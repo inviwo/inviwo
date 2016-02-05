@@ -220,7 +220,7 @@ class App:
 		db_test_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
 
 		git = report["git"]
-		dbcommit = self.db.getOrAddCommit(hash    = git["commit"],
+		dbcommit = self.db.getOrAddCommit(hash    = git["hash"],
 				                     	  date    = stringToDate(git['date']), 
 				                    	  author  = git['author'], 
 				                     	  message = git['message'], 

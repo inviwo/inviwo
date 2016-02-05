@@ -40,6 +40,7 @@ from ivwpy.colorprint import *
 # yattag, http://www.yattag.org for html report generation
 # Pillow (PIL) for image comparison https://python-pillow.github.io/
 # sqlalchemy for database connection 
+# bs4 (Beautiful Soup 4) for dom manipulation
 
 missing_modules = {}
 
@@ -58,6 +59,11 @@ try:
 	import sqlalchemy
 except ImportError:
 	missing_modules['sqlalchemy'] = "needed for database connection"
+
+try:
+	import bs4
+except ImportError:
+	missing_modules['beautifulsoup4'] = "needed for dom manipulation"
 
 if len(missing_modules)>0: 
 	print_error("Error: Missing python modules:")

@@ -90,7 +90,7 @@ class Git:
 		out, err = self.run(".", ["--version"])
 		return out
 
-	def commit(self, path):
+	def hash(self, path):
 		out, err = self.run(path, ["log", "-n1", "--pretty=format:%H"])
 		return out
 
@@ -116,7 +116,7 @@ class Git:
 
 	def info(self, path):
 		return {
-			'commit' : self.commit(path),
+			'hash'   : self.hash(path),
 			'date'   : util.dateToString(self.date(path)),
 			'author' : self.author(path),
 			'message': self.message(path),

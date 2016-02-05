@@ -34,6 +34,9 @@ import glob
 import datetime
 import contextlib
 
+# Beautiful Soup 4 for dom manipulation
+import bs4
+
 # Yattag for HTML generation, http://www.yattag.org
 import yattag 
 
@@ -69,6 +72,24 @@ def abr(text, length=85):
 	abr = text.split("\n")[0][:length]
 	return abr + ("..." if len(text.split("\n")) > 1 or len(text) > length else "")
 
+
+def abrhtml(html, length=85):
+	soup = bs4.BeautifulSoup(html.strip(), 'html.parser')
+	size = len(soup.getText())
+	toRemove = size - length
+	if toRemove > 0:
+		lastString = soup.find_all(string=True)[-1]
+		lastString.replace_with(lastString[:-toRemove] + "...")
+		return True, soup.prettify()
+	else:
+		return False, soup.prettify()
+
+def isValidString(*vars):
+	for var in vars:
+		if var is None or var is "" or not isinstance(var, str):
+			return False
+	return True
+
 def formatKey(key):
 	return key.capitalize().replace("_", " ")
 
@@ -97,20 +118,23 @@ def listItem(head, body="", status="", toggle = True, hide = True):
 
 def gitLink(commit):
 	doc, tag, text = yattag.Doc().tagtext()
-	if commit.server != "":
+
+	if isValidString(commit.server, commit.hash):
 		with tag('a', href = commit.server + "/commit/"+ commit.hash):
 			text(commit.server + "/commit/"+ commit.hash)
 	else:
-		text(commit.hash)
+		#text(commit.hash)
+		test("None")
 	return doc.getvalue()
 
 def getDiffLink(start, stop):
 	doc, tag, text = yattag.Doc().tagtext()
-	if start.server != "":
+	if isValidString(start.server, start.hash, stop.hash):
 		with tag('a', href = start.server + "/compare/"+ start.hash + "..." + stop.hash):
 			text(start.server + "/compare/"+ start.hash + "..." + stop.hash)
 	else:
-		text(commit.hash)
+		#text(commit.hash)
+		test("None")
 	return doc.getvalue()
 
 def commitInfo(commit):
@@ -357,8 +381,8 @@ class TestRun:
 		with tag('ol'):
 			for key, errors in self.report["failures"].items():
 				for error in errors:
-					with self.item(keyval(formatKey(key), abr(error)), doc = doc, status = "fail"):
-						text(error)
+					toToggle, short = abrhtml(error)
+					doc.asis(listItem(keyval(formatKey(key), short), error, status = "fail", toggle=toToggle))
 
 		return doc.getvalue()
 
@@ -470,6 +494,7 @@ class HtmlReport:
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 
+			#f.write(self.doc.getvalue())
 
 		return file
 			
