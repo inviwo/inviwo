@@ -169,14 +169,33 @@ void CanvasGL::renderLayer(size_t idx) {
 
 void CanvasGL::renderNoise() {
     if (!noiseShader_) return;
+    if (!ready()) return;
+
+    LGL_ERROR;
     activate();
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
     drawRect();
     noiseShader_->deactivate();
     glSwapBuffers();
     activateDefaultRenderContext();
+    LGL_ERROR;
+}
+
+bool CanvasGL::ready() {
+    if (ready_) {
+        return true;
+    } else {
+        switch (glCheckFramebufferStatus(GL_FRAMEBUFFER)) {
+            case GL_FRAMEBUFFER_COMPLETE:
+                ready_ = true;
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 
 void CanvasGL::renderTexture(int unitNumber) {
@@ -281,10 +300,6 @@ void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     imageGL_ = nullptr;
     pickingContainer_.setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);
-}
-
-std::unique_ptr<Canvas> CanvasGL::create() {
-    return util::make_unique<CanvasGL>(screenDimensions_);
 }
 
 }  // namespace

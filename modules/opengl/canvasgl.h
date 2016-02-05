@@ -80,8 +80,6 @@ public:
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
-    virtual std::unique_ptr<Canvas> create() override;
-
 protected:
     void renderLayer(size_t idx = 0);
     void renderNoise();
@@ -116,6 +114,15 @@ protected:
     const ImageGL* imageGL_;
     
 private:
+    /**
+     * Sometime on OSX in renderNoise when on the first time using
+     * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
+     * to avoid this we have this ready flag to check that the 
+     * frame buffer is compleate.
+     */
+    bool ready_ = false;
+    bool ready();
+
     static const MeshGL* screenAlignedRectGL_;
 
     LayerType layerType_;
