@@ -36,36 +36,44 @@
 
 namespace inviwo{
 
-
-TEST(filesystemTest,fileExistsTest) {
+TEST(filesystemTest, fileExistsTest) {
 #ifdef __FILE__
     EXPECT_TRUE(filesystem::fileExists(__FILE__));
 #endif
 }
 
-TEST(filesystemTest,fileExtensionTest) {
-    EXPECT_STREQ("",filesystem::getFileExtension("").c_str());
-    EXPECT_STREQ("txt",filesystem::getFileExtension("test.txt").c_str());
-    EXPECT_STREQ("txt",filesystem::getFileExtension("test.dobule.txt").c_str());
-    EXPECT_STREQ("",filesystem::getFileExtension("noExtensions").c_str());
-    EXPECT_STREQ("",filesystem::getFileExtension("C:/a/directory/for/test/noExtensions").c_str());
-    EXPECT_STREQ("", filesystem::getFileExtension("C:/a/directory/for/test.test/noExtensions").c_str());
+TEST(filesystemTest, fileExtensionTest) {
+    EXPECT_STREQ("", filesystem::getFileExtension("").c_str());
+    EXPECT_STREQ("txt", filesystem::getFileExtension("test.txt").c_str());
+    EXPECT_STREQ("txt", filesystem::getFileExtension("test.dobule.txt").c_str());
+    EXPECT_STREQ("", filesystem::getFileExtension("noExtensions").c_str());
+    EXPECT_STREQ("", filesystem::getFileExtension("C:/a/directory/for/test/noExtensions").c_str());
+    EXPECT_STREQ("",
+                 filesystem::getFileExtension("C:/a/directory/for/test.test/noExtensions").c_str());
 #ifdef __FILE__
-    EXPECT_STREQ("cpp",filesystem::getFileExtension(__FILE__).c_str());
+    EXPECT_STREQ("cpp", filesystem::getFileExtension(__FILE__).c_str());
 #endif
 }
 
-TEST(filesystemTest,FileDirectoryTest) {
-    EXPECT_STREQ("C:/a/directory/for/test/",
-                 filesystem::getFileDirectory("C:/a/directory/for/test/file.txt").c_str());
-    EXPECT_STREQ("C:\\a\\directory\\for\\test\\",
-                 filesystem::getFileDirectory("C:\\a\\directory\\for\\test\\file.txt").c_str());
-    EXPECT_STREQ("",filesystem::getFileDirectory("justafile.txt").c_str());
+TEST(filesystemTest, fileNameWithExtension) {
+    EXPECT_STREQ("file.txt",
+                 filesystem::getFileNameWithExtension("C:/a/directory/for/test/file.txt").c_str());
+    EXPECT_STREQ(
+        "file.txt",
+        filesystem::getFileNameWithExtension("C:\\a\\directory\\for\\test\\file.txt").c_str());
+    EXPECT_STREQ("justafile.txt", filesystem::getFileNameWithExtension("justafile.txt").c_str());
 }
 
-TEST(filesystemTest, RelativePath) {
-    EXPECT_STREQ("../test/file.txt", 
+TEST(filesystemTest, fileDirectoryTest) {
+    EXPECT_STREQ("C:/a/directory/for/test",
+                 filesystem::getFileDirectory("C:/a/directory/for/test/file.txt").c_str());
+    EXPECT_STREQ("C:\\a\\directory\\for\\test",
+                 filesystem::getFileDirectory("C:\\a\\directory\\for\\test\\file.txt").c_str());
+    EXPECT_STREQ("", filesystem::getFileDirectory("justafile.txt").c_str());
+}
+
+TEST(filesystemTest, relativePathTest) {
+    EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
 }
-
 }

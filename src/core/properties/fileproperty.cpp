@@ -131,8 +131,9 @@ void FileProperty::deserialize(Deserializer& d) {
     const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
     const auto workspaceBasedPath =
-        filesystem::getCanonicalPath(workspacePath + workspaceRelativePath);
-    const auto ivwdataBasedPath = filesystem::getCanonicalPath(ivwdataPath + ivwdataRelativePath);
+        filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePath);
+    const auto ivwdataBasedPath =
+        filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePath);
 
     if (!absolutePath.empty() && filesystem::fileExists(absolutePath)) {
         set(absolutePath);

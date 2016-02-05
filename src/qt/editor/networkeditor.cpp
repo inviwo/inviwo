@@ -462,7 +462,7 @@ std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
 
             if (canvasProcessor) {
                 std::string snapShotFilePath =
-                    directory + "snapshot_" + canvasProcessor->getIdentifier() + newFileName;
+                    directory + "/" + "snapshot_" + canvasProcessor->getIdentifier() + newFileName;
                 canvasSnapShotFiles.push_back(snapShotFilePath);
                 canvasProcessor->saveImageLayer(snapShotFilePath);
             }

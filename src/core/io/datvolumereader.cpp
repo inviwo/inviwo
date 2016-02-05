@@ -128,9 +128,9 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
         std::stringstream ss(value);
 
         if (key == "objectfilename" || key == "rawfile") {
-            rawFile_ = fileDirectory + value;
+            rawFile_ = fileDirectory + "/" + value;
         } else if (key == "datfile") {
-            datFiles.push_back(fileDirectory + value);
+            datFiles.push_back(fileDirectory + "/" + value);
         } else if (key == "byteorder") {
             if (toLower(value) == "bigendian") {
                 littleEndian_ = false;

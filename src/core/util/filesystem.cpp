@@ -435,13 +435,15 @@ std::string addBasePath(const std::string& url) {
 }
 
 std::string getFileDirectory(const std::string& url) {
-    size_t pos = url.find_last_of("\\/") + 1;
+    size_t pos = url.find_last_of("\\/");
+    if (pos == std::string::npos) return "";
     std::string fileDirectory = url.substr(0, pos);
     return fileDirectory;
 }
 
 std::string getFileNameWithExtension(const std::string& url) {
     size_t pos = url.find_last_of("\\/") + 1;
+    // This relies on the fact that std::string::npos + 1 = 0
     std::string fileNameWithExtension = url.substr(pos, url.length());
     return fileNameWithExtension;
 }

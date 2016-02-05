@@ -80,11 +80,11 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string filePath) {
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
     for (size_t i = 0; i < files.size(); i++) {
-        auto newVol = PVMVolumeReader::readPVMData(fileDirectory + files[i]);
+        auto newVol = PVMVolumeReader::readPVMData(fileDirectory + "/" + files[i]);
         if (newVol)
             volumes.push_back(newVol);
         else
-            LogWarn("Could not load " << fileDirectory << files[i]);
+            LogWarn("Could not load " << fileDirectory << "/" << files[i]);
     }
 
     if (volumes.empty())
@@ -92,7 +92,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string filePath) {
                                   IvwContext);
 
     if (volumes.size() == 1) {
-        printPVMMeta(*volumes[0], fileDirectory + files[0]);
+        printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);
         return volumes[0];
     }
 
@@ -102,7 +102,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string filePath) {
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
             LogWarn("PVM volumes did not have the same format or dimensions, using first volume.");
-            printPVMMeta(*volumes[0], fileDirectory + files[0]);
+            printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);
             return volumes[0];
         }
     }
