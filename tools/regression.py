@@ -108,6 +108,8 @@ def makeCmdParser():
 						help="Exclude filter")
 	parser.add_argument("-l", "--list", action="store_true", dest="list", 
 						help="List all tests")
+	parser.add_argument("--imagetolerance", type=float, action="store", dest="imagetolerance", default=0.0,
+						help="Tolerance when comparing images")
 
 	return parser.parse_args()
 
@@ -178,10 +180,12 @@ if __name__ == '__main__':
 	if config.has_option("Inviwo", "activemodules"):
 		activeModules = config.get("Inviwo", "activemodules").split(";")
 
-	settings=ivwpy.regression.inviwoapp.RunSettings(
+	runSettings=ivwpy.regression.inviwoapp.RunSettings(
 		timeout=60,
 		activeModules = activeModules
 	)
+
+	testSettings = ivwpy.regression.reporttest.ReportTestSettings(imageDifferenceTolerance = args.imagetolerance)
 
 	app = ivwpy.regression.app.App(appPath         = inviwopath,
 								   moduleTestPaths = modulePaths, 
@@ -189,7 +193,8 @@ if __name__ == '__main__':
 								   jsonFile		   = "report",
 								   htmlFile        = "report",
 								   sqlFile         = "report",
-								   runSettings     = settings)
+								   runSettings     = runSettings,
+								   testSettings    = testSettings)
 
 
 	testfilter = makeFilter(args.include, args.exclude)

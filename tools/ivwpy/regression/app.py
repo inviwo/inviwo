@@ -66,13 +66,15 @@ class App:
 				 jsonFile = "report",
 				 htmlFile = "report",
 				 sqlFile = "report",
-				 runSettings = inviwoapp.RunSettings()):
+				 runSettings = inviwoapp.RunSettings(),
+				 testSettings = ReportTestSettings()):
 
 		self.app = inviwoapp.InviwoApp(appPath, runSettings)
 		self.output = outputDir
 		self.jsonFile = jsonFile
 		self.htmlFile = htmlFile
 		self.sqlFile = sqlFile
+		self.testSettings = testSettings
 
 		tests = [findModuleTest(p) for p in moduleTestPaths]
 		self.tests = list(itertools.chain(*tests))
@@ -93,7 +95,8 @@ class App:
 
 		report = self.app.runTest(test, report, self.output)
 		report = self.compareImages(test, report)
-		testsuite = ReportTestSuite()
+
+		testsuite = ReportTestSuite(self.testSettings)
 		report = testsuite.checkReport(report)
 
 		report['status'] = "new"

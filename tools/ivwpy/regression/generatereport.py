@@ -213,12 +213,12 @@ class TestRun:
 		with self.item(self.head(), status = self.totalstatus()):
 			with self.tag('ul'):
 
-				ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
-				fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
-				short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
+				failedImgs = safeget(self.report, 'failures', 'image_tests', failure = {})
+				fail = len(failedImgs)
+				short = "All OK" if fail == 0 else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"]))
 				self.doc.asis(listItem(keyval("Images", short), 
 					self.images(report["image_tests"], report["outputdir"]),
-					status = "ok" if fail == 0 else "fail"))
+					status = self.status('image_tests')))
 
 				self.testRunInfo("Current Version", testrun)
 				if self.totalstatus() != "ok":
@@ -332,12 +332,16 @@ class TestRun:
 		def path(type, img):
 			return os.path.relpath(toPath(testdir, type, img), self.basedir)
 
+		def imgstatus(key):
+			failedImgs = safeget(self.report, 'failures', 'image_tests', failure = {})
+			return "fail" if key in failedImgs.keys() else "ok"
+
 		with tag('ol'):
 			for img in imgs:
 				doc.asis(listItem(self.imageShort(img),
 					testImages(path("imgtest", img["image"]), path("imgref", img["image"]),
 							   path("imgdiff", img["image"]), path("imgmask", img["image"])),
-					status = "ok" if img["difference"] == 0.0 else "fail", hide=False))
+					status = imgstatus(img['image']), hide=False))
 		return doc.getvalue()
 
 	def screenshot(self):
@@ -382,7 +386,11 @@ class TestRun:
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('ol'):
 			for key, errors in self.report["failures"].items():
-				for error in errors:
+				if isinstance(errors, dict):
+					items = errors.values()
+				else:
+					items = errors
+				for error in items:
 					toToggle, short = abrhtml(error)
 					doc.asis(listItem(keyval(formatKey(key), short), error, status = "fail", toggle=toToggle))
 
