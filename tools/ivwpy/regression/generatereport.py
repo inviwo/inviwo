@@ -29,10 +29,12 @@
 
 import sys
 import os
+import io
 import pkgutil
 import glob
 import datetime
 import contextlib
+import lesscpy
 
 # Beautiful Soup 4 for dom manipulation
 import bs4
@@ -208,7 +210,7 @@ class TestRun:
 		lastSuccess, firstFailure = self.db.getLastSuccessFirstFailure(self.report["module"], 
 																	   self.report["name"])
 
-		with self.item(self.head(), self.totalstatus()):
+		with self.item(self.head(), status = self.totalstatus()):
 			with self.tag('ul'):
 
 				ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
@@ -248,6 +250,8 @@ class TestRun:
 				yield None
 
 	def totalstatus(self):
+		if not safeget(self.report, "config", "enabled", failure = True):
+			return "disabled"
 		return ("ok" if len(self.report['failures']) == 0 else "fail")
 
 	def status(self, key):
@@ -486,13 +490,12 @@ class HtmlReport:
 		with open(toPath(imgdir, "inviwo.png"), 'wb') as f:
 			f.write(imgdata)
 
-		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
-		with open(toPath(self.basedir, "report.css"), 'wb') as f:
-			f.write(cssdata)
+		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')		
+		with open(toPath(self.basedir, "report.css"), 'w') as f:
+			f.write(lesscpy.compile(io.StringIO(cssdata.decode("utf-8"))))
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 
-			#f.write(self.doc.getvalue())
 
 		return file
 			

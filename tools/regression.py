@@ -41,6 +41,7 @@ from ivwpy.colorprint import *
 # Pillow (PIL) for image comparison https://python-pillow.github.io/
 # sqlalchemy for database connection 
 # bs4 (Beautiful Soup 4) for dom manipulation
+# lesscpy to process css
 
 missing_modules = {}
 
@@ -64,6 +65,11 @@ try:
 	import bs4
 except ImportError:
 	missing_modules['beautifulsoup4'] = "needed for dom manipulation"
+
+try:
+	import lesscpy
+except ImportError:
+	missing_modules['lesscpy'] = "needed for css generation"
 
 if len(missing_modules)>0: 
 	print_error("Error: Missing python modules:")
