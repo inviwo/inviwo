@@ -54,6 +54,8 @@ class ReportImageTest(ReportTest):
 	def test(self, report):
 		imgs = report[self.key]
 		for img in imgs:
+			tol = safeget(report, "config", "image_test", "differenceTolerance", img["image"], failure = self.differenceTolerance)
+
 			if img['test_mode'] != img['ref_mode']:
 				self.message[img['image']] = \
 					("Image {image} has different modes, " +
@@ -62,11 +64,11 @@ class ReportImageTest(ReportTest):
 				self.message[img['image']] = \
 					("Image {image} has different sizes, " +
 					"Test: {test_size} vs Reference:{ref_size}").format(**img)
-			elif img["difference"] > self.differenceTolerance:
+			elif img["difference"] > tol:
 				self.message[img['image']] = \
-					("Image {image} has non-zero ({difference}%) " +
+					("Image {image} has difference greater then the allowd tolerance ({difference}% &gt; {tol})  " +
 					"difference, {different_pixels} different pixels, " +
-					"largest difference {max_difference}").format(**img)
+					"largest difference {max_difference}").format(tol=tol, **img)
 
 		return len(self.message) == 0
 
