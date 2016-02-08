@@ -93,6 +93,8 @@ PyInviwo::~PyInviwo() {
     delete inviwoInternalPyModule_;
 }
 
+#include <warn/push>
+#include <warn/ignore/missing-field-initializers>
 void PyInviwo::registerPyModule(PyModule* pyModule) {
     if (Py_IsInitialized()) {
         struct PyModuleDef moduleDef = {PyModuleDef_HEAD_INIT, pyModule->getModuleName(), nullptr,
@@ -114,6 +116,7 @@ void PyInviwo::registerPyModule(PyModule* pyModule) {
         LogError("Python environment not initialized");
     }
 }
+#include <warn/pop>
 
 void PyInviwo::addModulePath(const std::string& path) {
     if (!Py_IsInitialized()) {

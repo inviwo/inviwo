@@ -140,18 +140,18 @@ void VolumeVectorSource::loadFolder(bool deserialize) {
         auto file = folder_.get() + "/" + f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
             std::string ext = filesystem::getFileExtension(file);
-            if (auto reader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+            if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
                 try {
-                    auto volume = reader->readData(file);
+                    auto volume = reader1->readData(file);
                     volumes_->push_back(volume);
                 }
                 catch (DataReaderException const& e) {
                     LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
                 }
             }
-            else if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+            else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
                 try {
-                    auto volumes = reader->readData(file);
+                    auto volumes = reader2->readData(file);
                     for (auto volume : *volumes) {
                         volumes_->push_back(volume);
                     }

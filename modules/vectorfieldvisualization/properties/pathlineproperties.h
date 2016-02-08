@@ -55,7 +55,7 @@ public:
     double getStartT()const { return startT_.get(); }
 
 
-    void deserialize(Deserializer& d);
+    void deserialize(Deserializer& d) override;
 
 private:
     void setUpProperties();

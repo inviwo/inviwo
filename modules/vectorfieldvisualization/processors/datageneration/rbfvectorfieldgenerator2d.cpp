@@ -83,7 +83,7 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
 RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() {}
 
 void RBFVectorFieldGenerator2D::process() {
-    if (samples_.size() != seeds_.get()) {
+    if (samples_.size() != static_cast<size_t>(seeds_.get())) {
         createSamples();
     }
 
@@ -162,9 +162,9 @@ void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
     
-    for (auto s : samples_) {
-        sx.push_back(s.first);
-        sy.push_back(s.second);
+    for (auto sample : samples_) {
+        sx.push_back(sample.first);
+        sy.push_back(sample.second);
     }
     
     s.serialize("samplesx", sx, "samplex");
