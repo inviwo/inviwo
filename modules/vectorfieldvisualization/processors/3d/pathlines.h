@@ -80,7 +80,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    VolumeVectorInport volume_;
+    VolumeSequenceInport volume_;
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
 

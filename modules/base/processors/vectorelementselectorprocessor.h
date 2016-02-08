@@ -45,7 +45,7 @@ namespace inviwo {
  * ![](org.inviwo.VectorElementSelectorProcessor.png?classIdentifier=org.inviwo.VectorElementSelectorProcessor)
  *
  * Template for processors that want to select an element from an input vector and set it as output.
- * @see VolumeVectorElementSelectorProcessor for an example
+ * @see VolumeSequenceElementSelectorProcessor for an example
  * ### Inports
  *   * __inport__ ... Vector of data
  * ### Outports

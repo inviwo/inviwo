@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumevectorsource.h"
+#include "volumesequencesource.h"
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -35,18 +35,18 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeVectorSource::processorInfo_{
+const ProcessorInfo VolumeSequenceSource::processorInfo_{
     "org.inviwo.VolumeVectorSource",  // Class identifier
     "Volume Vector Source",           // Display name
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo VolumeVectorSource::getProcessorInfo() const {
+const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const {
     return processorInfo_;
 }
 
-VolumeVectorSource::VolumeVectorSource()
+VolumeSequenceSource::VolumeSequenceSource()
     : Processor()
     , outport_("data")
     , inputType_("inputType","Input type")
@@ -95,7 +95,7 @@ VolumeVectorSource::VolumeVectorSource()
     filter_.setVisible(inputType_.get() == InputType::Folder);
 }
 
-void VolumeVectorSource::load(bool deserialize) {
+void VolumeSequenceSource::load(bool deserialize) {
     if (isDeserializing_) return;
     switch (inputType_.get()) {
     case InputType::Folder:
@@ -108,12 +108,12 @@ void VolumeVectorSource::load(bool deserialize) {
     }
 }
 
-void VolumeVectorSource::loadFile(bool deserialize) {
+void VolumeSequenceSource::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+    if (auto reader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
         try {
             volumes_ = reader->readData(file_.get());
         } catch (DataReaderException const& e) {
@@ -129,10 +129,10 @@ void VolumeVectorSource::loadFile(bool deserialize) {
     }
 }
 
-void VolumeVectorSource::loadFolder(bool deserialize) {
+void VolumeSequenceSource::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    volumes_ = std::make_shared<VolumeVector>();
+    volumes_ = std::make_shared<VolumeSequence>();
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
 
     auto files = filesystem::getDirectoryContents(folder_.get());
@@ -149,7 +149,7 @@ void VolumeVectorSource::loadFolder(bool deserialize) {
                     LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
                 }
             }
-            else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+            else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
                 try {
                     auto volumes = reader2->readData(file);
                     for (auto volume : *volumes) {
@@ -172,9 +172,9 @@ void VolumeVectorSource::loadFolder(bool deserialize) {
     }
 }
 
-void VolumeVectorSource::addFileNameFilters() {
+void VolumeSequenceSource::addFileNameFilters() {
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-    auto extensions = rf->getExtensionsForType<VolumeVector>();
+    auto extensions = rf->getExtensionsForType<VolumeSequence>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {
@@ -182,7 +182,7 @@ void VolumeVectorSource::addFileNameFilters() {
     }
 }
 
-void VolumeVectorSource::process() {
+void VolumeSequenceSource::process() {
     if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
         for (auto& vol : *volumes_) {
             basis_.updateEntity(*vol);
@@ -192,7 +192,7 @@ void VolumeVectorSource::process() {
     }
 }
 
-void VolumeVectorSource::deserialize(Deserializer& d) {
+void VolumeSequenceSource::deserialize(Deserializer& d) {
     {
         isDeserializing_ = true;
         Processor::deserialize(d);

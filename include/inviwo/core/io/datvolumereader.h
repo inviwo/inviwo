@@ -57,7 +57,7 @@ namespace inviwo {
  */
 class IVW_CORE_API DatVolumeReader : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
 public:
-    using VolumeVector = std::vector<std::shared_ptr<Volume>>;
+    using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 
     DatVolumeReader();
     DatVolumeReader(const DatVolumeReader& rhs);
@@ -65,7 +65,7 @@ public:
     virtual DatVolumeReader* clone() const override;
     virtual ~DatVolumeReader() = default;
 
-    virtual std::shared_ptr<VolumeVector> readData(const std::string filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(const std::string filePath) override;
 
 private:
     std::string rawFile_;

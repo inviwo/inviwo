@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEPORT_H
-#define IVW_VOLUMEPORT_H
+#ifndef IVW_VOLUMESEQUENCESAMPLER_H
+#define IVW_VOLUMESEQUENCESAMPLER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
-using VolumeInport = DataInport<Volume>;
-using VolumeOutport = DataOutport<Volume>;
-using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
-using VolumeSequenceInport = DataInport<VolumeSequence>;
-using VolumeSequenceOutport = DataOutport<VolumeSequence>;
+/**
+ * \class VolumeSequenceSampler
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_CORE_API VolumeSequenceSampler { 
+public:
+    VolumeSequenceSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence);
+    virtual ~VolumeSequenceSampler();
 
-}  // namespace
+    void setVectorInterpolation(bool enable);
 
-#endif  // IVW_VOLUMEPORT_H
+    dvec4 sample(const dvec4 &pos) const;
+    dvec4 sample(double x, double y, double z, double t) const;
+    dvec4 sample(const vec4 &pos) const;
+
+private:
+    dvec4 getVoxel(const dvec3 &pos, int T) const;
+
+    size3_t dims_;
+    std::vector<VolumeSampler> samplers_;
+};
+
+} // namespace
+
+#endif // IVW_VOLUMESEQUENCESAMPLER_H
+

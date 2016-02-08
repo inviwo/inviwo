@@ -47,7 +47,7 @@
 #include <modules/base/processors/ordinalpropertyanimator.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/surfaceextraction.h>
-#include <modules/base/processors/volumevectorelementselectorprocessor.h>
+#include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/imagesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
@@ -55,7 +55,7 @@
 #include <modules/base/processors/volumeslice.h>
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
-#include <modules/base/processors/volumevectorsource.h>
+#include <modules/base/processors/volumesequencesource.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/orientationindicator.h>
 
@@ -102,8 +102,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
     registerProcessor<ImageContourProcessor>();
-    registerProcessor<VolumeVectorSource>();
-    registerProcessor<VolumeVectorElementSelectorProcessor>(); 
+    registerProcessor<VolumeSequenceSource>();
+    registerProcessor<VolumeSequenceElementSelectorProcessor>();
     registerProcessor<ImageSequenceElementSelectorProcessor>();
     registerProcessor<StereoCameraSyncer>();
 

@@ -41,7 +41,7 @@
 namespace inviwo {
 
 DatVolumeReader::DatVolumeReader()
-    : DataReaderType<VolumeVector>()
+    : DataReaderType<VolumeSequence>()
     , rawFile_("")
     , filePos_(0)
     , littleEndian_(true)
@@ -53,7 +53,7 @@ DatVolumeReader::DatVolumeReader()
 }
 
 DatVolumeReader::DatVolumeReader(const DatVolumeReader& rhs)
-    : DataReaderType<VolumeVector>(rhs)
+    : DataReaderType<VolumeSequence>(rhs)
     , rawFile_(rhs.rawFile_)
     , filePos_(rhs.filePos_)
     , littleEndian_(rhs.littleEndian_)
@@ -69,7 +69,7 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
         dimensions_ = that.dimensions_;
         format_ = that.format_;
         enableLogOutput_ = that.enableLogOutput_;
-        DataReaderType<VolumeVector>::operator=(that);
+        DataReaderType<VolumeSequence>::operator=(that);
     }
 
     return *this;
@@ -77,7 +77,7 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
 
 DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*this); }
 
-std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::string filePath) {
+std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -210,7 +210,7 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
     };
 
     // Check if other dat files where specified, and then only consider them as a sequence
-    auto volumes = std::make_shared<VolumeVector>();
+    auto volumes = std::make_shared<VolumeSequence>();
 
     if (!datFiles.empty()) {
         for (size_t t = 0; t < datFiles.size(); ++t) {

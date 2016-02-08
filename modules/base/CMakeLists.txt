@@ -33,6 +33,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
@@ -41,8 +42,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorelementselectorprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
@@ -80,14 +80,14 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorelementselectorprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp

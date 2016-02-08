@@ -27,23 +27,23 @@
  * 
  *********************************************************************************/
 
-#include "volumevectorelementselectorprocessor.h"
+#include "volumesequenceelementselectorprocessor.h"
 
 namespace inviwo {
 
-const ProcessorInfo VolumeVectorElementSelectorProcessor::processorInfo_{
+const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
     "org.inviwo.TimeStepSelector",  // Class identifier
     "Volume Sequence/Time Selector",// Display name
     "Volume Operation",             // Category
     CodeState::Stable,              // Code state
     Tags::CPU,                      // Tags
 };
-const ProcessorInfo VolumeVectorElementSelectorProcessor::getProcessorInfo() const {
+const ProcessorInfo VolumeSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
-VolumeVectorElementSelectorProcessor::VolumeVectorElementSelectorProcessor()
+VolumeSequenceElementSelectorProcessor::VolumeSequenceElementSelectorProcessor()
     : VectorElementSelectorProcessor<Volume>() {
-    timeStep_.index_.autoLinkToProperty<VolumeVectorElementSelectorProcessor>("timeStep.selectedSequenceIndex");
+    timeStep_.index_.autoLinkToProperty<VolumeSequenceElementSelectorProcessor>("timeStep.selectedSequenceIndex");
 
 }
 
