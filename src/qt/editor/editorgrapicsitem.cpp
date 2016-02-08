@@ -133,33 +133,31 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     if (data) {
         QByteArray byteArray;
 
-        if (imageType != "png"){
+        if (imageType != "png") {
             QImage::Format format = QImage::Format_Invalid;
-            if (data->size() == size*size){
+            if (data->size() == size * size) {
                 format = QImage::Format_Indexed8;
-            }
-            else if (data->size() == size*size * 3){
+            } else if (data->size() == size * size * 3) {
                 format = QImage::Format_RGB888;
-            }
-            else if (data->size() == size*size * 4){
+            } else if (data->size() == size * size * 4) {
                 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-            format = QImage::Format_RGBA8888;
-        #else
-            format = QImage::Format_RGB888;
-        #endif
+                format = QImage::Format_RGBA8888;
+                #else
+                format = QImage::Format_RGB888;
+                #endif
             }
 
-            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size, format);
+            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size,
+                         format);
             QBuffer buffer(&byteArray);
             image.save(&buffer, "PNG");
-        }
-        else{
+        } else {
             byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
-                static_cast<unsigned int>(data->size()));
+                                 static_cast<unsigned int>(data->size()));
         }
-        
-        t << "<tr><td><img width='"<< size <<"' height='"<< size << "' ";
-        t << "src=\"data:image/png;base64,"<< byteArray.toBase64().data() <<"\"/></td></tr>";
+
+        t << "<tr><td><img width='" << size << "' height='" << size << "' ";
+        t << "src=\"data:image/png;base64," << byteArray.toBase64().data() << "\"/></td></tr>";
     }
 
     if (portinfo) {

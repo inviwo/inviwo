@@ -48,13 +48,9 @@ void LinkDialogGraphicsView::setDialogScene(LinkDialogGraphicsScene* scene) {
 }
 
 void LinkDialogGraphicsView::wheelEvent(QWheelEvent* e) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QPoint numPixels = e->pixelDelta();
     QPoint numDegrees = e->angleDelta() / 8 / 15;
-#else
-    QPoint numPixels;
-    QPoint numDegrees = QPoint(0, e->delta() / 8 / 15);
-#endif
+
     if (!numPixels.isNull()) {
         scene_->wheelAction(static_cast<float>(numPixels.y()) / 50.f);
     } else if (!numDegrees.isNull()) {

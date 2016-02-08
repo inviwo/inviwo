@@ -32,11 +32,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
-#else
-#include <QDesktopServices>
-#endif
 #include <QDir>
 #include <warn/pop>
 
@@ -48,17 +44,12 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
     , pathType_(QString::fromStdString(pathType))
     , currentPath_() {
     setCurrentDirectory(path);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-#else
-    sidebarURLs_ << QUrl::fromLocalFile(
-        QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-    sidebarURLs_ << QUrl::fromLocalFile(
-        QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
-#endif
+
     useNativeDialog();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
