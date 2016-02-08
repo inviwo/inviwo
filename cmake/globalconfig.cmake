@@ -65,7 +65,7 @@ if(IVW_CMAKE_DEBUG)
         endif()
     endfunction()
 
-    #variable_watch(ALL_MODULE_PACKAGES)
+    #variable_watch(PYTHON_EXECUTABLE)
     #variable_watch(_projectName log_proj)
 endif()
 
