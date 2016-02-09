@@ -54,19 +54,22 @@ class IVW_QTWIDGETS_API ColorPropertyWidgetQt : public PropertyWidgetQt {
 
 public:
     ColorPropertyWidgetQt(Property* property);
-    virtual ~ColorPropertyWidgetQt();
+    virtual ~ColorPropertyWidgetQt() = default;
 
     void updateFromProperty();
-    QColor getCurrentColor();
+    const QColor& getCurrentColor() const;
 
 private:
     Property* property_;
     QPushButton* btnColor_;
     QColorDialog* colorDialog_;
-    QColor* currentColor_;
+    QColor currentColor_;
     EditableLabelQt* label_;
 
     void generateWidget();
+
+    void createColorDialog();
+
     void offsetColorDialog();
 
 public slots:
