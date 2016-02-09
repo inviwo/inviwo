@@ -41,7 +41,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public CanvasQt {
 public:
-    explicit HiddenCanvasQt(QGLParent *parent = nullptr, uvec2 dim = uvec2(256, 256));
+    explicit HiddenCanvasQt(QGLWidget *parent = nullptr, uvec2 dim = uvec2(256, 256));
     virtual ~HiddenCanvasQt();
 
 protected:

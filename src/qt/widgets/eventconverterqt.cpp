@@ -35,9 +35,7 @@
 #include <QWheelEvent>
 #include <QInputEvent>
 #include <QKeyEvent>
-#ifndef QT_NO_GESTURES
 #include <QGesture>
-#endif
 #include <warn/pop>
 
 namespace inviwo {
@@ -91,7 +89,6 @@ MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(const QWhe
     return MouseEvent::MOUSE_BUTTON_NONE;
 }
 
-#ifndef QT_NO_GESTURES
 GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(const QGesture* gesture){
     if (gesture->state() == Qt::GestureStarted)
         return GestureEvent::GESTURE_STATE_STARTED;
@@ -104,7 +101,6 @@ GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(const QGest
 
     return GestureEvent::GESTURE_STATE_NONE;
 }
-#endif
 
 InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEvent* e) {
     if (e->modifiers() == Qt::ShiftModifier)
@@ -119,14 +115,6 @@ InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEve
 
 int EventConverterQt::getKeyButton(const QKeyEvent* e) {
     return e->key();
-    
-// This does not work on OSX and makes no sense. 
-//    char key = toupper(e->nativeVirtualKey());
-//
-//    if ((key >= '0' && key <= '9')||(key >= 'A' && key <= 'Z'))
-//        return key;
-//    else
-//        return 0;
 }
 
 } // namespace

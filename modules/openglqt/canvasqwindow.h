@@ -27,13 +27,13 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_CANVASQT_H
-#define IVW_CANVASQT_H
+#ifndef IVW_CANVASQWINDOW_H
+#define IVW_CANVASQWINDOW_H
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <modules/openglqt/canvaseventmapper.h>
 #include <modules/opengl/canvasgl.h>
 #include <inviwo/qt/widgets/eventconverterqt.h>
+#include <modules/openglqt/canvaseventmapper.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/common/inviwo.h>
 
@@ -42,17 +42,35 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGLWidget>
+#include <QInputEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QEvent>
+
+#include <QGestureEvent>
+#include <QPanGesture>
+#include <QPinchGesture>
+
+#define USE_QWINDOW
+
+#include <QtGui/QWindow>
+#include <QtGui/QSurfaceFormat>
+class QOpenGLContext;
+#define QGLWindow QWindow
+#define QGLParent QWindow
+#define QGLContextFormat QSurfaceFormat
+
+
 #include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API CanvasQt : public QGLWidget, public CanvasGL {
+class IVW_MODULE_OPENGLQT_API CanvasQWindow : public QWindow, public CanvasGL {
     friend class CanvasProcessorWidgetQt;
 
 public:
-    explicit CanvasQt(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
-    ~CanvasQt() = default;
+    explicit CanvasQWindow(QWindow* parent = nullptr, uvec2 dim = uvec2(256,256));
+    ~CanvasQWindow() = default;
 
     static void defineDefaultContextFormat();
 
@@ -66,26 +84,25 @@ public:
     virtual std::unique_ptr<Canvas> create() override;
 
 protected:
-    void initializeGL() override;
-    void paintGL() override;
+    void initializeGL();
+    void paintGL();
 
     virtual bool event(QEvent *e) override;
-
     virtual void resizeEvent(QResizeEvent* event) override;
-    static CanvasQt* getSharedCanvas();
+    static CanvasQWindow* getSharedCanvas();
+    void exposeEvent(QExposeEvent *event);
 
 private:
-    void touchFallback(QTouchEvent*);
+    QOpenGLContext* thisGLContext_;
+    static QOpenGLContext* sharedGLContext_; //For rendering-context sharing
 
-
-    static QGLWidget* sharedGLContext_; //For rendering-context sharing
-
-    static CanvasQt* sharedCanvas_;
-    static QGLFormat sharedFormat_;
+    static CanvasQWindow* sharedCanvas_;
+    static QSurfaceFormat sharedFormat_;
     bool swapBuffersAllowed_;
     CanvasEventMapper eventMapper_;
 };
 
 } // namespace
 
-#endif // IVW_CANVASQT_H
+#endif // IVW_CANVASQWINDOW_H
+

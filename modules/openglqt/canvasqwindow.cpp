@@ -27,15 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/openglqt/canvasqt.h>
-#include <modules/openglqt/hiddencanvasqt.h>
+#include <modules/openglqt/canvasqwindow.h>
+
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QtGui/QOpenGLContext>
+#include <QThread>
 #include <QInputEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
@@ -43,116 +44,137 @@
 #include <QGestureEvent>
 #include <QPanGesture>
 #include <QPinchGesture>
-#include <QThread>
 #include <warn/pop>
 
 namespace inviwo {
 
-inline QGLFormat GetQGLFormat() {
-    QGLFormat sharedFormat = QGLFormat(QGL::Rgba | QGL::DoubleBuffer | QGL::AlphaChannel |
-                                       QGL::DepthBuffer | QGL::StencilBuffer);
-    sharedFormat.setProfile(QGLFormat::CoreProfile);
+inline QSurfaceFormat GetQGLFormat() {
+    QSurfaceFormat sharedFormat = QSurfaceFormat();
+    sharedFormat.setProfile(QSurfaceFormat::CoreProfile);
     sharedFormat.setVersion(10, 0);
     return sharedFormat;
 }
 
-QGLFormat CanvasQt::sharedFormat_ = GetQGLFormat();
-CanvasQt* CanvasQt::sharedCanvas_ = nullptr;
-QGLWidget* CanvasQt::sharedGLContext_ = nullptr;
+QSurfaceFormat CanvasQWindow::sharedFormat_ = GetQGLFormat();
+CanvasQWindow* CanvasQWindow::sharedCanvas_ = nullptr;
+QOpenGLContext* CanvasQWindow::sharedGLContext_ = nullptr;
 
-CanvasQt::CanvasQt(QGLWidget* parent, uvec2 dim)
-    : QGLWidget(sharedFormat_, parent, sharedGLContext_)
-    , CanvasGL(dim)
-    , swapBuffersAllowed_(false) {
+CanvasQWindow::CanvasQWindow(QWindow* parent, uvec2 dim)
+    : QWindow(parent), CanvasGL(dim), thisGLContext_(nullptr), swapBuffersAllowed_(false) {
+    setSurfaceType(QWindow::OpenGLSurface);
+    setFormat(sharedFormat_);
+    create();
+
+    thisGLContext_ = new QOpenGLContext(this);
+    thisGLContext_->setFormat(sharedFormat_);
+
     // This is our default rendering context
     // Initialized once. So "THE" first object of this class will 
     // not have any shared context (or widget)
     // But Following objects, will share the context of initial object
+    bool contextCreated;
     if (!sharedGLContext_) {
-        sharedFormat_ = this->format();
-        sharedGLContext_ = this;
+        contextCreated = thisGLContext_->create();
+        sharedFormat_ = thisGLContext_->format();
+        sharedGLContext_ = thisGLContext_;
         sharedCanvas_ = this;
-        QGLWidget::glInit();
+        activate();
+        initializeGL();
+    } else {
+        thisGLContext_->setShareContext(sharedGLContext_);
+        contextCreated = thisGLContext_->create();
     }
 
-    setAutoBufferSwap(false);
-    setFocusPolicy(Qt::StrongFocus);
-
-    grabGesture(Qt::PanGesture);
-    grabGesture(Qt::PinchGesture);
+    if (!contextCreated) {
+        std::cout << "OpenGL context was not created successfully!" << std::endl;
+        int major = sharedFormat_.majorVersion();
+        int minor = sharedFormat_.minorVersion();
+        std::cout << "GL Version: " << major << "." << minor << std::endl;
+        std::cout << "GL Profile: " << (sharedFormat_.profile() == QSurfaceFormat::CoreProfile
+                                            ? "Core"
+                                            : "CompatibilityProfile")
+                  << std::endl;
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        std::string vendorStr =
+            std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
+        std::cout << "GL Vendor: " << vendorStr << std::endl;
+    }
 }
 
-void CanvasQt::defineDefaultContextFormat() {
+void CanvasQWindow::defineDefaultContextFormat() {
     if (!sharedGLContext_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
         if (preferProfile == "core")
-            sharedFormat_.setProfile(QGLFormat::CoreProfile);
+            sharedFormat_.setProfile(QSurfaceFormat::CoreProfile);
         else if (preferProfile == "compatibility")
-            sharedFormat_.setProfile(QGLFormat::CompatibilityProfile);
+            sharedFormat_.setProfile(QSurfaceFormat::CompatibilityProfile);
     }
 }
 
-void CanvasQt::activate() { context()->makeCurrent(); }
+void CanvasQWindow::activate() { thisGLContext_->makeCurrent(this); }
 
-void CanvasQt::initializeGL() {
-    OpenGLCapabilities::initializeGLEW();
-    QGLWidget::initializeGL();
-    activate();
-}
+void CanvasQWindow::initializeGL() { OpenGLCapabilities::initializeGLEW(); }
 
-void CanvasQt::glSwapBuffers() {
+void CanvasQWindow::glSwapBuffers() {
     if (swapBuffersAllowed_) {
         activate();
-        QGLWidget::swapBuffers();
+        thisGLContext_->swapBuffers(this);
     }
 }
 
-void CanvasQt::update() { CanvasGL::update(); }
+void CanvasQWindow::update() { CanvasGL::update(); }
 
-void CanvasQt::repaint() { QGLWidget::updateGL(); }
+void CanvasQWindow::repaint() {}
 
-void CanvasQt::paintGL() {
+void CanvasQWindow::paintGL() {
+    if (!isExposed()) return;
     swapBuffersAllowed_ = true;
     CanvasGL::update();
 }
 
-CanvasQt* CanvasQt::getSharedCanvas() { return sharedCanvas_; }
+void CanvasQWindow::exposeEvent(QExposeEvent*) {
+    if (isExposed()) paintGL();
+}
 
-void CanvasQt::resize(uvec2 size) {
-    QGLWidget::resize(size.x, size.y);
+CanvasQWindow* CanvasQWindow::getSharedCanvas() {
+    return sharedCanvas_;
+}
+
+void CanvasQWindow::resize(uvec2 size) {
+    QWindow::resize(size.x, size.y);
     CanvasGL::resize(size);
 }
 
-std::unique_ptr<Canvas> CanvasQt::create() {
+std::unique_ptr<Canvas> CanvasQWindow::create() {
     auto thread = QThread::currentThread();
     auto res = dispatchFront([&thread]() {
-        auto canvas = util::make_unique<HiddenCanvasQt>();
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-        canvas->context()->moveToThread(thread);
-#endif
-        return canvas;
+        // auto canvas = util::make_unique<HiddenCanvasQWindow>();
+        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+        // canvas->context()->moveToThread(thread);
+        //#endif
+        // return canvas;
+        return nullptr;
     });
     return res.get();
 }
 
-void CanvasQt::resizeEvent(QResizeEvent* event) {
+void CanvasQWindow::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) {
-        QGLWidget::resizeEvent(event);
+        QWindow::resizeEvent(event);
         return;
     }
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
-    QGLWidget::resizeEvent(event);
+    QWindow::resizeEvent(event);
 }
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 
-bool CanvasQt::event(QEvent* e) {
+bool CanvasQWindow::event(QEvent* e) {
     switch (e->type()) {
         case QEvent::KeyPress: {
             auto keyEvent = static_cast<QKeyEvent*>(e);
-            QWidget* parent = this->parentWidget();
+            auto parent = this->parent();
             if (parent && keyEvent->key() == Qt::Key_F &&
                 keyEvent->modifiers() == Qt::ShiftModifier) {
                 if (parent->windowState() == Qt::WindowFullScreen) {
@@ -167,7 +189,7 @@ bool CanvasQt::event(QEvent* e) {
                 if (ke->hasBeenUsed()) {
                     e->accept();
                 } else {
-                    QGLWidget::keyPressEvent(static_cast<QKeyEvent*>(e));
+                    QWindow::keyPressEvent(static_cast<QKeyEvent*>(e));
                 }
                 return true;
             });
@@ -179,7 +201,7 @@ bool CanvasQt::event(QEvent* e) {
                 if (ke->hasBeenUsed()) {
                     e->accept();
                 } else {
-                    QGLWidget::keyReleaseEvent(keyEvent);
+                    QWindow::keyReleaseEvent(keyEvent);
                 }
                 return true;
             });
@@ -214,7 +236,6 @@ bool CanvasQt::event(QEvent* e) {
         case QEvent::TouchBegin:
         case QEvent::TouchEnd:
         case QEvent::TouchUpdate: {
-            touchFallback(static_cast<QTouchEvent*>(e));
             return eventMapper_.mapTouchEvent(static_cast<QTouchEvent*>(e), this,
                                               [&](TouchEvent* te) {
                                                   Canvas::touchEvent(te);
@@ -227,53 +248,13 @@ bool CanvasQt::event(QEvent* e) {
                                                     Canvas::gestureEvent(ge);
                                                     return true;
                                                 });
+        case QEvent::UpdateRequest:
+            paintGL();
+            return true;
+
         default:
-            return QGLWidget::event(e);
+            return QWindow::event(e);
     }
-}
-
-void CanvasQt::touchFallback(QTouchEvent* touch) {
-// Mouse events will be triggered for touch events by Qt4 and Qt >= 5.3.0
-// https://bugreports.qt.io/browse/QTBUG-40038
-#if (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
-    if (touch->touchPoints().size() == 1 && eventMapper_.getLastNumFingers() < 2) {
-        size_t nTouchPoints = touch->touchPoints().size();
-        if (nTouchPoints == 0) return;
-
-        QTouchEvent::TouchPoint firstPoint = touch->touchPoints()[0];
-
-        MouseEvent* mouseEvent = nullptr;
-        const ivec2 pos = utilqt::toGLM(firstPoint.pos());
-        const ivec2 screenPosInvY{util::invertY(pos, getScreenDimensions())};
-
-        double depth = getDepthValueAtCoord(screenPosInvY);
-        switch (touch->touchPoints().front().state()) {
-            case TouchPoint::TOUCH_STATE_STARTED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mousePressEvent(mouseEvent);
-                break;
-            case TouchPoint::TOUCH_STATE_UPDATED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseMoveEvent(mouseEvent);
-                break;
-            case TouchPoint::TOUCH_STATE_STATIONARY:
-                break;  // Do not fire event while standing still.
-            case TouchPoint::TOUCH_STATE_ENDED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseReleaseEvent(mouseEvent);
-                break;
-            default:
-                break;
-        }
-        delete mouseEvent;
-    }
-#endif
 }
 
 #include <warn/pop>
