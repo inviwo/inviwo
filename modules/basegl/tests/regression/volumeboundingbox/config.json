@@ -1,0 +1,8 @@
+{
+	"image_test" :  {
+		"differenceTolerance" : {
+			 "Canvas.png"   : 0.0001,
+			 "Canvas 2.png" : 0.0001
+		}
+	}
+}
