@@ -80,18 +80,9 @@ public:
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
-protected:
-    void renderLayer(size_t idx = 0);
-    void renderNoise();
-    void renderTexture(int);
 
-    void drawRect();
-    void checkChannels(std::size_t);
-
-    /**
+     /**
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
-     *
-     *
      * @return Depth layer RAM representation if existing, nullptr otherwise.
      */
     const LayerRAM* getDepthLayerRAM() const;
@@ -107,6 +98,14 @@ protected:
     double getDepthValueAtCoord(ivec2 screenCoordinate,
                                 const LayerRAM* depthLayerRAM = nullptr) const;
 
+protected:
+    void renderLayer(size_t idx = 0);
+    void renderNoise();
+    void renderTexture(int);
+
+    void drawRect();
+    void checkChannels(std::size_t);
+
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();
 
@@ -118,7 +117,7 @@ private:
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
      * to avoid this we have this ready flag to check that the 
-     * frame buffer is compleate.
+     * frame buffer is complete.
      */
     bool ready_ = false;
     bool ready();

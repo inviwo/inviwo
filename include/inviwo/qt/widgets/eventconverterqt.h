@@ -75,10 +75,11 @@ public:
     static MouseEvent::MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
     static MouseEvent::MouseButton getMouseWheelButton(const QWheelEvent* e);
     static InteractionEvent::Modifier getModifier(const QInputEvent* e);
-#ifndef QT_NO_GESTURES
     static GestureEvent::GestureState getGestureState(const QGesture* e);
-#endif
+
     static int getKeyButton(const QKeyEvent* e);
 };
+
 } // namespace
+
 #endif // IVW_EVENTCONVERTERQT_H

@@ -27,12 +27,12 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_CANVASQT_H
-#define IVW_CANVASQT_H
+#ifndef IVW_CANVASQOPENGLWIDGET_H
+#define IVW_CANVASQOPENGLWIDGET_H
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <modules/openglqt/canvaseventmapper.h>
 #include <modules/opengl/canvasgl.h>
+#include <modules/openglqt/canvaseventmapper.h>
 #include <inviwo/qt/widgets/eventconverterqt.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/common/inviwo.h>
@@ -42,17 +42,25 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGLWidget>
+#include <QInputEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QEvent>
+
+#include <QGestureEvent>
+#include <QPanGesture>
+#include <QPinchGesture>
+#include <QOpenGLWidget>
 #include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API CanvasQt : public QGLWidget, public CanvasGL {
+class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public CanvasGL {
     friend class CanvasProcessorWidgetQt;
 
 public:
-    explicit CanvasQt(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
-    ~CanvasQt() = default;
+    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
+    ~CanvasQOpenGLWidget() = default;
 
     static void defineDefaultContextFormat();
 
@@ -72,20 +80,17 @@ protected:
     virtual bool event(QEvent *e) override;
 
     virtual void resizeEvent(QResizeEvent* event) override;
-    static CanvasQt* getSharedCanvas();
+    static CanvasQOpenGLWidget* getSharedCanvas();
 
 private:
-    void touchFallback(QTouchEvent*);
-
-
-    static QGLWidget* sharedGLContext_; //For rendering-context sharing
-
-    static CanvasQt* sharedCanvas_;
-    static QGLFormat sharedFormat_;
+    static QOpenGLWidget* sharedGLContext_; //For rendering-context sharing
+    static CanvasQOpenGLWidget* sharedCanvas_;
+    static QSurfaceFormat sharedFormat_;
     bool swapBuffersAllowed_;
     CanvasEventMapper eventMapper_;
 };
 
 } // namespace
 
-#endif // IVW_CANVASQT_H
+#endif // IVW_CANVASQOPENGLWIDGET_H
+

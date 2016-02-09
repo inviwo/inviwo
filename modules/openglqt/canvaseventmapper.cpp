@@ -27,32 +27,24 @@
  *
  *********************************************************************************/
 
-#include "hiddencanvasqt.h"
+#include "canvaseventmapper.h"
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/qt/widgets/eventconverterqt.h>
 
 namespace inviwo {
 
-HiddenCanvasQt::HiddenCanvasQt(QGLWidget *parent /*= nullptr*/, uvec2 dim /*= uvec2(256,256)*/)
-    : CanvasQt(parent, dim) {
+CanvasEventMapper::CanvasEventMapper()
+    : gestureMode_(false)
+    , lastType_(Qt::CustomGesture)
+    , lastNumFingers_(0)
+    , screenPositionNormalized_(vec2(0.f)) {}
 
-    setVisible(false);
-    doneCurrent();
 
+int CanvasEventMapper::getLastNumFingers() const {
+    return lastNumFingers_;
 }
 
-HiddenCanvasQt::~HiddenCanvasQt() {}
+} // namespace
 
-void HiddenCanvasQt::glInit() {}
-
-void HiddenCanvasQt::glDraw() {}
-
-void HiddenCanvasQt::initializeGL() {}
-
-void HiddenCanvasQt::resizeGL(int width, int height) {}
-
-void HiddenCanvasQt::paintGL() {}
-
-void HiddenCanvasQt::resizeEvent(QResizeEvent *event) {}
-
-void HiddenCanvasQt::paintEvent(QPaintEvent *) {}
-
-}  // namespace
