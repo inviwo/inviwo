@@ -279,8 +279,6 @@ void PythonTextEditor::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 void PythonEditorWidget::saveAs() {
-    if (script_.getSource() == defaultSource) return;  // nothig to be saved
-
     InviwoFileDialog saveFileDialog(this, "Save Python Script ...", "script");
 
     saveFileDialog.setFileMode(QFileDialog::AnyFile);
