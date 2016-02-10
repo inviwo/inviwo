@@ -29,14 +29,13 @@
 
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>

@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
 
 namespace inviwo {
 

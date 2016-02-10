@@ -34,11 +34,16 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/canvasgl.h>
 
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+
+#include <inviwo/qt/widgets/eventconverterqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QInputEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
@@ -348,6 +353,7 @@ bool CanvasEventMapper::mapGestureEvent(QGestureEvent* ge, CanvasGL* canvas, F f
         if (absDeltaDist > 0.05) lastType_ = Qt::PinchGesture;
         return pinchTriggered(pinchGesture, canvas, fun);
     }
+    return true;
 }
 
 #include <warn/push>

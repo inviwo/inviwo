@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/canvasgl.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

@@ -29,20 +29,15 @@
 
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/hiddencanvasqt.h>
-#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QInputEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
 #include <QGestureEvent>
-#include <QPanGesture>
-#include <QPinchGesture>
 #include <QThread>
 #include <warn/pop>
 

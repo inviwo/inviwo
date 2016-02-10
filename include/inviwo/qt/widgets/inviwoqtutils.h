@@ -31,6 +31,8 @@
 #define IVW_INVIWOQTUTILS_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <locale>
 #include <ios>
 #include <sstream>

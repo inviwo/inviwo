@@ -28,10 +28,6 @@
  *********************************************************************************/
 
 #include "canvaseventmapper.h"
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/qt/widgets/eventconverterqt.h>
 
 namespace inviwo {
 

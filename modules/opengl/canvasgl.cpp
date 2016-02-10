@@ -34,9 +34,6 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglcapabilities.h>

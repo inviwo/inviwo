@@ -90,7 +90,7 @@ protected:
     virtual bool event(QEvent *e) override;
     virtual void resizeEvent(QResizeEvent* event) override;
     static CanvasQWindow* getSharedCanvas();
-    void exposeEvent(QExposeEvent *event);
+    void exposeEvent(QExposeEvent *event) override;
 
 private:
     QOpenGLContext* thisGLContext_;

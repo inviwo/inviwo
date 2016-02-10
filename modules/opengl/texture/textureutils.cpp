@@ -326,12 +326,12 @@ const MeshGL* imagePlaneRect() {
             util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
         auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
-        auto mesh = util::make_unique<Mesh>();
-        mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-        mesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-        mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+        auto m = util::make_unique<Mesh>();
+        m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+        m->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+        m->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
 
-        return mesh;
+        return m;
     }() };
 
     const static MeshGL* square{ mesh->getRepresentation<MeshGL>() };

@@ -32,14 +32,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/interaction/events/eventhandler.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/pickingcontainer.h>
 
 namespace inviwo {
@@ -50,6 +43,10 @@ class DataWriterType;
 class Image;
 class EventPropagator;
 class ProcessorWidget;
+class MouseEvent;
+class KeyboardEvent;
+class TouchEvent;
+class GestureEvent;
 
 class IVW_CORE_API Canvas {
 public:

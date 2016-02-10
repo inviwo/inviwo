@@ -114,12 +114,12 @@ VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
                 }
 
                 if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") || metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
-                    if (auto metadata = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
-                        timestamp_.set(metadata->get());
+                    if (auto metadata1 = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
+                        timestamp_.set(metadata1->get());
                         timestamp_.setVisible(true);
                     }
-                    else if (auto metadata = metadataowner->getMetaData<FloatMetaData>("timestamp")) {
-                        timestamp_.set(static_cast<double>(metadata->get()));
+                    else if (auto metadata2 = metadataowner->getMetaData<FloatMetaData>("timestamp")) {
+                        timestamp_.set(static_cast<double>(metadata2->get()));
                         timestamp_.setVisible(true);
                     }
                 }

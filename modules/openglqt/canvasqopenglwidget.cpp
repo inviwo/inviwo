@@ -72,7 +72,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, uvec2 dim)
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
 
-    QOpenGLWidget::resizeEvent(&QResizeEvent(QSize(dim.x, dim.y), QSize(width(), height())));
+    QResizeEvent event(QSize(dim.x, dim.y), QSize(width(), height()));
+    QOpenGLWidget::resizeEvent(&event);
     if (!sharedGLContext_) {
         sharedFormat_ = format();
         sharedGLContext_ = this;
