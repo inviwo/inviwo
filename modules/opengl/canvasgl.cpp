@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "canvasgl.h"
-#include <inviwo/core/datastructures/geometry/mesh.h>
+
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorwidget.h>
@@ -38,10 +38,9 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/datastructures/image/image.h>
-
 
 namespace inviwo {
 
@@ -66,9 +65,7 @@ void CanvasGL::defaultGLState() {
     LGL_ERROR;
 }
 
-void CanvasGL::activate() {}
-
-void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {
+void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {   
     image_ = image;
     layerType_ = layerType;
     pickingContainer_.setPickingSource(image);
@@ -86,7 +83,7 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
         if (pickingContainer_.pickingEnabled() && imageGL_->getPickingLayerGL()) {
             imageGL_->getPickingLayerGL()->getTexture()->downloadToPBO();
         }
-        
+
     } else {
         imageGL_ = nullptr;
         renderNoise();
@@ -101,25 +98,6 @@ void CanvasGL::resize(uvec2 size) {
 
 void CanvasGL::update() { renderLayer(previousRenderedLayerIdx_); }
 
-void CanvasGL::attachImagePlanRect(BufferObjectArray* arrayObject) {
-    if (arrayObject) {
-        arrayObject->bind();
-        arrayObject->attachBufferObject(
-            square()->getBufferGL(0)->getBufferObject().get(),
-            static_cast<GLuint>(BufferType::PositionAttrib));
-        arrayObject->attachBufferObject(
-            square()->getBufferGL(1)->getBufferObject().get(),
-            static_cast<GLuint>(BufferType::TexcoordAttrib));
-        arrayObject->unbind();
-    }
-}
-
-void CanvasGL::singleDrawImagePlaneRect() { glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); }
-
-void CanvasGL::multiDrawImagePlaneRect(int instances) {
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
-}
-
 void CanvasGL::renderLayer(size_t idx) {
     previousRenderedLayerIdx_ = idx;
     if (imageGL_) {
@@ -132,29 +110,6 @@ void CanvasGL::renderLayer(size_t idx) {
         }
     }
     renderNoise();
-}
-
-
-const MeshGL* CanvasGL::square() {
-    LGL_ERROR;
-    static std::unique_ptr<Mesh> mesh{ []() {
-        auto verticesBuffer =
-            util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-        auto texCoordsBuffer =
-            util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-        auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
-
-        auto mesh = util::make_unique<Mesh>();
-        mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-        mesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-        mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
-
-        return mesh;
-    }() };
-    LGL_ERROR;
-    const static MeshGL* square{mesh->getRepresentation<MeshGL>()};
-    LGL_ERROR;
-    return square;
 }
 
 bool CanvasGL::ready() {
@@ -173,7 +128,7 @@ bool CanvasGL::ready() {
                 LGL_ERROR;
 
                 return true;
-                }
+            }
             default:
                 return false;
         }
@@ -182,13 +137,14 @@ bool CanvasGL::ready() {
 
 void CanvasGL::renderNoise() {
     if (!ready()) return;
+
     LGL_ERROR;
     activate();
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
     LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
-    drawRect();
+    utilgl::singleDrawImagePlaneRect();
     noiseShader_->deactivate();
     glSwapBuffers();
     activateDefaultRenderContext();
@@ -197,6 +153,7 @@ void CanvasGL::renderNoise() {
 
 void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
+
     LGL_ERROR;
     activate();
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
@@ -205,7 +162,7 @@ void CanvasGL::renderTexture(int unitNumber) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader_->activate();
     shader_->setUniform("tex_", unitNumber);
-    drawRect();
+    utilgl::singleDrawImagePlaneRect();
     shader_->deactivate();
     glDisable(GL_BLEND);
     glSwapBuffers();
@@ -213,23 +170,10 @@ void CanvasGL::renderTexture(int unitNumber) {
     LGL_ERROR;
 }
 
-void CanvasGL::drawRect() {
-    LGL_ERROR;
-    BufferObjectArray rectArray;
-    rectArray.bind();
-    rectArray.attachBufferObject(square()->getBufferGL(0)->getBufferObject().get(),
-                                   static_cast<GLuint>(BufferType::PositionAttrib));
-    rectArray.attachBufferObject(square()->getBufferGL(1)->getBufferObject().get(),
-                                   static_cast<GLuint>(BufferType::TexcoordAttrib));
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    rectArray.unbind();
-    LGL_ERROR;
-}
-
 void CanvasGL::checkChannels(std::size_t channels) {
     if (channels_ == channels) return;
-    
-    switch(channels) {
+
+    switch (channels) {
         case 1: {
             shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
             break;
@@ -254,13 +198,11 @@ void CanvasGL::checkChannels(std::size_t channels) {
 
 const LayerRAM* CanvasGL::getDepthLayerRAM() const {
     if (image_) {
-        const Layer* depthLayer = image_->getDepthLayer();
-        if (depthLayer) {
+        if (auto depthLayer = image_->getDepthLayer()) {
             return depthLayer->getRepresentation<LayerRAM>();
-        } else
-            return nullptr;
-    } else
-        return nullptr;
+        }
+    }
+    return nullptr;
 }
 
 double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM) const {
@@ -273,7 +215,7 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
 
         const dvec2 depthScreenRatio{dvec2(depthDims) / screenDims};
         size2_t coordDepth{depthScreenRatio * dvec2(coord)};
-        coordDepth = glm::min(coordDepth, depthDims - size2_t(1,1));
+        coordDepth = glm::min(coordDepth, depthDims - size2_t(1, 1));
 
         const double depthValue = depthLayerRAM->getValueAsSingleDouble(coordDepth);
 
@@ -283,10 +225,6 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
         return 1.0;
     }
 }
-
-void CanvasGL::enableDrawImagePlaneRect() { square()->enable(); }
-
-void CanvasGL::disableDrawImagePlaneRect() { square()->disable(); }
 
 void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     // Clear internal state

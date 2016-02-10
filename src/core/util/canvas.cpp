@@ -56,10 +56,6 @@ Canvas::~Canvas() {
     }
 }
 
-void Canvas::render(std::shared_ptr<const Image> im, LayerType layerType, size_t idx) {}
-
-void Canvas::activate() {}
-
 void Canvas::resize(uvec2 canvasSize) {
     uvec2 previousScreenDimensions_ = screenDimensions_;
     screenDimensions_ = canvasSize;
@@ -75,8 +71,6 @@ void Canvas::resize(uvec2 canvasSize) {
 }
 
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
-
-void Canvas::update() {}
 
 void Canvas::activateDefaultRenderContext() {
     RenderContext::getPtr()->activateDefaultRenderContext();

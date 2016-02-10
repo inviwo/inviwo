@@ -45,6 +45,7 @@ namespace inviwo {
 
 class BufferObjectArray;
 class Shader;
+class MeshGL;
 
 namespace utilgl {
 
@@ -168,12 +169,8 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageOutport&
                                              const std::string samplerID = "");
 
 // Draw image plane.
-IVW_MODULE_OPENGL_API BufferObjectArray* enableImagePlaneRect();
-
-IVW_MODULE_OPENGL_API void disableImagePlaneRect(BufferObjectArray*);
-
+IVW_MODULE_OPENGL_API const MeshGL* imagePlaneRect();
 IVW_MODULE_OPENGL_API void singleDrawImagePlaneRect();
-
 IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
 
 // convenience Image port binding and setting uniforms

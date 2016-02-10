@@ -30,6 +30,7 @@
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/canvasgl.h>
 #include <inviwo/core/datastructures/image/image.h>
 
@@ -422,16 +423,7 @@ void ImageGL::update(bool editable) {
 }
 
 void ImageGL::renderImagePlaneRect() const {
-    BufferObjectArray rectArray{};
-    CanvasGL::attachImagePlanRect(&rectArray);
-    LGL_ERROR;
-    glDepthFunc(GL_ALWAYS);
-    rectArray.bind();
-    LGL_ERROR;
-    CanvasGL::singleDrawImagePlaneRect();
-    rectArray.unbind();
-    glDepthFunc(GL_LESS);
-    LGL_ERROR;
+    utilgl::singleDrawImagePlaneRect();
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }

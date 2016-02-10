@@ -48,7 +48,6 @@ public:
     CanvasGL(uvec2 dimensions);
     virtual ~CanvasGL() = default;
 
-    virtual void activate() override;
     static void defaultGLState();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
@@ -57,24 +56,7 @@ public:
     virtual void glSwapBuffers() = 0;
     virtual void update() override;
 
-    static void attachImagePlanRect(BufferObjectArray*);
-    static void singleDrawImagePlaneRect();
-    static void multiDrawImagePlaneRect(int instances);
-
-    static inline void renderImagePlaneRect() {
-        enableDrawImagePlaneRect();
-        singleDrawImagePlaneRect();
-        disableDrawImagePlaneRect();
-    }
-
-    static inline void renderImagePlaneRect(int instances) {
-        enableDrawImagePlaneRect();
-        multiDrawImagePlaneRect(instances);
-        disableDrawImagePlaneRect();
-    }
-
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
-
 
      /**
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
@@ -98,18 +80,12 @@ protected:
     void renderNoise();
     void renderTexture(int);
 
-    void drawRect();
     void checkChannels(std::size_t);
-
-    static void enableDrawImagePlaneRect();
-    static void disableDrawImagePlaneRect();
 
     std::shared_ptr<const Image> image_;
     const ImageGL* imageGL_;
     
 private:
-    static const MeshGL* square();
-
     /**
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error

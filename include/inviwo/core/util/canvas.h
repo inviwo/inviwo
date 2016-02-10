@@ -56,13 +56,14 @@ public:
     Canvas(uvec2 dimensions);
     virtual ~Canvas();
 
-    virtual void activate();
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
-                        size_t idx = 0);
+                        size_t idx = 0) = 0;
     virtual void resize(uvec2 canvasSize);
 
     uvec2 getScreenDimensions() const;
-    virtual void update();
+
+    virtual void update() = 0;
+    virtual void activate() = 0;
 
     void setEventPropagator(EventPropagator* propagator);
     virtual ProcessorWidget* getProcessorWidgetOwner() const;
