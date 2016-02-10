@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#ifndef IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
+#define IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
 
-uniform ImageParameters outportParameters_;
-uniform sampler2D inport_;
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/processors/vectorelementselectorprocessor.h>
 
-uniform vec4 min_;    
-uniform vec4 max_;    
+namespace inviwo {
 
-uniform float typeMax_;
-uniform float typeMin_;
+/**
+ * \class ImageVectorElementSelectorProcessor
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 pixel = texture(inport_, texCoords);
-    
-    pixel.rgb *= (typeMax_ - typeMin_);
-    pixel.rgb += typeMin_;
+    class IVW_MODULE_BASE_API ImageSequenceElementSelectorProcessor : public VectorElementSelectorProcessor < Image, ImageOutport > {
+    public:
+        ImageSequenceElementSelectorProcessor();
+        virtual ~ImageSequenceElementSelectorProcessor() = default;
 
-    pixel.rgb -= min_.rgb;
-    pixel.rgb /= (max_.rgb - min_.rgb);
-    
-    FragData0 = pixel;
-}
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
+    };
+} // namespace
+
+#endif // IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
+

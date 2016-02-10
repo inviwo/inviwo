@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,31 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#include "imagesequenceelementselectorprocessor.h"
 
-uniform ImageParameters outportParameters_;
-uniform sampler2D inport_;
+namespace inviwo {
 
-uniform vec4 min_;    
-uniform vec4 max_;    
 
-uniform float typeMax_;
-uniform float typeMin_;
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 pixel = texture(inport_, texCoords);
-    
-    pixel.rgb *= (typeMax_ - typeMin_);
-    pixel.rgb += typeMin_;
+    const ProcessorInfo ImageSequenceElementSelectorProcessor::processorInfo_{
+        "org.inviwo.ImageTimeStepSelector",  // Class identifier
+        "Image Sequence/Time Selector",// Display name
+        "Image Operation",             // Category
+        CodeState::Stable,              // Code state
+        Tags::CPU,                      // Tags
+    };
+    const ProcessorInfo ImageSequenceElementSelectorProcessor::getProcessorInfo() const {
+        return processorInfo_;
+    }
+    ImageSequenceElementSelectorProcessor::ImageSequenceElementSelectorProcessor()
+        : VectorElementSelectorProcessor<Image, ImageOutport>() {
+        timeStep_.index_.autoLinkToProperty<ImageSequenceElementSelectorProcessor>("timeStep.selectedSequenceIndex");
+        outport_.setHandleResizeEvents(false);
 
-    pixel.rgb -= min_.rgb;
-    pixel.rgb /= (max_.rgb - min_.rgb);
-    
-    FragData0 = pixel;
-}
+    }
+
+} // namespace
+

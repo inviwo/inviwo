@@ -32,7 +32,55 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 
+
 namespace inviwo {
+
+namespace detail {
+
+    template <typename T>
+    bool any(const T &t) {
+        return glm::any(t):
+    }
+
+    template<> bool any(const bool &t) { return t; }
+
+
+    struct LayerMinMaxDispatcher {
+        using type = std::pair<dvec4, dvec4>;
+
+        template <typename T>
+        std::pair<dvec4,dvec4> dispatch(const LayerRAM* layer) {
+            auto data = static_cast<const T::type*>(layer->getData());
+            auto df = layer->getDataFormat();
+            T::type minV = T::type(df->getMax());
+            T::type maxV = T::type(df->getMin());
+            for (size_t i = 0; i < layer->getDimensions().x*layer->getDimensions().y; i++) {
+                auto v = data[i];
+
+                if(v != v + T::type(1)){ 
+                    minV = glm::min(minV, v);
+                    maxV = glm::max(maxV, v);
+                }
+            }
+
+
+            std::pair<dvec4, dvec4> out;
+            out.first = df->valueToVec4Double(&minV);
+            out.second = df->valueToVec4Double(&maxV);
+            
+
+            return out;
+        }
+    };
+}
+
+struct LayerMinMax {
+    static std::pair<dvec4, dvec4> getMinMax(const LayerRAM* layer) {
+        detail::LayerMinMaxDispatcher disp;
+        return layer->getDataFormat()->dispatch(disp, layer);
+    }
+};
+
 
 const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     "org.inviwo.ImageNormalization",  // Class identifier
@@ -85,9 +133,19 @@ void ImageNormalizationProcessor::preProcess() {
         max = glm::max(glm::abs(min), glm::abs(max));
         min = -max;
     }
+    auto df = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getDataFormat();
+    float typeMax = 1;
+    float typeMin = 0;
+    if (df->getNumericType() != NumericType::Float) {
+        typeMax = df->getMax();
+        typeMin = df->getMin();
+    }
+
+    shader_.setUniform("typeMax_", typeMax);
+    shader_.setUniform("typeMin_", typeMin);
 
     if (eachChannelsIndividually_.get()) {
-        shader_.setUniform("min_", static_cast<vec4>(dvec4(min,0.0)));
+        shader_.setUniform("min_", static_cast<vec4>(dvec4(min, 0.0)));
         shader_.setUniform("max_", static_cast<vec4>(dvec4(max,1.0)));
     } else {
         double minV = std::min(std::min(min.x,min.y),min.z);
@@ -104,23 +162,23 @@ void ImageNormalizationProcessor::updateMinMax() {
 
 void ImageNormalizationProcessor::invalidateMinMax() {
     if (!inport_.hasData()) return;
+
     const LayerRAM* img = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
 
-    uvec2 dim = img->getDimensions();
-    uvec2 pixel(0, 0);
-    min_ = dvec4(std::numeric_limits<double>::max());
-    max_ = dvec4(std::numeric_limits<double>::min());
-    for (pixel.y = 0; pixel.y < dim.y; pixel.y++)
-        for (pixel.x = 0; pixel.x < dim.x; pixel.x++) {
-            dvec4 pixelValue = img->getValueAsVec4Double(pixel);
-            if (!(glm::any(glm::isinf(pixelValue)) || glm::any(glm::isnan(pixelValue)))) {
-                min_ = glm::min(min_, pixelValue);
-                max_ = glm::max(max_, pixelValue);
-            }
+    auto df = img->getDataFormat();
+    if (df->getNumericType() == NumericType::SignedInteger || df->getNumericType() == NumericType::UnsignedInteger) {
+        if (df->getSize() >= 4) {
+            LogWarn("Image Normalization only works on float data or Integer data  with 8 or 16 bit precision, got:  " << df->getSize()*4);
         }
+    }
 
-    minS_.set(toString(min_));
-    maxS_.set(toString(max_));
+    auto minMax = LayerMinMax::getMinMax(img);
+
+    min_ = minMax.first;
+    max_ = minMax.second;
+    
+    minS_.set(toString(minMax.first));
+    maxS_.set(toString(minMax.second));
 
     min_.a = 0.0;  // never normalize alpha
     max_.a = 1.0;
