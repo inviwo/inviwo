@@ -59,7 +59,7 @@ namespace detail {
             for (size_t i = 0; i < layer->getDimensions().x*layer->getDimensions().y; i++) {
                 auto v = data[i];
 
-                if(all(v != v + T::type(1))){ 
+                if(all(v != v + dataType(1))){
                     minV = glm::min(minV, v);
                     maxV = glm::max(maxV, v);
                 }
