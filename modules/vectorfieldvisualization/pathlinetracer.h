@@ -46,21 +46,22 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineTracer : public IntegralLineTracer {
 public:
     PathLineTracer(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector,
-                   IntegrationScheme integrationScheme = IntegralLineTracer::IntegrationScheme::RK4);
+        const IntegralLineProperties &properties);
     virtual ~PathLineTracer();
 
-    IntegralLine traceFrom(const vec4 &p, int steps, double dt, Direction dir);
-    IntegralLine traceFrom(const dvec4 &p, int steps, double dt, Direction dir);
+    IntegralLine traceFrom(const vec4 &p);
+    IntegralLine traceFrom(const dvec4 &p);
 
 private:
-    void step(int steps, dvec4 curPos, IntegralLine &line, double dt);
+    void step(int steps, dvec4 curPos, IntegralLine &line, bool fwd);
 
     dvec3 euler(const dvec4 &curPos);
 
-    dvec3 rk4(const dvec4 &curPos, double dt);
+    dvec3 rk4(const dvec4 &curPos, bool fwd);
     VolumeVectorSampler sampler_;
     size3_t dimensions_;
     dmat3 invBasis_;
+
 
 };
 

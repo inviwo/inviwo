@@ -21,7 +21,7 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_include_directories(ext/assimp/include)
+ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include)
 
 #--------------------------------------------------------------------
 # Create module

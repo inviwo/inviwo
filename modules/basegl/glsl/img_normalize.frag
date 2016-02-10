@@ -35,13 +35,18 @@ uniform sampler2D inport_;
 uniform vec4 min_;    
 uniform vec4 max_;    
 
+uniform float typeMax_;
+uniform float typeMin_;
+
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
     vec4 pixel = texture(inport_, texCoords);
     
+    pixel.rgb *= (typeMax_ - typeMin_);
+    pixel.rgb += typeMin_;
 
-    pixel.rgb -= vec3(min_.rgb);
-    pixel.rgb /= vec3(max_.rgb - min_.rgb);
-
+    pixel.rgb -= min_.rgb;
+    pixel.rgb /= (max_.rgb - min_.rgb);
+    
     FragData0 = pixel;
 }

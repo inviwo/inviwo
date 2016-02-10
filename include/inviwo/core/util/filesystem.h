@@ -66,13 +66,19 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
+
+enum class IVW_CORE_API ListMode {
+    Files,
+    Directories,
+    FilesAndDirectories,
+};
 /**
  * Returns the file listing of a directory
  *
  * @param path Files are listed for this directory
  * @return List of files residing in the given path
  */
-IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path);
+IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode = ListMode::Files);
 
 
 /** 
@@ -168,6 +174,18 @@ IVW_CORE_API std::string getFileNameWithoutExtension(const std::string& url);
 IVW_CORE_API std::string getFileExtension(const std::string& url);
 IVW_CORE_API std::string replaceFileExtension(const std::string& url,
                                               const std::string& newFileExtension);
+
+
+/**
+ *	\brief Make a path relative to basePath.
+ * Requirement: basePath and absulutePath has to be absolute paths.
+ * basePath should point at directory.
+ *
+ * Example:
+ * basePath = "C:/foo/bar"
+ * absolutePath = "C:/foo/test/file.txt"
+ * returns "../test/file.txt"
+ */
 IVW_CORE_API std::string getRelativePath(const std::string& basePath,
                                          const std::string& absolutePath);
 IVW_CORE_API std::string getCanonicalPath(const std::string& url);

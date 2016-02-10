@@ -36,20 +36,26 @@
 namespace inviwo {
 
 void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
-                           std::string default_name /*= ""*/, std::string ext /*= ".png"*/) {
+                           std::string name, std::string ext) {
 
     int i = 0;
-    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {
+    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {       
         std::stringstream ss;
+        ss << dir << "/";
 
-        if (default_name == "" || default_name == "UPN")
+        if (name == "") {
             ss << cp->getIdentifier();
-        else
-            ss << default_name << i + 1;
+        } else if(name.find("UPN") != std::string::npos) {
+            std::string tmp = name;
+            replaceInString(tmp, "UPN", cp->getIdentifier());
+            ss << tmp;
+        } else {
+            ss << name << i + 1;
+        }
+        ss << ext;
 
-        std::string path(dir + "/" + ss.str() + ext);
-        LogInfoCustom("Inviwo", "Saving canvas to: " + path);
-        cp->saveImageLayer(path);
+        LogInfoCustom("Inviwo", "Saving canvas to: " + ss.str());
+        cp->saveImageLayer(ss.str());
         i++;
     }
 }

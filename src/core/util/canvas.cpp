@@ -38,13 +38,13 @@
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
-EventHandler* eventHandler_();
-
 Mesh* Canvas::screenAlignedRect_ = nullptr;
-DataWriterType<Layer>* Canvas::generalLayerWriter_ = nullptr;
 
 Canvas::Canvas(uvec2 dimensions)
     : initialized_(false)
@@ -58,10 +58,8 @@ Canvas::Canvas(uvec2 dimensions)
 
         auto verticesBuffer =
             util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-
         auto texCoordsBuffer =
             util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-
         auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
         Mesh* screenAlignedRectMesh = new Mesh();
@@ -72,22 +70,12 @@ Canvas::Canvas(uvec2 dimensions)
 
         screenAlignedRect_ = screenAlignedRectMesh;
     }
-
-    if (!generalLayerWriter_) {
-        generalLayerWriter_ = InviwoApplication::getPtr()
-                                  ->getDataWriterFactory()
-                                  ->getWriterForTypeAndExtension<Layer>("png")
-                                  .release();
-    }
 }
 
 Canvas::~Canvas() {
     if (!shared_) {
         delete screenAlignedRect_;
         screenAlignedRect_ = nullptr;
-
-        delete generalLayerWriter_;
-        generalLayerWriter_ = nullptr;
     }
 
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
@@ -157,6 +145,9 @@ void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
 void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
 
 void Canvas::touchEvent(TouchEvent* e) {
+    if(!touchEnabled())
+        return;
+    
     NetworkLock lock;
 
     if (!pickingContainer_.performTouchPick(e)) {
@@ -177,6 +168,12 @@ void Canvas::touchEvent(TouchEvent* e) {
             interactionEvent(e);
         }
     }
+}
+
+bool Canvas::touchEnabled() {
+    auto touchEnabledProperty =
+        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->enableTouchProperty_;
+    return (touchEnabledProperty.get());
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

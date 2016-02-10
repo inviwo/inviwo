@@ -31,6 +31,7 @@
 #include <inviwo/core/util/volumevectorsampler.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/util/imagesampler.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
@@ -54,14 +55,9 @@ PathLines::PathLines()
     , colors_("colors")
     , linesStripsMesh_("linesStripsMesh_")
 
-    , startT_("startT", "Start at timestep",0,0,1)
-    , numberOfSteps_("steps", "Number of steps", 100, 1, 1000)
-    , dt_("dt", "Stepsize (dt)", 0.001f, 0.0001f, 1.0f, 0.001f)
+    , pathLineProperties_("pathLineProperties", "Path Line Properties")
 
 
-    , stepDirection_("stepDirection", "Step Direction")
-    , integrationScheme_("integrationScheme", "Integration Scheme")
-    , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
 
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
@@ -76,30 +72,9 @@ PathLines::PathLines()
     addPort(colors_);
     addPort(linesStripsMesh_);
 
-    stepDirection_.addOption("fwd", "Forward", IntegralLineTracer::Direction::FWD);
-    stepDirection_.addOption("bwd", "Backwards", IntegralLineTracer::Direction::BWD);
-    stepDirection_.addOption("bi", "Bi Directional", IntegralLineTracer::Direction::BOTH);
-
-    integrationScheme_.addOption("euler", "Euler", IntegralLineTracer::IntegrationScheme::Euler);
-    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", IntegralLineTracer::IntegrationScheme::RK4);
-    integrationScheme_.setSelectedValue(IntegralLineTracer::IntegrationScheme::RK4);
-
-    seedPointsSpace_.addOption("texture", "Texture",
-        StructuredCoordinateTransformer<3>::Space::Texture);
-    seedPointsSpace_.addOption("model", "Model", StructuredCoordinateTransformer<3>::Space::Model);
-    seedPointsSpace_.addOption("world", "World", StructuredCoordinateTransformer<3>::Space::World);
-    seedPointsSpace_.addOption("data", "Data", StructuredCoordinateTransformer<3>::Space::Data);
-    seedPointsSpace_.addOption("index", "Index", StructuredCoordinateTransformer<3>::Space::Index);
+    addProperty(pathLineProperties_);
 
     maxVelocity_.setReadOnly(true);
-
-    addProperty(startT_);
-    addProperty(numberOfSteps_);
-    addProperty(dt_);
-
-    addProperty(stepDirection_);
-    addProperty(integrationScheme_);
-    addProperty(seedPointsSpace_);
 
     addProperty(tf_);
     addProperty(velocityScale_);
@@ -125,13 +100,12 @@ void PathLines::process() {
     mesh->setModelMatrix(firstVol->getModelMatrix());
     mesh->setWorldMatrix(firstVol->getWorldMatrix());
 
-    auto m = firstVol->getCoordinateTransformer().getMatrix(
-        seedPointsSpace_.get(), StructuredCoordinateTransformer<3>::Space::Texture);
+    auto m = pathLineProperties_.getSeedPointTransformationMatrix(firstVol->getCoordinateTransformer());
 
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    PathLineTracer tracer(data, integrationScheme_.get());
+    PathLineTracer tracer(data, pathLineProperties_);
    
     size_t i = 0;
     bool hasColors = colors_.hasData();
@@ -140,7 +114,7 @@ void PathLines::process() {
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(vec4(P.xyz(), startT_), numberOfSteps_, dt_,stepDirection_.get());
+            auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
@@ -170,7 +144,7 @@ void PathLines::process() {
                 vec3 pos(*position);
                 vec3 v(*velocity);
 
-                float l = glm::length(vec3(*velocity));
+                float l = glm::length(v);
                 float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
                 maxVelocity = std::max(maxVelocity, l);
                 if (!hasColors) {
@@ -193,8 +167,13 @@ void PathLines::process() {
     linesStripsMesh_.setData(mesh);
     maxVelocity_.set(toString(maxVelocity));
 
+}
 
-
+void PathLines::deserialize(Deserializer& d) {
+    DoubleProperty dProperty("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f);
+    util::renameProperty(d, { { &dProperty, "dt" } });
+    util::changePropertyType(d, { {&dProperty,  FloatProperty::CLASS_IDENTIFIER } });
+    Processor::deserialize(d);
 }
 
 } // namespace

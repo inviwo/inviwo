@@ -30,7 +30,7 @@
 set(IVW_VERSION 0.9.5)
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 5)
+set(IVW_PATCH_VERSION 5dev)
 
 #--------------------------------------------------------------------
 # Requirement checks
@@ -65,7 +65,7 @@ if(IVW_CMAKE_DEBUG)
         endif()
     endfunction()
 
-    #variable_watch(ALL_MODULE_PACKAGES)
+    #variable_watch(PYTHON_EXECUTABLE)
     #variable_watch(_projectName log_proj)
 endif()
 
@@ -278,6 +278,9 @@ if(WIN32 AND MSVC)
     else()
         set(CMAKE_MSVC_ARCH x86)
     endif()
+    # default dll dependencies for Visual Studio versions 2005, 2008, 2010, and 2013
+    # In VS 2015, "msvcr140.dll" was replaced by several other dlls.
+    set(MSVC_DLLNAMES "msvcp" "msvcr")
     if(MSVC90)
         set(MSVC_ACRO "9")
     elseif(MSVC10)
@@ -288,13 +291,17 @@ if(WIN32 AND MSVC)
         set(MSVC_ACRO "12")
     elseif(MSVC14)
         set(MSVC_ACRO "14")
+        set(MSVC_DLLNAMES "msvcp" "concrt" "vccorlib" "vcruntime")
     endif()
+
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
         if(DEFINED MSVC_ACRO)
-            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcr${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
-            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcr${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+            foreach(dllname ${MSVC_DLLNAMES})
+                # debug build
+                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+                # release build
+                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+            endforeach()
         endif()
     endif()
 

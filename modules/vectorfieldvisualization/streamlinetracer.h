@@ -35,6 +35,7 @@
 #include <modules/vectorfieldvisualization/integralline.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <inviwo/core/util/volumesampler.h>
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
 namespace inviwo {
 
@@ -48,27 +49,28 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
 public:
 
-    StreamLineTracer(const Volume *vol , IntegrationScheme integrationScheme = IntegrationScheme::RK4);
+    StreamLineTracer(const Volume *vol , const StreamLineProperties &properties);
 
     virtual ~StreamLineTracer();
 
     void addMetaVolume(const std::string &name, const VolumeRAM *vol);
 
-    IntegralLine traceFrom(const dvec3 &p, int steps, double stepSize, Direction dir,
-                           bool normalzieSample);
-    IntegralLine traceFrom(const vec3 &p, int steps, double stepSize, Direction dir,
-                           bool normalzieSample);
+    IntegralLine traceFrom(const dvec3 &p);
+    IntegralLine traceFrom(const vec3 &p);
 
 
 private:
-    void step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample);
+    void step(int steps, dvec3 curPos, IntegralLine &line,bool fwd);
     dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , double stepSize, bool normalzieSample, const dmat3 &m);
+    dvec3 rk4(const dvec3 &curPos , const dmat3 &m , bool fwd);
 
     dmat3 invBasis_;
     std::map<std::string, VolumeSampler> metaVolumes_;
     VolumeSampler volumeSampler_;
     size3_t dimensions_;
+
+
+    bool normalizeSample_;
     
 };
 

@@ -316,7 +316,7 @@ ClearColor& utilgl::ClearColor::operator=(ClearColor&& that) {
 
 utilgl::ClearColor::~ClearColor() {
     if (oldColor_ != color_) {
-        glClearColor(color_.x, color_.y, color_.z, color_.w);
+        glClearColor(oldColor_.x, oldColor_.y, oldColor_.z, oldColor_.w);
     }
 }
 

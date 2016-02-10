@@ -73,8 +73,8 @@ CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     : QGLWindow(parent)
     , CanvasGL(dim)
     , swapBuffersAllowed_(false)
-#ifndef QT_NO_GESTURES
     , gestureMode_(false)
+#ifndef QT_NO_GESTURES
     , lastType_(Qt::CustomGesture)
     , lastNumFingers_(0)
     , screenPositionNormalized_(vec2(0.f))
@@ -108,8 +108,8 @@ CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     , CanvasGL(dim)
     , thisGLContext_(nullptr)
     , swapBuffersAllowed_(false)
-#ifndef QT_NO_GESTURES
     , gestureMode_(false)
+#ifndef QT_NO_GESTURES
     , lastNumFingers_(0)
     , screenPositionNormalized_(vec2(0.f))
 #endif
@@ -678,6 +678,8 @@ void CanvasQt::pinchTriggered(QPinchGesture* gesture) {
         GestureEvent::PINCH, EventConverterQt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_, getScreenDimensions());
     Canvas::gestureEvent(&gestureEvent);
 }
+    
+#endif
 
 void CanvasQt::resize(uvec2 size) {
     QGLWindow::resize(size.x, size.y);
@@ -704,7 +706,5 @@ void CanvasQt::resizeEvent(QResizeEvent* event) {
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
     QGLWindow::resizeEvent(event);
 }
-
-#endif
 
 } // namespace

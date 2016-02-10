@@ -1,0 +1,7 @@
+{
+	"image_test" :  {
+		"differenceTolerance" : {
+			 "Color & text.png"   : 0.001
+		}
+	}
+}

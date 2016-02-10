@@ -181,13 +181,9 @@ void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QPointF numPixels = e->pixelDelta() / 5.0;
     QPointF numDegrees = e->angleDelta() / 8.0 / 15;
-#else
-    QPointF numPixels;
-    QPointF numDegrees = QPointF(0.0, e->delta() / 8.0 / 15.0);
-#endif
+
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
             zoom(qPow(1.05,  numPixels.y()));

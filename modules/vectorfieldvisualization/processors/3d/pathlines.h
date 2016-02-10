@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 
 namespace inviwo {
 
@@ -74,7 +75,9 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
      
-    virtual void process() override;
+    virtual void process() override; 
+
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     VolumeVectorInport volume_;
@@ -83,15 +86,10 @@ private:
 
     MeshOutport linesStripsMesh_;
 
-    DoubleProperty startT_;
-    IntProperty numberOfSteps_;
-    DoubleProperty dt_;
 
+    PathLineProperties pathLineProperties_;
 
-    TemplateOptionProperty<IntegralLineTracer::Direction> stepDirection_;
-    TemplateOptionProperty<IntegralLineTracer::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
-
+   
     TransferFunctionProperty tf_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;

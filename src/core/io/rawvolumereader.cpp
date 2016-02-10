@@ -91,8 +91,6 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
         }
     }
 
-    std::string fileDirectory = filesystem::getFileDirectory(filePath);
-    std::string fileExtension = filesystem::getFileExtension(filePath);
     rawFile_ = filePath;
 
     if (!parametersSet_) {

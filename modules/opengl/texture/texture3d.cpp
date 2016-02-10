@@ -92,8 +92,6 @@ Texture3D& Texture3D::operator=(Texture3D&& rhs) {
     return *this;
 }
 
-Texture3D::~Texture3D() {}
-
 Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
 
 void Texture3D::initialize(const void* data) {

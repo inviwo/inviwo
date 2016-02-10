@@ -61,8 +61,6 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     if (filesystem::fileExists(rawPath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
 
-    std::string fileDirectory = filesystem::getFileDirectory(filePath);
-    std::string fileExtension = filesystem::getFileExtension(filePath);
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     //Write the .dat file content
     std::stringstream ss;

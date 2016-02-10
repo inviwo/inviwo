@@ -49,29 +49,67 @@ const ProcessorInfo VolumeVectorSource::getProcessorInfo() const {
 VolumeVectorSource::VolumeVectorSource()
     : Processor()
     , outport_("data")
+    , inputType_("inputType","Input type")
     , file_("filename", "File")
+    , folder_("folder", "Folder")
+    , filter_("filter_","Filter","*.*")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , isDeserializing_(false) {
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
+    folder_.setContentType("volume");
+    folder_.setDisplayName("Volume folder");
 
     file_.onChange([this]() { load(); });
     reload_.onChange([this]() { load(); });
+    folder_.onChange([this]() { load(); });
+    folder_.onChange([this]() { load(); });
+    filter_.onChange([this]() { load(); });
+    
 
     addFileNameFilters();
 
     addPort(outport_);
 
+    addProperty(inputType_);
+    addProperty(folder_);
+    addProperty(filter_);
     addProperty(file_);
     addProperty(reload_);
     addProperty(information_);
     addProperty(basis_);
+
+    inputType_.addOption("singlefile", "SingleFile", InputType::SingleFile);
+    inputType_.addOption("folder", "Folder", InputType::Folder);
+    inputType_.setCurrentStateAsDefault();
+    inputType_.onChange([&](){
+        file_.setVisible(inputType_.get() == InputType::SingleFile);
+        folder_.setVisible(inputType_.get() == InputType::Folder);
+        filter_.setVisible(inputType_.get() == InputType::Folder);
+    });
+
+    file_.setVisible(inputType_.get() == InputType::SingleFile);
+    folder_.setVisible(inputType_.get() == InputType::Folder);
+    filter_.setVisible(inputType_.get() == InputType::Folder);
 }
 
-void VolumeVectorSource::load(bool deserialize /*= false*/) {
-    if (isDeserializing_ || file_.get().empty()) return;
+void VolumeVectorSource::load(bool deserialize) {
+    if (isDeserializing_) return;
+    switch (inputType_.get()) {
+    case InputType::Folder:
+        loadFolder();
+        break;
+    case InputType::SingleFile:
+    default:
+        loadFile();
+        break;
+    }
+}
+
+void VolumeVectorSource::loadFile(bool deserialize) {
+    if (file_.get().empty()) return;
 
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     std::string ext = filesystem::getFileExtension(file_.get());
@@ -83,6 +121,49 @@ void VolumeVectorSource::load(bool deserialize /*= false*/) {
         }
     } else {
         LogProcessorError("Could not find a data reader for file: " << file_.get());
+    }
+
+    if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
+        basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
+        information_.updateForNewVolume(*(*volumes_)[0], deserialize);
+    }
+}
+
+void VolumeVectorSource::loadFolder(bool deserialize) {
+    if (folder_.get().empty()) return;
+
+    volumes_ = std::make_shared<VolumeVector>();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+
+    auto files = filesystem::getDirectoryContents(folder_.get());
+    for (auto f : files) {
+        auto file = folder_.get() + "/" + f;
+        if (filesystem::wildcardStringMatch(filter_, file)) {
+            std::string ext = filesystem::getFileExtension(file);
+            if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+                try {
+                    auto volume = reader1->readData(file);
+                    volumes_->push_back(volume);
+                }
+                catch (DataReaderException const& e) {
+                    LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
+                }
+            }
+            else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+                try {
+                    auto volumes = reader2->readData(file);
+                    for (auto volume : *volumes) {
+                        volumes_->push_back(volume);
+                    }
+                }
+                catch (DataReaderException const& e) {
+                    LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
+                }
+            }
+            else {
+                LogProcessorError("Could not find a data reader for file: " << file);
+            }
+        }
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {

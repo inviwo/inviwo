@@ -92,10 +92,13 @@ IVW_CORE_API TxElement* xmlGetElement(TxElement* node, std::string path);
 IVW_CORE_API bool xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
 
 IVW_CORE_API void renamePort(Deserializer& d,
-                std::initializer_list<std::pair<const Port*, std::string>> rules);
+    std::initializer_list<std::pair<const Port*, std::string>> rules);
 
 IVW_CORE_API void renameProperty(Deserializer& d,
-                    std::initializer_list<std::pair<const Property*, std::string>> rules);
+    std::initializer_list<std::pair<const Property*, std::string>> rules);
+
+IVW_CORE_API void changePropertyType(
+    Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules);
 
 }  // namespace
 

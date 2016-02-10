@@ -1,18 +1,19 @@
 #ifndef IVW_STREAMLINES_H
 #define IVW_STREAMLINES_H
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/vectorfieldvisualization/streamlinetracer.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/vectorfieldvisualization/streamlinetracer.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
 namespace inviwo {
 
@@ -56,12 +57,7 @@ protected:
 
     MeshOutport linesStripsMesh_;
 
-    IntProperty numberOfSteps_;
-    FloatProperty stepSize_;
-    BoolProperty normalizeSamples_;
-    TemplateOptionProperty<IntegralLineTracer::Direction> stepDirection_;
-    TemplateOptionProperty<IntegralLineTracer::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
+    StreamLineProperties streamLineProperties_;
 
     TransferFunctionProperty tf_;
     FloatProperty velocityScale_;

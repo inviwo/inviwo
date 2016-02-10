@@ -49,12 +49,9 @@
 #include <warn/push>
 #include <warn/ignore/all>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QScreen>
 #include <QStandardPaths>
-#else
-#include <QDesktopServices>
-#endif
+
 #include <QActionGroup>
 #include <QClipboard>
 #include <QDesktopWidget>
@@ -168,7 +165,6 @@ void InviwoMainWindow::initialize() {
     updateRecentWorkspaceMenu();
 
 #ifdef WIN32
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     // Fix window offset when restoring old position for correct positioning
     // The frame size should be determined only once before starting up the
     // main application and stored in InviwoApplicationQt
@@ -186,7 +182,6 @@ void InviwoMainWindow::initialize() {
     delete w;
 
     app_->setWindowDecorationOffset(offset);
-#endif
 #endif
 }
 
@@ -210,11 +205,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
 
     repaint();
     app_->processEvents();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
-#else
-    QPixmap screenGrab = QPixmap::grabWindow(this->winId());
-#endif
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }
 
@@ -314,7 +305,6 @@ void InviwoMainWindow::addActions() {
 
     {
         // create list of all example workspaces
-        fileMenuItem->addSeparator();
         auto exampleWorkspaceMenu = fileMenuItem->addMenu(tr("&Example Workspaces"));
         fillExampleWorkspaceMenu(exampleWorkspaceMenu);
     }
@@ -323,12 +313,12 @@ void InviwoMainWindow::addActions() {
         // TODO: need a DEVELOPER flag here!
         // create list of all test workspaces, inviwo-dev and other external modules, i.e.
         // "research"
-        fileMenuItem->addSeparator();
         auto testWorkspaceMenu = fileMenuItem->addMenu(tr("&Test Workspaces"));
         fillTestWorkspaceMenu(testWorkspaceMenu);
     }
 
     {
+        fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
         connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
@@ -604,6 +594,33 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
 }
 
 void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
+    for (const auto& module : app_->getModules()) {
+        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+        if (filesystem::directoryExists(moduleTestPath)) {
+            QMenu* moduleMenu = nullptr;
+
+            for (auto test : filesystem::getDirectoryContents(moduleTestPath,
+                                                              filesystem::ListMode::Directories)) {
+                std::string testdir = moduleTestPath + "/" + test;
+                // only accept inviwo workspace files
+                if (filesystem::directoryExists(testdir)) {
+                    for (auto item : filesystem::getDirectoryContents(testdir)) {
+                        if (filesystem::getFileExtension(item) == "inv") {
+                            if (!moduleMenu) {
+                                moduleMenu =
+                                    menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                            }
+                            QAction* action = moduleMenu->addAction(QString::fromStdString(item));
+                            action->setData(QString::fromStdString(testdir + "/" + item));
+                            QObject::connect(action, SIGNAL(triggered()), this,
+                                             SLOT(openRecentWorkspace()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // store path and extracted module name
     std::vector<std::pair<std::string, std::string> > paths;  // we need to keep the order...
 
@@ -621,24 +638,6 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
         }
         if (workspaceExists) {
             paths.push_back({coreWorkspacePath, "core"});
-        }
-    }
-
-    for (const auto& module : app_->getModules()) {
-        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
-        if (filesystem::directoryExists(moduleTestPath)) {
-            // check whether path contains at least one workspace
-            bool workspaceExists = false;
-            for (auto item : filesystem::getDirectoryContents(moduleTestPath)) {
-                // only accept inviwo workspace files
-                workspaceExists = (filesystem::getFileExtension(item) == "inv");
-                if (workspaceExists) {
-                    break;
-                }
-            }
-            if (workspaceExists) {
-                paths.push_back({moduleTestPath, module->getIdentifier()});
-            }
         }
     }
 

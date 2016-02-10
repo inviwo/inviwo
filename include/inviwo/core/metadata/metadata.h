@@ -176,8 +176,8 @@ typedef MetaDataPrimitiveType<mat3, 0, 0> FloatMat3MetaData;
 typedef MetaDataPrimitiveType<mat4, 0, 0> FloatMat4MetaData;
 
 typedef MetaDataPrimitiveType<dmat2, 0, 0> DoubleMat2MetaData;
-typedef MetaDataPrimitiveType<dmat3, 0, 0> DoubleMat4MetaData;
-typedef MetaDataPrimitiveType<dmat4, 0, 0> DoubleMat3MetaData;
+typedef MetaDataPrimitiveType<dmat3, 0, 0> DoubleMat3MetaData;
+typedef MetaDataPrimitiveType<dmat4, 0, 0> DoubleMat4MetaData;
 
 // Vector specialization
 template <typename T, int N>

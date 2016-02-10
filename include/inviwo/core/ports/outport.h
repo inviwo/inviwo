@@ -81,13 +81,13 @@ public:
     const BaseCallBack* onDisconnect(std::function<void()> lambda);
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
-
-protected:
-    Outport(std::string identifier = "");
     /**
     *    Called by Processor::setValid, will call setValid its connected inports.
     */
     virtual void setValid();
+
+protected:
+    Outport(std::string identifier = "");
 
     // These function are only called by the corresponding inport.
     virtual void connectTo(Inport* port);

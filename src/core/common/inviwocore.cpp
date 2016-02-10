@@ -148,7 +148,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     
     // Register Cameras
     registerCamera<PerspectiveCamera>("PerspectiveCamera");
-    registerCamera<OrthographicCamera>("OrthographicCamera");
+	registerCamera<OrthographicCamera>("OrthographicCamera");
+	registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
     
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();

@@ -73,11 +73,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-if(DESIRED_QT_VERSION MATCHES 5)
-    find_package(Qt5Core QUIET REQUIRED)
-else()
-    find_package(Qt QUIET REQUIRED)
-endif()
+find_package(Qt5Core QUIET REQUIRED)
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
@@ -88,47 +84,34 @@ ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
 ivw_define_qt_definitions()
 
 # Add dependencies to this list
-if(DESIRED_QT_VERSION MATCHES 5)
-    set(IVW_EDITOR_QT_DEPENDS
-        Qt5Core
-        Qt5Gui
-        Qt5Widgets
-        Qt5Help
-    )
+set(IVW_EDITOR_QT_DEPENDS
+    Qt5Core
+    Qt5Gui
+    Qt5Widgets
+    Qt5Help
+)
 
-    foreach(qtarget ${IVW_EDITOR_QT_DEPENDS})
-        ivw_add_dependencies(${qtarget})  
-        ivw_qt_add_to_install(${qtarget} qt_editor)
-    endforeach()
+foreach(qtarget ${IVW_EDITOR_QT_DEPENDS})
+    ivw_add_dependencies(${qtarget})  
+    ivw_qt_add_to_install(${qtarget} qt_editor)
+endforeach()
 
-    foreach(qtarget Qt5Sql Qt5Network)
-        ivw_qt_add_to_install(${qtarget} qt_editor)
-    endforeach()
+foreach(qtarget Qt5Sql Qt5Network)
+    ivw_qt_add_to_install(${qtarget} qt_editor)
+endforeach()
 
-    ivw_add_dependencies(InviwoQtWidgets )
-    
-    if(IVW_PACKAGE_PROJECT)
-        if(WIN32)
-            if(Qt5Help_FOUND)
-                set(QT_BINARY_DIR "${Qt5Help_DIR}/../../../bin")
-                install(FILES ${QT_BINARY_DIR}/Qt5Help${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-                install(FILES ${QT_BINARY_DIR}/Qt5Help.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-            endif()
-        endif()
-    endif()
-else()
-    set(QT_USE_QTHELP TRUE)
-    ivw_add_definition(QT_HELP_LIB)
+ivw_add_dependencies(InviwoQtWidgets )
 
-    ivw_add_dependencies(InviwoQtWidgets Qt)
-        
-    if(IVW_PACKAGE_PROJECT)
-        if(WIN32)
-            install(FILES ${QT_BINARY_DIR}/QtHelp${CMAKE_DEBUG_POSTFIX}4.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-            install(FILES ${QT_BINARY_DIR}/QtHelp4.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
+if(IVW_PACKAGE_PROJECT)
+    if(WIN32)
+        if(Qt5Help_FOUND)
+            set(QT_BINARY_DIR "${Qt5Help_DIR}/../../../bin")
+            install(FILES ${QT_BINARY_DIR}/Qt5Help${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
+            install(FILES ${QT_BINARY_DIR}/Qt5Help.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
         endif()
     endif()
 endif()
+
 
 
 

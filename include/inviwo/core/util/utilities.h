@@ -40,7 +40,7 @@ class ProcessorNetwork;
 namespace util {
 
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
-                                  std::string default_name = "", std::string ext = ".png");
+                                  std::string name = "UPN", std::string ext = ".png");
 }
 
 }  // namespace

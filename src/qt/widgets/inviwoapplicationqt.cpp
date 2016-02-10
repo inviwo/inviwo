@@ -41,9 +41,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFile>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QSound>
-#endif
 #include <warn/pop>
 
 namespace inviwo {
@@ -64,10 +61,8 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 
-// Make qt write errors in the console;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
-#endif
 }
 
 InviwoApplicationQt::~InviwoApplicationQt() {}
@@ -115,23 +110,7 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
 
 void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
 
-void InviwoApplicationQt::playSound(Message message) {
-// Qt currently does not support playing sounds from resources
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    if ((dynamic_cast<BoolProperty*>(InviwoApplication::getPtr()
-                                         ->getSettingsByType<SystemSettings>()
-                                         ->getPropertyByIdentifier("enableSound"))
-             ->get())) {
-        if (message == Message::Ok)
-            QSound::play(QString::fromStdString(
-                filesystem::getPath(PathType::Resources) + "/sounds/ok.wav"));
-        else if (message == Message::Error)
-            QSound::play(QString::fromStdString(
-                filesystem::getPath(PathType::Resources) + "/sounds/error.wav"));
-    }
-
-#endif
-}
+void InviwoApplicationQt::playSound(Message message) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return utilqt::getCurrentStdLocale(); }
 
@@ -159,7 +138,7 @@ void InviwoApplicationQt::wait(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {
 #ifdef IVW_DEBUG
@@ -198,7 +177,8 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
                     context.line, context.function);
             abort();
             break;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+
+        #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         case QtInfoMsg:
             inviwo::LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
                                               context.file, context.function, context.line,
@@ -207,11 +187,11 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
             fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
-#endif
+        #endif
     }
 #endif
 }
-#endif
+
 
 QPoint InviwoApplicationQt::getWindowDecorationOffset() const { return windowDecorationOffset_; }
 
@@ -237,12 +217,10 @@ QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSiz
         QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
         QPoint appPos = getMainWindow()->pos();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         if (decorationOffset) {
             QPoint offset = getWindowDecorationOffset();
             pos -= offset;
         }
-#endif
 
         if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {
             // If the widget is outside visible screen

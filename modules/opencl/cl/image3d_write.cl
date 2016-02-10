@@ -97,18 +97,21 @@ void write_imageUInt8ui(image_3d_write_uint8_t image, int4 coord, int4 dimension
 #endif
 }
 
-// Write value, val in [0 1], at location coord.
-// 0.f will convert to 0 
-// 1.f will convert to 65535
-// @note write_imagef can only be used with image objects created with 
-// image_channel_data_type set to one of the pre-defined packed formats or set to 
-// CL_SNORM_INT8, CL_UNORM_INT8, CL_SNORM_INT16, CL_UNORM_INT16, CL_HALF_FLOAT or CL_FLOAT.
-void writeImageUInt16f(image_3d_write_uint16_t image, int4 coord, int4 dimension, float val) {
+// Write value at location coord.
+void writeImageFloat16f(image_3d_write_float16_t image, int4 coord, int4 dimension, float val) {
 #ifdef SUPPORTS_VOLUME_WRITE
     write_imagef(image, coord, (float4)(val));
 #else
-    // The preferred method for conversions from floating-point values to normalized integer
-    image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_ushort_sat_rte(val * 65535.f);
+    vstore_half(val, coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y, image);
+#endif
+}
+
+// Write value at location coord.
+void writeImageFloat32f(image_3d_write_float32_t image, int4 coord, int4 dimension, float val) {
+#ifdef SUPPORTS_VOLUME_WRITE
+    write_imagef(image, coord, (float4)(val));
+#else
+    image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = val;
 #endif
 }
 

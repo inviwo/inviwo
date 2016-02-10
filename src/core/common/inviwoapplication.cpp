@@ -92,8 +92,12 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , processorNetworkEvaluator_{
           util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
     if (commandLineParser_.getLogToFile()) {
-        LogCentral::getPtr()->registerLogger(
-            new FileLogger(commandLineParser_.getLogToFileFileName()));
+        auto filename = commandLineParser_.getLogToFileFileName();
+        auto dir = filesystem::getFileDirectory(filename);
+        if (dir.empty() || !filesystem::directoryExists(dir)){
+            filename = commandLineParser_.getOutputPath() + "/" + filename;
+        }
+        LogCentral::getPtr()->registerLogger(new FileLogger(filename));
     }
 
     init(this);

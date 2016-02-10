@@ -73,46 +73,35 @@ void Layer::setDimensions(const size2_t& dim) {
 
     if (lastValidRepresentation_) {
         // Resize last valid representation
-        lastValidRepresentation_->setDimensions(dim);
         removeOtherRepresentations(lastValidRepresentation_.get());
+        lastValidRepresentation_->setDimensions(dim);
     }
 }
 
 void Layer::copyRepresentationsTo(Layer* targetLayer) {
-    // TODO: And also need to be tested on multiple representations_ such as LayerRAM, LayerDisk
-    // TODO: optimize the code
-
-    auto& targets = targetLayer->representations_;
-    bool copyDone = false;
-
-    for (auto& sourceElem : representations_) {
-        auto sourceRepr = sourceElem.second.get();
+    for (auto& source : representations_) {
+        auto sourceRepr = source.second.get();
         if (sourceRepr->isValid()) {
-            for (auto& targetElem : targets) {
-                auto targetRepr = targetElem.second.get();
+            for (auto& target : targetLayer->representations_) {
+                auto targetRepr = target.second.get();
                 if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                     if (sourceRepr->copyRepresentationsTo(targetRepr)) {
-                        targetRepr->setValid(true);
-                        targetLayer->lastValidRepresentation_ = targetElem.second;
-                        copyDone = true;
+                        targetLayer->invalidateAllOther(targetRepr);
+                        return;
                     }
                 }
             }
         }
     }
 
-    if (!copyDone) {  // Fallback
-        for (auto& targetElem : targets) targetElem.second->setValid(false);
-        targetLayer->createDefaultRepresentation();
+    // Fallback
+    auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
+    targetLayer->addRepresentation(clone);
+    targetLayer->removeOtherRepresentations(clone.get());
+    targetLayer->StructuredGridEntity<2>::setDimensions(clone->getDimensions());
 
-        auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
-        targetLayer->addRepresentation(clone);
-        targetLayer->setDimensions(targetLayer->getDimensions());
-
-        if (lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
-            clone->setValid(true);
-            targetLayer->lastValidRepresentation_ = clone;
-        }
+    if (!lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
+        throw Exception("Failed to copy Layer Representation", IvwContext);
     }
 }
 

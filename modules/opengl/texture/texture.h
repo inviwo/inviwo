@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTURE_H
@@ -37,13 +37,13 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API Texture: public Observable<TextureObserver> {
-
+class IVW_MODULE_OPENGL_API Texture : public Observable<TextureObserver> {
 public:
     Texture(GLenum, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture(GLenum, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture(GLenum, GLint format, GLint internalformat, GLenum dataType, GLenum filtering,
+            GLint level = 0);
     Texture(const Texture& other);
-    Texture(Texture&& other); // move constructor
+    Texture(Texture&& other);  // move constructor
     Texture& operator=(const Texture& other);
     Texture& operator=(Texture&& other);
 
@@ -69,7 +69,7 @@ public:
 
     template <typename T>
     void setTextureParameterFunction(T* o, void (T::*m)(Texture*)) const {
-        texParameterCallback_->addMemberFunction(o,m);
+        texParameterCallback_->addMemberFunction(o, m);
     }
 
     void bind() const;
@@ -102,7 +102,7 @@ protected:
 
 private:
     GLuint id_;
-    GLuint pboBack_; //For asynchronous readback to CPU
+    GLuint pboBack_;  // For asynchronous readback to CPU
 
     GLuint byteSize_;
     GLuint numChannels_;
@@ -111,6 +111,6 @@ private:
     mutable bool pboBackHasData_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTURE_H
+#endif  // IVW_TEXTURE_H

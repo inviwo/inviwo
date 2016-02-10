@@ -27,18 +27,55 @@
 # 
 #*********************************************************************************
 
+import glob
+import os
+import json
+
+from . error import *
+from .. util import *
+
 class Test:
-	def __init__(self, kind, name = "", module = "", repo = "", path=""):
-		self.kind = kind
-		self.repo = repo
+	def __init__(self, name, module, path):
 		self.module = module
 		self.path = path
 		self.name = name
 		self.script = ""
+		self.config = {}
+		self.workspaces = glob.glob(self.path +"/*.inv")
+
+		configfile = toPath(self.path, "config.json")
+		if os.path.exists(configfile):
+			with open(configfile, 'r') as f:
+				self.config = json.load(f)
+
+	def __str__(self):
+		return self.toString()
 
 	def toString(self):
-		if self.kind == "module":
-			return "Module: " + self.module + " Test: " + self.name + " : " + self.path
-		elif self.kind == "repo":
-			return "Repo: " + self.repo + " Test: " + self.name + " : " + self.path
+		return self.module + "/" + self.name
+
+	def getWorkspaces(self):
+		return self.workspaces
+
+	def getImages(self):
+		imgs = glob.glob(self.path +"/*.png")
+		imgs = [os.path.relpath(x, self.path) for x in imgs]
+		return imgs
 		
+	def report(self, report):
+		report['module'] = self.module
+		report['name'] = self.name
+		report['path'] = self.path
+		report['script'] = self.script
+		report['config'] = self.config
+		return report
+
+	def makeOutputDir(self, base):
+		if not os.path.isdir(base):
+			raise RegressionError("Output dir does not exsist: " + base)
+
+		mkdir(base, self.module)
+		mkdir(base, self.module, self.name)
+		return toPath(base, self.module, self.name)
+
+		raise RegressionError("Invalid Test kind")

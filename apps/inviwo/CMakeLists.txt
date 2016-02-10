@@ -34,11 +34,7 @@ source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
 
 #--------------------------------------------------------------------
 # Add resource file
-if(DESIRED_QT_VERSION MATCHES 5)
-    qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
-else()
-    qt4_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
-endif()
+qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
         
 #--------------------------------------------------------------------
 # Define libraries that should be linked

@@ -54,13 +54,8 @@ StreamRibbons::StreamRibbons()
     , vorticityVolume_("vorticityVolume")
     , seedPoints_("seedpoints")
     , mesh_("mesh")
-    , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
-    , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
-    , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
-    , stepDirection_("stepDirection", "Step Direction", InvalidationLevel::InvalidResources)
-    , integrationScheme_("integrationScheme", "Integration Scheme")
+    , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
-    , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Max Velocity", "0", InvalidationLevel::Valid)
@@ -72,30 +67,9 @@ StreamRibbons::StreamRibbons()
     addPort(seedPoints_);
     addPort(mesh_);
 
-    stepSize_.setIncrement(0.0001f);
-    stepDirection_.addOption("fwd", "Forward", StreamLineTracer::Direction::FWD);
-    stepDirection_.addOption("bwd", "Backwards", StreamLineTracer::Direction::BWD);
-    stepDirection_.addOption("bi", "Bi Directional", StreamLineTracer::Direction::BOTH);
-
-    integrationScheme_.addOption("euler", "Euler", StreamLineTracer::IntegrationScheme::Euler);
-    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", StreamLineTracer::IntegrationScheme::RK4);
-    integrationScheme_.setSelectedValue(StreamLineTracer::IntegrationScheme::RK4);
-
-    seedPointsSpace_.addOption("texture", "Texture",
-                               StructuredCoordinateTransformer<3>::Space::Texture);
-    seedPointsSpace_.addOption("model", "Model", StructuredCoordinateTransformer<3>::Space::Model);
-    seedPointsSpace_.addOption("world", "World", StructuredCoordinateTransformer<3>::Space::World);
-    seedPointsSpace_.addOption("data", "Data", StructuredCoordinateTransformer<3>::Space::Data);
-    seedPointsSpace_.addOption("index", "Index", StructuredCoordinateTransformer<3>::Space::Index);
-
-    addProperty(numberOfSteps_);
-    addProperty(stepSize_);
-    addProperty(stepDirection_);
-    addProperty(integrationScheme_);
-    addProperty(normalizeSamples_);
+    
+    addProperty(streamLineProperties_);
     addProperty(ribbonWidth_);
-
-    addProperty(seedPointsSpace_);
 
     addProperty(tf_);
     addProperty(velocityScale_);
@@ -109,15 +83,15 @@ StreamRibbons::StreamRibbons()
 }
 
 void StreamRibbons::process() {
+    //*
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(vectorVolume_.getData()->getModelMatrix());
     mesh->setWorldMatrix(vectorVolume_.getData()->getWorldMatrix());
 
-    auto m = vectorVolume_.getData()->getCoordinateTransformer().getMatrix(
-        seedPointsSpace_.get(), StructuredCoordinateTransformer<3>::Space::Texture);
+    auto m = streamLineProperties_.getSeedPointTransformationMatrix(vectorVolume_.getData()->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
-    StreamLineTracer tracer(vectorVolume_.getData().get(),integrationScheme_.get());
+    StreamLineTracer tracer(vectorVolume_.getData().get(), streamLineProperties_);
     ImageSampler tf(tf_.get().getData());
     tracer.addMetaVolume("vorticity", vorticityVolume_.getData()->getRepresentation<VolumeRAM>());
     mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
@@ -126,8 +100,7 @@ void StreamRibbons::process() {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
             auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
-            auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
-                                         stepDirection_.get(), normalizeSamples_.get());
+            auto line = tracer.traceFrom(P.xyz());
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
@@ -168,6 +141,7 @@ void StreamRibbons::process() {
     }
     mesh->addVertices(vertices);
     mesh_.setData(mesh);
+ //   */
 }
 
 }  // namespace

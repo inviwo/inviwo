@@ -1,9 +1,38 @@
 
 # Search for zlib
+
 find_package(ZLIB QUIET)
-# Build dependency from source if not found
-if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
-	ivw_message("Compiling zlib from source since it was not found")
+# For some reason we cannot entirely trust that 
+# ZLIB_FOUND is set correctly (Windows). We therefore also
+# check if the include directories are set and exists
+if (ZLIB_INCLUDE_DIRS)
+    foreach(include_dir ${ZLIB_INCLUDE_DIRS})
+        set(ZLIB_FOUND (ZLIB_FOUND AND EXISTS ${include_dir}))
+    endforeach(include_dir)
+else() 
+    set(ZLIB_FOUND false)
+endif()
+
+# Use existing zlib or build dependency from source if not found
+if (ZLIB_FOUND)
+	# we need to make the ZLIB configuration available to other modules (via PARENT_SCOPE)
+	# in case zlib was found by find_package()
+
+	set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS} PARENT_SCOPE)
+	# Some libraries use ZLIB_INCLUDE_DIR even though find_package(ZLIB) specifies that ZLIB_INCLUDE_DIRS should be used
+	set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} PARENT_SCOPE)
+
+	set(ZLIB_LIBRARIES ${ZLIB_LIBRARIES} PARENT_SCOPE)
+	
+	set(ZLIB_VERSION_STRING ${VERSION} PARENT_SCOPE)
+	set(ZLIB_VERSION_MAJOR 1 PARENT_SCOPE)
+	set(ZLIB_VERSION_MINOR 2 PARENT_SCOPE)
+	set(ZLIB_VERSION_PATCH 8 PARENT_SCOPE)
+	set(ZLIB_VERSION_TWEAK 0 PARENT_SCOPE)
+
+	set(ZLIB_FOUND ${ZLIB_FOUND} PARENT_SCOPE)
+else()
+	ivw_debug_message(STATUS "Compiling zlib from source since it was not found")
 	if(BUILD_SHARED_LIBS)
 		add_definitions(-DZLIB_INTERNAL)
 		ivw_add_definition(ZLIB_DLL)
@@ -37,23 +66,6 @@ if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
 		set(ZLIB_LIBRARIES zlibstatic PARENT_SCOPE)
 		set(ZLIB_LIBRARIES zlibstatic)
     endif()
-else()
-	## we need to make the ZLIB configuration available to other modules (via PARENT_SCOPE)
-	## in case zlib was found by find_package()
-
-	set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS} PARENT_SCOPE)
-	# Some libraries use ZLIB_INCLUDE_DIR even though find_package(ZLIB) specifies that ZLIB_INCLUDE_DIRS should be used
-	set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} PARENT_SCOPE)
-
-	set(ZLIB_LIBRARIES ${ZLIB_LIBRARIES} PARENT_SCOPE)
-	
-	set(ZLIB_VERSION_STRING ${VERSION} PARENT_SCOPE)
-	set(ZLIB_VERSION_MAJOR 1 PARENT_SCOPE)
-	set(ZLIB_VERSION_MINOR 2 PARENT_SCOPE)
-	set(ZLIB_VERSION_PATCH 8 PARENT_SCOPE)
-	set(ZLIB_VERSION_TWEAK 0 PARENT_SCOPE)
-
-	set(ZLIB_FOUND ${ZLIB_FOUND} PARENT_SCOPE)
 endif()
 
 #--------------------------------------------------------------------

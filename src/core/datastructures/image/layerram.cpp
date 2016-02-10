@@ -30,6 +30,9 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 
@@ -46,7 +49,12 @@ LayerRAM& LayerRAM::operator=(const LayerRAM& that) {
 LayerRAM::~LayerRAM() {}
 
 bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
-    return Canvas::generalLayerWriter_->writeDataToRepresentation(this, targetLayerRam);
+    static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
+                                                     ->getDataWriterFactory()
+                                                     ->getWriterForTypeAndExtension<Layer>("png")
+                                                     .release();
+
+    return layerWriter_->writeDataToRepresentation(this, targetLayerRam);
 }
 
 std::type_index LayerRAM::getTypeIndex() const {

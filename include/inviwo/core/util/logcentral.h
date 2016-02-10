@@ -43,6 +43,8 @@
 
 namespace inviwo {
 
+class Processor;
+
 enum class IVW_CORE_API LogLevel : int { Info, Warn, Error };
 enum class IVW_CORE_API LogAudience : int { User, Developer };
 
@@ -96,31 +98,31 @@ enum class IVW_CORE_API LogAudience : int { User, Developer };
                                           __LINE__, stream__.str());                              \
     }
 
-#define LogProcessorInfo(message)                                                                 \
-    {                                                                                             \
-        std::ostringstream stream__;                                                              \
-        stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->logProcessor(this->getIdentifier(), inviwo::LogLevel::Info, \
-                                                   inviwo::LogAudience::User, stream__.str(),     \
-                                                   __FILE__, __FUNCTION__, __LINE__);             \
+#define LogProcessorInfo(message)                                                             \
+    {                                                                                         \
+        std::ostringstream stream__;                                                          \
+        stream__ << message;                                                                  \
+        inviwo::LogCentral::getPtr()->logProcessor(this, inviwo::LogLevel::Info,              \
+                                                   inviwo::LogAudience::User, stream__.str(), \
+                                                   __FILE__, __FUNCTION__, __LINE__);         \
     }
 
-#define LogProcessorWarn(message)                                                                 \
-    {                                                                                             \
-        std::ostringstream stream__;                                                              \
-        stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->logProcessor(this->getIdentifier(), inviwo::LogLevel::Warn, \
-                                                   inviwo::LogAudience::User, stream__.str(),     \
-                                                   __FILE__, __FUNCTION__, __LINE__);             \
+#define LogProcessorWarn(message)                                                             \
+    {                                                                                         \
+        std::ostringstream stream__;                                                          \
+        stream__ << message;                                                                  \
+        inviwo::LogCentral::getPtr()->logProcessor(this, inviwo::LogLevel::Warn,              \
+                                                   inviwo::LogAudience::User, stream__.str(), \
+                                                   __FILE__, __FUNCTION__, __LINE__);         \
     }
 
-#define LogProcessorError(message)                                                                 \
-    {                                                                                              \
-        std::ostringstream stream__;                                                               \
-        stream__ << message;                                                                       \
-        inviwo::LogCentral::getPtr()->logProcessor(this->getIdentifier(), inviwo::LogLevel::Error, \
-                                                   inviwo::LogAudience::User, stream__.str(),      \
-                                                   __FILE__, __FUNCTION__, __LINE__);              \
+#define LogProcessorError(message)                                                            \
+    {                                                                                         \
+        std::ostringstream stream__;                                                          \
+        stream__ << message;                                                                  \
+        inviwo::LogCentral::getPtr()->logProcessor(this, inviwo::LogLevel::Error,             \
+                                                   inviwo::LogAudience::User, stream__.str(), \
+                                                   __FILE__, __FUNCTION__, __LINE__);         \
     }
 
 #define LogNetworkInfo(message)                                                             \
@@ -159,7 +161,7 @@ public:
                      const char* fileName, const char* functionName, int lineNumber,
                      std::string logMsg) = 0;
 
-    virtual void logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function, int line);
 
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
@@ -210,7 +212,7 @@ public:
     void log(std::string source, LogLevel level, LogAudience audience, const char* file,
              const char* function, int line, std::string msg);
 
-    void logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+    void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                       std::string msg, const char* file = "", const char* function = "",
                       int line = 0);
 

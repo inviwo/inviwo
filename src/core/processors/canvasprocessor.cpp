@@ -236,16 +236,9 @@ const Layer* CanvasProcessor::getSelectedLayer() const {
 
 std::shared_ptr<DataWriterType<Layer>> CanvasProcessor::getWriter(
     const std::string& fileExtension) const {
-    if (Canvas::generalLayerWriter_ && fileExtension == "png") {
-        return std::shared_ptr<DataWriterType<Layer>>(Canvas::generalLayerWriter_,
-                                                      [](DataWriterType<Layer>*) {});
-    } else {
-        return std::shared_ptr<DataWriterType<Layer>>(
-            getNetwork()
-                ->getApplication()
-                ->getDataWriterFactory()
-                ->getWriterForTypeAndExtension<Layer>(fileExtension));
-    }
+    return std::shared_ptr<DataWriterType<Layer>>(
+        getNetwork()->getApplication()->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
+            fileExtension));
 }
 
 std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getLayerAsCodedBuffer(

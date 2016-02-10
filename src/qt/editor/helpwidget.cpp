@@ -48,11 +48,10 @@
 #include <QCoreApplication>
 #include <QBuffer>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QUrlQuery>
 #include <QImageReader>
 #include <QImageWriter>
-#endif
+
 #include <warn/pop>
 
 namespace inviwo {
@@ -140,7 +139,6 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     QUrl url(name);
     if (name.isRelative()) url = source().resolved(url);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QUrlQuery query(url);
     if (query.hasQueryItem("classIdentifier")) {
         QString cid = query.queryItemValue("classIdentifier");
@@ -169,7 +167,6 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
             return data;
         }
     }
-#endif
 
 #ifdef IVW_DEBUG  // Look for the html in the doc-qt folder.
     if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {

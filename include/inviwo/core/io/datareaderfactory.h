@@ -80,7 +80,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 
     auto lkey = toLower(ext);
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == toLower(lkey)) {
+        if (toLower(elem.first.extension_) == lkey) {
             if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }

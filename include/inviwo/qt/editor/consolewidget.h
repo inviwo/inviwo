@@ -52,7 +52,7 @@ public:
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
              const char* functionName, int lineNumber, std::string logMsg) override;
 
-    virtual void logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function,
                               int line) override;
 

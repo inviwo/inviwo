@@ -132,13 +132,13 @@ private:
     static CanvasQt* sharedCanvas_;
     static QGLContextFormat sharedFormat_;
     bool swapBuffersAllowed_;
+    bool gestureMode_;
 
 #ifndef QT_NO_GESTURES
     void touchEvent(QTouchEvent*);
     bool gestureEvent(QGestureEvent*);
     void panTriggered(QPanGesture*);
     void pinchTriggered(QPinchGesture*);
-    bool gestureMode_;
     Qt::GestureType lastType_;
     int lastNumFingers_;
     std::vector<int> lastTouchIds_;

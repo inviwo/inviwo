@@ -93,10 +93,13 @@ PyInviwo::~PyInviwo() {
     Py_Finalize();
 }
 
+#include <warn/push>
+#include <warn/ignore/missing-field-initializers>
 void PyInviwo::registerPyModule(PyModule* pyModule) {
     registeredModules_.push_back(pyModule);
     return;
 }
+#include <warn/pop>
 
 void PyInviwo::addModulePath(const std::string& path) {
     if (!Py_IsInitialized()) {

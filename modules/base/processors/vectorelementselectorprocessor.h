@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
 namespace inviwo {
@@ -53,7 +55,7 @@ namespace inviwo {
  *   * __Time Step__ ...
  *
  */
-template< typename T>
+template< typename T,typename OutportType = DataOutport<T>>
 class VectorElementSelectorProcessor : public Processor {
 public:
     VectorElementSelectorProcessor();
@@ -65,30 +67,83 @@ public:
 
 protected:
     DataInport<std::vector<std::shared_ptr<T>>> inport_;
-    DataOutport<T> outport_;
+    OutportType outport_;
     SequenceTimerProperty timeStep_;
+
+    StringProperty name_;
+    DoubleProperty timestamp_;
 };
 
-template < typename T>
-VectorElementSelectorProcessor<T>::VectorElementSelectorProcessor()
+template< typename T,typename OutportType>
+VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , timeStep_("timeStep", "Step") {
+    , timeStep_("timeStep", "Step") 
+    , name_("name","Name")
+    , timestamp_("timestamp","Timestamp")
+{
     addPort(inport_);
     addPort(outport_);
 
     addProperty(timeStep_);
+    addProperty(name_);
+    addProperty(timestamp_);
+    name_.setVisible(false);
+    name_.setReadOnly(true);
+    name_.setCurrentStateAsDefault();
+
+    timestamp_.setVisible(false);
+    timestamp_.setReadOnly(true);
+    timestamp_.setCurrentStateAsDefault();
+
     // This needs to be added by the child class
     //timeStep_.index_.autoLinkToProperty<VectorElementSelectorProcessor<T>>("timeStep.selectedSequenceIndex");
 
+    timeStep_.onChange([this]() {
+        if (auto data = inport_.getData()) {
+            size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
+            auto selectedData = data->at(index).get();
+            if (auto metadataowner = dynamic_cast<const MetaDataOwner*>(selectedData)) {
+                if (metadataowner->hasMetaData<StringMetaData>("name")) {
+                    name_.set(metadataowner->getMetaData<StringMetaData>("name")->get());
+                    name_.setVisible(true);
+                }
+                else {
+                    name_.setVisible(false);
+                }
+
+                if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") || metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
+                    if (auto metadata = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
+                        timestamp_.set(metadata->get());
+                        timestamp_.setVisible(true);
+                    }
+                    else if (auto metadata = metadataowner->getMetaData<FloatMetaData>("timestamp")) {
+                        timestamp_.set(static_cast<double>(metadata->get()));
+                        timestamp_.setVisible(true);
+                    }
+                }
+                else {
+                    timestamp_.setVisible(false);
+                }
+            }
+
+        }
+        else {
+            name_.setVisible(false);
+            timestamp_.setVisible(false);
+        }
+    });
+
     inport_.onChange([this]() {
-        if (inport_.hasData()) timeStep_.updateMax(inport_.getData()->size());
+        if (inport_.hasData()) {
+            timeStep_.updateMax(inport_.getData()->size());
+        }
     });
 }
 
-template < typename T>
-void VectorElementSelectorProcessor<T>::process() {
+template< typename T,typename OutportType>
+void VectorElementSelectorProcessor<T, OutportType>::process() {
     if (!inport_.isReady()) return;
 
     if (auto data = inport_.getData()) {

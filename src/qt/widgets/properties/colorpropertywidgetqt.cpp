@@ -114,8 +114,8 @@ void ColorPropertyWidgetQt::offsetColorDialog() {
     colorDialog_->move(x + offsetX, y + offsetY);
     offsetX += 150;
     offsetY += 50;
-    offsetX %= mainFrame.width() - rightOffset - leftOffset  - 538;
-    offsetY %= mainFrame.height() - topOffset - bottomOffset - 418;
+    offsetX %= std::max(300, mainFrame.width() - rightOffset - leftOffset  - 538);
+    offsetY %= std::max(300, mainFrame.height() - topOffset - bottomOffset - 418);
 }
 
 void ColorPropertyWidgetQt::updateFromProperty() {

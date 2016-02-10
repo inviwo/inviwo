@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
 namespace inviwo {
 
@@ -81,12 +82,8 @@ private:
     VolumeInport vorticityVolume_;
     SeedPointsInport seedPoints_;
 
-    IntProperty numberOfSteps_;
-    FloatProperty stepSize_;
-    BoolProperty normalizeSamples_;
-    TemplateOptionProperty<StreamLineTracer::Direction> stepDirection_;
-    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
-    TemplateOptionProperty<StreamLineTracer::IntegrationScheme> integrationScheme_;
+
+    StreamLineProperties streamLineProperties_;
 
     FloatProperty ribbonWidth_;
 

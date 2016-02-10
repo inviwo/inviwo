@@ -42,6 +42,8 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/consolewidget.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
@@ -197,11 +199,12 @@ void ConsoleWidget::log(std::string logSource, LogLevel level, LogAudience audie
     logMessage(level, message);
 }
 
-void ConsoleWidget::logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function,
-                              int line) {
-    
-    QString message = QString::fromStdString("Processor " + processorIdentifier + ": " + msg);
+void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
+                                 std::string msg, const char* file, const char* function,
+                                 int line) {
+    QString message = QString::fromStdString("Processor " + 
+        (parseTypeIdName(std::string(typeid(processor).name()))) + "/" + processor->getIdentifier()
+         + ": " + msg);
     logMessage(level, message);
 }
 

@@ -32,6 +32,7 @@
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
 namespace inviwo {
 
@@ -43,21 +44,18 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineTracer { 
 public:
 
-    enum class IntegrationScheme {
-        Euler,
-        RK4
-    };
-
-    enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
-
-    IntegralLineTracer(IntegrationScheme integrationScheme);
+    IntegralLineTracer(const IntegralLineProperties &properties);
     virtual ~IntegralLineTracer();
 
-    IntegrationScheme getIntegrationScheme() const;
-    void setIntegrationScheme(IntegrationScheme scheme);
+    IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
+    void setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme);
 
 protected:
-    IntegrationScheme integrationScheme_;
+    IntegralLineProperties::IntegrationScheme integrationScheme_;
+
+    int steps_;
+    double stepSize_;
+    IntegralLineProperties::Direction dir_;
 
 };
 
