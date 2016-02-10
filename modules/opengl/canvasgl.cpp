@@ -31,8 +31,8 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -41,6 +41,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/datastructures/image/image.h>
+
 
 namespace inviwo {
 
@@ -56,14 +57,6 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , channels_(0)
     , previousRenderedLayerIdx_(0) {}
 
-CanvasGL::~CanvasGL() { deinitialize(); }
-
-void CanvasGL::initialize() {
-    if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
-
-    Canvas::initialize();
-}
-
 void CanvasGL::initializeSquare() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
 
@@ -71,15 +64,6 @@ void CanvasGL::initializeSquare() {
         screenAlignedRectGL_ = screenAlignedRect_->getRepresentation<MeshGL>();
         LGL_ERROR;
     }
-}
-
-void CanvasGL::deinitialize() {
-    shader_.reset();
-    noiseShader_.reset();
-
-    image_.reset();
-    imageGL_ = nullptr;
-    Canvas::deinitialize();
 }
 
 void CanvasGL::defaultGLState() {
@@ -125,8 +109,6 @@ void CanvasGL::resize(uvec2 size) {
     pickingContainer_.setPickingSource(nullptr);
     Canvas::resize(size);
 }
-
-void CanvasGL::glSwapBuffers() {}
 
 void CanvasGL::update() { renderLayer(previousRenderedLayerIdx_); }
 
@@ -269,25 +251,18 @@ const LayerRAM* CanvasGL::getDepthLayerRAM() const {
 }
 
 double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM) const {
-    const LayerRAM* dlr = depthLayerRAM;
-    if (!dlr) dlr = getDepthLayerRAM();
+    if (!depthLayerRAM) depthLayerRAM = getDepthLayerRAM();
 
-    if (dlr) {
-        auto screenDims(getScreenDimensions());
-        auto depthDims = dlr->getDimensions();
+    if (depthLayerRAM) {
+        const dvec2 screenDims(getScreenDimensions());
+        const auto depthDims = depthLayerRAM->getDimensions();
         coord = glm::max(coord, ivec2(0));
 
-        double depthScreenRatioX =
-            static_cast<double>(depthDims.x) / static_cast<double>(screenDims.x);
-        double depthScreenRatioY =
-            static_cast<double>(depthDims.y) / static_cast<double>(screenDims.y);
-        size2_t coordDepth;
-        coordDepth.x = static_cast<size_t>(depthScreenRatioX * static_cast<double>(coord.x));
-        coordDepth.y = static_cast<size_t>(depthScreenRatioY * static_cast<double>(coord.y));
-        depthDims -= 1;
-        coordDepth = glm::min(coordDepth, depthDims);
+        const dvec2 depthScreenRatio{dvec2(depthDims) / screenDims};
+        size2_t coordDepth{depthScreenRatio * dvec2(coord)};
+        coordDepth = glm::min(coordDepth, depthDims - size2_t(1,1));
 
-        double depthValue = dlr->getValueAsSingleDouble(coordDepth);
+        const double depthValue = depthLayerRAM->getValueAsSingleDouble(coordDepth);
 
         // Convert to normalized device coordinates
         return 2.0 * depthValue - 1.0;

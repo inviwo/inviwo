@@ -63,8 +63,6 @@ void CanvasProcessorWidgetGLFW::initialize() {
         canvas_ = new CanvasGLFW(processor_->getIdentifier(), dimU);
     }
 
-    if(!canvas_->isInitialized()) canvas_->initialize();
-
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setWindowSize(dimU);
 }

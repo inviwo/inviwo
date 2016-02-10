@@ -59,6 +59,7 @@ void CanvasProcessorWidgetQt::initialize() {
     ivec2 pos = CanvasProcessorWidget::getPosition();
 
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
+    
     CanvasQt* sharedCanvas = CanvasQt::getSharedCanvas();
     if (!sharedCanvas->getProcessorWidgetOwner()) {
         canvas_ = sharedCanvas;
@@ -68,10 +69,8 @@ void CanvasProcessorWidgetQt::initialize() {
     }
 
     canvas_->setEventPropagator(nullptr);
-
-    if (!canvas_->isInitialized()) canvas_->initialize();
-
     canvas_->setProcessorWidgetOwner(this);
+
     QGridLayout* gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
 #ifdef USE_QWINDOW
@@ -108,9 +107,8 @@ void CanvasProcessorWidgetQt::deinitialize() {
             canvas_->setProcessorWidgetOwner(nullptr);
             layout()->removeWidget(canvas_);
             canvas_->setParent(nullptr);
-        } else {
-            canvas_->deinitialize();
         }
+
         canvas_->setEventPropagator(nullptr);
         canvas_ = nullptr;  // Qt will take care of deleting the canvas
     }

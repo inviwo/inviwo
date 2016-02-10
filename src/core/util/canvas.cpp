@@ -44,7 +44,20 @@
 
 namespace inviwo {
 
-Mesh* Canvas::screenAlignedRect_ = nullptr;
+std::unique_ptr<Mesh> Canvas::screenAlignedRect_{[]() {
+    auto verticesBuffer =
+        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+    auto texCoordsBuffer =
+        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
+
+    auto mesh = util::make_unique<Mesh>();
+    mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+    mesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+    mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+
+    return mesh;
+}()};
 
 Canvas::Canvas(uvec2 dimensions)
     : initialized_(false)
@@ -53,42 +66,17 @@ Canvas::Canvas(uvec2 dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
     , ownerWidget_(nullptr) {
+
     if (!screenAlignedRect_) {
         shared_ = false;
-
-        auto verticesBuffer =
-            util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-        auto texCoordsBuffer =
-            util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-        auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
-
-        Mesh* screenAlignedRectMesh = new Mesh();
-        screenAlignedRectMesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-        screenAlignedRectMesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-        screenAlignedRectMesh->addIndicies(
-            Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
-
-        screenAlignedRect_ = screenAlignedRectMesh;
     }
 }
 
 Canvas::~Canvas() {
-    if (!shared_) {
-        delete screenAlignedRect_;
-        screenAlignedRect_ = nullptr;
-    }
-
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
-
-void Canvas::initialize() {
-    initialized_ = true;
-    propagator_ = nullptr;
-}
-
-void Canvas::deinitialize() { propagator_ = nullptr; }
 
 void Canvas::render(std::shared_ptr<const Image> im, LayerType layerType, size_t idx) {}
 
@@ -111,8 +99,6 @@ void Canvas::resize(uvec2 canvasSize) {
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
 
 void Canvas::update() {}
-
-bool Canvas::isInitialized() { return initialized_; }
 
 void Canvas::activateDefaultRenderContext() {
     RenderContext::getPtr()->activateDefaultRenderContext();

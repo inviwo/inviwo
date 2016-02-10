@@ -55,7 +55,6 @@ GLFWModule::~GLFWModule() {
     if (GLFWSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
-    GLFWSharedCanvas_->deinitialize();
     delete GLFWSharedCanvas_;
 }
 

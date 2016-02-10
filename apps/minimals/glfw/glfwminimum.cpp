@@ -81,9 +81,7 @@ int main(int argc, char** argv) {
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // Continue initialization of default context
-    CanvasGLFW* sharedCanvas =
-        static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
-    sharedCanvas->initialize();
+    auto sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
     sharedCanvas->activate();
 
     // Load simple scene
@@ -98,16 +96,16 @@ int main(int argc, char** argv) {
         if (!workspace.empty()) {
             Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-            std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
+            auto processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
             for (auto processor : processors) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
-                if (auto processorWidget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
-                    processorWidget->setProcessor(processor);
-                    processorWidget->initialize();
-                    processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-                    processor->setProcessorWidget(processorWidget.get());
-                    widgets.push_back(std::move(processorWidget));
+                if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
+                    widget->setProcessor(processor);
+                    widget->initialize();
+                    widget->setVisible(widget->ProcessorWidget::isVisible());
+                    processor->setProcessorWidget(widget.get());
+                    widgets.push_back(std::move(widget));
                 }
             }
         }

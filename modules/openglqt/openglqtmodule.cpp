@@ -54,7 +54,6 @@ OpenGLQtModule::~OpenGLQtModule() {
     if (qtGLSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
-    qtGLSharedCanvas_->deinitialize();
 }
 
 }  // namespace

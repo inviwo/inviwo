@@ -73,11 +73,8 @@ int main(int argc, char** argv) {
 
     // Continue initialization of default context
     Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
-    if (sharedCanvas) {
-        sharedCanvas->initialize();
-        sharedCanvas->activate();
-    }
-
+    if (sharedCanvas) sharedCanvas->activate();
+  
     // Set canvas as central widget
     QMainWindow mainWin;
 
@@ -98,21 +95,20 @@ int main(int argc, char** argv) {
         if (!workspace.empty()) {
             Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-            std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
+            auto processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
             for (auto processor : processors) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
 
-                if (auto processorWidget =
-                        inviwoApp.getProcessorWidgetFactory()->create(processor).release()) {
-                    processorWidget->setProcessor(processor);
-                    processorWidget->initialize();
-                    processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-                    processor->setProcessorWidget(processorWidget);
-
+                if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
+                    widget->setProcessor(processor);
+                    widget->initialize();
+                    widget->setVisible(widget->ProcessorWidget::isVisible());
+                    processor->setProcessorWidget(widget.get());
                     if (!mainWin.centralWidget()) {
-                        mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
+                        mainWin.setCentralWidget(dynamic_cast<QWidget*>(widget.get()));
                     }
+                    widget.release();
                 }
             }
         }

@@ -56,10 +56,6 @@ public:
     Canvas(uvec2 dimensions);
     virtual ~Canvas();
 
-    virtual void initialize();
-    virtual void deinitialize();
-    bool isInitialized();
-
     virtual void activate();
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0);
@@ -95,7 +91,7 @@ protected:
     
     bool touchEnabled();
 
-    static Mesh* screenAlignedRect_;
+    static std::unique_ptr<Mesh> screenAlignedRect_;
 
     bool initialized_;
     bool shared_;

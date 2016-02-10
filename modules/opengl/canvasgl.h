@@ -30,26 +30,24 @@
 #ifndef IVW_CANVASGL_H
 #define IVW_CANVASGL_H
 
-#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/canvas.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-class Shader;
 class ImageGL;
 class LayerRAM;
 class MeshGL;
 class BufferObjectArray;
+class ProcessorWidget;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
     CanvasGL(uvec2 dimensions);
-    virtual ~CanvasGL();
+    virtual ~CanvasGL() = default;
 
-    virtual void initialize() override;
-    virtual void deinitialize() override;
     virtual void initializeSquare();
 
     virtual void activate() override;
@@ -58,7 +56,7 @@ public:
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
     virtual void resize(uvec2 size) override;
-    virtual void glSwapBuffers();
+    virtual void glSwapBuffers() = 0;
     virtual void update() override;
 
     static void attachImagePlanRect(BufferObjectArray*);
