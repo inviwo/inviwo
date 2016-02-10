@@ -38,26 +38,28 @@ namespace inviwo {
 namespace detail {
 
     template <typename T>
-    bool any(const T &t) {
-        return glm::any(t):
+    bool all(const T &t) {
+        return glm::all(t);
     }
 
-    template<> bool any(const bool &t) { return t; }
+    template<> bool all(const bool &t) { return t; }
 
 
     struct LayerMinMaxDispatcher {
         using type = std::pair<dvec4, dvec4>;
+        
 
         template <typename T>
         std::pair<dvec4,dvec4> dispatch(const LayerRAM* layer) {
-            auto data = static_cast<const T::type*>(layer->getData());
+            using dataType = typename T::type;
+            auto data = static_cast<const dataType*>(layer->getData());
             auto df = layer->getDataFormat();
-            T::type minV = T::type(df->getMax());
-            T::type maxV = T::type(df->getMin());
+            dataType minV = dataType(df->getMax());
+            dataType maxV = dataType(df->getMin());
             for (size_t i = 0; i < layer->getDimensions().x*layer->getDimensions().y; i++) {
                 auto v = data[i];
 
-                if(v != v + T::type(1)){ 
+                if(all(v != v + T::type(1))){ 
                     minV = glm::min(minV, v);
                     maxV = glm::max(maxV, v);
                 }
