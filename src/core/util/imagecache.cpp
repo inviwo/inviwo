@@ -36,6 +36,10 @@ namespace inviwo {
 ImageCache::ImageCache(std::shared_ptr<const Image> master) : valid_(true), master_(master) {}
 
 void ImageCache::setMaster(std::shared_ptr<const Image> master) {
+    // Clear cache if format changes.
+    if (master_ && master && master_->getDataFormat() != master->getDataFormat()) {
+        cache_.clear();
+    }
     master_ = master;
     valid_ = false;
 }
