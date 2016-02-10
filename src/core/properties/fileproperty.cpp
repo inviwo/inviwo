@@ -118,13 +118,25 @@ void FileProperty::deserialize(Deserializer& d) {
     std::string absolutePath;
     std::string workspaceRelativePath;
     std::string ivwdataRelativePath;
+    std::string oldWorkspacePath;
 
     d.deserialize("absolutePath", absolutePath);
     d.deserialize("workspaceRelativePath", workspaceRelativePath);
     d.deserialize("ivwdataRelativePath", ivwdataRelativePath);
-
-    if (workspaceRelativePath.empty()) {  // Fallback for old workspaces
-        d.deserialize("url", workspaceRelativePath);
+    d.deserialize("url", oldWorkspacePath);
+    
+    
+    if (!oldWorkspacePath.empty()) { // fallback if the old value "url" is used 
+        if (filesystem::isAbsolutePath(oldWorkspacePath)) {
+            if (absolutePath.empty()) {   // on use url if "absolutePath" is not set
+                absolutePath = oldWorkspacePath;
+            }
+        }
+        else {
+            if (workspaceRelativePath.empty()) { // on use url if "workspaceRelativePath" is not set
+                workspaceRelativePath = oldWorkspacePath;
+            }
+        }
     }
 
     const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
