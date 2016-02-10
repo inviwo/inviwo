@@ -32,8 +32,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/ports/imageport.h>
 #include <modules/base/processors/vectorelementselectorprocessor.h>
 
 namespace inviwo {

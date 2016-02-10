@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
 namespace inviwo {
