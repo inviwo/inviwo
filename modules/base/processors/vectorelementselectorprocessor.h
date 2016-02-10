@@ -53,7 +53,7 @@ namespace inviwo {
  *   * __Time Step__ ...
  *
  */
-template< typename T>
+template< typename T,typename OutportType = DataOutport<T>>
 class VectorElementSelectorProcessor : public Processor {
 public:
     VectorElementSelectorProcessor();
@@ -65,12 +65,12 @@ public:
 
 protected:
     DataInport<std::vector<std::shared_ptr<T>>> inport_;
-    DataOutport<T> outport_;
+    OutportType outport_;
     SequenceTimerProperty timeStep_;
 };
 
-template < typename T>
-VectorElementSelectorProcessor<T>::VectorElementSelectorProcessor()
+template< typename T,typename OutportType>
+VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
@@ -87,8 +87,8 @@ VectorElementSelectorProcessor<T>::VectorElementSelectorProcessor()
     });
 }
 
-template < typename T>
-void VectorElementSelectorProcessor<T>::process() {
+template< typename T,typename OutportType>
+void VectorElementSelectorProcessor<T, OutportType>::process() {
     if (!inport_.isReady()) return;
 
     if (auto data = inport_.getData()) {
