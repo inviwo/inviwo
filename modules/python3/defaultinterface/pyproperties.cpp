@@ -88,6 +88,7 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     }
 
     OrdinalProperty<float>* ordinalFloat = dynamic_cast<OrdinalProperty<float>*>(theProperty);
+    OrdinalProperty<double>* ordinalDouble = dynamic_cast<OrdinalProperty<double>*>(theProperty);
     OrdinalProperty<int>* ordinalInt = dynamic_cast<OrdinalProperty<int>*>(theProperty);
     OrdinalProperty<ivec2>* ordinalIvec2 = dynamic_cast<OrdinalProperty<ivec2>*>(theProperty);
     OrdinalProperty<ivec3>* ordinalIvec3 = dynamic_cast<OrdinalProperty<ivec3>*>(theProperty);
@@ -101,6 +102,8 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
 
     if (ordinalFloat) {
         ordinalFloat->setMaxValue(PyValueParser::parse<float>(parameter));
+    } else if (ordinalDouble) {
+        ordinalDouble->setMaxValue(PyValueParser::parse<double>(parameter));
     } else if (ordinalInt) {
         ordinalInt->setMaxValue(PyValueParser::parse<int>(parameter));
     } else if (ordinalIvec2) {
@@ -238,6 +241,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     }
 
     CAST_N_GETMAX(FloatProperty, theProperty, parser);
+    CAST_N_GETMAX(DoubleProperty, theProperty, parser);
     CAST_N_GETMAX(IntProperty, theProperty, parser);
     CAST_N_GETMAX(IntVec2Property, theProperty, parser);
     CAST_N_GETMAX(IntVec3Property, theProperty, parser);
@@ -248,7 +252,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMAX(FloatVec2Property, theProperty, parser);
     CAST_N_GETMAX(FloatVec3Property, theProperty, parser);
     CAST_N_GETMAX(FloatVec4Property, theProperty, parser);
-    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type");
+    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type: " << theProperty->getClassIdentifier());
     Py_RETURN_NONE;
 }
 
@@ -269,6 +273,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     }
 
     CAST_N_GETMIN(FloatProperty, theProperty, parser);
+    CAST_N_GETMIN(DoubleProperty, theProperty, parser);
     CAST_N_GETMIN(IntProperty, theProperty, parser);
     CAST_N_GETMIN(IntVec2Property, theProperty, parser);
     CAST_N_GETMIN(IntVec3Property, theProperty, parser);
@@ -279,7 +284,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMIN(FloatVec2Property, theProperty, parser);
     CAST_N_GETMIN(FloatVec3Property, theProperty, parser);
     CAST_N_GETMIN(FloatVec4Property, theProperty, parser);
-    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type");
+    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type: " << theProperty->getClassIdentifier());
     Py_RETURN_NONE;
 }
 
