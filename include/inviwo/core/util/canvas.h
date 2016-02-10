@@ -91,10 +91,6 @@ protected:
     
     bool touchEnabled();
 
-    static std::unique_ptr<Mesh> screenAlignedRect_;
-
-    bool initialized_;
-    bool shared_;
     uvec2 screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
     PickingContainer pickingContainer_;

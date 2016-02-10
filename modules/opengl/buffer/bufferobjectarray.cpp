@@ -94,22 +94,22 @@ void BufferObjectArray::bind() const { glBindVertexArray(id_); }
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
-    if (bo)
-        pointToObject(bo, location);
-    else
-        LogError("Error: No valid BufferObject");
-
+    if (bo) pointToObject(bo, location);
+    else LogError("Error: No valid BufferObject");
     attachedBuffers_.at(location) = bo;
 }
 
 void BufferObjectArray::pointToObject(const BufferObject* bo, GLuint location) {
+    LGL_ERROR;
     if (location < attachedBuffers_.size()) {
         glEnableVertexAttribArray(location);
         bo->bind();
         glVertexAttribPointer(location, bo->getGLFormat().channels, bo->getGLFormat().type,
                               GL_FALSE, 0, (void*)nullptr);
-    } else
+    } else {
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");
+    }
+    LGL_ERROR;
 }
 
 const BufferObject* BufferObjectArray::getBufferObject(size_t idx) const {

@@ -44,33 +44,11 @@
 
 namespace inviwo {
 
-std::unique_ptr<Mesh> Canvas::screenAlignedRect_{[]() {
-    auto verticesBuffer =
-        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-    auto texCoordsBuffer =
-        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
-
-    auto mesh = util::make_unique<Mesh>();
-    mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    mesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
-
-    return mesh;
-}()};
-
 Canvas::Canvas(uvec2 dimensions)
-    : initialized_(false)
-    , shared_(true)
-    , screenDimensions_(dimensions)
+    : screenDimensions_(dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
-    , ownerWidget_(nullptr) {
-
-    if (!screenAlignedRect_) {
-        shared_ = false;
-    }
-}
+    , ownerWidget_(nullptr) {}
 
 Canvas::~Canvas() {
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {

@@ -39,8 +39,6 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
     qtGLSharedCanvas_ = util::make_unique<CanvasQt>();
-
-    qtGLSharedCanvas_->initializeSquare();
     qtGLSharedCanvas_->defaultGLState();
     RenderContext::getPtr()->setDefaultRenderContext(qtGLSharedCanvas_.get());
 

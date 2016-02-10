@@ -48,8 +48,6 @@ public:
     CanvasGL(uvec2 dimensions);
     virtual ~CanvasGL() = default;
 
-    virtual void initializeSquare();
-
     virtual void activate() override;
     static void defaultGLState();
 
@@ -60,7 +58,6 @@ public:
     virtual void update() override;
 
     static void attachImagePlanRect(BufferObjectArray*);
-
     static void singleDrawImagePlaneRect();
     static void multiDrawImagePlaneRect(int instances);
 
@@ -111,16 +108,16 @@ protected:
     const ImageGL* imageGL_;
     
 private:
+    static const MeshGL* square();
+
     /**
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
      * to avoid this we have this ready flag to check that the 
      * frame buffer is complete.
      */
-    bool ready_ = false;
     bool ready();
-
-    static const MeshGL* screenAlignedRectGL_;
+    bool ready_ = false;
 
     LayerType layerType_;
     std::unique_ptr<Shader> shader_;

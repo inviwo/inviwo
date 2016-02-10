@@ -45,8 +45,6 @@
 
 namespace inviwo {
 
-const MeshGL* CanvasGL::screenAlignedRectGL_ = nullptr;
-
 CanvasGL::CanvasGL(uvec2 dimensions)
     : Canvas(dimensions)
     , imageGL_(nullptr)
@@ -56,15 +54,6 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , noiseShader_(nullptr)
     , channels_(0)
     , previousRenderedLayerIdx_(0) {}
-
-void CanvasGL::initializeSquare() {
-    if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
-
-    if (screenAlignedRect_) {
-        screenAlignedRectGL_ = screenAlignedRect_->getRepresentation<MeshGL>();
-        LGL_ERROR;
-    }
-}
 
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
@@ -116,10 +105,10 @@ void CanvasGL::attachImagePlanRect(BufferObjectArray* arrayObject) {
     if (arrayObject) {
         arrayObject->bind();
         arrayObject->attachBufferObject(
-            screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
+            square()->getBufferGL(0)->getBufferObject().get(),
             static_cast<GLuint>(BufferType::PositionAttrib));
         arrayObject->attachBufferObject(
-            screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
+            square()->getBufferGL(1)->getBufferObject().get(),
             static_cast<GLuint>(BufferType::TexcoordAttrib));
         arrayObject->unbind();
     }
@@ -146,6 +135,28 @@ void CanvasGL::renderLayer(size_t idx) {
 }
 
 
+const MeshGL* CanvasGL::square() {
+    LGL_ERROR;
+    static std::unique_ptr<Mesh> mesh{ []() {
+        auto verticesBuffer =
+            util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+        auto texCoordsBuffer =
+            util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+        auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
+
+        auto mesh = util::make_unique<Mesh>();
+        mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+        mesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+        mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+
+        return mesh;
+    }() };
+    LGL_ERROR;
+    const static MeshGL* square{mesh->getRepresentation<MeshGL>()};
+    LGL_ERROR;
+    return square;
+}
+
 bool CanvasGL::ready() {
     if (ready_) {
         return true;
@@ -171,10 +182,10 @@ bool CanvasGL::ready() {
 
 void CanvasGL::renderNoise() {
     if (!ready()) return;
-    
+    LGL_ERROR;
     activate();
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
-    
+    LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
     drawRect();
@@ -186,7 +197,7 @@ void CanvasGL::renderNoise() {
 
 void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
-    
+    LGL_ERROR;
     activate();
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -203,14 +214,16 @@ void CanvasGL::renderTexture(int unitNumber) {
 }
 
 void CanvasGL::drawRect() {
+    LGL_ERROR;
     BufferObjectArray rectArray;
     rectArray.bind();
-    rectArray.attachBufferObject(screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
+    rectArray.attachBufferObject(square()->getBufferGL(0)->getBufferObject().get(),
                                    static_cast<GLuint>(BufferType::PositionAttrib));
-    rectArray.attachBufferObject(screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
+    rectArray.attachBufferObject(square()->getBufferGL(1)->getBufferObject().get(),
                                    static_cast<GLuint>(BufferType::TexcoordAttrib));
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     rectArray.unbind();
+    LGL_ERROR;
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {
@@ -271,9 +284,9 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
     }
 }
 
-void CanvasGL::enableDrawImagePlaneRect() { screenAlignedRectGL_->enable(); }
+void CanvasGL::enableDrawImagePlaneRect() { square()->enable(); }
 
-void CanvasGL::disableDrawImagePlaneRect() { screenAlignedRectGL_->disable(); }
+void CanvasGL::disableDrawImagePlaneRect() { square()->disable(); }
 
 void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     // Clear internal state
