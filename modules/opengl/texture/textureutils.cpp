@@ -339,11 +339,13 @@ const MeshGL* imagePlaneRect() {
 }
 
 void singleDrawImagePlaneRect() {
+    LGL_ERROR;
     imagePlaneRect()->enable();
     glDepthFunc(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     imagePlaneRect()->disable();
     glDepthFunc(GL_LESS);
+    LGL_ERROR;
 }
 
 void multiDrawImagePlaneRect(int instances) {

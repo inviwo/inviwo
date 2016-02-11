@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHGL_H
@@ -34,40 +34,61 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 
+#include <unordered_map>
+
 namespace inviwo {
 
 class BufferGL;
 class BufferObjectArray;
-
+/**
+ * This class encapsulates a BufferObjectArray (BOA) which is wrapping
+ * an OpenGL "VertexArrayObject" We need to keep one BufferObjectArray 
+ * per context since they are OpenGL __Container Objects__ and
+ * can't be shared between contexts. Store them in a map with the 
+ * context id as key and a pair of a dirty flag and the actual BOA. 
+ * The dirty flag is needed since have to keep track on weather we need
+ * to reattach the buffers. We have to do this lazily in enable instead 
+ * of in update. Since update will usually only be called in one
+ * context and maybe not the context that we will use when we enable.
+ */
 class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
-
 public:
+    using ContextId = void*;
+
     MeshGL();
     MeshGL(const MeshGL& rhs);
     MeshGL& operator=(const MeshGL& that);
     virtual MeshGL* clone() const override;
-  
+
     virtual ~MeshGL();
 
     void enable() const;
     void disable() const;
 
-    const BufferGL* getBufferGL(size_t idx=0) const;
+    const BufferGL* getBufferGL(size_t idx = 0) const;
 
     virtual Mesh* getOwner() override;
     virtual const Mesh* getOwner() const override;
-
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool editable) override;
 
 private:
-    std::vector<const BufferGL*> attributesGL_;
-    std::unique_ptr<BufferObjectArray> attributesArray_;
+    /**
+     * Find the BOA for the current context. 	
+     */ 
+    std::pair<bool, std::unique_ptr<BufferObjectArray>>& getArray() const;
+    /**
+     *	To the actual attach of the Buffers to the BOA. 
+     */
+    void attachAllBuffers(BufferObjectArray* array) const;
 
+    std::vector<std::pair<BufferType, const BufferGL*>> bufferGLs_;
+    mutable std::unordered_map<ContextId, std::pair<bool, std::unique_ptr<BufferObjectArray>>>
+        bufferArrays_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESHGL_H
+#endif  // IVW_MESHGL_H

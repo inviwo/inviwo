@@ -69,7 +69,6 @@ public:
     void bind() const;
 
     void upload(const void* data, GLsizeiptr sizeInBytes);
-
     void download(void* data) const;
 
     void enable() const;

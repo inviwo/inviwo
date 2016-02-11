@@ -49,7 +49,7 @@ public:
     void bind() const;
     void unbind() const;
 
-    void clear();  // Make sure the buffer is bound before calling clear.
+    void clear(); // Make sure the buffer is bound before calling clear.
 
     // Attach buffer object to specific location
     void attachBufferObject(const BufferObject*, GLuint);

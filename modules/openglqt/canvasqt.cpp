@@ -39,6 +39,7 @@
 #include <QEvent>
 #include <QGestureEvent>
 #include <QThread>
+#include <QOpenGLContext>
 #include <warn/pop>
 
 namespace inviwo {
@@ -112,6 +113,10 @@ void CanvasQt::paintGL() {
 }
 
 CanvasQt* CanvasQt::getSharedCanvas() { return sharedCanvas_; }
+
+void* CanvasQt::currentContext() const {
+    return static_cast<void*>(QOpenGLContext::currentContext());
+}
 
 void CanvasQt::resize(uvec2 size) {
     QGLWidget::resize(size.x, size.y);

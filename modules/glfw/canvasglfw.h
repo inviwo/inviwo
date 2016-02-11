@@ -75,6 +75,8 @@ public:
     
     virtual std::unique_ptr<Canvas> create() override;
 
+    virtual void* currentContext() const override;
+
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();

@@ -76,7 +76,10 @@ BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     return *this;
 }
 
-BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
+BufferObjectArray::~BufferObjectArray() { 
+    glDeleteVertexArrays(1, &id_); 
+    LGL_ERROR;
+}
 
 GLuint BufferObjectArray::getId() const { return id_; }
 

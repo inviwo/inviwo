@@ -72,9 +72,10 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
     static CanvasQt* getSharedCanvas();
 
+    virtual void* currentContext() const override;
+
 private:
     void touchFallback(QTouchEvent*);
-
 
     static QGLWidget* sharedGLContext_; //For rendering-context sharing
 

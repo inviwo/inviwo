@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -34,17 +34,9 @@
 
 namespace inviwo {
 
-MeshGL::MeshGL()
-    : MeshRepresentation()
-    , attributesArray_(new BufferObjectArray()) {
-}
+MeshGL::MeshGL() : MeshRepresentation() {}
 
-MeshGL::MeshGL(const MeshGL& rhs)
-    : MeshRepresentation(rhs)
-    , attributesArray_(new BufferObjectArray()){
-
-    update(true);
-}
+MeshGL::MeshGL(const MeshGL& rhs) : MeshRepresentation(rhs) { update(true); }
 
 MeshGL& MeshGL::operator=(const MeshGL& that) {
     if (this != &that) {
@@ -54,59 +46,69 @@ MeshGL& MeshGL::operator=(const MeshGL& that) {
     return *this;
 }
 
-MeshGL::~MeshGL(){}
+MeshGL::~MeshGL() {}
 
-MeshGL* MeshGL::clone() const {
-    return new MeshGL(*this);
+MeshGL* MeshGL::clone() const { return new MeshGL(*this); }
+
+void MeshGL::enable() const { 
+    auto& elem = getArray();
+    elem.second->bind(); 
+    if (elem.first) { // our buffers are dirty attach them.
+        attachAllBuffers(elem.second.get());
+        elem.first = false;
+    }
 }
 
-void MeshGL::enable() const {
-    attributesArray_->bind();
-}
+void MeshGL::disable() const { getArray().second->unbind(); }
 
-void MeshGL::disable() const {
-    attributesArray_->unbind();
-}
+const BufferGL* MeshGL::getBufferGL(size_t idx) const { return bufferGLs_[idx].second; }
 
-const BufferGL* MeshGL::getBufferGL(size_t idx) const{
-    return attributesGL_[idx];
-}
-
+// save all buffers and to lazy attachment in enable.
 void MeshGL::update(bool editable) {
-    attributesGL_.clear();
+    bufferGLs_.clear();
     Mesh* owner = this->getOwner();
-    attributesArray_->bind();  // Have to call bind before clear.
-    attributesArray_->clear();
+    
+    for(auto& elem : bufferArrays_) elem.second.first = true;    
+
     if (editable) {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
-            attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
-                                                 static_cast<GLuint>(buf.first));
+            bufferGLs_.push_back(std::make_pair(buf.first, bufGL));
         }
     } else {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getRepresentation<BufferGL>();
-            attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
-                                                 static_cast<GLuint>(buf.first));
+            bufferGLs_.push_back(std::make_pair(buf.first, bufGL));
         }
     }
-    attributesArray_->unbind();
 }
 
-Mesh* MeshGL::getOwner() {
-    return static_cast<Mesh*>(DataRepresentation::getOwner());
+// make sure we call bind first...
+void MeshGL::attachAllBuffers(BufferObjectArray* array) const {
+    array->clear();  // Have to call bind before clear.
+    for (auto& elem : bufferGLs_) {
+        array->attachBufferObject(elem.second->getBufferObject().get(),
+                                  static_cast<GLuint>(elem.first));
+    }
 }
+
+std::pair<bool, std::unique_ptr<BufferObjectArray>>& MeshGL::getArray() const {
+    ContextId id = RenderContext::getPtr()->currentContext();
+    auto it = bufferArrays_.find(id);
+    if (it != bufferArrays_.end()) {
+        return it->second;
+    } else {
+        return bufferArrays_.emplace(std::make_pair(id, 
+            std::make_pair(true, util::make_unique<BufferObjectArray>()))).first->second;
+    }
+}
+
+Mesh* MeshGL::getOwner() { return static_cast<Mesh*>(DataRepresentation::getOwner()); }
 
 const Mesh* MeshGL::getOwner() const {
     return static_cast<const Mesh*>(DataRepresentation::getOwner());
 }
 
+std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }
 
-std::type_index MeshGL::getTypeIndex() const {
-    return std::type_index(typeid(MeshGL));
-}
-
-} // namespace
-
+}  // namespace

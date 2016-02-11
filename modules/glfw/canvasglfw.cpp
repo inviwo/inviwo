@@ -249,4 +249,8 @@ std::unique_ptr<Canvas> CanvasGLFW::create() {
     return res.get();
 }
 
+void* CanvasGLFW::currentContext() const {
+    return static_cast<void*>(glfwGetCurrentContext());
+}
+
 }  // namespace
