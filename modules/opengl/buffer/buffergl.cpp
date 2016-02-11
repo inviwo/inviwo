@@ -75,11 +75,9 @@ void BufferGL::download(void* data) const { buffer_->download(data); }
 void BufferGL::enable() const {
     if (!bufferArray_) {
         bufferArray_ = util::make_unique<BufferObjectArray>();
-        bufferArray_->bind();
         bufferArray_->attachBufferObject(buffer_.get(), 0);
-    } else {
-        bufferArray_->bind();
     }
+    bufferArray_->bind();
 }
 
 void BufferGL::disable() const {

@@ -46,60 +46,33 @@ MeshGL& MeshGL::operator=(const MeshGL& that) {
     return *this;
 }
 
-MeshGL::~MeshGL() {}
-
 MeshGL* MeshGL::clone() const { return new MeshGL(*this); }
 
-void MeshGL::enable() const { 
-    auto& elem = getArray();
-    elem.second->bind(); 
-    if (elem.first) { // our buffers are dirty attach them.
-        attachAllBuffers(elem.second.get());
-        elem.first = false;
-    }
-}
+void MeshGL::enable() const { bufferArray_.bind(); }
 
-void MeshGL::disable() const { getArray().second->unbind(); }
+void MeshGL::disable() const { bufferArray_.unbind(); }
 
-const BufferGL* MeshGL::getBufferGL(size_t idx) const { return bufferGLs_[idx].second; }
+const BufferGL* MeshGL::getBufferGL(size_t idx) const { return bufferGLs_[idx]; }
 
 // save all buffers and to lazy attachment in enable.
 void MeshGL::update(bool editable) {
     bufferGLs_.clear();
     Mesh* owner = this->getOwner();
-    
-    for(auto& elem : bufferArrays_) elem.second.first = true;    
 
     if (editable) {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
-            bufferGLs_.push_back(std::make_pair(buf.first, bufGL));
+            bufferGLs_.push_back(bufGL);
+            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
+                                            static_cast<GLuint>(buf.first));
         }
     } else {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getRepresentation<BufferGL>();
-            bufferGLs_.push_back(std::make_pair(buf.first, bufGL));
+            bufferGLs_.push_back(bufGL);
+            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
+                                            static_cast<GLuint>(buf.first));
         }
-    }
-}
-
-// make sure we call bind first...
-void MeshGL::attachAllBuffers(BufferObjectArray* array) const {
-    array->clear();  // Have to call bind before clear.
-    for (auto& elem : bufferGLs_) {
-        array->attachBufferObject(elem.second->getBufferObject().get(),
-                                  static_cast<GLuint>(elem.first));
-    }
-}
-
-std::pair<bool, std::unique_ptr<BufferObjectArray>>& MeshGL::getArray() const {
-    ContextId id = RenderContext::getPtr()->currentContext();
-    auto it = bufferArrays_.find(id);
-    if (it != bufferArrays_.end()) {
-        return it->second;
-    } else {
-        return bufferArrays_.emplace(std::make_pair(id, 
-            std::make_pair(true, util::make_unique<BufferObjectArray>()))).first->second;
     }
 }
 

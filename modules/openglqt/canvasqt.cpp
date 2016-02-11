@@ -78,6 +78,10 @@ CanvasQt::CanvasQt(QGLWidget* parent, uvec2 dim)
     grabGesture(Qt::PinchGesture);
 }
 
+CanvasQt::~CanvasQt() {
+    context()->makeCurrent();
+}
+
 void CanvasQt::defineDefaultContextFormat() {
     if (!sharedGLContext_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();

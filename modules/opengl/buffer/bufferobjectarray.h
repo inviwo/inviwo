@@ -54,15 +54,13 @@ public:
     // Attach buffer object to specific location
     void attachBufferObject(const BufferObject*, GLuint);
 
-    const BufferObject* getBufferObject(size_t idx = 0) const;
+    const BufferObject* getBufferObject(size_t location = 0) const;
     
     size_t maxSize() const;
 
 private:
-    void pointToObject(const BufferObject*, GLuint);
-
-private:
-    GLuint id_;
+    mutable bool reattach_ = true;
+    mutable GLuint id_ = 0;
     std::vector<const BufferObject*> attachedBuffers_;
 };
 

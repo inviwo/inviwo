@@ -40,13 +40,14 @@ namespace inviwo {
 class ImageGL;
 class LayerRAM;
 class MeshGL;
+class Mesh;
 class BufferObjectArray;
 class ProcessorWidget;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
     CanvasGL(uvec2 dimensions);
-    virtual ~CanvasGL() = default;
+    virtual ~CanvasGL();
 
     static void defaultGLState();
 
@@ -78,6 +79,9 @@ public:
 protected:
     void renderLayer(size_t idx = 0);
     void renderNoise();
+
+    void drawSquare();
+
     void renderTexture(int);
 
     void checkChannels(std::size_t);
@@ -98,6 +102,8 @@ private:
     LayerType layerType_;
     std::unique_ptr<Shader> shader_;
     std::unique_ptr<Shader> noiseShader_;
+    std::unique_ptr<Mesh> square_;
+    const MeshGL* squareGL_;
     size_t channels_;
     size_t previousRenderedLayerIdx_;
 };

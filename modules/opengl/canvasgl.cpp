@@ -38,6 +38,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <modules/opengl/geometry/meshgl.h>
 
 namespace inviwo {
 
@@ -50,6 +51,8 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , noiseShader_(nullptr)
     , channels_(0)
     , previousRenderedLayerIdx_(0) {}
+
+CanvasGL::~CanvasGL() {}
 
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
@@ -113,6 +116,7 @@ bool CanvasGL::ready() {
     if (ready_) {
         return true;
     } else {
+        
         switch (glCheckFramebufferStatus(GL_FRAMEBUFFER)) {
             case GL_FRAMEBUFFER_COMPLETE: {
                 ready_ = true;
@@ -123,7 +127,10 @@ bool CanvasGL::ready() {
                 LGL_ERROR;
                 noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
                 LGL_ERROR;
-
+                square_ = utilgl::planeRect();
+                activate();
+                squareGL_ = square_->getRepresentation<MeshGL>();
+                
                 return true;
             }
             default:
@@ -141,7 +148,9 @@ void CanvasGL::renderNoise() {
     LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
-    utilgl::singleDrawImagePlaneRect();
+
+    drawSquare();
+
     noiseShader_->deactivate();
     glSwapBuffers();
     activateDefaultRenderContext();
@@ -159,12 +168,20 @@ void CanvasGL::renderTexture(int unitNumber) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader_->activate();
     shader_->setUniform("tex_", unitNumber);
-    utilgl::singleDrawImagePlaneRect();
+    drawSquare();
     shader_->deactivate();
     glDisable(GL_BLEND);
     glSwapBuffers();
     activateDefaultRenderContext();
     LGL_ERROR;
+}
+
+void CanvasGL::drawSquare() {
+    squareGL_->enable();
+    glDepthFunc(GL_ALWAYS);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    squareGL_->disable();
+    glDepthFunc(GL_LESS);
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {
