@@ -102,8 +102,14 @@ private:
     LayerType layerType_;
     std::unique_ptr<Shader> shader_;
     std::unique_ptr<Shader> noiseShader_;
+
     std::unique_ptr<Mesh> square_;
-    const MeshGL* squareGL_;
+    /**
+     * Each canvas must have its own MeshGL
+     * since QT uses a context per canvas
+     * and the vertex array in MeshGL cannot be shared.
+     */
+    const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
     size_t channels_;
     size_t previousRenderedLayerIdx_;
 };

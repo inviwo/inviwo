@@ -114,7 +114,12 @@ bool CanvasGL::ready() {
     if (ready_) {
         return true;
     } else {
-        
+        // Will only happen once 
+
+        // Activate OpenGL context for this canvas
+        // in order to set states and 
+        // since VAO in MeshGL cannot be shared
+        activate();
         switch (glCheckFramebufferStatus(GL_FRAMEBUFFER)) {
             case GL_FRAMEBUFFER_COMPLETE: {
                 ready_ = true;
@@ -126,7 +131,7 @@ bool CanvasGL::ready() {
                 noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
                 LGL_ERROR;
                 square_ = utilgl::planeRect();
-                activate();
+
                 squareGL_ = square_->getRepresentation<MeshGL>();
                 
                 return true;
