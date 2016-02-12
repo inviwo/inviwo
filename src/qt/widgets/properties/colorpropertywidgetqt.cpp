@@ -83,10 +83,10 @@ void ColorPropertyWidgetQt::generateWidget() {
 void ColorPropertyWidgetQt::createColorDialog() {
     if (!colorDialog_) {
         colorDialog_ = new QColorDialog(this);
-#ifdef __APPLE_
+#ifdef __APPLE__
         // hide the dialog, due to some Mac issues
         colorDialog_->hide(); // OSX Bug workaround
-#endif // MAC_OS
+#endif // __APPLE__
 
         colorDialog_->setAttribute(Qt::WA_DeleteOnClose, false);
         colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
@@ -206,9 +206,9 @@ void ColorPropertyWidgetQt::setPropertyValue() {
 void ColorPropertyWidgetQt::openColorDialog() {
     createColorDialog();
 
-#ifdef __APPLE_
+#ifdef __APPLE__
     colorDialog_->hide(); // OSX Bug workaround
-#endif // MAC_OS
+#endif // __APPLE__
     updateFromProperty();
     colorDialog_->show();
 }
