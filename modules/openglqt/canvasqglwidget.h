@@ -50,7 +50,6 @@ namespace inviwo {
 /**
  * \class CanvasQGLWidget
  */
-
 class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasGL {
     friend class CanvasProcessorWidgetQt;
 

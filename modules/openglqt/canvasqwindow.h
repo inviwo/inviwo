@@ -66,6 +66,9 @@ public:
     void repaint();
 
     virtual void resize(uvec2 size) override;
+    
+    QOpenGLContext* context() const;
+    QWindow* parentWidget() const;
 
 protected:
     void initializeGL();

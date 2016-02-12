@@ -32,9 +32,7 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/canvasgl.h>
 #include <modules/openglqt/hiddencanvasqt.h>
-
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
@@ -42,20 +40,19 @@
 #include <inviwo/qt/widgets/eventconverterqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 
+#include <modules/opengl/canvasgl.h>
 #include <modules/openglqt/canvasqglwidget.h>
-
-#define QT_NO_OPENGL_ES_2
-#define GLEXT_64_TYPES_DEFINED
+//#include <modules/openglqt/canvasqwindow.h>
+//#include <modules/openglqt/canvasqopenglwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGLWidget>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
 #include <QGestureEvent>
+#include <QTouchEvent>
 #include <QThread>
-#include <QOpenGLContext>
 #include <warn/pop>
 
 namespace inviwo {
@@ -101,6 +98,8 @@ private:
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
+//using CanvasQt = CanvasQtBase<CanvasQWindow>;
+//using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
 template <typename T>
 CanvasQtBase<T>::CanvasQtBase(uvec2 dim) : T(nullptr, dim) {}
@@ -127,7 +126,7 @@ bool CanvasQtBase<T>::event(QEvent* e) {
     switch (e->type()) {
         case QEvent::KeyPress: {
             auto keyEvent = static_cast<QKeyEvent*>(e);
-            QWidget* parent = this->parentWidget();
+            auto parent = this->parentWidget();
             if (parent && keyEvent->key() == Qt::Key_F &&
                 keyEvent->modifiers() == Qt::ShiftModifier) {
                 if (parent->windowState() == Qt::WindowFullScreen) {
@@ -397,7 +396,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
 
-    T::touchEvent(&touchEvent);
+    Canvas::touchEvent(&touchEvent);
     return true;
 }
 
@@ -459,7 +458,7 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
     GestureEvent ge(deltaPos, 0.0, GestureEvent::PAN, EventConverterQt::getGestureState(gesture),
                     lastNumFingers_, screenPositionNormalized_,  this->getScreenDimensions());
 
-    T::gestureEvent(&ge);
+    Canvas::gestureEvent(&ge);
     return true;
 }
 
@@ -484,7 +483,7 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
                     EventConverterQt::getGestureState(gesture), lastNumFingers_,
                     screenPositionNormalized_, this->getScreenDimensions());
 
-    T::gestureEvent(&ge);
+    Canvas::gestureEvent(&ge);
     return true;
 }
 

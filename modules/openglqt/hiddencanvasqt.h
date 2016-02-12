@@ -56,9 +56,6 @@ public:
     virtual ~HiddenCanvasQt() = default;
 
 protected:
-    virtual void glInit() override{};
-    virtual void glDraw() override{};
-
     virtual void initializeGL() override{};
     virtual void resizeGL(int width, int height) override{};
     virtual void paintGL() override{};

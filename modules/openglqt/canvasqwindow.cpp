@@ -126,6 +126,10 @@ void CanvasQWindow::paintGL() {
     CanvasGL::update();
 }
 
+QOpenGLContext* CanvasQWindow::context() const { return thisGLContext_; }
+QWindow* CanvasQWindow::parentWidget() const { return parent(); };
+
+
 void CanvasQWindow::exposeEvent(QExposeEvent*) {
     if (isExposed()) paintGL();
 }

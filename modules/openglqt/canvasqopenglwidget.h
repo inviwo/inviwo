@@ -66,8 +66,8 @@ public:
     virtual void resize(uvec2 size) override;
 
 protected:
-    void initializeGL() override;
-    void paintGL() override;
+    virtual void initializeGL() override;
+    virtual void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
     static CanvasQOpenGLWidget* sharedCanvas_;
