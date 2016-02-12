@@ -73,11 +73,6 @@ void RenderContext::clearContext(const std::thread::id& id) {
     contextMap_.erase(id);
 }
 
-void* RenderContext::currentContext() const {
-    if (defaultContext_) return defaultContext_->currentContext();
-    else return nullptr;
-}
-
 void RenderContext::clearLocalContexts() {
     std::unique_lock<std::mutex> lock(mutex_);
     contextMap_.clear();

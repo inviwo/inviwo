@@ -52,8 +52,6 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , channels_(0)
     , previousRenderedLayerIdx_(0) {}
 
-CanvasGL::~CanvasGL() {}
-
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
 

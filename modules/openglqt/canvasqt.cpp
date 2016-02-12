@@ -31,6 +31,7 @@
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,10 +79,6 @@ CanvasQt::CanvasQt(QGLWidget* parent, uvec2 dim)
     grabGesture(Qt::PinchGesture);
 }
 
-CanvasQt::~CanvasQt() {
-    context()->makeCurrent();
-}
-
 void CanvasQt::defineDefaultContextFormat() {
     if (!sharedGLContext_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
@@ -117,10 +114,6 @@ void CanvasQt::paintGL() {
 }
 
 CanvasQt* CanvasQt::getSharedCanvas() { return sharedCanvas_; }
-
-void* CanvasQt::currentContext() const {
-    return static_cast<void*>(QOpenGLContext::currentContext());
-}
 
 void CanvasQt::resize(uvec2 size) {
     QGLWidget::resize(size.x, size.y);

@@ -50,8 +50,6 @@ class GestureEvent;
 
 class IVW_CORE_API Canvas {
 public:
-    friend RenderContext;
-
     Canvas(uvec2 dimensions);
     virtual ~Canvas();
 
@@ -90,9 +88,6 @@ protected:
     void touchEvent(TouchEvent* e);
     
     bool touchEnabled();
-
-
-    virtual void* currentContext() const = 0;
 
     uvec2 screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference

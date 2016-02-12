@@ -34,20 +34,20 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
 class ImageGL;
 class LayerRAM;
 class MeshGL;
-class Mesh;
 class BufferObjectArray;
 class ProcessorWidget;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
     CanvasGL(uvec2 dimensions);
-    virtual ~CanvasGL();
+    virtual ~CanvasGL() = default;
 
     static void defaultGLState();
 

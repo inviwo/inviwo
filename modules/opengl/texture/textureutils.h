@@ -46,6 +46,7 @@ namespace inviwo {
 class BufferObjectArray;
 class Shader;
 class MeshGL;
+class Mesh;
 
 namespace utilgl {
 

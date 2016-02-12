@@ -50,7 +50,7 @@ class IVW_MODULE_OPENGLQT_API CanvasQt : public QGLWidget, public CanvasGL {
 
 public:
     explicit CanvasQt(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
-    ~CanvasQt();
+    ~CanvasQt() = default;
 
     static void defineDefaultContextFormat();
 
@@ -71,8 +71,6 @@ protected:
 
     virtual void resizeEvent(QResizeEvent* event) override;
     static CanvasQt* getSharedCanvas();
-
-    virtual void* currentContext() const override;
 
 private:
     void touchFallback(QTouchEvent*);

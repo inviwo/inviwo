@@ -36,7 +36,6 @@ HiddenCanvasQt::HiddenCanvasQt(QGLWidget *parent /*= nullptr*/, uvec2 dim /*= uv
 
     setVisible(false);
     doneCurrent();
-
 }
 
 HiddenCanvasQt::~HiddenCanvasQt() {}
