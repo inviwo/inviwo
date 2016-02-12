@@ -65,6 +65,14 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true,
                                 InvalidationLevel::Valid)
+
+
+
+    , mouseDblClick_("mouseDblClick", "Double Click",
+        new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY_AND_NONE, InteractionEvent::MODIFIER_NONE,
+            MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
+        new Action(this, &CameraProperty::dblClick))
+
     , camera_()
     , inport_(inport)
     , data_(nullptr)
@@ -90,6 +98,7 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
+    addProperty(mouseDblClick_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -109,10 +118,13 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
+    , mouseDblClick_(rhs.mouseDblClick_)
     , camera_()
     , inport_(rhs.inport_)
     , data_(nullptr)
-    , prevDataToWorldMatrix_(0) {
+    , prevDataToWorldMatrix_(0) 
+
+{
     // Make sure that the Camera) is
     // in sync with the property values.
     addProperty(cameraType_);
@@ -132,6 +144,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
+    addProperty(mouseDblClick_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -283,6 +296,9 @@ void CameraProperty::invokeEvent(Event* event) {
             setAspectRatio(static_cast<float>(width / height));
         }
     }
+    else {
+        PropertyOwner::invokeEvent(event);
+    }
 }
 
 void CameraProperty::setInport(Inport* inport) {
@@ -381,4 +397,27 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->inverseProjectionMatrix();
 }
 
-}  // namespace
+void CameraProperty::dblClick(Event *event)
+{
+
+    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+        vec4 viewPos;
+        viewPos.xy = mouseEvent->posNormalized();
+        viewPos.y = 1 - viewPos.y;
+        viewPos.xy = viewPos.xy * vec2(2) - vec2(1);
+        
+        viewPos.z = mouseEvent->depth();// *2.0f - 1.0f;
+        viewPos.w = 1.0f;
+
+        auto point = (inverseViewMatrix()*inverseProjectionMatrix()) * viewPos;
+        auto newLookTo = point.xyz() / point.w;
+        
+        auto newLookFrom = lookFrom_.get() + (newLookTo - lookTo_.get());
+
+        setLookTo(newLookTo);
+        setLookFrom(newLookFrom);
+    }
+
+
+    event->markAsUsed();
+}}  // namespace
