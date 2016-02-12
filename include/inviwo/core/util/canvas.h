@@ -75,6 +75,7 @@ protected:
     void interactionEvent(Event* e);
 
     void mousePressEvent(MouseEvent* e);
+    void mouseDoubleClickEvent(MouseEvent *e);
     void mouseReleaseEvent(MouseEvent* e);
     void mouseMoveEvent(MouseEvent* e);
 

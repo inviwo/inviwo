@@ -84,6 +84,8 @@ void Canvas::interactionEvent(Event* event) {
 
 void Canvas::mousePressEvent(MouseEvent* e) { mouseButtonEvent(e); }
 
+void Canvas::mouseDoubleClickEvent(MouseEvent* e) { mouseButtonEvent(e); }
+
 void Canvas::mouseReleaseEvent(MouseEvent* e) { mouseButtonEvent(e); }
 
 void Canvas::mouseMoveEvent(MouseEvent* e) { mouseButtonEvent(e); }
