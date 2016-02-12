@@ -58,7 +58,7 @@ void RenderContext::activateLocalRenderContext() const {
         std::unique_lock<std::mutex> lock(mutex_);
         auto it = contextMap_.find(id);
         if (it == contextMap_.end()) {
-            auto canvas = defaultContext_->create();
+            auto canvas = defaultContext_->createHiddenCanvas();
             localContext = canvas.get();
             contextMap_[id] = std::move(canvas);
         } else {

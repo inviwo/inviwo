@@ -65,7 +65,7 @@ void CanvasProcessorWidgetQt::initialize() {
         canvas_ = sharedCanvas;
         hasSharedCanvas_ = true;
     } else {
-        canvas_ = new CanvasQt(nullptr, uvec2(dim.x, dim.y));
+        canvas_ = new CanvasQt(uvec2(dim.x, dim.y));
     }
 
     canvas_->setEventPropagator(nullptr);

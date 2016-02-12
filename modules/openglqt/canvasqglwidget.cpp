@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/openglqt/canvasqopenglwidget.h>
-#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/openglqt/canvasqglwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,86 +40,86 @@
 
 namespace inviwo {
 
-inline QSurfaceFormat GetQGLFormat() {
-    QSurfaceFormat sharedFormat = QSurfaceFormat();
-    sharedFormat.setProfile(QSurfaceFormat::CoreProfile);
+inline QGLFormat GetQGLFormat() {
+    QGLFormat sharedFormat = QGLFormat(QGL::Rgba | QGL::DoubleBuffer | QGL::AlphaChannel |
+                                       QGL::DepthBuffer | QGL::StencilBuffer);
+    sharedFormat.setProfile(QGLFormat::CoreProfile);
     sharedFormat.setVersion(10, 0);
     return sharedFormat;
 }
 
-QSurfaceFormat CanvasQOpenGLWidget::sharedFormat_ = GetQGLFormat();
-CanvasQOpenGLWidget* CanvasQOpenGLWidget::sharedCanvas_ = nullptr;
-QOpenGLWidget* CanvasQOpenGLWidget::sharedGLContext_ = nullptr;
+QGLFormat CanvasQGLWidget::sharedFormat_ = GetQGLFormat();
+CanvasQGLWidget* CanvasQGLWidget::sharedCanvas_ = nullptr;
+QGLWidget* CanvasQGLWidget::sharedGLContext_ = nullptr;
 
-CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, uvec2 dim)
-    : QOpenGLWidget(parent), CanvasGL(dim), swapBuffersAllowed_(false) {
-    setFormat(sharedFormat_);
-
-    if (sharedGLContext_) {
-        this->context()->setShareContext(sharedGLContext_->context());
+CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
+    : QGLWidget(sharedFormat_, parent, sharedGLContext_)
+    , CanvasGL(dim)
+    , swapBuffersAllowed_(false) {
+    // This is our default rendering context
+    // Initialized once. So "THE" first object of this class will
+    // not have any shared context (or widget)
+    // But Following objects, will share the context of initial object
+    if (!sharedGLContext_) {
+        sharedFormat_ = this->format();
+        sharedGLContext_ = this;
+        sharedCanvas_ = this;
+        QGLWidget::glInit();
     }
-    create();
 
+    setAutoBufferSwap(false);
     setFocusPolicy(Qt::StrongFocus);
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
-
-    QResizeEvent event(QSize(dim.x, dim.y), QSize(width(), height()));
-    QOpenGLWidget::resizeEvent(&event);
-    if (!sharedGLContext_) {
-        sharedFormat_ = format();
-        sharedGLContext_ = this;
-        sharedCanvas_ = this;
-    }
 }
 
-void CanvasQOpenGLWidget::defineDefaultContextFormat() {
+void CanvasQGLWidget::defineDefaultContextFormat() {
     if (!sharedGLContext_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
         if (preferProfile == "core")
-            sharedFormat_.setProfile(QSurfaceFormat::CoreProfile);
+            sharedFormat_.setProfile(QGLFormat::CoreProfile);
         else if (preferProfile == "compatibility")
-            sharedFormat_.setProfile(QSurfaceFormat::CompatibilityProfile);
+            sharedFormat_.setProfile(QGLFormat::CompatibilityProfile);
     }
 }
 
-void CanvasQOpenGLWidget::activate() { makeCurrent(); }
+void CanvasQGLWidget::activate() { context()->makeCurrent(); }
 
-void CanvasQOpenGLWidget::initializeGL() {
+void CanvasQGLWidget::initializeGL() {
     OpenGLCapabilities::initializeGLEW();
-    QOpenGLWidget::initializeGL();
+    QGLWidget::initializeGL();
     activate();
 }
 
-void CanvasQOpenGLWidget::glSwapBuffers() {
+void CanvasQGLWidget::glSwapBuffers() {
     if (swapBuffersAllowed_) {
         activate();
-        context()->swapBuffers(context()->surface());
+        QGLWidget::swapBuffers();
     }
 }
 
-void CanvasQOpenGLWidget::update() { CanvasGL::update(); }
+void CanvasQGLWidget::update() { CanvasGL::update(); }
 
-void CanvasQOpenGLWidget::repaint() {}
+void CanvasQGLWidget::repaint() { QGLWidget::updateGL(); }
 
-void CanvasQOpenGLWidget::paintGL() {
+void CanvasQGLWidget::paintGL() {
     swapBuffersAllowed_ = true;
     CanvasGL::update();
 }
 
-void CanvasQOpenGLWidget::resize(uvec2 size) {
-    QOpenGLWidget::resize(size.x, size.y);
+void CanvasQGLWidget::resize(uvec2 size) {
+    QGLWidget::resize(size.x, size.y);
     CanvasGL::resize(size);
 }
 
-void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
+void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) {
-        QOpenGLWidget::resizeEvent(event);
+        QGLWidget::resizeEvent(event);
         return;
     }
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
-    QOpenGLWidget::resizeEvent(event);
+    QGLWidget::resizeEvent(event);
 }
 
 }  // namespace

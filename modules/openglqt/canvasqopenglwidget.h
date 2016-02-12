@@ -32,9 +32,6 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
-#include <modules/openglqt/canvaseventmapper.h>
-#include <inviwo/qt/widgets/eventconverterqt.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/common/inviwo.h>
 
 #define QT_NO_OPENGL_ES_2
@@ -42,16 +39,11 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QInputEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QEvent>
-
-#include <QGestureEvent>
-#include <QPanGesture>
-#include <QPinchGesture>
 #include <QOpenGLWidget>
+#include <QSurfaceFormat>
 #include <warn/pop>
+
+class QResizeEvent;
 
 namespace inviwo {
 
@@ -59,6 +51,8 @@ class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public
     friend class CanvasProcessorWidgetQt;
 
 public:
+    using QtBase = QOpenGLWidget;
+
     explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
     ~CanvasQOpenGLWidget() = default;
 
@@ -71,23 +65,17 @@ public:
 
     virtual void resize(uvec2 size) override;
 
-    virtual std::unique_ptr<Canvas> create() override;
-
 protected:
     void initializeGL() override;
     void paintGL() override;
-
-    virtual bool event(QEvent *e) override;
-
     virtual void resizeEvent(QResizeEvent* event) override;
-    static CanvasQOpenGLWidget* getSharedCanvas();
+
+    static CanvasQOpenGLWidget* sharedCanvas_;
 
 private:
     static QOpenGLWidget* sharedGLContext_; //For rendering-context sharing
-    static CanvasQOpenGLWidget* sharedCanvas_;
     static QSurfaceFormat sharedFormat_;
     bool swapBuffersAllowed_;
-    CanvasEventMapper eventMapper_;
 };
 
 } // namespace

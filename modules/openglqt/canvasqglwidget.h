@@ -27,20 +27,63 @@
  *
  *********************************************************************************/
 
-#include "canvaseventmapper.h"
+#ifndef IVW_CANVASQGLWIDGET_H
+#define IVW_CANVASQGLWIDGET_H
+
+#include <modules/openglqt/openglqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/canvasgl.h>
+
+#define QT_NO_OPENGL_ES_2
+#define GLEXT_64_TYPES_DEFINED
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGLWidget>
+#include <QGLFormat>
+#include <warn/pop>
+
+class QResizeEvent;
 
 namespace inviwo {
 
-CanvasEventMapper::CanvasEventMapper()
-    : gestureMode_(false)
-    , lastType_(Qt::CustomGesture)
-    , lastNumFingers_(0)
-    , screenPositionNormalized_(vec2(0.f)) {}
+/**
+ * \class CanvasQGLWidget
+ */
 
+class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasGL {
+    friend class CanvasProcessorWidgetQt;
 
-int CanvasEventMapper::getLastNumFingers() const {
-    return lastNumFingers_;
-}
+public:
+    using QtBase = QGLWidget;
+
+    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
+    ~CanvasQGLWidget() = default;
+
+    static void defineDefaultContextFormat();
+
+    virtual void activate() override;
+    virtual void glSwapBuffers() override;
+    virtual void update() override;
+    void repaint();
+
+    virtual void resize(uvec2 size) override;
+
+protected:
+    void initializeGL() override;
+    void paintGL() override;
+    virtual void resizeEvent(QResizeEvent* event) override;
+
+    static CanvasQGLWidget* sharedCanvas_;
+
+private:
+    static QGLWidget* sharedGLContext_; //For rendering-context sharing
+    static QGLFormat sharedFormat_;
+    bool swapBuffersAllowed_;
+};
+
 
 } // namespace
+
+#endif // IVW_CANVASQGLWIDGET_H
 

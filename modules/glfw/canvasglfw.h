@@ -73,7 +73,7 @@ public:
 
     static void setAlwaysOnTopByDefault(bool);
     
-    virtual std::unique_ptr<Canvas> create() override;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
 
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);

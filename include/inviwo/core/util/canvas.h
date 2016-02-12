@@ -67,7 +67,7 @@ public:
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
     // used to create hidden canvases used for context in background threads.
-    virtual std::unique_ptr<Canvas> create() = 0;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
 
 protected:
     void activateDefaultRenderContext();

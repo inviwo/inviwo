@@ -35,15 +35,9 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QResizeEvent>
+#include <QExposeEvent>
 #include <QtGui/QOpenGLContext>
-#include <QThread>
-#include <QInputEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QEvent>
-#include <QGestureEvent>
-#include <QPanGesture>
-#include <QPinchGesture>
 #include <warn/pop>
 
 namespace inviwo {
@@ -136,26 +130,9 @@ void CanvasQWindow::exposeEvent(QExposeEvent*) {
     if (isExposed()) paintGL();
 }
 
-CanvasQWindow* CanvasQWindow::getSharedCanvas() {
-    return sharedCanvas_;
-}
-
 void CanvasQWindow::resize(uvec2 size) {
     QWindow::resize(size.x, size.y);
     CanvasGL::resize(size);
-}
-
-std::unique_ptr<Canvas> CanvasQWindow::create() {
-    auto thread = QThread::currentThread();
-    auto res = dispatchFront([&thread]() {
-        // auto canvas = util::make_unique<HiddenCanvasQWindow>();
-        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-        // canvas->context()->moveToThread(thread);
-        //#endif
-        // return canvas;
-        return nullptr;
-    });
-    return res.get();
 }
 
 void CanvasQWindow::resizeEvent(QResizeEvent* event) {
@@ -166,97 +143,5 @@ void CanvasQWindow::resizeEvent(QResizeEvent* event) {
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
     QWindow::resizeEvent(event);
 }
-
-#include <warn/push>
-#include <warn/ignore/switch-enum>
-
-bool CanvasQWindow::event(QEvent* e) {
-    switch (e->type()) {
-        case QEvent::KeyPress: {
-            auto keyEvent = static_cast<QKeyEvent*>(e);
-            auto parent = this->parent();
-            if (parent && keyEvent->key() == Qt::Key_F &&
-                keyEvent->modifiers() == Qt::ShiftModifier) {
-                if (parent->windowState() == Qt::WindowFullScreen) {
-                    parent->showNormal();
-                } else {
-                    parent->showFullScreen();
-                }
-            }
-
-            return eventMapper_.mapKeyPressEvent(keyEvent, [&](KeyboardEvent* ke) {
-                Canvas::keyPressEvent(ke);
-                if (ke->hasBeenUsed()) {
-                    e->accept();
-                } else {
-                    QWindow::keyPressEvent(static_cast<QKeyEvent*>(e));
-                }
-                return true;
-            });
-        }
-        case QEvent::KeyRelease: {
-            auto keyEvent = static_cast<QKeyEvent*>(e);
-            return eventMapper_.mapKeyPressEvent(keyEvent, [&](KeyboardEvent* ke) {
-                Canvas::keyPressEvent(ke);
-                if (ke->hasBeenUsed()) {
-                    e->accept();
-                } else {
-                    QWindow::keyReleaseEvent(keyEvent);
-                }
-                return true;
-            });
-        }
-        case QEvent::MouseButtonPress:
-            return eventMapper_.mapMousePressEvent(static_cast<QMouseEvent*>(e), this,
-                                                   [&](MouseEvent* me) {
-                                                       Canvas::mousePressEvent(me);
-                                                       return true;
-                                                   });
-        case QEvent::MouseButtonRelease:
-            return eventMapper_.mapMouseReleaseEvent(static_cast<QMouseEvent*>(e), this,
-                                                     [&](MouseEvent* me) {
-                                                         Canvas::mouseReleaseEvent(me);
-                                                         return true;
-                                                     });
-
-        case QEvent::MouseMove:
-            return eventMapper_.mapMouseMoveEvent(static_cast<QMouseEvent*>(e), this,
-                                                  [&](MouseEvent* me) {
-                                                      Canvas::mouseMoveEvent(me);
-                                                      return true;
-                                                  });
-
-        case QEvent::Wheel:
-            return eventMapper_.mapWheelEvent(static_cast<QWheelEvent*>(e), this,
-                                              [&](MouseEvent* me) {
-                                                  Canvas::mouseWheelEvent(me);
-                                                  return true;
-                                              });
-
-        case QEvent::TouchBegin:
-        case QEvent::TouchEnd:
-        case QEvent::TouchUpdate: {
-            return eventMapper_.mapTouchEvent(static_cast<QTouchEvent*>(e), this,
-                                              [&](TouchEvent* te) {
-                                                  Canvas::touchEvent(te);
-                                                  return true;
-                                              });
-        }
-        case QEvent::Gesture:
-            return eventMapper_.mapGestureEvent(static_cast<QGestureEvent*>(e), this,
-                                                [&](GestureEvent* ge) {
-                                                    Canvas::gestureEvent(ge);
-                                                    return true;
-                                                });
-        case QEvent::UpdateRequest:
-            paintGL();
-            return true;
-
-        default:
-            return QWindow::event(e);
-    }
-}
-
-#include <warn/pop>
 
 }  // namespace

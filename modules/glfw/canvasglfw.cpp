@@ -241,7 +241,7 @@ InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
     return static_cast<InteractionEvent::Modifier>(result);
 }
 
-std::unique_ptr<Canvas> CanvasGLFW::create() {
+std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront([&]() {
         auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
         return std::move(canvas);

@@ -13,8 +13,8 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvasqglwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvaseventmapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/hiddencanvasqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.h
@@ -27,10 +27,8 @@ set(HEADER_FILES
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvaseventmapper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvasqglwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/hiddencanvasqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.cpp

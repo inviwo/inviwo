@@ -33,6 +33,8 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <modules/openglqt/canvasqt.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -40,7 +42,6 @@
 
 namespace inviwo {
 
-class CanvasQt;
 class CanvasProcessor;
 
 class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
