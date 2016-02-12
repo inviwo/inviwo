@@ -96,6 +96,14 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The defalt bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
+    
+    connect(this, &QGraphicsScene::selectionChanged, [&](){
+        auto actions = mainwindow_->getActions();
+        auto enable = selectedItems().size()>0;
+        actions["Copy"]->setEnabled(enable);
+        actions["Cut"]->setEnabled(enable);
+        actions["Delete"]->setEnabled(enable);
+    });
 }
 
 NetworkEditor::~NetworkEditor() {}
@@ -754,9 +762,15 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addAction(deleteAction);
     toBeDeleted_.append(items(e->scenePos()));
   
+    
+    doingContextMenu_ = true;
     menu.exec(QCursor::pos());
     e->accept();
     toBeDeleted_.clear();
+    doingContextMenu_ = false;
+}
+bool NetworkEditor::doingContextMenu() const {
+    return doingContextMenu_;
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {

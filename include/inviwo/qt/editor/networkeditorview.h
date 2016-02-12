@@ -64,7 +64,7 @@ protected:
     virtual void focusOutEvent(QFocusEvent *) override;
 
 private:
-    void setupAction(std::string action, std::function<void()> fun);
+    void setupAction(std::string action, bool enable, std::function<void()> fun);
     void takeDownAction(std::string action);
 
     void zoom(double dz);

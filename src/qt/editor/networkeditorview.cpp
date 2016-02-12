@@ -121,11 +121,13 @@ void NetworkEditorView::fitNetwork() {
     }
 }
 
-void NetworkEditorView::setupAction(std::string tag, std::function<void()> fun) {
+void NetworkEditorView::setupAction(std::string tag, bool enable, std::function<void()> fun) {
     auto actions = mainwindow_->getActions();
     auto action = actions[tag];
-    connections_[tag] = connect(action, &QAction::triggered, fun);
-    action->setEnabled(true);
+    if(!connections_[tag]){
+        connections_[tag] = connect(action, &QAction::triggered, fun);
+    }
+    action->setEnabled(enable);
 }
 
 void NetworkEditorView::takeDownAction(std::string tag) {
@@ -136,7 +138,9 @@ void NetworkEditorView::takeDownAction(std::string tag) {
 }
 
 void NetworkEditorView::focusInEvent(QFocusEvent* e) {
-    setupAction("Cut", [&]() {
+    auto enable = networkEditor_->selectedItems().size() > 0;
+
+    setupAction("Cut", enable, [&]() {
         auto data = networkEditor_->cut();
 
         auto mimedata = util::make_unique<QMimeData>();
@@ -145,7 +149,7 @@ void NetworkEditorView::focusInEvent(QFocusEvent* e) {
         QApplication::clipboard()->setMimeData(mimedata.release());
     });
     
-    setupAction("Copy", [&]() {
+    setupAction("Copy", enable, [&]() {
         auto data = networkEditor_->copy();
 
         auto mimedata = util::make_unique<QMimeData>();
@@ -154,7 +158,7 @@ void NetworkEditorView::focusInEvent(QFocusEvent* e) {
         QApplication::clipboard()->setMimeData(mimedata.release());
     });
 
-    setupAction("Paste", [&]() {
+    setupAction("Paste", true, [&]() {
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
         if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
@@ -164,12 +168,14 @@ void NetworkEditorView::focusInEvent(QFocusEvent* e) {
         }
     });
 
-    setupAction("Delete", [&]() { networkEditor_->deleteSelection(); });
+    setupAction("Delete", enable, [&]() { networkEditor_->deleteSelection(); });
 
     QGraphicsView::focusInEvent(e);
 }
 
 void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
+    if(networkEditor_->doingContextMenu()) return;
+    
     setDragMode(QGraphicsView::RubberBandDrag);
     
     takeDownAction("Cut");

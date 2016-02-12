@@ -138,6 +138,7 @@ public:
                                                                          std::string& type);
 
     void updateLeds();
+    bool doingContextMenu() const;
 
     // Overrides for ProcessorNetworkObserver
     virtual void onProcessorNetworkChange() override;
@@ -257,6 +258,7 @@ private:
     static const int GRID_SPACING;
     std::string filename_;
     bool modified_;
+    bool doingContextMenu_ = false;
 };
 
 template <typename T>

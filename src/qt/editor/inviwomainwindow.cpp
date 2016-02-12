@@ -331,6 +331,8 @@ void InviwoMainWindow::addActions() {
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
         editMenuItem->addAction(cutAction);
+        cutAction->setEnabled(false);
+        
     }
 
     {
@@ -338,6 +340,7 @@ void InviwoMainWindow::addActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem->addAction(copyAction);
+        copyAction->setEnabled(false);
     }
 
     {
@@ -350,8 +353,10 @@ void InviwoMainWindow::addActions() {
     {
         auto deleteAction = new QAction(tr("&Delete"), this);
         actions_["Delete"] = deleteAction;
-        deleteAction->setShortcut(QKeySequence::Delete);
+        deleteAction->setShortcuts(QList<QKeySequence>(
+            {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
         editMenuItem->addAction(deleteAction);
+        deleteAction->setEnabled(false);
     }
 
     editMenuItem->addSeparator();
