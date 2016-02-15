@@ -50,19 +50,17 @@ inline QGLFormat GetQGLFormat() {
 
 QGLFormat CanvasQGLWidget::sharedFormat_ = GetQGLFormat();
 CanvasQGLWidget* CanvasQGLWidget::sharedCanvas_ = nullptr;
-QGLWidget* CanvasQGLWidget::sharedGLContext_ = nullptr;
 
 CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
-    : QGLWidget(sharedFormat_, parent, sharedGLContext_)
+    : QGLWidget(sharedFormat_, parent, sharedCanvas_)
     , CanvasGL(dim)
     , swapBuffersAllowed_(false) {
     // This is our default rendering context
     // Initialized once. So "THE" first object of this class will
     // not have any shared context (or widget)
     // But Following objects, will share the context of initial object
-    if (!sharedGLContext_) {
+    if (!sharedCanvas_) {
         sharedFormat_ = this->format();
-        sharedGLContext_ = this;
         sharedCanvas_ = this;
         QGLWidget::glInit();
     }
@@ -74,8 +72,12 @@ CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
     grabGesture(Qt::PinchGesture);
 }
 
+CanvasQGLWidget::~CanvasQGLWidget() {
+    if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
+}
+
 void CanvasQGLWidget::defineDefaultContextFormat() {
-    if (!sharedGLContext_) {
+    if (!sharedCanvas_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
         if (preferProfile == "core")
             sharedFormat_.setProfile(QGLFormat::CoreProfile);

@@ -57,7 +57,7 @@ public:
     using QtBase = QGLWidget;
 
     explicit CanvasQGLWidget(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
-    ~CanvasQGLWidget() = default;
+    ~CanvasQGLWidget();
 
     static void defineDefaultContextFormat();
 
@@ -76,7 +76,6 @@ protected:
     static CanvasQGLWidget* sharedCanvas_;
 
 private:
-    static QGLWidget* sharedGLContext_; //For rendering-context sharing
     static QGLFormat sharedFormat_;
     bool swapBuffersAllowed_;
 };

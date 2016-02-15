@@ -54,7 +54,7 @@ public:
     using QtBase = QOpenGLWidget;
 
     explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
-    ~CanvasQOpenGLWidget() = default;
+    virtual ~CanvasQOpenGLWidget();
 
     static void defineDefaultContextFormat();
 
@@ -70,10 +70,9 @@ protected:
     virtual void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
-    static CanvasQOpenGLWidget* sharedCanvas_;
+    static CanvasQOpenGLWidget* sharedCanvas_; //For rendering-context sharing
 
 private:
-    static QOpenGLWidget* sharedGLContext_; //For rendering-context sharing
     static QSurfaceFormat sharedFormat_;
     bool swapBuffersAllowed_;
 };

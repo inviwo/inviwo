@@ -82,7 +82,10 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     OpenGLCapabilities::initializeGLEW();
 }
 
-CanvasGLFW::~CanvasGLFW() { glfwDestroyWindow(glWindow_); }
+CanvasGLFW::~CanvasGLFW() { 
+    glfwDestroyWindow(glWindow_);
+    if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
+}
 
 void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 

@@ -49,14 +49,13 @@ inline QSurfaceFormat GetQGLFormat() {
 
 QSurfaceFormat CanvasQOpenGLWidget::sharedFormat_ = GetQGLFormat();
 CanvasQOpenGLWidget* CanvasQOpenGLWidget::sharedCanvas_ = nullptr;
-QOpenGLWidget* CanvasQOpenGLWidget::sharedGLContext_ = nullptr;
 
 CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, uvec2 dim)
     : QOpenGLWidget(parent), CanvasGL(dim), swapBuffersAllowed_(false) {
     setFormat(sharedFormat_);
 
-    if (sharedGLContext_) {
-        this->context()->setShareContext(sharedGLContext_->context());
+    if (sharedCanvas_) {
+        this->context()->setShareContext(sharedCanvas_->context());
     }
     create();
 
@@ -67,15 +66,18 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, uvec2 dim)
 
     QResizeEvent event(QSize(dim.x, dim.y), QSize(width(), height()));
     QOpenGLWidget::resizeEvent(&event);
-    if (!sharedGLContext_) {
+    if (!sharedCanvas_) {
         sharedFormat_ = format();
-        sharedGLContext_ = this;
         sharedCanvas_ = this;
     }
 }
 
+CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {
+    if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
+}
+
 void CanvasQOpenGLWidget::defineDefaultContextFormat() {
-    if (!sharedGLContext_) {
+    if (!sharedCanvas_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
         if (preferProfile == "core")
             sharedFormat_.setProfile(QSurfaceFormat::CoreProfile);
