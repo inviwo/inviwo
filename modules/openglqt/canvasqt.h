@@ -153,7 +153,8 @@ bool CanvasQtBase<T>::event(QEvent* e) {
         }
         case QEvent::MouseButtonPress:
             return mapMousePressEvent(static_cast<QMouseEvent*>(e));
-            
+        case QEvent::MouseButtonDblClick:
+            return mapMouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonRelease:
             return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseMove:
