@@ -96,6 +96,14 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The defalt bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
+    
+    connect(this, &QGraphicsScene::selectionChanged, [&](){
+        auto actions = mainwindow_->getActions();
+        auto enable = selectedItems().size()>0;
+        actions["Copy"]->setEnabled(enable);
+        actions["Cut"]->setEnabled(enable);
+        actions["Delete"]->setEnabled(enable);
+    });
 }
 
 NetworkEditor::~NetworkEditor() {}
@@ -107,17 +115,8 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     // generate GUI representations (graphics item, property widget, processor widget)
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
-    auto factory = mainwindow_->getInviwoApplication()->getProcessorWidgetFactory();
-    if (auto processorWidget = factory->create(processor)) {
-        if (auto widget = dynamic_cast<QWidget*>(processorWidget.get())) {
-            widget->setParent(mainwindow_);
-        }
-        processorWidget->setProcessor(processor);
-        processorWidget->initialize();
-        processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-        processorWidget->addObserver(ret->getStatusItem());
-
-        processor->setProcessorWidget(processorWidget.release());
+    if (auto widget = processor->getProcessorWidget()){
+        widget->addObserver(ret->getStatusItem());
     }
     return ret;
 }
@@ -125,13 +124,6 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
 void NetworkEditor::removeProcessorRepresentations(Processor* processor) {
     removeProcessorGraphicsItem(processor);
     removeAndDeletePropertyWidgets(processor);
-
-    // processor widget should be removed here since it is added in addProcessorRepresentations()
-    if (auto processorWidget = processor->getProcessorWidget()) {
-        processorWidget->deinitialize();
-        processor->setProcessorWidget(nullptr);
-        delete processorWidget;
-    }
 }
 
 ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* processor) {
@@ -754,9 +746,15 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addAction(deleteAction);
     toBeDeleted_.append(items(e->scenePos()));
   
+    
+    doingContextMenu_ = true;
     menu.exec(QCursor::pos());
     e->accept();
     toBeDeleted_.clear();
+    doingContextMenu_ = false;
+}
+bool NetworkEditor::doingContextMenu() const {
+    return doingContextMenu_;
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
@@ -881,6 +879,8 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
         ProcessorDragObject::decode(e->mimeData(), name);
         std::string className = name.toLocal8Bit().constData();
 
+        NetworkLock lock(network_);
+        
         if (!className.empty()) {
             e->setAccepted(true);
             e->acceptProposedAction();

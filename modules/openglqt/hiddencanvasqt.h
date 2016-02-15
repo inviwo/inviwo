@@ -32,28 +32,36 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/openglqt/canvasqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QResizeEvent>
+#include <QPaintEvent>
+#include <warn/pop>
+
 
 namespace inviwo {
 
 // Inspiration from http://www.krazer.com/?p=109
 // https://github.com/caseymcc/TestOpenCL
 
-class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public CanvasQt {
+template <typename Base>
+class HiddenCanvasQt : public Base {
 public:
-    explicit HiddenCanvasQt(QGLParent *parent = nullptr, uvec2 dim = uvec2(256, 256));
-    virtual ~HiddenCanvasQt();
+    explicit HiddenCanvasQt(uvec2 dim = uvec2(256, 256))
+        : Base(dim) {
+        this->setVisible(false);
+        this->doneCurrent();
+    }
+    virtual ~HiddenCanvasQt() = default;
 
 protected:
-    virtual void glInit() override;
-    virtual void glDraw() override;
+    virtual void initializeGL() override{};
+    virtual void resizeGL(int width, int height) override{};
+    virtual void paintGL() override{};
 
-    virtual void initializeGL() override;
-    virtual void resizeGL(int width, int height) override;
-    virtual void paintGL() override;
-
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void paintEvent(QPaintEvent *) override;
+    virtual void resizeEvent(QResizeEvent *event) override{};
+    virtual void paintEvent(QPaintEvent *) override{};
 };
 
 }  // namespace

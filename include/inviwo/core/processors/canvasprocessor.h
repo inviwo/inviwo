@@ -75,7 +75,7 @@ public:
 
     void triggerQueuedEvaluation();
     virtual bool isReady() const override;
-    virtual void setProcessorWidget(ProcessorWidget* processorWidget) override;
+    virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
     virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:

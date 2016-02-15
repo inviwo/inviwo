@@ -42,24 +42,19 @@ class ProcessorWidgetMetaData;
 class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable {
 
 public:
-    ProcessorWidget();
-    virtual ~ProcessorWidget();
+    ProcessorWidget(Processor* p);
+    virtual ~ProcessorWidget() = default;
 
-    virtual void setProcessor(Processor* processor);
-    virtual Processor* getProcessor();
+    virtual Processor* getProcessor() const;
 
-    virtual ProcessorWidget* create() const = 0;
-    virtual void initialize();
-    virtual void deinitialize();
-
-    virtual bool isVisible();
+    virtual bool isVisible() const;
     virtual void setVisible(bool visible);
     virtual void show();
     virtual void hide();
     
-    virtual glm::ivec2 getDimensions();
+    virtual glm::ivec2 getDimensions() const;
     virtual void setDimensions(ivec2);
-    virtual glm::ivec2 getPosition();
+    virtual glm::ivec2 getPosition() const;
     virtual void setPosition(ivec2);
     
 protected:

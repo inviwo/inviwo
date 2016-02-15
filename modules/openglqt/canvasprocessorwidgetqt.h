@@ -33,6 +33,8 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <modules/openglqt/canvasqt.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -40,7 +42,6 @@
 
 namespace inviwo {
 
-class CanvasQt;
 class CanvasProcessor;
 
 class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
@@ -52,12 +53,8 @@ class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
     Q_OBJECT
     #include <warn/pop>
 public:
-    CanvasProcessorWidgetQt();
+    CanvasProcessorWidgetQt(Processor* p);
     virtual ~CanvasProcessorWidgetQt();
-
-    virtual CanvasProcessorWidgetQt* create() const override;
-    virtual void initialize() override;
-    virtual void deinitialize() override;
 
     // Override ProcessorWidget
     virtual void setVisible(bool visible) override;
@@ -65,7 +62,6 @@ public:
     virtual void hide() override;
     virtual void setPosition(glm::ivec2 pos) override; 
     virtual void setDimensions(ivec2 dimensions) override;
-    virtual void setProcessor(Processor* processor) override;
 
     virtual Canvas* getCanvas() const override;
 
@@ -82,7 +78,6 @@ protected:
 
 private:
     CanvasQt* canvas_;
-    bool hasSharedCanvas_;
 };
 
 }  // namespace

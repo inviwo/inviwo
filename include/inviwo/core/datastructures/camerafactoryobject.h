@@ -42,7 +42,7 @@ public:
     CameraFactoryObject(const std::string& classIdentifier);
     virtual ~CameraFactoryObject() = default;
 
-    virtual Camera* create() = 0;
+    virtual std::unique_ptr<Camera> create() = 0;
     std::string getClassIdentifier() const;
 
 private:
@@ -54,8 +54,8 @@ public:
     CameraFactoryObjectTemplate(const std::string& classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
-    virtual Camera* create() override {
-        return static_cast<Camera*>(new T());
+    virtual std::unique_ptr<Camera> create() override {
+        return util::make_unique<T>();
     }
 };
 

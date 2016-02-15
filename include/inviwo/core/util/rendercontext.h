@@ -39,9 +39,7 @@ namespace inviwo {
 class Canvas;
 /**
  * \class RenderContext
- *
  * \brief Keeper of the default render context.
- *
  */
 class IVW_CORE_API RenderContext : public Singleton<RenderContext>{ 
 public:
@@ -55,6 +53,7 @@ public:
     void activateLocalRenderContext() const;
     void clearLocalContexts();
     void clearContext(const std::thread::id& id);
+
 private: 
     Canvas* defaultContext_;
     std::thread::id mainThread_;

@@ -29,14 +29,13 @@
 
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -44,55 +43,17 @@
 
 namespace inviwo {
 
-Mesh* Canvas::screenAlignedRect_ = nullptr;
-
 Canvas::Canvas(uvec2 dimensions)
-    : initialized_(false)
-    , shared_(true)
-    , screenDimensions_(dimensions)
+    : screenDimensions_(dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
-    , ownerWidget_(nullptr) {
-    if (!screenAlignedRect_) {
-        shared_ = false;
-
-        auto verticesBuffer =
-            util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-        auto texCoordsBuffer =
-            util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-        auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
-
-        Mesh* screenAlignedRectMesh = new Mesh();
-        screenAlignedRectMesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-        screenAlignedRectMesh->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-        screenAlignedRectMesh->addIndicies(
-            Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
-
-        screenAlignedRect_ = screenAlignedRectMesh;
-    }
-}
+    , ownerWidget_(nullptr) {}
 
 Canvas::~Canvas() {
-    if (!shared_) {
-        delete screenAlignedRect_;
-        screenAlignedRect_ = nullptr;
-    }
-
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
-
-void Canvas::initialize() {
-    initialized_ = true;
-    propagator_ = nullptr;
-}
-
-void Canvas::deinitialize() { propagator_ = nullptr; }
-
-void Canvas::render(std::shared_ptr<const Image> im, LayerType layerType, size_t idx) {}
-
-void Canvas::activate() {}
 
 void Canvas::resize(uvec2 canvasSize) {
     uvec2 previousScreenDimensions_ = screenDimensions_;
@@ -109,10 +70,6 @@ void Canvas::resize(uvec2 canvasSize) {
 }
 
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
-
-void Canvas::update() {}
-
-bool Canvas::isInitialized() { return initialized_; }
 
 void Canvas::activateDefaultRenderContext() {
     RenderContext::getPtr()->activateDefaultRenderContext();

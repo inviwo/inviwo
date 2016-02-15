@@ -36,85 +36,56 @@
 
 namespace inviwo {
 
-CanvasProcessorWidgetQt::CanvasProcessorWidgetQt()
-    : QWidget(), CanvasProcessorWidget(), canvas_(nullptr), hasSharedCanvas_(false) {
+CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
+    : QWidget(dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow())
+    , CanvasProcessorWidget(p)
+    , canvas_(nullptr) {
+    
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_OpaquePaintEvent);
-    setWindowTitle(QString::fromStdString("untitled canvas"));
-}
-
-CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
-    if (hasSharedCanvas_ && canvas_) canvas_->setParent(nullptr);
-}
-
-CanvasProcessorWidgetQt* CanvasProcessorWidgetQt::create() const {
-    return new CanvasProcessorWidgetQt();
-}
-
-void CanvasProcessorWidgetQt::initialize() {
-    CanvasProcessorWidget::initialize();
 
     ivec2 dim = CanvasProcessorWidget::getDimensions();
     ivec2 pos = CanvasProcessorWidget::getPosition();
 
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
-    CanvasQt* sharedCanvas = CanvasQt::getSharedCanvas();
-    if (!sharedCanvas->getProcessorWidgetOwner()) {
-        canvas_ = sharedCanvas;
-        hasSharedCanvas_ = true;
-    } else {
-        canvas_ = new CanvasQt(nullptr, uvec2(dim.x, dim.y));
-    }
 
-    canvas_->setEventPropagator(nullptr);
-
-    if (!canvas_->isInitialized()) canvas_->initialize();
-
+    canvas_ = new CanvasQt(uvec2(dim.x, dim.y));
+    canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
+    canvas_->setMouseTracking(true);
+    canvas_->setAttribute(Qt::WA_OpaquePaintEvent);
+
     QGridLayout* gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
-#ifdef USE_QWINDOW
-    QWidget* container = QWidget::createWindowContainer(canvas_);
-#else
-    canvas_->setMouseTracking(true);
-    QWidget* container = static_cast<QWidget*>(canvas_);
-#endif
-    container->setAttribute(Qt::WA_OpaquePaintEvent);
-    gridLayout->addWidget(container, 0, 0);
+    gridLayout->addWidget(canvas_, 0, 0);
     setLayout(gridLayout);
-    
+
     setWindowFlags(Qt::Tool);
     setDimensions(dim);
 
-    InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-    if (app) {
+    if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             QWidget::move(newPos);
-        } else { // We guess that this is a new widget and give a new position
+        } else {  // We guess that this is a new widget and give a new position
             newPos = app->getMainWindow()->pos();
             newPos += app->offsetWidget();
             QWidget::move(newPos);
         }
     }
+    processor_->ProcessorObservable::addObserver(this);
+    canvas_->setVisible(true);
+    QWidget::setVisible(ProcessorWidget::isVisible());
 }
 
-void CanvasProcessorWidgetQt::deinitialize() {
-    if (canvas_) {        
+CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
+    if (canvas_) {
         this->hide();
-        if (hasSharedCanvas_) {
-            canvas_->setProcessorWidgetOwner(nullptr);
-            layout()->removeWidget(canvas_);
-            canvas_->setParent(nullptr);
-        } else {
-            canvas_->deinitialize();
-        }
         canvas_->setEventPropagator(nullptr);
         canvas_ = nullptr;  // Qt will take care of deleting the canvas
     }
-    CanvasProcessorWidget::deinitialize();
 }
 
 void CanvasProcessorWidgetQt::setVisible(bool visible) {
@@ -175,11 +146,6 @@ void CanvasProcessorWidgetQt::hideEvent(QHideEvent* event) {
 void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     CanvasProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
     QWidget::moveEvent(event);
-}
-
-void CanvasProcessorWidgetQt::setProcessor(Processor* processor) {
-    CanvasProcessorWidget::setProcessor(processor);
-    if (processor) processor->ProcessorObservable::addObserver(this);
 }
 
 void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {

@@ -34,8 +34,14 @@
 namespace inviwo {
 
 std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(Processor* processor) const {
-    return StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject>::create(
-        processor->getClassIdentifier());
+    //return this->create(processor->getClassIdentifier(), processor); Does not compile in VS2013
+
+    auto it = map_.find(processor->getClassIdentifier());
+    if (it != end(map_)) {
+        return it->second->create(processor);
+    } else {
+        return nullptr;
+    }
 }
 
 }  // namespace

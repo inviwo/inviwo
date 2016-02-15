@@ -43,7 +43,7 @@ public:
                                const std::string& inspectorWorkspaceFileName);
     virtual ~PortInspectorFactoryObject() {}
 
-    virtual PortInspector* create();
+    virtual std::unique_ptr<PortInspector> create();
 
     std::string getClassIdentifier() const;
 

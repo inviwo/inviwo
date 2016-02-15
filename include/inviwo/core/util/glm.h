@@ -505,8 +505,6 @@ auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
 }
 
 
-
-
 } // namespace util
 
 template <unsigned int Dim, typename Type>
@@ -531,6 +529,17 @@ template <typename T>
 Matrix<2, T> MatrixInvert(const glm::detail::tmat2x2<T, glm::defaultp>& m) {
     return glm::inverse(m);
 }
+
+namespace util {
+
+// Type1 and and Type2 models glm vec 2 types.
+template <typename Type1, typename Type2>
+Type1 invertY(Type1 vec, Type2 dim) {
+    using T = typename Type1::value_type;
+    return Type1(vec.x, static_cast<T>(dim.y) - 1 - vec.y);
+}
+
+} // namespace util
 
 } // namespace inviwo
 

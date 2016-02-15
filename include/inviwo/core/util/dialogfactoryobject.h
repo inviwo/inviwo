@@ -42,7 +42,7 @@ public:
     DialogFactoryObject(const std::string& className);
     virtual ~DialogFactoryObject() {}
 
-    virtual Dialog* create() = 0;
+    virtual std::unique_ptr<Dialog> create() = 0;
 
     std::string getClassIdentifier() const;
 
@@ -58,8 +58,8 @@ public:
 
     virtual ~DialogFactoryObjectTemplate() {}
 
-    virtual Dialog* create() override {
-        return static_cast<Dialog*>(new T());
+    virtual std::unique_ptr<Dialog> create() override {
+        return util::make_unique<T>();
     }
 };
 

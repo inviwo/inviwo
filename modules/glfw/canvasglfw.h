@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/canvasgl.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -52,13 +54,16 @@ public:
     void show();
     void hide();
     
-    void setWindowSize(uvec2);
+    void setWindowSize(ivec2);
+    void setWindowPosition(ivec2);
+    
     void setWindowTitle(std::string);
 
     static void closeWindow(GLFWwindow*);
     static int getVisibleWindowCount();
 
     static void reshape(GLFWwindow*, int, int);
+    static void move(GLFWwindow*,int,int);
 
     static void keyboard(GLFWwindow*, int, int, int, int);
     static void mouseButton(GLFWwindow*, int, int, int);
@@ -71,7 +76,7 @@ public:
 
     static void setAlwaysOnTopByDefault(bool);
     
-    virtual std::unique_ptr<Canvas> create() override;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
 
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);

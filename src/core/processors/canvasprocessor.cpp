@@ -125,12 +125,11 @@ CanvasProcessor::~CanvasProcessor() {
     }
 }
 
-void CanvasProcessor::setProcessorWidget(ProcessorWidget* processorWidget) {
-    Processor::setProcessorWidget(processorWidget);
-    if (processorWidget) {
-        canvasWidget_ = dynamic_cast<CanvasProcessorWidget*>(processorWidget);
-        canvasWidget_->getCanvas()->setEventPropagator(this);
+void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
+    if (auto cw = dynamic_cast<CanvasProcessorWidget*>(processorWidget.get())) {
+        canvasWidget_ = cw;
     }
+    Processor::setProcessorWidget(std::move(processorWidget));
 }
 
 // Called by dimensions onChange.

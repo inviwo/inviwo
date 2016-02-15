@@ -34,10 +34,9 @@ namespace inviwo {
    
 size_t BufferObjectArray::maxSize() const {
     static size_t size = [](){
-        GLint glsize = static_cast<GLint>(BufferType::NumberOfBufferTypes);
-        #ifdef GL_VERSION_2_0
+        GLint glsize = 0;
+        // usually about 16 should be more than BufferType::NumberOfBufferTypes. 
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);
-        #endif
         return static_cast<size_t>(glsize);
     }();
     
@@ -45,38 +44,26 @@ size_t BufferObjectArray::maxSize() const {
 }
 
 BufferObjectArray::BufferObjectArray()
-    : id_(0u), attachedBuffers_(maxSize(), nullptr) {
-    glGenVertexArrays(1, &id_);
+    : attachedBuffers_(maxSize(), nullptr) {
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(maxSize(), nullptr) {
-    glGenVertexArrays(1, &id_);
-
-    bind();
-    GLuint count = 0;
-    for (const auto& buff : rhs.attachedBuffers_) {
-        attachBufferObject(buff, count);
-        count++;
-    }
-    unbind();
+    : attachedBuffers_(rhs.attachedBuffers_) {
 }
 
 BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     if (this != &that) {
         bind();
         clear();
-        GLuint count = 0;
-        for (const auto& buff : that.attachedBuffers_) {
-            attachBufferObject(buff, count);
-            count++;
-        }
         unbind();
+        attachedBuffers_ = that.attachedBuffers_;
     }
     return *this;
 }
 
-BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
+BufferObjectArray::~BufferObjectArray() { 
+    glDeleteVertexArrays(1, &id_); 
+}
 
 GLuint BufferObjectArray::getId() const { return id_; }
 
@@ -87,34 +74,43 @@ void BufferObjectArray::clear() {
             attachedBuffers_[i] = nullptr;
         }
     }
+    reattach_ = true;
 }
 
-void BufferObjectArray::bind() const { glBindVertexArray(id_); }
+void BufferObjectArray::bind() const {
+    if (id_ == 0) {
+        glGenVertexArrays(1, &id_);
+    }
+    glBindVertexArray(id_);
+    if (reattach_) {
+        
+        GLuint location = 0;
+        for (auto& bo : attachedBuffers_) {
+            if (bo) {
+                glEnableVertexAttribArray(location);
+                bo->bind();
+                glVertexAttribPointer(location, bo->getGLFormat().channels, bo->getGLFormat().type,
+                                      GL_FALSE, 0, (void*)nullptr);
+            }
+            location++;
+        }
+        reattach_ = false;
+    }
+}
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
-    if (bo)
-        pointToObject(bo, location);
-    else
-        LogError("Error: No valid BufferObject");
-
-    attachedBuffers_.at(location) = bo;
-}
-
-void BufferObjectArray::pointToObject(const BufferObject* bo, GLuint location) {
     if (location < attachedBuffers_.size()) {
-        glEnableVertexAttribArray(location);
-        bo->bind();
-        glVertexAttribPointer(location, bo->getGLFormat().channels, bo->getGLFormat().type,
-                              GL_FALSE, 0, (void*)nullptr);
-    } else
+        attachedBuffers_[location] = bo;
+    } else {
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");
+    }
 }
 
-const BufferObject* BufferObjectArray::getBufferObject(size_t idx) const {
-    if (idx < attachedBuffers_.size())
-        return attachedBuffers_[idx];
+const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
+    if (location < attachedBuffers_.size())
+        return attachedBuffers_[location];
     else
         return nullptr;
 }

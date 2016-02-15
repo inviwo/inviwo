@@ -30,68 +30,37 @@
 #ifndef IVW_CANVASGL_H
 #define IVW_CANVASGL_H
 
-#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/canvas.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
-class Shader;
 class ImageGL;
 class LayerRAM;
 class MeshGL;
 class BufferObjectArray;
+class ProcessorWidget;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
     CanvasGL(uvec2 dimensions);
-    virtual ~CanvasGL();
+    virtual ~CanvasGL() = default;
 
-    virtual void initialize() override;
-    virtual void deinitialize() override;
-    virtual void initializeSquare();
-
-    virtual void activate() override;
     static void defaultGLState();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
     virtual void resize(uvec2 size) override;
-    virtual void glSwapBuffers();
+    virtual void glSwapBuffers() = 0;
     virtual void update() override;
-
-    static void attachImagePlanRect(BufferObjectArray*);
-
-    static void singleDrawImagePlaneRect();
-    static void multiDrawImagePlaneRect(int instances);
-
-    static inline void renderImagePlaneRect() {
-        enableDrawImagePlaneRect();
-        singleDrawImagePlaneRect();
-        disableDrawImagePlaneRect();
-    }
-
-    static inline void renderImagePlaneRect(int instances) {
-        enableDrawImagePlaneRect();
-        multiDrawImagePlaneRect(instances);
-        disableDrawImagePlaneRect();
-    }
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
-protected:
-    void renderLayer(size_t idx = 0);
-    void renderNoise();
-    void renderTexture(int);
-
-    void drawRect();
-    void checkChannels(std::size_t);
-
-    /**
+     /**
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
-     *
-     *
      * @return Depth layer RAM representation if existing, nullptr otherwise.
      */
     const LayerRAM* getDepthLayerRAM() const;
@@ -107,8 +76,15 @@ protected:
     double getDepthValueAtCoord(ivec2 screenCoordinate,
                                 const LayerRAM* depthLayerRAM = nullptr) const;
 
-    static void enableDrawImagePlaneRect();
-    static void disableDrawImagePlaneRect();
+protected:
+    void renderLayer(size_t idx = 0);
+    void renderNoise();
+
+    void drawSquare();
+
+    void renderTexture(int);
+
+    void checkChannels(std::size_t);
 
     std::shared_ptr<const Image> image_;
     const ImageGL* imageGL_;
@@ -118,16 +94,22 @@ private:
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
      * to avoid this we have this ready flag to check that the 
-     * frame buffer is compleate.
+     * frame buffer is complete.
      */
-    bool ready_ = false;
     bool ready();
-
-    static const MeshGL* screenAlignedRectGL_;
+    bool ready_ = false;
 
     LayerType layerType_;
     std::unique_ptr<Shader> shader_;
     std::unique_ptr<Shader> noiseShader_;
+
+    std::unique_ptr<Mesh> square_;
+    /**
+     * Each canvas must have its own MeshGL
+     * since QT uses a context per canvas
+     * and the vertex array in MeshGL cannot be shared.
+     */
+    const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
     size_t channels_;
     size_t previousRenderedLayerIdx_;
 };

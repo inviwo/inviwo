@@ -29,8 +29,9 @@
 
 #include "canvasglfw.h"
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/processors/processorwidget.h>
 
 namespace inviwo {
 
@@ -45,6 +46,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
     , mouseState_(MouseEvent::MOUSE_STATE_NONE)
     , mouseModifiers_(InteractionEvent::MODIFIER_NONE) {
+    
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -75,12 +77,16 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     glfwSetWindowCloseCallback(glWindow_, closeWindow);
     glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
+    glfwSetWindowPosCallback(glWindow_, move);
 
     activate();
     OpenGLCapabilities::initializeGLEW();
 }
 
-CanvasGLFW::~CanvasGLFW() { glfwDestroyWindow(glWindow_); }
+CanvasGLFW::~CanvasGLFW() { 
+    glfwDestroyWindow(glWindow_);
+    if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
+}
 
 void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 
@@ -101,8 +107,12 @@ void CanvasGLFW::hide() {
     }
 }
 
-void CanvasGLFW::setWindowSize(uvec2 size) {
-    glfwSetWindowSize(glWindow_, static_cast<int>(size.x), static_cast<int>(size.y));
+void CanvasGLFW::setWindowSize(ivec2 size) {
+    glfwSetWindowSize(glWindow_, size.x, size.y);
+}
+
+void CanvasGLFW::setWindowPosition(ivec2 pos) {
+    glfwSetWindowPos(glWindow_, pos.x, pos.y);
 }
 
 void CanvasGLFW::setWindowTitle(std::string windowTitle) {
@@ -116,6 +126,10 @@ int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
     getCanvasGLFW(window)->resize(uvec2(width, height));
+}
+
+void CanvasGLFW::move(GLFWwindow* window, int x, int y) {
+    getCanvasGLFW(window)->getProcessorWidgetOwner()->ProcessorWidget::setPosition(ivec2(x,y));
 }
 
 void CanvasGLFW::setAlwaysOnTopByDefault(bool alwaysOnTop) { alwaysOnTop_ = alwaysOnTop; }
@@ -240,7 +254,7 @@ InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
     return static_cast<InteractionEvent::Modifier>(result);
 }
 
-std::unique_ptr<Canvas> CanvasGLFW::create() {
+std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront([&]() {
         auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
         return std::move(canvas);

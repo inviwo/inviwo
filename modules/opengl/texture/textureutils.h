@@ -45,6 +45,8 @@ namespace inviwo {
 
 class BufferObjectArray;
 class Shader;
+class MeshGL;
+class Mesh;
 
 namespace utilgl {
 
@@ -168,12 +170,19 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageOutport&
                                              const std::string samplerID = "");
 
 // Draw image plane.
-IVW_MODULE_OPENGL_API BufferObjectArray* enableImagePlaneRect();
 
-IVW_MODULE_OPENGL_API void disableImagePlaneRect(BufferObjectArray*);
-
+/**
+ * Creates an indexed triangle strip mesh
+ * with points and texture coordinates.
+ *  (-1,1)----(1, 1)
+ *    |         |
+ *  (-1,1)----(1,-1)
+ *
+ * @return std::unique_ptr<Mesh>
+*/
+IVW_MODULE_OPENGL_API std::unique_ptr<Mesh> planeRect();
+IVW_MODULE_OPENGL_API const MeshGL* imagePlaneRect();
 IVW_MODULE_OPENGL_API void singleDrawImagePlaneRect();
-
 IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
 
 // convenience Image port binding and setting uniforms

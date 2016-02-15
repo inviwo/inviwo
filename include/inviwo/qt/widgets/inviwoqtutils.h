@@ -31,12 +31,18 @@
 #define IVW_INVIWOQTUTILS_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <locale>
 #include <ios>
 #include <sstream>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QString>
+#include <QPointF>
+#include <QPoint>
+#include <QSizeF>
+#include <QSize>
 #include <warn/pop>
 
 namespace inviwo {
@@ -69,6 +75,17 @@ IVW_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 IVW_QTWIDGETS_API QString toLocalQString(const std::string&);
 IVW_QTWIDGETS_API QString toQString(const std::string&);
 
+IVW_QTWIDGETS_API dvec2 toGLM(QPointF);
+IVW_QTWIDGETS_API ivec2 toGLM(QPoint);
+
+IVW_QTWIDGETS_API QPointF toQPoint(dvec2);
+IVW_QTWIDGETS_API QPoint toQPoint(ivec2);
+
+IVW_QTWIDGETS_API dvec2 toGLM(QSizeF);
+IVW_QTWIDGETS_API ivec2 toGLM(QSize);
+
+IVW_QTWIDGETS_API QSizeF toQSize(dvec2);
+IVW_QTWIDGETS_API QSize toQSize(ivec2);
 
 } // namespace utilqt
 

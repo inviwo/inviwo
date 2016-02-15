@@ -41,7 +41,7 @@ public:
     PortFactoryObject(const std::string& className);
     virtual ~PortFactoryObject();
 
-    virtual Port* create(std::string identifier) = 0;
+    virtual std::unique_ptr<Port> create(std::string identifier) = 0;
 
     std::string getClassIdentifier() const;
 
@@ -59,8 +59,8 @@ public:
 
     virtual ~PortFactoryObjectTemplate() {}
 
-    virtual Port* create(std::string identifier) override{
-        return static_cast<Port*>(new T(identifier));
+    virtual std::unique_ptr<Port> create(std::string identifier) override{
+        return util::make_unique<T>(identifier);
     }
 };
 

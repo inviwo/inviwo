@@ -32,14 +32,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/interaction/events/eventhandler.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/pickingcontainer.h>
 
 namespace inviwo {
@@ -50,30 +43,31 @@ class DataWriterType;
 class Image;
 class EventPropagator;
 class ProcessorWidget;
+class MouseEvent;
+class KeyboardEvent;
+class TouchEvent;
+class GestureEvent;
 
 class IVW_CORE_API Canvas {
 public:
     Canvas(uvec2 dimensions);
     virtual ~Canvas();
 
-    virtual void initialize();
-    virtual void deinitialize();
-    bool isInitialized();
-
-    virtual void activate();
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
-                        size_t idx = 0);
+                        size_t idx = 0) = 0;
     virtual void resize(uvec2 canvasSize);
 
     uvec2 getScreenDimensions() const;
-    virtual void update();
+
+    virtual void update() = 0;
+    virtual void activate() = 0;
 
     void setEventPropagator(EventPropagator* propagator);
     virtual ProcessorWidget* getProcessorWidgetOwner() const;
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
     // used to create hidden canvases used for context in background threads.
-    virtual std::unique_ptr<Canvas> create() = 0;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
 
 protected:
     void activateDefaultRenderContext();
@@ -95,10 +89,6 @@ protected:
     
     bool touchEnabled();
 
-    static Mesh* screenAlignedRect_;
-
-    bool initialized_;
-    bool shared_;
     uvec2 screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
     PickingContainer pickingContainer_;

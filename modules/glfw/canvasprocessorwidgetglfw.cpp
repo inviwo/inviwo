@@ -34,65 +34,36 @@
 
 namespace inviwo {
 
-CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW()
-    : CanvasProcessorWidget()
-    , canvas_(nullptr)
-    , hasSharedCanvas_(false) {}
+CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
+    : CanvasProcessorWidget(p)
+    , canvas_(util::make_unique<CanvasGLFW>(processor_->getIdentifier(), getDimensions())) {
+    
+    canvas_->setEventPropagator(processor_);
+    canvas_->setProcessorWidgetOwner(this);
+    canvas_->setWindowSize(getDimensions());
+    canvas_->setWindowPosition(getPosition());
+    if (ProcessorWidget::isVisible()) {
+        canvas_->show();
+    } else {
+        canvas_->hide();
+    }
+}
 
 CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
-    deinitialize();
-}
-
-CanvasProcessorWidgetGLFW* CanvasProcessorWidgetGLFW::create() const {
-    return new CanvasProcessorWidgetGLFW();
-}
-
-void CanvasProcessorWidgetGLFW::initialize() {
-    CanvasProcessorWidget::initialize();
-
-    ivec2 dim = getDimensions();
-    uvec2 dimU = uvec2(dim.x, dim.y);
-
-    CanvasGLFW::setAlwaysOnTopByDefault(true);
-    CanvasGLFW* sharedCanvas = CanvasGLFW::getSharedContext();
-    if (!sharedCanvas->getProcessorWidgetOwner()) {
-        canvas_ = sharedCanvas;
-        canvas_->setWindowTitle(processor_->getIdentifier());
-        hasSharedCanvas_ = true;
-    } else {
-        canvas_ = new CanvasGLFW(processor_->getIdentifier(), dimU);
-    }
-
-    if(!canvas_->isInitialized()) canvas_->initialize();
-
-    canvas_->setProcessorWidgetOwner(this);
-    canvas_->setWindowSize(dimU);
-}
-
-void CanvasProcessorWidgetGLFW::deinitialize() {
     if (canvas_) {
         this->hide();
-        if(hasSharedCanvas_) {
-            canvas_->setProcessorWidgetOwner(nullptr);
-        } else {
-            delete canvas_;
-        }
         canvas_->setEventPropagator(nullptr);
-        canvas_ = nullptr;
     }
-
-    CanvasProcessorWidget::deinitialize();
 }
 
 void CanvasProcessorWidgetGLFW::setVisible(bool visible) {
     if (visible) {
         canvas_->show();
         static_cast<CanvasProcessor*>(processor_)->triggerQueuedEvaluation();
-        CanvasProcessorWidget::setVisible(true);
     } else {
         canvas_->hide();
-        CanvasProcessorWidget::setVisible(false);
     }
+    CanvasProcessorWidget::setVisible(visible);
 }
 
 void CanvasProcessorWidgetGLFW::show() {
@@ -108,8 +79,14 @@ void CanvasProcessorWidgetGLFW::setDimensions(ivec2 dim) {
     canvas_->setWindowSize(uvec2(dim.x, dim.y));
 }
 
+void CanvasProcessorWidgetGLFW::setPosition(ivec2 dim) {
+    CanvasProcessorWidget::setPosition(dim);
+    canvas_->setWindowPosition(uvec2(dim.x, dim.y));
+}
+
+
 Canvas* CanvasProcessorWidgetGLFW::getCanvas() const {
-    return canvas_;
+    return canvas_.get();
 }
 
 

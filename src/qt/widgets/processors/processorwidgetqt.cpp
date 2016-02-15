@@ -40,20 +40,14 @@
 
 namespace inviwo {
 
-ProcessorWidgetQt::ProcessorWidgetQt() : QWidget(nullptr), ProcessorWidget() {}
+ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), ProcessorWidget(p) {
 
-ProcessorWidgetQt::~ProcessorWidgetQt() {}
-
-void ProcessorWidgetQt::initialize() {
-    ProcessorWidget::initialize();
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
     
     QWidget::resize(dim.x, dim.y);
 
-    InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-    if (app) {
-
+    if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x,pos.y), this->size());
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
@@ -64,10 +58,6 @@ void ProcessorWidgetQt::initialize() {
             QWidget::move(newPos);
         }
     }
-}
-
-void ProcessorWidgetQt::deinitialize() {
-    ProcessorWidget::deinitialize();
 }
 
 void ProcessorWidgetQt::setVisible(bool visible) {

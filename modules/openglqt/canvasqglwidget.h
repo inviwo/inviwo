@@ -27,32 +27,61 @@
  *
  *********************************************************************************/
 
-#include "hiddencanvasqt.h"
+#ifndef IVW_CANVASQGLWIDGET_H
+#define IVW_CANVASQGLWIDGET_H
+
+#include <modules/openglqt/openglqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/canvasgl.h>
+
+#define QT_NO_OPENGL_ES_2
+#define GLEXT_64_TYPES_DEFINED
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGLWidget>
+#include <QGLFormat>
+#include <warn/pop>
+
+class QResizeEvent;
 
 namespace inviwo {
 
-HiddenCanvasQt::HiddenCanvasQt(QGLParent *parent /*= nullptr*/, uvec2 dim /*= uvec2(256,256)*/)
-    : CanvasQt(parent, dim) {
+/**
+ * \class CanvasQGLWidget
+ */
+class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasGL {
+    friend class CanvasProcessorWidgetQt;
 
-    setVisible(false);
-    doneCurrent();
+public:
+    using QtBase = QGLWidget;
 
-}
+    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
+    ~CanvasQGLWidget();
 
-HiddenCanvasQt::~HiddenCanvasQt() {}
+    static void defineDefaultContextFormat();
 
-void HiddenCanvasQt::glInit() {}
+    virtual void activate() override;
+    virtual void glSwapBuffers() override;
+    virtual void update() override;
+    void repaint();
 
-void HiddenCanvasQt::glDraw() {}
+    virtual void resize(uvec2 size) override;
 
-void HiddenCanvasQt::initializeGL() {}
+protected:
+    void initializeGL() override;
+    void paintGL() override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
-void HiddenCanvasQt::resizeGL(int width, int height) {}
+    static CanvasQGLWidget* sharedCanvas_;
 
-void HiddenCanvasQt::paintGL() {}
+private:
+    static QGLFormat sharedFormat_;
+    bool swapBuffersAllowed_;
+};
 
-void HiddenCanvasQt::resizeEvent(QResizeEvent *event) {}
 
-void HiddenCanvasQt::paintEvent(QPaintEvent *) {}
+} // namespace
 
-}  // namespace
+#endif // IVW_CANVASQGLWIDGET_H
+

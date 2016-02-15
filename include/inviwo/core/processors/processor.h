@@ -185,7 +185,7 @@ public:
     std::string getIdentifier();
     virtual std::vector<std::string> getPath() const override;
 
-    virtual void setProcessorWidget(ProcessorWidget* processorWidget);
+    virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
@@ -217,22 +217,22 @@ public:
     virtual bool isReady() const;
 
     /**
-     *    Called when the network is evaluated and the processor is ready and not valid.
-     *    The work of the processor should be done here.
+     * Called when the network is evaluated and the processor is ready and not valid.
+     * The work of the processor should be done here.
      */
     virtual void process() {}
 
     /**
-     *    Called when the network is evaluated and the processor is neither ready or valid.
+     * Called when the network is evaluated and the processor is neither ready or valid.
      */
     virtual void doIfNotReady() {}
 
     /**
-     *    Called by the network after Processor::process has been called.
-     *    This will set the following to valid
-     *    * The processor
-     *    * All properties
-     *    * All outports and their connected inports.
+     * Called by the network after Processor::process has been called.
+     * This will set the following to valid
+     *   * The processor
+     *   * All properties
+     *   * All outports and their connected inports.
      * It will also set is't inports "changed" to false.
      */
     virtual void setValid() override;
@@ -290,7 +290,7 @@ protected:
 
     virtual void performEvaluateRequest();
 
-    ProcessorWidget* processorWidget_;  //< non-owning reference, the widget is owned by the editor.
+    std::unique_ptr<ProcessorWidget> processorWidget_;
 
 private:
     std::string identifier_;

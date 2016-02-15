@@ -38,11 +38,9 @@ namespace inviwo {
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "OpenGLQt") {
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
-    qtGLSharedCanvas_ = util::make_unique<CanvasQt>();
-
-    qtGLSharedCanvas_->initializeSquare();
-    qtGLSharedCanvas_->defaultGLState();
-    RenderContext::getPtr()->setDefaultRenderContext(qtGLSharedCanvas_.get());
+    sharedCanvas_ = util::make_unique<CanvasQt>();
+    sharedCanvas_->defaultGLState();
+    RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
 
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
@@ -51,10 +49,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
-    if (qtGLSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (sharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
-    qtGLSharedCanvas_->deinitialize();
 }
 
 }  // namespace

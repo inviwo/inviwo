@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHGL_H
@@ -33,41 +33,40 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
 
 class BufferGL;
-class BufferObjectArray;
 
 class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
-
 public:
+    using ContextId = void*;
+
     MeshGL();
     MeshGL(const MeshGL& rhs);
     MeshGL& operator=(const MeshGL& that);
     virtual MeshGL* clone() const override;
-  
-    virtual ~MeshGL();
+
+    virtual ~MeshGL() = default;
 
     void enable() const;
     void disable() const;
 
-    const BufferGL* getBufferGL(size_t idx=0) const;
+    const BufferGL* getBufferGL(size_t idx = 0) const;
 
     virtual Mesh* getOwner() override;
     virtual const Mesh* getOwner() const override;
-
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool editable) override;
 
 private:
-    std::vector<const BufferGL*> attributesGL_;
-    std::unique_ptr<BufferObjectArray> attributesArray_;
-
+    std::vector<const BufferGL*> bufferGLs_;
+    BufferObjectArray bufferArray_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESHGL_H
+#endif  // IVW_MESHGL_H

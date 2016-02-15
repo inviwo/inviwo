@@ -513,7 +513,14 @@ KDNode<N, T, P> *KDNode<N, T, P>::findMax(unsigned int d) {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
-    if (goRight(pos)) return this;
+    bool found = true;
+    for (unsigned char i = 0; i < N && found; i++) {
+        found &= pos_[i] == pos[i];
+    }
+    if (found) {
+        return this;
+    }
+
     if (goRight(pos)) {
         return isRightLeaf() ? nullptr : rightChild_->find(pos);
     } else {

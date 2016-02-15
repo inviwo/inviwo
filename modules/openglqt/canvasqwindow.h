@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,65 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/metadata/processorwidgetmetadata.h>
+#ifndef IVW_CANVASQWINDOW_H
+#define IVW_CANVASQWINDOW_H
+
+#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/opengl/canvasgl.h>
+#include <inviwo/core/common/inviwo.h>
+
+#define QT_NO_OPENGL_ES_2
+#define GLEXT_64_TYPES_DEFINED
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QtGui/QWindow>
+#include <QtGui/QSurfaceFormat>
+#include <warn/pop>
+
+class QOpenGLContext;
+class QExposeEvent;
+class QResizeEvent;
 
 namespace inviwo {
 
-ProcessorWidget::ProcessorWidget(Processor* p)
-    : ProcessorWidgetObservable()
-    , processor_(p)
-    , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
-          ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {}
+class IVW_MODULE_OPENGLQT_API CanvasQWindow : public QWindow, public CanvasGL {
+    friend class CanvasProcessorWidgetQt;
 
-void ProcessorWidget::setVisible(bool visible) {
-    metaData_->setVisibile(visible);
-    if (visible) {
-        notifyObserversAboutShow(this);
-        if (processor_) processor_->invalidate(InvalidationLevel::InvalidOutput);
-    } else {
-        notifyObserversAboutHide(this);
-    }
-}
+public:
+    using QtBase = QWindow;
 
-bool ProcessorWidget::isVisible() const { return metaData_->isVisible(); }
+    explicit CanvasQWindow(QWindow* parent = nullptr, uvec2 dim = uvec2(256,256));
+    ~CanvasQWindow() = default;
 
-void ProcessorWidget::show() {
-    ProcessorWidget::setVisible(true);
-}
+    static void defineDefaultContextFormat();
 
-void ProcessorWidget::hide() {
-    ProcessorWidget::setVisible(false);
-}
+    virtual void activate() override;
+    virtual void glSwapBuffers() override;
+    virtual void update() override;
+    void repaint();
+
+    virtual void resize(uvec2 size) override;
     
-Processor* ProcessorWidget::getProcessor() const { return processor_; }
+    QOpenGLContext* context() const;
+    QWindow* parentWidget() const;
 
-glm::ivec2 ProcessorWidget::getDimensions() const { return metaData_->getDimensions(); }
-void ProcessorWidget::setDimensions(glm::ivec2 dimensions) { metaData_->setDimensions(dimensions); }
+protected:
+    void initializeGL();
+    void paintGL();
+    virtual void resizeEvent(QResizeEvent* event) override;
+    void exposeEvent(QExposeEvent *event) override;
 
-glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(); }
-void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos); }
+    static CanvasQWindow* sharedCanvas_;
+ 
+private:
+    QOpenGLContext* thisGLContext_;
+    static QOpenGLContext* sharedGLContext_; //For rendering-context sharing
+    static QSurfaceFormat sharedFormat_;
+    bool swapBuffersAllowed_;
+};
 
-}  // namespace
+} // namespace
+
+#endif // IVW_CANVASQWINDOW_H
+

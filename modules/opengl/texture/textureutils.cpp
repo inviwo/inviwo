@@ -27,9 +27,15 @@
  *
  *********************************************************************************/
 
+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -312,30 +318,45 @@ void setShaderUniforms(Shader& shader, const ImageOutport& outport, const std::s
                       samplerID.empty() ? outport.getIdentifier() + "Parameters" : samplerID);
 }
 
-BufferObjectArray* enableImagePlaneRect() {
-    BufferObjectArray* rectArray = new BufferObjectArray();
-    CanvasGL::attachImagePlanRect(rectArray);
-    glDepthFunc(GL_ALWAYS);
-    rectArray->bind();
-    return rectArray;
+
+
+std::unique_ptr<Mesh> planeRect() {
+    auto verticesBuffer =
+        util::makeBuffer<vec2>({ {-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f} });
+    auto texCoordsBuffer =
+        util::makeBuffer<vec2>({ {0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f} });
+    auto indices_ = util::makeIndexBuffer({ 0, 1, 2, 3 });
+
+    auto m = util::make_unique<Mesh>();
+    m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+    m->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+    m->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+
+    return m;
 }
 
-void disableImagePlaneRect(BufferObjectArray* rectArray) {
-    rectArray->unbind();
-    glDepthFunc(GL_LESS);
-    delete rectArray;
+const MeshGL* imagePlaneRect() {
+    static std::unique_ptr<Mesh> mesh = planeRect();
+    const static MeshGL* square{ mesh->getRepresentation<MeshGL>() };
+    return square;
 }
 
 void singleDrawImagePlaneRect() {
-    BufferObjectArray* rectArray = enableImagePlaneRect();
+    LGL_ERROR;
+    imagePlaneRect()->enable();
+    glDepthFunc(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    disableImagePlaneRect(rectArray);
+    imagePlaneRect()->disable();
+    glDepthFunc(GL_LESS);
+    LGL_ERROR;
 }
 
 void multiDrawImagePlaneRect(int instances) {
-    BufferObjectArray* rectArray = enableImagePlaneRect();
+    imagePlaneRect()->enable();
+    glDepthFunc(GL_ALWAYS);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
-    disableImagePlaneRect(rectArray);
+    imagePlaneRect()->disable();
+    glDepthFunc(GL_LESS);
 }
 
 void bindTexture(const Texture& texture, GLenum texUnit) {

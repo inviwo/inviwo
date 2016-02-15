@@ -73,48 +73,30 @@ int main(int argc, char** argv) {
 
     // Continue initialization of default context
     Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
-    if (sharedCanvas) {
-        sharedCanvas->initialize();
-        sharedCanvas->activate();
-    }
+    if (sharedCanvas) sharedCanvas->activate();
 
-    // Set canvas as central widget
     QMainWindow mainWin;
-
+    inviwoApp.setMainWindow(&mainWin);
+    
+    // Need to clear the network and (will delete processors and processorwidgets)
+    // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
+    // before Processor can delete them.
+    util::OnScopeExit clearNetwork([&](){
+        inviwoApp.getProcessorNetwork()->clear();
+    });
+    
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    std::string workspace;
-    if (cmdparser.getLoadWorkspaceFromArg())
-        workspace = cmdparser.getWorkspacePath();
-    else
-#ifdef REG_INVIWOBASEGLMODULE
-        workspace = filesystem::getPath(PathType::Workspaces, "/boron.inv");
-#else
-        workspace = "";
-#endif
+    const std::string workspace =
+        cmdparser.getLoadWorkspaceFromArg()
+            ? cmdparser.getWorkspacePath()
+            : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {
             Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-            std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
-
-            for (auto processor : processors) {
-                processor->invalidate(InvalidationLevel::InvalidResources);
-
-                if (auto processorWidget =
-                        inviwoApp.getProcessorWidgetFactory()->create(processor).release()) {
-                    processorWidget->setProcessor(processor);
-                    processorWidget->initialize();
-                    processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-                    processor->setProcessorWidget(processorWidget);
-
-                    if (!mainWin.centralWidget()) {
-                        mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
-                    }
-                }
-            }
         }
     } catch (const AbortException& exception) {
         util::log(exception.getContext(),
@@ -133,13 +115,8 @@ int main(int argc, char** argv) {
     }
 
     inviwoApp.getProcessorNetwork()->setModified(true);
+    inviwoApp.processFront();
     inviwoApp.getProcessorNetwork()->unlock();
-
-    if (sharedCanvas)
-        mainWin.resize(sharedCanvas->getScreenDimensions().x,
-                       sharedCanvas->getScreenDimensions().y);
-
-    mainWin.show();
 
     cmdparser.processCallbacks(); // run any command line callbacks from modules.
 

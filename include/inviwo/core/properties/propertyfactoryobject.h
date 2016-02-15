@@ -41,7 +41,7 @@ public:
     PropertyFactoryObject(const std::string& className);
     virtual ~PropertyFactoryObject();
 
-    virtual Property* create(std::string identifier,
+    virtual std::unique_ptr<Property> create(std::string identifier,
                              std::string displayName) = 0;
 
     std::string getClassIdentifier() const;
@@ -58,9 +58,9 @@ public:
 
     virtual ~PropertyFactoryObjectTemplate() {}
 
-    virtual Property* create(std::string identifier,
+    virtual std::unique_ptr<Property> create(std::string identifier,
                              std::string displayName) {
-        return static_cast<Property*>(new T(identifier, displayName));
+        return util::make_unique<T>(identifier, displayName);
     }
 };
 

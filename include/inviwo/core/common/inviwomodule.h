@@ -116,8 +116,8 @@ public:
     virtual std::string getPath() const;
     std::string getPath(ModulePath type) const;
 
-    const std::vector<Capabilities*> getCapabilities() const;
     const std::vector<CameraFactoryObject*> getCameras() const;
+    const std::vector<Capabilities*> getCapabilities() const;
     const std::vector<DataReader*> getDataReaders() const;
     const std::vector<DataWriter*> getDataWriters() const;
     const std::vector<DialogFactoryObject*> getDialogs() const;
@@ -126,12 +126,12 @@ public:
     const std::vector<PortFactoryObject*> getPorts() const;
     const std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
     const std::vector<ProcessorFactoryObject*> getProcessors() const;
+    const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
     const std::vector<PropertyFactoryObject*> getProperties() const;
     const std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
     const std::vector<RepresentationConverter*> getRepresentationConverters() const;
     const std::vector<Resource*> getResources() const;
     const std::vector<Settings*> getSettings() const;
-    const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
 
 protected:
     void registerCapabilities(std::unique_ptr<Capabilities> info);
@@ -187,8 +187,8 @@ private:
 
     const std::string identifier_;  ///< Module folder name
 
-    std::vector<std::unique_ptr<Capabilities>> capabilities_;
     std::vector<std::unique_ptr<CameraFactoryObject>> cameras_;
+    std::vector<std::unique_ptr<Capabilities>> capabilities_;
     std::vector<std::unique_ptr<DataReader>> dataReaders_;
     std::vector<std::unique_ptr<DataWriter>> dataWriters_;
     std::vector<std::unique_ptr<DialogFactoryObject>> dialogs_;
@@ -197,13 +197,13 @@ private:
     std::vector<std::unique_ptr<PortFactoryObject>> ports_;
     std::vector<std::unique_ptr<PortInspectorFactoryObject>> portInspectors_;
     std::vector<std::unique_ptr<ProcessorFactoryObject>> processors_;
+    std::vector<std::unique_ptr<ProcessorWidgetFactoryObject>> processorWidgets_;
     std::vector<std::unique_ptr<PropertyConverter>> propertyConverters_;
     std::vector<std::unique_ptr<PropertyFactoryObject>> properties_;
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
     std::vector<std::unique_ptr<RepresentationConverter>> representationConverters_;
     std::vector<std::unique_ptr<Resource>> resources_;
     std::vector<std::unique_ptr<Settings>> settings_;
-    std::vector<std::unique_ptr<ProcessorWidgetFactoryObject>> processorWidgets_;
 };
 
 template <typename T>

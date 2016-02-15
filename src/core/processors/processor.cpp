@@ -53,9 +53,6 @@ Processor::Processor()
 
 Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
-    if (processorWidget_) {
-        processorWidget_->setProcessor(nullptr);
-    }
 }
 
 void Processor::addPort(Inport* port, const std::string& portDependencySet) {
@@ -115,11 +112,11 @@ std::string Processor::getIdentifier() {
     return identifier_;
 }
 
-void Processor::setProcessorWidget(ProcessorWidget* processorWidget) {
-    processorWidget_ = processorWidget;
+void Processor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
+    processorWidget_ = std::move(processorWidget);
 }
 
-ProcessorWidget* Processor::getProcessorWidget() const { return processorWidget_; }
+ProcessorWidget* Processor::getProcessorWidget() const { return processorWidget_.get(); }
 
 bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr); }
 
@@ -182,7 +179,8 @@ bool Processor::isEndProcessor() const { return outports_.empty(); }
 bool Processor::isReady() const { return allInportsAreReady(); }
 
 bool Processor::allInportsAreReady() const {
-    return util::all_of(inports_, [](Inport* p) { return (p->isOptional() && !p->isConnected()) || p->isReady(); });
+    return util::all_of(
+        inports_, [](Inport* p) { return (p->isOptional() && !p->isConnected()) || p->isReady(); });
 }
 
 bool Processor::allInportsConnected() const {

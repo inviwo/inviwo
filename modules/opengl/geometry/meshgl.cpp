@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -34,17 +34,9 @@
 
 namespace inviwo {
 
-MeshGL::MeshGL()
-    : MeshRepresentation()
-    , attributesArray_(new BufferObjectArray()) {
-}
+MeshGL::MeshGL() : MeshRepresentation() {}
 
-MeshGL::MeshGL(const MeshGL& rhs)
-    : MeshRepresentation(rhs)
-    , attributesArray_(new BufferObjectArray()){
-
-    update(true);
-}
+MeshGL::MeshGL(const MeshGL& rhs) : MeshRepresentation(rhs) { update(true); }
 
 MeshGL& MeshGL::operator=(const MeshGL& that) {
     if (this != &that) {
@@ -54,59 +46,42 @@ MeshGL& MeshGL::operator=(const MeshGL& that) {
     return *this;
 }
 
-MeshGL::~MeshGL(){}
+MeshGL* MeshGL::clone() const { return new MeshGL(*this); }
 
-MeshGL* MeshGL::clone() const {
-    return new MeshGL(*this);
-}
+void MeshGL::enable() const { bufferArray_.bind(); }
 
-void MeshGL::enable() const {
-    attributesArray_->bind();
-}
+void MeshGL::disable() const { bufferArray_.unbind(); }
 
-void MeshGL::disable() const {
-    attributesArray_->unbind();
-}
+const BufferGL* MeshGL::getBufferGL(size_t idx) const { return bufferGLs_[idx]; }
 
-const BufferGL* MeshGL::getBufferGL(size_t idx) const{
-    return attributesGL_[idx];
-}
-
+// save all buffers and to lazy attachment in enable.
 void MeshGL::update(bool editable) {
-    attributesGL_.clear();
+    bufferGLs_.clear();
     Mesh* owner = this->getOwner();
-    attributesArray_->bind();  // Have to call bind before clear.
-    attributesArray_->clear();
+
     if (editable) {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
-            attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
-                                                 static_cast<GLuint>(buf.first));
+            bufferGLs_.push_back(bufGL);
+            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
+                                            static_cast<GLuint>(buf.first));
         }
     } else {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getRepresentation<BufferGL>();
-            attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
-                                                 static_cast<GLuint>(buf.first));
+            bufferGLs_.push_back(bufGL);
+            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
+                                            static_cast<GLuint>(buf.first));
         }
     }
-    attributesArray_->unbind();
 }
 
-Mesh* MeshGL::getOwner() {
-    return static_cast<Mesh*>(DataRepresentation::getOwner());
-}
+Mesh* MeshGL::getOwner() { return static_cast<Mesh*>(DataRepresentation::getOwner()); }
 
 const Mesh* MeshGL::getOwner() const {
     return static_cast<const Mesh*>(DataRepresentation::getOwner());
 }
 
+std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }
 
-std::type_index MeshGL::getTypeIndex() const {
-    return std::type_index(typeid(MeshGL));
-}
-
-} // namespace
-
+}  // namespace
