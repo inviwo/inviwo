@@ -39,8 +39,7 @@ namespace inviwo {
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     : QWidget(dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow())
     , CanvasProcessorWidget(p)
-    , canvas_(nullptr)
-    , hasSharedCanvas_(false) {
+    , canvas_(nullptr) {
     
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
@@ -51,27 +50,15 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 
-    CanvasQt* sharedCanvas = CanvasQt::getSharedCanvas();
-    if (!sharedCanvas->getProcessorWidgetOwner()) {
-        canvas_ = sharedCanvas;
-        hasSharedCanvas_ = true;
-    } else {
-        canvas_ = new CanvasQt(uvec2(dim.x, dim.y));
-    }
-
+    canvas_ = new CanvasQt(uvec2(dim.x, dim.y));
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
+    canvas_->setMouseTracking(true);
+    canvas_->setAttribute(Qt::WA_OpaquePaintEvent);
 
     QGridLayout* gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
-#ifdef USE_QWINDOW
-    QWidget* container = QWidget::createWindowContainer(canvas_);
-#else
-    canvas_->setMouseTracking(true);
-    QWidget* container = static_cast<QWidget*>(canvas_);
-#endif
-    container->setAttribute(Qt::WA_OpaquePaintEvent);
-    gridLayout->addWidget(container, 0, 0);
+    gridLayout->addWidget(canvas_, 0, 0);
     setLayout(gridLayout);
 
     setWindowFlags(Qt::Tool);
@@ -96,12 +83,6 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
     if (canvas_) {
         this->hide();
-        if (hasSharedCanvas_) {
-            canvas_->setProcessorWidgetOwner(nullptr);
-            layout()->removeWidget(canvas_);
-            canvas_->setParent(nullptr);
-        }
-
         canvas_->setEventPropagator(nullptr);
         canvas_ = nullptr;  // Qt will take care of deleting the canvas
     }

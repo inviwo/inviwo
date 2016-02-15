@@ -78,7 +78,6 @@ protected:
 
 private:
     CanvasQt* canvas_;
-    bool hasSharedCanvas_;
 };
 
 }  // namespace

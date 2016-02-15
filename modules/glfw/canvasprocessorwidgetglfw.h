@@ -43,16 +43,16 @@ public:
     CanvasProcessorWidgetGLFW(Processor* p);
     virtual ~CanvasProcessorWidgetGLFW();
     
-    virtual void setVisible(bool visible);
-    virtual void show();
-    virtual void hide();
-    virtual void setDimensions(ivec2);
+    virtual void setVisible(bool visible) override;
+    virtual void show() override;
+    virtual void hide() override;
+    virtual void setDimensions(ivec2) override;
+    virtual void setPosition(ivec2) override;
 
-    virtual Canvas* getCanvas() const;
+    virtual Canvas* getCanvas() const override;
 
 private:
-    CanvasGLFW* canvas_;
-    bool hasSharedCanvas_;
+    std::unique_ptr<CanvasGLFW> canvas_;
 };
 
 } // namespace

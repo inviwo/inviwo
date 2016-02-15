@@ -43,7 +43,7 @@ public:
     virtual ~OpenGLQtModule();
 
 private:
-    std::unique_ptr<CanvasQt> qtGLSharedCanvas_;
+    std::unique_ptr<CanvasQt> sharedCanvas_;
     std::unique_ptr<OpenGLQtMenu> menu_;
 };
 
