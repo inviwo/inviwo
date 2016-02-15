@@ -74,11 +74,17 @@ int main(int argc, char** argv) {
     // Continue initialization of default context
     Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
     if (sharedCanvas) sharedCanvas->activate();
-  
-    // Set canvas as central widget
+
     QMainWindow mainWin;
     inviwoApp.setMainWindow(&mainWin);
-
+    
+    // Need to clear the network and (will delete processors and processorwidgets)
+    // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
+    // before Processor can delete them.
+    util::OnScopeExit clearNetwork([&](){
+        inviwoApp.getProcessorNetwork()->clear();
+    });
+    
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
@@ -91,15 +97,6 @@ int main(int argc, char** argv) {
         if (!workspace.empty()) {
             Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-            auto processors = inviwoApp.getProcessorNetwork()->getProcessors();
-
-            for (auto processor : processors) {
-                processor->invalidate(InvalidationLevel::InvalidResources);
-
-                if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
-                    processor->setProcessorWidget(widget.release());
-                }
-            }
         }
     } catch (const AbortException& exception) {
         util::log(exception.getContext(),

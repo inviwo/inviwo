@@ -91,20 +91,10 @@ int main(int argc, char** argv) {
             ? cmdparser.getWorkspacePath()
             : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
 
-    std::vector<std::unique_ptr<ProcessorWidget>> widgets;
     try {
         if (!workspace.empty()) {
             Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-            auto processors = inviwoApp.getProcessorNetwork()->getProcessors();
-
-            for (auto processor : processors) {
-                processor->invalidate(InvalidationLevel::InvalidResources);
-                if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
-                    processor->setProcessorWidget(widget.get());
-                    widgets.push_back(std::move(widget));
-                }
-            }
         }
     } catch (const AbortException& exception) {
         util::log(exception.getContext(),

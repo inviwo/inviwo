@@ -185,7 +185,7 @@ public:
     std::string getIdentifier();
     virtual std::vector<std::string> getPath() const override;
 
-    virtual void setProcessorWidget(ProcessorWidget* processorWidget);
+    virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
@@ -290,7 +290,7 @@ protected:
 
     virtual void performEvaluateRequest();
 
-    ProcessorWidget* processorWidget_;  //< non-owning reference, the widget is owned by the editor.
+    std::unique_ptr<ProcessorWidget> processorWidget_;
 
 private:
     std::string identifier_;

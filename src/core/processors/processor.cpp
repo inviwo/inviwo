@@ -112,11 +112,11 @@ std::string Processor::getIdentifier() {
     return identifier_;
 }
 
-void Processor::setProcessorWidget(ProcessorWidget* processorWidget) {
-    processorWidget_ = processorWidget;
+void Processor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
+    processorWidget_ = std::move(processorWidget);
 }
 
-ProcessorWidget* Processor::getProcessorWidget() const { return processorWidget_; }
+ProcessorWidget* Processor::getProcessorWidget() const { return processorWidget_.get(); }
 
 bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr); }
 

@@ -115,10 +115,8 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     // generate GUI representations (graphics item, property widget, processor widget)
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
-    auto factory = mainwindow_->getInviwoApplication()->getProcessorWidgetFactory();
-    if (auto processorWidget = factory->create(processor)) {
-        processorWidget->addObserver(ret->getStatusItem());
-        processor->setProcessorWidget(processorWidget.release());
+    if (auto widget = processor->getProcessorWidget()){
+        widget->addObserver(ret->getStatusItem());
     }
     return ret;
 }
@@ -126,12 +124,6 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
 void NetworkEditor::removeProcessorRepresentations(Processor* processor) {
     removeProcessorGraphicsItem(processor);
     removeAndDeletePropertyWidgets(processor);
-
-    // processor widget should be removed here since it is added in addProcessorRepresentations()
-    if (auto processorWidget = processor->getProcessorWidget()) {
-        processor->setProcessorWidget(nullptr);
-        delete processorWidget;
-    }
 }
 
 ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* processor) {
