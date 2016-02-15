@@ -127,8 +127,12 @@ inline bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
 
 template <typename T, typename M, typename K, typename... Args>
 std::unique_ptr<T> StandardFactory<T, M, K, Args...>::create(K key, Args... args) const {
-    return std::unique_ptr<T>(util::map_find_or_null(
-        map_, key, [&](M* o) { return o->create(args...); }));
+    auto it = map_.find(key);
+    if (it != end(map_)) {
+        return it->second->create(args...);
+    } else {
+        return nullptr;
+    }
 }
 
 template <typename T, typename M, typename K, typename... Args>

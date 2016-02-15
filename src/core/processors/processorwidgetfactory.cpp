@@ -34,8 +34,7 @@
 namespace inviwo {
 
 std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(Processor* processor) const {
-    return StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, const std::string&,
-                          Processor*>::create(processor->getClassIdentifier(), processor);
+    return this->create(processor->getClassIdentifier(), processor);
 }
 
 }  // namespace
