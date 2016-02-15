@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 namespace inviwo {
 
