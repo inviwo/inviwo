@@ -32,6 +32,7 @@
 #include "pyutil.h"
 
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
@@ -43,28 +44,18 @@
 
 namespace inviwo {
 
-PyObject* py_wait(PyObject* /*self*/, PyObject* args) {
-    static PyWaitMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-
+PyObject* py_wait(PyObject* self, PyObject* args) {
     InviwoApplication::getPtr()->waitForPool();
-
     Py_RETURN_NONE;
 }
 
-PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
-    static PySnapshotMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-
-    std::string canvasName = "";
-    std::string filename = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-
-    if (PyTuple_Size(args) == 2) {
-        canvasName = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1)));
+PyObject* py_snapshot(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester(1);
+    std::string filename, canvasName = "";
+    if (tester.parse(args, filename, canvasName)== -1) {
+        return nullptr;
     }
-
+    
     CanvasProcessor* canvas = nullptr;
 
     if (canvasName.size() != 0) {
@@ -93,16 +84,14 @@ PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
-    static PySnapshotCanvasMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-
-    unsigned int index;
-    const char* filename = nullptr;
-
-    if (!PyArg_ParseTuple(args, "is:canvasSnapshot", &index, &filename)) return nullptr;
-
+PyObject* py_snapshotCanvas(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    int index;
+    std::string filename;
+    if (tester.parse(args, index, filename)== -1) {
+        return nullptr;
+    }
+    
     std::vector<CanvasProcessor*> canvases =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
 
@@ -117,22 +106,11 @@ PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* args) {
-    static PySnapshotAllCanvasesMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-    auto size = PyTuple_Size(args);
-
-    std::string path;
-    std::string prefix = "";
-    std::string fileEnding = "png";
-
-    path = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-    if (size >= 1) {
-        prefix = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
-    }
-    if (size >= 2) {
-        fileEnding = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 2));
+PyObject* py_snapshotAllCanvases(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester(2);
+    std::string path, prefix = "", fileEnding = "png";
+    if (tester.parse(args, path, prefix, fileEnding) == -1) {
+        return nullptr;
     }
 
     std::vector<CanvasProcessor*> canvases =
@@ -147,32 +125,34 @@ PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getBasePath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(InviwoApplication::getPtr()->getBasePath());
 }
 
-PyObject* py_getDataPath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getDataPath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Data));
 }
 
-PyObject* py_getWorkspaceSavePath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getWorkspaceSavePath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Workspaces));
 }
-PyObject* py_getVolumePath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getVolumePath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Volumes));
 }
-PyObject* py_getImagePath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getImagePath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Images));
 }
-PyObject* py_getModulePath(PyObject* /*self*/, PyObject* args) {
-    static PyGetModulePathMethod p;
-    if (!p.testParams(args)) return nullptr;
+PyObject* py_getModulePath(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    std::string name;
+    if (tester.parse(args, name) == -1) {
+        return nullptr;
+    }
 
-    auto name = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
     if (auto module = InviwoApplication::getPtr()->getModuleByIdentifier(name)) {
         return PyValueParser::toPyObject(module->getPath());
     } else {
@@ -182,12 +162,12 @@ PyObject* py_getModulePath(PyObject* /*self*/, PyObject* args) {
     }
 }
 
-PyObject* py_getTransferFunctionPath(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getTransferFunctionPath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::TransferFunctions));
 }
 
-PyObject* py_getMemoryUsage(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_getMemoryUsage(PyObject* self, PyObject* args) {
     InviwoApplication* a = InviwoApplication::getPtr();
     if (!a) {
         std::string msg =
@@ -216,7 +196,7 @@ PyObject* py_getMemoryUsage(PyObject* /*self*/, PyObject* /*args*/) {
     return nullptr;
 }
 
-PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_clearResourceManager(PyObject* self, PyObject* args) {
     if (ResourceManager::getPtr()) {
         ResourceManager::getPtr()->clearAllResources();
         Py_RETURN_NONE;
@@ -227,7 +207,7 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
     return nullptr;
 }
 
-PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_disableEvaluation(PyObject* self, PyObject* args) {
     if (auto app = InviwoApplication::getPtr()) {
         if (auto network = app->getProcessorNetwork()) {
             network->lock();
@@ -244,7 +224,7 @@ PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
     return nullptr;
 }
 
-PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_enableEvaluation(PyObject* self, PyObject* args) {
     if (auto app = InviwoApplication::getPtr()) {
         if (auto network = app->getProcessorNetwork()) {
             network->unlock();
@@ -261,25 +241,5 @@ PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
     return nullptr;
 }
 
-PySnapshotMethod::PySnapshotMethod() : filename_("filename"), canvas_("canvas", true) {
-    addParam(&filename_);
-    addParam(&canvas_);
-}
-
-PySnapshotCanvasMethod::PySnapshotCanvasMethod() : canvasID_("canvasID"), filename_("filename") {
-    addParam(&canvasID_);
-    addParam(&filename_);
-}
-
-PySnapshotAllCanvasesMethod::PySnapshotAllCanvasesMethod()
-    : path_("path"), prefix_("prefix", true), fileEnding_("fileEnding", true) {
-    addParam(&path_);
-    addParam(&prefix_);
-    addParam(&fileEnding_);
-}
-
-PyGetModulePathMethod::PyGetModulePathMethod() : moduleName_("moduleName", false) {
-    addParam(&moduleName_);
-}
 
 }

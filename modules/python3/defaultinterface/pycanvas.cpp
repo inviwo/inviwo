@@ -36,6 +36,7 @@
 
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/pythoninterface/pythonparameterparser.h>
 
 namespace inviwo {
 
@@ -50,14 +51,18 @@ PyObject* py_canvascount(PyObject* /*self*/, PyObject* /*args*/) {
     Py_RETURN_NONE;
 }
 
-//
 PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
-    static PyResizeCanvasMethod p;
+    static PythonParameterParser tester;
+    PyObject* arg0;
+    int w;
+    int h;
+    if (tester.parse(args,arg0, w, h) == -1) {
+        return nullptr;
+    }
 
-    if (!p.testParams(args)) return nullptr;
+   
 
     CanvasProcessor* canvas = nullptr;
-    PyObject* arg0 = PyTuple_GetItem(args, 0);
     bool argIsString = PyValueParser::is<std::string>(arg0);
 
     if (argIsString) {
@@ -106,30 +111,19 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
         canvas = canvases[id];
     }
 
-    PyObject* arg1 = PyTuple_GetItem(args, 1);
-    PyObject* arg2 = PyTuple_GetItem(args, 2);
-    int w = PyValueParser::parse<int>(arg1);
-    int h = PyValueParser::parse<int>(arg2);
 
     if (w <= 0 || h <= 0) {
         std::string msg = std::string(
             "resizeCanvas(canvas,width,height) width and height must have positive non-zero "
-            "values ");
+            "values");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
 
-    static_cast<IntVec2Property*>(canvas->getPropertyByIdentifier("dimensions"))->set(ivec2(w, h));
-
-    canvas->invalidate(InvalidationLevel::InvalidOutput);
+    canvas->setCanvasSize(ivec2(w, h));
+    //canvas->invalidate(InvalidationLevel::InvalidOutput);
 
     Py_RETURN_NONE;
 }
 
-PyResizeCanvasMethod::PyResizeCanvasMethod()
-    : canvas_("canvas"), newWidth_("newWidth"), newHeight_("newHeight") {
-    addParam(&canvas_);
-    addParam(&newWidth_);
-    addParam(&newHeight_);
-}
 }

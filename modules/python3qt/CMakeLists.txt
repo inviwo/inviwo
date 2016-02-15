@@ -11,7 +11,6 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninfowidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonmenu.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonqtmethods/pythonqtmethods.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python3qtmodule.h
@@ -27,7 +26,6 @@ source_group("MOC Files" FILES ${MOC_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoneditorwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninfowidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonmenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonqtmethods/pythonqtmethods.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python3qtmodule.cpp

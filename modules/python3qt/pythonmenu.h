@@ -33,7 +33,6 @@
 #include <modules/python3qt/python3qtmoduledefine.h>
 
 namespace inviwo {
-class PythonInfoWidget;
 class PythonEditorWidget;
 class InviwoApplication;
 
@@ -45,7 +44,6 @@ public:
     PythonEditorWidget* getEditor() const;
 
 private:
-    PythonInfoWidget* infoWidget_;
     PythonEditorWidget* editor_;
 };
 

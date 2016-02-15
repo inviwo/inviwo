@@ -34,32 +34,10 @@
 
 #include <modules/python3/python3moduledefine.h>
 
-#include <modules/python3/pythoninterface/pymethod.h>
-
 namespace inviwo {
 PyObject* py_canvascount(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* /*args*/);
 
-
-class IVW_MODULE_PYTHON3_API PyCanvasCountMethod : public PyMethod {
-public:
-    virtual std::string getName()const {return "canvasCount";}
-    virtual std::string getDesc()const {return "Returns the number of canvases in the current network.";}
-    virtual PyCFunction getFunc() {return py_canvascount;}
-};
-
-class IVW_MODULE_PYTHON3_API PyResizeCanvasMethod : public PyMethod {
-public:
-    PyResizeCanvasMethod();
-    virtual ~PyResizeCanvasMethod() {}
-    virtual std::string getName()const {return "resizeCanvas";}
-    virtual std::string getDesc()const {return "Resizes the canvas in the network to the given size. Canvas can either be given using a canvas index (starting at 0) or a canvas ID string ";}
-    virtual PyCFunction getFunc() {return py_resizecanvas;}
-private:
-    PyParamVarious canvas_;
-    PyParamInt newWidth_;
-    PyParamInt newHeight_;
-};
 
 } //namespace
 

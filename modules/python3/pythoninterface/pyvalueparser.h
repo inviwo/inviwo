@@ -52,7 +52,7 @@ public:
     template <typename T>
     static bool is(PyObject* arg);
     
-    static void setProperty(Property* p, PyObject* args);
+    static bool setProperty(Property* p, PyObject* args);
     static PyObject* getProperty(Property* p);
 };
 
@@ -209,6 +209,9 @@ template <typename T>
 bool PyValueParser::is(PyObject* arg) {
     return detail::test<T>(arg);
 }
+
+template <> IVW_MODULE_PYTHON3_API
+bool PyValueParser::is<bool>(PyObject* arg);
 
 }  // namespace
 

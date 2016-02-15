@@ -31,7 +31,6 @@
 #define IVW_PYINVIWO_H
 
 #include <modules/python3/python3moduledefine.h>
-#include <modules/python3/pyinviwoobserver.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/observer.h>
@@ -45,21 +44,22 @@ namespace inviwo {
 class PyModule;
 class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo>,
-                                        public Observable<PyInviwoObserver> {
+class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo> {
 public:
     PyInviwo(Python3Module* module);
     virtual ~PyInviwo();
 
     /**
-    * \brief initialized python modules
+    * \brief initialize a python module
     *
-    * Initializes given python module. Can be used called from outside this python module.
+    * Initializes given python module definition. 
     *
-    * @param PyModule *pyModule class containing information and methods for python module
+    * @param PyModuleDef *def definition of module
+    * @param std::string name the name of the python module, will be used to access functions in the script: eg inviwo.setPropertyValue(....)
     */
-    void registerPyModule(PyModule* pyModule);
+    void registerPyModule(PyModuleDef *def, std::string name);
 
+  
     /**
     * \brief add a path for where python scripts will look for modules
     *
@@ -78,13 +78,11 @@ public:
 
 protected:
     void initPythonCInterface(Python3Module* module);
-    void initDefaultInterfaces();
     void initOutputRedirector(Python3Module* module);
 
 private:
     bool isInit_;
-    PyModule* inviwoPyModule_;
-    PyModule* inviwoInternalPyModule_;
+    PyObject* dict_;
 
     std::vector<PyModule*> registeredModules_;
 };

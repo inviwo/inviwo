@@ -32,55 +32,12 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonincluder.h>
-#include <modules/python3/pythoninterface/pymethod.h>
-#include <string>
 
 namespace inviwo {
 PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* /*args*/);
 
-class IVW_MODULE_PYTHON3_API PySetCameraFocusMethod : public PyMethod {
-public:
-    PySetCameraFocusMethod();
-    virtual ~PySetCameraFocusMethod() {}
-
-    virtual std::string getName() const { return "setCameraFocus"; }
-    virtual std::string getDesc() const { return "Function to set the cameras focal point."; }
-    virtual PyCFunction getFunc() { return py_setCameraFocus; }
-
-private:
-    PyParamString path_;
-    PyParamVec3 focusPoint_;
-};
-
-class IVW_MODULE_PYTHON3_API PySetCameraUpMethod : public PyMethod {
-public:
-    PySetCameraUpMethod();
-    virtual ~PySetCameraUpMethod() {}
-
-    virtual std::string getName() const { return "setCameraUp"; }
-    virtual std::string getDesc() const { return "Function to set the cameras up direction."; }
-    virtual PyCFunction getFunc() { return py_setCameraUp; }
-
-private:
-    PyParamString path_;
-    PyParamVec3 upVector_;
-};
-
-class IVW_MODULE_PYTHON3_API PySetCameraPosMethod : public PyMethod {
-public:
-    PySetCameraPosMethod();
-    virtual ~PySetCameraPosMethod() {}
-
-    virtual std::string getName() const { return "setCameraPosition"; }
-    virtual std::string getDesc() const { return "Function to set the cameras position."; }
-    virtual PyCFunction getFunc() { return py_setCameraPos; }
-
-private:
-    PyParamString path_;
-    PyParamVec3 position_;
-};
 
 }  // namespace
 

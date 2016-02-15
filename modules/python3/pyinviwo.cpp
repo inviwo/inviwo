@@ -37,10 +37,6 @@
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
-#include <modules/python3/pythoninterface/pymodule.h>
-
-#include <modules/python3/pyinviwoobserver.h>
-
 #include <modules/python3/defaultinterface/pyproperties.h>
 #include <modules/python3/defaultinterface/pycamera.h>
 #include <modules/python3/defaultinterface/pycanvas.h>
@@ -49,15 +45,7 @@
 #include <modules/python3/defaultinterface/pyvolume.h>
 
 namespace inviwo {
-static PyObject* py_stdout(PyObject* /*self*/, PyObject* args);
-class PyStdOutCatcher : public PyMethod {
-public:
-    virtual std::string getName() const override { return "ivwPrint"; }
-    virtual std::string getDesc() const override {
-        return " Only for internal use. Redirect std output to python editor widget.";
-    }
-    virtual PyCFunction getFunc() override { return py_stdout; }
-};
+
 
 static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
     char* msg;
@@ -79,8 +67,6 @@ static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
 
 PyInviwo::PyInviwo(Python3Module* module)
     : isInit_(false)
-    , inviwoPyModule_(nullptr)
-    , inviwoInternalPyModule_(nullptr)
 {
     init(this);
 
@@ -88,18 +74,17 @@ PyInviwo::PyInviwo(Python3Module* module)
 }
 
 PyInviwo::~PyInviwo() {
-    delete inviwoPyModule_;
-    delete inviwoInternalPyModule_;
     Py_Finalize();
 }
 
-#include <warn/push>
-#include <warn/ignore/missing-field-initializers>
-void PyInviwo::registerPyModule(PyModule* pyModule) {
-    registeredModules_.push_back(pyModule);
-    return;
+void PyInviwo::registerPyModule(PyModuleDef *def, std::string name) {
+    PyObject* obj = PyModule_Create(def);
+    if (!obj) {
+        LogError("Failed to init " << name);
+    }
+    PyDict_SetItemString(dict_, name.c_str(), obj);
 }
-#include <warn/pop>
+
 
 void PyInviwo::addModulePath(const std::string& path) {
     if (!Py_IsInitialized()) {
@@ -124,34 +109,85 @@ static PyMethodDef Inviwo_Internals_METHODS[] =
     nullptr
 };
 
-struct PyModuleDef Inviwo_Internals_Module_Def =  { 
-    PyModuleDef_HEAD_INIT, 
-    "inviwo_internal", 
+static PyMethodDef Inviwo_METHODS[] =
+{
+    //Defined in pyproperties.h
+    { "setPropertyValue" , py_setPropertyValue , METH_VARARGS, "Assigns a value to a processor property. The value has to be passed as scalar or "
+    "tuple, depending on the property's cardinality. Camera properties take a 3-tuple "
+    "of 3-tuples, containing the position, focus and up vectors. Option properties "
+    "expect an option key." },
+    { "setPropertyMaxValue" , py_setPropertyMaxValue , METH_VARARGS, "Sets the max value for a property." },
+    { "setPropertyMinValue" , py_setPropertyMinValue , METH_VARARGS, "Sets the min value for a property." },
+    { "getPropertyValue" , py_getPropertyValue , METH_VARARGS, "Returns the current value of a processor property (scalar or tuple)." },
+    { "getPropertyMaxValue" , py_getPropertyMaxValue , METH_VARARGS, "Returns the max value for a property (scalar or tuple)." },
+    { "getPropertyMinValue" , py_getPropertyMinValue , METH_VARARGS, "Returns the min value for a property (scalar or tuple)." },
+    { "clickButton" , py_clickButton , METH_VARARGS, "Simulates a click on a button property." }, 
+
+    //Defined in pycamera.h
+    { "setCameraFocus" , py_setCameraFocus , METH_VARARGS, "Function to set the cameras focal point." },
+    { "setCameraUp" , py_setCameraUp , METH_VARARGS, "Function to set the cameras up direction." },
+    { "setCameraPos" , py_setCameraPos , METH_VARARGS, "Function to set the cameras position." },
+
+
+    //Defined in pycanvas.h
+    { "canvascount" , py_canvascount , METH_VARARGS, "Returns the number of canvases in the current network." },
+    { "resizecanvas" , py_resizecanvas , METH_VARARGS, "Resizes the canvas in the network to the given size. Canvas can either be given using a canvas index (starting at 0) or a canvas ID string." },
+
+    //Defined in pylist.h
+    { "listProperties" , py_listProperties , METH_VARARGS, "List all properties for a processor." },
+    { "listProcesoors" , py_listProcesoors , METH_VARARGS, "Lists all processors in the current network." },
+
+    //Defined in pyutil.h
+    { "wait" , py_wait , METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },
+    { "snapshot" , py_snapshot , METH_VARARGS, "Saves a snapshot of the specified canvas to the given file. If no canvas name is "
+                                               "passed, the first canvas in the network is chosen." },
+    { "snapshotCanvas" , py_snapshotCanvas , METH_VARARGS, "Saves a snapshot of the ith canvas to the given file." },
+    { "snapshotAllCanvases" , py_snapshotAllCanvases , METH_VARARGS, "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string)." },
+    { "getBasePath" , py_getBasePath , METH_VARARGS, "Returns the path to Inviwos base folder." },
+    { "getDataPath" , py_getDataPath , METH_VARARGS, "Returns the path to Inviwos data folder." },
+    { "getWorkspaceSavePath" , py_getWorkspaceSavePath , METH_VARARGS, "Returns the path to Inviwos workspace folder." },
+    { "getVolumePath" , py_getVolumePath , METH_VARARGS, "Returns the path to Inviwos volume folder." },
+    { "getImagePath" , py_getImagePath , METH_VARARGS, "Returns the path to Inviwos image folder." },
+    { "getModulePath" , py_getModulePath , METH_VARARGS, "Returns the path to the given module." },
+    { "getTransferFunctionPath" , py_getTransferFunctionPath , METH_VARARGS, "Returns the path to Inviwo transfer function folder." },
+    { "getMemoryUsage" , py_getMemoryUsage , METH_VARARGS, "Return how big Inviwo's current RAM working set is." },
+    { "clearResourceManager" , py_clearResourceManager , METH_VARARGS, "Method to clear Inviwo's resource manager." },
+    { "disableEvaluation" , py_disableEvaluation , METH_VARARGS, "Method to disable evaluation of Inviwo's network." },
+    { "enableEvaluation" , py_enableEvaluation , METH_VARARGS, "Method to re-enable evaluation of Inviwo's network." },
+
+    //Defined in pyvolume.h
+
+    { "saveTransferFunction" , py_saveTransferFunction , METH_VARARGS, "Save a transfer function to file from the specified transfer function property." },
+    { "loadTransferFunction" , py_loadTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+    { "clearTransferfunction" , py_clearTransferfunction , METH_VARARGS, "Clears a transfer function." },
+    { "addPointTransferFunction" , py_addPointTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+
+    nullptr
+};
+
+
+
+struct PyModuleDef Inviwo_Internals_Module_Def = {
+    PyModuleDef_HEAD_INIT,
+    "inviwo_internal",
     nullptr,
-    -1, 
+    -1,
     Inviwo_Internals_METHODS,
     nullptr, nullptr, nullptr, nullptr
 };
 
-PyMODINIT_FUNC
-Iniviwo_internals_init()
-{
-    auto a = PyInviwo::getPtr()->getAllPythonModules()[0];
-   // Inviwo_Internals_Module_Def.m_methods = a->getPyMethodDefs();
-    PyObject* obj = PyModule_Create(&Inviwo_Internals_Module_Def);
-    if (!obj) {
-        LogErrorCustom("Iniviwo_internals_init" , "Failed to init inviwo_internal")
-    }
 
-    a->setPyObject(obj);
-
-    return obj;
-}
+struct PyModuleDef Inviwo_Module_Def = {
+    PyModuleDef_HEAD_INIT,
+    "inviwo",
+    nullptr,
+    -1,
+    Inviwo_METHODS,
+    nullptr, nullptr, nullptr, nullptr
+};
 
 void PyInviwo::initPythonCInterface(Python3Module* module) {
     if (isInit_) return;
-
-    initDefaultInterfaces();
 
     isInit_ = true;
     LogInfo("Python version: " + toString(Py_GetVersion()));
@@ -173,16 +209,12 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     importModule("sys");
 
 
-//*    
-    auto main = PyImport_AddModule("__main__");
-    auto dict = PyImport_GetModuleDict();
-    auto pobj = Iniviwo_internals_init();
-    PyDict_SetItemString(dict, "inviwo_internal", pobj);
-   // */
-
+    //auto main = PyImport_AddModule("__main__");
+    dict_ = PyImport_GetModuleDict();
+    registerPyModule(&Inviwo_Internals_Module_Def, "inviwo_internal");
+    registerPyModule(&Inviwo_Module_Def, "inviwo");
 
     addModulePath(module->getPath() + "/scripts");
-   // initDefaultInterfaces();
     initOutputRedirector(module);
 }
 
@@ -200,51 +232,6 @@ void PyInviwo::importModule(const std::string& moduleName) {
         }
     }
     delete[] key;
-}
-
-void PyInviwo::initDefaultInterfaces() {
-    inviwoInternalPyModule_ = new PyModule("inviwo_internal");
-    inviwoInternalPyModule_->addMethod(new PyStdOutCatcher());
-
-    inviwoPyModule_ = new PyModule("inviwo");
-    inviwoPyModule_->addMethod(new PySetPropertyValueMethod());
-    inviwoPyModule_->addMethod(new PySetPropertyMaxValueMethod());
-    inviwoPyModule_->addMethod(new PySetPropertyMinValueMethod());
-    inviwoPyModule_->addMethod(new PyGetPropertyValueMethod());
-    inviwoPyModule_->addMethod(new PyGetPropertyMaxValueMethod());
-    inviwoPyModule_->addMethod(new PyGetPropertyMinValueMethod());
-    inviwoPyModule_->addMethod(new PyClickButtonMethod());
-    inviwoPyModule_->addMethod(new PySetCameraFocusMethod());
-    inviwoPyModule_->addMethod(new PySetCameraUpMethod());
-    inviwoPyModule_->addMethod(new PySetCameraPosMethod());
-    inviwoPyModule_->addMethod(new PyListPropertiesMethod());
-    inviwoPyModule_->addMethod(new PyListProcessorsMethod());
-    inviwoPyModule_->addMethod(new PyCanvasCountMethod());
-    inviwoPyModule_->addMethod(new PyResizeCanvasMethod());
-    inviwoPyModule_->addMethod(new PyWaitMethod());
-    inviwoPyModule_->addMethod(new PySnapshotMethod());
-    inviwoPyModule_->addMethod(new PySnapshotCanvasMethod());
-    inviwoPyModule_->addMethod(new PySnapshotAllCanvasesMethod());
-    inviwoPyModule_->addMethod(new PyGetBasePathMethod());
-    inviwoPyModule_->addMethod(new PyGetWorkspaceSavePathMethod());
-    inviwoPyModule_->addMethod(new PyGetVolumePathMethod());
-    inviwoPyModule_->addMethod(new PyGetDataPathMethod());
-    inviwoPyModule_->addMethod(new PyGetImagePathMethod());
-    inviwoPyModule_->addMethod(new PyGetModulePathMethod());
-    inviwoPyModule_->addMethod(new PyGetTransferFunctionPath());
-    inviwoPyModule_->addMethod(new PyGetMemoryUsage());
-    inviwoPyModule_->addMethod(new PyClearResourceManage());
-    inviwoPyModule_->addMethod(new PyEnableEvaluation());
-    inviwoPyModule_->addMethod(new PyDisableEvaluation());
-    inviwoPyModule_->addMethod(new PySaveTransferFunction());
-    inviwoPyModule_->addMethod(new PyLoadTransferFunction());
-    inviwoPyModule_->addMethod(new PyClearTransferfunction());
-    inviwoPyModule_->addMethod(new PyAddTransferFunction());
-
-  
-
-    registerPyModule(inviwoInternalPyModule_);
-    registerPyModule(inviwoPyModule_);
 }
 
 void PyInviwo::initOutputRedirector(Python3Module* module) {

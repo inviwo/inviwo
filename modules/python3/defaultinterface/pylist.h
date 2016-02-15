@@ -34,31 +34,10 @@
 
 #include <modules/python3/python3moduledefine.h>
 
-#include <modules/python3/pythoninterface/pymethod.h>
-
 namespace inviwo {
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/);
 
-
-class IVW_MODULE_PYTHON3_API PyListPropertiesMethod : public PyMethod {
-public:
-    PyListPropertiesMethod();
-    virtual ~PyListPropertiesMethod() {}
-    virtual std::string getName()const {return "listProperties";}
-    virtual std::string getDesc()const {return "List all properties for a processor";}
-    virtual PyCFunction getFunc() {return py_listProperties;}
-private:
-    PyParamString processor_;
-
-};
-class IVW_MODULE_PYTHON3_API PyListProcessorsMethod : public PyMethod {
-public:
-    virtual std::string getName()const {return "listProcessors";}
-    virtual std::string getDesc()const {return "Lists all processors in the current network";}
-    virtual PyCFunction getFunc() {return py_listProcesoors;}
-
-};
 
 } //namespace
 

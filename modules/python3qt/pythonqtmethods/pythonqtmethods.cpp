@@ -31,6 +31,7 @@
 
 #include "pythonqtmethods.h"
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -43,16 +44,39 @@
 
 #include <QInputDialog>
 #include <QDir>
+#include <modules/python3/pyinviwo.h>
 
 namespace inviwo {
 
-PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
-    if (!(PyTuple_Size(args) == 0)) {
-        std::ostringstream errStr;
-        utilqt::localizeStream(errStr);
-        errStr << "loadWorkspace() takes no parameters";
-        errStr << " (" << PyTuple_Size(args) << " given)";
-        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+    static PyMethodDef Inviwo_QT_METHODS[] =
+    {
+        { "getPathCurrentWorkspace" , py_getPathCurrentWorkspace , METH_VARARGS, "Return the path to the current loaded workspace." },
+        { "loadWorkspace" , py_loadWorkspace , METH_VARARGS, "Load a new workspace into the network." },
+        { "saveWorkspace" , py_saveWorkspace , METH_VARARGS, "Saves the current workspace." },
+        { "quitInviwo" , py_quitInviwo , METH_VARARGS, "Method to quit Inviwo." },
+        { "prompt" , py_prompt , METH_VARARGS, "Prompts the user for input." },
+        { "showTransferFunctionEditor" , py_showTransferFunctionEditor , METH_VARARGS, "Show the transfer function editor for given transfer function property." },
+        nullptr
+    };
+
+
+    struct PyModuleDef Inviwo_QT_Module_Def = {
+        PyModuleDef_HEAD_INIT,
+        "inviwoqt",
+        nullptr,
+        -1,
+        Inviwo_QT_METHODS,
+        nullptr, nullptr, nullptr, nullptr
+    };
+
+
+    void initPythonQT() {
+        PyInviwo::getPtr()->registerPyModule(&Inviwo_QT_Module_Def,"inviwoqt");
+    }
+
+PyObject* py_getPathCurrentWorkspace(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    if (tester.parse(args) == -1) {
         return nullptr;
     }
 
@@ -65,24 +89,12 @@ PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
     return nullptr;
 }
 
-PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
-    if (!(PyTuple_Size(args) == 1)) {
-        std::ostringstream errStr;
-        utilqt::localizeStream(errStr);
-        errStr << "loadWorkspace() takes 1 argument: filename";
-        errStr << " (" << PyTuple_Size(args) << " given)";
-        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+PyObject* py_loadWorkspace(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    std::string filename;
+    if (tester.parse(args, filename) == -1) {
         return nullptr;
     }
-
-    // check parameter if is string
-    if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
-        PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
-        return nullptr;
-    }
-
-    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-
     if (!filesystem::fileExists(filename)) {
         filename = filesystem::getPath(PathType::Workspaces) + "/" + filename;
 
@@ -102,24 +114,12 @@ PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
-    if (!(PyTuple_Size(args) == 1)) {
-        std::ostringstream errStr;
-        utilqt::localizeStream(errStr);
-        errStr << "saveWorkspace() takes 1 argument: filename";
-        errStr << " (" << PyTuple_Size(args) << " given)";
-        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+PyObject* py_saveWorkspace(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    std::string filename;
+    if (tester.parse(args, filename) == -1) {
         return nullptr;
     }
-
-    // check parameter if is string
-    if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
-        PyErr_SetString(PyExc_TypeError, "saveWorkspace() first argument must be a string");
-        return nullptr;
-    }
-
-    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-
     if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
             mw->getNetworkEditor()->saveNetwork(filename);
@@ -129,7 +129,11 @@ PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_quitInviwo(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    if (tester.parse(args) == -1) {
+        return nullptr;
+    }
     if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
             mw->getNetworkEditor()->setModified(false);
@@ -139,20 +143,13 @@ PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
-    PyPromptMethod p;
-    if (!p.testParams(args)) {
+PyObject* py_prompt(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester(1);
+    std::string title, message, defaultValue = "";
+    if (tester.parse(args, title, message, defaultValue) == -1) {
         return nullptr;
     }
-    std::string title = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    std::string message = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1)));
-    std::string defaultValue = "";
-
-    size_t size = static_cast<size_t>(PyTuple_Size(args));
-    if (size == 3) {
-        defaultValue = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 2)));
-    }
-
+    
     bool ok;
     QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
                                          defaultValue.c_str(), &ok);
@@ -165,12 +162,14 @@ PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* args) {
-    PyShowPropertyWidgetMethod p;
-    if (!p.testParams(args)) {
+PyObject* py_showTransferFunctionEditor(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+
+    std::string path;
+    if (tester.parse(args, path) == -1) {
         return nullptr;
     }
-    std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
+
     Property* theProperty =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 

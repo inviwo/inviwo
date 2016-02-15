@@ -31,7 +31,6 @@
 #define IVW_PYTONQTFUNCTIONS_H
 
 #include <modules/python3qt/python3qtmoduledefine.h>
-#include <modules/python3/pythoninterface/pymethod.h>
 
 namespace inviwo {
 
@@ -42,75 +41,9 @@ namespace inviwo {
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* /*args*/);
 
-    class IVW_MODULE_PYTHON3QT_API PyGetPathCurrentWorkspace : public PyMethod {
-    public:
-        std::string getName() const { return "getPathCurrentWorkspace"; }
-        std::string getDesc() const { return "Return the path to the current loaded workspace."; }
-        virtual PyCFunction getFunc() { return py_getPathCurrentWorkspace; }
-    };
-
-    class IVW_MODULE_PYTHON3QT_API PyLoadNetworkMethod : public PyMethod {
-    public:
-        std::string getName() const { return "loadWorkspace"; }
-        std::string getDesc() const { return "Load a new workspace into the network."; }
-        virtual PyCFunction getFunc() { return py_loadWorkspace; }
-    };
-
-    class IVW_MODULE_PYTHON3QT_API PySaveNetworkMethod : public PyMethod {
-    public:
-        std::string getName() const { return "saveWorkspace"; }
-        std::string getDesc() const { return "Saves the current workspace."; }
-        virtual PyCFunction getFunc() { return py_saveWorkspace; }
-    };
+    void IVW_MODULE_PYTHON3QT_API initPythonQT();
 
 
-class IVW_MODULE_PYTHON3QT_API PyQuitInviwoMethod : public PyMethod {
-public:
-    virtual std::string getName() const { return "quit"; }
-    virtual std::string getDesc() const { return "Method to quit Inviwo."; }
-    virtual PyCFunction getFunc() { return py_quitInviwo; }
-};
-
-
-class IVW_MODULE_PYTHON3QT_API PyPromptMethod : public PyMethod {
-public:
-    PyPromptMethod()
-        : title_("title")
-        , message_("message")
-        , default_("default", true)
-    {
-        addParam(&title_);
-        addParam(&message_);
-        addParam(&default_);
-    }
-
-    virtual std::string getName() const { return "prompt"; }
-    virtual std::string getDesc() const { return "Prompts the user for input."; }
-    virtual PyCFunction getFunc() { return py_prompt; }
-
-protected:
-    PyParamString title_;
-    PyParamString message_;
-    PyParamString default_;
-};
-
-
-
-class IVW_MODULE_PYTHON3QT_API PyShowPropertyWidgetMethod: public PyMethod {
-public:
-    PyShowPropertyWidgetMethod()
-        : path_("path")
-    {
-        addParam(&path_);
-    }
-
-    virtual std::string getName() const { return "showTransferFunctionEditor"; }
-    virtual std::string getDesc() const { return "Show the transfer function editor for given transfer function property."; }
-    virtual PyCFunction getFunc() { return py_showTransferFunctionEditor; }
-
-protected:
-    PyParamString path_;
-};
 
 
 }

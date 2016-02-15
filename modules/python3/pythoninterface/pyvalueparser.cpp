@@ -73,81 +73,290 @@ PyObject* PyValueParser::toPyObject(std::string str) {
     return Py_BuildValue("s#", str.c_str(), str.length());
 }
 
-void PyValueParser::setProperty(Property* p, PyObject* args) {
+
+template <>
+bool PyValueParser::is<bool>(PyObject* arg) {
+    return PyBool_Check(arg);
+}
+
+bool PyValueParser::setProperty(Property* p, PyObject* args) {
     std::string className = p->getClassIdentifier();
 
-    if (className == "org.inviwo.BoolProperty")
-         static_cast<BoolProperty*>(p)->set(parse<bool>(args));
-    else if (className == "org.inviwo.FloatProperty")
-        static_cast<FloatProperty*>(p)->set(parse<float>(args));
-    else if (className == "org.inviwo.DoubleProperty")
-        static_cast<DoubleProperty*>(p)->set(parse<float>(args));
-    else if (className == "org.inviwo.IntProperty")
-        static_cast<IntProperty*>(p)->set(parse<int>(args));
-    else if (className == "org.inviwo.StringProperty")
-        static_cast<StringProperty*>(p)->set(parse<std::string>(args));
-    else if (className == "org.inviwo.FileProperty")
-        static_cast<FileProperty*>(p)->set(parse<std::string>(args));
-    else if (className == "org.inviwo.DirectoryProperty")
-        static_cast<DirectoryProperty*>(p)->set(parse<std::string>(args));
-    else if (className == "org.inviwo.IntVec2Property")
-        static_cast<IntVec2Property*>(p)->set(parse<ivec2>(args));
-    else if (className == "org.inviwo.IntVec3Property")
-        static_cast<IntVec3Property*>(p)->set(parse<ivec3>(args));
-    else if (className == "org.inviwo.IntVec4Property")
-        static_cast<IntVec4Property*>(p)->set(parse<ivec4>(args));
-    else if (className == "org.inviwo.FloatVec2Property")
-        static_cast<FloatVec2Property*>(p)->set(parse<vec2>(args));
-    else if (className == "org.inviwo.FloatVec3Property")
-        static_cast<FloatVec3Property*>(p)->set(parse<vec3>(args));
-    else if (className == "org.inviwo.FloatVec4Property")
-        static_cast<FloatVec4Property*>(p)->set(parse<vec4>(args));
-    else if (className == "org.inviwo.FloatMat2Property")
-        static_cast<FloatVec2Property*>(p)->set(parse<vec2>(args));
-    else if (className == "org.inviwo.FloatMat3Property")
-        static_cast<FloatVec3Property*>(p)->set(parse<vec3>(args));
-    else if (className == "org.inviwo.FloatMat4Property")
-        static_cast<FloatVec4Property*>(p)->set(parse<vec4>(args));
-    else if (className == "org.inviwo.FloatMinMaxProperty")
-        static_cast<FloatMinMaxProperty*>(p)->set(parse<vec2>(args));
-    else if (className == "org.inviwo.DoubleVec2Property")
-        static_cast<DoubleVec2Property*>(p)->set(parse<dvec2>(args));
-    else if (className == "org.inviwo.DoubleVec3Property")
-        static_cast<DoubleVec3Property*>(p)->set(parse<dvec3>(args));
-    else if (className == "org.inviwo.DoubleVec4Property")
-        static_cast<DoubleVec4Property*>(p)->set(parse<dvec4>(args));
-    else if (className == "org.inviwo.DoubleMat2Property")
-        static_cast<DoubleVec2Property*>(p)->set(parse<dvec2>(args));
-    else if (className == "org.inviwo.DoubleMat3Property")
-        static_cast<DoubleVec3Property*>(p)->set(parse<dvec3>(args));
-    else if (className == "org.inviwo.DoubleMat4Property")
-        static_cast<DoubleVec4Property*>(p)->set(parse<dvec4>(args));
-    else if (className == "org.inviwo.DoubleMinMaxProperty")
-        static_cast<DoubleMinMaxProperty*>(p)->set(parse<dvec2>(args));
-    else if (className == "org.inviwo.OptionPropertyInt")
-        static_cast<OptionPropertyInt*>(p)->set(parse<int>(args));
-    else if (className == "org.inviwo.OptionPropertyFloat")
-        static_cast<OptionPropertyFloat*>(p)->set(parse<float>(args));
-    else if (className == "org.inviwo.OptionPropertyString")
-        static_cast<OptionPropertyString*>(p)->set(parse<std::string>(args));
-    else if (className == "org.inviwo.OptionPropertyDouble")
-        static_cast<OptionPropertyDouble*>(p)->set(parse<double>(args));
-    else if (className == "org.inviwo.IntMinMaxProperty")
-        static_cast<IntMinMaxProperty*>(p)->set(parse<ivec2>(args));
-    else if (className == "org.inviwo.CameraProperty") {
+    if (className == "org.inviwo.BoolProperty") {
+        if (is<bool>(args)) {
+            static_cast<BoolProperty*>(p)->set(parse<bool>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type bool got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatProperty") {
+        if (is<float>(args)) {
+            static_cast<FloatProperty*>(p)->set(parse<float>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type float got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleProperty") {
+        if (is<float>(args)) {
+            static_cast<DoubleProperty*>(p)->set(parse<float>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type float got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.IntProperty") {
+        if (is<int>(args)) {
+            static_cast<IntProperty*>(p)->set(parse<int>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type int got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.StringProperty") {
+        if (is<std::string>(args)) {
+            static_cast<StringProperty*>(p)->set(parse<std::string>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FileProperty") {
+        if (is<std::string>(args)) {
+            static_cast<FileProperty*>(p)->set(parse<std::string>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DirectoryProperty") {
+        if (is<std::string>(args)) {
+            static_cast<DirectoryProperty*>(p)->set(parse<std::string>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.IntVec2Property") {
+        if (is<ivec2>(args)) {
+            static_cast<IntVec2Property*>(p)->set(parse<ivec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.IntVec3Property") {
+        if (is<ivec3>(args)) {
+            static_cast<IntVec3Property*>(p)->set(parse<ivec3>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type ivec3 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.IntVec4Property") {
+        if (is<ivec4>(args)) {
+            static_cast<IntVec4Property*>(p)->set(parse<ivec4>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type ivec4 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatVec2Property") {
+        if (is<vec2>(args)) {
+            static_cast<FloatVec2Property*>(p)->set(parse<vec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatVec3Property") {
+        if (is<vec3>(args)) {
+            static_cast<FloatVec3Property*>(p)->set(parse<vec3>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec3 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatVec4Property") {
+        if (is<vec4>(args)) {
+            static_cast<FloatVec4Property*>(p)->set(parse<vec4>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec4 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatMat2Property") {
+        if (is<vec2>(args)) {
+            static_cast<FloatVec2Property*>(p)->set(parse<vec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatMat3Property") {
+        if (is<vec3>(args)) {
+            static_cast<FloatVec3Property*>(p)->set(parse<vec3>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec3 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatMat4Property") {
+        if (is<vec4>(args)) {
+            static_cast<FloatVec4Property*>(p)->set(parse<vec4>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec4 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.FloatMinMaxProperty") {
+        if (is<vec2>(args)) {
+            static_cast<FloatMinMaxProperty*>(p)->set(parse<vec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleVec2Property") {
+        if (is<dvec2>(args)) {
+            static_cast<DoubleVec2Property*>(p)->set(parse<dvec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleVec3Property") {
+        if (is<dvec3>(args)) {
+            static_cast<DoubleVec3Property*>(p)->set(parse<dvec3>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec3 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleVec4Property") {
+        if (is<dvec4>(args)) {
+            static_cast<DoubleVec4Property*>(p)->set(parse<dvec4>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec4 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleMat2Property") {
+        if (is<dvec2>(args)) {
+            static_cast<DoubleVec2Property*>(p)->set(parse<dvec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleMat3Property") {
+        if (is<dvec3>(args)) {
+            static_cast<DoubleVec3Property*>(p)->set(parse<dvec3>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec3 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleMat4Property") {
+        if (is<dvec4>(args)) {
+            static_cast<DoubleVec4Property*>(p)->set(parse<dvec4>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec4 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.DoubleMinMaxProperty") {
+        if (is<dvec2>(args)) {
+            static_cast<DoubleMinMaxProperty*>(p)->set(parse<dvec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.OptionPropertyInt") {
+        if (is<int>(args)) {
+            static_cast<OptionPropertyInt*>(p)->set(parse<int>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type int got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.OptionPropertyFloat") {
+        if (is<float>(args)) {
+            static_cast<OptionPropertyFloat*>(p)->set(parse<float>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type float got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.OptionPropertyString") {
+        if (is<std::string>(args)) {
+            static_cast<OptionPropertyString*>(p)->set(parse<std::string>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.OptionPropertyDouble") {
+        if (is<double>(args)) {
+            static_cast<OptionPropertyDouble*>(p)->set(parse<double>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type double got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.IntMinMaxProperty") {
+        if (is<ivec2>(args)) {
+            static_cast<IntMinMaxProperty*>(p)->set(parse<ivec2>(args));
+        } else {
+            auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+            std::stringstream ss;
+            ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
+            PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+        }
+    } else if (className == "org.inviwo.CameraProperty") {
         vec3 from, to, up;
 
         // float fovy,nearP,farP;
         if (!PyArg_ParseTuple(args, "(fff)(fff)(fff)", &from.x, &from.y, &from.z, &to.x, &to.y,
                               &to.z, &up.x, &up.y, &up.z
-                                                    //,&fovy,&nearP,&farP
+                              //,&fovy,&nearP,&farP
                               )) {
             std::string msg = std::string(
                                   "Failed to parse values for camera, needs to be on the format: "
                                   "((posX,posY,posZ),(focusX,focusY,focusZ),(upX,upY,upZ)) : ") +
                               p->getIdentifier();
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return;
+            return false;
         }
 
         CameraProperty* cam = static_cast<CameraProperty*>(p);
@@ -158,7 +367,9 @@ void PyValueParser::setProperty(Property* p, PyObject* args) {
             std::string("setPropertyValue() no available conversion for proerty of type: ") +
             className;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
+        return false;
     }
+    return true;
 }
 
 #define CAST_DO_STUFF(PropType, prop)                     \

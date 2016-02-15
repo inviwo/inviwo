@@ -35,16 +35,18 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
 PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
-    static PySetCameraFocusMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-
-    std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
+    static PythonParameterParser tester;
+    std::string path;
+    vec3 focus;
+    if (tester.parse(args, path, focus) == -1) {
+        return nullptr;
+    }
 
     Property* theProperty =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
@@ -57,19 +59,6 @@ PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
     if (cam) {
-        vec3 focus;
-        char* dummy1;
-        int d1;
-
-        if (!PyArg_ParseTuple(args, "s#(fff)", &dummy1, &d1, &focus.x, &focus.y, &focus.z)) {
-            std::string msg = std::string(
-                                  "setCameraFocus() Failed to parse values for camera, needs to be "
-                                  "on the format: (posX,posY,posZ) ") +
-                              path;
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return nullptr;
-        }
-
         cam->setLookTo(focus);
         Py_RETURN_NONE;
     } else {
@@ -81,11 +70,12 @@ PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
 }
 
 PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
-    static PySetCameraUpMethod p;
-
-    if (!p.testParams(args)) return nullptr;
-
-    std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
+    static PythonParameterParser tester;
+    std::string path;
+    vec3 up;
+    if (tester.parse(args, path, up) == -1) {
+        return nullptr;
+    }
 
     Property* theProperty =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
@@ -98,19 +88,6 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
     if (cam) {
-        vec3 up;
-        char* dummy1;
-        int d1;
-
-        if (!PyArg_ParseTuple(args, "s#(fff)", &dummy1, &d1, &up.x, &up.y, &up.z)) {
-            std::string msg = std::string(
-                                  "setCameraUp() Failed to parse values for camera, needs to be on "
-                                  "the format: (dirX,dirY,dirZ) ") +
-                              path;
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return nullptr;
-        }
-
         cam->setLookUp(up);
         Py_RETURN_NONE;
     } else {
@@ -122,13 +99,16 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
 }
 
 PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
-    static PySetCameraPosMethod p;
+    static PythonParameterParser tester;
+    std::string path;
+    vec3 from;
+    if (tester.parse(args, path, from) == -1) {
+        return nullptr;
+    }
 
-    if (!p.testParams(args)) return nullptr;
-
-    std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     Property* theProperty =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
@@ -137,19 +117,6 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
     if (cam) {
-        vec3 from;
-        char* dummy1;
-        int d1;
-
-        if (!PyArg_ParseTuple(args, "s#(fff)", &dummy1, &d1, &from.x, &from.y, &from.z)) {
-            std::string msg = std::string(
-                                  "setPropertyValue() Failed to parse values for camera, needs to "
-                                  "be on the format: (posX,posY,posZ) ") +
-                              path;
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return nullptr;
-        }
-
         cam->setLookFrom(from);
         Py_RETURN_NONE;
     } else {
@@ -160,18 +127,4 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
     }
 }
 
-PySetCameraFocusMethod::PySetCameraFocusMethod() : path_("path"), focusPoint_("focusPoint") {
-    addParam(&path_);
-    addParam(&focusPoint_);
-}
-
-PySetCameraUpMethod::PySetCameraUpMethod() : path_("path"), upVector_("upVector") {
-    addParam(&path_);
-    addParam(&upVector_);
-}
-
-PySetCameraPosMethod::PySetCameraPosMethod() : path_("path"), position_("position") {
-    addParam(&path_);
-    addParam(&position_);
-}
 }

@@ -34,8 +34,6 @@
 
 #include <modules/python3/python3moduledefine.h>
 
-#include <modules/python3/pythoninterface/pymethod.h>
-
 namespace inviwo {
 
 
@@ -46,67 +44,6 @@ PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args);
 PyObject* py_addPointTransferFunction(PyObject* /*self*/, PyObject* args);
 
 
-
-class IVW_MODULE_PYTHON3_API PySaveTransferFunction : public PyMethod {
-public:
-    PySaveTransferFunction();
-    virtual ~PySaveTransferFunction() {}
-
-    virtual std::string getName()const {return "saveTransferFunction";}
-    virtual std::string getDesc()const {return "Save a transfer function to file from the specified transfer function property.";}
-    virtual PyCFunction getFunc() {return py_saveTransferFunction;}
-
-private:
-    PyParamString path_;
-    PyParamString filename_;
-};
-
-
-
-class IVW_MODULE_PYTHON3_API PyLoadTransferFunction : public PyMethod {
-public:
-    PyLoadTransferFunction();
-    virtual ~PyLoadTransferFunction() {}
-
-    virtual std::string getName()const {return "loadTransferFunction";}
-    virtual std::string getDesc()const {return "Load a transfer function from file into the specified transfer function property.";}
-    virtual PyCFunction getFunc() {return py_loadTransferFunction;}
-
-private:
-    PyParamString path_;
-    PyParamString filename_;
-};
-
-
-
-class IVW_MODULE_PYTHON3_API PyClearTransferfunction : public PyMethod {
-public:
-    PyClearTransferfunction();
-    virtual ~PyClearTransferfunction() {}
-
-    virtual std::string getName()const {return "clearTransferfunction";}
-    virtual std::string getDesc()const {return "Clears a transfer function.";}
-    virtual PyCFunction getFunc() {return py_clearTransferfunction;}
-
-private:
-    PyParamString path_;
-};
-
-
-class IVW_MODULE_PYTHON3_API PyAddTransferFunction : public PyMethod {
-public:
-    PyAddTransferFunction();
-    virtual ~PyAddTransferFunction() {}
-
-    virtual std::string getName()const {return "addPointToTransferFunction";}
-    virtual std::string getDesc()const {return "Load a transfer function from file into the specified transfer function property.";}
-    virtual PyCFunction getFunc() {return py_addPointTransferFunction;}
-
-private:
-    PyParamString path_;
-    PyParamVec2 pos_;
-    PyParamVec3 color_;
-};
 
 
 } //namespace
