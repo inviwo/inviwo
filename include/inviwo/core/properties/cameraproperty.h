@@ -154,7 +154,7 @@ public:
     void resetAdjustCameraToData();
     void inportChanged();
 
-    void dblClick(Event *event);
+    void changeFocusPoint(Event *event);
 
 private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
@@ -173,7 +173,7 @@ private:
     FloatProperty nearPlane_;
     FloatProperty farPlane_;
 
-    EventProperty mouseDblClick_;
+    EventProperty mouseChangeFocusPoint_;
 
     BoolProperty adjustCameraOnDataChange_;
 

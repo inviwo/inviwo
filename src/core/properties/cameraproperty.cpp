@@ -68,10 +68,10 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
 
 
 
-    , mouseDblClick_("mouseDblClick", "Double Click",
-        new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY_AND_NONE, InteractionEvent::MODIFIER_NONE,
+    , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
+        new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
             MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
-        new Action(this, &CameraProperty::dblClick))
+        new Action(this, &CameraProperty::changeFocusPoint))
 
     , camera_()
     , inport_(inport)
@@ -98,7 +98,7 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
-    addProperty(mouseDblClick_);
+    addProperty(mouseChangeFocusPoint_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -118,7 +118,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
-    , mouseDblClick_(rhs.mouseDblClick_)
+    , mouseChangeFocusPoint_(rhs.mouseChangeFocusPoint_)
     , camera_()
     , inport_(rhs.inport_)
     , data_(nullptr)
@@ -144,7 +144,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
-    addProperty(mouseDblClick_);
+    addProperty(mouseChangeFocusPoint_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -397,27 +397,25 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->inverseProjectionMatrix();
 }
 
-void CameraProperty::dblClick(Event *event)
-{
-
+void CameraProperty::changeFocusPoint(Event* event) {
     if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
         vec4 viewPos;
         viewPos.xy = mouseEvent->posNormalized();
         viewPos.y = 1 - viewPos.y;
         viewPos.xy = viewPos.xy * vec2(2) - vec2(1);
-        
-        viewPos.z = mouseEvent->depth();// *2.0f - 1.0f;
+
+        viewPos.z = mouseEvent->depth();  // *2.0f - 1.0f;
         viewPos.w = 1.0f;
 
-        auto point = (inverseViewMatrix()*inverseProjectionMatrix()) * viewPos;
+        auto point = (inverseViewMatrix() * inverseProjectionMatrix()) * viewPos;
         auto newLookTo = point.xyz() / point.w;
-        
+
         auto newLookFrom = lookFrom_.get() + (newLookTo - lookTo_.get());
 
         setLookTo(newLookTo);
         setLookFrom(newLookFrom);
     }
-
-
     event->markAsUsed();
-}}  // namespace
+}
+
+}  // namespace
