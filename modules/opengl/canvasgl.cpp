@@ -188,6 +188,7 @@ void CanvasGL::drawSquare() {
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {
+    if (!ready()) return;
     if (channels_ == channels) return;
 
     switch (channels) {

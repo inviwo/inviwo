@@ -24,26 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORDOCKWIDGETQT_H
 #define IVW_PROCESSORDOCKWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/core/processors/processorobserver.h>
-
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 namespace inviwo {
 
 /**
  * \class ProcessorDockWidgetQt
  * \brief Base class for Qt processor widget using InviwoDockWidget.
- * 
+ *
  * This Qt widget provides the basic functionality and setup
  * for creating a processor widget based on InviwoDockWidget.
  * The content of the dock widget is set by calling setContent().
@@ -52,20 +51,16 @@ namespace inviwo {
  */
 class IVW_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                 public ProcessorWidget,
-                                                public ProcessorObserver
-{ 
+                                                public ProcessorObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 
 public:
-    ProcessorDockWidgetQt(const QString &title=QString("ProcessorDockWidgetQt"), QWidget *parent=nullptr);
+    ProcessorDockWidgetQt(Processor *p, const QString &title = QString("ProcessorDockWidgetQt"),
+                          QWidget *parent = nullptr);
     virtual ~ProcessorDockWidgetQt() = default;
-
-    virtual ProcessorDockWidgetQt* create() const override;
-
-    virtual void initialize() override;
 
     // Override ProcessorWidget
     virtual void setVisible(bool visible) override;
@@ -73,21 +68,16 @@ public:
     virtual void hide() override;
     virtual void setPosition(glm::ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
-    virtual void setProcessor(Processor* processor) override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorIdentifierChange(Processor *) override;
 
 protected:
     // Override QWidget events
-    virtual void resizeEvent(QResizeEvent*) override;
-    virtual void moveEvent(QMoveEvent*) override;
-    //virtual void closeEvent(QCloseEvent*) override;
-    //virtual void showEvent(QShowEvent*) override;
-    //virtual void hideEvent(QHideEvent*) override;
+    virtual void resizeEvent(QResizeEvent *) override;
+    virtual void moveEvent(QMoveEvent *) override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORDOCKWIDGETQT_H
-
+#endif  // IVW_PROCESSORDOCKWIDGETQT_H

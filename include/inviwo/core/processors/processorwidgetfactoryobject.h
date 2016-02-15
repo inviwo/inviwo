@@ -44,22 +44,24 @@ public:
     ProcessorWidgetFactoryObject(const std::string& processorClassIdentifier);
     virtual ~ProcessorWidgetFactoryObject();
 
-    virtual ProcessorWidget* create() = 0;
+    virtual std::unique_ptr<ProcessorWidget> create(Processor* p) = 0;
     const std::string& getClassIdentifier() const { return classIdentifier_; }
 
 private:
     std::string classIdentifier_;
 };
 
-template <typename T, typename Processor>
+template <typename T, typename ProcessorType>
 class ProcessorWidgetFactoryObjectTemplate : public ProcessorWidgetFactoryObject {
 public:
     ProcessorWidgetFactoryObjectTemplate()
         : ProcessorWidgetFactoryObject(
-              ProcessorTraits<Processor>::getProcessorInfo().classIdentifier) {}
-    virtual ~ProcessorWidgetFactoryObjectTemplate() {}
+              ProcessorTraits<ProcessorType>::getProcessorInfo().classIdentifier) {}
+    virtual ~ProcessorWidgetFactoryObjectTemplate() = default;
 
-    virtual ProcessorWidget* create() { return static_cast<ProcessorWidget*>(new T()); }
+    virtual std::unique_ptr<ProcessorWidget> create(Processor* p) override {
+        return util::make_unique<T>(p);
+    }
 };
 
 }  // namespace

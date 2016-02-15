@@ -61,10 +61,10 @@ std::unique_ptr<Property> PropertyFactory::create(const std::string &className) 
 std::unique_ptr<Property> PropertyFactory::create(const std::string &className,
                                                   const std::string &identifier,
                                                   const std::string &displayName) const {
-    return std::unique_ptr<Property>(util::map_find_or_null(
-        map_, className, [&identifier, &displayName](PropertyFactoryObject *o) {
-            return o->create(identifier, displayName);
-        }));
+    return util::map_find_or_null(map_, className,
+                                  [&identifier, &displayName](PropertyFactoryObject *o) {
+                                      return o->create(identifier, displayName);
+                                  });
 }
 
 bool PropertyFactory::hasKey(const std::string &className) const {

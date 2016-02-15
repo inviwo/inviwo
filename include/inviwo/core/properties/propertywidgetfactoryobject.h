@@ -44,7 +44,7 @@ public:
     PropertyWidgetFactoryObject(const std::string& className, const PropertySemantics& semantics);
     virtual ~PropertyWidgetFactoryObject();
 
-    virtual PropertyWidget* create(Property*) = 0;
+    virtual std::unique_ptr<PropertyWidget> create(Property*) = 0;
 
     std::string getClassIdentifier() const;
     PropertySemantics getSematics() const;
@@ -62,8 +62,8 @@ public:
 
     virtual ~PropertyWidgetFactoryObjectTemplate() {}
 
-    virtual PropertyWidget* create(Property* prop) {
-        return static_cast<PropertyWidget*>(new T(static_cast<P*>(prop)));
+    virtual std::unique_ptr<PropertyWidget> create(Property* prop) {
+        return util::make_unique<T>(static_cast<P*>(prop));
     }
 };
 

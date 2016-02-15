@@ -34,26 +34,11 @@
 
 namespace inviwo {
 
-CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW()
-    : CanvasProcessorWidget()
-    , canvas_(nullptr)
-    , hasSharedCanvas_(false) {}
+CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
+    : CanvasProcessorWidget(p), canvas_(nullptr), hasSharedCanvas_(false) {
+    
+    uvec2 dimU = uvec2(getDimensions());
 
-CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
-    deinitialize();
-}
-
-CanvasProcessorWidgetGLFW* CanvasProcessorWidgetGLFW::create() const {
-    return new CanvasProcessorWidgetGLFW();
-}
-
-void CanvasProcessorWidgetGLFW::initialize() {
-    CanvasProcessorWidget::initialize();
-
-    ivec2 dim = getDimensions();
-    uvec2 dimU = uvec2(dim.x, dim.y);
-
-    CanvasGLFW::setAlwaysOnTopByDefault(true);
     CanvasGLFW* sharedCanvas = CanvasGLFW::getSharedContext();
     if (!sharedCanvas->getProcessorWidgetOwner()) {
         canvas_ = sharedCanvas;
@@ -63,34 +48,37 @@ void CanvasProcessorWidgetGLFW::initialize() {
         canvas_ = new CanvasGLFW(processor_->getIdentifier(), dimU);
     }
 
+    canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setWindowSize(dimU);
+    
+    if (ProcessorWidget::isVisible()) {
+        canvas_->show();
+    } else {
+        canvas_->hide();
+    }
 }
 
-void CanvasProcessorWidgetGLFW::deinitialize() {
+CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
     if (canvas_) {
         this->hide();
-        if(hasSharedCanvas_) {
+        if (hasSharedCanvas_) {
             canvas_->setProcessorWidgetOwner(nullptr);
         } else {
             delete canvas_;
         }
         canvas_->setEventPropagator(nullptr);
-        canvas_ = nullptr;
     }
-
-    CanvasProcessorWidget::deinitialize();
 }
 
 void CanvasProcessorWidgetGLFW::setVisible(bool visible) {
     if (visible) {
         canvas_->show();
         static_cast<CanvasProcessor*>(processor_)->triggerQueuedEvaluation();
-        CanvasProcessorWidget::setVisible(true);
     } else {
         canvas_->hide();
-        CanvasProcessorWidget::setVisible(false);
     }
+    CanvasProcessorWidget::setVisible(visible);
 }
 
 void CanvasProcessorWidgetGLFW::show() {

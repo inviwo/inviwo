@@ -38,12 +38,14 @@
 namespace inviwo {
 
 class IVW_CORE_API ProcessorWidgetFactory
-    : public StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject> {
+    : public StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, const std::string&,
+                             Processor*> {
 public:
     ProcessorWidgetFactory() = default;
     virtual ~ProcessorWidgetFactory() = default;
-    
-    using StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject>::create;
+
+    using StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, const std::string&,
+                          Processor*>::create;
     std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
 };
 

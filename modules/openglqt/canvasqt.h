@@ -67,6 +67,9 @@ public:
     explicit CanvasQtBase(uvec2 dim = uvec2(256,256));
     ~CanvasQtBase() = default;
 
+    virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
+                        size_t idx = 0) override;
+
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
 
     static CanvasQtBase<T>* getSharedCanvas() {
@@ -116,6 +119,13 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
         return canvas;
     });
     return res.get();
+}
+
+template <typename T>
+void CanvasQtBase<T>::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {
+    if (this->isVisible() && this->isValid()) {
+        CanvasGL::render(image, layerType, idx);
+    }
 }
 
 #include <warn/push>

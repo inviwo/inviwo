@@ -117,14 +117,7 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
 
     auto factory = mainwindow_->getInviwoApplication()->getProcessorWidgetFactory();
     if (auto processorWidget = factory->create(processor)) {
-        if (auto widget = dynamic_cast<QWidget*>(processorWidget.get())) {
-            widget->setParent(mainwindow_);
-        }
-        processorWidget->setProcessor(processor);
-        processorWidget->initialize();
-        processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
         processorWidget->addObserver(ret->getStatusItem());
-
         processor->setProcessorWidget(processorWidget.release());
     }
     return ret;
@@ -136,7 +129,6 @@ void NetworkEditor::removeProcessorRepresentations(Processor* processor) {
 
     // processor widget should be removed here since it is added in addProcessorRepresentations()
     if (auto processorWidget = processor->getProcessorWidget()) {
-        processorWidget->deinitialize();
         processor->setProcessorWidget(nullptr);
         delete processorWidget;
     }
@@ -895,6 +887,8 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
         ProcessorDragObject::decode(e->mimeData(), name);
         std::string className = name.toLocal8Bit().constData();
 
+        NetworkLock lock(network_);
+        
         if (!className.empty()) {
             e->setAccepted(true);
             e->acceptProposedAction();

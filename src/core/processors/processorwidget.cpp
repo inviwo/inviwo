@@ -33,21 +33,15 @@
 
 namespace inviwo {
 
-ProcessorWidget::ProcessorWidget()
-    : ProcessorWidgetObservable(), processor_(nullptr), metaData_(nullptr) {}
+ProcessorWidget::ProcessorWidget(Processor* p)
+    : ProcessorWidgetObservable()
+    , processor_(p)
+    , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
+          ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {}
 
 ProcessorWidget::~ProcessorWidget() {
-    if (processor_) {
-        processor_->setProcessorWidget(nullptr);
-    }
+    if (processor_) processor_->setProcessorWidget(nullptr);
 }
-
-void ProcessorWidget::initialize() {
-    metaData_ = processor_->createMetaData<ProcessorWidgetMetaData>(
-        ProcessorWidgetMetaData::CLASS_IDENTIFIER);
-}
-
-void ProcessorWidget::deinitialize() { metaData_ = nullptr; }
 
 void ProcessorWidget::setVisible(bool visible) {
     metaData_->setVisibile(visible);
@@ -59,7 +53,7 @@ void ProcessorWidget::setVisible(bool visible) {
     }
 }
 
-bool ProcessorWidget::isVisible() { return metaData_->isVisible(); }
+bool ProcessorWidget::isVisible() const { return metaData_->isVisible(); }
 
 void ProcessorWidget::show() {
     ProcessorWidget::setVisible(true);
@@ -69,13 +63,12 @@ void ProcessorWidget::hide() {
     ProcessorWidget::setVisible(false);
 }
     
-Processor* ProcessorWidget::getProcessor() { return processor_; }
-void ProcessorWidget::setProcessor(Processor* processor) { processor_ = processor; }
+Processor* ProcessorWidget::getProcessor() const { return processor_; }
 
-glm::ivec2 ProcessorWidget::getDimensions() { return metaData_->getDimensions(); }
+glm::ivec2 ProcessorWidget::getDimensions() const { return metaData_->getDimensions(); }
 void ProcessorWidget::setDimensions(glm::ivec2 dimensions) { metaData_->setDimensions(dimensions); }
 
-glm::ivec2 ProcessorWidget::getPosition() { return metaData_->getPosition(); }
+glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(); }
 void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos); }
 
 }  // namespace

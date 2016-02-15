@@ -47,7 +47,7 @@ public:
     ProcessorFactoryObject(const ProcessorInfo info) : info_(info) {}
     virtual ~ProcessorFactoryObject() {}
 
-    virtual Processor* create() = 0;
+    virtual std::unique_ptr<Processor> create() = 0;
 
     ProcessorInfo getProcessorInfo() const { return info_; }
     std::string getClassIdentifier() const { return info_.classIdentifier; }
@@ -67,7 +67,7 @@ public:
         : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
     virtual ~ProcessorFactoryObjectTemplate() {}
 
-    virtual Processor* create() { return static_cast<Processor*>(new T()); }
+    virtual std::unique_ptr<Processor> create() { return util::make_unique<T>(); }
 };
 
 }  // namespace

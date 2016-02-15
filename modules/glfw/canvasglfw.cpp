@@ -46,6 +46,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
     , mouseState_(MouseEvent::MOUSE_STATE_NONE)
     , mouseModifiers_(InteractionEvent::MODIFIER_NONE) {
+    
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 

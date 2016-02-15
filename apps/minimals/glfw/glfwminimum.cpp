@@ -101,9 +101,6 @@ int main(int argc, char** argv) {
             for (auto processor : processors) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
                 if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
-                    widget->setProcessor(processor);
-                    widget->initialize();
-                    widget->setVisible(widget->ProcessorWidget::isVisible());
                     processor->setProcessorWidget(widget.get());
                     widgets.push_back(std::move(widget));
                 }

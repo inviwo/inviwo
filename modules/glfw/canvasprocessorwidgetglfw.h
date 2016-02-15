@@ -40,12 +40,8 @@ class CanvasProcessor;
 
 class IVW_MODULE_GLFW_API CanvasProcessorWidgetGLFW : public CanvasProcessorWidget {
 public:
-    CanvasProcessorWidgetGLFW();
+    CanvasProcessorWidgetGLFW(Processor* p);
     virtual ~CanvasProcessorWidgetGLFW();
-
-    virtual void initialize();
-    virtual void deinitialize();
-    virtual CanvasProcessorWidgetGLFW* create() const;
     
     virtual void setVisible(bool visible);
     virtual void show();

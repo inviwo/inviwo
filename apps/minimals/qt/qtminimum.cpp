@@ -77,19 +77,15 @@ int main(int argc, char** argv) {
   
     // Set canvas as central widget
     QMainWindow mainWin;
+    inviwoApp.setMainWindow(&mainWin);
 
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    std::string workspace;
-    if (cmdparser.getLoadWorkspaceFromArg())
-        workspace = cmdparser.getWorkspacePath();
-    else
-#ifdef REG_INVIWOBASEGLMODULE
-        workspace = filesystem::getPath(PathType::Workspaces, "/boron.inv");
-#else
-        workspace = "";
-#endif
+    const std::string workspace =
+        cmdparser.getLoadWorkspaceFromArg()
+            ? cmdparser.getWorkspacePath()
+            : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {
@@ -101,14 +97,7 @@ int main(int argc, char** argv) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
 
                 if (auto widget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
-                    widget->setProcessor(processor);
-                    widget->initialize();
-                    widget->setVisible(widget->ProcessorWidget::isVisible());
-                    processor->setProcessorWidget(widget.get());
-                    if (!mainWin.centralWidget()) {
-                        mainWin.setCentralWidget(dynamic_cast<QWidget*>(widget.get()));
-                    }
-                    widget.release();
+                    processor->setProcessorWidget(widget.release());
                 }
             }
         }
@@ -129,13 +118,8 @@ int main(int argc, char** argv) {
     }
 
     inviwoApp.getProcessorNetwork()->setModified(true);
+    inviwoApp.processFront();
     inviwoApp.getProcessorNetwork()->unlock();
-
-    if (sharedCanvas)
-        mainWin.resize(sharedCanvas->getScreenDimensions().x,
-                       sharedCanvas->getScreenDimensions().y);
-
-    mainWin.show();
 
     cmdparser.processCallbacks(); // run any command line callbacks from modules.
 

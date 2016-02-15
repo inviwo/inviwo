@@ -53,9 +53,6 @@ Processor::Processor()
 
 Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
-    if (processorWidget_) {
-        processorWidget_->setProcessor(nullptr);
-    }
 }
 
 void Processor::addPort(Inport* port, const std::string& portDependencySet) {

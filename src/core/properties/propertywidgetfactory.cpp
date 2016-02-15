@@ -73,7 +73,7 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (sematics == it->second->getSematics()) {
-            return std::unique_ptr<PropertyWidget>(it->second->create(property));
+            return it->second->create(property);
         }
     }
 
@@ -82,7 +82,7 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
             LogWarn("Requested property widget semantics ("
                     << sematics << ") for property (" << property->getClassIdentifier()
                     << ") does not exist, returning default semantics.");
-            return std::unique_ptr<PropertyWidget>(it->second->create(property));
+            return it->second->create(property);
         }
     }
 

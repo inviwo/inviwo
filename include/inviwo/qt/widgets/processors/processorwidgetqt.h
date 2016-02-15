@@ -47,13 +47,9 @@ class IVW_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidg
 #include <warn/pop>
 
 public:
-    ProcessorWidgetQt();
-    virtual ~ProcessorWidgetQt();
-
-    virtual ProcessorWidget* create() const = 0;
-    virtual void initialize();
-    virtual void deinitialize();
-    
+    ProcessorWidgetQt(Processor* p);
+    virtual ~ProcessorWidgetQt() = default;
+   
     virtual void setVisible(bool visible); // Override QWidget && ProcessorWidget
     virtual void show(); // Override ProcessorWidget
     virtual void hide(); // Override ProcessorWidget

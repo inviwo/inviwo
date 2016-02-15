@@ -127,9 +127,8 @@ CanvasProcessor::~CanvasProcessor() {
 
 void CanvasProcessor::setProcessorWidget(ProcessorWidget* processorWidget) {
     Processor::setProcessorWidget(processorWidget);
-    if (processorWidget) {
-        canvasWidget_ = dynamic_cast<CanvasProcessorWidget*>(processorWidget);
-        canvasWidget_->getCanvas()->setEventPropagator(this);
+    if (auto cw = dynamic_cast<CanvasProcessorWidget*>(processorWidget)) {
+        canvasWidget_ = cw;
     }
 }
 

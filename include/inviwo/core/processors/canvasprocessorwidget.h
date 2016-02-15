@@ -40,14 +40,12 @@ class Canvas;
 
 /**
  * \class CanvasProcessorWidget
- *
  * \brief A processor widget that has a canvas.
- *
  * CanvasProcessorWidget is the base class for all processor widgets with canvases.
  */
 class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget { 
 public:
-    virtual CanvasProcessorWidget* create() const = 0;
+    CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
     virtual Canvas* getCanvas() const = 0;
 };
 

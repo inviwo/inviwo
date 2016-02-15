@@ -32,7 +32,7 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/processors/processor.h>
-
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 
 #include <QMoveEvent>
@@ -41,25 +41,11 @@
 
 namespace inviwo {
 
-ProcessorDockWidgetQt::ProcessorDockWidgetQt(const QString &title, QWidget *parent)
-    : InviwoDockWidget(title, parent)
+ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString &title, QWidget *parent)
+    : InviwoDockWidget(title, parent), ProcessorWidget(p)
 {
     this->setObjectName("ProcessorDockWidgetQt");
     setDimensions(ivec2(200, 150));
-    //setPosition(ivec2(300, 500));    
-}
-
-ProcessorDockWidgetQt* ProcessorDockWidgetQt::create() const {
-    auto widget = new ProcessorDockWidgetQt;
-    InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-    if (app) {
-        widget->setParent(app->getMainWindow());
-    }
-    return widget;
-}
-
-void ProcessorDockWidgetQt::initialize() {
-    ProcessorWidget::initialize();
 
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
@@ -71,8 +57,7 @@ void ProcessorDockWidgetQt::initialize() {
 
     setDimensions(dim);
 
-    InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-    if (app) {
+    if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         auto mainWindow = static_cast<InviwoMainWindow *>(app->getMainWindow());
         // set default docking area to the right side
         mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
@@ -81,14 +66,14 @@ void ProcessorDockWidgetQt::initialize() {
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             InviwoDockWidget::move(newPos);
-        }
-        else { // We guess that this is a new widget and give a new position
+        } else { // We guess that this is a new widget and give a new position
             newPos = app->getMainWindow()->pos();
             newPos += app->offsetWidget();
             InviwoDockWidget::move(newPos);
         }
     }
     
+    processor_->ProcessorObservable::addObserver(this);
 }
 
 void ProcessorDockWidgetQt::setVisible(bool visible) {
@@ -127,32 +112,9 @@ void ProcessorDockWidgetQt::moveEvent(QMoveEvent* event) {
     InviwoDockWidget::moveEvent(event);
 }
 
-void ProcessorDockWidgetQt::setProcessor(Processor* processor) {
-    ProcessorWidget::setProcessor(processor);
-    if (processor) processor->ProcessorObservable::addObserver(this);
-}
-
 void ProcessorDockWidgetQt::onProcessorIdentifierChange(Processor*) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
-
-/*
-void ProcessorDockWidgetQt::closeEvent(QCloseEvent* event) {
-    //canvas_->hide();
-    ProcessorDockWidgetQt::setVisible(false);
-    InviwoDockWidget::closeEvent(event);
-}
-
-void ProcessorDockWidgetQt::showEvent(QShowEvent* event) {
-    //ProcessorDockWidgetQt::setVisible(true);
-    InviwoDockWidget::showEvent(event);
-}
-
-void ProcessorDockWidgetQt::hideEvent(QHideEvent* event) {
-    //ProcessorDockWidgetQt::setVisible(false);
-    InviwoDockWidget::hideEvent(event);
-}
-*/
 
 } // namespace
 
