@@ -287,7 +287,6 @@ std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getVisibleLayerAsCo
 
 void CanvasProcessor::process() {
     if (canvasWidget_ && canvasWidget_->getCanvas()) {
-        canvasWidget_->getCanvas()->activate();
         LayerType layerType = visibleLayer_.get();
         if (visibleLayer_.get() == LayerType::Color) {
             canvasWidget_->getCanvas()->render(inport_.getData(), LayerType::Color,
@@ -300,7 +299,6 @@ void CanvasProcessor::process() {
 
 void CanvasProcessor::doIfNotReady() {
     if (canvasWidget_ && canvasWidget_->getCanvas()) {
-        canvasWidget_->getCanvas()->activate();
         canvasWidget_->getCanvas()->render(nullptr, visibleLayer_.get());
     }
 }
