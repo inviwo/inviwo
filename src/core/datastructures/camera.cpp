@@ -138,6 +138,7 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
     } else {
         fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
         comp->addProperty(fov, true);
+        fov->setSerializationMode(PropertySerializationMode::ALL);
     }
 
     fov->onChange([this, fov]() { setFovy(fov->get()); });
@@ -189,6 +190,7 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp) {
     } else {
         widthProp = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
         comp->addProperty(widthProp, true);
+        widthProp->setSerializationMode(PropertySerializationMode::ALL);
     }
 
     widthProp->onChange([this, widthProp]() {
@@ -264,6 +266,7 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
 	else {
 		widthProp = new FloatProperty("skewed-frustum-width", "Skewed Frustum Width", 0.1f, 0.001f, 10.0f, 0.0001f);
 		comp->addProperty(widthProp, true);
+        widthProp->setSerializationMode(PropertySerializationMode::ALL);
 	}
 
 	widthProp->onChange([this, widthProp]() {
@@ -284,6 +287,7 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
 	else {
 		offsetProp = new FloatVec2Property("seperation", "Separation", vec2(0.0f), vec2(-10.0f), vec2(10.0f), vec2(0.01f));
 		comp->addProperty(offsetProp, true);
+        offsetProp->setSerializationMode(PropertySerializationMode::ALL);
 	}
 
 	offsetProp->onChange([this, offsetProp, widthProp]() {
