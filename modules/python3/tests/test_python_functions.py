@@ -2,6 +2,9 @@
 import inviwo 
 import inviwoqt 
 
+#help('modules')
+
+
 #help('inviwo')
 
 outpath = "D:/temp/pythontest/"
@@ -21,4 +24,3 @@ inviwo.snapshotAllCanvases(outpath, "snapshots" , "png")
 sampRate = inviwo.getPropertyValue("VolumeRaycaster.raycaster.samplingRate");
 if sampRate != 3.0:
     print("should not get here")
-
