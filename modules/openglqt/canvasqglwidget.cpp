@@ -73,6 +73,10 @@ CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
 }
 
 CanvasQGLWidget::~CanvasQGLWidget() {
+    // Make sure that the correct OpenGL context 
+    // is active when objects are destroyed
+    // This affect for example FBO's and VAO's
+    activate();
     if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
 }
 
