@@ -124,16 +124,15 @@ bool CanvasGL::ready() {
             case GL_FRAMEBUFFER_COMPLETE: {
                 ready_ = true;
                 LGL_ERROR;
-                defaultGLState();
-                LGL_ERROR;
-                shader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
-                LGL_ERROR;
-                noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
-                LGL_ERROR;
-                square_ = utilgl::planeRect();
 
-                squareGL_ = square_->getRepresentation<MeshGL>();
+                defaultGLState();
+                shader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
+                noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
                 
+                square_ = utilgl::planeRect();
+                squareGL_ = square_->getRepresentation<MeshGL>();
+
+                LGL_ERROR;
                 return true;
             }
             default:
@@ -191,24 +190,12 @@ void CanvasGL::checkChannels(std::size_t channels) {
     if (!ready()) return;
     if (channels_ == channels) return;
 
-    switch (channels) {
-        case 1: {
-            shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
-            break;
-        }
-        case 2: {
-            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-            break;
-        }
-        case 3: {
-            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-            break;
-        }
-        case 4: {
-            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-            break;
-        }
+    if (channels == 1) {
+        shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+    } else {
+        shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
     }
+    
     channels_ = channels;
     shader_->getFragmentShaderObject()->build();
     shader_->link();

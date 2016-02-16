@@ -54,13 +54,16 @@ public:
     void show();
     void hide();
     
-    void setWindowSize(uvec2);
+    void setWindowSize(ivec2);
+    void setWindowPosition(ivec2);
+    
     void setWindowTitle(std::string);
 
     static void closeWindow(GLFWwindow*);
     static int getVisibleWindowCount();
 
     static void reshape(GLFWwindow*, int, int);
+    static void move(GLFWwindow*,int,int);
 
     static void keyboard(GLFWwindow*, int, int, int, int);
     static void mouseButton(GLFWwindow*, int, int, int);

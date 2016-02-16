@@ -36,6 +36,8 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
@@ -72,7 +74,7 @@ int main(int argc, char** argv) {
     inviwoApp.processEvents();
 
     // Do this after registerModules if some arguments were added
-    clp.parse(inviwo::CommandLineParser::Mode::Normal); 
+    clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // setup main window
     mainWin.initialize();
@@ -89,10 +91,15 @@ int main(int argc, char** argv) {
     clp.processCallbacks(); // run any command line callbacks from modules.
     inviwoApp.processEvents();
 
+    inviwo::util::OnScopeExit clearNetwork([&](){
+        inviwoApp.getProcessorNetwork()->clear();
+    });
+
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
         return inviwoApp.exec();
-    } else {
+    }
+    else {
         mainWin.exitInviwo(false);
         return 0;
     }

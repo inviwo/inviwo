@@ -35,23 +35,13 @@
 namespace inviwo {
 
 CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
-    : CanvasProcessorWidget(p), canvas_(nullptr), hasSharedCanvas_(false) {
+    : CanvasProcessorWidget(p)
+    , canvas_(util::make_unique<CanvasGLFW>(processor_->getIdentifier(), getDimensions())) {
     
-    uvec2 dimU = uvec2(getDimensions());
-
-    CanvasGLFW* sharedCanvas = CanvasGLFW::getSharedContext();
-    if (!sharedCanvas->getProcessorWidgetOwner()) {
-        canvas_ = sharedCanvas;
-        canvas_->setWindowTitle(processor_->getIdentifier());
-        hasSharedCanvas_ = true;
-    } else {
-        canvas_ = new CanvasGLFW(processor_->getIdentifier(), dimU);
-    }
-
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
-    canvas_->setWindowSize(dimU);
-    
+    canvas_->setWindowSize(getDimensions());
+    canvas_->setWindowPosition(getPosition());
     if (ProcessorWidget::isVisible()) {
         canvas_->show();
     } else {
@@ -62,11 +52,6 @@ CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
 CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
     if (canvas_) {
         this->hide();
-        if (hasSharedCanvas_) {
-            canvas_->setProcessorWidgetOwner(nullptr);
-        } else {
-            delete canvas_;
-        }
         canvas_->setEventPropagator(nullptr);
     }
 }
@@ -94,8 +79,14 @@ void CanvasProcessorWidgetGLFW::setDimensions(ivec2 dim) {
     canvas_->setWindowSize(uvec2(dim.x, dim.y));
 }
 
+void CanvasProcessorWidgetGLFW::setPosition(ivec2 dim) {
+    CanvasProcessorWidget::setPosition(dim);
+    canvas_->setWindowPosition(uvec2(dim.x, dim.y));
+}
+
+
 Canvas* CanvasProcessorWidgetGLFW::getCanvas() const {
-    return canvas_;
+    return canvas_.get();
 }
 
 

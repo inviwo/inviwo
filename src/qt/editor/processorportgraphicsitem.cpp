@@ -77,7 +77,10 @@ void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsIte
 
     QRectF portRect(QPointF(-size_, size_) / 2, QPointF(size_, -size_) / 2);
     QLinearGradient portGrad(portRect.topLeft(), portRect.bottomLeft());
-    portGrad.setColorAt(0.0f, QColor(color.r * 6 / 10, color.g * 6 / 10, color.b * 6 / 10));
+    portGrad.setColorAt(0.0f,
+                        QColor(std::min(255u, color.r * 6 / 10), 
+                        std::min(255u, color.g * 6 / 10),
+                        std::min(255u, color.b * 6 / 10)));
     portGrad.setColorAt(0.3f, QColor(color.r, color.g, color.b));
     portGrad.setColorAt(1.0f, QColor(color.r, color.g, color.b));
     p->setBrush(portGrad);

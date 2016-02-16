@@ -101,7 +101,7 @@ protected:
 template <typename T, typename Alloc>
 struct port_traits<std::vector<T, Alloc>> {
     static std::string class_identifier() { return port_traits<T>::class_identifier() + "Vector"; }
-    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<T, Alloc>* data) {
         return "Vector of size " + toString(data->size()) +
                (!data->empty()
@@ -114,7 +114,7 @@ struct port_traits<std::vector<T*, Alloc>> {
     static std::string class_identifier() {
         return port_traits<T>::class_identifier() + "PtrVector";
     }
-    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<T*, Alloc>* data) {
         return "Vector of size " + toString(data->size()) +
                (!data->empty()
@@ -127,7 +127,7 @@ struct port_traits<std::vector<std::unique_ptr<T, D>, A>> {
     static std::string class_identifier() {
         return port_traits<T>::class_identifier() + "UniquePtrVector";
     }
-    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<std::unique_ptr<T, D>, A>* data) {
         return "Vector of size " + toString(data->size()) +
                (!data->empty()
@@ -141,7 +141,7 @@ struct port_traits<std::vector<std::shared_ptr<T>, A>> {
     static std::string class_identifier() {
         return port_traits<T>::class_identifier() + "SharedPtrVector";
     }
-    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<std::shared_ptr<T>, A>* data) {
         return "Vector of size " + toString(data->size()) +
                (!data->empty()

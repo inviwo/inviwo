@@ -1,4 +1,4 @@
-/*********************************************************************************
+		/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -79,7 +79,7 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
     }
 
     if (owner) {  // Assume ownership of property;
-        ownedProperties_.emplace_back(property);
+        ownedProperties_.emplace_back(property);	
     }
     notifyObserversDidAddProperty(property, properties_.size() - 1);
 }
@@ -242,7 +242,6 @@ void PropertyOwner::serialize(Serializer& s) const {
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
-
     // This is for finding renamed composites, and moving old properties to new composites.
     NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
@@ -261,16 +260,22 @@ void PropertyOwner::deserialize(Deserializer& d) {
 
         // Property is created in the de-serialization, assume ownership
         if (it == identifers.end()) {
-            notifyObserversWillAddProperty(p, i);
-            p->setOwner(this);
-            if (dynamic_cast<EventProperty*>(p)) {
-                eventProperties_.push_back(static_cast<EventProperty*>(p));
+            // check that we don't already own it. Could be added by some callback
+            // in the deserialization.
+            if (!util::contains_if(ownedProperties_, [&](const std::unique_ptr<Property>& o) {
+                    return o.get() == p;
+                })) {
+                notifyObserversWillAddProperty(p, i);
+                p->setOwner(this);
+                if (dynamic_cast<EventProperty*>(p)) {
+                    eventProperties_.push_back(static_cast<EventProperty*>(p));
+                }
+                if (dynamic_cast<CompositeProperty*>(p)) {
+                    compositeProperties_.push_back(static_cast<CompositeProperty*>(p));
+                }
+                ownedProperties_.emplace_back(p);
+                notifyObserversDidAddProperty(p, i);
             }
-            if (dynamic_cast<CompositeProperty*>(p)) {
-                compositeProperties_.push_back(static_cast<CompositeProperty*>(p));
-            }
-            ownedProperties_.emplace_back(p);
-            notifyObserversDidAddProperty(p, i);
         }
     }
 }

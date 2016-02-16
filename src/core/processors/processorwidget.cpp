@@ -39,10 +39,6 @@ ProcessorWidget::ProcessorWidget(Processor* p)
     , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {}
 
-ProcessorWidget::~ProcessorWidget() {
-    if (processor_) processor_->setProcessorWidget(nullptr);
-}
-
 void ProcessorWidget::setVisible(bool visible) {
     metaData_->setVisibile(visible);
     if (visible) {

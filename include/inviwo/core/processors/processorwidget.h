@@ -43,7 +43,7 @@ class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable {
 
 public:
     ProcessorWidget(Processor* p);
-    virtual ~ProcessorWidget();
+    virtual ~ProcessorWidget() = default;
 
     virtual Processor* getProcessor() const;
 
