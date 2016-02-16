@@ -90,6 +90,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type bool got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatProperty") {
         if (is<float>(args)) {
@@ -99,6 +100,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type float got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleProperty") {
         if (is<float>(args)) {
@@ -108,6 +110,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type float got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.IntProperty") {
         if (is<int>(args)) {
@@ -117,6 +120,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type int got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.StringProperty") {
         if (is<std::string>(args)) {
@@ -126,6 +130,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FileProperty") {
         if (is<std::string>(args)) {
@@ -135,6 +140,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DirectoryProperty") {
         if (is<std::string>(args)) {
@@ -144,6 +150,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.IntVec2Property") {
         if (is<ivec2>(args)) {
@@ -153,6 +160,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.IntVec3Property") {
         if (is<ivec3>(args)) {
@@ -162,6 +170,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type ivec3 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.IntVec4Property") {
         if (is<ivec4>(args)) {
@@ -171,6 +180,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type ivec4 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatVec2Property") {
         if (is<vec2>(args)) {
@@ -180,6 +190,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatVec3Property") {
         if (is<vec3>(args)) {
@@ -189,6 +200,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec3 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatVec4Property") {
         if (is<vec4>(args)) {
@@ -198,6 +210,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec4 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatMat2Property") {
         if (is<vec2>(args)) {
@@ -207,6 +220,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatMat3Property") {
         if (is<vec3>(args)) {
@@ -216,6 +230,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec3 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatMat4Property") {
         if (is<vec4>(args)) {
@@ -225,6 +240,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec4 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.FloatMinMaxProperty") {
         if (is<vec2>(args)) {
@@ -234,6 +250,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type vec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleVec2Property") {
         if (is<dvec2>(args)) {
@@ -243,6 +260,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleVec3Property") {
         if (is<dvec3>(args)) {
@@ -252,6 +270,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec3 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleVec4Property") {
         if (is<dvec4>(args)) {
@@ -261,6 +280,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec4 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleMat2Property") {
         if (is<dvec2>(args)) {
@@ -270,6 +290,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleMat3Property") {
         if (is<dvec3>(args)) {
@@ -279,6 +300,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec3 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleMat4Property") {
         if (is<dvec4>(args)) {
@@ -288,6 +310,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec4 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.DoubleMinMaxProperty") {
         if (is<dvec2>(args)) {
@@ -297,6 +320,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type dvec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.OptionPropertyInt") {
         if (is<int>(args)) {
@@ -306,6 +330,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type int got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.OptionPropertyFloat") {
         if (is<float>(args)) {
@@ -315,6 +340,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type float got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.OptionPropertyString") {
         if (is<std::string>(args)) {
@@ -324,6 +350,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type std::string got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.OptionPropertyDouble") {
         if (is<double>(args)) {
@@ -333,6 +360,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type double got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.IntMinMaxProperty") {
         if (is<ivec2>(args)) {
@@ -342,6 +370,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             std::stringstream ss;
             ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+            return false;
         }
     } else if (className == "org.inviwo.CameraProperty") {
         vec3 from, to, up;

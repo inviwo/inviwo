@@ -109,11 +109,11 @@ int PythonParameterParser::parse(PyObject* args, Types&... outputs) {
 
 template <typename T, typename... Types2>
 int PythonParameterParser::parseArray(int idx, PyObject* args, T& t, Types2&... outputs) {
-    if (!parseValue(idx, PyTuple_GetItem(args, idx), t)) {
-        return 0;
+    if (parseValue(idx, PyTuple_GetItem(args, idx), t) == -1) {
+        return -1;
     }
     auto v = parseArray(idx + 1, args, outputs...);
-    return v == 0 ? 0 : 1 + v;
+    return v == -1 ? -1 : 1 + v;
 }
 
 

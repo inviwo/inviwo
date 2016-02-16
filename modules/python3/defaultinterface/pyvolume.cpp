@@ -92,7 +92,7 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    auto tf = getTF(path, "saveTransferFunction");
+    auto tf = getTF(path, "loadTransferFunction");
     if (!tf) { return nullptr; }
 
     auto app = InviwoApplication::getPtr();
@@ -120,7 +120,7 @@ PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    auto tf = getTF(path, "saveTransferFunction");
+    auto tf = getTF(path, "clearTransferfunction");
     if (!tf) { return nullptr; }
     
     tf->get().clearPoints();
@@ -136,7 +136,7 @@ PyObject* py_addPointTransferFunction(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    auto tf = getTF(path, "saveTransferFunction");
+    auto tf = getTF(path, "addPointTransferFunction");
     if (!tf) { return nullptr; }
     
     tf->get().addPoint(pos, vec4(color, pos.y));
