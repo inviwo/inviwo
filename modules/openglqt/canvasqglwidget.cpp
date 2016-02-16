@@ -78,7 +78,6 @@ CanvasQGLWidget::~CanvasQGLWidget() {
     // This affect for example FBO's and VAO's
     activate();
     square_.release();
-    activateDefaultRenderContext();
     if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
 }
 
@@ -92,7 +91,9 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
     }
 }
 
-void CanvasQGLWidget::activate() { context()->makeCurrent(); }
+void CanvasQGLWidget::activate() {
+    context()->makeCurrent();
+}
 
 void CanvasQGLWidget::initializeGL() {
     OpenGLCapabilities::initializeGLEW();
