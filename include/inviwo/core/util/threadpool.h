@@ -59,6 +59,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -121,6 +122,10 @@ inline void ThreadPool::addWorker() {
     size_t i = workers.size();
     std::unique_lock<std::mutex> lock1(this->queue_mutex);
     workers.emplace_back([this, i] {
+        util::OnScopeExit cleanup{[](){
+            RenderContext::getPtr()->clearContext();
+        }};
+    
         for (;;) {
             std::function<void()> task;
 
@@ -136,7 +141,8 @@ inline void ThreadPool::addWorker() {
             }
 
             task();
-        }        
+        }
+        
     });
 }
 
@@ -146,11 +152,9 @@ inline void ThreadPool::removeWorker() {
             std::unique_lock<std::mutex> lock(queue_mutex);
             workers.back().stop = true;
         }
-        auto id = workers.back().thread.get_id();
         condition.notify_all();
         workers.back().thread.join();
         workers.pop_back();
-        RenderContext::getPtr()->clearContext(id);
     }
 }
 

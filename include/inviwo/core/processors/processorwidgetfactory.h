@@ -38,15 +38,28 @@
 namespace inviwo {
 
 class IVW_CORE_API ProcessorWidgetFactory
-    : public StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, const std::string&,
-                             Processor*> {
+    : public Factory<ProcessorWidget, const std::string&, Processor*> {
 public:
+    using T = ProcessorWidget;
+    using K = const std::string&;
+    using M = ProcessorWidgetFactoryObject;
+    using Key = std::string;
+    using Map = std::unordered_map<Key, ProcessorWidgetFactoryObject*>;
+
     ProcessorWidgetFactory() = default;
     virtual ~ProcessorWidgetFactory() = default;
 
-    using StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, const std::string&,
-                          Processor*>::create;
-    std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
+    virtual bool registerObject(M* obj);
+    virtual bool unRegisterObject(M* obj);
+
+    std::unique_ptr<T> create(K key, Processor* processor) const override;
+    std::unique_ptr<T> create(Processor* processor) const;
+
+    virtual bool hasKey(K key) const override;
+    virtual std::vector<Key> getKeys() const;
+
+protected:
+    Map map_;
 };
 
 }  // namespace

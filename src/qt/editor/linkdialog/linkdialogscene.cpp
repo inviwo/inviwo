@@ -41,9 +41,12 @@
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QTimeLine>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {

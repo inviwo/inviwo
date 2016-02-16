@@ -55,7 +55,7 @@ VolumeCombiner::VolumeCombiner()
     , eqn_("eqn", "Equation", "s1*v1")
     , scales_("scales", "Scale factors")
     , useWorldSpaceCoordinateSystem_("useWorldSpaceCoordinateSystem", "World space", false)
-    , borderValue_("borderValue", "Border value", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.1))
+    , borderValue_("borderValue", "Border value", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.1f))
     , shader_("volume_gpu.vert", "volume_gpu.geom", "volume_combiner.frag", false)
     , fbo_()
     , validEquation_(false) {

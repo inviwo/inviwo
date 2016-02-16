@@ -68,15 +68,12 @@ void RenderContext::activateLocalRenderContext() const {
     localContext->activate();
 }
 
-void RenderContext::clearContext(const std::thread::id& id) {
+void RenderContext::clearContext() {
+    auto id = std::this_thread::get_id();
     std::unique_lock<std::mutex> lock(mutex_);
     contextMap_.erase(id);
 }
 
-void RenderContext::clearLocalContexts() {
-    std::unique_lock<std::mutex> lock(mutex_);
-    contextMap_.clear();
-}
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 

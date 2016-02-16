@@ -40,14 +40,15 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QLabel>
 #include <QWidget>
-#include <QMenu>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
 #include <warn/pop>
+
+class QMenu;
+class QAction;
+class QActionGroup;
 
 namespace inviwo {
 

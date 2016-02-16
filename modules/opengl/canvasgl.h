@@ -88,7 +88,13 @@ protected:
 
     std::shared_ptr<const Image> image_;
     const ImageGL* imageGL_;
-    
+    std::unique_ptr<Mesh> square_;
+    /**
+     * Each canvas must have its own MeshGL
+     * since QT uses a context per canvas
+     * and the vertex array in MeshGL cannot be shared.
+     */
+    const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
 private:
     /**
      * Sometime on OSX in renderNoise when on the first time using
@@ -103,13 +109,7 @@ private:
     std::unique_ptr<Shader> shader_;
     std::unique_ptr<Shader> noiseShader_;
 
-    std::unique_ptr<Mesh> square_;
-    /**
-     * Each canvas must have its own MeshGL
-     * since QT uses a context per canvas
-     * and the vertex array in MeshGL cannot be shared.
-     */
-    const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
+
     size_t channels_;
     size_t previousRenderedLayerIdx_;
 };

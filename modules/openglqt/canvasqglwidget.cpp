@@ -73,6 +73,11 @@ CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
 }
 
 CanvasQGLWidget::~CanvasQGLWidget() {
+    // Make sure that the correct OpenGL context 
+    // is active when objects are destroyed
+    // This affect for example FBO's and VAO's
+    activate();
+    square_.release();
     if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
 }
 
@@ -86,12 +91,19 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
     }
 }
 
-void CanvasQGLWidget::activate() { context()->makeCurrent(); }
+void CanvasQGLWidget::activate() {
+    context()->makeCurrent();
+}
 
 void CanvasQGLWidget::initializeGL() {
     OpenGLCapabilities::initializeGLEW();
+    // QOpenGLWidget docs:
+    // There is no need to call makeCurrent() because this has already been done 
+    // when this function is called.
+    // Note however that the framebuffer is not yet available at this stage, 
+    // so do not issue draw calls from here.
+    // Defer such calls to paintGL() instead.
     QGLWidget::initializeGL();
-    activate();
 }
 
 void CanvasQGLWidget::glSwapBuffers() {
