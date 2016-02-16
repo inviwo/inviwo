@@ -38,6 +38,9 @@
 #include <warn/ignore/all>
 #include <QDialogButtonBox>
 #include <QMouseEvent>
+#include <QMenu>
+#include <QVBoxLayout>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {

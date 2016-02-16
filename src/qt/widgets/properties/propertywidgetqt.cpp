@@ -44,12 +44,13 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDesktopWidget>
-
 #include <QStyleOption>
 #include <QPainter>
 #include <QToolTip>
 #include <QHelpEvent>
 #include <QClipboard>
+#include <QMenu>
+#include <QLayout>
 #include <warn/pop>
 
 namespace inviwo {

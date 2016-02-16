@@ -41,6 +41,9 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSettings>
+#include <QStandardItemModel>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <warn/pop>
 
 namespace inviwo {
