@@ -35,6 +35,13 @@
 bool rayTriangleIntersection(float3 o, float3 dir, float3 v0, float3 v1, float3 v2, float* t) {
     float3 e1 = v1-v0;
     float3 e2 = v2-v0;
+    return rayTriangleEdgeIntersection(o, dir, v0, e1, e2, t);
+}
+// Intersects a ray with a triangle defined by a vertex and two edges:
+// float3 e1 = v1-v0;
+// float3 e2 = v2-v0;
+// If intersecting, t is the point of intersection along the ray
+bool rayTriangleEdgeIntersection(float3 o, float3 dir, float3 v0, float3 e1, float3 e2, float* t) {
     float3 p = cross(dir, e2);
     float a = dot(e1, p);
     if (a > -0.00001f && a < 0.00001f) {

@@ -142,7 +142,7 @@ void LayerCLGL::notifyAfterTextureInitialization() {
     if (it != LayerCLGL::clImageSharingMap_.end()) {
         clImage_ = std::static_pointer_cast<cl::Image2DGL>(it->second);
     } else {
-        if (glm::all(glm::greaterThan(texture_->getDimensions(), uvec2(0)))) {
+        if (glm::all(glm::greaterThan(texture_->getDimensions(), size2_t(0)))) {
             try {
                 clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(),
                                                            CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0,

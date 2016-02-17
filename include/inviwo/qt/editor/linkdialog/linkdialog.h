@@ -36,13 +36,12 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QComboBox>
-#include <QStandardItemModel>
-#include <QDialogButtonBox>
-#include <QCheckBox>
-#include <QPushButton>
 #include <QEventLoop>
-#include <QLineEdit>
 #include <warn/pop>
+
+class QStandardItemModel;
+class QStandardItem;
+class QPushButton;
 
 namespace inviwo {
 

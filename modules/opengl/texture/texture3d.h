@@ -61,7 +61,7 @@ public:
     const size3_t& getDimensions() const { return dimensions_; }
 
 protected:
-    void default3DTextureParameterFunction(Texture*);
+    static void default3DTextureParameterFunction(Texture*);
 
 private:
     size3_t dimensions_;

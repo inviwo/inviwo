@@ -77,8 +77,7 @@ CanvasQGLWidget::~CanvasQGLWidget() {
     // is active when objects are destroyed
     // This affect for example FBO's and VAO's
     activate();
-    square_.release();
-    activateDefaultRenderContext();
+    square_.reset();
     if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
 }
 
@@ -92,7 +91,9 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
     }
 }
 
-void CanvasQGLWidget::activate() { context()->makeCurrent(); }
+void CanvasQGLWidget::activate() {
+    context()->makeCurrent();
+}
 
 void CanvasQGLWidget::initializeGL() {
     OpenGLCapabilities::initializeGLEW();

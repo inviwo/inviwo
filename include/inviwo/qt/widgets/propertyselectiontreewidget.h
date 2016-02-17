@@ -35,12 +35,11 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QTreeWidget>
-#include <QApplication>
 #include <QDialog>
-#include <QPushButton>
 #include <warn/pop>
+
+class QVBoxLayout;
 
 namespace inviwo {
 

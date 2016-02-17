@@ -39,7 +39,6 @@ Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, 
     , dataType_(glFormat.type)
     , filtering_(filtering)
     , level_(level)
-    , texParameterCallback_(new TextureCallback())
     , pboBackIsSetup_(false)
     , pboBackHasData_(false)
 {
@@ -58,7 +57,6 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     , dataType_(dataType)
     , filtering_(filtering)
     , level_(level)
-    , texParameterCallback_(new TextureCallback())
     , pboBackIsSetup_(false)
     , pboBackHasData_(false)
 {
@@ -77,7 +75,6 @@ Texture::Texture(const Texture& other)
     , dataType_(other.dataType_)
     , filtering_(other.filtering_)
     , level_(other.level_)
-    , texParameterCallback_(new TextureCallback())
     , byteSize_(other.byteSize_)
     , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
@@ -96,7 +93,6 @@ Texture::Texture(Texture&& other)
     , dataType_(other.dataType_)
     , filtering_(other.filtering_)
     , level_(other.level_)
-    , texParameterCallback_(other.texParameterCallback_)
     , byteSize_(other.byteSize_)
     , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
@@ -106,7 +102,6 @@ Texture::Texture(Texture&& other)
     , pboBack_(other.pboBack_)
 {
     // Free resources from other
-    other.texParameterCallback_ = nullptr;
     other.id_ = 0;
     other.pboBack_ = 0;
 }
@@ -130,7 +125,6 @@ Texture& Texture::operator=(Texture&& rhs) {
         // Free existing resources
         glDeleteTextures(1, &id_);
         glDeleteBuffers(1, &pboBack_);
-        delete texParameterCallback_;
 
         // Steal resources
         Observable<TextureObserver>::operator=(std::move(rhs));
@@ -142,12 +136,10 @@ Texture& Texture::operator=(Texture&& rhs) {
         numChannels_ = rhs.numChannels_;
         byteSize_ = rhs.byteSize_;
 
-        texParameterCallback_ = rhs.texParameterCallback_;
         id_ = rhs.id_;
         pboBack_ = rhs.pboBack_;
 
         // Release resources from source object
-        rhs.texParameterCallback_ = nullptr;
         rhs.id_ = 0;
         rhs.pboBack_ = 0;
     }
@@ -162,7 +154,6 @@ Texture::~Texture() {
         glDeleteTextures(1, &id_); 
         glDeleteBuffers(1, &pboBack_);
     }
-    delete texParameterCallback_;
 }
 
 GLuint Texture::getID() const {
