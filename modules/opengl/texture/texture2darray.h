@@ -39,9 +39,9 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
 public:
-    Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+    Texture2DArray(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
                    GLint level = 0);
-    Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType,
+    Texture2DArray(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                    GLenum filtering, GLint level = 0);
     Texture2DArray(const Texture2DArray& other);
     Texture2DArray& operator=(const Texture2DArray& other);
@@ -55,15 +55,15 @@ public:
 
     void upload(const void* data);
 
-    void uploadAndResize(const void* data, const uvec3& dim);
+    void uploadAndResize(const void* data, const size3_t& dim);
 
-    const uvec3& getDimensions() const { return dimensions_; }
+    const size3_t& getDimensions() const { return dimensions_; }
 
 protected:
-    void default2DArrayTextureParameterFunction(Texture*);
+    static void default2DArrayTextureParameterFunction(Texture*);
 
 private:
-    uvec3 dimensions_;
+    size3_t dimensions_;
 };
 
 }  // namespace

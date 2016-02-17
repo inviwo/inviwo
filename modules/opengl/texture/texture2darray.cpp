@@ -32,27 +32,28 @@
 
 namespace inviwo {
 
-Texture2DArray::Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+Texture2DArray::Texture2DArray(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
                                GLint level)
     : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, level), dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
+    setTextureParameters(&Texture2DArray::default2DArrayTextureParameterFunction);
 }
 
-Texture2DArray::Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat,
+Texture2DArray::Texture2DArray(size3_t dimensions, GLint format, GLint internalformat,
                                GLenum dataType, GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_2D_ARRAY, format, internalformat, dataType, filtering, level)
     , dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
+    setTextureParameters(&Texture2DArray::default2DArrayTextureParameterFunction);
 }
 
 Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
     : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
+    setTextureParameters(&Texture2DArray::default2DArrayTextureParameterFunction);
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
         // GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
-                           dimensions_.x, dimensions_.y, dimensions_.z);
+                           static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
+                           static_cast<GLsizei>(dimensions_.z));
     } else {
         // Copy data through PBO
         loadFromPBO(&rhs);
@@ -63,12 +64,14 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
+        setTextureParameters(&Texture2DArray::default2DArrayTextureParameterFunction);
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
             // GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
-                               0, rhs.dimensions_.x, rhs.dimensions_.y, rhs.dimensions_.z);
+                               0, static_cast<GLsizei>(rhs.dimensions_.x),
+                               static_cast<GLsizei>(rhs.dimensions_.y),
+                               static_cast<GLsizei>(rhs.dimensions_.z));
         } else {
             // Copy data through PBO
             loadFromPBO(&rhs);
@@ -87,16 +90,16 @@ void Texture2DArray::initialize(const void* data) {
     // Allocate data
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texParameterCallback_->invoke(this);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, level_, internalformat_, dimensions_.x, dimensions_.y,
-                 dimensions_.z, 0, format_, dataType_, data);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
+                 static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z), 0,
+                 format_, dataType_, data);
     LGL_ERROR;
 
     for (auto o : observers_) o->notifyAfterTextureInitialization();
 }
 
 size_t Texture2DArray::getNumberOfValues() const {
-    return static_cast<size_t>(dimensions_.x * dimensions_.y * dimensions_.z);
+    return dimensions_.x * dimensions_.y * dimensions_.z;
 }
 
 void Texture2DArray::upload(const void* data) {
@@ -107,7 +110,7 @@ void Texture2DArray::upload(const void* data) {
     LGL_ERROR;
 }
 
-void Texture2DArray::uploadAndResize(const void* data, const uvec3& dim) {
+void Texture2DArray::uploadAndResize(const void* data, const size3_t& dim) {
     dimensions_ = dim;
     setPBOAsInvalid();
     initialize(data);

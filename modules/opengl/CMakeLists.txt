@@ -38,7 +38,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texturecallback.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureunit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureutils.h
@@ -109,8 +108,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/raycasting.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/standard.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/standard.vert
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.vert
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/classification.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/compositing.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl

@@ -33,19 +33,19 @@
 namespace inviwo {
 
 Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
+    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {  
+    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
 }
 
 Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, level)
     , dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
+    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
 }
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
+    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
         // GPU memcpy
@@ -67,7 +67,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
+        setTextureParameters(&Texture3D::default3DTextureParameterFunction);
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
             // GPU memcpy
@@ -98,11 +98,10 @@ void Texture3D::initialize(const void* data) {
     // Notify observers
     for (auto o : observers_) o->notifyBeforeTextureInitialization();
 
-
     // Allocate data
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texParameterCallback_->invoke(this);
+
     glTexImage3D(GL_TEXTURE_3D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
                  static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z), 0,
                  format_, dataType_, data);

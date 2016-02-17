@@ -32,7 +32,6 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/texturecallback.h>
 #include <modules/opengl/texture/textureobserver.h>
 
 namespace inviwo {
@@ -67,9 +66,10 @@ public:
     GLuint getNChannels() const;
     GLuint getSizeInBytes() const;
 
-    template <typename T>
-    void setTextureParameterFunction(T* o, void (T::*m)(Texture*)) const {
-        texParameterCallback_->addMemberFunction(o, m);
+    void setTextureParameters(std::function<void(Texture*)> fun) {
+        bind();
+        fun(this);
+        unbind();
     }
 
     void bind() const;
@@ -97,8 +97,6 @@ protected:
     GLenum dataType_;
     GLenum filtering_;
     GLint level_;
-
-    TextureCallback* texParameterCallback_;
 
 private:
     GLuint id_;
