@@ -362,9 +362,9 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
 
         for (auto& elem : propParams_) {
             if (!elem.vol || elem.vol->getDataFormat() != format) {
-                 elem.vol.reset(new VolumeGL(volumeDimOut_, format, false));
-                elem.vol->getTexture()->setTextureParameterFunction(
-                    this, &LightVolumeGL::propagation3DTextureParameterFunction);
+                elem.vol.reset(new VolumeGL(volumeDimOut_, format, false));
+                elem.vol->getTexture()->setTextureParameters(
+                    [&](Texture* t) { propagation3DTextureParameterFunction(t); });
                 elem.vol->getTexture()->initialize(nullptr);
             } else {
                 elem.vol->setDimensions(volumeDimOut_);

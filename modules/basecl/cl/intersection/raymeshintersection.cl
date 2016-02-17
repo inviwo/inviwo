@@ -36,6 +36,7 @@
  * Test intersection between a ray and an indexed triangle mesh.
  * If intersecting, t0 will contain the first point of intersection along the ray and t1 the last.
  * If ray is inside the box, t0 will be set to 0.
+ * @note Assumes that at least one triangle is present.
  * @param vertices  xyz position 
  * @param indices   Triangle indices into vertex list.
  * @param nIndices  Number of triangle indices. 
@@ -45,28 +46,64 @@
  * @param t1        End point along ray
  * @return true if an intersection is found, false otherwise.
  */ 
-bool rayMeshIntersection(__global float const * __restrict vertices
+bool rayMeshIntersection(
+
+#ifdef RAY_MESH_LOCAL_MEM
+    __global float const * __restrict verticesG
+    , __global int const * __restrict indicesG
+#else
+    __global float const * __restrict vertices
     , __global int const * __restrict indices
+#endif
     , int nIndices
     , float3 rayOrigin
     , float3 rayDirection
     , float* __restrict  t0, float* __restrict  t1)
 {
     float tNear = FLT_MAX; float tFar = 0.f;
-    for (int i = 0; i < nIndices-2; i +=1) {
-        // Triangle strip
-        int3 triangle = 3*(int3)(*indices, *(indices+1), *(indices+2));
-        float3 v0 = (float3)(vertices[triangle.x], vertices[triangle.x+1], vertices[triangle.x+2]);
-        float3 v1 = (float3)(vertices[triangle.y], vertices[triangle.y+1], vertices[triangle.y+2]);
-        float3 v2 = (float3)(vertices[triangle.z], vertices[triangle.z+1], vertices[triangle.z+2]);
-        float t;
-        bool iSect = rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2, &t);
+#ifdef RAY_MESH_LOCAL_MEM
+    // A simple test to see what would be the 
+    // fastest possible using local memory.
+    // Only works with a cube mesh.
+    __local float vertices[3 * 8];
+    __local int indices[3 * 14];
+    int localId = get_local_id(0);
+    uint currIndex = localId;
+    uint triangleCount = (nIndices - 2);
+    if (localId < 14 * 3) {
+        *(indices + localId) = *(indicesG + localId);
+    }
+    if (localId < 8 * 3) {
+        *(vertices + localId) = *(verticesG + localId);
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
+#endif
+    // Assume that at least one triangle is present
+    int3 triangle = 3 * (int3)(indices[0], indices[1], indices[2]);
+    // Triangle strip
+    float3 v0 = (float3)(vertices[triangle.x], vertices[triangle.x + 1], vertices[triangle.x + 2]);
+    float3 v1 = (float3)(vertices[triangle.y], vertices[triangle.y + 1], vertices[triangle.y + 2]);
+    float3 v2 = (float3)(vertices[triangle.z], vertices[triangle.z + 1], vertices[triangle.z + 2]);
+    float t;
+    bool iSect = rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2, &t);
+    if (iSect) {
+        tNear = fmin(t, tNear);
+        tFar = fmax(t, tFar);
+    }
+    for (int i = 3; i < nIndices; ++i) {
+        // Fetch new vertex in triangle strip
+        int newTriangleStripId = 3 * indices[i];
+        // Swap location of the vertices
+        v0 = v1; v1 = v2;
+        v2 = (float3)(vertices[newTriangleStripId], vertices[newTriangleStripId + 1], vertices[newTriangleStripId + 2]);
+
+        iSect = rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2, &t);
         if (iSect) {
             tNear = fmin(t, tNear);
             tFar = fmax(t, tFar);
         }
-        indices+=1;
     }
+
     if (tFar != 0.f) {
         // We are inside the geometry if the
         // closest hit point is equal

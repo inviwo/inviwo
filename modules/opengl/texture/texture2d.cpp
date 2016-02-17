@@ -32,24 +32,26 @@
 
 namespace inviwo {
 
-Texture2D::Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
+Texture2D::Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+                     GLint level)
     : Texture(GL_TEXTURE_2D, glFormat, filtering), dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 
-Texture2D::Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType,
+Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering), dimensions_(dimensions) {
-    setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 
 Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
         // GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
-                           dimensions_.x, dimensions_.y, 1);
+                           static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
+                           1);
     } else {
         // Copy data through PBO
         loadFromPBO(&rhs);
@@ -63,13 +65,14 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
+        setTextureParameters(&Texture2D::default2DTextureParameterFunction);
         initialize(nullptr);
 
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
             // GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
-                               0, rhs.dimensions_.x, rhs.dimensions_.y, 1);
+                               0, static_cast<GLsizei>(rhs.dimensions_.x),
+                               static_cast<GLsizei>(rhs.dimensions_.y), 1);
         } else {
             // Copy data through PBO
             loadFromPBO(&rhs);
@@ -94,25 +97,23 @@ void Texture2D::initialize(const void* data) {
     for (auto o : observers_) o->notifyBeforeTextureInitialization();
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texParameterCallback_->invoke(this);
-    glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, dimensions_.x, dimensions_.y, 0, format_,
-                 dataType_, data);
+    glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
+                 static_cast<GLsizei>(dimensions_.y), 0, format_, dataType_, data);
     LGL_ERROR;
     for (auto o : observers_) o->notifyAfterTextureInitialization();
 }
 
-size_t Texture2D::getNumberOfValues() const {
-    return static_cast<size_t>(dimensions_.x * dimensions_.y);
-}
+size_t Texture2D::getNumberOfValues() const { return dimensions_.x * dimensions_.y; }
 
 void Texture2D::upload(const void* data) {
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dimensions_.x, dimensions_.y, format_, dataType_, data);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(dimensions_.x),
+                    static_cast<GLsizei>(dimensions_.y), format_, dataType_, data);
     LGL_ERROR_SUPPRESS;
 }
 
-void Texture2D::resize(uvec2 dimensions) {
+void Texture2D::resize(size2_t dimensions) {
     dimensions_ = dimensions;
     setPBOAsInvalid();
     initialize(nullptr);

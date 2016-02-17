@@ -40,8 +40,8 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 public:
-    Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType,
+    Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
               GLenum filtering, GLint level = 0);
     Texture2D(const Texture2D& other);
     Texture2D(Texture2D&& other);  // move constructor
@@ -57,16 +57,16 @@ public:
 
     void upload(const void* data);
 
-    const uvec2& getDimensions() const { return dimensions_; }
-    int getWidth() const { return dimensions_.x; }
-    int getHeight() const { return dimensions_.y; }
-    void resize(uvec2 dimensions);
+    const size2_t& getDimensions() const { return dimensions_; }
+    size_t getWidth() const { return dimensions_.x; }
+    size_t getHeight() const { return dimensions_.y; }
+    void resize(size2_t dimensions);
 
 protected:
-    void default2DTextureParameterFunction(Texture*);
+    static void default2DTextureParameterFunction(Texture*);
 
 private:
-    uvec2 dimensions_;
+    size2_t dimensions_;
 };
 
 }  // namespace
