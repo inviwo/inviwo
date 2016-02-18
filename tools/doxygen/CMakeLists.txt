@@ -216,9 +216,13 @@ function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
     file(WRITE "${IVW_DOXY_OUT}/doc/help/inviwo.qhcp" ${INV_QHCP})
 
     add_custom_target("DOXY-QCH"
-        COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen ${QCH}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Building inviwo.qch"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${IVW_DOXY_OUT}/doc/help/inviwo.qch ${IVW_DOXY_OUT}/doc/help/html/index.qhp"
         COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${IVW_DOXY_OUT}/doc/help/inviwo.qch" "${IVW_DOXY_OUT}/doc/help/html/index.qhp"
+        COMMAND ${CMAKE_COMMAND} -E echo "Building inviwo.qhc"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QCOLLECTIONGENERATOR} -o ${IVW_DOXY_OUT}/doc/help/inviwo.qhc ${IVW_DOXY_OUT}/doc/help/inviwo.qhcp"
         COMMAND ${IVW_DOXY_QCOLLECTIONGENERATOR} "-o" "${IVW_DOXY_OUT}/doc/help/inviwo.qhc" "${IVW_DOXY_OUT}/doc/help/inviwo.qhcp"
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy ${IVW_DOXY_OUT}/doc/help/inviwo.q* to ${IVW_ROOT_DIR}/data/help/"
         COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/doc/help/inviwo.qch" "${IVW_ROOT_DIR}/data/help/"
         COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/doc/help/inviwo.qhc" "${IVW_ROOT_DIR}/data/help/"
         COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/doc/help/inviwo.qhcp" "${IVW_ROOT_DIR}/data/help/"

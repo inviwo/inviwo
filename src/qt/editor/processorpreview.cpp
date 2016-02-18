@@ -107,9 +107,12 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             offset -= yshift;
         }
 
+        float padBelow = processor->getOutports().empty() ? 10.0f : 0.0f;
+        float padAbove = processor->getInports().empty() ? 10.0f : 0.0f;
+
         scene->clearSelection();  // Selections would also render to the file
         // Re-shrink the scene to it's bounding contents
-        scene->setSceneRect(scene->itemsBoundingRect());
+        scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
         QImage image(
             scene->sceneRect().size().toSize(),
             QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
