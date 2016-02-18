@@ -94,7 +94,7 @@ private:
     
     void touchFallback(QTouchEvent*);
     
-    bool gestureMode_;
+    bool gestureMode_ = false;
     Qt::GestureType lastType_;
     int lastNumFingers_;
     std::vector<int> lastTouchIds_;
