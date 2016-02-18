@@ -2,7 +2,6 @@
 # Inviwo VectorFieldVisualization Module
 ivw_module(VectorFieldVisualization)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen)
 
 #--------------------------------------------------------------------
 # Add header files
