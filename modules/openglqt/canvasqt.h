@@ -65,7 +65,7 @@ public:
     using QtBase = typename T::QtBase;
 
     explicit CanvasQtBase(uvec2 dim = uvec2(256,256));
-    ~CanvasQtBase() = default;
+    virtual ~CanvasQtBase() = default;
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;

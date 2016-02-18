@@ -129,6 +129,7 @@ InviwoApplication::InviwoApplication(std::string displayName)
 
 InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
+    portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
 }
 

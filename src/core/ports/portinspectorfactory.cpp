@@ -53,4 +53,8 @@ PortInspector* PortInspectorFactory::createAndCache(const std::string& className
 }
 
 
+void PortInspectorFactory::clearCache() {
+    cache_.clear();
+}
+
 }  // namespace

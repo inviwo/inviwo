@@ -113,6 +113,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
+    processor->setProcessorWidget(nullptr);
     modified();
     notifyObserversProcessorNetworkDidRemoveProcessor(processor);
 }

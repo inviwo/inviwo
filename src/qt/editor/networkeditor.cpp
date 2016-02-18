@@ -242,7 +242,7 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
     if (!port) return false;
 
-    PortInspectorMap::iterator it = portInspectors_.find(port);
+    auto it = portInspectors_.find(port);
     if (it != portInspectors_.end()) {
         return false;
     }
@@ -257,12 +257,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
         NetworkLock lock(network_);
         // Add processors to the network
         CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
-
         for (auto& processor : portInspector->getProcessors()) {
-            // For Debugging
-            // auto meta =
-            // processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            // meta->setVisibile(true);
             network_->addProcessor(processor);
         }
 
@@ -302,7 +297,6 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             processorWidget->show();
             processorWidget->addObserver(new PortInspectorObserver(this, outport));
         }
-
         return true;
     }
     return false;
@@ -311,13 +305,19 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 void NetworkEditor::removePortInspector(Outport* port) {
     if (port) {
         auto it = portInspectors_.find(port);
-        if (it != portInspectors_.end() && it->second->isActive()) {
-            NetworkLock lock(network_);
-            // Remove processors from the network
-            auto processors = it->second->getProcessors();
-            for (auto& processor : processors) network_->removeProcessor(processor);
+        if (it != portInspectors_.end()) {
+            if (it->second && it->second->isActive()) {
+                NetworkLock lock(network_);
 
-            it->second->setActive(false);
+                it->second->getCanvasProcessor()->getProcessorWidget()->hide();
+
+                // Remove processors from the network
+                auto processors = it->second->getProcessors();
+                for (auto& processor : processors) {
+                    network_->removeProcessor(processor);
+                }
+                it->second->setActive(false);
+            }
             portInspectors_.erase(it);
         }
     }
@@ -335,14 +335,12 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
             portInspector->setActive(true);
 
             auto canvasProcessor = portInspector->getCanvasProcessor();
-            auto wm = canvasProcessor->createMetaData<ProcessorWidgetMetaData>(
-                ProcessorWidgetMetaData::CLASS_IDENTIFIER);
-            wm->setVisibile(false);
             {
                 NetworkLock lock(network_);
                 // Add processors to the network
                 for (auto& processor : portInspector->getProcessors()) {
                     network_->addProcessor(processor);
+                    //RenderContext::getPtr()->activateDefaultRenderContext();
                 }
 
                 // Connect the port to inspect to the inports of the inspector network
@@ -378,7 +376,6 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
             for (auto processor : portInspector->getProcessors()) {
                 network_->removeProcessor(processor);
             }
-            wm->setVisibile(true);
             portInspector->setActive(false);
         }
     } catch (Exception& exception) {
