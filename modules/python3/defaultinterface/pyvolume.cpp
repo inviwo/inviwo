@@ -65,6 +65,7 @@ namespace inviwo {
             PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
+        return tf;
     }
 
 PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
@@ -116,7 +117,7 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
 PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
     std::string path;
-    if (tester.parse(args, path)) {
+    if (tester.parse(args, path) == -1) {
         return nullptr;
     }
 
