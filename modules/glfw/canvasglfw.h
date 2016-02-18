@@ -62,6 +62,8 @@ public:
     static void closeWindow(GLFWwindow*);
     static int getVisibleWindowCount();
 
+    virtual void update() override;
+
     static void reshape(GLFWwindow*, int, int);
     static void move(GLFWwindow*,int,int);
 

@@ -50,10 +50,7 @@ CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
 }
 
 CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
-    if (canvas_) {
-        this->hide();
-        canvas_->setEventPropagator(nullptr);
-    }
+    this->hide();
 }
 
 void CanvasProcessorWidgetGLFW::setVisible(bool visible) {
