@@ -1,6 +1,7 @@
-# Inviwo Python script 
+#Inviwo Python script 
 import inviwo 
 import inviwoqt 
 
-inviwo.info() 
-inviwoqt.info() 
+help('inviwo') 
+help('inviwoqt') 
+ 

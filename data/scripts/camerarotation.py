@@ -9,14 +9,14 @@ scale = 1;
 d = 15
 steps = 120
 for i in range(0, steps):
-   r = (2 * 3.14 * i) / steps
+   r = (2 * 3.14 * i) / (steps-1)
    x = d*math.sin(r)
    z = -d*math.cos(r)
    inviwo.setPropertyValue("EntryExitPoints.camera",((x*scale,3*scale,z*scale),(0,0,0),(0,1,0)))
 
 
 for i in range(0, steps):
-   r = (2 * 3.14 * i) / (steps)
+   r = (2 * 3.14 * i) / (steps-1)
    x = 1.0*math.sin(r)
    z = 1.0*math.cos(r)
    inviwo.setCameraUp("EntryExitPoints.camera",(x*scale,z*scale,0))
