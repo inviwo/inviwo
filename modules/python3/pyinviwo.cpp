@@ -160,12 +160,10 @@ static PyMethodDef Inviwo_METHODS[] =
     { "saveTransferFunction" , py_saveTransferFunction , METH_VARARGS, "Save a transfer function to file from the specified transfer function property." },
     { "loadTransferFunction" , py_loadTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
     { "clearTransferfunction" , py_clearTransferfunction , METH_VARARGS, "Clears a transfer function." },
-    { "addPointTransferFunction" , py_addPointTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+    { "addPointToTransferFunction" , py_addPointTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
 
     nullptr
 };
-
-
 
 struct PyModuleDef Inviwo_Internals_Module_Def = {
     PyModuleDef_HEAD_INIT,
@@ -193,9 +191,6 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     LogInfo("Python version: " + toString(Py_GetVersion()));
     wchar_t programName[] = L"PyInviwo";
     Py_SetProgramName(programName);
-#ifdef WIN32
-   // Py_NoSiteFlag = 1;
-#endif
 
     Py_InitializeEx(false);
 
@@ -208,8 +203,6 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     importModule("builtins");
     importModule("sys");
 
-
-    //auto main = PyImport_AddModule("__main__");
     dict_ = PyImport_GetModuleDict();
     registerPyModule(&Inviwo_Internals_Module_Def, "inviwo_internal");
     registerPyModule(&Inviwo_Module_Def, "inviwo");
