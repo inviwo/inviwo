@@ -58,6 +58,7 @@ class IvwPaths:
 			self.cmake_file = self.find_cmake_file(self.source)
 			self.cmake_header_file = "/".join(["${IVW_INCLUDE_DIR}"] + abspath[inviwo_pos:] + [file.lower() +".h"])
 			self.cmake_source = "/".join(self.make_path_relative(self.source, self.cmake_file).split(os.sep))
+			self.glsl_file_name = os.sep.join(abspath[:modules+1] + ["glsl",self.file_name])
 				
 		elif re.compile(r".*/modules/.*").match("/".join(abspath)): # Module path
 			module_pos = abspath.index("modules")
@@ -70,12 +71,20 @@ class IvwPaths:
 			self.cmake_file = self.find_cmake_file(self.source)
 			self.cmake_header_file = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.header_file, self.cmake_file).split(os.sep))
 			self.cmake_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.source, self.cmake_file).split(os.sep))
-		
+			self.glsl_file_name = os.sep.join(abspath[:module_pos+2] + ["glsl",self.file_name])
+			self.cmake_glsl_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.glsl_file_name, self.cmake_file).split(os.sep))
+			
 	def get_source_file(self, ext = ".cpp"):
 		return self.source + ext
+
+	def get_glsl_file(self, ext = ".glsl"):
+		return self.glsl_file_name + ext
 	
 	def get_cmake_source(self,ext = ".cpp"):
 		return self.cmake_source + ext
+	
+	def get_cmake_glsl(self,ext = ".glsl"):
+		return self.cmake_glsl_source + ext
 	
 	def make_path_relative(self, path, base):
 		(basedir, filename) = os.path.split(base)

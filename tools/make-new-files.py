@@ -54,6 +54,9 @@ def make_template(file, name, define, api, incfile, author = "<Author>" ):
 	
     
 def write_file(paths, template, file, comment, force=False):
+	(path, filename)  = os.path.split(file)
+	ivwpy.util.mkdir(path)
+
 	if os.path.exists(file) and not force:
 		cp.print_error("... File exists: " + file + ", use --force or overwrite")
 		return
@@ -130,24 +133,24 @@ if __name__ == '__main__':
 				       "... Writing source file: ", args.force)
 
 		if args.frag:
-			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".frag"))
+			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".frag"))
 			write_file(paths,
 					   os.sep.join([templates, "fragment.frag"]), 	
-				       paths.file_name + ".frag" if args.dummy else paths.get_source_file(".frag"), 
+				       paths.file_name + ".frag" if args.dummy else paths.get_glsl_file(".frag"), 
 				       "... Writing fragment file: ", args.force)
 				
 		if args.vert:
-			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".vert"))
+			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".vert"))
 			write_file(paths,
 					   os.sep.join([templates, "vertex.vert"]), 	
-				       paths.file_name + ".vert" if args.dummy else paths.get_source_file(".vert"), 
+				       paths.file_name + ".vert" if args.dummy else paths.get_glsl_file(".vert"), 
 				       "... Writing vertex file: ", args.force)		
 
 		if args.geom:
-			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".geom"))
+			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".geom"))
 			write_file(paths,
 					   os.sep.join([templates, "geometry.geom"]), 	
-				       paths.file_name + ".geom" if args.dummy else paths.get_source_file(".geom"), 
+				       paths.file_name + ".geom" if args.dummy else paths.get_glsl_file(".geom"), 
 				       "... Writing geometry file: ", args.force)						 
 
 		cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
