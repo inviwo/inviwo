@@ -154,6 +154,7 @@ endfunction()
 function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
     # Help, used for the help inside invowo
     set(GENERATE_QHP "YES")
+    set(GENERATE_IMG "NO")
     set(HTML_LAYOUT_FILE "${INPUT_DIR}/layout.xml")
     set(HTML_STYLESHEET "${INPUT_DIR}/stylesheet.css")
     set(HTML_HEADER "${INPUT_DIR}/header.html")
@@ -216,6 +217,8 @@ function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
     file(WRITE "${IVW_DOXY_OUT}/doc/help/inviwo.qhcp" ${INV_QHCP})
 
     add_custom_target("DOXY-QCH"
+        COMMAND ${CMAKE_COMMAND} -E echo "Clean unused files"
+        COMMAND ${CMAKE_COMMAND} -P "${IVW_DOXY_OUT}/doc/clean_help.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "Building inviwo.qch"
         COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${IVW_DOXY_OUT}/doc/help/inviwo.qch ${IVW_DOXY_OUT}/doc/help/html/index.qhp"
         COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${IVW_DOXY_OUT}/doc/help/inviwo.qch" "${IVW_DOXY_OUT}/doc/help/html/index.qhp"
@@ -255,6 +258,7 @@ if(${IVW_DOXYGEN_PROJECT})
     set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR})
     set(IVW_DOXY_TAG_FILES "")
     set(IVW_DOXY_DEPENDS "")
+    set(GENERATE_IMG "YES")
 
     string(REGEX REPLACE ";" " \\\\\n                         " SHADER_INC_PATH "${IVW_SHADER_INCLUDE_PATHS}")
     set(SHADER_INC_PATH ${SHADER_INC_PATH})
@@ -448,5 +452,18 @@ if(${IVW_DOXYGEN_PROJECT})
     )
     string(REPLACE ";" "\n" COPY_SCRIPT "${COPY_SCRIPT_LIST}")
     file(WRITE "${IVW_DOXY_OUT}/doc/copy_img.cmake" ${COPY_SCRIPT})
+
+    # make a clean help script
+    set(CLEAN_HELP_SCRIPT_LIST
+        "file(GLOB save \"${IVW_DOXY_OUT}/doc/help/html/docpage*.html\")"
+        "file(GLOB todelete \"${IVW_DOXY_OUT}/doc/help/html/*.js\" \"${IVW_DOXY_OUT}/doc/help/html/*.html\")"
+        "list(REMOVE_ITEM todelete \${save})"
+        "foreach(item \${todelete})"
+        "    message(\"Remove: \${item}\")"
+        "    file(REMOVE \${item})"
+        "endforeach()"
+    )
+    string(REPLACE ";" "\n" CLEAN_HELP_SCRIPT "${CLEAN_HELP_SCRIPT_LIST}")
+    file(WRITE "${IVW_DOXY_OUT}/doc/clean_help.cmake" ${CLEAN_HELP_SCRIPT})
 
  endif()
