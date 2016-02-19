@@ -56,7 +56,7 @@ private:
     dvec4 getVoxel(const dvec3 &pos, int T) const;
 
     size3_t dims_;
-    std::vector<VolumeSampler> samplers_;
+    std::vector<VolumeDoubleSampler<4>> samplers_;
 };
 
 } // namespace

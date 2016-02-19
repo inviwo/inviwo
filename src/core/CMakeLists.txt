@@ -253,6 +253,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
@@ -264,7 +265,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -473,7 +473,6 @@ set(SOURCE_FILES
     util/tooltiphelper.cpp
     util/utilities.cpp
     util/volumesampler.cpp
-    util/volumesequencesampler.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
