@@ -48,6 +48,7 @@
 #include <QCoreApplication>
 #include <QBuffer>
 #include <QFileInfo>
+#include <QImage>
 
 #include <QUrlQuery>
 #include <QImageReader>
@@ -199,12 +200,11 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
             return data;
         case QTextDocument::ImageResource: {
             auto image = QImage::fromData(data, QFileInfo(url.path()).suffix().toLatin1().data());
-            QImage small =
-                image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio);
+            QImage resized{image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
             QByteArray smalldata;
             QBuffer buffer(&smalldata);
-            small.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
+            resized.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
             return smalldata;
         }
         case QTextDocument::StyleSheetResource:
