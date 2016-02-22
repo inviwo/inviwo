@@ -72,7 +72,7 @@ public:
     GLenum attachColorTexture(Texture2DArray* texture, int attachmentNumber, bool attachFromRear = false, int forcedLocation=-1);
     
     //For attaching a layer of a 2D Array Texture
-    void attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer);
+    void attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer, int level=0);
     GLenum attachColorTextureLayer(Texture2DArray* texture, int layer);
     // if forcedLocation is > -1, this will enforce to position the color attachment 
     // at the given location in the draw buffer list (as used for attrib location in shaders)
