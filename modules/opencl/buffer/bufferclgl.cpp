@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/opencl/buffer/bufferclgl.h>
+#include <modules/opencl/syncclgl.h>
 
 namespace inviwo {
 CLBufferSharingMap BufferCLGL::clBufferSharingMap_;
@@ -100,6 +101,9 @@ void BufferCLGL::upload(const void* data, size_t size) {
         setSize(size);
     }
     try {
+        SyncCLGL glSync;
+        glSync.addToAquireGLObjectList(this);
+        glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
             const_cast<void*>(data));
     } catch (cl::Error& err) {
@@ -110,6 +114,9 @@ void BufferCLGL::upload(const void* data, size_t size) {
 
 void BufferCLGL::download(void* data) const {
     try {
+        SyncCLGL glSync;
+        glSync.addToAquireGLObjectList(this);
+        glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueReadBuffer(*clBuffer_, true, 0,
             getSize() * getSizeOfElement(), data);
     } catch (cl::Error& err) {
