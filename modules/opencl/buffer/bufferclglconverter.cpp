@@ -41,7 +41,7 @@ std::shared_ptr<BufferRAM> BufferCLGL2RAMConverter::createFrom(
     auto destination = createBufferRAM(size, src->getDataFormat(), src->getBufferUsage());
 
     if (destination) {
-        src->getBufferGL()->download(destination->getData());
+        src->download(destination->getData());
     } else {
         LogError("Invalid conversion or not implemented");
     }
@@ -54,8 +54,7 @@ void BufferCLGL2RAMConverter::update(std::shared_ptr<const BufferCLGL> src,
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
-
-    src->getBufferGL()->download(dst->getData());
+    src->download(dst->getData());
 }
 
 std::shared_ptr<BufferGL> BufferCLGL2GLConverter::createFrom(

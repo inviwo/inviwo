@@ -94,6 +94,30 @@ void BufferCLGL::setSize(size_t size) {
     bufferObject_->setSize(size * getSizeOfElement());
 }
 
+void BufferCLGL::upload(const void* data, size_t size) {
+    // Resize buffer if necessary
+    if (size > size_ * getSizeOfElement()) {
+        setSize(size);
+    }
+    try {
+        OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
+            const_cast<void*>(data));
+    } catch (cl::Error& err) {
+        LogError(getCLErrorString(err));
+        throw err;
+    }
+}
+
+void BufferCLGL::download(void* data) const {
+    try {
+        OpenCL::getPtr()->getQueue().enqueueReadBuffer(*clBuffer_, true, 0,
+            getSize() * getSizeOfElement(), data);
+    } catch (cl::Error& err) {
+        LogError(getCLErrorString(err));
+        throw err;
+    }
+}
+
 std::type_index BufferCLGL::getTypeIndex() const { return std::type_index(typeid(BufferCLGL)); }
 
 void BufferCLGL::onBeforeBufferInitialization() {
