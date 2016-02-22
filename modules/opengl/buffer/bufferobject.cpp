@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format,                            BufferUsage usage, GLenum target /*= GL_ARRAY_BUFFER*/)
+BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
+                           GLenum target /*= GL_ARRAY_BUFFER*/)
     : Observable<BufferObjectObserver>()
     , target_(target)
     , glFormat_(getGLFormats()->getGLFormat(format->getId())) {

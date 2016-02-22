@@ -40,8 +40,8 @@ namespace inviwo {
 class IVW_CORE_API FileObserver {
 
 public:
-    FileObserver();
-    virtual ~FileObserver();
+    FileObserver() = default;
+    virtual ~FileObserver() = default;
 
     void startFileObservation(std::string fileName);
     void stopFileObservation(std::string fileName);

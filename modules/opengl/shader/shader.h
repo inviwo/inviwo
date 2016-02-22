@@ -56,16 +56,12 @@ public:
     Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
            bool linkShader = true);
 
+    Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool linkShader = true);
     
-    Shader(const Shader &rhs, bool linkShader = true);
+    Shader(const Shader &rhs);
     Shader &operator=(const Shader &that);
 
-    // Takes ownership of shader objects in vector
-    Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader = true);
-
     virtual ~Shader();
-
-    Shader *clone(bool linkShader = true);
 
     void link(bool notifyRebuild = false);
     void build();
@@ -75,9 +71,10 @@ public:
     unsigned int getID() const { return id_; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
-    ShaderObject *getVertexShaderObject() const;
-    ShaderObject *getGeometryShaderObject() const;
-    ShaderObject *getFragmentShaderObject() const;
+    ShaderObject* getShaderObject(GLenum type) const;
+    ShaderObject* getVertexShaderObject() const;
+    ShaderObject* getGeometryShaderObject() const;
+    ShaderObject* getFragmentShaderObject() const;
 
     void activate();
     void deactivate();

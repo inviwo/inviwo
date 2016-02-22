@@ -31,16 +31,23 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <modules/opengl/openglsettings.h>
 #include <modules/opengl/openglmodule.h>
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/openglcapabilities.h>
+
 #include <inviwomodulespaths.h>
+
 #include <string>
 
 namespace inviwo {
 
-ShaderManager::ShaderManager() : FileObserver(), uniformWarnings_(nullptr) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
+ShaderManager::ShaderManager() : uniformWarnings_(nullptr) {
     openGLInfoRef_ = nullptr;
 }
 
@@ -78,67 +85,11 @@ ShaderObject::Error ShaderManager::getShaderObjectError() const {
 
 void ShaderManager::registerShader(Shader* shader) {
     shaders_.push_back(shader);
-    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
-
-    for (const auto& shaderObject : shaderObjects) {
-        startFileObservation(shaderObject.second->getAbsoluteFileName());
-        std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
-
-        for (auto& shaderInclude : shaderIncludes) startFileObservation(shaderInclude);
-    }
-
     if (uniformWarnings_) shader->setUniformWarningLevel(uniformWarnings_->get());
 }
 
 void ShaderManager::unregisterShader(Shader* shader) {
-    shaders_.erase(std::remove(shaders_.begin(), shaders_.end(), shader), shaders_.end());
-    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
-
-    for (const auto& shaderObject : shaderObjects) {
-        if (shaderObject.second != nullptr) {
-            stopFileObservation(shaderObject.second->getAbsoluteFileName());
-            std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
-
-            for (auto& shaderInclude : shaderIncludes) stopFileObservation(shaderInclude);
-        }
-    }
-}
-
-void ShaderManager::fileChanged(std::string shaderFilename) {
-    BoolProperty& shaderReloadProp =
-        InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()->shaderReloadingProperty_;
-
-    if (shaderReloadProp) {
-        if (isObserved(shaderFilename)) {
-            try {
-                std::unordered_set<Shader*> toRelink;
-                for (auto shader : shaders_) {
-                    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
-
-                    for (const auto& shaderObject : shaderObjects) {
-                        const auto& shaderIncludes = shaderObject.second->getIncludeFileNames();
-
-                        if (shaderObject.second->getAbsoluteFileName() == shaderFilename ||
-                            util::contains(shaderIncludes, shaderFilename)) {
-                            shaderObject.second->rebuild();
-                            toRelink.insert(shader);
-                        }
-                    }
-                }
-                // Relink after for loop to avoid invalidation the shaders_ iterators.
-                // this can happen since link will trigger on reload callbacks.
-                NetworkLock lock;
-                for (auto shader : toRelink) shader->link(true);  // Link and notifyRebuild.
-
-                LogInfo(shaderFilename + " successfully reloaded");
-                InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Ok);
-
-            } catch (OpenGLException& e) {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-                InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Error);
-            }
-        }
-    }
+    util::erase_remove(shaders_, shader);
 }
 
 std::string ShaderManager::getGlobalGLSLHeader() {
@@ -174,7 +125,7 @@ void ShaderManager::bindCommonAttributes(unsigned int programID) {
     }
 }
 
-std::vector<std::string> ShaderManager::getShaderSearchPaths() { return shaderSearchPaths_; }
+const std::vector<std::string>& ShaderManager::getShaderSearchPaths() { return shaderSearchPaths_; }
 
 void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
     if (!addShaderSearchPathImpl(shaderSearchPath)) {
@@ -182,23 +133,82 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
     }
 }
 
-void ShaderManager::addShaderResource(std::string key, std::string src) {
-    size_t start_pos = 0;
-    std::string from = "NEWLINE";
-    std::string to = "\n";
-    while ((start_pos = src.find(from, start_pos)) != std::string::npos) {
-        src.replace(start_pos, from.length(), to);
-        start_pos += to.length();
+void ShaderManager::resourceChanged(ShaderResource* resource) {
+    BoolProperty& shaderReloadProp =
+        InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()->shaderReloadingProperty_;
+
+    if (shaderReloadProp) {
+        try {
+            std::unordered_set<Shader*> toRelink;
+            for (auto shader : shaders_) {
+                const auto& shaderObjects = shader->getShaderObjects();
+                for (const auto& shaderObject : shaderObjects) {
+                    const auto& shaderResources = shaderObject.second->getResources();
+
+                    if (util::contains(shaderResources, resource)) {
+                        shaderObject.second->rebuild();
+                        toRelink.insert(shader);
+                    }
+                }
+            }
+            // Relink after for loop to avoid invalidation the shaders_ iterators.
+            // this can happen since link will trigger on reload callbacks.
+            NetworkLock lock;
+            for (auto shader : toRelink) shader->link(true);  // Link and notifyRebuild.
+
+            LogInfo(resource->key() + " successfully reloaded");
+
+        } catch (OpenGLException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        }
     }
-    shaderResources_[key] = src;
 }
 
-std::string ShaderManager::getShaderResource(std::string key) {
-    if (shaderResources_.find(key) == shaderResources_.end()) {
-        return "";
-    } else {
-        return shaderResources_[key];
+void ShaderManager::addShaderResource(std::string key, std::string src) {
+    replaceInString(src, "NEWLINE", "\n");
+    auto resource =  util::make_unique<StringShaderResource>(key, src);
+    auto res = resource.get();
+    resource->onChange([&, res](){
+        resourceChanged(res);
+    });
+    shaderResources_[key] = std::move(resource);
+}
+
+void ShaderManager::addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource) {
+    auto res = resource.get();
+    resource->onChange([&, res](){
+        resourceChanged(res);
+    });
+    shaderResources_[key] = std::move(resource);
+}
+
+ShaderResource* ShaderManager::getShaderResource(std::string key) {
+    auto it1 = shaderResources_.find(key);
+    if (it1 != shaderResources_.end()) return it1->second.get();
+
+    if (filesystem::fileExists(key)) {
+        auto ret = shaderResources_.emplace(
+            std::make_pair(key, util::make_unique<FileShaderResource>(key, key)));
+        return ret.first->second.get();
     }
+
+    auto it2 = util::find_if(shaderSearchPaths_, [&](const std::string& path) {
+        return filesystem::fileExists(path + "/" + key);
+    });
+    if (it2 != shaderSearchPaths_.end()) {
+        std::string file = *it2 + "/" + key;
+        auto ret = shaderResources_.emplace(
+            std::make_pair(key, util::make_unique<FileShaderResource>(key, file)));
+        return ret.first->second.get();
+    }
+
+    std::string tmp{key};
+    replaceInString(tmp, "/", "_");
+    replaceInString(tmp, ".", "_");
+    auto it0 = shaderResources_.find(tmp);
+    if (it0 != shaderResources_.end()) return it0->second.get();
+
+    return nullptr;
 }
 
 OpenGLCapabilities* ShaderManager::getOpenGLCapabilitiesObject() {
@@ -226,6 +236,6 @@ bool ShaderManager::addShaderSearchPathImpl(const std::string& shaderSearchPath)
     return false;
 }
 
-const std::vector<Shader*> ShaderManager::getShaders() const { return shaders_; }
+const std::vector<Shader*>& ShaderManager::getShaders() const { return shaders_; }
 
 }  // namespace

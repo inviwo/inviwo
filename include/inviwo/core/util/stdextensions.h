@@ -198,6 +198,10 @@ auto find_if(T& cont, Pred pred) -> typename T::iterator {
     return std::find_if(begin(cont), end(cont), pred);
 }
 
+template <typename T, typename Pred>
+auto find_if(const T& cont, Pred pred) -> typename T::const_iterator {
+    return std::find_if(cont.cbegin(), cont.cend(), pred);
+}
 
 template <typename T, typename V>
 bool contains(T& cont, const V& elem) {

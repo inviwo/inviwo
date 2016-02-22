@@ -30,6 +30,8 @@
 #include "openglqtmenu.h"
 
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shaderresource.h>
+
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -39,7 +41,6 @@
 #include <warn/ignore/all>
 #include <QMainWindow>
 #include <QMenuBar>
-
 #include <warn/pop>
 
 namespace inviwo {
@@ -71,7 +72,7 @@ void OpenGLQtMenu::updateShadersMenu() {
 
             for (auto& item : shader->getShaderObjects()) {
                 auto action = shaderSubMenu->addAction(
-                    QString::fromStdString(item.second->getAbsoluteFileName()));
+                    QString::fromStdString(item.second->getResource()->key()));
                 shaderSubMenu->setTitle(shaderSubMenu->title() + QString(", ") +
                                         QString::fromStdString(item.second->getFileName()));
                 connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
