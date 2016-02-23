@@ -27,8 +27,12 @@
  # 
  #################################################################################
 
-
  ### Generate unittests for modules. ###
+
+#--------------------------------------------------------------------
+# Options for unittests
+option(IVW_UNITTESTS "Enable unittests" ON)
+option(IVW_UNITTESTS_RUN_ON_BUILD "Enable running unittest when building" ON)
 
 #--------------------------------------------------------------------
 # Add unittests
@@ -114,7 +118,10 @@ function(ivw_make_unittest_target name dependencies)
 	# Optimize compilation with pre-compilied headers based on inviwo-core
 	# ivw_compile_optimize_inviwo_core()
 
-	add_custom_command(TARGET "${test_name}" POST_BUILD COMMAND "${test_name}" COMMENT "Running unittest for: ${test_name}")
+	if(IVW_UNITTESTS_RUN_ON_BUILD)
+		add_custom_command(TARGET "${test_name}" POST_BUILD COMMAND "${test_name}" 
+			               COMMENT "Running unittest for: ${test_name}")
+	endif()
 
 	ivw_memleak_setup(${test_name})
 
