@@ -94,7 +94,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , modified_(false) {
     network_->addObserver(this);
 
-    // The defalt bsp tends to crash...
+    // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
     
     connect(this, &QGraphicsScene::selectionChanged, [&](){
@@ -651,7 +651,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(outport); });
+                    [this, outport]() { contextMenuShowInspector(outport); });
             break;
         }
 
@@ -663,13 +663,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(inport); });
+                    [this, inport]() { contextMenuShowInspector(inport); });
             break;
         }
 
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             QAction* renameAction = menu.addAction(tr("Rename Processor"));
-            connect(renameAction, &QAction::triggered, [&]() {
+            connect(renameAction, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
                 processor->editProcessorName();
@@ -679,7 +679,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 #if IVW_PROFILING
             QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset Time Measurements"));
             connect(resetTimeMeasurementsAction, &QAction::triggered,
-                    [&]() { processor->resetTimeMeasurements(); });
+                    [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
             if (processor->getProcessor()->hasProcessorWidget()) {
@@ -688,7 +688,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
                     showAction->setChecked(processorWidget->isVisible());
                 }
-                connect(showAction, &QAction::triggered, [&]() {
+                connect(showAction, &QAction::triggered, [processor]() {
                     if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
                         processor->getProcessor()->getProcessorWidget()->hide();
                     } else {
@@ -707,13 +707,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(connection->getOutportGraphicsItem()); });
+                    [this, connection]() { contextMenuShowInspector(connection->getOutportGraphicsItem()); });
             break;
         }
 
         if (auto link = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             QAction* editLink = menu.addAction(tr("Edit Links"));
-            connect(editLink, &QAction::triggered, [&]() {
+            connect(editLink, &QAction::triggered, [this, link]() {
                 showLinkDialog(link->getSrcProcessorGraphicsItem()->getProcessor(),
                                link->getDestProcessorGraphicsItem()->getProcessor());
             });
@@ -726,7 +726,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                   [](ProcessorMap::value_type item) { return item.second->isSelected(); });
     if (selectedProcessors.size() == 2) {
         QAction* editLink = menu.addAction(tr("Make Link"));
-        connect(editLink, &QAction::triggered, [&]() {
+        connect(editLink, &QAction::triggered, [this, selectedProcessors]() {
             showLinkDialog(selectedProcessors[0].second->getProcessor(),
                            selectedProcessors[1].second->getProcessor());
         });
