@@ -41,6 +41,8 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Shader {
 public:
+    enum class OnError { Warn, Throw };
+
     using ShaderObjectPtr = std::unique_ptr<ShaderObject, std::function<void(ShaderObject *)>>;
     using ShaderObjectMap = std::unordered_map<GLenum, ShaderObjectPtr>;
     enum class UniformWarning { Ignore, Warn, Throw };
@@ -65,7 +67,6 @@ public:
 
     void link(bool notifyRebuild = false);
     void build();
-    void rebuild();
     bool isReady() const; // returns whether the shader has been built and linked successfully
 
     unsigned int getID() const { return id_; }
@@ -99,6 +100,7 @@ public:
     void removeOnReload(const BaseCallBack* callback);
 
 private:
+    void handleError(OpenGLException& e);
     void registerShader();
 
     void createAndAddShader(GLenum, std::string, ShaderObject::Compile compile);

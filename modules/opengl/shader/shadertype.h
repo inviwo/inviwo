@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,53 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "compositeprocessorgl.h"
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
+#ifndef IVW_SHADERTYPE_H
+#define IVW_SHADERTYPE_H
+
+#include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
-CompositeProcessorGL::CompositeProcessorGL()
-    : Processor(), shaderFileName_("composite.frag"), shader_(shaderFileName_) {}
+/**
+ * \class ShaderType
+ * \brief Encapsulate a GLenum shader type, and related information.
+ */
+class IVW_MODULE_OPENGL_API ShaderType { 
+public:
+    ShaderType() = default;
+    explicit ShaderType(GLenum type);
+    ShaderType(const ShaderType&) = default;
+    ShaderType& operator=(const ShaderType&) = default;
+    ~ShaderType() = default;
 
-CompositeProcessorGL::CompositeProcessorGL(std::string programFileName)
-    : Processor(), shaderFileName_(programFileName), shader_(shaderFileName_) {}
+    operator GLenum() const;
+    operator bool() const;
 
-void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
-    if (inport.isReady() && outport.hasData()) {        
-        utilgl::activateTarget(outport, type);
-        shader_.activate();
+    std::string extension() const;
 
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *inport.getData(),  "tex0", ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader_, units, *outport.getData(), "tex1", ImageType::ColorDepthPicking);
-        utilgl::setShaderUniforms(shader_, outport, "outportParameters");
-        utilgl::singleDrawImagePlaneRect();
+    static ShaderType Vertex;
+    static ShaderType Geometry;
+    static ShaderType Fragment;
+    static ShaderType TessellationControl;
+    static ShaderType TessellationEvaluation;
+    static ShaderType Compute;
 
-        shader_.deactivate();
-        utilgl::deactivateCurrentTarget();
-    }
-}
+    static std::string extension(const ShaderType& type);
+    static ShaderType get(const std::string& ext);
 
-void CompositeProcessorGL::initializeResources() { shader_.build(); }
+private:
+    GLenum type_ = 0;
+};
 
-}  // namespace
+bool operator==(const ShaderType& lhs, const ShaderType& rhs);
+
+
+} // namespace
+
+#endif // IVW_SHADERTYPE_H
+

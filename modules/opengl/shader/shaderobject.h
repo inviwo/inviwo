@@ -33,43 +33,46 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadertype.h>
 
 namespace inviwo {
-
-class ShaderResource;
 
 class IVW_MODULE_OPENGL_API ShaderObject {
 public:
     enum class Compile { Yes, No };
-    enum class Error { Warn, Throw };
 
-    ShaderObject(GLenum shaderType, std::string fileName, Compile compile = Compile::Yes,
-                 Error error = Error::Warn);
+    ShaderObject(ShaderType shaderType, std::shared_ptr<ShaderResource> resource,
+                 Compile compile = Compile::Yes);
+
+    ShaderObject(std::shared_ptr<ShaderResource> resource, Compile compile = Compile::Yes);
+
+    ShaderObject(ShaderType shaderType, std::string fileName, Compile compile = Compile::Yes);
+
+    ShaderObject(std::string fileName, Compile compile = Compile::Yes);
+
+    ShaderObject(GLenum shaderType, std::string fileName, Compile compile = Compile::Yes);
+
     ShaderObject(GLenum shaderType, std::string fileName, bool compileShader = true);
+    
     ShaderObject(const ShaderObject& rhs);
     ShaderObject& operator=(const ShaderObject& that);
 
     ~ShaderObject();
 
-    GLuint getID() const { return id_; }
-    std::string getFileName() const { return fileName_; }
-    ShaderResource* getResource() const {return resource_; }
-    const std::vector<ShaderResource*>& getResources() const { return includeResources_; }
-    GLenum getShaderType() const { return shaderType_; }
-    void setError(Error error);
-    Error getError() const;
+    GLuint getID() const;
+    std::string getFileName() const;
+    std::shared_ptr<ShaderResource> getResource() const;
+    const std::vector<std::shared_ptr<ShaderResource>>& getResources() const;
+    ShaderType getShaderType() const;
 
-    void loadSource(std::string fileName);
     void preprocess();
     void upload();
     void compile();
-
+    void build();
     bool isReady() const;
 
     std::string getShaderInfoLog() const;
-
-    void build();
-    void rebuild();
 
     void addShaderDefine(std::string name, std::string value = "");
     void removeShaderDefine(std::string name);
@@ -105,17 +108,18 @@ public:
 
 private:
     void initialize(Compile compile);
+    static std::shared_ptr<ShaderResource> loadResource(std::string fileName);
     std::string getDefines();
     std::string getOutDeclarations();
-    std::string getIncludes(ShaderResource* resource);
+    std::string getIncludes(std::shared_ptr<ShaderResource> resource);
 
     int getLogLineNumber(const std::string& compileLogLine);
     std::string reformatShaderInfoLog(const std::string compileLog);
 
     // state variables
-    GLenum shaderType_;
+    ShaderType shaderType_;
     GLuint id_;
-    std::string fileName_;
+    std::shared_ptr<ShaderResource> resource_;
     std::vector<std::pair<std::string, int> > outDeclarations_;
 
     using ShaderDefines = std::map<std::string, std::string>;
@@ -124,12 +128,9 @@ private:
     using ShaderExtensions = std::map<std::string, bool>;  // extension name, enable flag
     ShaderExtensions shaderExtensions_;
 
-    Error error_;
-
     // derived variables
-    ShaderResource* resource_ = nullptr;
     std::string sourceProcessed_;
-    std::vector<ShaderResource*> includeResources_;
+    std::vector<std::shared_ptr<ShaderResource>> includeResources_;
     std::vector<std::pair<std::string, unsigned int> > lineNumberResolver_;
 };
 

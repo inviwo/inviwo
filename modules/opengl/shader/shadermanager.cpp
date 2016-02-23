@@ -64,22 +64,9 @@ void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     });
 
     shaderObjectErrors_ = &(settings->shaderObjectErrors_);
-
-    for (auto shader : shaders_) {
-        for (auto& obj : shader->getShaderObjects()) {
-            obj.second->setError(shaderObjectErrors_->get());
-        }
-    }
-    shaderObjectErrors_->onChange([this]() {
-        for (auto shader : shaders_) {
-            for (auto& obj : shader->getShaderObjects()) {
-                obj.second->setError(shaderObjectErrors_->get());
-            }
-        }
-    });
 }
 
-ShaderObject::Error ShaderManager::getShaderObjectError() const {
+Shader::OnError ShaderManager::getOnShaderError() const {
     return shaderObjectErrors_->get();
 }
 
@@ -141,12 +128,12 @@ void ShaderManager::resourceChanged(ShaderResource* resource) {
         try {
             std::unordered_set<Shader*> toRelink;
             for (auto shader : shaders_) {
-                const auto& shaderObjects = shader->getShaderObjects();
-                for (const auto& shaderObject : shaderObjects) {
-                    const auto& shaderResources = shaderObject.second->getResources();
-
-                    if (util::contains(shaderResources, resource)) {
-                        shaderObject.second->rebuild();
+                for (const auto& shaderObject : shader->getShaderObjects()) {
+                    if (util::contains_if(shaderObject.second->getResources(),
+                                          [&](const std::shared_ptr<ShaderResource>& p) {
+                                              return p.get() == resource;
+                                          })) {
+                        shaderObject.second->build();
                         toRelink.insert(shader);
                     }
                 }
@@ -157,7 +144,6 @@ void ShaderManager::resourceChanged(ShaderResource* resource) {
             for (auto shader : toRelink) shader->link(true);  // Link and notifyRebuild.
 
             LogInfo(resource->key() + " successfully reloaded");
-
         } catch (OpenGLException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
@@ -166,30 +152,34 @@ void ShaderManager::resourceChanged(ShaderResource* resource) {
 
 void ShaderManager::addShaderResource(std::string key, std::string src) {
     replaceInString(src, "NEWLINE", "\n");
-    auto resource =  util::make_unique<StringShaderResource>(key, src);
-    auto res = resource.get();
+    auto resource = std::make_shared<StringShaderResource>(key, src);
+    auto res = resource.get(); // don't create a circular ref.
     resource->onChange([&, res](){
         resourceChanged(res);
     });
-    shaderResources_[key] = std::move(resource);
+    ownedResources_.push_back(resource);
+    shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
 }
 
 void ShaderManager::addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource) {
-    auto res = resource.get();
-    resource->onChange([&, res](){
-        resourceChanged(res);
+    std::shared_ptr<ShaderResource> res(std::move(resource));
+    ShaderResource* resptr = res.get(); // don't create a circular ref.
+    res->onChange([&, resptr](){
+        resourceChanged(resptr);
     });
-    shaderResources_[key] = std::move(resource);
+    
+    ownedResources_.push_back(res);
+    shaderResources_[key] = std::weak_ptr<ShaderResource>(res);
 }
 
-ShaderResource* ShaderManager::getShaderResource(std::string key) {
+std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key) {
     auto it1 = shaderResources_.find(key);
-    if (it1 != shaderResources_.end()) return it1->second.get();
+    if (it1 != shaderResources_.end()) return it1->second.lock();
 
     if (filesystem::fileExists(key)) {
-        auto ret = shaderResources_.emplace(
-            std::make_pair(key, util::make_unique<FileShaderResource>(key, key)));
-        return ret.first->second.get();
+        auto resource = std::make_shared<FileShaderResource>(key, key);
+        shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
+        return resource;
     }
 
     auto it2 = util::find_if(shaderSearchPaths_, [&](const std::string& path) {
@@ -197,16 +187,17 @@ ShaderResource* ShaderManager::getShaderResource(std::string key) {
     });
     if (it2 != shaderSearchPaths_.end()) {
         std::string file = *it2 + "/" + key;
-        auto ret = shaderResources_.emplace(
-            std::make_pair(key, util::make_unique<FileShaderResource>(key, file)));
-        return ret.first->second.get();
+
+        auto resource = std::make_shared<FileShaderResource>(key, file);
+        shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
+        return resource;
     }
 
     std::string tmp{key};
     replaceInString(tmp, "/", "_");
     replaceInString(tmp, ".", "_");
     auto it0 = shaderResources_.find(tmp);
-    if (it0 != shaderResources_.end()) return it0->second.get();
+    if (it0 != shaderResources_.end()) return it0->second.lock();
 
     return nullptr;
 }
@@ -223,7 +214,7 @@ void ShaderManager::rebuildAllShaders() {
     if (shaders_.empty()) return;
 
     for (auto& shader : shaders_) {
-        shader->rebuild();
+        shader->build();
     }
     LogInfo("Rebuild of all shaders completed");
 }

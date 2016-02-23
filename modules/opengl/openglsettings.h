@@ -49,7 +49,7 @@ public:
     ButtonProperty btnOpenGLInfo_;
     OptionPropertyString selectedOpenGLProfile_;
     TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
-    TemplateOptionProperty<ShaderObject::Error> shaderObjectErrors_;
+    TemplateOptionProperty<Shader::OnError> shaderObjectErrors_;
 };
 
 } // namespace

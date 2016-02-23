@@ -37,26 +37,42 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/openglexception.h>
 #include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/shader/shaderresource.h>
 
 namespace inviwo {
 
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, Compile compile, Error error)
-    : shaderType_(shaderType), fileName_(fileName), id_(glCreateShader(shaderType)), error_(error) {
+ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<ShaderResource> resource,
+                           Compile compile) 
+    : shaderType_{ shaderType }, resource_{ resource }, id_{ glCreateShader(shaderType) } {
+
+    if (!shaderType_) throw OpenGLException("Invalid shader type", IvwContext);
     initialize(compile);
 }
 
+ShaderObject::ShaderObject(std::shared_ptr<ShaderResource> resource, Compile compile)
+    : ShaderObject(ShaderType::get(filesystem::getFileExtension(resource->key())), resource,
+                   compile) {}
+
+ShaderObject::ShaderObject(ShaderType shaderType, std::string fileName, Compile compile)
+    : ShaderObject(shaderType, loadResource(fileName), compile) {}
+
+ShaderObject::ShaderObject(std::string fileName, Compile compile)
+    : ShaderObject(ShaderType::get(filesystem::getFileExtension(fileName)), loadResource(fileName),
+                   compile) {}
+
+ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, Compile compile)
+    : ShaderObject(ShaderType(shaderType), loadResource(fileName), compile) {}
+
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
-    : ShaderObject(shaderType, fileName, compileShader ? Compile::Yes : Compile::No, Error::Warn) {}
+    : ShaderObject(ShaderType(shaderType), loadResource(fileName),
+                   compileShader ? Compile::Yes : Compile::No) {}
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
-    , fileName_(rhs.fileName_)
+    , resource_(rhs.resource_)
     , id_(glCreateShader(rhs.shaderType_))
     , outDeclarations_(rhs.outDeclarations_)
     , shaderDefines_(rhs.shaderDefines_)
-    , shaderExtensions_(rhs.shaderExtensions_)
-    , error_(rhs.error_) {
+    , shaderExtensions_(rhs.shaderExtensions_) {
     
     initialize(rhs.isReady() ? Compile::Yes : Compile::No);
 }
@@ -66,12 +82,11 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
         glDeleteShader(id_);
         
         shaderType_ = that.shaderType_;
-        fileName_ = that.fileName_;
+        resource_ = that.resource_;
         id_ = glCreateShader(shaderType_);
         outDeclarations_ = that.outDeclarations_;
         shaderDefines_ = that.shaderDefines_;
         shaderExtensions_ = that.shaderExtensions_;
-        error_ = that.error_;
         
         initialize(that.isReady() ? Compile::Yes : Compile::No);
     }
@@ -80,30 +95,52 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
 
 ShaderObject::~ShaderObject() { glDeleteShader(id_); }
 
+GLuint ShaderObject::getID() const {
+    return id_;
+}
+
+std::string ShaderObject::getFileName() const {
+    return resource_->key();
+}
+
+std::shared_ptr<ShaderResource> ShaderObject::getResource() const {
+    return resource_;
+}
+
+const std::vector<std::shared_ptr<ShaderResource>>& ShaderObject::getResources() const {
+    return includeResources_;
+}
+
+ShaderType ShaderObject::getShaderType() const {
+    return shaderType_;
+}
+
 void ShaderObject::initialize(Compile shouldCompile) {
     // Help developer to spot errors
-    std::string fileExtension = filesystem::getFileExtension(fileName_);
-    if ((fileExtension == "vert" && shaderType_ != GL_VERTEX_SHADER) ||
-        (fileExtension == "geom" && shaderType_ != GL_GEOMETRY_SHADER) ||
-        (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
-        LogWarn("File extension does not match shader type: " << fileName_);
+    std::string fileExtension = filesystem::getFileExtension(resource_->key());
+    if (fileExtension != shaderType_.extension()) {
+        LogWarn("File extension does not match shader type: " << resource_->key());
     }
 
-    loadSource(fileName_);
     preprocess();
     upload();
     if (shouldCompile == Compile::Yes) compile();
+}
+
+std::shared_ptr<ShaderResource> ShaderObject::loadResource(std::string fileName) {
+    auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
+    if (!resource) {
+        throw OpenGLException(
+            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
+            IvwContextCustom("ShaderObject"));
+    }
+    return resource;
 }
 
 void ShaderObject::build() {
     preprocess();
     upload();
     compile();
-}
-
-void ShaderObject::rebuild() {
-    loadSource(fileName_);
-    build();
 }
 
 void ShaderObject::preprocess() {
@@ -135,9 +172,9 @@ std::string ShaderObject::getDefines() {
     }
 
     std::string globalDefines;
-    if (shaderType_ == GL_VERTEX_SHADER) {
+    if (shaderType_ == ShaderType::Vertex) {
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLVertexDefines();
-    } else if (shaderType_ == GL_FRAGMENT_SHADER) {
+    } else if (shaderType_ == ShaderType::Fragment) {
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLFragmentDefines();
     }
 
@@ -163,7 +200,7 @@ std::string ShaderObject::getOutDeclarations() {
     return result.str();
 }
 
-std::string ShaderObject::getIncludes(ShaderResource* resource) {
+std::string ShaderObject::getIncludes(std::shared_ptr<ShaderResource> resource) {
     std::ostringstream result;
     std::string curLine;
     includeResources_.push_back(resource);
@@ -201,15 +238,6 @@ std::string ShaderObject::getIncludes(ShaderResource* resource) {
     return result.str();
 }
 
-void ShaderObject::loadSource(std::string fileName) {
-    resource_ = ShaderManager::getPtr()->getShaderResource(fileName);
-    if (!resource_) {
-        throw OpenGLException(
-            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
-            IvwContext);
-    }
-}
-
 void ShaderObject::upload() {
     const char* source = sourceProcessed_.c_str();
     glShaderSource(id_, 1, &source, nullptr);
@@ -238,7 +266,6 @@ int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
 
     if (input >> num) {
         char c;
-
         if (input >> c && c == '(') {
             if (input >> result) {
                 return result;
@@ -284,7 +311,7 @@ std::string ShaderObject::reformatShaderInfoLog(const std::string shaderInfoLog)
 }
 
 bool ShaderObject::isReady() const {
-    GLint res;
+    GLint res = GL_FALSE;
     glGetShaderiv(id_, GL_COMPILE_STATUS, &res);
     return res == GL_TRUE;
 }
@@ -294,18 +321,9 @@ void ShaderObject::compile() {
 
     if (!isReady()) {
         std::string compilerLog = reformatShaderInfoLog(getShaderInfoLog());
-        switch (error_) {
-            case Error::Warn:
-                LogError("ShaderObject compile error: " << compilerLog);
-                break;
-            case Error::Throw:
-                throw OpenGLException(compilerLog, IvwContext);
-        }
+        throw OpenGLException(compilerLog, IvwContext);
     }
 }
-
-void ShaderObject::setError(Error error) { error_ = error; }
-ShaderObject::Error ShaderObject::getError() const { return error_; }
 
 void ShaderObject::addShaderDefine(std::string name, std::string value) {
     shaderDefines_[name] = value;
@@ -384,7 +402,7 @@ std::string ShaderObject::print(bool showSource, bool preprocess) const {
             std::stringstream out;
             std::istringstream in(resource_->source());
             while (std::getline(in, line)) {
-                std::string file = fileName_;
+                std::string file = resource_->key();
 
                 out << std::left << std::setw(file.length() + 1) << file << std::right
                     << std::setw(4) << lineNumber << ": " << std::left << line << "\n";

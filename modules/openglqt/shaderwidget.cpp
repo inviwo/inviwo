@@ -73,11 +73,11 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save);
     connect(save, &QAction::triggered,[=]() {
-        if (auto fr = dynamic_cast<FileShaderResource*>(obj->getResource())) {
+        if (auto fr = dynamic_cast<FileShaderResource*>(obj->getResource().get())) {
             std::ofstream file(fr->file());
             file << shadercode->toPlainText().toLocal8Bit().constData();
             file.close();
-        } else if (auto sr = dynamic_cast<StringShaderResource*>(obj->getResource())) {
+        } else if (auto sr = dynamic_cast<StringShaderResource*>(obj->getResource().get())) {
             sr->setSource(shadercode->toPlainText().toLocal8Bit().constData());
         }
     });

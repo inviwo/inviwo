@@ -123,7 +123,7 @@ void TubeRendering::process() {
 void TubeRendering::initializeResources()
 {
     utilgl::addShaderDefines(shader_, light_);
-    shader_.rebuild();
+    shader_.build();
 }
 
 } // namespace

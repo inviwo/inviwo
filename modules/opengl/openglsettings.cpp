@@ -42,7 +42,7 @@ OpenGLSettings::OpenGLSettings()
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
     , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
     , uniformWarnings_("uniformWarnings", "Uniform Warnings")
-    , shaderObjectErrors_("compileWarnings", "Shader Errros") {
+    , shaderObjectErrors_("compileWarnings", "Shader Errors") {
     
     selectedOpenGLProfile_.addOption("core", "Core");
     selectedOpenGLProfile_.addOption("compatibility", "Compatibility");
@@ -55,8 +55,8 @@ OpenGLSettings::OpenGLSettings()
     uniformWarnings_.setSelectedIndex(0);
     uniformWarnings_.setCurrentStateAsDefault();
 
-    shaderObjectErrors_.addOption("warn", "Print warning", ShaderObject::Error::Warn);
-    shaderObjectErrors_.addOption("throw", "Throw error", ShaderObject::Error::Throw);
+    shaderObjectErrors_.addOption("warn", "Print warning", Shader::OnError::Warn);
+    shaderObjectErrors_.addOption("throw", "Throw error", Shader::OnError::Throw);
     shaderObjectErrors_.setSelectedIndex(0);
     shaderObjectErrors_.setCurrentStateAsDefault();
 

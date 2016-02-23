@@ -31,6 +31,7 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <modules/opengl/shader/shaderresource.h>
 
 namespace inviwo {
 
@@ -40,9 +41,11 @@ Shader::Shader(std::string vertexFilename, std::string geometryFilename,
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     
     const auto compile = linkShader ? ShaderObject::Compile::Yes : ShaderObject::Compile::No;
+
     createAndAddShader(GL_VERTEX_SHADER, vertexFilename, compile);
     createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, compile);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, compile);
+
     attachAllShaderObjects();
     if (linkShader) link();
     registerShader();
@@ -117,9 +120,8 @@ void Shader::createAndAddShader(GLenum shaderType, std::string fileName,
                                 ShaderObject::Compile compile) {
     if (fileName.empty()) return;
     
-    auto err = ShaderManager::getPtr()->getShaderObjectError();
     shaderObjects_[shaderType] = ShaderObjectPtr(
-        new ShaderObject(shaderType, fileName, compile, err), [this](ShaderObject *shaderObject) {
+        new ShaderObject(shaderType, fileName, compile), [this](ShaderObject *shaderObject) {
             detachShaderObject(shaderObject);
             delete shaderObject;
         });
@@ -132,13 +134,15 @@ void Shader::link(bool notifyRebuild) {
     if (!util::all_of(shaderObjects_, [](const ShaderObjectMap::value_type &elem) {
             return elem.second->isReady();
         })) {
-        LogError("ERROR");
+        LogError("Shader objects not ready when linking.");
+        return;
     }
 
     glLinkProgram(id_);
 
     if (!isReady()) {
-        LogError("ERROR");
+        LogError("Shader linking failed");
+        return;
     }
 
     LGL_ERROR;
@@ -147,13 +151,23 @@ void Shader::link(bool notifyRebuild) {
 }
 
 void Shader::build() {
-    for (auto &elem : shaderObjects_) elem.second->build();
-    link();
+    try {
+        for (auto &elem : shaderObjects_) elem.second->build();
+        link();
+    } catch (OpenGLException& e) {
+        handleError(e);
+    }
 }
 
-void Shader::rebuild() {
-    for (auto &elem : shaderObjects_) elem.second->rebuild();
-    link();
+void Shader::handleError(OpenGLException& e) {
+    auto onError = ShaderManager::getPtr()->getOnShaderError();
+    switch (onError) {
+        case Shader::OnError::Warn:
+            LogError(e.getMessage());
+            break;
+        case Shader::OnError::Throw:
+            throw;
+    }
 }
 
 bool Shader::isReady() const {

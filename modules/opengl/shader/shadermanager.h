@@ -74,13 +74,13 @@ public:
     
     void addShaderResource(std::string key, std::string resource);
     void addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource);
-    ShaderResource* getShaderResource(std::string key);
+    std::shared_ptr<ShaderResource> getShaderResource(std::string key);
     
     const std::vector<Shader*>& getShaders() const;
     void rebuildAllShaders();
 
     void setOpenGLSettings(OpenGLSettings* settings);
-    ShaderObject::Error getShaderObjectError() const;
+    Shader::OnError getOnShaderError() const;
 
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();
@@ -90,11 +90,12 @@ private:
     std::vector<Shader*> shaders_;
     OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::string> shaderSearchPaths_;
-    std::unordered_map<std::string, std::unique_ptr<ShaderResource>> shaderResources_;
+
+    std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
+    std::unordered_map<std::string, std::weak_ptr<ShaderResource>> shaderResources_;
     
     TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
-    TemplateOptionProperty<ShaderObject::Error>* shaderObjectErrors_; // non-owning reference
-
+    TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_; // non-owning reference
 };
 
 } // namespace

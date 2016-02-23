@@ -420,7 +420,7 @@ void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {
     fragObj->addShaderDefine("ABUFFER_PAGE_SIZE", toString(ABUFFER_PAGE_SIZE));
     fragObj->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", toString(0));
     // LogInfo("Default shader defines added")
-    shader->rebuild();
+    shader->build();
 }
 
 void Inviwo_ABufferGL4::aBuffer_unbind() {
