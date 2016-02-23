@@ -117,6 +117,8 @@ void CanvasQGLWidget::resize(uvec2 size) {
 }
 
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
+    if (event->spontaneous()) return;
+
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
 
