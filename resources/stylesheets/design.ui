@@ -56,7 +56,23 @@ QWidget {
     color: #9d9995;
     background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;
+    /*background: transparent;*/
 }
+
+/* set a common background color for all central widgets of dock widgets.
+   All other QWidgets will have a transparent background. */
+QDockWidget &gt; .QWidget, QDockWidget &gt; .QScrollArea, QDialog, QDockWidget#PythonInfoWidget &gt; .QWidget QScrollArea {
+    background-color: #323235;
+}
+
+QDockWidget#PythonInfoWidget &gt; .QWidget {
+    background-color: #252527;
+}
+QDockWidget#PythonInfoWidget &gt; .QWidget QScrollArea {
+    /*border: none;*/
+}
+
+
 QStatusBar {
     background-color: #252527;
 }
@@ -67,6 +83,65 @@ QMainWindow::separator {
     border-style: outset;
     border-width: 1px;
 }
+
+QWidget#PropertyWidget {
+}
+
+/* Composite property */
+QWidget#CompositeWidget {
+    /*border: 1px solid #4a4a4f;*/
+    border: 1px solid red;
+    border: none;
+    background: #2b2b2d;
+    /*background: steelblue;*/
+}
+
+/* default background for nested composite properties with depth &gt; 4 */
+QWidget#CompositeWidget &gt; .QWidget {
+    background: lime;
+}
+
+QWidget[bgType=&quot;toplevel&quot;]#CompositeWidget {
+    background-color: #323235; /* assign default background color */
+}
+
+QWidget[bgType=&quot;toplevel&quot;]#CompositeWidget &gt; .QWidget, 
+QWidget[bgType=&quot;3&quot;]#CompositeWidget,
+QWidget[bgType=&quot;0&quot;]#CompositeWidget &gt; .QWidget {
+    background-color: #323235;
+    background-color: #2a2a2e;
+}
+QWidget[bgType=&quot;0&quot;]#CompositeWidget, QWidget[bgType=&quot;1&quot;]#CompositeWidget &gt; .QWidget {
+    background-color: #38383c;
+    background-color: #242428;
+    /*background-color: darkslategray;*/
+}
+QWidget[bgType=&quot;1&quot;]#CompositeWidget, QWidget[bgType=&quot;2&quot;]#CompositeWidget &gt; .QWidget {
+    background: #323235;
+    background-color: #2a2a2e;
+    /*background-color: darkslateblue;*/
+}
+QWidget[bgType=&quot;2&quot;]#CompositeWidget, QWidget[bgType=&quot;3&quot;]#CompositeWidget &gt; .QWidget {
+    background: #3a3a3d;
+    background-color: #242428;
+    /*background-color: maroon;*/
+}
+
+
+/*
+QWidget#CompositeContents {
+    border: 1px solid steelblue;
+    background: #2b2b2d;
+    background: red;
+}
+*/
+
+
+QWidget#CompositeContents &gt; QWidget {
+    border: 0px solid red;
+    /*background: #2b2b2d;*/
+}
+
 
 /* Common defines for flat property editors, both active and disabled */
 QLineEdit, QAbstractSpinBox, QComboBox {
@@ -79,6 +154,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       jump on hover!
       */
     border: 1px solid #3a3a3e;
+    border: 1px solid #3e3e3f;
     /*border: 1px solid transparent; */
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
@@ -91,25 +167,20 @@ QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover
     border: 1px solid #268bd2;
 }
 
-/* Composite property */
-QWidget#CollapsibleGroupBoxWidgetQt {
-    border: 1px solid #4a4a4f;
-    background: #2b2b2d;
-}
 
-QWidget#compositeLabel QLabel {
-    border: 1px solid transparent;
-    background: #2b2b2d;
-}
 
 /* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
 /*
-QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
+QWidget#CompositeWidget QLabel, QWidget#CompositeWidget QWidget {
     border: none;
     background: transparent;
 }
 */
 
+QDockWidget#ConsoleWidget QTextEdit {
+    border: none;
+    border-bottom: 2px ridge #4a4a4f;
+}
 
 /* QToolBar styles */
 QToolBar {
@@ -146,7 +217,12 @@ QToolButton {
 QToolButton#resetButton {
     width: 13px;
     height: 13px;
-    image: url(:/icons/edit-undo-icon.png);
+    image: url(:/icons/reset-dark.png);
+}
+QToolButton:hover#resetButton {
+    width: 13px;
+    height: 13px;
+    image: url(:/icons/reset.png);
 }
 
 /*QToolTop */
@@ -169,6 +245,11 @@ QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
 } 
+QWidget#CompositeWidget &gt; .QPushButton {
+    /* overwrite minimum size for push buttons within the composite properties */
+    min-height: 5px;
+    min-width: 40px;    
+}
 QPushButton:default {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
@@ -239,17 +320,21 @@ QDockWidget {
     */
 }
 
+
 QTabWidget {
 }
-QTabWidget::pane{
+QTabWidget::pane:bottom {
     border-bottom: 2px solid #414145;
     /*background: #414145; */ 
     /* cannot use other color than default background here because of QDockWidgets */
     /*background: #252527;*/
 }
-QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
+QTabWidget::pane:top {
+    /*border-top: 2px solid #414145;*/
+}
+QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
-    background: #252527;
+    background: transparent; /*#252527*/
 }
 
 QTabWidget::tab-bar {
@@ -260,31 +345,33 @@ QTabBar {
     background: #252527;
 }
 QTabBar::tab {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
-    border: 1px solid #4a4a4f; /*#252527;*/
-    border-top-width: 0px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-/*
-    border-left-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-    border-right-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-*/
-    min-width: 8ex;
-    margin-top: 1px;
-    margin-left: 2px;
-    margin-right: 1px; /* spacing between tabs */
-    padding: 2px;
-    padding-left: 10px;
-    padding-right: 10px;
     min-height: 20px;
     min-width: 80px;
+    border: 1px solid #4a4a4f; /*#252527;*/
+    border-radius: 3px;
+    padding: 2px 10px 0px 10px;
+    margin: 0px 1px 1px 2px; /* top, right (spacing between tabs), bottom, left */
 }
-QTabBar::tab:selected{
+QTabBar::tab:bottom {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #414145, stop:0.8 #3c3c40, stop:1 #222224);
+                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
+    border-top-width: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+
+    margin-top: 1px;
+}
+QTabBar::tab:top {
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                               stop: 0 #2a2a2a, stop:0.18 #323235, stop:0.88 #37373a, stop:1 #505058);
+    border-bottom-width: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+    margin-bottom: 1px;
+}
+
+QTabBar::tab:bottom:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
     border: 1px solid #888;
@@ -292,10 +379,24 @@ QTabBar::tab:selected{
     margin-top: -2px;
     /*font-weight: bold;*/
 }
- QTabBar::tab:hover {
+QTabBar::tab:top:selected{
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #323235, stop:0.88 #3c3c40, stop:1 #5f5f5f);
+    border: 1px solid #888;
+    color: #e9e4de;
+    margin-bottom: -2px;
+    /*font-weight: bold;*/
+}
+QTabBar::tab:bottom:hover {
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-bottom: 1px solid #268bd2;
+    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
+}
+QTabBar::tab:top:hover {
+    border-left: 1px solid #268bd2;
+    border-right: 1px solid #268bd2;
+    border-top: 1px solid #268bd2;
     /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:bottom:!selected {
@@ -312,6 +413,9 @@ QMenu,QMenu::item, QMenu::item::selected {
     selection-color: #999;
     background-color: #3a3a3d;
     selection-background-color: #47474b;
+}
+QMenu::item::disabled {
+    color: #555;
 }
 QMenu {
     border: 1px solid #666;
@@ -464,7 +568,7 @@ QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::su
 
 QTextBrowser {
     border-color: #444;
-    border: 0px 
+    border: 0px;
 }
 
 QPlainTextEdit {
@@ -474,22 +578,21 @@ QPlainTextEdit:hover  {
     background: #47474b;
     border: 1px solid #268bd2;
 }
-QPlainTextEdit:hover QScrollBar, QPlainTextEdit:hover QScrollBar::add-page, QPlainTextEdit:hover QScrollBar::add-line,QPlainTextEdit:hover  QScrollBar::sub-page, QPlainTextEdit:hover QScrollBar::sub-line{
-/*    background: #47474b;*/
-}
-QPlainTextEdit QScrollBar, QPlainTextEdit QScrollBar::add-line {
-/*	border-bottom: 1px solid red;*/
-}
-QPlainTextEdit QScrollBar::add-line {
-	margin-bottom: 1px;
-}
-
-
 
 /* QLineEdit styles */
 QLineEdit {
     border-radius: 1px;
 }
+
+QSplitter:handle {
+    background: #c8ccd0;
+    border: 1px solid #c8ccd0;
+}
+QSplitter::handle:pressed, QSplitter::handle:hover {
+    background: #268bd2;
+    border: 1px solid #268bd2;
+}
+
 
 
 /* QAbstractSpinBox styles */
@@ -510,27 +613,30 @@ QAbstractSpinBox::down-button:disabled {
 }
 
 /* slim slider styles and part of the QSplitter styles */
-QSlider::sub-page:horizontal, QSlider::add-page:vertical, QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+QSlider::sub-page:horizontal, QSlider::add-page:vertical, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
     border: 0px;
     background: #99a0a7;
     background: #1e70a8;
     border-radius:2px;
 }
-QSlider::sub-page:horizontal, QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea {
+QSlider::sub-page:horizontal, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
     margin: -1px 0px -1px 0px;
 }
-QSlider::add-page:vertical, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+QSlider::add-page:vertical, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
     margin: 0px -1px 0px -1px;
 }
-QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;false&quot;] QFrame, QSplitter[Vertical=&quot;true&quot;] QFrame {
+QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
     border: 0px;
     background: #65696d;
     border-radius:1px;
 }
-QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical=&quot;false&quot;] QFrame {
+QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
     height: 3px;
 }
-QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;true&quot;] QFrame {
+QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
     width: 3px;
 }
 
@@ -554,11 +660,13 @@ QSlider::handle:vertical {
 
 
 /* disabled slider / QSplitter */
-QSlider::sub-page:horizontal:disabled, QSplitter[Vertical=&quot;false&quot;] QFrame:disabled#valueArea, QSlider::add-page:vertical:disabled, QSplitter[Vertical=&quot;true&quot;] QFrame:disabled#valueArea {
+QSlider::sub-page:horizontal:disabled, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame:disabled#valueArea, 
+QSlider::add-page:vertical:disabled, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame:disabled#valueArea {
     background: #4f555b;
 }
 
-QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, QSplitter:disabled[Vertical=&quot;false&quot;] QFrame, QSplitter:disabled[Vertical=&quot;true&quot;] QFrame {
+QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, 
+QSplitter:disabled[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, QSplitter:disabled[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
     background: #404246;
 }
 
@@ -581,87 +689,95 @@ QSplitter:horizontal {
    only cosmetics are done here (rounded corners)!
 */
 
-QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+
+
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
     border: 0px;
     background: #99a0a7;
     background: #1e70a8;
     border-radius:0px;
 }
 
-QSplitter QFrame, QSplitter QFrame#valueArea {
+QSplitter#RangeSliderQt QFrame, QSplitter#RangeSliderQt QFrame#valueArea {
     border-radius: 0px;    
     background-clip: content;
 }
-QSplitter[Vertical=&quot;true&quot;] QFrame {
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
     margin: 0px 4px; 
     min-width: 4px;
     max-width: 4px;
 }
-QSplitter[Vertical=&quot;false&quot;] QFrame {
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
     margin: 4px 0px; 
     min-height: 4px;
     max-height: 4px;
 }
-QSplitter[Vertical=&quot;true&quot;] QFrame[LeftPart=&quot;false&quot;] {
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
     /* lower part of splitter */
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-QSplitter[Vertical=&quot;true&quot;] QFrame[LeftPart=&quot;true&quot;] {
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
     /* upper part of splitter */
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
-QSplitter[Vertical=&quot;false&quot;] QFrame[LeftPart=&quot;true&quot;] {
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
     /* left part of splitter */
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
-QSplitter[Vertical=&quot;false&quot;] QFrame[LeftPart=&quot;false&quot;] {
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
     /* right part of splitter */
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
     margin: 0px 3px; 
     min-width: 6px;
     max-width: 6px;
 }
-QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea {
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
     margin: 3px 0px; 
     min-height: 6px;
     max-height: 6px;
 }
 
-QSplitter::handle {
+QSplitter::handle#RangeSliderQt {
     background: #c8ccd0;
     border: 2px solid #c8ccd0;
     border-radius: 6px;
 }
 
-QSplitter::handle:horizontal {
+QSplitter::handle:horizontal#RangeSliderQt {
     width: 5px;
-}
-
-QSplitter::handle:vertical {
     height: 5px;
 }
 
+QSplitter::handle:vertical#RangeSliderQt {
+    height: 5px;
+    width: 5px;
+}
 
-QSplitter::handle:pressed, QSplitter::handle:hover {
+
+QSplitter::handle:pressed#RangeSliderQt, 
+QSplitter::handle:hover#RangeSliderQt {
     background: #268bd2;
     border: 2px solid #268bd2;
 }
 
 QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
     font-family: &quot;Calibra&quot;;
-    background-color: #888888;
+    background-color: #b0b0bc;
     color: #111111;
+    border: 1px solid #9d9995;
 }
 QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
     font-family: &quot;Calibra&quot;;
     color: #999999;
     background-color: #4d4d4d;
+    border: 1px solid #6a6a6f;
 }
 
 
@@ -674,6 +790,12 @@ QSlider::handle[outOfBounds=&quot;true&quot;], QSplitter::handle[outOfBounds=&qu
 QComboBox {
     border-radius: 1px;
 }
+QComboBox QAbstractItemView {
+    /* Do NOT modify the border here! This will break the repainting in the dropdown */
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+    outline: 0;
+}
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
@@ -682,6 +804,7 @@ QComboBox::drop-down {
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     outline: 0;
+    border:none;
 }
 QComboBox::drop-down:hover {
     background-color: #47474b;
@@ -691,17 +814,6 @@ QComboBox::down-arrow {
 }
 QComboBox::down-arrow:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
-}
-
-QComboBox QListView {
-    padding-top: 1px;
-    background-color: #3a3a3d;
-    selection-background-color: #47474b;
-    border: 1px solid #6a6a6f;
-    border-top: 1px solid #268bd2;
-    border-bottom-left-radius: 1px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 1px;
-    outline: 0;
 }
 
 
@@ -941,6 +1053,116 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
       <string>d</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>e</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>f</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>g</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>h</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>i</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>j</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>k</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>l</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>m</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>n</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>o</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>p</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>q</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>r</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>s</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>t</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>u</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>v</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>w</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>x</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>y</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>z</string>
+     </property>
+    </item>
    </widget>
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
@@ -959,8 +1181,8 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
     <widget class="QDockWidget" name="dockWidget_2">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>40</y>
+       <x>70</x>
+       <y>20</y>
        <width>231</width>
        <height>151</height>
       </rect>
@@ -971,7 +1193,7 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
 }</string>
      </property>
      <property name="floating">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="windowTitle">
       <string>DockWidget2</string>
@@ -1339,6 +1561,286 @@ asdf
      </item>
     </layout>
    </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>DropDown</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>a</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>b</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>c</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>d</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>e</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>f</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>g</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>h</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>i</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>j</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>k</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>l</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>m</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>n</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>o</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>p</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>q</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>r</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>s</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>t</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>u</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>v</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>w</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>x</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>y</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>z</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_4">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>140</y>
+      <width>201</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+    background: white;
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+}
+
+/* QComboBox gets the &quot;on&quot; state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+QComboBox QAbstractItemView {
+    border: 0px solid darkgray;
+    selection-background-color: lightgray;
+}</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>a</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>b</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>c</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>d</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>e</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>f</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>g</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>h</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>i</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>j</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>k</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>l</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>m</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>n</string>
+     </property>
+    </item>
+   </widget>
    <zorder>widget</zorder>
    <zorder>pushButton</zorder>
    <zorder>toolButton</zorder>
@@ -1363,7 +1865,8 @@ asdf
    <zorder>lineEdit_2</zorder>
    <zorder>pushButton_3</zorder>
    <zorder>horizontalLayoutWidget</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
+   <zorder>comboBox_2</zorder>
+   <zorder>comboBox_4</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1390,6 +1893,8 @@ asdf
      <string>Edit</string>
     </property>
     <addaction name="actionTest_2"/>
+    <addaction name="actionTemp2"/>
+    <addaction name="actionTemp1"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1414,7 +1919,153 @@ asdf
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
+   <widget class="QWidget" name="dockWidgetContents">
+    <widget class="QComboBox" name="comboBox_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>161</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>DropDown</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>a</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>b</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>c</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>d</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>e</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>f</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>g</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>h</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>i</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>j</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>k</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>l</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>m</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>n</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>o</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>p</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>q</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>r</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>s</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>t</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>u</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>v</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>w</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>y</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>z</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_3">
    <property name="minimumSize">
@@ -1717,6 +2368,9 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionSave_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save As</string>
    </property>
@@ -1729,6 +2383,22 @@ p, li { white-space: pre-wrap; }
   <action name="actionTest_2">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="actionTemp1">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>temp1</string>
+   </property>
+  </action>
+  <action name="actionTemp2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>temp2</string>
    </property>
   </action>
  </widget>

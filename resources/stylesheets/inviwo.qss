@@ -392,6 +392,9 @@ QMenu,QMenu::item, QMenu::item::selected {
     background-color: #3a3a3d;
     selection-background-color: #47474b;
 }
+QMenu::item::disabled {
+    color: #555;
+}
 QMenu {
     border: 1px solid #666;
 }
@@ -765,6 +768,12 @@ QSlider::handle[outOfBounds="true"], QSplitter::handle[outOfBounds="true"] {
 QComboBox {
     border-radius: 1px;
 }
+QComboBox QAbstractItemView {
+    /* Do NOT modify the border here! This will break the repainting in the dropdown */
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+    outline: 0;
+}
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
@@ -773,6 +782,7 @@ QComboBox::drop-down {
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     outline: 0;
+    border:none;
 }
 QComboBox::drop-down:hover {
     background-color: #47474b;
@@ -782,17 +792,6 @@ QComboBox::down-arrow {
 }
 QComboBox::down-arrow:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
-}
-
-QComboBox QListView {
-    padding-top: 1px;
-    background-color: #3a3a3d;
-    selection-background-color: #47474b;
-    border: 1px solid #6a6a6f;
-    border-top: 1px solid #268bd2;
-    border-bottom-left-radius: 1px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 1px;
-    outline: 0;
 }
 
 
