@@ -124,10 +124,9 @@ void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
     util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
 
     ivec2 dim(event->size().width(), event->size().height());
-    if (event->spontaneous()) {
-        CanvasProcessorWidget::setDimensions(dim);
-    } else {
-        CanvasProcessorWidget::setDimensions(dim);
+    CanvasProcessorWidget::setDimensions(dim);
+
+    if (!event->spontaneous()) {       
         QWidget::resizeEvent(event);
     }
 }
