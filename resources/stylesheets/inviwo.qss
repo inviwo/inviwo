@@ -392,6 +392,9 @@ QMenu,QMenu::item, QMenu::item::selected {
     background-color: #3a3a3d;
     selection-background-color: #47474b;
 }
+QMenu::item::disabled {
+    color: #555;
+}
 QMenu {
     border: 1px solid #666;
 }
