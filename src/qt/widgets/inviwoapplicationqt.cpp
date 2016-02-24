@@ -98,9 +98,11 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
 
-        for (auto observer : fileObservers_) {
-            if (observer->isObserved(fileNameStd)) {
-                observer->fileChanged(fileNameStd);
+        // don't use iterators here, they might be invalidated.
+        size_t size = fileObservers_.size();
+        for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
+            if (fileObservers_[i]->isObserved(fileNameStd)) {
+                fileObservers_[i]->fileChanged(fileNameStd);
             }
         }
 
