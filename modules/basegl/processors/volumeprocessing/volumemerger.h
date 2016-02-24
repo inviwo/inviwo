@@ -36,6 +36,7 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
