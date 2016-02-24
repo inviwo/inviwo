@@ -58,7 +58,7 @@ class IvwPaths:
 			self.cmake_file = self.find_cmake_file(self.source)
 			self.cmake_header_file = "/".join(["${IVW_INCLUDE_DIR}"] + abspath[inviwo_pos:] + [file.lower() +".h"])
 			self.cmake_source = "/".join(self.make_path_relative(self.source, self.cmake_file).split(os.sep))
-			self.glsl_file_name = os.sep.join(abspath[:modules+1] + ["glsl",self.file_name])
+			self.glsl_file_name = self.source
 				
 		elif re.compile(r".*/modules/.*").match("/".join(abspath)): # Module path
 			module_pos = abspath.index("modules")
