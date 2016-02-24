@@ -30,13 +30,7 @@
 #ifndef RAY_TRIANGLE_INTERSECTION_CL
 #define RAY_TRIANGLE_INTERSECTION_CL
 
-// Intersects a ray with a triangle defined by three vertices.
-// If intersecting, t is the point of intersection along the ray
-bool rayTriangleIntersection(float3 o, float3 dir, float3 v0, float3 v1, float3 v2, float* t) {
-    float3 e1 = v1-v0;
-    float3 e2 = v2-v0;
-    return rayTriangleEdgeIntersection(o, dir, v0, e1, e2, t);
-}
+
 // Intersects a ray with a triangle defined by a vertex and two edges:
 // float3 e1 = v1-v0;
 // float3 e2 = v2-v0;
@@ -47,19 +41,19 @@ bool rayTriangleEdgeIntersection(float3 o, float3 dir, float3 v0, float3 e1, flo
     if (a > -0.00001f && a < 0.00001f) {
         return false;
     }
-    float f = 1.f/a;
+    float f = 1.f / a;
     // Distance from v0 to ray origin
-    float3 s = o-v0;
+    float3 s = o - v0;
     // u parameter
     float u = f * dot(s, p);
     if (u < 0.f || u > 1.f) {
         return false;
     }
-    
+
     float3 q = cross(s, e1);
     float v = f * dot(dir, q);
 
-    if (v < 0.f || u+v > 1.f) {
+    if (v < 0.f || u + v > 1.f) {
         return false;
     }
     // Compute the intersection point t
@@ -72,6 +66,14 @@ bool rayTriangleEdgeIntersection(float3 o, float3 dir, float3 v0, float3 e1, flo
         return false;
     }
 }
+// Intersects a ray with a triangle defined by three vertices.
+// If intersecting, t is the point of intersection along the ray
+bool rayTriangleIntersection(float3 o, float3 dir, float3 v0, float3 v1, float3 v2, float* t) {
+    float3 e1 = v1-v0;
+    float3 e2 = v2-v0;
+    return rayTriangleEdgeIntersection(o, dir, v0, e1, e2, t);
+}
+
 
 
 #endif
