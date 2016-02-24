@@ -35,70 +35,78 @@
 
 namespace inviwo {
 
-
-Shader::Shader(std::string vertexFilename, std::string geometryFilename,
-               std::string fragmentFilename, bool linkShader)
+Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     
-    const auto compile = linkShader ? ShaderObject::Compile::Yes : ShaderObject::Compile::No;
+    for (auto &item : items) createAndAddShader(item.first, item.second);
 
-    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, compile);
-    createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, compile);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, compile);
-
-    attachAllShaderObjects();
-    if (linkShader) link();
-    registerShader();
+    if (buildShader == Build::Yes) build();
+    ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader)
-    : Shader(vertexFilename, "", fragmentFilename, linkShader) {}
+Shader::Shader(
+    const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
+    Build buildShader)
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
 
-Shader::Shader(std::string fragmentFilename, bool linkShader)
-    : Shader("img_identity.vert", "", fragmentFilename, linkShader) {}
+    for (auto &item : items) createAndAddShader(item.first, item.second);
+    
+    if (buildShader == Build::Yes) build();
+    ShaderManager::getPtr()->registerShader(this);
+}
 
-Shader::Shader(const char *fragmentFilename, bool linkShader)
-    : Shader(std::string(fragmentFilename), linkShader) {}
+Shader::Shader(std::string vertexFilename, std::string geometryFilename,
+               std::string fragmentFilename, bool buildShader)
+    : Shader({{ShaderType::Vertex, vertexFilename},
+              {ShaderType::Geometry, geometryFilename},
+              {ShaderType::Fragment, fragmentFilename}},
+             buildShader ? Build::Yes : Build::No) {}
 
-Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader)
-    : Shader(std::string(vertexFilename), std::string(fragmentFilename), linkShader) {}
+Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader)
+    : Shader({{ShaderType::Vertex, vertexFilename}, {ShaderType::Fragment, fragmentFilename}},
+             buildShader ? Build::Yes : Build::No) {}
+
+Shader::Shader(std::string fragmentFilename, bool buildShader)
+    : Shader({{ShaderType::Vertex, "img_identity.vert"}, {ShaderType::Fragment, fragmentFilename}},
+             buildShader ? Build::Yes : Build::No) {}
+
+Shader::Shader(const char *fragmentFilename, bool buildShader)
+    : Shader(std::string(fragmentFilename), buildShader) {}
+
+Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool buildShader)
+    : Shader(std::string(vertexFilename), std::string(fragmentFilename), buildShader) {}
 
 Shader::Shader(const char *vertexFilename, const char *geometryFilename,
-               const char *fragmentFilename, bool linkShader)
+               const char *fragmentFilename, bool buildShader)
     : Shader(std::string(vertexFilename), std::string(geometryFilename),
-             std::string(fragmentFilename), linkShader) {}
+             std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool linkShader)
+Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    for (auto &shaderObject : shaderObjects)
-        shaderObjects_[shaderObject->getShaderType()] = std::move(shaderObject);
+    for (auto &shaderObject : shaderObjects) createAndAddShader(shaderObject);
 
-    attachAllShaderObjects();
-    if (linkShader) link();
-    registerShader();
+    if (buildShader) build();
+    ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(const Shader &rhs)
-    : id_{glCreateProgram()}, warningLevel_{rhs.warningLevel_} {
-    for (auto &it : rhs.shaderObjects_) {
-        this->shaderObjects_[it.first] = util::make_unique<ShaderObject>(*(it.second.get()));
+Shader::Shader(const Shader &rhs) : id_{glCreateProgram()}, warningLevel_{rhs.warningLevel_} {
+    for (auto &elem : rhs.shaderObjects_) {
+        createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
     }
-    attachAllShaderObjects();
-    if (rhs.isReady()) link();
-    registerShader();
+
+    if (rhs.isReady()) build();
+    ShaderManager::getPtr()->registerShader(this);
 }
 
 Shader &Shader::operator=(const Shader &that) {
     if (this != &that) {
-        for (auto &it : that.shaderObjects_) {
-            this->shaderObjects_[it.first] = util::make_unique<ShaderObject>(*(it.second.get()));
+        shaderObjects_.clear();
+        for (auto &elem : that.shaderObjects_) {
+            createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
         }
         warningLevel_ = that.warningLevel_;
-        attachAllShaderObjects();
-        
-        if (that.isReady()) {
-            link();
-        }
+
+        if (that.isReady()) build();
     }
     return *this;
 }
@@ -112,19 +120,29 @@ Shader::~Shader() {
     LGL_ERROR;
 }
 
-void Shader::registerShader() {
-    ShaderManager::getPtr()->registerShader(this);
+void Shader::createAndAddShader(ShaderType type, std::string fileName) {
+    createAndAddHelper(new ShaderObject(type, fileName));
 }
 
-void Shader::createAndAddShader(GLenum shaderType, std::string fileName,
-                                ShaderObject::Compile compile) {
-    if (fileName.empty()) return;
-    
-    shaderObjects_[shaderType] = ShaderObjectPtr(
-        new ShaderObject(shaderType, fileName, compile), [this](ShaderObject *shaderObject) {
-            detachShaderObject(shaderObject);
-            delete shaderObject;
-        });
+void Shader::createAndAddShader(std::unique_ptr<ShaderObject> &object) {
+    createAndAddHelper(object.get());
+    object.release();
+}
+
+void Shader::createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
+    createAndAddHelper(new ShaderObject(type, resource));
+}
+
+void Shader::createAndAddHelper(ShaderObject *object) {
+    auto ptr = ShaderObjectPtr(object, [this](ShaderObject *shaderObject) {
+        detachShaderObject(shaderObject);
+        delete shaderObject;
+    });
+
+    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebildShader(o); }));
+    attachShaderObject(ptr.get());
+
+    shaderObjects_[object->getShaderType()] = std::move(ptr);
 }
 
 void Shader::link(bool notifyRebuild) {
@@ -154,16 +172,29 @@ void Shader::build() {
     try {
         for (auto &elem : shaderObjects_) elem.second->build();
         link();
-    } catch (OpenGLException& e) {
+    } catch (OpenGLException &e) {
         handleError(e);
     }
 }
 
-void Shader::handleError(OpenGLException& e) {
+void Shader::rebildShader(ShaderObject* obj) {
+    try {
+        obj->build();
+        link();
+
+        onReloadCallback_.invokeAll();
+
+        LogInfo(obj->getFileName() + " successfully reloaded");
+    } catch (OpenGLException &e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+    }
+}
+
+void Shader::handleError(OpenGLException &e) {
     auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
         case Shader::OnError::Warn:
-            LogError(e.getMessage());
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
             break;
         case Shader::OnError::Throw:
             throw;
@@ -210,13 +241,11 @@ void Shader::detachAllShaderObject() {
 
 void Shader::setUniformWarningLevel(UniformWarning level) { warningLevel_ = level; }
 
-const BaseCallBack* Shader::onReload(std::function<void()> callback) {
-    return onReloadCallback_.addLambdaCallback(callback); 
+const BaseCallBack *Shader::onReload(std::function<void()> callback) {
+    return onReloadCallback_.addLambdaCallback(callback);
 }
 
-void Shader::removeOnReload(const BaseCallBack* callback) {
-    onReloadCallback_.remove(callback);
-}
+void Shader::removeOnReload(const BaseCallBack *callback) { onReloadCallback_.remove(callback); }
 
 std::string Shader::shaderNames() const {
     std::vector<std::string> names;
@@ -250,6 +279,56 @@ void Shader::setUniform(const std::string &name, const GLint &value) const {
     if (location != -1) glUniform1i(location, value);
 }
 
+void Shader::setUniform(const std::string &name, const GLint *value, int count) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1iv(location, count, value);
+}
+
+void Shader::setUniform(const std::string &name, const GLuint &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1ui(location, value);
+}
+
+void Shader::setUniform(const std::string &name, const GLuint *value, int count) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1uiv(location, count, value);
+}
+
+void Shader::setUniform(const std::string &name, const GLfloat *value, int count) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1fv(location, count, value);
+}
+
+void Shader::setUniform(const std::string &name, const ivec2 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform2iv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const std::string &name, const ivec3 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform3iv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const std::string &name, const ivec4 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform4iv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const std::string &name, const uvec2 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform2uiv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const std::string &name, const uvec3 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform3uiv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const std::string &name, const uvec4 &value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform4uiv(location, 1, glm::value_ptr(value));
+}
+
 void Shader::setUniform(const std::string &name, const GLfloat &value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) glUniform1f(location, value);
@@ -270,29 +349,9 @@ void Shader::setUniform(const std::string &name, const vec4 &value) const {
     if (location != -1) glUniform4fv(location, 1, glm::value_ptr(value));
 }
 
-void Shader::setUniform(const std::string &name, const ivec2 &value) const {
+void Shader::setUniform(const std::string &name, const mat2 &value) const {
     GLint location = findUniformLocation(name);
-    if (location != -1) glUniform2iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const ivec3 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform3iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const ivec4 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform4iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const GLint *value, int count) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1iv(location, count, value);
-}
-
-void Shader::setUniform(const std::string &name, const GLfloat *value, int count) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1fv(location, count, value);
+    if (location != -1) glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string &name, const mat3 &value) const {
@@ -305,19 +364,19 @@ void Shader::setUniform(const std::string &name, const mat4 &value) const {
     if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-ShaderObject *Shader::getShaderObject(GLenum type) const {
+ShaderObject *Shader::getShaderObject(ShaderType type) const {
     return util::map_find_or_null(shaderObjects_, type,
                                   [](const ShaderObjectPtr &p) { return p.get(); });
 }
 
 ShaderObject *Shader::getFragmentShaderObject() const {
-    return getShaderObject(GL_FRAGMENT_SHADER);
+    return getShaderObject(ShaderType::Fragment);
 }
 
 ShaderObject *Shader::getGeometryShaderObject() const {
-    return getShaderObject(GL_GEOMETRY_SHADER);
+    return getShaderObject(ShaderType::Geometry);
 }
 
-ShaderObject *Shader::getVertexShaderObject() const { return getShaderObject(GL_VERTEX_SHADER); }
+ShaderObject *Shader::getVertexShaderObject() const { return getShaderObject(ShaderType::Vertex); }
 
 }  // namespace

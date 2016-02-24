@@ -33,14 +33,6 @@
 
 namespace inviwo {
 
-const BaseCallBack* ShaderResource::onChange(std::function<void()> callback) {
-    return onChangeCallback_.addLambdaCallback(callback);
-}
-
-void ShaderResource::removeOnChange(const BaseCallBack* callback) {
-    onChangeCallback_.remove(callback);
-}
-
 FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
     : key_(key), fileName_(fileName) {
     InviwoApplication::getPtr()->registerFileObserver(this);
@@ -58,16 +50,21 @@ std::unique_ptr<ShaderResource> FileShaderResource::clone() {
 
 std::string FileShaderResource::key() const { return key_; }
 
-std::string FileShaderResource::source() {
+std::string FileShaderResource::source() const {
+    if (!cache_.empty()) return cache_;
     std::ifstream stream(fileName_);
     std::stringstream buffer;
     buffer << stream.rdbuf();
-    return buffer.str();
+    cache_ = buffer.str();
+    return cache_;
 }
 
 std::string FileShaderResource::file() const { return fileName_; }
 
-void FileShaderResource::fileChanged(std::string fileName) { onChangeCallback_.invokeAll(); }
+void FileShaderResource::fileChanged(std::string fileName) { 
+    cache_ = "";
+    callbacks_.invoke(this); 
+}
 
 StringShaderResource::StringShaderResource(const std::string& key, const std::string& source)
     : key_(key), source_(source) {}
@@ -78,11 +75,11 @@ std::unique_ptr<ShaderResource> StringShaderResource::clone() {
 
 std::string StringShaderResource::key() const { return key_; }
 
-std::string StringShaderResource::source() { return source_; }
+std::string StringShaderResource::source() const { return source_; }
 
 void StringShaderResource::setSource(const std::string& source) {
     source_ = source;
-    onChangeCallback_.invokeAll();
+    callbacks_.invoke(this);
 }
 
 }  // namespace

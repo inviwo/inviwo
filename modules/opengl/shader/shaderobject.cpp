@@ -40,31 +40,29 @@
 
 namespace inviwo {
 
-ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<ShaderResource> resource,
-                           Compile compile) 
-    : shaderType_{ shaderType }, resource_{ resource }, id_{ glCreateShader(shaderType) } {
-
+ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
+    : shaderType_{shaderType}, resource_{resource}, id_{glCreateShader(shaderType)} {
     if (!shaderType_) throw OpenGLException("Invalid shader type", IvwContext);
-    initialize(compile);
+ 
+    // Help developer to spot errors
+    std::string fileExtension = filesystem::getFileExtension(resource_->key());
+    if (fileExtension != shaderType_.extension()) {
+        LogWarn("File extension does not match shader type: " << resource_->key());
+    }
 }
 
-ShaderObject::ShaderObject(std::shared_ptr<ShaderResource> resource, Compile compile)
-    : ShaderObject(ShaderType::get(filesystem::getFileExtension(resource->key())), resource,
-                   compile) {}
+ShaderObject::ShaderObject(std::shared_ptr<const ShaderResource> resource)
+    : ShaderObject(ShaderType::get(filesystem::getFileExtension(resource->key())), resource) {}
 
-ShaderObject::ShaderObject(ShaderType shaderType, std::string fileName, Compile compile)
-    : ShaderObject(shaderType, loadResource(fileName), compile) {}
+ShaderObject::ShaderObject(ShaderType shaderType, std::string fileName)
+    : ShaderObject(shaderType, loadResource(fileName)) {}
 
-ShaderObject::ShaderObject(std::string fileName, Compile compile)
-    : ShaderObject(ShaderType::get(filesystem::getFileExtension(fileName)), loadResource(fileName),
-                   compile) {}
+ShaderObject::ShaderObject(std::string fileName)
+    : ShaderObject(ShaderType::get(filesystem::getFileExtension(fileName)),
+                   loadResource(fileName)) {}
 
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, Compile compile)
-    : ShaderObject(ShaderType(shaderType), loadResource(fileName), compile) {}
-
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
-    : ShaderObject(ShaderType(shaderType), loadResource(fileName),
-                   compileShader ? Compile::Yes : Compile::No) {}
+ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
+    : ShaderObject(ShaderType(shaderType), loadResource(fileName)) {}
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
@@ -73,8 +71,6 @@ ShaderObject::ShaderObject(const ShaderObject& rhs)
     , outDeclarations_(rhs.outDeclarations_)
     , shaderDefines_(rhs.shaderDefines_)
     , shaderExtensions_(rhs.shaderExtensions_) {
-    
-    initialize(rhs.isReady() ? Compile::Yes : Compile::No);
 }
 
 ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
@@ -87,8 +83,6 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
         outDeclarations_ = that.outDeclarations_;
         shaderDefines_ = that.shaderDefines_;
         shaderExtensions_ = that.shaderExtensions_;
-        
-        initialize(that.isReady() ? Compile::Yes : Compile::No);
     }
     return *this;
 }
@@ -103,11 +97,11 @@ std::string ShaderObject::getFileName() const {
     return resource_->key();
 }
 
-std::shared_ptr<ShaderResource> ShaderObject::getResource() const {
+std::shared_ptr<const ShaderResource> ShaderObject::getResource() const {
     return resource_;
 }
 
-const std::vector<std::shared_ptr<ShaderResource>>& ShaderObject::getResources() const {
+const std::vector<std::shared_ptr<const ShaderResource>>& ShaderObject::getResources() const {
     return includeResources_;
 }
 
@@ -115,19 +109,7 @@ ShaderType ShaderObject::getShaderType() const {
     return shaderType_;
 }
 
-void ShaderObject::initialize(Compile shouldCompile) {
-    // Help developer to spot errors
-    std::string fileExtension = filesystem::getFileExtension(resource_->key());
-    if (fileExtension != shaderType_.extension()) {
-        LogWarn("File extension does not match shader type: " << resource_->key());
-    }
-
-    preprocess();
-    upload();
-    if (shouldCompile == Compile::Yes) compile();
-}
-
-std::shared_ptr<ShaderResource> ShaderObject::loadResource(std::string fileName) {
+std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string fileName) {
     auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
     if (!resource) {
         throw OpenGLException(
@@ -144,7 +126,9 @@ void ShaderObject::build() {
 }
 
 void ShaderObject::preprocess() {
+    resourceCallbacks_.clear();
     lineNumberResolver_.clear();
+    auto holdOntoResources = includeResources_; // Don't release until we have processed again.
     includeResources_.clear();
     sourceProcessed_ = getDefines() + getOutDeclarations() + getIncludes(resource_);
 }
@@ -200,10 +184,13 @@ std::string ShaderObject::getOutDeclarations() {
     return result.str();
 }
 
-std::string ShaderObject::getIncludes(std::shared_ptr<ShaderResource> resource) {
+std::string ShaderObject::getIncludes(std::shared_ptr<const ShaderResource> resource) {
     std::ostringstream result;
     std::string curLine;
     includeResources_.push_back(resource);
+    resourceCallbacks_.push_back(
+        resource->onChange([this](const ShaderResource* res) { callbacks_.invoke(this); }));
+
     std::istringstream shaderSource(resource->source());
     int localLineNumber = 1;
 
@@ -216,18 +203,17 @@ std::string ShaderObject::getIncludes(std::shared_ptr<ShaderResource> resource) 
             auto pathBegin = curLine.find("\"", posInclude + 1);
             auto pathEnd = curLine.find("\"", pathBegin + 1);
             std::string incfile(curLine, pathBegin + 1, pathEnd - pathBegin - 1);
-            
+
             auto inc = ShaderManager::getPtr()->getShaderResource(incfile);
             if (!inc) {
                 throw OpenGLException(
-                    "Include file " + incfile + " not found in shader search paths.",
-                    IvwContext);
+                    "Include file " + incfile + " not found in shader search paths.", IvwContext);
             }
             auto it = util::find(includeResources_, inc);
-            if (it == includeResources_.end()) { // Only include files once.
+            if (it == includeResources_.end()) {  // Only include files once.
                 result << getIncludes(inc);
             }
-            
+
         } else {
             result << curLine << "\n";
             lineNumberResolver_.emplace_back(resource->key(), localLineNumber);

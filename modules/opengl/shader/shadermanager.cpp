@@ -120,65 +120,44 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
     }
 }
 
-void ShaderManager::resourceChanged(ShaderResource* resource) {
-    BoolProperty& shaderReloadProp =
-        InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()->shaderReloadingProperty_;
-
-    if (shaderReloadProp) {
-        try {
-            std::unordered_set<Shader*> toRelink;
-            for (auto shader : shaders_) {
-                for (const auto& shaderObject : shader->getShaderObjects()) {
-                    if (util::contains_if(shaderObject.second->getResources(),
-                                          [&](const std::shared_ptr<ShaderResource>& p) {
-                                              return p.get() == resource;
-                                          })) {
-                        shaderObject.second->build();
-                        toRelink.insert(shader);
-                    }
-                }
-            }
-            // Relink after for loop to avoid invalidation the shaders_ iterators.
-            // this can happen since link will trigger on reload callbacks.
-            NetworkLock lock;
-            for (auto shader : toRelink) shader->link(true);  // Link and notifyRebuild.
-
-            LogInfo(resource->key() + " successfully reloaded");
-        } catch (OpenGLException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-        }
-    }
-}
-
 void ShaderManager::addShaderResource(std::string key, std::string src) {
     replaceInString(src, "NEWLINE", "\n");
     auto resource = std::make_shared<StringShaderResource>(key, src);
-    auto res = resource.get(); // don't create a circular ref.
-    resource->onChange([&, res](){
-        resourceChanged(res);
-    });
     ownedResources_.push_back(resource);
     shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
 }
 
 void ShaderManager::addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource) {
-    std::shared_ptr<ShaderResource> res(std::move(resource));
-    ShaderResource* resptr = res.get(); // don't create a circular ref.
-    res->onChange([&, resptr](){
-        resourceChanged(resptr);
-    });
-    
+    std::shared_ptr<ShaderResource> res(std::move(resource));   
     ownedResources_.push_back(res);
     shaderResources_[key] = std::weak_ptr<ShaderResource>(res);
 }
 
 std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key) {
     auto it1 = shaderResources_.find(key);
-    if (it1 != shaderResources_.end()) return it1->second.lock();
+    if (it1 != shaderResources_.end()) {
+        if(!it1->second.expired()) {
+            return it1->second.lock();
+        } else {
+            shaderResources_.erase(it1);
+        }
+    }
+
+    std::string key2{ key };
+    replaceInString(key2, "/", "_");
+    replaceInString(key2, ".", "_");
+    auto it0 = shaderResources_.find(key2);
+    if (it0 != shaderResources_.end()) {
+        if (!it0->second.expired()) {
+            return it0->second.lock();
+        } else {
+            shaderResources_.erase(it0);
+        }
+    }
 
     if (filesystem::fileExists(key)) {
         auto resource = std::make_shared<FileShaderResource>(key, key);
-        shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
+        shaderResources_[key] = resource;
         return resource;
     }
 
@@ -189,15 +168,9 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key
         std::string file = *it2 + "/" + key;
 
         auto resource = std::make_shared<FileShaderResource>(key, file);
-        shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
+        shaderResources_[key] = resource;
         return resource;
     }
-
-    std::string tmp{key};
-    replaceInString(tmp, "/", "_");
-    replaceInString(tmp, ".", "_");
-    auto it0 = shaderResources_.find(tmp);
-    if (it0 != shaderResources_.end()) return it0->second.lock();
 
     return nullptr;
 }

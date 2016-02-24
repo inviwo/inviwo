@@ -33,29 +33,36 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
 /**
  * \class ShaderResource
- * \brief Abstaction for a shader source file.
+ * \brief Abstraction for a shader source file.
  */
 class IVW_MODULE_OPENGL_API ShaderResource { 
 public:
+    using Callback = std::function<void(const ShaderResource*)>;
+
     virtual ~ShaderResource() = default;
     virtual std::unique_ptr<ShaderResource> clone() = 0;
 
     virtual std::string key() const = 0;
-    virtual std::string source() = 0;
+    virtual std::string source() const = 0;
     
-    const BaseCallBack* onChange(std::function<void()> callback);
-    void removeOnChange(const BaseCallBack* callback);
+    template <typename T>
+    std::shared_ptr<Callback> onChange(T&& callback) const;
     
 protected:
-    CallBackList onChangeCallback_;
+    mutable Dispatcher<void(const ShaderResource*)> callbacks_;
 };
 
+template <typename T>
+std::shared_ptr<ShaderResource::Callback>
+ShaderResource::onChange(T&& callback) const {
+    return callbacks_.add(std::forward<T>(callback));
+}
 
 class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource,  public FileObserver {
 public:
@@ -65,7 +72,7 @@ public:
     virtual std::unique_ptr<ShaderResource> clone() override;
     
     virtual std::string key() const override;
-    virtual std::string source() override;
+    virtual std::string source() const override;
     
     std::string file() const; 
     
@@ -74,6 +81,8 @@ public:
 private:
     std::string key_;
     std::string fileName_;
+
+    mutable std::string cache_;
 };
 
 
@@ -85,7 +94,7 @@ public:
     virtual std::unique_ptr<ShaderResource> clone() override;
     
     virtual std::string key() const override;
-    virtual std::string source() override;
+    virtual std::string source() const override;
     
     void setSource(const std::string& source);
     

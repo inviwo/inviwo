@@ -35,25 +35,19 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadertype.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API ShaderObject {
 public:
-    enum class Compile { Yes, No };
+    using Callback = std::function<void(ShaderObject*)>;
 
-    ShaderObject(ShaderType shaderType, std::shared_ptr<ShaderResource> resource,
-                 Compile compile = Compile::Yes);
-
-    ShaderObject(std::shared_ptr<ShaderResource> resource, Compile compile = Compile::Yes);
-
-    ShaderObject(ShaderType shaderType, std::string fileName, Compile compile = Compile::Yes);
-
-    ShaderObject(std::string fileName, Compile compile = Compile::Yes);
-
-    ShaderObject(GLenum shaderType, std::string fileName, Compile compile = Compile::Yes);
-
-    ShaderObject(GLenum shaderType, std::string fileName, bool compileShader = true);
+    ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource);
+    ShaderObject(std::shared_ptr<const ShaderResource> resource);
+    ShaderObject(ShaderType shaderType, std::string fileName);
+    ShaderObject(std::string fileName);
+    ShaderObject(GLenum shaderType, std::string fileName);
     
     ShaderObject(const ShaderObject& rhs);
     ShaderObject& operator=(const ShaderObject& that);
@@ -62,8 +56,8 @@ public:
 
     GLuint getID() const;
     std::string getFileName() const;
-    std::shared_ptr<ShaderResource> getResource() const;
-    const std::vector<std::shared_ptr<ShaderResource>>& getResources() const;
+    std::shared_ptr<const ShaderResource> getResource() const;
+    const std::vector<std::shared_ptr<const ShaderResource>>& getResources() const;
     ShaderType getShaderType() const;
 
     void preprocess();
@@ -106,12 +100,14 @@ public:
 
     std::string print(bool showSource = false, bool preprocess = true) const;
 
+    template <typename T>
+    std::shared_ptr<Callback> onChange(T&& callback);
+
 private:
-    void initialize(Compile compile);
-    static std::shared_ptr<ShaderResource> loadResource(std::string fileName);
+    static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
     std::string getDefines();
     std::string getOutDeclarations();
-    std::string getIncludes(std::shared_ptr<ShaderResource> resource);
+    std::string getIncludes(std::shared_ptr<const ShaderResource> resource);
 
     int getLogLineNumber(const std::string& compileLogLine);
     std::string reformatShaderInfoLog(const std::string compileLog);
@@ -119,7 +115,7 @@ private:
     // state variables
     ShaderType shaderType_;
     GLuint id_;
-    std::shared_ptr<ShaderResource> resource_;
+    std::shared_ptr<const ShaderResource> resource_;
     std::vector<std::pair<std::string, int> > outDeclarations_;
 
     using ShaderDefines = std::map<std::string, std::string>;
@@ -130,9 +126,18 @@ private:
 
     // derived variables
     std::string sourceProcessed_;
-    std::vector<std::shared_ptr<ShaderResource>> includeResources_;
+    std::vector<std::shared_ptr<const ShaderResource>> includeResources_;
     std::vector<std::pair<std::string, unsigned int> > lineNumberResolver_;
+
+    Dispatcher<void(ShaderObject*)> callbacks_;
+    std::vector<std::shared_ptr<ShaderResource::Callback>> resourceCallbacks_;
 };
+
+template <typename T>
+std::shared_ptr<ShaderObject::Callback>
+ShaderObject::onChange(T&& callback) {
+   return callbacks_.add(std::forward<T>(callback));
+}
 
 }  // namespace
 

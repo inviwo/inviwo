@@ -60,8 +60,6 @@ public:
     void registerShader(Shader* shader);
     void unregisterShader(Shader* shader);
 
-    void resourceChanged(ShaderResource*);
-
     std::string getGlobalGLSLHeader();
     std::string getGlobalGLSLVertexDefines();
     std::string getGlobalGLSLFragmentDefines();

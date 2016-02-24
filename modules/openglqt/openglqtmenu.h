@@ -66,7 +66,7 @@ private:
 
     QMenu* shadersItem_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
-    std::unordered_map<const ShaderObject*, ShaderWidget*> editors_;
+    std::unordered_map<unsigned int, ShaderWidget*> editors_;
 };
 
 }  // namespace

@@ -69,8 +69,16 @@ private:
 
 bool operator==(const ShaderType& lhs, const ShaderType& rhs);
 
-
 } // namespace
+
+namespace std {
+template<>
+struct hash<inviwo::ShaderType> {
+    size_t operator()(const inviwo::ShaderType& type) const {
+        return std::hash<GLenum>()(static_cast<GLenum>(type));
+    }
+};
+}  // namespace
 
 #endif // IVW_SHADERTYPE_H
 
