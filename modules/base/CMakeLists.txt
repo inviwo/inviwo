@@ -27,6 +27,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
@@ -73,6 +74,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
