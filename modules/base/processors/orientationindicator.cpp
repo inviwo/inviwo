@@ -137,7 +137,7 @@ void OrientationIndicator::process() {
     auto endZ = start + vec3(0, 0, 1) * zScale;
     
     const static float baseRadius = 0.06f;
-    const static float baseHeadradius = 0.1f5;
+    const static float baseHeadradius = 0.15f;
     float radius = radius_.get() * baseRadius;
     float headradius = radius_.get() * baseHeadradius;
     auto xArrow = BasicMesh::arrow(start, endX, xColor_, xScale * radius, 0.25, xScale * headradius);
