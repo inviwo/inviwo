@@ -207,6 +207,7 @@ IVW_MODULE_PYTHON3_API PyObject* PyValueParser::toPyObject<std::string>(std::str
 
 template <typename T>
 bool PyValueParser::is(PyObject* arg) {
+    if (!arg) return false;
     return detail::test<T>(arg);
 }
 

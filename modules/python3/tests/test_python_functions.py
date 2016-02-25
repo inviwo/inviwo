@@ -19,8 +19,9 @@ inviwo.snapshotCanvas(0,outpath +"/snapshot001.png")
 inviwo.setPropertyValue("CubeProxyGeometry.clipX",(75,149))
 
 inviwo.snapshotAllCanvases(outpath, "snapshots" , "png")
+inviwo.snapshotAllCanvases(outpath)
 
 
 sampRate = inviwo.getPropertyValue("VolumeRaycaster.raycaster.samplingRate");
 if sampRate != 3.0:
-    print("should not get here")
+    print("should not get here" , file=sys.stderr)

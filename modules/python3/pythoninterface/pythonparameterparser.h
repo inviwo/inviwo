@@ -62,7 +62,7 @@ public:
         int parseArray(int idx, PyObject* args, T& t, Types2&... outputs);
 
         template <typename T>
-        bool parseArray(int idx, PyObject* args, T& t);
+        int parseArray(int idx, PyObject* args, T& t);
 
         template <typename T>
         bool parseValue(int idx, PyObject* obj, T& t);
@@ -88,7 +88,7 @@ int PythonParameterParser::parse(PyObject* args, Types&... outputs) {
     auto needed = sizeof...(Types);
     auto nonOptional = needed - optional_;
 
-    if (params < sizeof...(Types)) {
+    if (params < nonOptional) {
         std::stringstream ss;
         ss << "Function expects " << needed << " parameters ";
         if (optional_ != 0) {
@@ -100,8 +100,6 @@ int PythonParameterParser::parse(PyObject* args, Types&... outputs) {
         return -1;
     }
 
-
-
     auto v = parseArray(0, args, outputs...);
     return v;
 }
@@ -109,7 +107,9 @@ int PythonParameterParser::parse(PyObject* args, Types&... outputs) {
 
 template <typename T, typename... Types2>
 int PythonParameterParser::parseArray(int idx, PyObject* args, T& t, Types2&... outputs) {
-    if (parseValue(idx, PyTuple_GetItem(args, idx), t) == -1) {
+    auto params = static_cast<size_t>(PyTuple_Size(args));
+    if (idx >= params) return 0;
+    if (!parseValue(idx, PyTuple_GetItem(args, idx), t)) {
         return -1;
     }
     auto v = parseArray(idx + 1, args, outputs...);
@@ -118,13 +118,16 @@ int PythonParameterParser::parseArray(int idx, PyObject* args, T& t, Types2&... 
 
 
 template <typename T>
-bool PythonParameterParser::parseArray(int idx, PyObject* args, T& t) {
+int PythonParameterParser::parseArray(int idx, PyObject* args, T& t) {
+    auto params = static_cast<size_t>(PyTuple_Size(args));
+    if (idx >= params) return 0;
     return parseValue(idx, PyTuple_GetItem(args, idx), t);
 }
 
 
 template <typename T>
 bool PythonParameterParser::parseValue(int idx, PyObject* obj, T& t) {
+    if (!obj) return false;
     if (PyValueParser::is<T>(obj)) {
         t = PyValueParser::parse<T>(obj);
         return true;
