@@ -268,16 +268,20 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     if (srcFBO->hasStencilAttachment() && tgtFBO->hasStencilAttachment())
         mask |= GL_STENCIL_BUFFER_BIT;
 
-    glBlitFramebufferEXT(0, 0, sTex->getWidth(), sTex->getHeight(), 0, 0, tTex->getWidth(),
-                         tTex->getHeight(), mask, GL_NEAREST);
+    glBlitFramebufferEXT(0, 0, static_cast<GLint>(sTex->getWidth()),
+                         static_cast<GLint>(sTex->getHeight()), 0, 0,
+                         static_cast<GLint>(tTex->getWidth()),
+                         static_cast<GLint>(tTex->getHeight()), mask, GL_NEAREST);
     bool pickingCopied = false;
 
     for (int i = 1; i < srcFBO->getMaxColorAttachments(); i++) {
         if (srcBuffers[i] && targetBuffers[i]) {
             glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + i);
             glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + i);
-            glBlitFramebufferEXT(0, 0, sTex->getWidth(), sTex->getHeight(), 0, 0, tTex->getWidth(),
-                                 tTex->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+            glBlitFramebufferEXT(
+                0, 0, static_cast<GLint>(sTex->getWidth()), static_cast<GLint>(sTex->getHeight()),
+                0, 0, static_cast<GLint>(tTex->getWidth()), static_cast<GLint>(tTex->getHeight()),
+                GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
             if (GL_COLOR_ATTACHMENT0_EXT + i == static_cast<int>(pickingAttachmentID_))
                 pickingCopied = true;

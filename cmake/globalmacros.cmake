@@ -928,6 +928,11 @@ endmacro()
 #--------------------------------------------------------------------
 # Define QT definitions
 macro(ivw_define_qt_definitions)
+    if(WIN32) 
+        # Disable some warnings for qt modules.
+        add_definitions( "/wd4800" ) # 'type' : forcing value to bool 'true' or 'false'
+    endif()
+
     add_definitions(-DQT_CORE_LIB
                     -DQT_GUI_LIB)
 endmacro()

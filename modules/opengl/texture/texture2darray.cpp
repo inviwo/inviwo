@@ -105,7 +105,8 @@ size_t Texture2DArray::getNumberOfValues() const {
 void Texture2DArray::upload(const void* data) {
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, dimensions_.x, dimensions_.y, dimensions_.z,
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, static_cast<GLsizei>(dimensions_.x),
+                    static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z),
                     format_, dataType_, data);
     LGL_ERROR;
 }

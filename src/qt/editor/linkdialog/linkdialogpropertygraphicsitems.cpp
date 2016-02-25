@@ -116,9 +116,9 @@ int LinkDialogPropertyGraphicsItem::getLevel() const { return parent_->getLevel(
 
 size_t LinkDialogPropertyGraphicsItem::getTotalVisibleChildCount() const {
     if (isExpanded_) {
-        return std::accumulate(subProperties_.begin(), subProperties_.end(), 0,
+        return std::accumulate(subProperties_.begin(), subProperties_.end(), size_t(0),
                                [](size_t val, LinkDialogPropertyGraphicsItem* p) {
-                                   return val + 1 + p->getTotalVisibleChildCount();
+                                   return val + size_t(1) + p->getTotalVisibleChildCount();
                                });
     } else {
         return 0;
