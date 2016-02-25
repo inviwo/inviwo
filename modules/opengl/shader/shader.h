@@ -75,11 +75,11 @@ public:
 
     virtual ~Shader();
 
-    void link(bool notifyRebuild = false);
+    void link();
     void build();
     bool isReady() const; // returns whether the shader has been built and linked successfully
 
-    unsigned int getID() const { return id_; }
+    GLuint getID() const { return id_; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
     ShaderObject* getShaderObject(ShaderType type) const;
@@ -123,7 +123,10 @@ public:
 
 private:
     void handleError(OpenGLException& e);
+    std::string processLog(std::string log) const;
+
     void rebildShader(ShaderObject* obj);
+    void linkShader(bool notifyRebuild = false);
 
     void createAndAddShader(ShaderType type, std::string fileName);
     void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
@@ -139,8 +142,10 @@ private:
     std::string shaderNames() const;
     GLint findUniformLocation(const std::string &name) const;
 
-    unsigned int id_;
+    GLuint id_;
     ShaderObjectMap shaderObjects_;
+
+    bool ready_ = false;
 
     UniformWarning warningLevel_;
     // Uniform location cache. Clear after linking.
@@ -148,6 +153,7 @@ private:
 
     // Callback on reload.
     CallBackList onReloadCallback_;
+
 
     std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
 };
