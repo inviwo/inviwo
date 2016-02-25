@@ -81,9 +81,9 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
     : Shader(std::string(vertexFilename), std::string(geometryFilename),
              std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
+Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    for (auto &shaderObject : shaderObjects) createAndAddShader(shaderObject);
+    for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
 
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -124,7 +124,7 @@ void Shader::createAndAddShader(ShaderType type, std::string fileName) {
     createAndAddHelper(new ShaderObject(type, fileName));
 }
 
-void Shader::createAndAddShader(std::unique_ptr<ShaderObject> &object) {
+void Shader::createAndAddShader(std::unique_ptr<ShaderObject> object) {
     createAndAddHelper(object.get());
     object.release();
 }

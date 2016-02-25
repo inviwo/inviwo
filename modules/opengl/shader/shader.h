@@ -127,7 +127,7 @@ private:
 
     void createAndAddShader(ShaderType type, std::string fileName);
     void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
-    void createAndAddShader(std::unique_ptr<ShaderObject>& object);
+    void createAndAddShader(std::unique_ptr<ShaderObject> object);
     void createAndAddHelper(ShaderObject* object);
 
     void attachShaderObject(ShaderObject *shaderObject);
