@@ -32,12 +32,12 @@
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
 Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    
     for (auto &item : items) createAndAddShader(item.first, item.second);
 
     if (buildShader == Build::Yes) build();
@@ -48,9 +48,8 @@ Shader::Shader(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
     Build buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-
     for (auto &item : items) createAndAddShader(item.first, item.second);
-    
+
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -83,7 +82,7 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 
 Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    for (auto &shaderObject : shaderObjects) createAndAddShader(shaderObject);
+    for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
 
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -124,7 +123,7 @@ void Shader::createAndAddShader(ShaderType type, std::string fileName) {
     createAndAddHelper(new ShaderObject(type, fileName));
 }
 
-void Shader::createAndAddShader(std::unique_ptr<ShaderObject> &object) {
+void Shader::createAndAddShader(std::unique_ptr<ShaderObject> object) {
     createAndAddHelper(object.get());
     object.release();
 }
@@ -145,48 +144,66 @@ void Shader::createAndAddHelper(ShaderObject *object) {
     shaderObjects_[object->getShaderType()] = std::move(ptr);
 }
 
-void Shader::link(bool notifyRebuild) {
+void Shader::build() {
+    try {
+        ready_ = false;
+        for (auto &elem : shaderObjects_) elem.second->build();
+        linkShader();
+    } catch (OpenGLException &e) {
+        handleError(e);
+    }
+}
+
+void Shader::link() {
+    try {
+        ready_ = false;
+        linkShader();
+    } catch (OpenGLException &e) {
+        handleError(e);
+    }
+}
+
+void Shader::linkShader(bool notifyRebuild /*= false*/) {
     uniformLookup_.clear();  // clear uniform location cache.
     ShaderManager::getPtr()->bindCommonAttributes(id_);
 
     if (!util::all_of(shaderObjects_, [](const ShaderObjectMap::value_type &elem) {
             return elem.second->isReady();
         })) {
-        LogError("Shader objects not ready when linking.");
+        util::log(IvwContext, "Id: " + toString(id_) + " objects not ready when linking.",
+                  LogLevel::Error, LogAudience::User);
         return;
     }
 
     glLinkProgram(id_);
 
     if (!isReady()) {
-        LogError("Shader linking failed");
-        return;
+        throw OpenGLException(processLog(utilgl::getProgramInfoLog(id_)), IvwContext);
     }
 
-    LGL_ERROR;
+#ifdef IVW_DEBUG
+    auto log = utilgl::getProgramInfoLog(id_);
+    if (!log.empty()) util::log(IvwContext, processLog(log), LogLevel::Info, LogAudience::User);
+#endif
 
+    LGL_ERROR;
+    ready_ = true;
     if (notifyRebuild) onReloadCallback_.invokeAll();
 }
 
-void Shader::build() {
+void Shader::rebildShader(ShaderObject *obj) {
     try {
-        for (auto &elem : shaderObjects_) elem.second->build();
-        link();
-    } catch (OpenGLException &e) {
-        handleError(e);
-    }
-}
-
-void Shader::rebildShader(ShaderObject* obj) {
-    try {
+        ready_ = false;
         obj->build();
-        link();
+        linkShader();
 
         onReloadCallback_.invokeAll();
 
-        LogInfo(obj->getFileName() + " successfully reloaded");
+        util::log(IvwContext, "Id: " + toString(id_) + ", resource: " + obj->getFileName() +
+                                  " successfully reloaded",
+                  LogLevel::Info, LogAudience::User);
     } catch (OpenGLException &e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
     }
 }
 
@@ -194,11 +211,49 @@ void Shader::handleError(OpenGLException &e) {
     auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
         case Shader::OnError::Warn:
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
             break;
         case Shader::OnError::Throw:
             throw;
     }
+}
+
+std::string Shader::processLog(std::string log) const {
+    std::istringstream stream(log);
+    std::ostringstream result;
+    std::string line;
+    ShaderType type(0);
+
+    while (std::getline(stream, line)) {
+        // This log matching needs more testing. Mostly guessing here.
+        auto lline = toLower(line);
+        if (lline.find("vertex"))
+            type = ShaderType::Vertex;
+        else if (lline.find("geometry"))
+            type = ShaderType::Geometry;
+        else if (lline.find("fragment"))
+            type = ShaderType::Fragment;
+        else if (lline.find("tessellation control"))
+            type = ShaderType::TessellationControl;
+        else if (lline.find("tessellation evaluation"))
+            type = ShaderType::TessellationEvaluation;
+        else if (lline.find("compute"))
+            type = ShaderType::Compute;
+
+        int origLineNumber = utilgl::getLogLineNumber(line);
+
+        auto obj = getShaderObject(type);
+        if (obj && origLineNumber > 0) {
+            auto res = obj->resolveLine(origLineNumber - 1);
+            auto lineNumber = res.second;
+            auto fileName = res.first;
+            result << "\n" << fileName << " (" << lineNumber
+                   << "): " << line.substr(line.find(":") + 1);
+        } else {
+            result << "\n" << line;
+        }
+    }
+    return result.str();
 }
 
 bool Shader::isReady() const {
@@ -208,6 +263,7 @@ bool Shader::isReady() const {
 }
 
 void Shader::activate() {
+    if (!ready_) throw OpenGLException("Shader Id: " + toString(id_) + " not ready: " + shaderNames(), IvwContext);
     glUseProgram(id_);
     LGL_ERROR;
 }
@@ -264,10 +320,13 @@ GLint Shader::findUniformLocation(const std::string &name) const {
         uniformLookup_[name] = location;
 
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
-            throw OpenGLException("Unable to set uniform " + name + " in shader " + shaderNames(),
+            throw OpenGLException("Unable to set uniform " + name + " in shader id: " +
+                                      toString(id_) + " " + shaderNames(),
                                   IvwContext);
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
-            LogWarn("Unable to set uniform " + name + " in shader " + shaderNames());
+            util::log(IvwContext, "Unable to set uniform " + name + " in shader " +
+                                      " in shader id: " + toString(id_) + " " + shaderNames(),
+                      LogLevel::Warn, LogAudience::User);
         }
 
         return location;

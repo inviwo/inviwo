@@ -295,6 +295,93 @@ void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& property, 
     }
 }
 
-}  // namspace utilgl
+
+int getLogLineNumber(const std::string& compileLogLine) {
+    int result = -1;
+    std::istringstream input(compileLogLine);
+    int num;
+
+    if (input >> num) {
+        char c;
+        if (input >> c && c == '(') {
+            if (input >> result) {
+                return result;
+            }
+        }
+    }
+
+    // ATI parsing:
+    // ATI error: "ERROR: 0:145: Call to undeclared function 'texelFetch'\n"
+    std::vector<std::string> elems;
+    std::stringstream ss(compileLogLine);
+    std::string item;
+    while (std::getline(ss, item, ':')) {
+        elems.push_back(item);
+    }
+    if (elems.size() >= 3) {
+        std::stringstream number;
+        number << elems[2];
+        number >> result;
+    }
+
+    return result;
+}
+
+std::string reformatInfoLog(
+    const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
+    const std::string compileLog) {
+
+    std::ostringstream result;
+    std::string curLine;
+    std::istringstream origShaderInfoLog(compileLog);
+
+    while (std::getline(origShaderInfoLog, curLine)) {
+        if (!curLine.empty()) {
+            int origLineNumber = getLogLineNumber(curLine);
+            if (origLineNumber > 0) {
+                auto lineNumber = lineNumberResolver[origLineNumber - 1].second;
+                auto fileName = lineNumberResolver[origLineNumber - 1].first;
+                result << "\n" << fileName << " (" << lineNumber
+                    << "): " << curLine.substr(curLine.find(":") + 1);
+            } else {
+                result << "\n" << curLine;
+            }
+        }
+    }
+
+    return result.str();
+}
+
+std::string getShaderInfoLog(GLuint id) {
+    GLint maxLogLength;
+    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);
+    LGL_ERROR;
+
+    if (maxLogLength > 1) {
+        auto shaderInfoLog = util::make_unique<GLchar[]>(maxLogLength);
+        GLsizei logLength{ 0 };
+        glGetShaderInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
+        return std::string(shaderInfoLog.get(), logLength);
+    } else {
+        return "";
+    }
+}
+
+std::string getProgramInfoLog(GLuint id) {
+    GLint maxLogLength;
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);
+    LGL_ERROR;
+
+    if (maxLogLength > 1) {
+        auto shaderInfoLog = util::make_unique<GLchar[]>(maxLogLength);
+        GLsizei logLength{ 0 };
+        glGetProgramInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
+        return std::string(shaderInfoLog.get(), logLength);
+    } else {
+        return "";
+    }
+}
+
+}  // namespace utilgl
 
 }  // namespace

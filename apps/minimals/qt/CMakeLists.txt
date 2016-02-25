@@ -44,6 +44,7 @@ add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add qt dependencies to this list
 ivw_add_dependencies(Qt5Core Qt5Gui Qt5Widgets)    
+ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
 # Define defintions

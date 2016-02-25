@@ -360,6 +360,10 @@ public:
         T minSepOrg = property_->getMinSeparation();
         T incOrg = property_->getIncrement();
 
+// Visual studio warns here even with the static casts, bug?  
+#include <warn/push>
+#include <warn/ignore/conversion>
+
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
                 int t = 0;
@@ -378,6 +382,9 @@ public:
                 count++;
             }
         }
+
+#include <warn/pop>
+
         range.x = min;
         range.y = max;
         property_->setInitiatingWidget(this);

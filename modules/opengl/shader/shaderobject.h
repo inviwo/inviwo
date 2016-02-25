@@ -66,8 +66,6 @@ public:
     void build();
     bool isReady() const;
 
-    std::string getShaderInfoLog() const;
-
     void addShaderDefine(std::string name, std::string value = "");
     void removeShaderDefine(std::string name);
     bool hasShaderDefine(const std::string& name) const;
@@ -98,6 +96,7 @@ public:
     void addOutDeclaration(std::string name, int location = -1);
     void clearOutDeclarations();
 
+    std::pair<std::string, unsigned int> resolveLine(size_t line) const;
     std::string print(bool showSource = false, bool preprocess = true) const;
 
     template <typename T>
@@ -105,18 +104,15 @@ public:
 
 private:
     static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
-    std::string getDefines();
-    std::string getOutDeclarations();
-    std::string getIncludes(std::shared_ptr<const ShaderResource> resource);
-
-    int getLogLineNumber(const std::string& compileLogLine);
-    std::string reformatShaderInfoLog(const std::string compileLog);
+    void addDefines(std::ostringstream& source);
+    void addOutDeclarations(std::ostringstream& source);
+    void addIncludes(std::ostringstream& source, std::shared_ptr<const ShaderResource> resource);
 
     // state variables
     ShaderType shaderType_;
     GLuint id_;
     std::shared_ptr<const ShaderResource> resource_;
-    std::vector<std::pair<std::string, int> > outDeclarations_;
+    std::vector<std::pair<std::string, int>> outDeclarations_;
 
     using ShaderDefines = std::map<std::string, std::string>;
     ShaderDefines shaderDefines_;

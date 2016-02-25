@@ -400,14 +400,14 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
 
 void CameraProperty::changeFocusPoint(Event* event) {
     if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        vec2 p = mouseEvent->posNormalized();
-        float d = mouseEvent->depth();
-        if (std::abs(d - 1) < glm::epsilon<float>()) {
+        auto p = mouseEvent->posNormalized();
+        auto d = mouseEvent->depth();
+        if (std::abs(d - 1.0) < glm::epsilon<decltype(d)>()) {
             return;
         }
-        p.y = 1 - p.y;
+        p.y = 1.0f - p.y;
         p = p * 2.0f - 1.0f;
-        vec4 viewPos(p.x,p.y, d , 1.0f);
+        vec4 viewPos(p.x, p.y, static_cast<float>(d), 1.0f);
 
         auto point = (inverseViewMatrix() * inverseProjectionMatrix()) * viewPos;
         auto newLookTo = point.xyz() / point.w;

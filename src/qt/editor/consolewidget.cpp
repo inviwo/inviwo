@@ -180,22 +180,36 @@ void ConsoleWidget::logMessage(LogLevel level, QString message) {
 void ConsoleWidget::log(std::string logSource, LogLevel level, LogAudience audience,
                         const char* fileName, const char* function, int line, std::string msg) {
     IVW_UNUSED_PARAM(function);
-    
+
     QString message;
     std::string lineNo = toString(line);
-    switch (level) {
-        case LogLevel::Error:
-        case LogLevel::Warn: {
-            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
-                                             ", " + lineNo + "]: " + msg);
-            break;
-        }
-        case LogLevel::Info:
-        default: {
+    switch (audience) {
+        case inviwo::LogAudience::User: {
             message = QString::fromStdString("(" + logSource + ") " + msg);
+
             break;
         }
+        case inviwo::LogAudience::Developer: {
+            switch (level) {
+                case LogLevel::Error:
+                case LogLevel::Warn: {
+                    message =
+                        QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
+                                               ", " + lineNo + "]: " + msg);
+                    break;
+                }
+                case LogLevel::Info:
+                default: {
+                    message = QString::fromStdString("(" + logSource + ") " + msg);
+                    break;
+                }
+            }
+            break;
+        }
+        default:
+            break;
     }
+
     logMessage(level, message);
 }
 

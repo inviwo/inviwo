@@ -129,7 +129,17 @@ void setUniforms(Shader& shader, const T& elem, const Ts&... elements) {
     setUniforms(shader, elements...);
 }
 
-}  // namspace utilgl
+
+IVW_MODULE_OPENGL_API int getLogLineNumber(const std::string& compileLogLine);
+IVW_MODULE_OPENGL_API std::string reformatInfoLog(
+    const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
+    const std::string compileLog);
+
+IVW_MODULE_OPENGL_API std::string getShaderInfoLog(GLuint id);
+
+IVW_MODULE_OPENGL_API std::string getProgramInfoLog(GLuint id);
+
+}  // namespace utilgl
 
 }  // namespace
 

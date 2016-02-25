@@ -3,6 +3,12 @@
 ivw_project(stackwalker)
 #--------------------------------------------------------------------
 
+# Define defintions
+if(WIN32) 
+    #disable  warning
+    add_definitions( "/wd4091" )
+endif()
+
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES

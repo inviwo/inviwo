@@ -35,8 +35,12 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+ // Qt
 #include <QMoveEvent>
 #include <QMainWindow>
+#include <warn/pop>
 
 
 namespace inviwo {

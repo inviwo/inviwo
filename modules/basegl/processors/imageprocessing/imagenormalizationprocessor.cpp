@@ -54,8 +54,15 @@ struct LayerMinMaxDispatcher {
         using dataType = typename T::type;
         auto data = static_cast<const dataType*>(layer->getData());
         auto df = layer->getDataFormat();
-        dataType minV = dataType(df->getMax());
-        dataType maxV = dataType(df->getMin());
+
+// Visual studio warns here even with the static casts, bug?  
+#include <warn/push>
+#include <warn/ignore/conversion>
+        auto minV = static_cast<dataType>(df->getMax());
+        auto maxV = static_cast<dataType>(df->getMin());
+#include <warn/pop>
+
+
         for (size_t i = 0; i < layer->getDimensions().x * layer->getDimensions().y; i++) {
             auto v = data[i];
 
