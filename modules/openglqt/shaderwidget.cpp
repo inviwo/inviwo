@@ -29,7 +29,8 @@
 
 #include "shaderwidget.h"
 #include <modules/opengl/shader/shaderobject.h>
-
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -73,9 +74,17 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save);
     connect(save, &QAction::triggered,[=]() {
-        std::ofstream file(obj->getAbsoluteFileName());
-        file << shadercode->toPlainText().toLocal8Bit().constData();
-        file.close();
+        if (auto fr = dynamic_cast<const FileShaderResource*>(obj->getResource().get())) {
+            std::ofstream file(fr->file());
+            file << shadercode->toPlainText().toLocal8Bit().constData();
+            file.close();
+        } else if (auto sr = dynamic_cast<const StringShaderResource*>(obj->getResource().get())) {
+            // get the non-const version from the manager.
+            auto res = ShaderManager::getPtr()->getShaderResource(sr->key());
+            if (auto editable = dynamic_cast<StringShaderResource*>(res.get())) {
+                editable->setSource(shadercode->toPlainText().toLocal8Bit().constData());
+            }
+        }
     });
 
     auto showSource = toolBar->addAction("Show Sources");

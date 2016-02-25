@@ -50,7 +50,13 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 
-    canvas_ = new CanvasQt(uvec2(dim.x, dim.y));
+    canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y)), [&](CanvasQt* c){
+        layout()->removeWidget(c);
+        c->activate();
+        delete c;
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    });
+
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setMouseTracking(true);
@@ -58,7 +64,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     QGridLayout* gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
-    gridLayout->addWidget(canvas_, 0, 0);
+    gridLayout->addWidget(canvas_.get(), 0, 0);
     setLayout(gridLayout);
 
     setWindowFlags(Qt::Tool);
@@ -76,16 +82,12 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         }
     }
     processor_->ProcessorObservable::addObserver(this);
-    canvas_->setVisible(true);
+    canvas_->setVisible(ProcessorWidget::isVisible());
     QWidget::setVisible(ProcessorWidget::isVisible());
 }
 
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
-    if (canvas_) {
-        this->hide();
-        canvas_->setEventPropagator(nullptr);
-        canvas_ = nullptr;  // Qt will take care of deleting the canvas
-    }
+    this->hide();
 }
 
 void CanvasProcessorWidgetQt::setVisible(bool visible) {
@@ -114,17 +116,19 @@ void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
 }
 
 Canvas* CanvasProcessorWidgetQt::getCanvas() const {
-    return canvas_;
+    return canvas_.get();
 }
 
 void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
+    setUpdatesEnabled(false);
+    util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
+
     ivec2 dim(event->size().width(), event->size().height());
-    if (event->spontaneous()) {
-        CanvasProcessorWidget::setDimensions(dim);
-        return;
-    }
     CanvasProcessorWidget::setDimensions(dim);
-    QWidget::resizeEvent(event);
+
+    if (!event->spontaneous()) {       
+        QWidget::resizeEvent(event);
+    }
 }
 
 void CanvasProcessorWidgetQt::closeEvent(QCloseEvent* event) {

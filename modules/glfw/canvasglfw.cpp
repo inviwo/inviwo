@@ -124,6 +124,12 @@ void CanvasGLFW::closeWindow(GLFWwindow* window) { getCanvasGLFW(window)->hide()
 
 int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 
+void CanvasGLFW::update() {
+    activate();
+    CanvasGL::update();
+    activateDefaultRenderContext();
+}
+
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
     getCanvasGLFW(window)->resize(uvec2(width, height));
 }

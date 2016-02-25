@@ -248,8 +248,8 @@ std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& st
     for (size_t i = 0; i < segments; ++i) {
         j = static_cast<float>(i);
         o = glm::rotate(orth, static_cast<float>(i * angle), normal);
-        mesh->addVertex(start + radius * o, o, vec3(j / segments, 0.0f, 0.0f), color);
-        mesh->addVertex(stop + radius * o, o, vec3(j / segments, 1.0f, 0.0f), color);
+        mesh->addVertex(start + radius * o, -o, vec3(j / segments, 0.0f, 0.0f), color);
+        mesh->addVertex(stop + radius * o, -o, vec3(j / segments, 1.0f, 0.0f), color);
 
         inds->add(static_cast<std::uint32_t>(i * 2 + 1));
         inds->add(static_cast<std::uint32_t>(i * 2 + 0));
@@ -440,11 +440,140 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
 
                 if (quad.x * quad.y * quad.z > 0) {
                     for (auto& elem : sphereind) {
-                        inds->add({elem.x, elem.y, elem.z});
+                        inds->add({ elem.x, elem.y, elem.z });
                     }
-                } else {
+                }
+                else {
                     for (auto& elem : sphereind) {
-                        inds->add({elem.z, elem.y, elem.x});
+                        inds->add({ elem.z, elem.y, elem.x });
+                    }
+                }
+                mesh->append(&temp);
+            }
+        }
+    }
+    return mesh;
+}
+
+std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& radius , const vec4 &color) {
+    std::vector<vec2> spheremesh;
+    spheremesh.push_back(vec2(M_PI_2, 0.0f));
+    spheremesh.push_back(vec2(M_PI_2, M_PI_2));
+    spheremesh.push_back(vec2(0.0f, 0.0f));
+    spheremesh.push_back(vec2(0.0f, 0.0f));
+    spheremesh.push_back(vec2(std::atan(6.0f), 0.0f));
+    spheremesh.push_back(vec2(std::atan(5.0f / 2.0f), 0.0f));
+    spheremesh.push_back(vec2(std::atan(4.0f / 3.0f), 0.0f));
+    spheremesh.push_back(vec2(std::atan(3.0f / 4.0f), 0.0f));
+    spheremesh.push_back(vec2(std::atan(2.0f / 5.0f), 0.0f));
+    spheremesh.push_back(vec2(std::atan(1.0f / 6.0f), 0.0f));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(1.0f / 6.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(26.0f)), std::atan(1.0f / 5.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(17.0f) / 2.0f), std::atan(1.0f / 4.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(10.0f) / 3.0f), std::atan(1.0f / 3.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(5.0f) / 4.0f), std::atan(1.0f / 2.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(2.0f) / 5.0f), M_PI_4));
+    spheremesh.push_back(vec2(std::atan(1.0f / 6.0f), M_PI_2));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(2.0f / 5.0f)));
+    spheremesh.push_back(vec2(std::atan(2.0f * std::sqrt(5.0f)), std::atan(1.0f / 2.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(13.0f) / 2.0f), std::atan(2.0f / 3.0f)));
+    spheremesh.push_back(vec2(std::atan((2.0f * std::sqrt(2.0f)) / 3.0f), M_PI_4));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(5.0f) / 4.0f), std::atan(2.0f)));
+    spheremesh.push_back(vec2(std::atan(2.0f / 5.0f), M_PI_2));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(3.0f / 4.0f)));
+    spheremesh.push_back(vec2(std::atan(3.0f * std::sqrt(2.0f)), M_PI_4));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(13.0f) / 2.0f), std::atan(3.0f / 2.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(10.0f) / 3.0f), std::atan(3.0f)));
+    spheremesh.push_back(vec2(std::atan(3.0f / 4.0f), M_PI_2));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(4.0f / 3.0f)));
+    spheremesh.push_back(vec2(std::atan(2.0f * std::sqrt(5.0f)), std::atan(2.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(17.0f) / 2.0f), std::atan(4.0f)));
+    spheremesh.push_back(vec2(std::atan(4.0f / 3.0f), M_PI_2));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(5.0f / 2.0f)));
+    spheremesh.push_back(vec2(std::atan(std::sqrt(26.0f)), std::atan(5.0f)));
+    spheremesh.push_back(vec2(std::atan(5.0f / 2.0f), M_PI_2));
+    spheremesh.push_back(vec2(M_PI_2, std::atan(6.0f)));
+    spheremesh.push_back(vec2(std::atan(6.0f), M_PI_2));
+
+    std::vector<uvec3> sphereind;
+    sphereind.push_back(uvec3(0, 10, 4));
+    sphereind.push_back(uvec3(4, 11, 5));
+    sphereind.push_back(uvec3(5, 12, 6));
+    sphereind.push_back(uvec3(6, 13, 7));
+    sphereind.push_back(uvec3(7, 14, 8));
+    sphereind.push_back(uvec3(8, 15, 9));
+    sphereind.push_back(uvec3(9, 16, 2));
+    sphereind.push_back(uvec3(10, 17, 11));
+    sphereind.push_back(uvec3(11, 18, 12));
+    sphereind.push_back(uvec3(12, 19, 13));
+    sphereind.push_back(uvec3(13, 20, 14));
+    sphereind.push_back(uvec3(14, 21, 15));
+    sphereind.push_back(uvec3(15, 22, 16));
+    sphereind.push_back(uvec3(17, 23, 18));
+    sphereind.push_back(uvec3(18, 24, 19));
+    sphereind.push_back(uvec3(19, 25, 20));
+    sphereind.push_back(uvec3(20, 26, 21));
+    sphereind.push_back(uvec3(21, 27, 22));
+    sphereind.push_back(uvec3(23, 28, 24));
+    sphereind.push_back(uvec3(24, 29, 25));
+    sphereind.push_back(uvec3(25, 30, 26));
+    sphereind.push_back(uvec3(26, 31, 27));
+    sphereind.push_back(uvec3(28, 32, 29));
+    sphereind.push_back(uvec3(29, 33, 30));
+    sphereind.push_back(uvec3(30, 34, 31));
+    sphereind.push_back(uvec3(32, 35, 33));
+    sphereind.push_back(uvec3(33, 36, 34));
+    sphereind.push_back(uvec3(35, 1, 36));
+    sphereind.push_back(uvec3(11, 4, 10));
+    sphereind.push_back(uvec3(12, 5, 11));
+    sphereind.push_back(uvec3(13, 6, 12));
+    sphereind.push_back(uvec3(14, 7, 13));
+    sphereind.push_back(uvec3(15, 8, 14));
+    sphereind.push_back(uvec3(16, 9, 15));
+    sphereind.push_back(uvec3(18, 11, 17));
+    sphereind.push_back(uvec3(19, 12, 18));
+    sphereind.push_back(uvec3(20, 13, 19));
+    sphereind.push_back(uvec3(21, 14, 20));
+    sphereind.push_back(uvec3(22, 15, 21));
+    sphereind.push_back(uvec3(24, 18, 23));
+    sphereind.push_back(uvec3(25, 19, 24));
+    sphereind.push_back(uvec3(26, 20, 25));
+    sphereind.push_back(uvec3(27, 21, 26));
+    sphereind.push_back(uvec3(29, 24, 28));
+    sphereind.push_back(uvec3(30, 25, 29));
+    sphereind.push_back(uvec3(31, 26, 30));
+    sphereind.push_back(uvec3(33, 29, 32));
+    sphereind.push_back(uvec3(34, 30, 33));
+    sphereind.push_back(uvec3(36, 33, 35));
+
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(mat4(1.f));
+
+    vec3 quad(0);
+    for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
+        for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
+            for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
+                BasicMesh temp;
+                auto inds = temp.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+
+                vec3 normal;
+                vec3 vertex;
+                vec3 tcoord;
+                for (auto& elem : spheremesh) {
+                    normal = quad * tospherical(elem);
+                    vertex = center + radius * normal;
+                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
+                    temp.addVertex(vertex, normal, tcoord, color);
+                }
+
+                if (quad.x * quad.y * quad.z > 0) {
+                    for (auto& elem : sphereind) {
+                        inds->add({ elem.x, elem.y, elem.z });
+                    }
+                }
+                else {
+                    for (auto& elem : sphereind) {
+                        inds->add({ elem.z, elem.y, elem.x });
                     }
                 }
                 mesh->append(&temp);

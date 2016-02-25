@@ -65,7 +65,7 @@ public:
     using QtBase = typename T::QtBase;
 
     explicit CanvasQtBase(uvec2 dim = uvec2(256,256));
-    ~CanvasQtBase() = default;
+    virtual ~CanvasQtBase() = default;
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
@@ -81,6 +81,7 @@ protected:
 
 private:
     bool mapMousePressEvent(QMouseEvent* e);
+    bool mapMouseDoubleClickEvent(QMouseEvent* e);
     bool mapMouseReleaseEvent(QMouseEvent* e);
     bool mapMouseMoveEvent(QMouseEvent* e);
     bool mapWheelEvent(QWheelEvent* e);
@@ -93,7 +94,7 @@ private:
     
     void touchFallback(QTouchEvent*);
     
-    bool gestureMode_;
+    bool gestureMode_ = false;
     Qt::GestureType lastType_;
     int lastNumFingers_;
     std::vector<int> lastTouchIds_;
@@ -152,7 +153,8 @@ bool CanvasQtBase<T>::event(QEvent* e) {
         }
         case QEvent::MouseButtonPress:
             return mapMousePressEvent(static_cast<QMouseEvent*>(e));
-            
+        case QEvent::MouseButtonDblClick:
+            return mapMouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonRelease:
             return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseMove:
@@ -178,16 +180,33 @@ template <typename T>
 bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
     if (gestureMode_) return true;
 
-    const ivec2 screenPos{utilqt::toGLM(e->pos())};
-    const ivec2 screenPosInvY{util::invertY(screenPos, this->getScreenDimensions())};
+    const ivec2 screenPos{ utilqt::toGLM(e->pos()) };
+    const ivec2 screenPosInvY{ util::invertY(screenPos, this->getScreenDimensions()) };
 
     MouseEvent mouseEvent(screenPos, EventConverterQt::getMouseButton(e),
-                          MouseEvent::MOUSE_STATE_PRESS, EventConverterQt::getModifier(e),
-                          this->getScreenDimensions(),
-                          this->getDepthValueAtCoord(screenPosInvY));
-    
+        MouseEvent::MOUSE_STATE_PRESS, EventConverterQt::getModifier(e),
+        this->getScreenDimensions(),
+        this->getDepthValueAtCoord(screenPosInvY));
+
     e->accept();
     Canvas::mousePressEvent(&mouseEvent);
+    return true;
+}
+
+template <typename T>
+bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
+    if (gestureMode_) return true;
+
+    const ivec2 screenPos{ utilqt::toGLM(e->pos()) };
+    const ivec2 screenPosInvY{ util::invertY(screenPos, this->getScreenDimensions()) };
+
+    MouseEvent mouseEvent(screenPos, EventConverterQt::getMouseButton(e),
+        MouseEvent::MOUSE_STATE_DOUBLE_CLICK, EventConverterQt::getModifier(e),
+        this->getScreenDimensions(),
+        this->getDepthValueAtCoord(screenPosInvY));
+
+    e->accept();
+    Canvas::mouseDoubleClickEvent(&mouseEvent);
     return true;
 }
 

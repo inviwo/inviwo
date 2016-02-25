@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/interaction/trackballobject.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 namespace inviwo {
 
@@ -153,6 +154,8 @@ public:
     void resetAdjustCameraToData();
     void inportChanged();
 
+    void changeFocusPoint(Event *event);
+
 private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
 
@@ -169,6 +172,8 @@ private:
     FloatProperty aspectRatio_;
     FloatProperty nearPlane_;
     FloatProperty farPlane_;
+
+    EventProperty mouseChangeFocusPoint_;
 
     BoolProperty adjustCameraOnDataChange_;
 

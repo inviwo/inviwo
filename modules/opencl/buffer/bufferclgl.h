@@ -63,6 +63,23 @@ public:
     cl::Buffer& getEditable() override { return *clBuffer_; }
     const cl::Buffer& get() const override { return *clBuffer_; }
 
+    /**
+     * \brief Copies data from RAM to OpenCL.
+     *
+     * @param data Pointer to data
+     * @param size Size in bytes to copy
+     */
+    void upload(const void* data, size_t size);
+    /**
+     * \brief Copies the entire buffer to RAM memory.
+     *
+     * Copies getSize()*getSizeOfElement() bytes into data.
+     * Pointer needs to be allocated beforehand.
+     *
+     * @param data Pointer to data
+     */
+    void download(void* data) const;
+
     void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
         OpenCL::getPtr()->getQueue().enqueueAcquireGLObjects(&syncBuffers, syncEvents);

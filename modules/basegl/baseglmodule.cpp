@@ -72,6 +72,7 @@
 #include <modules/basegl/processors/volumeprocessing/volumelaplacian.h>
 #include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
+#include <modules/basegl/processors/volumeprocessing/volumemerger.h>
 
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
 #include <modules/basegl/shader_resources.h>
@@ -132,6 +133,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeLowPass>();
     registerProcessor<VolumeMapping>();
     registerProcessor<VolumeBinary>();
+    registerProcessor<VolumeMerger>();
 
 }
 

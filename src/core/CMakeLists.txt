@@ -222,6 +222,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h

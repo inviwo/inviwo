@@ -81,6 +81,7 @@ public:
     void setLookFrom(vec3 lookFrom);
     void setLookUp(vec3 lookUp);
 
+
     /**
      * \brief Set look from, look to and up vector at the same time.
      * Should be used when more than one parameter will be changed to avoid duplicate evaluations.
@@ -123,6 +124,8 @@ protected:
 
     void zoomIn(Event* event);
     void zoomOut(Event* event);
+    void dblClick(Event *event);
+
 
     /**
      * \brief Rotates around the direction vector,
@@ -162,6 +165,7 @@ protected:
     EventProperty mouseZoom_;
     EventProperty mousePan_;
     EventProperty mouseReset_;
+
 
     EventProperty stepRotateUp_;
     EventProperty stepRotateLeft_;

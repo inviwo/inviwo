@@ -58,6 +58,9 @@ public:
 protected slots:
     void setupFinished();
 
+protected:
+    virtual void resizeEvent(QResizeEvent * event) override;
+
 private:
     class HelpBrowser : public QTextBrowser {
     public:
@@ -75,6 +78,7 @@ private:
     InviwoMainWindow* mainwindow_;
     HelpBrowser* helpBrowser_;
     QHelpEngineCore* helpEngine_;
+    std::string current_ = "org.inviwo.Background";
 };
 
 }  // namespace

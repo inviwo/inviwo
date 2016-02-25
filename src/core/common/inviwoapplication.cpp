@@ -129,6 +129,7 @@ InviwoApplication::InviwoApplication(std::string displayName)
 
 InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
+    portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
 }
 
@@ -290,6 +291,9 @@ void InviwoApplication::closeInviwoApplication() {
 }
 void InviwoApplication::registerFileObserver(FileObserver* fileObserver) {
     LogWarn("this application have not implemented the registerFileObserver function");
+}
+void InviwoApplication::unRegisterFileObserver(FileObserver* fileObserver) {
+    LogWarn("this application have not implemented the unRegisterFileObserver function");
 }
 void InviwoApplication::startFileObservation(std::string fileName) {
     LogWarn("this application have not implemented the startFileObservation function");

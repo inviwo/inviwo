@@ -53,8 +53,7 @@ CanvasQGLWidget* CanvasQGLWidget::sharedCanvas_ = nullptr;
 
 CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
     : QGLWidget(sharedFormat_, parent, sharedCanvas_)
-    , CanvasGL(dim)
-    , swapBuffersAllowed_(false) {
+    , CanvasGL(dim) {
     // This is our default rendering context
     // Initialized once. So "THE" first object of this class will
     // not have any shared context (or widget)
@@ -73,11 +72,6 @@ CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
 }
 
 CanvasQGLWidget::~CanvasQGLWidget() {
-    // Make sure that the correct OpenGL context 
-    // is active when objects are destroyed
-    // This affect for example FBO's and VAO's
-    activate();
-    square_.reset();
     if (sharedCanvas_ == this) sharedCanvas_ = nullptr;
 }
 
@@ -92,7 +86,7 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
 }
 
 void CanvasQGLWidget::activate() {
-    context()->makeCurrent();
+    makeCurrent();
 }
 
 void CanvasQGLWidget::initializeGL() {
@@ -107,31 +101,27 @@ void CanvasQGLWidget::initializeGL() {
 }
 
 void CanvasQGLWidget::glSwapBuffers() {
-    if (swapBuffersAllowed_) {
-        activate();
-        QGLWidget::swapBuffers();
-    }
+    QGLWidget::swapBuffers();
 }
 
-void CanvasQGLWidget::update() { CanvasGL::update(); }
-
-void CanvasQGLWidget::repaint() { QGLWidget::updateGL(); }
+void CanvasQGLWidget::update() { 
+    QGLWidget::update(); // this will trigger a paint event.
+}
 
 void CanvasQGLWidget::paintGL() {
-    swapBuffersAllowed_ = true;
     CanvasGL::update();
 }
 
 void CanvasQGLWidget::resize(uvec2 size) {
-    QGLWidget::resize(size.x, size.y);
-    CanvasGL::resize(size);
+    QGLWidget::resize(size.x, size.y); // this should trigger a resize event.
 }
 
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
-    if (event->spontaneous()) {
-        QGLWidget::resizeEvent(event);
-        return;
-    }
+    if (event->spontaneous()) return;
+
+    setUpdatesEnabled(false);
+    util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
+
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
     QGLWidget::resizeEvent(event);
 }

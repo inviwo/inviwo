@@ -176,6 +176,7 @@ public:
     // Methods to be implemented by deriving classes
     virtual void closeInviwoApplication();
     virtual void registerFileObserver(FileObserver* fileObserver);
+    virtual void unRegisterFileObserver(FileObserver* fileObserver);
     virtual void startFileObservation(std::string fileName);
     virtual void stopFileObservation(std::string fileName);
     enum class Message { Ok, Error };

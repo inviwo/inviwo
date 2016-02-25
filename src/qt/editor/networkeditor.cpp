@@ -94,7 +94,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , modified_(false) {
     network_->addObserver(this);
 
-    // The defalt bsp tends to crash...
+    // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
     
     connect(this, &QGraphicsScene::selectionChanged, [&](){
@@ -242,7 +242,7 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
     if (!port) return false;
 
-    PortInspectorMap::iterator it = portInspectors_.find(port);
+    auto it = portInspectors_.find(port);
     if (it != portInspectors_.end()) {
         return false;
     }
@@ -257,12 +257,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
         NetworkLock lock(network_);
         // Add processors to the network
         CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
-
         for (auto& processor : portInspector->getProcessors()) {
-            // For Debugging
-            // auto meta =
-            // processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            // meta->setVisibile(true);
             network_->addProcessor(processor);
         }
 
@@ -302,7 +297,6 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             processorWidget->show();
             processorWidget->addObserver(new PortInspectorObserver(this, outport));
         }
-
         return true;
     }
     return false;
@@ -311,13 +305,19 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 void NetworkEditor::removePortInspector(Outport* port) {
     if (port) {
         auto it = portInspectors_.find(port);
-        if (it != portInspectors_.end() && it->second->isActive()) {
-            NetworkLock lock(network_);
-            // Remove processors from the network
-            auto processors = it->second->getProcessors();
-            for (auto& processor : processors) network_->removeProcessor(processor);
+        if (it != portInspectors_.end()) {
+            if (it->second && it->second->isActive()) {
+                NetworkLock lock(network_);
 
-            it->second->setActive(false);
+                it->second->getCanvasProcessor()->getProcessorWidget()->hide();
+
+                // Remove processors from the network
+                auto processors = it->second->getProcessors();
+                for (auto& processor : processors) {
+                    network_->removeProcessor(processor);
+                }
+                it->second->setActive(false);
+            }
             portInspectors_.erase(it);
         }
     }
@@ -335,14 +335,12 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
             portInspector->setActive(true);
 
             auto canvasProcessor = portInspector->getCanvasProcessor();
-            auto wm = canvasProcessor->createMetaData<ProcessorWidgetMetaData>(
-                ProcessorWidgetMetaData::CLASS_IDENTIFIER);
-            wm->setVisibile(false);
             {
                 NetworkLock lock(network_);
                 // Add processors to the network
                 for (auto& processor : portInspector->getProcessors()) {
                     network_->addProcessor(processor);
+                    //RenderContext::getPtr()->activateDefaultRenderContext();
                 }
 
                 // Connect the port to inspect to the inports of the inspector network
@@ -378,7 +376,6 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
             for (auto processor : portInspector->getProcessors()) {
                 network_->removeProcessor(processor);
             }
-            wm->setVisibile(true);
             portInspector->setActive(false);
         }
     } catch (Exception& exception) {
@@ -654,7 +651,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(outport); });
+                    [this, outport]() { contextMenuShowInspector(outport); });
             break;
         }
 
@@ -666,13 +663,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(inport); });
+                    [this, inport]() { contextMenuShowInspector(inport); });
             break;
         }
 
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             QAction* renameAction = menu.addAction(tr("Rename Processor"));
-            connect(renameAction, &QAction::triggered, [&]() {
+            connect(renameAction, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
                 processor->editProcessorName();
@@ -682,7 +679,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 #if IVW_PROFILING
             QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset Time Measurements"));
             connect(resetTimeMeasurementsAction, &QAction::triggered,
-                    [&]() { processor->resetTimeMeasurements(); });
+                    [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
             if (processor->getProcessor()->hasProcessorWidget()) {
@@ -691,7 +688,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
                     showAction->setChecked(processorWidget->isVisible());
                 }
-                connect(showAction, &QAction::triggered, [&]() {
+                connect(showAction, &QAction::triggered, [processor]() {
                     if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
                         processor->getProcessor()->getProcessorWidget()->hide();
                     } else {
@@ -710,13 +707,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showPortInsector->setChecked(true);
             }
             connect(showPortInsector, &QAction::triggered,
-                    [&]() { contextMenuShowInspector(connection->getOutportGraphicsItem()); });
+                    [this, connection]() { contextMenuShowInspector(connection->getOutportGraphicsItem()); });
             break;
         }
 
         if (auto link = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             QAction* editLink = menu.addAction(tr("Edit Links"));
-            connect(editLink, &QAction::triggered, [&]() {
+            connect(editLink, &QAction::triggered, [this, link]() {
                 showLinkDialog(link->getSrcProcessorGraphicsItem()->getProcessor(),
                                link->getDestProcessorGraphicsItem()->getProcessor());
             });
@@ -729,7 +726,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                   [](ProcessorMap::value_type item) { return item.second->isSelected(); });
     if (selectedProcessors.size() == 2) {
         QAction* editLink = menu.addAction(tr("Make Link"));
-        connect(editLink, &QAction::triggered, [&]() {
+        connect(editLink, &QAction::triggered, [this, selectedProcessors]() {
             showLinkDialog(selectedProcessors[0].second->getProcessor(),
                            selectedProcessors[1].second->getProcessor());
         });

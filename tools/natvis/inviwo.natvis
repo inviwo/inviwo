@@ -3,11 +3,14 @@
 <!-- Inviwo visualizers for Visual Studio 2015 -->
 <!-- Put them into My Documents/Visual Studio 2015/Visualizers/ -->
 
+<!-- Write .natvisreload in a watch window to reload. -->
+
+
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>
+  <!--<UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>-->
 
   <Type Name="inviwo::DataFormat&lt;*&gt;">
-    <DisplayString>{{DataFormat={formatStr_}, n={components_}}}}</DisplayString>
+    <DisplayString>DataFormat={formatStr_}, n={components_}</DisplayString>
     <Expand>
       <Item Name="Id">formatId_</Item>
       <Item Name="Components">components_</Item>
@@ -19,21 +22,69 @@
   </Type>
 
   <Type Name="inviwo::DataRepresentation">
-    <DisplayString>{{Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>DataRepresentation Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
       <Item Name="Owner">*owner_</Item>
+      <Item Name="Valid">isValid_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
     </Expand>
   </Type>
 
+  <Type Name="inviwo::Buffer&lt;*&gt;">
+    <DisplayString>Buffer Size={size_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Size">size_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Representations">representations_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::BufferRepresentation">
+    <DisplayString>BufferRepresentation Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Valid">isValid_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::BufferRAM">
+    <DisplayString>BufferRAM Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Valid">isValid_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="inviwo::BufferRAMPrecision&lt;*&gt;">
+    <DisplayString>BufferRAMPrecision Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Valid">isValid_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Data">data_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::BufferGL">
+    <DisplayString>BufferGL Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Valid">isValid_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="inviwo::VolumeRepresentation">
-    <DisplayString>{{VolumeRepresentation, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>{VolumeRepresentation, Format={dataFormatBase_-&gt;formatStr_}}</DisplayString>
     <Expand>
       <Item Name="Owner">*owner_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
     </Expand>
   </Type>
-
+  
   <Type Name="inviwo::VolumeDisk">
     <DisplayString>{{VolumeDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
     <Expand>
@@ -137,7 +188,7 @@
     </Expand>
   </Type>
 
-
+  <!--
   <Type Name="inviwo::LayerRAMPrecision&lt;*&gt;">
     <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
   </Type>
@@ -161,6 +212,7 @@
  
     </Expand>
   </Type>
+
 
 
   <Type Name="QImage">
@@ -191,7 +243,7 @@
       <Item Name="[stride]">((Qt5Guid.dll!QImageData*)d)->bytes_per_line</Item>
     </Expand>
   </Type>
-
+-->
 
   <Type Name="inviwo::DataInport&lt;*,*,*&gt;">
     <DisplayString>{identifier_}</DisplayString>
@@ -212,4 +264,111 @@
     </Expand>
   </Type>
   
+  <Type Name="inviwo::PropertyOwner" Inheritable="false">
+    <DisplayString>PropertyOwner</DisplayString>
+    <Expand>
+      <Item Name="Properties">properties_</Item>
+      <Item Name="Owned Properties">ownedProperties_</Item>
+      <Item Name="Event Properties">eventProperties_</Item>
+      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::Property">
+    <DisplayString>{identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::TemplateProperty&lt;*&gt;">
+    <DisplayString>{identifier_} = {value_.value}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">value_.value</Item>
+      <Item Name="Deafult">value_.defaultValue</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::OrdinalProperty&lt;*&gt;">
+    <DisplayString>{identifier_} = {value_.value}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">value_.value</Item>
+      <Item Name="Deafult">value_.defaultValue</Item>
+      <Item Name="Min">minValue_.value</Item>
+      <Item Name="Max">maxValue_.value</Item>
+      <Item Name="Inc">increment_.value</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::CompositeProperty">
+    <DisplayString>{identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Collapsed">collapsed_</Item>
+      <Item Name="Properties">properties_</Item>
+      <Item Name="Owned Properties">ownedProperties_</Item>
+      <Item Name="Event Properties">eventProperties_</Item>
+      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Sub Invalidation level">subPropertyInvalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  
+  <Type Name="inviwo::Processor" Inheritable="false">
+    <DisplayString>{identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Inports">inports_</Item>
+      <Item Name="Outports">outports_</Item>
+      <Item Name="Properties">properties_</Item>
+      <Item Name="Owned Properties">ownedProperties_</Item>
+      <Item Name="Event Properties">eventProperties_</Item>
+      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Processor Widget">processorWidget_</Item>
+      <Item Name="Interaction Handlers">interactionHandlers_</Item>
+      <Item Name="Port Dependency Sets">portDependencySets_</Item>
+      <Item Name="Processor Network">network_</Item>
+    </Expand>
+  </Type>
+
 </AutoVisualizer>

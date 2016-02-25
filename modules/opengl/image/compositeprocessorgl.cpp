@@ -57,6 +57,6 @@ void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageT
     }
 }
 
-void CompositeProcessorGL::initializeResources() { shader_.rebuild(); }
+void CompositeProcessorGL::initializeResources() { shader_.build(); }
 
 }  // namespace

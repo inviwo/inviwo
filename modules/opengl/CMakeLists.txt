@@ -33,6 +33,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h
@@ -77,6 +79,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.cpp

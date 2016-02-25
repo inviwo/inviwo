@@ -78,7 +78,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
 
     if (fout.good()) {
         fout.write((char*)vr->getData(),
-                   vr->getDimensions().x*vr->getDimensions().x*vr->getDimensions().x
+                   vr->getDimensions().x*vr->getDimensions().y*vr->getDimensions().z
                    * vr->getDataFormat()->getSize());
     } else
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);

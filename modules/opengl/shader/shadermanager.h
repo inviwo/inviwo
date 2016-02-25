@@ -31,29 +31,34 @@
 #define IVW_SHADERMANAGER_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/openglcapabilities.h>
+
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
-#include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/singleton.h>
-#include <inviwo/core/properties/optionproperty.h>
+
+#include <unordered_map>
 
 namespace inviwo {
 
 class OpenGLSettings;
+class ShaderResource;
+class OpenGLCapabilities;
 
-class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager>, public FileObserver {
+template<typename T>
+class TemplateOptionProperty;
+
+class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager> {
 
 public:
     ShaderManager();
+    ShaderManager(const ShaderManager&) = delete;
+    ShaderManager& operator=(const ShaderManager&) = delete;
+    
+    virtual ~ShaderManager() = default;
 
     void registerShader(Shader* shader);
     void unregisterShader(Shader* shader);
-
-    virtual void fileChanged(std::string shaderFilename);
 
     std::string getGlobalGLSLHeader();
     std::string getGlobalGLSLVertexDefines();
@@ -62,17 +67,18 @@ public:
 
     void bindCommonAttributes(unsigned int);
 
-    std::vector<std::string> getShaderSearchPaths();
-
     void addShaderSearchPath(std::string);
-    void addShaderResource(std::string, std::string);
-
-    std::string getShaderResource(std::string);
-    const std::vector<Shader*> getShaders() const;
+    const std::vector<std::string>& getShaderSearchPaths();
+    
+    void addShaderResource(std::string key, std::string resource);
+    void addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource);
+    std::shared_ptr<ShaderResource> getShaderResource(std::string key);
+    
+    const std::vector<Shader*>& getShaders() const;
     void rebuildAllShaders();
 
     void setOpenGLSettings(OpenGLSettings* settings);
-    ShaderObject::Error getShaderObjectError() const;
+    Shader::OnError getOnShaderError() const;
 
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();
@@ -82,11 +88,12 @@ private:
     std::vector<Shader*> shaders_;
     OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::string> shaderSearchPaths_;
-    std::map<std::string, std::string> shaderResources_;
+
+    std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
+    std::unordered_map<std::string, std::weak_ptr<ShaderResource>> shaderResources_;
     
     TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
-    TemplateOptionProperty<ShaderObject::Error>* shaderObjectErrors_; // non-owning reference
-
+    TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_; // non-owning reference
 };
 
 } // namespace

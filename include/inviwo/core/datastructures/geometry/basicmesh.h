@@ -92,6 +92,7 @@ public:
                                             const size_t& segments = 16);
 
     static std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius);
+    static std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4 &color);
 
     static std::shared_ptr<BasicMesh> square(const vec3& pos, const vec3& normal,
                                              const glm::vec2& extent,

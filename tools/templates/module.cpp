@@ -38,10 +38,10 @@ namespace inviwo {
     // Register objects that can be shared with the rest of inviwo here:
     
     // Processors
-    // registerProcessor<<name>Processor>());
+    // registerProcessor<<name>Processor>();
     
     // Properties
-    // registerProperty<<name>Property>());
+    // registerProperty<<name>Property>();
     
     // Readers and writes
     // registerDataReader(util::make_unique<<name>Reader>());
@@ -51,17 +51,17 @@ namespace inviwo {
     // registerRepresentationConverter(util::make_unique<<name>Disk2RAMConverter>());
 
     // Ports
-    // registerPort<<name>Outport>("<name>Outport"));
-    // registerPort<<name>Inport>("<name>Inport"));
+    // registerPort<<name>Outport>("<name>Outport");
+    // registerPort<<name>Inport>("<name>Inport");
 
     // PropertyWidgets
     // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");
     
     // Dialogs
-    // registerDialog<<name>Dialog>(<name>Outport));
+    // registerDialog<<name>Dialog>(<name>Outport);
     
     // Other varius things
-    // registerCapabilities(util::make_unique<<name>Capabilities>()));
+    // registerCapabilities(util::make_unique<<name>Capabilities>());
     // registerSettings(util::make_unique<<name>Settings>());
     // registerMetaData(util::make_unique<<name>MetaData>());   
     // registerPortInspector("<name>Outport", "path/workspace.inv");

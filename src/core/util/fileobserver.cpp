@@ -33,14 +33,6 @@
 
 namespace inviwo {
 
-FileObserver::FileObserver() {
-    //  observedFiles_ = new std::vector<std::pair<std::string, int> >();
-}
-
-FileObserver::~FileObserver() {
-    //    delete observedFiles_;
-}
-
 void FileObserver::startFileObservation(std::string fileName) {
     if (isObserved(fileName))
         increaseNumObservers(fileName);

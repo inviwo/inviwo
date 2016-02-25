@@ -33,6 +33,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
 #include <unordered_map>
@@ -41,57 +42,76 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Shader {
 public:
+    enum class OnError { Warn, Throw };
+    enum class Build { Yes, No };
+
     using ShaderObjectPtr = std::unique_ptr<ShaderObject, std::function<void(ShaderObject *)>>;
-    using ShaderObjectMap = std::unordered_map<GLenum, ShaderObjectPtr>;
+    using ShaderObjectMap = std::unordered_map<ShaderType, ShaderObjectPtr>;
+
     enum class UniformWarning { Ignore, Warn, Throw };
 
-    Shader(std::string fragmentFilename, bool linkShader = true);
-    Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader = true);
+    Shader(const std::vector<std::pair<ShaderType, std::string>> &items,
+           Build buildShader = Build::Yes);
+
+    Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
+           Build buildShader = Build::Yes);
+
+    Shader(std::string fragmentFilename, bool buildShader = true);
+    Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader = true);
     Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
-           bool linkShader = true);
+           bool buildShader = true);
     
     // We need these to avoid strange implicit conversions...
-    Shader(const char *fragmentFilename, bool linkShader = true);
-    Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader = true);
+    Shader(const char *fragmentFilename, bool buildShader = true);
+    Shader(const char *vertexFilename, const char *fragmentFilename, bool buildShader = true);
     Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
-           bool linkShader = true);
+           bool buildShader = true);
+
+    Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader = true);
 
     
-    Shader(const Shader &rhs, bool linkShader = true);
+    Shader(const Shader &rhs);
     Shader &operator=(const Shader &that);
-
-    // Takes ownership of shader objects in vector
-    Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader = true);
 
     virtual ~Shader();
 
-    Shader *clone(bool linkShader = true);
-
     void link(bool notifyRebuild = false);
     void build();
-    void rebuild();
     bool isReady() const; // returns whether the shader has been built and linked successfully
 
     unsigned int getID() const { return id_; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
-    ShaderObject *getVertexShaderObject() const;
-    ShaderObject *getGeometryShaderObject() const;
-    ShaderObject *getFragmentShaderObject() const;
+    ShaderObject* getShaderObject(ShaderType type) const;
+    ShaderObject* getVertexShaderObject() const;
+    ShaderObject* getGeometryShaderObject() const;
+    ShaderObject* getFragmentShaderObject() const;
 
     void activate();
     void deactivate();
 
     void setUniform(const std::string &name, const GLint &value) const;
     void setUniform(const std::string &name, const GLint *value, int count) const;
+    
+    void setUniform(const std::string &name, const GLuint &value) const;
+    void setUniform(const std::string &name, const GLuint *value, int count) const;
+
     void setUniform(const std::string &name, const GLfloat &value) const;
     void setUniform(const std::string &name, const GLfloat *value, int count) const;
-    void setUniform(const std::string &name, const vec2 &value) const;
-    void setUniform(const std::string &name, const vec3 &value) const;
-    void setUniform(const std::string &name, const vec4 &value) const;
+
     void setUniform(const std::string &name, const ivec2 &value) const;
     void setUniform(const std::string &name, const ivec3 &value) const;
     void setUniform(const std::string &name, const ivec4 &value) const;
+
+    void setUniform(const std::string &name, const uvec2 &value) const;
+    void setUniform(const std::string &name, const uvec3 &value) const;
+    void setUniform(const std::string &name, const uvec4 &value) const;
+
+    void setUniform(const std::string &name, const vec2 &value) const;
+    void setUniform(const std::string &name, const vec3 &value) const;
+    void setUniform(const std::string &name, const vec4 &value) const;
+
+    void setUniform(const std::string &name, const mat2 &value) const;
     void setUniform(const std::string &name, const mat3 &value) const;
     void setUniform(const std::string &name, const mat4 &value) const;
 
@@ -102,9 +122,13 @@ public:
     void removeOnReload(const BaseCallBack* callback);
 
 private:
-    void registerShader();
+    void handleError(OpenGLException& e);
+    void rebildShader(ShaderObject* obj);
 
-    void createAndAddShader(GLenum, std::string, ShaderObject::Compile compile);
+    void createAndAddShader(ShaderType type, std::string fileName);
+    void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
+    void createAndAddShader(std::unique_ptr<ShaderObject>& object);
+    void createAndAddHelper(ShaderObject* object);
 
     void attachShaderObject(ShaderObject *shaderObject);
     void detachShaderObject(ShaderObject *shaderObject);
@@ -124,6 +148,8 @@ private:
 
     // Callback on reload.
     CallBackList onReloadCallback_;
+
+    std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
 };
 
 }  // namespace

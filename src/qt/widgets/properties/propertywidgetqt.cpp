@@ -219,13 +219,13 @@ void PropertyWidgetQt::generateContextMenu() {
         usageModeActionGroup_ = new QActionGroup(this);
         usageModeActionGroup_->addAction(developerUsageModeAction_);
         usageModeActionGroup_->addAction(applicationUsageModeAction_);
-        contextMenu_->addMenu(usageModeItem_);
 
         copyAction_ = new QAction("Copy", this);
         pasteAction_ = new QAction("Paste", this);
         copyPathAction_ = new QAction("Copy path", this);
 
         if (property_) {
+            contextMenu_->addMenu(usageModeItem_);
             contextMenu_->addAction(copyAction_);
             contextMenu_->addAction(pasteAction_);
             contextMenu_->addAction(copyPathAction_);

@@ -105,8 +105,11 @@ private:
     bool ready();
     bool ready_ = false;
 
+    Shader* textureShader();
+    Shader* noiseShader();
+
     LayerType layerType_;
-    std::unique_ptr<Shader> shader_;
+    std::unique_ptr<Shader> textureShader_;
     std::unique_ptr<Shader> noiseShader_;
 
 

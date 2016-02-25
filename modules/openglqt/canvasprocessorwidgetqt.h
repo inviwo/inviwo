@@ -77,7 +77,8 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
 private:
-    CanvasQt* canvas_;
+    using canvas_ptr = std::unique_ptr<CanvasQt, std::function<void(CanvasQt*)>>;
+    canvas_ptr canvas_;
 };
 
 }  // namespace

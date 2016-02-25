@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 namespace inviwo {
 
@@ -65,6 +66,14 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true,
                                 InvalidationLevel::Valid)
+
+
+
+    , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
+        new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
+            MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
+        new Action(this, &CameraProperty::changeFocusPoint))
+
     , camera_()
     , inport_(inport)
     , data_(nullptr)
@@ -90,6 +99,7 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
+    addProperty(mouseChangeFocusPoint_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -109,10 +119,13 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
+    , mouseChangeFocusPoint_(rhs.mouseChangeFocusPoint_)
     , camera_()
     , inport_(rhs.inport_)
     , data_(nullptr)
-    , prevDataToWorldMatrix_(0) {
+    , prevDataToWorldMatrix_(0) 
+
+{
     // Make sure that the Camera) is
     // in sync with the property values.
     addProperty(cameraType_);
@@ -132,6 +145,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
+    addProperty(mouseChangeFocusPoint_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -283,6 +297,9 @@ void CameraProperty::invokeEvent(Event* event) {
             setAspectRatio(static_cast<float>(width / height));
         }
     }
+    else {
+        PropertyOwner::invokeEvent(event);
+    }
 }
 
 void CameraProperty::setInport(Inport* inport) {
@@ -379,6 +396,28 @@ const mat4& CameraProperty::inverseViewMatrix() const { return camera_->inverseV
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->inverseProjectionMatrix();
+}
+
+void CameraProperty::changeFocusPoint(Event* event) {
+    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+        vec2 p = mouseEvent->posNormalized();
+        float d = mouseEvent->depth();
+        if (std::abs(d - 1) < glm::epsilon<float>()) {
+            return;
+        }
+        p.y = 1 - p.y;
+        p = p * 2.0f - 1.0f;
+        vec4 viewPos(p.x,p.y, d , 1.0f);
+
+        auto point = (inverseViewMatrix() * inverseProjectionMatrix()) * viewPos;
+        auto newLookTo = point.xyz() / point.w;
+
+        auto newLookFrom = lookFrom_.get() + (newLookTo - lookTo_.get());
+
+        setLookTo(newLookTo);
+        setLookFrom(newLookFrom);
+    }
+    event->markAsUsed();
 }
 
 }  // namespace

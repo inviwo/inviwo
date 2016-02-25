@@ -145,9 +145,9 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attach
 }
 
 void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attachmentID,
-                                           int layer) {
+                                           int layer, int level) {
     performAttachTexture(attachmentID);
-    glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0, layer);
+    glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), level, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int layer) {

@@ -47,6 +47,8 @@
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QBuffer>
+#include <QFileInfo>
+#include <QImage>
 
 #include <QUrlQuery>
 #include <QImageReader>
@@ -108,14 +110,17 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
 
 void HelpWidget::setupFinished() {
     if (!helpEngine_) return;
-    helpBrowser_->setSource(QUrl("qthelp://org.inviwo/doc/docpage-org_8inviwo_8Background.html"));
+    showDocForClassName(current_);
 }
 
 void HelpWidget::showDocForClassName(std::string classIdentifier) {
+    current_ = classIdentifier;
+    
     if (!helpEngine_) return;
-    std::string className = joinString(splitString(classIdentifier, '.'), "_8");
+    
+    //replaceInString(classIdentifier, ".", "_8");
 
-    QUrl url(QString::fromStdString("qthelp://org.inviwo/doc/docpage-" + className + ".html"));
+    QUrl url(QString::fromStdString("qthelp://org.inviwo/doc/docpage-" + classIdentifier + ".html"));
     QUrl foundUrl = helpEngine_->findFile(url);
 
     if (foundUrl.isValid()) {
@@ -123,6 +128,11 @@ void HelpWidget::showDocForClassName(std::string classIdentifier) {
     } else {
         helpBrowser_->setText(QString("No documentation available"));
     }
+}
+
+void HelpWidget::resizeEvent(QResizeEvent * event) {
+    helpBrowser_->reload();
+    InviwoDockWidget::resizeEvent(event);
 }
 
 HelpWidget::HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
@@ -143,8 +153,8 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     if (query.hasQueryItem("classIdentifier")) {
         QString cid = query.queryItemValue("classIdentifier");
 
-        auto imageCache = helpwidget_->mainwindow_->getInviwoApplication()->getPath(
-            PathType::Settings);
+        auto imageCache =
+            helpwidget_->mainwindow_->getInviwoApplication()->getPath(PathType::Settings);
         imageCache += "/image-cache";
         filesystem::createDirectoryRecursively(imageCache);
 
@@ -172,6 +182,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {
         std::string docbase = helpwidget_->mainwindow_->getInviwoApplication()->getPath(
             PathType::Data, "/../tools/doxygen/doc-qt/html");
+
         QString file = name.toString();
         file.replace("qthelp://org.inviwo/doc", QString::fromStdString(docbase));
         QFile newfile(file);
@@ -187,8 +198,15 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     switch (type) {
         case QTextDocument::HtmlResource:
             return data;
-        case QTextDocument::ImageResource:
-            return data;
+        case QTextDocument::ImageResource: {
+            auto image = QImage::fromData(data, QFileInfo(url.path()).suffix().toLatin1().data());
+            QImage resized{image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
+
+            QByteArray smalldata;
+            QBuffer buffer(&smalldata);
+            resized.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
+            return smalldata;
+        }
         case QTextDocument::StyleSheetResource:
             return data;
     }

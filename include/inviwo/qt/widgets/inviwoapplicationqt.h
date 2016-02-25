@@ -75,6 +75,7 @@ public:
     virtual void registerModules(RegisterModuleFunc) override;
     
     virtual void registerFileObserver(FileObserver* fileObserver) override;
+    virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
     virtual void startFileObservation(std::string fileName) override;
     virtual void stopFileObservation(std::string fileName) override;
     virtual void closeInviwoApplication() override;

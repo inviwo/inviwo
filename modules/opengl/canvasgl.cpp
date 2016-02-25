@@ -47,7 +47,7 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , imageGL_(nullptr)
     , image_()
     , layerType_(LayerType::Color)
-    , shader_(nullptr)
+    , textureShader_(nullptr)
     , noiseShader_(nullptr)
     , channels_(0)
     , previousRenderedLayerIdx_(0) {}
@@ -69,12 +69,12 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
     pickingContainer_.setPickingSource(image);
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
+        
         if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
             checkChannels(imageGL_->getLayerGL(layerType_, idx)->getDataFormat()->getComponents());
         } else {
             checkChannels(image_->getDataFormat()->getComponents());
         }
-        renderLayer(idx);
 
         // Faster async download of textures sampled on interaction
         if (imageGL_->getDepthLayerGL()) imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
@@ -84,8 +84,8 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
 
     } else {
         imageGL_ = nullptr;
-        renderNoise();
     }
+    update();
 }
 
 void CanvasGL::resize(uvec2 size) {
@@ -113,68 +113,65 @@ void CanvasGL::renderLayer(size_t idx) {
 bool CanvasGL::ready() {
     if (ready_) {
         return true;
+    } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+        ready_ = true;
+        LGL_ERROR;
+
+        defaultGLState();
+        square_ = utilgl::planeRect();
+        squareGL_ = square_->getRepresentation<MeshGL>();
+        textureShader();
+        noiseShader();
+
+        LGL_ERROR;
+        return true;
     } else {
-        // Will only happen once 
-
-        // Activate OpenGL context for this canvas
-        // in order to set states and 
-        // since VAO in MeshGL cannot be shared
-        activate();
-        switch (glCheckFramebufferStatus(GL_FRAMEBUFFER)) {
-            case GL_FRAMEBUFFER_COMPLETE: {
-                ready_ = true;
-                LGL_ERROR;
-
-                defaultGLState();
-                shader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
-                noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
-                
-                square_ = utilgl::planeRect();
-                squareGL_ = square_->getRepresentation<MeshGL>();
-
-                LGL_ERROR;
-                return true;
-            }
-            default:
-                return false;
-        }
+        return false;
     }
+}
+
+Shader* CanvasGL::textureShader() {
+    if (!textureShader_) {
+        textureShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
+    }
+    return textureShader_.get();
+}
+Shader* CanvasGL::noiseShader() {
+    if (!noiseShader_) {
+        noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
+    }
+    return noiseShader_.get();
 }
 
 void CanvasGL::renderNoise() {
     if (!ready()) return;
-
     LGL_ERROR;
-    activate();
+    
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
     LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
-
     drawSquare();
-
     noiseShader_->deactivate();
     glSwapBuffers();
-    activateDefaultRenderContext();
+ 
     LGL_ERROR;
 }
 
 void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
-
     LGL_ERROR;
-    activate();
+
     glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    shader_->activate();
-    shader_->setUniform("tex_", unitNumber);
+    textureShader_->activate();
+    textureShader_->setUniform("tex_", unitNumber);
     drawSquare();
-    shader_->deactivate();
+    textureShader_->deactivate();
     glDisable(GL_BLEND);
     glSwapBuffers();
-    activateDefaultRenderContext();
     LGL_ERROR;
 }
 
@@ -187,18 +184,17 @@ void CanvasGL::drawSquare() {
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {
-    if (!ready()) return;
     if (channels_ == channels) return;
 
     if (channels == 1) {
-        shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+        textureShader()->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
     } else {
-        shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
+        textureShader()->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
     }
     
     channels_ = channels;
-    shader_->getFragmentShaderObject()->build();
-    shader_->link();
+    textureShader_->getFragmentShaderObject()->build();
+    textureShader_->link();
 }
 
 const LayerRAM* CanvasGL::getDepthLayerRAM() const {

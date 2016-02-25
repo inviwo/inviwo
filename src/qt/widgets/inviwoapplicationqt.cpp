@@ -76,6 +76,10 @@ void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
     fileObservers_.push_back(fileObserver);
 }
 
+void InviwoApplicationQt::unRegisterFileObserver(FileObserver* fileObserver) {
+    util::erase_remove(fileObservers_, fileObserver);
+}
+
 void InviwoApplicationQt::startFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
 
@@ -94,12 +98,12 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
 
-        for (auto& elem : fileObservers_) {
-            std::vector<std::string> observedFiles = elem->getFiles();
-
-            if (std::find(observedFiles.begin(), observedFiles.end(), fileNameStd) !=
-                observedFiles.end())
-                elem->fileChanged(fileNameStd);
+        // don't use iterators here, they might be invalidated.
+        size_t size = fileObservers_.size();
+        for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
+            if (fileObservers_[i]->isObserved(fileNameStd)) {
+                fileObservers_[i]->fileChanged(fileNameStd);
+            }
         }
 
         if (!fileWatcher_->files().contains(fileName)) {

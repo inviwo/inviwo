@@ -24,51 +24,51 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SHADEROBJECT_H
 #define IVW_SHADEROBJECT_H
 
-#include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API ShaderObject {
-
 public:
-    enum class Compile { Yes, No };
-    enum class Error { Warn, Throw };
+    using Callback = std::function<void(ShaderObject*)>;
 
-    ShaderObject(GLenum shaderType, std::string fileName, Compile compile = Compile::Yes, Error error = Error::Warn);
-    ShaderObject(GLenum shaderType, std::string fileName, bool compileShader=true);
-    ShaderObject(const ShaderObject& rhs, bool compileShader=true);
-    ShaderObject& operator=(const ShaderObject& that);
+    ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource);
+    ShaderObject(std::shared_ptr<const ShaderResource> resource);
+    ShaderObject(ShaderType shaderType, std::string fileName);
+    ShaderObject(std::string fileName);
+    ShaderObject(GLenum shaderType, std::string fileName);
     
+    ShaderObject(const ShaderObject& rhs);
+    ShaderObject& operator=(const ShaderObject& that);
+
     ~ShaderObject();
 
-    ShaderObject* clone(bool compileShader=true);
+    GLuint getID() const;
+    std::string getFileName() const;
+    std::shared_ptr<const ShaderResource> getResource() const;
+    const std::vector<std::shared_ptr<const ShaderResource>>& getResources() const;
+    ShaderType getShaderType() const;
 
-    GLuint getID() const { return id_; }
-    std::string getFileName() const { return fileName_; }
-    std::string getAbsoluteFileName() const { return absoluteFileName_; }
-    const std::vector<std::string>& getIncludeFileNames() const { return includeFileNames_; }
-    GLenum getShaderType() const { return shaderType_; }
-    void setError(Error error);
-    Error getError() const;
-
-    void loadSource(std::string fileName);
     void preprocess();
     void upload();
     void compile();
-    std::string getShaderInfoLog();
-
     void build();
-    void rebuild();
+    bool isReady() const;
 
-    void addShaderDefine(std::string name, std::string value="");
+    std::string getShaderInfoLog() const;
+
+    void addShaderDefine(std::string name, std::string value = "");
     void removeShaderDefine(std::string name);
     bool hasShaderDefine(const std::string& name) const;
     void clearShaderDefines();
@@ -78,59 +78,67 @@ public:
     bool hasShaderExtension(const std::string& extName) const;
     void clearShaderExtensions();
 
-    /** 
+    /**
      * \brief adds an additional output specifier to the fragment shader
-     *  The given name will be added as 
+     *  The given name will be added as
      *  \code{.cpp}
      *     out vec4 <name>;
      *  \encode
-     *  If location index is positive, the output will be 
+     *  If location index is positive, the output will be
      *  \code{.cpp}
      *     layout(location = <location>) out vec4 <name>;
      *  \encode
      *
-     *  Location indices can be reused several times unless more than 
+     *  Location indices can be reused several times unless more than
      *  one output specifier is used.
-     * 
+     *
      * @param name      identifier of the output specifier
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      */
-    void addOutDeclaration(std::string name, int location=-1);
-
+    void addOutDeclaration(std::string name, int location = -1);
     void clearOutDeclarations();
 
     std::string print(bool showSource = false, bool preprocess = true) const;
 
-private:
-    void initialize(Compile compile);
+    template <typename T>
+    std::shared_ptr<Callback> onChange(T&& callback);
 
-    std::string embeddDefines(std::string source);
-    std::string embeddOutDeclarations(std::string source);
-    std::string embeddIncludes(std::string source, std::string fileName);
+private:
+    static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
+    std::string getDefines();
+    std::string getOutDeclarations();
+    std::string getIncludes(std::shared_ptr<const ShaderResource> resource);
 
     int getLogLineNumber(const std::string& compileLogLine);
     std::string reformatShaderInfoLog(const std::string compileLog);
 
-    GLenum shaderType_;
-    std::string fileName_;
-    std::string absoluteFileName_;
-    std::vector<std::string> includeFileNames_;
-
+    // state variables
+    ShaderType shaderType_;
     GLuint id_;
-    std::string source_;
-    std::string sourceProcessed_;
-
+    std::shared_ptr<const ShaderResource> resource_;
     std::vector<std::pair<std::string, int> > outDeclarations_;
-    typedef std::map<std::string, std::string> ShaderDefineContainer;
-    ShaderDefineContainer shaderDefines_;
 
-    typedef std::map<std::string, bool> ShaderExtensionContainer; // extension name, enable flag
-    ShaderExtensionContainer shaderExtensions_;
+    using ShaderDefines = std::map<std::string, std::string>;
+    ShaderDefines shaderDefines_;
 
+    using ShaderExtensions = std::map<std::string, bool>;  // extension name, enable flag
+    ShaderExtensions shaderExtensions_;
+
+    // derived variables
+    std::string sourceProcessed_;
+    std::vector<std::shared_ptr<const ShaderResource>> includeResources_;
     std::vector<std::pair<std::string, unsigned int> > lineNumberResolver_;
-    Error error_;
+
+    Dispatcher<void(ShaderObject*)> callbacks_;
+    std::vector<std::shared_ptr<ShaderResource::Callback>> resourceCallbacks_;
 };
 
-} // namespace
+template <typename T>
+std::shared_ptr<ShaderObject::Callback>
+ShaderObject::onChange(T&& callback) {
+   return callbacks_.add(std::forward<T>(callback));
+}
 
-#endif // IVW_SHADEROBJECT_H
+}  // namespace
+
+#endif  // IVW_SHADEROBJECT_H

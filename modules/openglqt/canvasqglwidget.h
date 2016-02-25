@@ -64,7 +64,6 @@ public:
     virtual void activate() override;
     virtual void glSwapBuffers() override;
     virtual void update() override;
-    void repaint();
 
     virtual void resize(uvec2 size) override;
 
@@ -77,7 +76,6 @@ protected:
 
 private:
     static QGLFormat sharedFormat_;
-    bool swapBuffersAllowed_;
 };
 
 
