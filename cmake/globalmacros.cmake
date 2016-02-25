@@ -179,7 +179,7 @@ function(generate_module_registration_file module_classes modules_class_paths)
                 "        \"${${mod_dep}_description}\",\n" 
                 "        ${module_depdens_vector}\n" 
                 "        )\n"
-                "    ):\n"
+                "    )__SEMICOLON__\n"
                 "    #endif\n"
                 "\n"
             )
@@ -192,8 +192,15 @@ function(generate_module_registration_file module_classes modules_class_paths)
 
     join(";" "" headers ${headers})
     join(";" "" functions ${functions})
-    string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")   
-    string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+
+    # undo encoding of linebreaks and semicolon in the module description read from file
+    # linebreaks are replaced with '\n"'
+    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" functions "${functions}")
+    string(REPLACE "__SEMICOLON__" ";" functions "${functions}")
+
+    string(REPLACE ":" ";" MODULE_HEADERS "${headers}")   
+    string(REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+
 
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
@@ -352,7 +359,8 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
             # In that case set to INVIWO<NAME>MODULE_description
             if(EXISTS "${module_root_path}/${dir}/readme.md")
                 file(READ "${module_root_path}/${dir}/readme.md" description)
-                join("\n" "\\\\\\\\n\"\n        \"" cdescription ${description})
+                # encode linebreaks, i.e. '\n', and semicolon in description for proper handling in CMAKE
+                encodeLineBreaks(cdescription ${description})
                 set("${mod_dep}_description" ${cdescription} CACHE INTERNAL "Module description")
             endif()
 

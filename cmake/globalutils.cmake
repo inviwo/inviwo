@@ -52,11 +52,38 @@ endfunction()
 
 #--------------------------------------------------------------------
 # join(sep glue output)
-# Joins list
+# Joins list by replacing the separator with glue
 function(join sep glue output)
     string (REGEX REPLACE "([^\\]|^)${sep}" "\\1${glue}" _TMP_STR "${ARGN}")
+    # duplicate all backslashes
     string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}")
     set(${output} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# encodeLineBreaks(output strings)
+# encodes the contents of the string given as last argument and saves the 
+# result in output.
+# Linebreaks ('\n') and semicolon (';') are replaced for better handling 
+# within CMAKE with __LINEBREAK__ and __SEMICOLON__, respectively.
+function(encodeLineBreaks output)
+    # replace linebreaks
+    string(REPLACE "\n" "__LINEBREAK__" _tmp_str "${ARGN}")
+    # replace semicolon, as it is interpreted as a list separator by CMAKE
+    string(REPLACE ";" "__SEMICOLON__" _tmp_str "${_tmp_str}")
+    set(${output} "${_tmp_str}" PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# decodeLineBreaks(output strings)
+# reverse the encoding done by encodeLineBreaks(), i.e. __LINEBREAK__ and 
+# __SEMICOLON__ are reverted to '\n' and ';', respectively.
+function(decodeLineBreaks output)
+    # revert linebreaks
+    string(REPLACE "__LINEBREAK__" "\n" _tmp_str "${ARGN}")
+    # revert semicolon
+    string(REPLACE "__SEMICOLON__" ";" _tmp_str "${_tmp_str}")
+    set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------
