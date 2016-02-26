@@ -107,7 +107,7 @@ int PythonParameterParser::parse(PyObject* args, Types&... outputs) {
 
 template <typename T, typename... Types2>
 int PythonParameterParser::parseArray(int idx, PyObject* args, T& t, Types2&... outputs) {
-    auto params = static_cast<size_t>(PyTuple_Size(args));
+    auto params = PyTuple_Size(args);
     if (idx >= params) return 0;
     if (!parseValue(idx, PyTuple_GetItem(args, idx), t)) {
         return -1;
@@ -119,7 +119,7 @@ int PythonParameterParser::parseArray(int idx, PyObject* args, T& t, Types2&... 
 
 template <typename T>
 int PythonParameterParser::parseArray(int idx, PyObject* args, T& t) {
-    auto params = static_cast<size_t>(PyTuple_Size(args));
+    auto params = PyTuple_Size(args);
     if (idx >= params) return 0;
     return parseValue(idx, PyTuple_GetItem(args, idx), t);
 }

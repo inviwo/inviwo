@@ -95,7 +95,7 @@ PyObject* py_snapshotCanvas(PyObject* self, PyObject* args) {
     std::vector<CanvasProcessor*> canvases =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
 
-    if (index >= canvases.size()) {
+    if (index >= static_cast<int>(canvases.size())) {
         std::string msg = std::string("snapshotCanvas() index out of range with index: ") +
                           toString(index) + " ,canvases avilable: " + toString(canvases.size());
         PyErr_SetString(PyExc_TypeError, msg.c_str());

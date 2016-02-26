@@ -103,6 +103,9 @@ void PyInviwo::addModulePath(const std::string& path) {
 
 std::vector<PyModule*> PyInviwo::getAllPythonModules() { return registeredModules_; }
 
+#include <warn/push>
+#include <warn/ignore/missing-field-initializers>
+
 static PyMethodDef Inviwo_Internals_METHODS[] =
 {
     { "ivwPrint" , py_stdout , METH_VARARGS, "A simple example of an embedded function." },
@@ -164,6 +167,8 @@ static PyMethodDef Inviwo_METHODS[] =
 
     nullptr
 };
+
+#include <warn/pop>
 
 struct PyModuleDef Inviwo_Internals_Module_Def = {
     PyModuleDef_HEAD_INIT,

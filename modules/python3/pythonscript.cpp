@@ -67,9 +67,6 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     }
 
     bool PythonScript::run(bool outputInfo) {
-        PyObject* main_module = PyImport_AddModule("__main__");
-        PyObject* glb = PyModule_GetDict(main_module);
-
         if (isCompileNeeded_ && !compile(outputInfo)) {
             LogError("Failed to run script, script could not be compiled");
             return false;
@@ -77,11 +74,11 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
 
         ivwAssert(byteCode_ != nullptr, "No byte code");
 
-        if (outputInfo)
-            LogInfo("Running compiled script ...");
+        if (outputInfo) LogInfo("Running compiled script ...");
+       
         auto m = PyImport_AddModule("__main__");
-        if (m == NULL)
-            return false;
+        if (m == NULL) return false;
+       
         auto d = PyModule_GetDict(m);
 
         PyObject* copy = PyDict_Copy(d);

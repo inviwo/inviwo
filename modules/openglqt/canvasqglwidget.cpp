@@ -27,14 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/openglqt/canvasqglwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QOpenGLContext>
 #include <QResizeEvent>
 #include <warn/pop>
 

@@ -29,50 +29,52 @@
 
 #include <modules/python3/pythonincluder.h>
 
-#include "pythonqtmethods.h"
-#include <modules/python3/pythoninterface/pyvalueparser.h>
-#include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/python3/pythoninterface/pythonparameterparser.h>
+#include <modules/python3/pythoninterface/pyvalueparser.h>
+#include "pythonqtmethods.h"
 
-#include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
-#include <QInputDialog>
-#include <QDir>
 #include <modules/python3/pyinviwo.h>
+#include <QDir>
+#include <QInputDialog>
 
 namespace inviwo {
 
-    static PyMethodDef Inviwo_QT_METHODS[] =
-    {
-        { "getPathCurrentWorkspace" , py_getPathCurrentWorkspace , METH_VARARGS, "Return the path to the current loaded workspace." },
-        { "loadWorkspace" , py_loadWorkspace , METH_VARARGS, "Load a new workspace into the network." },
-        { "saveWorkspace" , py_saveWorkspace , METH_VARARGS, "Saves the current workspace." },
-        { "quitInviwo" , py_quitInviwo , METH_VARARGS, "Method to quit Inviwo." },
-        { "prompt" , py_prompt , METH_VARARGS, "Prompts the user for input." },
-        { "showTransferFunctionEditor" , py_showTransferFunctionEditor , METH_VARARGS, "Show the transfer function editor for given transfer function property." },
-        nullptr
-    };
+#include <warn/push>
+#include <warn/ignore/missing-field-initializers>
 
+static PyMethodDef Inviwo_QT_METHODS[] = {
+    {"getPathCurrentWorkspace", py_getPathCurrentWorkspace, METH_VARARGS,
+     "Return the path to the current loaded workspace."},
+    {"loadWorkspace", py_loadWorkspace, METH_VARARGS, "Load a new workspace into the network."},
+    {"saveWorkspace", py_saveWorkspace, METH_VARARGS, "Saves the current workspace."},
+    {"quitInviwo", py_quitInviwo, METH_VARARGS, "Method to quit Inviwo."},
+    {"prompt", py_prompt, METH_VARARGS, "Prompts the user for input."},
+    {"showTransferFunctionEditor", py_showTransferFunctionEditor, METH_VARARGS,
+     "Show the transfer function editor for given transfer function property."},
+    nullptr};
 
-    struct PyModuleDef Inviwo_QT_Module_Def = {
-        PyModuleDef_HEAD_INIT,
-        "inviwoqt",
-        nullptr,
-        -1,
-        Inviwo_QT_METHODS,
-        nullptr, nullptr, nullptr, nullptr
-    };
+#include <warn/pop>
 
+struct PyModuleDef Inviwo_QT_Module_Def = {PyModuleDef_HEAD_INIT,
+                                           "inviwoqt",
+                                           nullptr,
+                                           -1,
+                                           Inviwo_QT_METHODS,
+                                           nullptr,
+                                           nullptr,
+                                           nullptr,
+                                           nullptr};
 
-    void initPythonQT() {
-        PyInviwo::getPtr()->registerPyModule(&Inviwo_QT_Module_Def,"inviwoqt");
-    }
+void initPythonQT() { PyInviwo::getPtr()->registerPyModule(&Inviwo_QT_Module_Def, "inviwoqt"); }
 
 PyObject* py_getPathCurrentWorkspace(PyObject* self, PyObject* args) {
     static PythonParameterParser tester;
@@ -149,7 +151,7 @@ PyObject* py_prompt(PyObject* self, PyObject* args) {
     if (tester.parse(args, title, message, defaultValue) == -1) {
         return nullptr;
     }
-    
+
     bool ok;
     QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
                                          defaultValue.c_str(), &ok);

@@ -64,7 +64,6 @@ VolumeMerger::VolumeMerger()
 void VolumeMerger::onVolChange() {
 
     auto channels = 1;
-    auto dims = inport_.getData()->getDimensions();
 
     auto df = inport_.getData()->getDataFormat();
 
