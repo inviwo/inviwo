@@ -289,3 +289,11 @@ input:focus {
     top:-10px;
     right:-5px;
 }
+
+/* flot plots */
+div.flot-summary {
+    width: 500px;
+    height: 150px;
+}
+
+

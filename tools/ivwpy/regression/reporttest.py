@@ -55,6 +55,7 @@ class ReportImageTest(ReportTest):
 		imgs = report[self.key]
 		for img in imgs:
 			tol = safeget(report, "config", "image_test", "differenceTolerance", img["image"], failure = self.differenceTolerance)
+			tol = max(tol, self.differenceTolerance)
 
 			if img['test_mode'] != img['ref_mode']:
 				self.message[img['image']] = \

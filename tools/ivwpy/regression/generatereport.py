@@ -44,12 +44,14 @@ import yattag
 
 from .. util import *
 from . database import *
+from . statistics import *
 
 # Javascript packages
 # jQuary			 http://jquery.com
 # wheelzoom          http://www.jacklmoore.com/wheelzoom
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
 # List.js            http://www.listjs.com/
+# Flot 				 http://www.flotcharts.org
 
 # Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
 # System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self';style-src 'self' 'unsafe-inline';")
@@ -192,6 +194,10 @@ def testImages(testimg, refimg, diffimg, maskimg):
 			with tag('div', klass ="zoom"):
 				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
+
+
+def dataToJsArray(data):
+	return "[\n" + ",\n".join(["[" + str(x) + ", " + str(y) + "]" for x,y in data]) + "\n]"
 
 class TestRun:
 	"""Generate a html report for one Test Run"""
@@ -413,8 +419,13 @@ class HtmlReport:
 						"jquery.sparkline.min.js", 
 						"jquery.zoom.js", 
 						"list.min.js",
-						"make-list.js", 
+						"jquery.flot.js",
+						"jquery.flot.time.js",
+						"jquery.flot.selection.js",
+						"jquery.flot.stack.js",
 						"main.js"]
+		self.postScripts = [ "make-list.js", "make-flot.js" ]
+		
 		
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
@@ -453,6 +464,9 @@ class HtmlReport:
 								with tag('a', klass='version', href=prev):
 									text("-"+str(i+1))
 
+					with tag('div', klass='summary'):
+						self.doc.stag('div', style="width:800px;height:150px", id='flot-summary')
+
 					with tag("div", klass = "head"):
 						with tag("div", klass = "cell testmodule"):
 							with tag('button', ('data-sort','testmodule'), klass='sort'):
@@ -475,18 +489,31 @@ class HtmlReport:
 							tr = TestRun(self, report)
 							self.doc.asis(tr.getvalue())
 
+
 				with tag('script', language="javascript", 
-					src = self.scriptDirname + "/make-list.js"): text("")
-					
+					src = self.scriptDirname + "/plotdata.js"): text("")	
+				for script in self.postScripts:
+					with tag('script', language="javascript", 
+					src = self.scriptDirname + "/" + script): text("")				
 
 
 	def saveScripts(self):
 		scriptdir = toPath(self.basedir, self.scriptDirname)
 		mkdir(scriptdir)
-		for script in self.scripts:
+		for script in (self.scripts + self.postScripts):
 			scriptdata = pkgutil.get_data('ivwpy', 'regression/resources/' + script)
 			with open(toPath(scriptdir, script), 'wb') as f:
 				f.write(scriptdata)
+
+		with open(toPath(scriptdir, "plotdata.js"), 'w') as f:
+			runtimedata = elapsed_time_stats(self.db)
+			print("var summarydata = " +dataToJsArray([[x.timestamp()*1000, y] for x,y in runtimedata]), file = f)
+
+			resulttimedata = result_time_stats(self.db)
+			print("var passdata = " +dataToJsArray([[x.timestamp()*1000, y[0]] for x,y in resulttimedata]), file = f)
+			print("var faildata = " +dataToJsArray([[x.timestamp()*1000, y[1]] for x,y in resulttimedata]), file = f)
+
+
 
 	def saveHtml(self, filename):
 		file = self.basedir + "/" + filename + ".html"
