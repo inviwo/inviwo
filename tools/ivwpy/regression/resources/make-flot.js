@@ -31,7 +31,6 @@ var options = {
     yaxes: [ { 
         show : true,
         position : "right",
-        min : 0,
     }, {
         show : true,
         position : "left",
@@ -47,9 +46,10 @@ var options = {
     },
     legend: {
         show : true,
-        position : "nw",
-        backgroundColor: null,
-        backgroundOpacity: 0
+        position : "sw",
+        backgroundColor : null,
+        backgroundOpacity : 0,
+        noColumns : 3
     }
 };
 
@@ -78,7 +78,7 @@ $.plot($("#flot-summary"),
             fillColor : "#FFE7E7"
         },
         points: { show: false },
-        label : "Failues",
+        label : "Failues/Disabled",
         data  : faildata,
         color : "#FF9898",
         stack : "test",
@@ -91,7 +91,7 @@ $.plot($("#flot-summary"),
         label : "Normalized run time",
         data  : summarydata,
         color : "#907FC6",
-        yaxis :1
+        yaxis : 1
     }
     ],
     options 
