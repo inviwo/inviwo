@@ -41,7 +41,7 @@ namespace inviwo {
 
 class IVW_CORE_API SingletonBase {
 protected:
-    static std::vector<SingletonBase*>* instances_;
+    static std::unique_ptr<std::vector<SingletonBase*>> instances_;
 
     SingletonBase();
     virtual ~SingletonBase();

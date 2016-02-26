@@ -31,11 +31,11 @@
 
 namespace inviwo {
 
-std::vector<SingletonBase*>* SingletonBase::instances_ = nullptr;
+    std::unique_ptr<std::vector<SingletonBase*>> SingletonBase::instances_(nullptr);
 
 SingletonBase::SingletonBase() {
     if(!instances_)
-        instances_ = new std::vector<SingletonBase*>();
+        instances_ = util::make_unique<std::vector<SingletonBase*>>();
     instances_->push_back(this);
 }
 
@@ -60,8 +60,7 @@ void SingletonBase::deleteAllSingeltons() {
         if (instance != this)
             delete instance;
     }
-    delete instances_;
-    instances_ = nullptr;
+    instances_.reset();
 }
 
 } // namespace
