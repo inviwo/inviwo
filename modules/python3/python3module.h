@@ -46,6 +46,7 @@ public:
 
 private:
     std::unique_ptr<PyInviwo> pyInviwo_;
+    TCLAP::ValueArg<std::string> pythonScriptArg_;
 };
 
 }  // namespace

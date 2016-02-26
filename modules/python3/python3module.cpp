@@ -34,15 +34,33 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <modules/python3/pythonscript.h>
 
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pyInviwo_(nullptr) {
+    , pyInviwo_(nullptr)
+    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
+        "Path to the file containing the script") {
 
     PythonExecutionOutputObservable::init();
     pyInviwo_ = util::make_unique<PyInviwo>(this);
+
+    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
+        PythonScript s;
+        auto filename = pythonScriptArg_.getValue();
+        std::ifstream file(filename.c_str());
+        std::string src((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+
+        s.setSource(src);
+        s.setFilename(filename);
+
+        s.run();
+
+
+    }, 100);
 }
 
 Python3Module::~Python3Module() {

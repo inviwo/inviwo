@@ -81,7 +81,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
             LogInfo("Running compiled script ...");
         auto m = PyImport_AddModule("__main__");
         if (m == NULL)
-            return -1;
+            return false;
         auto d = PyModule_GetDict(m);
 
         PyObject* copy = PyDict_Copy(d);

@@ -39,17 +39,9 @@ namespace inviwo {
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
- //   , inviwoPyQtModule_(util::make_unique<PyModule>("inviwoqt"))
     , menu_(util::make_unique<PythonMenu>(app))
-    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "Path to the file containing the script") {
-
+{
     initPythonQT();
-
-    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        menu_->getEditor()->loadFile(pythonScriptArg_.getValue(), false);
-        menu_->getEditor()->run();
-    }, 100);
 }
 
 Python3QtModule::~Python3QtModule() = default;

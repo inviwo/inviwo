@@ -43,9 +43,7 @@ public:
     virtual ~Python3QtModule();
 
 private:
-  //  std::unique_ptr<PyModule> inviwoPyQtModule_;
     std::unique_ptr<PythonMenu> menu_;
-    TCLAP::ValueArg<std::string> pythonScriptArg_;
 };
 
 } // namespace
