@@ -146,7 +146,9 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
 
     bind();
     // Allocate and transfer possible data
-    glBufferData(target_, sizeInBytes, data, usageGL_);
+    // Allocation a zero sized buffer may create
+    // errors (OpenCL sharing) so ensure at least one byte
+    glBufferData(target_, sizeInBytes <= 0 ? 1 : sizeInBytes, data, usageGL_);
 
     for (auto observer : observers_) {
         observer->onAfterBufferInitialization();
