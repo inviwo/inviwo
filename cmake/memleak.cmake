@@ -38,41 +38,42 @@ IF(WIN32 AND MSVC)
         else ()
     	    link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win32)
         endif()
+
+        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+            set(arch "Win64")
+        else()
+            set(arch "Win32")
+        endif()
+
+        add_custom_target("copy-memleak-lib"
+           COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll 
+            
+            COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll
+            
+            COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest    
+
+            DEPENDS 
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
+                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
+
+            WORKING_DIRECTORY ${OUTPUT_DIR}
+            COMMENT "Copying memleak libs"
+            VERBATIM
+        )
+        set_target_properties("copy-memleak-lib" PROPERTIES FOLDER "unittests")
+
     endif()    
 ENDIF()
 
-function(ivw_memleak_setup unittest_target)
+function(ivw_memleak_setup target)
 	if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)    
-                                    
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-                                    
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-        else ()
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)    
-                                    
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-                                    
-            add_custom_command(TARGET ${unittest_target} POST_BUILD 
-                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
-                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-        endif()
+        add_dependencies(${target} copy-memleak-lib)
 	endif()
 endfunction()
