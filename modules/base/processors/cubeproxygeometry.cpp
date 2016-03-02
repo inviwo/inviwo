@@ -73,20 +73,20 @@ CubeProxyGeometry::CubeProxyGeometry()
 CubeProxyGeometry::~CubeProxyGeometry() {}
 
 void CubeProxyGeometry::process() {
-    vec3 startDataTexCoord = vec3(0.0);
-    vec3 endDataTexCoord = vec3(1.f);
+    vec3 startDataTexCoord = vec3(0.0f);
+    vec3 endDataTexCoord = vec3(1.0f);
     glm::vec3 pos(0.0f);
-    glm::vec3 p1(1.0f,0.0f,0.0f);
-    glm::vec3 p2(0.0f,1.0f,0.0f);
-    glm::vec3 p3(0.0f,0.0f,1.0f);
+    glm::vec3 p1(1.0f, 0.0f, 0.0f);
+    glm::vec3 p2(0.0f, 1.0f, 0.0f);
+    glm::vec3 p3(0.0f, 0.0f, 1.0f);
     glm::vec3 tex(startDataTexCoord);
-    glm::vec3 t1(endDataTexCoord.x,startDataTexCoord.y,startDataTexCoord.z);
-    glm::vec3 t2(startDataTexCoord.x,endDataTexCoord.y,startDataTexCoord.z);
-    glm::vec3 t3(startDataTexCoord.x,startDataTexCoord.y,endDataTexCoord.z);
-    glm::vec4 col(startDataTexCoord,1.0f);
-    glm::vec4 c1(t1,0.0f);
-    glm::vec4 c2(t2,0.0f);
-    glm::vec4 c3(t3,0.0f);
+    glm::vec3 t1(endDataTexCoord.x, 0.0f, 0.0f);
+    glm::vec3 t2(0.0f, endDataTexCoord.y, 0.0f);
+    glm::vec3 t3(0.0f, 0.0f, endDataTexCoord.z);
+    glm::vec4 col(startDataTexCoord, 1.0f);
+    glm::vec4 c1(t1, 0.0f);
+    glm::vec4 c2(t2, 0.0f);
+    glm::vec4 c3(t3, 0.0f);
     auto dims = inport_.getData()->getDimensions();
 
     if (clippingEnabled_.get()) {
