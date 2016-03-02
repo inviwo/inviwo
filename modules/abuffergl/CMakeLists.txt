@@ -47,13 +47,5 @@ endif()
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
-# Handle external resources
-if(IVW_USE_GENERATED_RESOURCES)
-#--------------------------------------------------------------------
-# Generate shader resource (if GENERATE_SHADER_RESOURCES is checked)
-ivw_generate_shader_resource(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
-else()
-#--------------------------------------------------------------------
-# Add shader directory to pack
-ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
-endif()
+# Package or build shaders into resources
+ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})

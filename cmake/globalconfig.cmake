@@ -213,7 +213,7 @@ option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 
 #--------------------------------------------------------------------
 # Use and generate resources when available
-option(IVW_USE_GENERATED_RESOURCES "Use and Generate File Resources" OFF)
+include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)
 
 #--------------------------------------------------------------------
 # Calculate and display profiling information
