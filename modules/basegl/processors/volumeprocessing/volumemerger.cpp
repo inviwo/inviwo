@@ -104,11 +104,3 @@ void VolumeMerger::preProcess(TextureUnitContainer &cont)
 
 
 } // namespace
-
-    }
-    if (vol4_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "vol4");
-    }
-}
-
-}  // namespace

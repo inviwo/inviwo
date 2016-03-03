@@ -77,12 +77,3 @@ protected:
 
 #endif // IVW_VOLUMEMERGER_H
 
-    VolumeInport vol2_;
-    VolumeInport vol3_;
-    VolumeInport vol4_;
-};
-
-} // namespace
-
-#endif // IVW_VOLUMEMERGER_H
-
