@@ -151,7 +151,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_laplacian.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_lowpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_mapping.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_merger.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumemerger.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
