@@ -74,15 +74,26 @@ CubeProxyGeometry::~CubeProxyGeometry() {}
 
 void CubeProxyGeometry::process() {
     vec3 startDataTexCoord = vec3(0.0f);
-    vec3 endDataTexCoord = vec3(1.0f);
+    vec3 extent = vec3(1.0f); //!< will be added to the origin in the parallelepiped() yielding the end position
+
+    if (inport_.getData()->getMetaData<BoolMetaData>("marginsEnabled", false)) {
+        // volume has margins enabled
+        // adjust start and end texture coordinate accordingly
+        auto marginsBottomLeft = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
+        auto marginsTopRight = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
+
+        startDataTexCoord += marginsBottomLeft;
+        extent -= marginsTopRight;
+    }
+
     glm::vec3 pos(0.0f);
     glm::vec3 p1(1.0f, 0.0f, 0.0f);
     glm::vec3 p2(0.0f, 1.0f, 0.0f);
     glm::vec3 p3(0.0f, 0.0f, 1.0f);
     glm::vec3 tex(startDataTexCoord);
-    glm::vec3 t1(endDataTexCoord.x, 0.0f, 0.0f);
-    glm::vec3 t2(0.0f, endDataTexCoord.y, 0.0f);
-    glm::vec3 t3(0.0f, 0.0f, endDataTexCoord.z);
+    glm::vec3 t1(extent.x, 0.0f, 0.0f);
+    glm::vec3 t2(0.0f, extent.y, 0.0f);
+    glm::vec3 t3(0.0f, 0.0f, extent.z);
     glm::vec4 col(startDataTexCoord, 1.0f);
     glm::vec4 c1(t1, 0.0f);
     glm::vec4 c2(t2, 0.0f);
