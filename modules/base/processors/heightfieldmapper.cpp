@@ -117,7 +117,7 @@ void HeightFieldMapper::process() {
                 for (unsigned int y = 0; y < dim.y; ++y) {
                     for (unsigned int x = 0; x < dim.x; ++x) {
                         data[y * dim.x + x] =
-                            static_cast<float>(srcLayer->getValueAsVec2Double(glm::uvec2(x, y)).r);
+                            static_cast<float>(srcLayer->getAsNormalizedDVec2(glm::uvec2(x, y)).r);
                     }
                 }
                 break;
@@ -125,7 +125,7 @@ void HeightFieldMapper::process() {
                 for (unsigned int y = 0; y < dim.y; ++y) {
                     for (unsigned int x = 0; x < dim.x; ++x) {
                         data[y * dim.x + x] =
-                            static_cast<float>(srcLayer->getValueAsVec3Double(glm::uvec2(x, y)).r);
+                            static_cast<float>(srcLayer->getAsNormalizedDVec3(glm::uvec2(x, y)).r);
                     }
                 }
                 break;
@@ -133,7 +133,7 @@ void HeightFieldMapper::process() {
                 for (unsigned int y = 0; y < dim.y; ++y) {
                     for (unsigned int x = 0; x < dim.x; ++x) {
                         data[y * dim.x + x] =
-                            static_cast<float>(srcLayer->getValueAsVec4Double(glm::uvec2(x, y)).r);
+                            static_cast<float>(srcLayer->getAsNormalizedDVec4(glm::uvec2(x, y)).r);
                     }
                 }
                 break;
@@ -142,7 +142,7 @@ void HeightFieldMapper::process() {
                 for (unsigned int y = 0; y < dim.y; ++y) {
                     for (unsigned int x = 0; x < dim.x; ++x) {
                         data[y * dim.x + x] =
-                            static_cast<float>(srcLayer->getValueAsSingleDouble(glm::uvec2(x, y)));
+                            static_cast<float>(srcLayer->getAsNormalizedDouble(glm::uvec2(x, y)));
                     }
                 }
                 break;

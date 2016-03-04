@@ -78,7 +78,7 @@ dvec4 VolumeSampler::sample(const dvec3 &pos) const {
 
 dvec4 VolumeSampler::getVoxel(const size3_t &pos) const {
     auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-    return vol_->getValueAsVec4Double(p);
+    return vol_->getAsNormalizedDVec4(p);
 }
 
 }  // namespace

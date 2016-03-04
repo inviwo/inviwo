@@ -82,7 +82,7 @@ void PixelToBufferProcessor::inportChanged() {
 
 void PixelToBufferProcessor::process() {
     double value =
-        inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getValueAsVec4Double(
+        inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDVec4(
             fromPixel_.get())[channel_.get()];
 
     auto values = values_->getEditableRepresentation<BufferRAMPrecision<double>>();
