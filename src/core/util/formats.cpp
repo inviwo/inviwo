@@ -35,9 +35,9 @@ DataFormatBase* DataFormatBase::instance_[] = {nullptr};
 
 DataFormatBase::DataFormatBase() : formatId_(id()), components_(components()), size_(size()), formatStr_("") {}
 
-DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
+DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min, double lowest,
                                NumericType nt, std::string s)
-    : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), formatStr_(s) {}
+    : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), lowest_(lowest), formatStr_(s) {}
 
 DataFormatBase::~DataFormatBase() {}
 
@@ -307,6 +307,10 @@ double DataFormatBase::getMax() const {
 
 double DataFormatBase::getMin() const {
     return min_;
+}
+
+double DataFormatBase::getLowest() const {
+    return lowest_;
 }
 
 const char* DataFormatBase::getString() const {

@@ -125,7 +125,7 @@ enum class NumericType {
 class IVW_CORE_API DataFormatBase {
 public:
     DataFormatBase();
-    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
+    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min, double lowest,
                    NumericType nt, std::string s);
     virtual ~DataFormatBase();
 
@@ -151,6 +151,7 @@ public:
     NumericType getNumericType() const;
     double getMax() const;
     double getMin() const;
+    double getLowest() const;
     const char* getString() const;
     DataFormatId getId() const;
 
@@ -187,6 +188,7 @@ protected:
     NumericType numericType_;
     double max_;
     double min_;
+    double lowest_;
 
     #include <warn/push>
     #include <warn/ignore/dll-interface>
@@ -204,7 +206,7 @@ public:
     static const size_t compsize = sizeof(primitive);
 
     DataFormat()
-        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), numericType(),
+        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble() , lowestToDouble(), numericType(),
                          str()) {}
 
     virtual ~DataFormat() {}
@@ -226,9 +228,11 @@ public:
 
     static T max() { return std::numeric_limits<T>::max(); }
     static T min() { return std::numeric_limits<T>::min(); }
+    static T lowest() { return std::numeric_limits<T>::lowest(); }
 
     static double maxToDouble() { return static_cast<double>(max()); }
     static double minToDouble() { return static_cast<double>(min()); }
+    static double lowestToDouble() { return static_cast<double>(lowest()); }
 
     static std::string str() { return DataFormatBase::str(); }
     static DataFormatId id() { return DataFormatBase::id(); }
@@ -283,7 +287,7 @@ public:
     static const size_t compsize = sizeof(primitive);
 
     DataFormat()
-        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), numericType(),
+        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(), numericType(),
                          str()) {}
 
     virtual ~DataFormat() {}
@@ -303,9 +307,11 @@ public:
 
     static type max() { return type(DataFormat<T>::max()); }
     static type min() { return type(DataFormat<T>::min()); }
+    static type lowest() { return type(DataFormat<T>::lowest()); }
 
     static double maxToDouble() { return static_cast<double>(DataFormat<T>::max()); }
     static double minToDouble() { return static_cast<double>(DataFormat<T>::min()); }
+    static double lowestToDouble() { return static_cast<double>(DataFormat<T>::lowest()); }
 
     static std::string str() { return "Vec" + toString(comp) + DataFormat<T>::str(); }
     static DataFormatId id() { return DataFormat<T>::id(); }
