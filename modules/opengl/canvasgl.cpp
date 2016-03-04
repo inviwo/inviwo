@@ -218,7 +218,7 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
         size2_t coordDepth{depthScreenRatio * dvec2(coord)};
         coordDepth = glm::min(coordDepth, depthDims - size2_t(1, 1));
 
-        const double depthValue = depthLayerRAM->getValueAsSingleDouble(coordDepth);
+        const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
 
         // Convert to normalized device coordinates
         return 2.0 * depthValue - 1.0;

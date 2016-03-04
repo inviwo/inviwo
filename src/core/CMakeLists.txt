@@ -494,6 +494,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/filesystem-test.cpp
+    tests/unittests/conversion-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

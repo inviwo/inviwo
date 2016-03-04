@@ -70,19 +70,30 @@ public:
     virtual void calculateHistograms(size_t bins, size3_t sampleRate, const bool& stop) const = 0;
 
     // uniform getters and setters
-    virtual void setValueFromSingleDouble(const size3_t& pos, double val) = 0;
-    virtual void setValueFromVec2Double(const size3_t& pos, dvec2 val) = 0;
-    virtual void setValueFromVec3Double(const size3_t& pos, dvec3 val) = 0;
-    virtual void setValueFromVec4Double(const size3_t& pos, dvec4 val) = 0;
+    virtual double getAsDouble(const size3_t& pos) const = 0;
+    virtual dvec2 getAsDVec2(const size3_t& pos) const = 0;
+    virtual dvec3 getAsDVec3(const size3_t& pos) const = 0;
+    virtual dvec4 getAsDVec4(const size3_t& pos) const = 0;
+    
+    virtual void setFromDouble(const size3_t& pos, double val) = 0;
+    virtual void setFromDVec2(const size3_t& pos, dvec2 val) = 0;
+    virtual void setFromDVec3(const size3_t& pos, dvec3 val) = 0;
+    virtual void setFromDVec4(const size3_t& pos, dvec4 val) = 0;
+
+
+    virtual double getAsNormalizedDouble(const size3_t& pos) const = 0;
+    virtual dvec2 getAsNormalizedDVec2(const size3_t& pos) const = 0;
+    virtual dvec3 getAsNormalizedDVec3(const size3_t& pos) const = 0;
+    virtual dvec4 getAsNormalizedDVec4(const size3_t& pos) const = 0;
+
+    virtual void setFromNormalizedDouble(const size3_t& pos, double val) = 0;
+    virtual void setFromNormalizedDVec2(const size3_t& pos, dvec2 val) = 0;
+    virtual void setFromNormalizedDVec3(const size3_t& pos, dvec3 val) = 0;
+    virtual void setFromNormalizedDVec4(const size3_t& pos, dvec4 val) = 0;
 
     virtual void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset,
                                      const size3_t& subSize, const size3_t& subOffset) = 0;
     void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset = size3_t(0));
-
-    virtual double getValueAsSingleDouble(const size3_t& pos) const = 0;
-    virtual dvec2 getValueAsVec2Double(const size3_t& pos) const = 0;
-    virtual dvec3 getValueAsVec3Double(const size3_t& pos) const = 0;
-    virtual dvec4 getValueAsVec4Double(const size3_t& pos) const = 0;
 
     virtual size_t getNumberOfBytes() const = 0;
 

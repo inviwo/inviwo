@@ -55,15 +55,25 @@ public:
     std::vector<T>* getDataContainer();
     const std::vector<T>* getDataContainer() const;
 
-    virtual void setValueFromSingleDouble(size_t index, double val) override;
-    virtual void setValueFromVec2Double(size_t index, dvec2 val) override;
-    virtual void setValueFromVec3Double(size_t index, dvec3 val) override;
-    virtual void setValueFromVec4Double(size_t index, dvec4 val) override;
+    virtual double getAsDouble(const size_t& pos) const override;
+    virtual dvec2 getAsDVec2(const size_t& pos) const override;
+    virtual dvec3 getAsDVec3(const size_t& pos) const override;
+    virtual dvec4 getAsDVec4(const size_t& pos) const override;
 
-    virtual double getValueAsSingleDouble(size_t index) const override;
-    virtual dvec2 getValueAsVec2Double(size_t index) const override;
-    virtual dvec3 getValueAsVec3Double(size_t index) const override;
-    virtual dvec4 getValueAsVec4Double(size_t index) const override;
+    virtual void setFromDouble(const size_t& pos, double val) override;
+    virtual void setFromDVec2(const size_t& pos, dvec2 val) override;
+    virtual void setFromDVec3(const size_t& pos, dvec3 val) override;
+    virtual void setFromDVec4(const size_t& pos, dvec4 val) override;
+
+    virtual double getAsNormalizedDouble(const size_t& pos) const override;
+    virtual dvec2 getAsNormalizedDVec2(const size_t& pos) const override;
+    virtual dvec3 getAsNormalizedDVec3(const size_t& pos) const override;
+    virtual dvec4 getAsNormalizedDVec4(const size_t& pos) const override;
+ 
+    virtual void setFromNormalizedDouble(const size_t& pos, double val) override;
+    virtual void setFromNormalizedDVec2(const size_t& pos, dvec2 val) override;
+    virtual void setFromNormalizedDVec3(const size_t& pos, dvec3 val) override;
+    virtual void setFromNormalizedDVec4(const size_t& pos, dvec4 val) override;
 
     void add(const T& item);
     void add(std::initializer_list<T> data);
@@ -165,43 +175,83 @@ const std::vector<T>* BufferRAMPrecision<T>::getDataContainer() const {
 }
 
 template <typename T>
-void BufferRAMPrecision<T>::setValueFromSingleDouble(size_t index, double val) {
-    (*data_)[index] = util::glm_convert<T>(val);
+double BufferRAMPrecision<T>::getAsDouble(const size_t& pos) const {
+    return util::glm_convert<double>((*data_)[pos]);
 }
 
 template <typename T>
-void BufferRAMPrecision<T>::setValueFromVec2Double(size_t index, dvec2 val) {
-    (*data_)[index] = util::glm_convert<T>(val);
+dvec2 BufferRAMPrecision<T>::getAsDVec2(const size_t& pos) const {
+    return util::glm_convert<dvec2>((*data_)[pos]);
 }
 
 template <typename T>
-void BufferRAMPrecision<T>::setValueFromVec3Double(size_t index, dvec3 val) {
-    (*data_)[index] = util::glm_convert<T>(val);
+dvec3 BufferRAMPrecision<T>::getAsDVec3(const size_t& pos) const {
+    return util::glm_convert<dvec3>((*data_)[pos]);
 }
 
 template <typename T>
-void BufferRAMPrecision<T>::setValueFromVec4Double(size_t index, dvec4 val) {
-    (*data_)[index] = util::glm_convert<T>(val);
+dvec4 BufferRAMPrecision<T>::getAsDVec4(const size_t& pos) const {
+    return util::glm_convert<dvec4>((*data_)[pos]);
 }
 
 template <typename T>
-double BufferRAMPrecision<T>::getValueAsSingleDouble(size_t index) const {
-    return util::glm_convert_normalized<double>((*data_)[index]);
+void BufferRAMPrecision<T>::setFromDouble(const size_t& pos, double val) {
+    (*data_)[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-dvec2 BufferRAMPrecision<T>::getValueAsVec2Double(size_t index) const {
-    return util::glm_convert_normalized<dvec2>((*data_)[index]);
+void BufferRAMPrecision<T>::setFromDVec2(const size_t& pos, dvec2 val) {
+    (*data_)[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-dvec3 BufferRAMPrecision<T>::getValueAsVec3Double(size_t index) const {
-    return util::glm_convert_normalized<dvec3>((*data_)[index]);
+void BufferRAMPrecision<T>::setFromDVec3(const size_t& pos, dvec3 val) {
+    (*data_)[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-dvec4 BufferRAMPrecision<T>::getValueAsVec4Double(size_t index) const {
-    return util::glm_convert_normalized<dvec4>((*data_)[index]);
+void BufferRAMPrecision<T>::setFromDVec4(const size_t& pos, dvec4 val) {
+    (*data_)[pos] = util::glm_convert<T>(val);
+}
+
+template <typename T>
+double BufferRAMPrecision<T>::getAsNormalizedDouble(const size_t& pos) const {
+    return util::glm_convert_normalized<double>((*data_)[pos]);
+}
+
+template <typename T>
+dvec2 BufferRAMPrecision<T>::getAsNormalizedDVec2(const size_t& pos) const {
+    return util::glm_convert_normalized<dvec2>((*data_)[pos]);
+}
+
+template <typename T>
+dvec3 BufferRAMPrecision<T>::getAsNormalizedDVec3(const size_t& pos) const {
+    return util::glm_convert_normalized<dvec3>((*data_)[pos]);
+}
+
+template <typename T>
+dvec4 BufferRAMPrecision<T>::getAsNormalizedDVec4(const size_t& pos) const {
+    return util::glm_convert_normalized<dvec4>((*data_)[pos]);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDouble(const size_t& pos, double val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T>

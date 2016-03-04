@@ -67,18 +67,29 @@ public:
                                                     size3_t sampleRate = size3_t(1)) const override;
     virtual void calculateHistograms(size_t bins, size3_t sampleRate, const bool& stop) const override;
 
-    virtual void setValueFromSingleDouble(const size3_t& pos, double val) override;
-    virtual void setValueFromVec2Double(const size3_t& pos, dvec2 val) override;
-    virtual void setValueFromVec3Double(const size3_t& pos, dvec3 val) override;
-    virtual void setValueFromVec4Double(const size3_t& pos, dvec4 val) override;
+    virtual double getAsDouble(const size3_t& pos) const override;
+    virtual dvec2 getAsDVec2(const size3_t& pos) const override;
+    virtual dvec3 getAsDVec3(const size3_t& pos) const override;
+    virtual dvec4 getAsDVec4(const size3_t& pos) const override;
+
+    virtual void setFromDouble(const size3_t& pos, double val) override;
+    virtual void setFromDVec2(const size3_t& pos, dvec2 val) override;
+    virtual void setFromDVec3(const size3_t& pos, dvec3 val) override;
+    virtual void setFromDVec4(const size3_t& pos, dvec4 val) override;
+
+    virtual double getAsNormalizedDouble(const size3_t& pos) const override;
+    virtual dvec2 getAsNormalizedDVec2(const size3_t& pos) const override;
+    virtual dvec3 getAsNormalizedDVec3(const size3_t& pos) const override;
+    virtual dvec4 getAsNormalizedDVec4(const size3_t& pos) const override;
+
+    virtual void setFromNormalizedDouble(const size3_t& pos, double val) override;
+    virtual void setFromNormalizedDVec2(const size3_t& pos, dvec2 val) override;
+    virtual void setFromNormalizedDVec3(const size3_t& pos, dvec3 val) override;
+    virtual void setFromNormalizedDVec4(const size3_t& pos, dvec4 val) override;
 
     void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset, const size3_t& subSize,
                              const size3_t& subOffset) override;
 
-    virtual double getValueAsSingleDouble(const size3_t& pos) const override;
-    virtual dvec2 getValueAsVec2Double(const size3_t& pos) const override;
-    virtual dvec3 getValueAsVec3Double(const size3_t& pos) const override;
-    virtual dvec4 getValueAsVec4Double(const size3_t& pos) const override;
 
     virtual size_t getNumberOfBytes() const override;
 
@@ -212,23 +223,83 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
 }
 
 template <typename T>
-void VolumeRAMPrecision<T>::setValueFromSingleDouble(const size3_t& pos, double val) {
+double VolumeRAMPrecision<T>::getAsDouble(const size3_t& pos) const {
+    return util::glm_convert<double>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec2 VolumeRAMPrecision<T>::getAsDVec2(const size3_t& pos) const {
+    return util::glm_convert<dvec2>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec3 VolumeRAMPrecision<T>::getAsDVec3(const size3_t& pos) const {
+    return util::glm_convert<dvec3>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec4 VolumeRAMPrecision<T>::getAsDVec4(const size3_t& pos) const {
+    return util::glm_convert<dvec4>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setFromDouble(const size3_t& pos, double val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void VolumeRAMPrecision<T>::setValueFromVec2Double(const size3_t& pos, dvec2 val) {
+void VolumeRAMPrecision<T>::setFromDVec2(const size3_t& pos, dvec2 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void VolumeRAMPrecision<T>::setValueFromVec3Double(const size3_t& pos, dvec3 val) {
+void VolumeRAMPrecision<T>::setFromDVec3(const size3_t& pos, dvec3 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void VolumeRAMPrecision<T>::setValueFromVec4Double(const size3_t& pos, dvec4 val) {
+void VolumeRAMPrecision<T>::setFromDVec4(const size3_t& pos, dvec4 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
+}
+
+template <typename T>
+double VolumeRAMPrecision<T>::getAsNormalizedDouble(const size3_t& pos) const {
+    return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec2 VolumeRAMPrecision<T>::getAsNormalizedDVec2(const size3_t& pos) const {
+    return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec3 VolumeRAMPrecision<T>::getAsNormalizedDVec3(const size3_t& pos) const {
+    return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec4 VolumeRAMPrecision<T>::getAsNormalizedDVec4(const size3_t& pos) const {
+    return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setFromNormalizedDouble(const size3_t& pos, double val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setFromNormalizedDVec2(const size3_t& pos, dvec2 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setFromNormalizedDVec3(const size3_t& pos, dvec3 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setFromNormalizedDVec4(const size3_t& pos, dvec4 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T>
@@ -237,7 +308,7 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const size
     const T* srcData = reinterpret_cast<const T*>(src->getData());
 
     size_t initialStartPos = (dstOffset.z * (dimensions_.x * dimensions_.y)) +
-                             (dstOffset.y * dimensions_.x) + dstOffset.x;
+        (dstOffset.y * dimensions_.x) + dstOffset.x;
 
     size3_t srcDims = src->getDimensions();
     size_t dataSize = subSize.x * getDataFormat()->getSize();
@@ -256,25 +327,6 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const size
     }
 }
 
-template <typename T>
-double VolumeRAMPrecision<T>::getValueAsSingleDouble(const size3_t& pos) const {
-    return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
-}
-
-template <typename T>
-dvec2 VolumeRAMPrecision<T>::getValueAsVec2Double(const size3_t& pos) const {
-    return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
-}
-
-template <typename T>
-dvec3 VolumeRAMPrecision<T>::getValueAsVec3Double(const size3_t& pos) const {
-    return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
-}
-
-template <typename T>
-dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const size3_t& pos) const {
-    return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
-}
 
 template <typename T>
 const HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,

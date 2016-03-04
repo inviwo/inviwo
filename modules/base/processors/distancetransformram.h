@@ -145,7 +145,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
         for (int y=0; y<static_cast<int>(dataDim.y); ++y) {
             for (std::size_t x=0; x<dataDim.x; ++x) {
                 size3_t pos(x, y, z);
-                if (srcVol->getValueAsSingleDouble(pos) > 0.5) {
+                if (srcVol->getAsNormalizedDouble(pos) > 0.5) {
                     // set distance to zero
                     data[(z * dataDim.y + y) * dataDim.x + x] = lowVal;
                 }

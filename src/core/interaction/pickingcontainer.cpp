@@ -221,7 +221,7 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
 
         if (pickingLayer) {
             const LayerRAM* pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
-            dvec4 value = pickingLayerRAM->getValueAsVec4Double(coord);
+            dvec4 value = pickingLayerRAM->getAsNormalizedDVec4(coord);
             dvec3 pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
             uvec3 color(pickedColor*255.0);
             return PickingManager::getPtr()->getPickingObjectFromColor(color);

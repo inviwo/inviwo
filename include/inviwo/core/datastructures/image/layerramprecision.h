@@ -54,15 +54,25 @@ public:
      */
     virtual void setDimensions(size2_t dimensions) override;
 
-    void setValueFromSingleDouble(const size2_t& pos, double val) override;
-    void setValueFromVec2Double(const size2_t& pos, dvec2 val) override;
-    void setValueFromVec3Double(const size2_t& pos, dvec3 val) override;
-    void setValueFromVec4Double(const size2_t& pos, dvec4 val) override;
+    virtual double getAsDouble(const size2_t& pos) const override;
+    virtual dvec2 getAsDVec2(const size2_t& pos) const override;
+    virtual dvec3 getAsDVec3(const size2_t& pos) const override;
+    virtual dvec4 getAsDVec4(const size2_t& pos) const override;
 
-    double getValueAsSingleDouble(const size2_t& pos) const override;
-    dvec2 getValueAsVec2Double(const size2_t& pos) const override;
-    dvec3 getValueAsVec3Double(const size2_t& pos) const override;
-    dvec4 getValueAsVec4Double(const size2_t& pos) const override;
+    virtual void setFromDouble(const size2_t& pos, double val) override;
+    virtual void setFromDVec2(const size2_t& pos, dvec2 val) override;
+    virtual void setFromDVec3(const size2_t& pos, dvec3 val) override;
+    virtual void setFromDVec4(const size2_t& pos, dvec4 val) override;
+
+    virtual double getAsNormalizedDouble(const size2_t& pos) const override;
+    virtual dvec2 getAsNormalizedDVec2(const size2_t& pos) const override;
+    virtual dvec3 getAsNormalizedDVec3(const size2_t& pos) const override;
+    virtual dvec4 getAsNormalizedDVec4(const size2_t& pos) const override;
+
+    virtual void setFromNormalizedDouble(const size2_t& pos, double val) override;
+    virtual void setFromNormalizedDVec2(const size2_t& pos, dvec2 val) override;
+    virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) override;
+    virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
 
 private:
     std::unique_ptr<T[]> data_;
@@ -153,47 +163,84 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromSingleDouble(const size2_t& pos, double val) {
+double LayerRAMPrecision<T>::getAsDouble(const size2_t& pos) const {
+    return util::glm_convert<double>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec2 LayerRAMPrecision<T>::getAsDVec2(const size2_t& pos) const {
+    return util::glm_convert<dvec2>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec3 LayerRAMPrecision<T>::getAsDVec3(const size2_t& pos) const {
+    return util::glm_convert<dvec3>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+dvec4 LayerRAMPrecision<T>::getAsDVec4(const size2_t& pos) const {
+    return util::glm_convert<dvec4>(data_[posToIndex(pos, dimensions_)]);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromDouble(const size2_t& pos, double val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec2Double(const size2_t& pos, dvec2 val) {
+void LayerRAMPrecision<T>::setFromDVec2(const size2_t& pos, dvec2 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec3Double(const size2_t& pos, dvec3 val) {
+void LayerRAMPrecision<T>::setFromDVec3(const size2_t& pos, dvec3 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec4Double(const size2_t& pos, dvec4 val) {
+void LayerRAMPrecision<T>::setFromDVec4(const size2_t& pos, dvec4 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-double LayerRAMPrecision<T>::getValueAsSingleDouble(const size2_t& pos) const {
+double LayerRAMPrecision<T>::getAsNormalizedDouble(const size2_t& pos) const {
     return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec2 LayerRAMPrecision<T>::getValueAsVec2Double(const size2_t& pos) const {
+dvec2 LayerRAMPrecision<T>::getAsNormalizedDVec2(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec3 LayerRAMPrecision<T>::getValueAsVec3Double(const size2_t& pos) const {
+dvec3 LayerRAMPrecision<T>::getAsNormalizedDVec3(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const size2_t& pos) const {
+dvec4 LayerRAMPrecision<T>::getAsNormalizedDVec4(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
-//#define DataFormatIdMacro(i) typedef LayerRAMPrecision<Data##i::type> LayerRAM_##i;
-//#include <inviwo/core/util/formatsdefinefunc.h>
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDouble(const size2_t& pos, double val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec2(const size2_t& pos, dvec2 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec3(const size2_t& pos, dvec3 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec4(const size2_t& pos, dvec4 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
 
 }  // namespace
 

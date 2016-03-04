@@ -69,10 +69,10 @@ TEST(ImageTests, ImageLoadWhite) {
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
 
-    dvec4 a = layerRam->getValueAsVec4Double(uvec2(0, 0));
-    dvec4 b = layerRam->getValueAsVec4Double(uvec2(0, 1));
-    dvec4 c = layerRam->getValueAsVec4Double(uvec2(1, 0));
-    dvec4 d = layerRam->getValueAsVec4Double(uvec2(1, 1));
+    dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(0, 0));
+    dvec4 b = layerRam->getAsNormalizedDVec4(uvec2(0, 1));
+    dvec4 c = layerRam->getAsNormalizedDVec4(uvec2(1, 0));
+    dvec4 d = layerRam->getAsNormalizedDVec4(uvec2(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 1.0);
     EXPECT_DOUBLE_EQ(a.b, 1.0);
@@ -115,10 +115,10 @@ TEST(ImageTests, ImageLoadRGB) {
     uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
-    dvec4 a = layerRam->getValueAsVec4Double(uvec2(0, 0));
-    dvec4 b = layerRam->getValueAsVec4Double(uvec2(1, 0));
-    dvec4 c = layerRam->getValueAsVec4Double(uvec2(0, 1));
-    dvec4 d = layerRam->getValueAsVec4Double(uvec2(1, 1));
+    dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(0, 0));
+    dvec4 b = layerRam->getAsNormalizedDVec4(uvec2(1, 0));
+    dvec4 c = layerRam->getAsNormalizedDVec4(uvec2(0, 1));
+    dvec4 d = layerRam->getAsNormalizedDVec4(uvec2(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 0.0);
     EXPECT_DOUBLE_EQ(a.b, 0.0);
@@ -163,7 +163,7 @@ TEST(ImageTests, ImageLoadRange) {
     EXPECT_EQ(dim.y, 1);
 
     for (int i = 0; i < 255; i++) {
-        dvec4 a = layerRam->getValueAsVec4Double(uvec2(i, 0));
+        dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(i, 0));
         EXPECT_DOUBLE_EQ(a.r, i / 255.0);
         EXPECT_DOUBLE_EQ(a.g, i / 255.0);
         EXPECT_DOUBLE_EQ(a.b, i / 255.0);
