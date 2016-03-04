@@ -96,6 +96,12 @@ public:
     glm::u64 getCurrentAvailableTextureMem();
     glm::u64 getTotalAvailableTextureMem();
 
+    std::string getRenderString() const;
+    std::string getVendorString() const;
+    std::string getGLVersionString() const;
+    std::string getGLSLVersionString() const;
+    GlVendor getVendor() const;
+
     int getMaxProgramLoopCount();
     int getMaxTexSize();
     int getMax3DTexSize();

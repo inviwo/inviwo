@@ -730,4 +730,10 @@ int OpenGLCapabilities::parseAndRetrieveVersion(std::string versionStr) {
     return 0;
 }
 
+std::string OpenGLCapabilities::getRenderString() const { return glRenderStr_; }
+std::string OpenGLCapabilities::getVendorString() const { return glVendorStr_; }
+std::string OpenGLCapabilities::getGLVersionString() const { return glVersionStr_; }
+std::string OpenGLCapabilities::getGLSLVersionString() const { return glslVersionStr_; }
+OpenGLCapabilities::GlVendor OpenGLCapabilities::getVendor() const { return glVendor_; }
+
 }  // namespace
