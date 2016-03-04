@@ -19,7 +19,7 @@ Below follow some general information about the framework:
  - Python (> 3.2) scripting and computation is supported through provided modules.
 
 #### GUI
- - The primary GUI is based on Qt (Supported >= 5.2).
+ - The primary GUI is based on Qt (Supported >= 5.3).
  - A minimal application is available, utilizing GLFW 3 for multiple window and context management.
 
 #### Build system
