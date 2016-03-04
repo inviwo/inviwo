@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-NiftiReader::NiftiReader() : DataReaderType<VolumeVector>() {
+NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
     addExtension(FileExtension("nii", "NIfTI-1 file format"));
     addExtension(FileExtension("hdr", "ANALYZE file format"));
     addExtension(FileExtension("img", "ANALYZE file format"));
@@ -77,7 +77,7 @@ const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiData
     }
 }
 
-std::shared_ptr<NiftiReader::VolumeVector> NiftiReader::readData(const std::string filePath) {
+std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string filePath) {
     /* read input dataset, but not data */
     std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0), nifti_image_free);
     if (!niftiImage) {
@@ -265,7 +265,7 @@ std::shared_ptr<NiftiReader::VolumeVector> NiftiReader::readData(const std::stri
         volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
     }
 
-    auto volumes = std::make_shared<VolumeVector>();
+    auto volumes = std::make_shared<VolumeSequence>();
     // Lazy loading of time steps
     for (int t = 1; t < niftiImage->dim[4]; ++t) {
 

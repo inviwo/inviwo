@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/volumevectorsampler.h>
+#ifndef IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H
+#define IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/processors/vectorelementselectorprocessor.h>
+
 
 namespace inviwo {
 
-VolumeVectorSampler::VolumeVectorSampler(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector) {
-    for (const auto &vol : (*volumeVector.get())) {
-        samplers_.emplace_back(vol);
-    }
-}
+/** \docpage{org.inviwo.TimeStepSelector, Volume Sequence/Time Selector}
+ * ![](org.inviwo.TimeStepSelector.png?classIdentifier=org.inviwo.TimeStepSelector)
+ *
+ *
+ * ### Outports
+ *   * __outport__ ...
+ *
+ * ### Properties
+ *   * __Time Step__ ...
+ *
+ */
+class IVW_MODULE_BASE_API VolumeSequenceElementSelectorProcessor : public VectorElementSelectorProcessor<Volume> {
+public:
+    VolumeSequenceElementSelectorProcessor();
+    virtual ~VolumeSequenceElementSelectorProcessor() = default;
 
-VolumeVectorSampler::~VolumeVectorSampler() {}
-
-void VolumeVectorSampler::setVectorInterpolation(bool enable) {
-    for (auto &s : samplers_) {
-        s.setVectorInterpolation(enable);
-    }
-}
-
-dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const {
-    dvec3 spatialPos = pos.xyz();
-    double t = pos.w;
-    while (t < 0) t += 1;
-    while (t > 1) t -= 1;
-
-    t *= (samplers_.size() - 1);
-
-    int tIndex = static_cast<int>(t);
-    double tInterpolant = t - static_cast<float>(tIndex);
-
-    dvec4 v0, v1;
-    v0 = getVoxel(spatialPos, tIndex);
-    v1 = getVoxel(spatialPos, tIndex + 1);
-
-    return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
-}
-
-dvec4 VolumeVectorSampler::sample(double x, double y, double z, double t) const {
-    return sample(dvec4(x, y, z, t));
-}
-
-dvec4 VolumeVectorSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
-
-dvec4 VolumeVectorSampler::getVoxel(const dvec3 &pos, int T) const {
-    T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
-    return samplers_[T].sample(pos);
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+};
 
 }  // namespace
+
+#endif  // IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H

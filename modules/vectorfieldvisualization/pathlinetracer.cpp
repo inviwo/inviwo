@@ -32,19 +32,19 @@
 namespace inviwo {
 
     PathLineTracer::PathLineTracer(
-        std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector,
+        std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence,
         const IntegralLineProperties &properties)
         : IntegralLineTracer(properties)
-        , sampler_(volumeVector)
+        , sampler_(volumeSequence)
         , dimensions_(0)
     
     {
-        if (volumeVector->empty()) {
+        if (volumeSequence->empty()) {
             LogWarn("Initializing PathLineTracer with an empty vector");
         }
         else {
-            invBasis_ = dmat3(glm::inverse(volumeVector->at(0)->getBasis()));
-            dimensions_ = volumeVector->at(0)->getDimensions();
+            invBasis_ = dmat3(glm::inverse(volumeSequence->at(0)->getBasis()));
+            dimensions_ = volumeSequence->at(0)->getDimensions();
         }
 
         sampler_.setVectorInterpolation(true);

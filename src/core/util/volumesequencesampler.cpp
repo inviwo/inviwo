@@ -27,39 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEVECTORSAMPLER_H
-#define IVW_VOLUMEVECTORSAMPLER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/util/volumesequencesampler.h>
 
 namespace inviwo {
 
-/**
- * \class VolumeVectorSampler
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_CORE_API VolumeVectorSampler { 
-public:
-    VolumeVectorSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector);
-    virtual ~VolumeVectorSampler();
+VolumeSequenceSampler::VolumeSequenceSampler(
+    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence) {
+    for (const auto &vol : (*volumeSequence.get())) {
+        samplers_.emplace_back(vol);
+    }
+}
 
-    void setVectorInterpolation(bool enable);
+VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-    dvec4 sample(const dvec4 &pos) const;
-    dvec4 sample(double x, double y, double z, double t) const;
-    dvec4 sample(const vec4 &pos) const;
+void VolumeSequenceSampler::setVectorInterpolation(bool enable) {
+    for (auto &s : samplers_) {
+        s.setVectorInterpolation(enable);
+    }
+}
 
-private:
-    dvec4 getVoxel(const dvec3 &pos, int T) const;
+dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
+    dvec3 spatialPos = pos.xyz();
+    double t = pos.w;
+    while (t < 0) t += 1;
+    while (t > 1) t -= 1;
 
-    size3_t dims_;
-    std::vector<VolumeSampler> samplers_;
-};
+    t *= (samplers_.size() - 1);
 
-} // namespace
+    int tIndex = static_cast<int>(t);
+    double tInterpolant = t - static_cast<float>(tIndex);
 
-#endif // IVW_VOLUMEVECTORSAMPLER_H
+    dvec4 v0, v1;
+    v0 = getVoxel(spatialPos, tIndex);
+    v1 = getVoxel(spatialPos, tIndex + 1);
 
+    return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
+}
+
+dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) const {
+    return sample(dvec4(x, y, z, t));
+}
+
+dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
+
+dvec4 VolumeSequenceSampler::getVoxel(const dvec3 &pos, int T) const {
+    T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
+    return samplers_[T].sample(pos);
+}
+
+}  // namespace

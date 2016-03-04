@@ -37,6 +37,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
@@ -89,6 +90,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp

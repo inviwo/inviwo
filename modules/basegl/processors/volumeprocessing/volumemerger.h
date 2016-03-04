@@ -32,11 +32,8 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -61,25 +58,19 @@ namespace inviwo {
  * \brief <brief description> 
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_BASEGL_API VolumeMerger : public VolumeGLProcessor { 
+class IVW_MODULE_BASEGL_API VolumeMerger : public VolumeGLProcessor {
 public:
     VolumeMerger();
     virtual ~VolumeMerger() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
-
-    virtual void preProcess(TextureUnitContainer &cont) override;
-
     static const ProcessorInfo processorInfo_;
+
 protected:
-    void onVolChange();
-
-    virtual void postProcess() override;
-
-private:
     VolumeInport vol2_;
     VolumeInport vol3_;
     VolumeInport vol4_;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
 } // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +24,82 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEVECTORELEMENTSELECTORPROCESSOR_H
-#define IVW_VOLUMEVECTORELEMENTSELECTORPROCESSOR_H
+#ifndef IVW_VOLUMESEQUENCESOURCE_H
+#define IVW_VOLUMESEQUENCESOURCE_H
 
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <modules/base/processors/vectorelementselectorprocessor.h>
-
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TimeStepSelector, Volume Sequence/Time Selector}
- * ![](org.inviwo.TimeStepSelector.png?classIdentifier=org.inviwo.TimeStepSelector)
+/** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
+ * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)
+ * Explanation of how to use the processor.
  *
+ * Loads a vector of volumes
  *
  * ### Outports
- *   * __outport__ ...
+ *   * __Outport__ The loaded volumes
  *
  * ### Properties
- *   * __Time Step__ ...
- *
+ *   * __File name__ File to load.
  */
-class IVW_MODULE_BASE_API VolumeVectorElementSelectorProcessor : public VectorElementSelectorProcessor<Volume> {
-public:
-    VolumeVectorElementSelectorProcessor();
-    virtual ~VolumeVectorElementSelectorProcessor() = default;
 
+
+/**
+ * \class VolumeSequenceSource
+ * \brief Loads a vector of volumes
+ */
+class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor { 
+    enum class InputType {
+        SingleFile,
+        Folder
+    };
+public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+    VolumeSequenceSource();
+    virtual ~VolumeSequenceSource() = default;
+     
+    virtual void deserialize(Deserializer& d) override;
+    virtual void process() override;
+
+private:
+    void load(bool deserialize = false);
+    void loadFile(bool deserialize = false);
+    void loadFolder(bool deserialize = false);
+    void addFileNameFilters();
+
+    std::shared_ptr<VolumeSequence> volumes_;
+
+    VolumeSequenceOutport outport_;
+
+    TemplateOptionProperty<InputType> inputType_;
+    FileProperty file_;
+    DirectoryProperty folder_;
+    StringProperty filter_;
+
+    ButtonProperty reload_;
+
+    BasisProperty basis_;
+    VolumeInformationProperty information_;
+
+    bool isDeserializing_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_VOLUMEVECTORELEMENTSELECTORPROCESSOR_H
+#endif // IVW_VOLUMESEQUENCESOURCE_H
+
