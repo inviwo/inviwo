@@ -69,11 +69,11 @@ public:
     virtual dvec2 getAsNormalizedDVec2(const size_t& pos) const override;
     virtual dvec3 getAsNormalizedDVec3(const size_t& pos) const override;
     virtual dvec4 getAsNormalizedDVec4(const size_t& pos) const override;
-// 
-//     virtual void setFromNormalizedDouble(const size_t& pos, double val) override;
-//     virtual void setFromNormalizedDVec2(const size_t& pos, dvec2 val) override;
-//     virtual void setFromNormalizedDVec3(const size_t& pos, dvec3 val) override;
-//     virtual void setFromNormalizedDVec4(const size_t& pos, dvec4 val) override;
+ 
+    virtual void setFromNormalizedDouble(const size_t& pos, double val) override;
+    virtual void setFromNormalizedDVec2(const size_t& pos, dvec2 val) override;
+    virtual void setFromNormalizedDVec3(const size_t& pos, dvec3 val) override;
+    virtual void setFromNormalizedDVec4(const size_t& pos, dvec4 val) override;
 
     void add(const T& item);
     void add(std::initializer_list<T> data);
@@ -234,25 +234,25 @@ dvec4 BufferRAMPrecision<T>::getAsNormalizedDVec4(const size_t& pos) const {
     return util::glm_convert_normalized<dvec4>((*data_)[pos]);
 }
 
-// template <typename T>
-// void BufferRAMPrecision<T>::setFromNormalizedDouble(const size_t& pos, double val) {
-//     (*data_)[pos] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void BufferRAMPrecision<T>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
-//     (*data_)[pos] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void BufferRAMPrecision<T>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
-//     (*data_)[pos] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void BufferRAMPrecision<T>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
-//     (*data_)[pos] = util::glm_convert_normalized<T>(val);
-// }
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDouble(const size_t& pos, double val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void BufferRAMPrecision<T>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
+    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+}
 
 template <typename T>
 void BufferRAMPrecision<T>::add(const T& item) {

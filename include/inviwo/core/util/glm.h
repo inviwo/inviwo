@@ -313,11 +313,11 @@ To glm_convert(From x) {
  * 3    Float               Signed Integer      castD(x * D::range + D::low)
 
  * 4    Unsigned Integer    Unsigned Integer    castD(x / S::max * D::max)
- * 5    Unsigned Integer    Signed Integer      castD(x / S::max * D::range + D::low)
+ (* 5    Unsigned Integer    Signed Integer      castD(x / S::max * D::range + D::low))
  * 8    Unsigned Integer    Float               castD(x / S::max)
 
  * 7    Signed Integer      Signed Integer      castD((x - S::low) / S::range * D::range + D::low)
- * 8    Signed Integer      Unsigned Integer    castD((x - S::low) / S::range * D::range)
+ (* 8    Signed Integer      Unsigned Integer    castD((x - S::low) / S::range * D::range))
  * 9    Signed Integer      Float               castD((x - S::low) / S::range)
 
  * 10   Scalar              Vector              {conv(x), 0,...}
@@ -346,12 +346,6 @@ struct is_signed_int {
     static const bool value = std::is_signed<T>::value && std::is_integral<T>::value;
 };
 
-template <typename To, typename From>
-struct highp {
-    static const bool value =
-        std::numeric_limits<To>::digits - std::numeric_limits<From>::digits >= 56 ||
-        std::numeric_limits<From>::digits - std::numeric_limits<To>::digits >= 56;
-};
 
 template <typename T, typename To = T>
 To range() {
@@ -359,22 +353,41 @@ return (static_cast<To>(std::numeric_limits<T>::max()) -
         static_cast<To>(std::numeric_limits<T>::lowest()));
 }
 
-template <typename To, typename From,
-    typename std::enable_if<highp<To, From>::value, int>::type = 0>
-    To rangeConv(From x) {
-    return static_cast<To>(static_cast<long double>(x) * range<To, long double>() /
-                           range<From, long double>());
-}
-template <typename To, typename From,
-    typename std::enable_if<!highp<To, From>::value, int>::type = 0>
-    To rangeConv(From x) {
-    return static_cast<To>(static_cast<double>(x) * range<To, double>() / range<From, double>());
-}
-
 template <typename To, typename From>
 struct upscale {
     static const bool value = std::numeric_limits<To>::digits > std::numeric_limits<From>::digits;
 };
+
+template <typename T, bool Signed>
+struct growImpl {};
+
+template <>
+struct growImpl<unsigned char, false> {
+    using type = unsigned short;
+};
+
+template <>
+struct growImpl<unsigned short, false> {
+    using type = unsigned int;
+};
+
+template <>
+struct growImpl<unsigned int, false> {
+    using type = unsigned long long;
+};
+
+template <typename T>
+struct growImpl<T, true> {
+    using type = typename std::make_signed<
+        typename growImpl<typename std::make_unsigned<T>::type, false>::type>::type;
+};
+
+template <typename T>
+struct grow {
+    using type = typename growImpl<T, std::is_signed<T>::value>::type;
+};
+template <typename T>
+using grow_t = typename grow<T>::type;
 
 /**
  * The size of a integer types domain is 2^digits - 1
@@ -412,10 +425,12 @@ struct rangeRatioImpl<T, D, D> {
  */
 template <typename To, typename From>
 struct rangeRatio {
+    using uTo = typename std::make_unsigned<To>::type;
+    using uFrom = typename std::make_unsigned<From>::type;
     static_assert(std::numeric_limits<To>::digits >= std::numeric_limits<From>::digits,
                   "Invalid type order: To is smaller then From");
-    static const To value =
-        rangeRatioImpl<To, std::numeric_limits<To>::digits, std::numeric_limits<From>::digits>::value;
+    static const To value = static_cast<To>(rangeRatioImpl<uTo, std::numeric_limits<uTo>::digits,
+                                            std::numeric_limits<uFrom>::digits>::value);
 };
 
 }  // namespace
@@ -456,7 +471,7 @@ template <typename To = double, typename From,
                                   int>::type = 0>
 To glm_convert_normalized(From x) {
     return static_cast<To>(x * detail::range<To, From>() +
-                           static_cast<To>(std::numeric_limits<From>::lowest()));
+                           static_cast<From>(std::numeric_limits<To>::lowest()));
 }
 
 // 4. Unsigned Integer to Unsigned Integer
@@ -478,7 +493,25 @@ To glm_convert_normalized(From x) {
 }
 
 // 5 Unsigned Integer to Signed Integer
-// TODO
+template <typename To = double, typename From,
+          typename std::enable_if<
+              detail::is_scalar_conv<To, From>::value && detail::is_signed_int<To>::value &&
+                  detail::is_unsigned_int<From>::value && detail::upscale<To, From>::value,
+              int>::type = 0>
+To glm_convert_normalized(From x) {
+    return static_cast<To>(x) * detail::rangeRatio<To, From>::value +
+           std::numeric_limits<To>::lowest();
+}
+template <typename To = double, typename From,
+          typename std::enable_if<
+              detail::is_scalar_conv<To, From>::value && detail::is_signed_int<To>::value &&
+                  detail::is_unsigned_int<From>::value && !detail::upscale<To, From>::value,
+              int>::type = 0>
+To glm_convert_normalized(From x) {
+    return static_cast<To>(static_cast<typename std::make_signed<From>::type>(
+               x / detail::rangeRatio<From, To>::value)) +
+           std::numeric_limits<To>::lowest();
+}
 
 // 6 Unsigned Integer to Float
 template <typename To = double, typename From,
@@ -497,7 +530,9 @@ template <typename To = double, typename From,
                   detail::is_signed_int<From>::value && detail::upscale<To, From>::value,
               int>::type = 0>
 To glm_convert_normalized(From x) {
-    return static_cast<To>(x) * detail::rangeRatio<To, From>::value;
+    return (static_cast<To>(x) - std::numeric_limits<From>::lowest()) *
+               detail::rangeRatio<To, From>::value +
+           std::numeric_limits<To>::lowest();
 }
 template <typename To = double, typename From,
           typename std::enable_if<
@@ -505,11 +540,32 @@ template <typename To = double, typename From,
                   detail::is_signed_int<From>::value && !detail::upscale<To, From>::value,
               int>::type = 0>
 To glm_convert_normalized(From x) {
-    return static_cast<To>(x / detail::rangeRatio<From, To>::value);
+    return static_cast<To>((static_cast<detail::grow_t<From>>(x) - std::numeric_limits<From>::lowest()) /
+                               detail::rangeRatio<From, To>::value +
+                           std::numeric_limits<To>::lowest());
 }
 
 // 8 Signed Integer to Unsigned Integer
-// TODO
+template <typename To = double, typename From,
+          typename std::enable_if<
+              detail::is_scalar_conv<To, From>::value && detail::is_unsigned_int<To>::value &&
+                  detail::is_signed_int<From>::value && detail::upscale<To, From>::value,
+              int>::type = 0>
+To glm_convert_normalized(From x) {
+    return static_cast<To>(static_cast<typename std::make_signed<To>::type>(x) -
+                           std::numeric_limits<From>::lowest()) *
+           detail::rangeRatio<To, From>::value;
+}
+template <typename To = double, typename From,
+          typename std::enable_if<
+              detail::is_scalar_conv<To, From>::value && detail::is_unsigned_int<To>::value &&
+                  detail::is_signed_int<From>::value && !detail::upscale<To, From>::value,
+              int>::type = 0>
+To glm_convert_normalized(From x) {
+    return static_cast<To>(static_cast<typename std::make_unsigned<From>::type>(
+                               x - std::numeric_limits<From>::lowest()) /
+                           detail::rangeRatio<From, To>::value);
+}
 
 // 9 Signed Integer to Float
 template <typename To = double, typename From,
@@ -529,7 +585,7 @@ template <class To, typename From,
                                   int>::type = 0>
 To glm_convert_normalized(From x) {
     To res(0);
-    res[0] = glm_convert_normalized<To::value_type>(x);
+    res[0] = glm_convert_normalized<typename To::value_type>(x);
     return res;
 }
 

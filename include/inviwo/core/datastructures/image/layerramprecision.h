@@ -69,10 +69,10 @@ public:
     virtual dvec3 getAsNormalizedDVec3(const size2_t& pos) const override;
     virtual dvec4 getAsNormalizedDVec4(const size2_t& pos) const override;
 
-//     virtual void setFromNormalizedDouble(const size2_t& pos, double val) override;
-//     virtual void setFromNormalizedDVec2(const size2_t& pos, dvec2 val) override;
-//     virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) override;
-//     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
+    virtual void setFromNormalizedDouble(const size2_t& pos, double val) override;
+    virtual void setFromNormalizedDVec2(const size2_t& pos, dvec2 val) override;
+    virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) override;
+    virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
 
 private:
     std::unique_ptr<T[]> data_;
@@ -222,26 +222,25 @@ dvec4 LayerRAMPrecision<T>::getAsNormalizedDVec4(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
-// template <typename T>
-// void LayerRAMPrecision<T>::setFromNormalizedDouble(const size2_t& pos, double val) {
-//     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void LayerRAMPrecision<T>::setFromNormalizedDVec2(const size2_t& pos, dvec2 val) {
-//     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void LayerRAMPrecision<T>::setFromNormalizedDVec3(const size2_t& pos, dvec3 val) {
-//     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
-// }
-// 
-// template <typename T>
-// void LayerRAMPrecision<T>::setFromNormalizedDVec4(const size2_t& pos, dvec4 val) {
-//     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
-// }
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDouble(const size2_t& pos, double val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
 
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec2(const size2_t& pos, dvec2 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec3(const size2_t& pos, dvec3 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setFromNormalizedDVec4(const size2_t& pos, dvec4 val) {
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
+}
 
 }  // namespace
 

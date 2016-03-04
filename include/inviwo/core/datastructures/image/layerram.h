@@ -73,10 +73,10 @@ public:
     virtual dvec3 getAsNormalizedDVec3(const size2_t& pos) const = 0;
     virtual dvec4 getAsNormalizedDVec4(const size2_t& pos) const = 0;
 
-//     virtual void setFromNormalizedDouble(const size2_t& pos, double val) = 0;
-//     virtual void setFromNormalizedDVec2(const size2_t& pos, dvec2 val) = 0;
-//     virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) = 0;
-//     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) = 0;
+    virtual void setFromNormalizedDouble(const size2_t& pos, double val) = 0;
+    virtual void setFromNormalizedDVec2(const size2_t& pos, dvec2 val) = 0;
+    virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) = 0;
+    virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) = 0;
 
     static inline size_t posToIndex(const size2_t& pos, const size2_t& dim) {
         return pos.x + (pos.y * dim.x);

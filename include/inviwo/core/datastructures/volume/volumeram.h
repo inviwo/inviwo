@@ -86,10 +86,10 @@ public:
     virtual dvec3 getAsNormalizedDVec3(const size3_t& pos) const = 0;
     virtual dvec4 getAsNormalizedDVec4(const size3_t& pos) const = 0;
 
-//     virtual void setFromNormalizedDouble(const size3_t& pos, double val) = 0;
-//     virtual void setFromNormalizedDVec2(const size3_t& pos, dvec2 val) = 0;
-//     virtual void setFromNormalizedDVec3(const size3_t& pos, dvec3 val) = 0;
-//     virtual void setFromNormalizedDVec4(const size3_t& pos, dvec4 val) = 0;
+    virtual void setFromNormalizedDouble(const size3_t& pos, double val) = 0;
+    virtual void setFromNormalizedDVec2(const size3_t& pos, dvec2 val) = 0;
+    virtual void setFromNormalizedDVec3(const size3_t& pos, dvec3 val) = 0;
+    virtual void setFromNormalizedDVec4(const size3_t& pos, dvec4 val) = 0;
 
     virtual void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset,
                                      const size3_t& subSize, const size3_t& subOffset) = 0;
