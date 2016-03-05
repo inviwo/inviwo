@@ -82,11 +82,11 @@ std::shared_ptr<LayerCL> LayerCLGL2CLConverter::createFrom(
         std::make_shared<LayerCL>(src->getDimensions(), src->getLayerType(), src->getDataFormat());
     {
         SyncCLGL glSync;
-        src->aquireGLObject(glSync.getGLSyncEvent());
+        glSync.addToAquireGLObjectList(src.get());
+        glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), destination->get(),
                                                       glm::size3_t(0), glm::size3_t(0),
                                                       glm::size3_t(src->getDimensions(), 1));
-        src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
     return destination;
 }
@@ -99,11 +99,11 @@ void LayerCLGL2CLConverter::update(std::shared_ptr<const LayerCLGL> src,
 
     {
         SyncCLGL glSync;
-        src->aquireGLObject(glSync.getGLSyncEvent());
+        glSync.addToAquireGLObjectList(src.get());
+        glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), dst->get(), glm::size3_t(0),
                                                       glm::size3_t(0),
                                                       glm::size3_t(src->getDimensions(), 1));
-        src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
 }
 

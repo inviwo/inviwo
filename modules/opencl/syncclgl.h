@@ -90,23 +90,22 @@ public:
      */
     void aquireAllObjects() const;
 
-    std::vector<cl::Event>* getGLSyncEvent() { return syncEvents_; }
-
-    cl::Event* getLastReleaseGLEvent() { return releaseEvent_; }
+    /**
+     * Release all added objects. Done automatically at destruction.
+     * Will wait for provided events.
+     */
+    void releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents = nullptr, cl::Event* event = nullptr);
 
 protected:
-    /**
-     * Release all added objects.
-     */
-    void releaseAllGLObjects() const;
+
 
     std::vector<cl::Memory> syncedObjects_;
 #if defined(CL_VERSION_1_1)
-    GLsync glFenceSync_;
-    cl::Event glSync_;
+    // TODO: Fix support for faster synchronization. See constructor
+    //GLsync glFenceSync_;
+    //cl::Event glSync_;
 #endif
-    cl::Event* releaseEvent_;
-    std::vector<cl::Event>* syncEvents_;
+    std::unique_ptr< std::vector<cl::Event> > syncEvents_;
     const cl::Context& context_;
     const cl::CommandQueue& queue_;
 };

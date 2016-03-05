@@ -39,19 +39,20 @@ PFNCLCREATEEVENTFROMGLSYNCKHR clCreateEventFromGLsync =
 namespace inviwo {
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
-    : releaseEvent_(nullptr), syncEvents_(nullptr), context_(context), queue_(queue) {
+    : syncEvents_(nullptr), context_(context), queue_(queue) {
 #if defined(CL_VERSION_1_1) && defined(GL_ARB_cl_event) && \
     defined(CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR)
     // FIXME: We can only do this if it is supported by the device, otherwise we get unresolved
     // symbol from clCreateEventFromGLsyncKHR
+    // Need to do a runtime check for support
     // glFenceSync_ = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     // cl_int err;
     // glSync_ = clCreateEventFromGLsyncKHR(context(), glFenceSync_, &err);
-    // syncEvents_ = new std::vector<cl::Event>(1, glSync_);
+    // syncEvents_ = std::unique_ptr< std::vector<cl::Event> >(new std::vector<cl::Event>(1, glSync_));
     // if(err != CL_SUCCESS) {
     //    LogError("Failed to create sync event");
     //}
-    // releaseEvent_ = new cl::Event();
+
     glFinish();
 #else
     glFinish();
@@ -59,22 +60,23 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
 }
 
 SyncCLGL::~SyncCLGL() {
-    try {
-        releaseAllGLObjects();
+    if (!syncedObjects_.empty()) {
+        try {
+            cl::Event releaseEvent;
+            releaseAllGLObjects(nullptr, &releaseEvent);
 #if defined(CL_VERSION_1_1) && defined(GL_ARB_cl_event) && \
     defined(CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR)
-        // GLsync clSync = glCreateSyncFromCLeventARB(context_(), (*releaseEvent_)(), 0);
-        // glWaitSync(clSync, 0, GL_TIMEOUT_IGNORED);
-        // glDeleteSync(glFenceSync_);
-        // delete syncEvents_;
-        // delete releaseEvent_;
-        queue_.finish();
+            // GLsync clSync = glCreateSyncFromCLeventARB(context_(), releaseEvent(), 0);
+            // glWaitSync(clSync, 0, GL_TIMEOUT_IGNORED);
+            // glDeleteSync(glFenceSync_);
+            releaseEvent.wait();
+            //queue_.finish();
 #else
-        queue_.finish();
+            queue_.finish();
 #endif
-    }
-    catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
     }
 }
 
@@ -95,12 +97,15 @@ void SyncCLGL::addToAquireGLObjectList(const VolumeCLGL* object) {
 }
 
 void SyncCLGL::aquireAllObjects() const {
-    queue_.enqueueAcquireGLObjects(&syncedObjects_, syncEvents_);
+    queue_.enqueueAcquireGLObjects(&syncedObjects_, syncEvents_.get());
 }
 
-void SyncCLGL::releaseAllGLObjects() const {
-    if (!syncedObjects_.empty())
-        queue_.enqueueReleaseGLObjects(&syncedObjects_, nullptr, releaseEvent_);
+void SyncCLGL::releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents, cl::Event* event) {
+    if (!syncedObjects_.empty()) {
+        queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, event);
+        syncedObjects_.clear();
+    }
+        
 }
 
 }  // end namespace

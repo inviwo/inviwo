@@ -101,11 +101,11 @@ void VolumeFirstHitCLProcessor::process() {
         auto output = outport_.getEditableData()->getEditableRepresentation<ImageCLGL>();
         auto volume = volumePort_.getData()->getRepresentation<VolumeCLGL>();
         auto tfCL = transferFunction_.get().getData()->getRepresentation<LayerCLGL>();
-        volume->aquireGLObject(glSync.getGLSyncEvent());
-        entry->getLayerCL()->aquireGLObject();
-        exit->getLayerCL()->aquireGLObject();
-        output->getLayerCL()->aquireGLObject();
-        tfCL->aquireGLObject();
+        glSync.addToAquireGLObjectList(volume);
+        glSync.addToAquireGLObjectList(entry);
+        glSync.addToAquireGLObjectList(exit);
+        glSync.addToAquireGLObjectList(output);
+        glSync.addToAquireGLObjectList(tfCL);
         const cl::Image& volumeCL = volume->get();
         const cl::Image& entryCL = entry->getLayerCL()->get();
         const cl::Image& exitCL = exit->getLayerCL()->get();
@@ -113,11 +113,6 @@ void VolumeFirstHitCLProcessor::process() {
         const cl::Image& tf = tfCL->get();
         firstHit(volumeCL, entryCL, exitCL, tf, outImageCL, stepSize, globalWorkGroupSize,
                  localWorkGroupSize, profilingEvent);
-        entry->getLayerCL()->releaseGLObject();
-        exit->getLayerCL()->releaseGLObject();
-        output->getLayerCL()->releaseGLObject();
-        tfCL->releaseGLObject();
-        volume->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     } else {
         auto entry = entryImage->getRepresentation<ImageCL>();
         auto exit = exitImage->getRepresentation<ImageCL>();
