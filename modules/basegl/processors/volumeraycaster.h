@@ -86,12 +86,10 @@ public:
 protected:
     virtual void process() override;
 
-    Shader shader_;
-
-private:
     void onVolumeChange();
     void toggleShading(Event*);
     
+    Shader shader_;
     VolumeInport volumePort_;
     std::shared_ptr<const Volume> loadedVolume_;
     ImageInport entryPort_;
