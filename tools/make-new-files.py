@@ -36,6 +36,7 @@ import ivwpy.colorprint as cp
 import ivwpy.util
 import ivwpy.ivwpaths
 import ivwpy.cmake
+import ivwpy.moduleregistration
 
 def make_template(file, name, define, api, incfile, author = "<Author>" ):
 	lines = []
@@ -154,6 +155,18 @@ if __name__ == '__main__':
 				       "... Writing geometry file: ", args.force)						 
 
 		cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
+
+		if args.processor: 
+			if paths.module_register_file == None:
+				cp.print_warn("Don't forget to register the processor in the module")
+			else:
+				try:
+					modulefile = ivwpy.moduleregistration.ModuleRegistration(paths.module_register_file)
+					modulefile.addProcessor(paths.class_name, paths.include_define)
+					modulefile.write("Modulefile.dummy" if args.dummy else paths.module_register_file)
+				except ivwpy.moduleregistration.ModuleRegistrationError as e:
+					cp.print_warn(e.error)
+
 		
 		
 	if args.builddir != None:
@@ -161,7 +174,6 @@ if __name__ == '__main__':
 	else:
 		cp.print_warn("Don't forget to rerun CMake")
 	
-	if args.processor: cp.print_warn("Don't forget to register the processor in the module")
 	cp.print_warn("Done")
 
 

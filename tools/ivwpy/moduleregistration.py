@@ -36,82 +36,43 @@ from . import util
 from . import colorprint as cp
 from . import ivwpaths
 
-def findCMake(pyconf = ""):
-	config = configparser.ConfigParser()
-	config.read([
-		util.toPath(ivwpaths.find_inv_path(), "pyconfig.ini"),
-		pyconf
-		])
-	if config.has_option("CMake", "path"):
-		cmake = config.get("CMake", "path")
-	elif os.name == 'posix': 
-		cmake='cmake'
-	else: 
-		cmake='cmake.exe'
+class ModuleRegistrationError(BaseException):
+	def __init__(self, error):
+		self.error = error
 
-	return cmake
-
-def runCMake(path, options = []):
-	cp.print_warn("Running CMake:")
-	cmake = findCMake()
-	try:
-		with subprocess.Popen([cmake] + options + [path], 
-	  						  stdout=subprocess.PIPE, 
-							  stderr=subprocess.STDOUT,
-							  universal_newlines=True) as proc:
-			for line in proc.stdout:
-				print(line, end='', flush=True)
-	except FileNotFoundError:
-		cp.print_error("... Could not find " + cmake + " in the path")
-
-
-class CMakefile:
-	"""Represent a cmake file"""
+class ModuleRegistration:
+	"""Represents a moudule registration file, i.e. basemodule.cpp"""
 	def __init__(self, filepath):
-		self.filepath = filepath
+		self.cppfile = filepath + ".cpp"
 		self.lines = []
-		with open(filepath, "r") as f:
+		with open(self.cppfile, "r") as f:
 			for l in f:
 				self.lines.append(l)
-	
-	def add_file(self, group, file):
-		m1 = re.compile(r"\s*set\(" + group + "\s*")
-		m0 = re.compile(r"\s*\)\s*")
-		it = iter(self.lines)
-		self.found_group = False
-		def sort_and_insert_line(f, line):
-			lines = []
-			for l in f:
-				if m0.match(l):
-					self.found_group = True
-					lines.append("    " + line + "\n")
-					lines.sort()
-					
-					# remove duplicates
-					seen = set()
-					lines = [x for x in lines if not ( x in seen or seen.add(x))]
-					
-					lines.append(l)
-					break
-				elif l.strip() != "":	
-					lines.append(l.replace("\t","    "))
-				
-			return lines
+
+	def addProcessor(self, processor, header):
+		mConstructor = re.compile(r"""(\s*\w+)Module::\1Module\(InviwoApplication\* \w+\)\s*:\s*InviwoModule\(\w*\s*,\s*"\w*"\)\s*{""")
+		mProcessor = re.compile(r"""\s*registerProcessor<\w+>\(\);""")
+		mInclude = re.compile(r"""#include\s* <[\w/.]*>""")
+
+		lastInclude = None
+		constructorStart = None
+		lastProcessor = None
+
+		for i,line in enumerate(self.lines):
+			if mInclude.match(line): lastInclude = i
+			elif mConstructor.match(line): constructorStart = i
+			elif mProcessor.match(line): lastProcessor = i
+
+		if mConstructor ==  None: raise ModuleRegistrationError("Error: Cound not find construcor")
+		if lastInclude ==  None: raise ModuleRegistrationError("Error: Cound not find includes")
+		if lastInclude >= constructorStart: raise ModuleRegistrationError("Error: we do not understand the file structure")
 		
-		lines = []
-		for line in it:
-			if m1.match(line):
-				lines.append(line)
-				lines.extend(sort_and_insert_line(it, file))
-			else:
-				lines.append(line)
-			
-		if not self.found_group:
-			print_error("... Could not find group " + group + " in cmakelist: " + self.filepath)
-		self.lines = lines
-	
+		self.lines.insert(lastInclude+1, "#include " + header + "\n")
+		ppos = lastProcessor+2 if lastProcessor != None else constructorStart + 2
+		self.lines.insert(ppos, "    registerProcessor<" + processor + ">();\n")
+
 	def write(self, file = ""):
-		with open(file if file != "" else self.filepath, "w") as f:
-			print("... Updating cmakelists: " + f.name)
+		with open(file +".cpp" if file != "" else self.cppfile, "w") as f:
+			print("... Updating object registration: " + f.name)
 			for l in self.lines:
 				f.write(l)
