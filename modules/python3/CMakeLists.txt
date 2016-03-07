@@ -95,6 +95,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pythonparameterparser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pyvalueparser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -112,6 +113,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pythonparameterparser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pyvalueparser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
