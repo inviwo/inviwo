@@ -58,6 +58,7 @@ static PyMethodDef Inviwo_QT_METHODS[] = {
     {"saveWorkspace", py_saveWorkspace, METH_VARARGS, "Saves the current workspace."},
     {"quitInviwo", py_quitInviwo, METH_VARARGS, "Method to quit Inviwo."},
     {"prompt", py_prompt, METH_VARARGS, "Prompts the user for input."},
+    {"update", py_update, METH_VARARGS, "Ask QT to update its widgets"},
     {"showTransferFunctionEditor", py_showTransferFunctionEditor, METH_VARARGS,
      "Show the transfer function editor for given transfer function property."},
     nullptr};
@@ -87,7 +88,6 @@ PyObject* py_getPathCurrentWorkspace(PyObject* self, PyObject* args) {
             return PyValueParser::toPyObject(mw->getNetworkEditor()->getCurrentFilename());
         }
     }
-
     return nullptr;
 }
 
@@ -160,6 +160,17 @@ PyObject* py_prompt(PyObject* self, PyObject* args) {
         return PyValueParser::toPyObject(t);
     } else if (ok) {
         return PyValueParser::toPyObject(std::string(""));
+    }
+    Py_RETURN_NONE;
+}
+
+PyObject* py_update(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    if (tester.parse(args) == -1) {
+        return nullptr;
+    }
+    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        qt->processEvents();
     }
     Py_RETURN_NONE;
 }

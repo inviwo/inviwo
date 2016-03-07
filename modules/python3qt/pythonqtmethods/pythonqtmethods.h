@@ -39,13 +39,10 @@ namespace inviwo {
     PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
+    PyObject* py_update(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* /*args*/);
 
     void IVW_MODULE_PYTHON3QT_API initPythonQT();
-
-
-
-
 }
 
 #endif
