@@ -33,18 +33,14 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/observer.h>
 #include <modules/python3/pythonincluder.h>
-
-// #ifndef PyObject_HEAD
-// struct PyObject;
-// #endif
+#include <modules/python3/pythonexecutionoutputobservable.h>
 
 namespace inviwo {
 class PyModule;
 class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo> {
+class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo> , public PythonExecutionOutputObservable {
 public:
     PyInviwo(Python3Module* module);
     virtual ~PyInviwo();

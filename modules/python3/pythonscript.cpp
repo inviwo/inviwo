@@ -211,7 +211,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         Py_XDECREF(pyError_value);
         Py_XDECREF(pyError_traceback);
         LogError(pyException);
-        PythonExecutionOutputObservable::getPtr()->pythonExecutionOutputEvent(pyException, sysstderr);
+        PyInviwo::getPtr()->pythonExecutionOutputEvent(pyException, sysstderr);
         return false;
     }
 

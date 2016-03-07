@@ -46,8 +46,7 @@ public:
 };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable
-    : public Observable<PythonExecutionOutputObeserver>,
-      public Singleton<PythonExecutionOutputObservable> {
+    : public Observable<PythonExecutionOutputObeserver> {
 public:
     void pythonExecutionOutputEvent(const std::string &msg,
                                     const PythonExecutionOutputStream &outputType);

@@ -45,9 +45,8 @@ Python3Module::Python3Module(InviwoApplication* app)
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
         "Path to the file containing the script") {
 
-    PythonExecutionOutputObservable::init();
     pyInviwo_ = util::make_unique<PyInviwo>(this);
-    PythonExecutionOutputObservable::getPtr()->addObserver(new PythonLogger());
+    PyInviwo::getPtr()->addObserver(&pythonLogger_);
 
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         PythonScript s;
@@ -66,8 +65,8 @@ Python3Module::Python3Module(InviwoApplication* app)
 }
 
 Python3Module::~Python3Module() {
+    PyInviwo::getPtr()->removeObserver(&pythonLogger_);
     pyInviwo_.reset();  // issue destruction before PythonExecutionOutputObservable
-    PythonExecutionOutputObservable::deleteInstance();
 }
 
 }  // namespace

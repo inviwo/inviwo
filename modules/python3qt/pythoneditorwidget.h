@@ -37,6 +37,7 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QTextEdit>

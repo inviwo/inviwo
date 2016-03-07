@@ -32,6 +32,7 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <modules/python3/pythonlogger.h>
 
 #include <string>
 
@@ -47,6 +48,7 @@ public:
 private:
     std::unique_ptr<PyInviwo> pyInviwo_;
     TCLAP::ValueArg<std::string> pythonScriptArg_;
+    PythonLogger pythonLogger_;
 };
 
 }  // namespace
