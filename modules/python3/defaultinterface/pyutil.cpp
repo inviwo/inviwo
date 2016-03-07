@@ -129,6 +129,11 @@ PyObject* py_getBasePath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(InviwoApplication::getPtr()->getBasePath());
 }
 
+PyObject* py_getOutputPath(PyObject* self, PyObject* args) {
+    return PyValueParser::toPyObject(
+        InviwoApplication::getPtr()->getCommandLineParser().getOutputPath());
+}
+
 PyObject* py_getDataPath(PyObject* self, PyObject* args) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Data));

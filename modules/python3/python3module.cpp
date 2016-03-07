@@ -41,12 +41,11 @@ namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pyInviwo_(nullptr)
+    , pyInviwo_(util::make_unique<PyInviwo>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
         "Path to the file containing the script") {
 
-    pyInviwo_ = util::make_unique<PyInviwo>(this);
-    PyInviwo::getPtr()->addObserver(&pythonLogger_);
+    pyInviwo_->addObserver(&pythonLogger_);
 
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         PythonScript s;
@@ -65,8 +64,7 @@ Python3Module::Python3Module(InviwoApplication* app)
 }
 
 Python3Module::~Python3Module() {
-    PyInviwo::getPtr()->removeObserver(&pythonLogger_);
-    pyInviwo_.reset();  // issue destruction before PythonExecutionOutputObservable
+    pyInviwo_->removeObserver(&pythonLogger_);
 }
 
 }  // namespace

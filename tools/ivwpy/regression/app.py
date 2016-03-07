@@ -249,6 +249,18 @@ class App:
 				                   testrun = dbtestrun, 
 				                   value = img["difference"])
 
+		if os.path.exists(report['outputdir'] + "/stats.json"):
+			stats = []
+			with open(report['outputdir'] + "/stats.json", 'r') as f:
+				stats = json.load(f)
+
+			for stat in stats:
+				unit = self.db.getOrAddQuantity(stat["quantity"], stat["unit"])
+				series = self.db.getOrAddSeries(dbtest, unit, stat["name"])
+				self.db.addMeasurement(series = series, testrun = dbtestrun, value = stat["value"])
+
+
+
 
 
 

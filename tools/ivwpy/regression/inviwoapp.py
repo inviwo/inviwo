@@ -67,6 +67,8 @@ class InviwoApp:
 						"-s", "imgtest/UPN", 
 						"-l", "log.txt",
 						"-w", workspace]
+			if report["script"] != "": command += ["-p", report["script"]]
+
 			report['command'] = " ".join(command)
 			report['timeout'] = False
 

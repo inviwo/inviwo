@@ -46,7 +46,6 @@
 
 namespace inviwo {
 
-
 static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
     char* msg;
     int len;
@@ -65,26 +64,21 @@ static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyInviwo::PyInviwo(Python3Module* module)
-    : isInit_(false)
-{
+PyInviwo::PyInviwo(Python3Module* module) : isInit_(false) {
     init(this);
 
     initPythonCInterface(module);
 }
 
-PyInviwo::~PyInviwo() {
-    Py_Finalize();
-}
+PyInviwo::~PyInviwo() { Py_Finalize(); }
 
-void PyInviwo::registerPyModule(PyModuleDef *def, std::string name) {
+void PyInviwo::registerPyModule(PyModuleDef* def, std::string name) {
     PyObject* obj = PyModule_Create(def);
     if (!obj) {
         LogError("Failed to init " << name);
     }
     PyDict_SetItemString(dict_, name.c_str(), obj);
 }
-
 
 void PyInviwo::addModulePath(const std::string& path) {
     if (!Py_IsInitialized()) {
@@ -147,6 +141,7 @@ static PyMethodDef Inviwo_METHODS[] =
     { "snapshotCanvas" , py_snapshotCanvas , METH_VARARGS, "Saves a snapshot of the ith canvas to the given file." },
     { "snapshotAllCanvases" , py_snapshotAllCanvases , METH_VARARGS, "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string)." },
     { "getBasePath" , py_getBasePath , METH_VARARGS, "Returns the path to Inviwos base folder." },
+    { "getOutputPath" , py_getOutputPath , METH_VARARGS, "Returns the output path given by the -o command line option." },
     { "getDataPath" , py_getDataPath , METH_VARARGS, "Returns the path to Inviwos data folder." },
     { "getWorkspaceSavePath" , py_getWorkspaceSavePath , METH_VARARGS, "Returns the path to Inviwos workspace folder." },
     { "getVolumePath" , py_getVolumePath , METH_VARARGS, "Returns the path to Inviwos volume folder." },

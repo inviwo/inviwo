@@ -30,17 +30,18 @@
 #ifndef IVW_PYINVIWO_H
 #define IVW_PYINVIWO_H
 
-#include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
-#include <modules/python3/pythonincluder.h>
+#include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/pythonincluder.h>
 
 namespace inviwo {
 class PyModule;
 class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo> , public PythonExecutionOutputObservable {
+class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo>,
+                                        public PythonExecutionOutputObservable {
 public:
     PyInviwo(Python3Module* module);
     virtual ~PyInviwo();
@@ -48,14 +49,14 @@ public:
     /**
     * \brief initialize a python module
     *
-    * Initializes given python module definition. 
+    * Initializes given python module definition.
     *
     * @param PyModuleDef *def definition of module
-    * @param std::string name the name of the python module, will be used to access functions in the script: eg inviwo.setPropertyValue(....)
+    * @param std::string name the name of the python module, will be used to access functions in the
+    * script: eg inviwo.setPropertyValue(....)
     */
-    void registerPyModule(PyModuleDef *def, std::string name);
+    void registerPyModule(PyModuleDef* def, std::string name);
 
-  
     /**
     * \brief add a path for where python scripts will look for modules
     *
@@ -65,8 +66,8 @@ public:
     * @param PyMethodDef * module static array of registered classes in a module
     */
     void addModulePath(const std::string& path);
-    //PyObject* getMainDictionary();
-    //PyObject* getModulesDictionary();
+    // PyObject* getMainDictionary();
+    // PyObject* getModulesDictionary();
 
     std::vector<PyModule*> getAllPythonModules();
 

@@ -32,11 +32,10 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/observer.h>
-#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
+
 enum IVW_MODULE_PYTHON3_API PythonExecutionOutputStream { sysstdout, sysstderr };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {

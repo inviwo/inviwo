@@ -27,58 +27,34 @@
 # 
 #*********************************************************************************
 
-import glob
-import os
+import time
 import json
+import inviwo
 
-from . error import *
-from .. util import *
+def saveCanvas(canvas, name = None):
+	if name == None: name = canvas
+	inviwo.snapshot( inviwo.getOutputPath() + "/imgtest/"+name+".png", canvas)
 
-class Test:
-	def __init__(self, name, module, path):
-		self.module = module
-		self.path = path
-		self.name = name
-		self.script = ""
-		self.config = {}
-		self.workspaces = glob.glob(self.path +"/*.inv")
+class Measurements:
+	def __init__(self):
+		self.m = []
 
-		configfile = toPath(self.path, "config.json")
-		if os.path.exists(configfile):
-			with open(configfile, 'r') as f:
-				self.config = json.load(f)
+	def add(self, name, quantity, unit, value):
+		self.m.append({"name": name, 'quantity' : quantity, "unit": unit, 'value' : value})
 
-		scripts = glob.glob(self.path +"/*.py")
-		if len(scripts) > 0: self.script = scripts[0]
+	def addCount(self, name, value):
+		self.add(name, "count", "", value)
 
-	def __str__(self):
-		return self.toString()
+	def addTime(self, name, value):
+		self.add(name, "time", "s", value)
 
-	def toString(self):
-		return self.module + "/" + self.name
+	def addFrequency(self, name, value):
+		self.add(name, "frequency", "Hz", value)
 
-	def getWorkspaces(self):
-		return self.workspaces
+	def addFraction(self, name, value):
+		self.add(name, "fraction", "%", value)
 
-	def getImages(self):
-		imgs = glob.glob(self.path +"/*.png")
-		imgs = [os.path.relpath(x, self.path) for x in imgs]
-		return imgs
-		
-	def report(self, report):
-		report['module'] = self.module
-		report['name'] = self.name
-		report['path'] = self.path
-		report['script'] = self.script
-		report['config'] = self.config
-		return report
-
-	def makeOutputDir(self, base):
-		if not os.path.isdir(base):
-			raise RegressionError("Output dir does not exsist: " + base)
-
-		mkdir(base, self.module)
-		mkdir(base, self.module, self.name)
-		return toPath(base, self.module, self.name)
-
+	def save(self):
+		with open(inviwo.getOutputPath() + "/stats.json", 'w') as f:
+ 			json.dump(self.m, f, indent=4, separators=(',', ': '))
 

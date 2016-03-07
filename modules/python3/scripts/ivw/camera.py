@@ -27,58 +27,42 @@
 # 
 #*********************************************************************************
 
-import glob
-import os
-import json
+import inviwo 
+import inviwoqt
 
-from . error import *
-from .. util import *
+import math
+import numpy as np
 
-class Test:
-	def __init__(self, name, module, path):
-		self.module = module
-		self.path = path
-		self.name = name
-		self.script = ""
-		self.config = {}
-		self.workspaces = glob.glob(self.path +"/*.inv")
-
-		configfile = toPath(self.path, "config.json")
-		if os.path.exists(configfile):
-			with open(configfile, 'r') as f:
-				self.config = json.load(f)
-
-		scripts = glob.glob(self.path +"/*.py")
-		if len(scripts) > 0: self.script = scripts[0]
-
-	def __str__(self):
-		return self.toString()
-
-	def toString(self):
-		return self.module + "/" + self.name
-
-	def getWorkspaces(self):
-		return self.workspaces
-
-	def getImages(self):
-		imgs = glob.glob(self.path +"/*.png")
-		imgs = [os.path.relpath(x, self.path) for x in imgs]
-		return imgs
-		
-	def report(self, report):
-		report['module'] = self.module
-		report['name'] = self.name
-		report['path'] = self.path
-		report['script'] = self.script
-		report['config'] = self.config
-		return report
-
-	def makeOutputDir(self, base):
-		if not os.path.isdir(base):
-			raise RegressionError("Output dir does not exsist: " + base)
-
-		mkdir(base, self.module)
-		mkdir(base, self.module, self.name)
-		return toPath(base, self.module, self.name)
+def rotation_matrix(axis, theta):
+    """
+    Return the rotation matrix associated with counterclockwise rotation about
+    the given axis by theta radians.
+    """
+    axis = np.asarray(axis)
+    theta = np.asarray(theta)
+    axis = axis/math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta/2.0)
+    b, c, d = -axis*math.sin(theta/2.0)
+    aa, bb, cc, dd = a*a, b*b, c*c, d*d
+    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
 
 
+class Camera:
+	def __init__(self, id):
+		self.id = id
+		(self.lookfrom, self.lookto, self.lookup) = inviwo.getPropertyValue(self.id)
+
+	def set(self):
+		inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
+		inviwoqt.update()
+
+	def rotate(self, delta = math.pi/30, steps = 60, axis = None):
+		if axis == None: axis = self.lookup
+		start = self.lookup
+		for i in range(1, steps+1):
+			mat = rotation_matrix(axis, i*delta)
+			self.lookup = np.dot(mat, start)
+			self.set()

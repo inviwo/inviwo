@@ -39,6 +39,7 @@ PyObject* py_snapshot(PyObject* self, PyObject* args);
 PyObject* py_snapshotCanvas(PyObject* self, PyObject* args);
 PyObject* py_snapshotAllCanvases(PyObject* self, PyObject* args);
 PyObject* py_getBasePath(PyObject* self, PyObject* args);
+PyObject* py_getOutputPath(PyObject* self, PyObject* args);
 PyObject* py_getDataPath(PyObject* self, PyObject* args);
 PyObject* py_getWorkspaceSavePath(PyObject* self, PyObject* args);
 PyObject* py_getVolumePath(PyObject* self, PyObject* args);

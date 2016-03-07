@@ -38,13 +38,11 @@ namespace inviwo {
 
 /**
  * \class PythonLogger
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
  */
 class IVW_MODULE_PYTHON3_API PythonLogger : public PythonExecutionOutputObeserver {
 public:
-    PythonLogger();
-    virtual ~PythonLogger();
+    PythonLogger() = default;
+    virtual ~PythonLogger() = default;
 
     virtual void onPyhonExecutionOutput(const std::string &msg,
                                         const PythonExecutionOutputStream &outputType) override;

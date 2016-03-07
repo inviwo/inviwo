@@ -31,10 +31,6 @@
 
 namespace inviwo {
 
-PythonLogger::PythonLogger() {}
-
-PythonLogger::~PythonLogger() {}
-
 void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
                                           const PythonExecutionOutputStream &outputType) {
     switch (outputType) {
