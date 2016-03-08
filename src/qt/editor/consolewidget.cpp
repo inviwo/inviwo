@@ -216,8 +216,7 @@ void ConsoleWidget::log(std::string logSource, LogLevel level, LogAudience audie
 void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                                  std::string msg, const char* file, const char* function,
                                  int line) {
-    QString message = QString::fromStdString("Processor " + 
-        (parseTypeIdName(std::string(typeid(processor).name()))) + "/" + processor->getIdentifier()
+    QString message = QString::fromStdString("Processor " + processor->getIdentifier()
          + ": " + msg);
     logMessage(level, message);
 }

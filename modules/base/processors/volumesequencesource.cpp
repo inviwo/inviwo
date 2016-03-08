@@ -117,7 +117,7 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
         try {
             volumes_ = reader->readData(file_.get());
         } catch (DataReaderException const& e) {
-            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
+            LogProcessorError(e.getMessage());
         }
     } else {
         LogProcessorError("Could not find a data reader for file: " << file_.get());
@@ -146,7 +146,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
                     volumes_->push_back(volume);
                 }
                 catch (DataReaderException const& e) {
-                    LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
+                    LogProcessorError(e.getMessage());
                 }
             }
             else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
@@ -157,7 +157,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
                     }
                 }
                 catch (DataReaderException const& e) {
-                    LogProcessorError("Could not load data: " << file << ", " << e.getMessage());
+                    LogProcessorError(e.getMessage());
                 }
             }
             else {

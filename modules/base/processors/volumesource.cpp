@@ -94,7 +94,7 @@ void VolumeSource::load(bool deserialize) {
             auto volumes = volVecReader->readData(file_.get());
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
-            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
+            LogProcessorError(e.getMessage());
         }
     } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
         try {
@@ -103,7 +103,7 @@ void VolumeSource::load(bool deserialize) {
             volumes->push_back(volume);
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
-            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
+            LogProcessorError(e.getMessage());
         }
     } else {
         LogProcessorError("Could not find a data reader for file: " << file_.get());
