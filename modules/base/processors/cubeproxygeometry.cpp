@@ -83,7 +83,8 @@ void CubeProxyGeometry::process() {
         auto marginsTopRight = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
 
         startDataTexCoord += marginsBottomLeft;
-        extent -= marginsTopRight;
+        // extent needs to be adjusted for both margins
+        extent -= marginsBottomLeft + marginsTopRight;
     }
 
     glm::vec3 pos(0.0f);
