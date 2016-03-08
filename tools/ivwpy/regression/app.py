@@ -32,6 +32,7 @@ import glob
 import datetime
 import json
 import shutil
+import filecmp
 
 from . import inviwoapp
 from . import test
@@ -152,20 +153,34 @@ class App:
 		report["imgs"] = list(imgs)
 		report['missing_refs'] = list(imgs - refs)
 		report['missing_imgs'] = list(refs - imgs)
-
 		report['image_tests'] = []
+
+		olddirs = list(reversed(sorted(glob.glob(outputdir+"/../*"))))
+		if len(olddirs)>=1:
+			lastoutdir = olddirs[1]
+		else:
+			lastoutdir = None
+
+		testpath = mkdir(toPath(outputdir, "imgtest"))
+		refpath = mkdir(toPath(outputdir, "imgref"))
+		diffpath = mkdir(toPath(outputdir, "imgdiff"))
+		maskpath = mkdir(toPath(outputdir, "imgmask"))
+
 		for img in imgs & refs:
-			comp = ImageCompare(testImage = toPath(outputdir, "imgtest", img), 
+			comp = ImageCompare(testImage = toPath(testpath, img), 
 				                refImage = toPath(test.path, img))
 
-			refpath = mkdir(toPath(outputdir, "imgref"))
-			diffpath = mkdir(toPath(outputdir, "imgdiff"))
-			maskpath = mkdir(toPath(outputdir, "imgmask"))
-			
 			comp.saveReferenceImage(toPath(refpath, img))
 			comp.saveDifferenceImage(toPath(diffpath, img))
 			comp.saveMaskImage(toPath(maskpath, img))
-							
+			
+			# do some hardlinks to save disk space...
+			if lastoutdir != None:
+				self.linkImages(toPath(lastoutdir, "imgtest", img), toPath(testpath, img))
+				self.linkImages(toPath(lastoutdir, "imgref", img), toPath(refpath, img))
+				self.linkImages(toPath(lastoutdir, "imgdiff", img), toPath(diffpath, img))
+				self.linkImages(toPath(lastoutdir, "imgmask", img), toPath(maskpath, img))
+
 			imgtest = {
 				'image' : img,
 				'difference' : comp.getDifference(),
@@ -179,6 +194,11 @@ class App:
 			report['image_tests'].append(imgtest)
 
 		return report
+
+	def linkImages(self, oldimg, newimg):
+		if os.path.exists(oldimg) and os.path.exists(newimg) and filecmp.cmp(oldimg, newimg):
+			os.remove(newimg)
+			os.link(oldimg, newimg)
 
 	def printTestList(self, testrange = slice(0,None), testfilter = lambda x: True, printfun = print):
 		printfun("List of regression tests")
