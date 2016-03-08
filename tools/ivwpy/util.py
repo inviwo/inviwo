@@ -41,6 +41,9 @@ def subDirs(path):
 def toPath(*list):
 	return "/".join(list)
 
+def useForwardSlash(path):
+	 return "/".join(path.split(os.sep))
+
 def addPostfix(file, postfix):
 	parts = file.split(os.path.extsep)
 	parts[0]+= postfix

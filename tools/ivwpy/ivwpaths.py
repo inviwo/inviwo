@@ -57,7 +57,7 @@ class IvwPaths:
 			self.source = os.sep.join(abspath[:inviwo_pos-1] + ["src"] + abspath[inviwo_pos+1:] + [self.file_name])
 			self.cmake_file = self.find_cmake_file(self.source)
 			self.cmake_header_file = "/".join(["${IVW_INCLUDE_DIR}"] + abspath[inviwo_pos:] + [file.lower() +".h"])
-			self.cmake_source = "/".join(self.make_path_relative(self.source, self.cmake_file).split(os.sep))
+			self.cmake_source = util.useForwardSlash(self.make_path_relative(self.source, self.cmake_file))
 			self.glsl_file_name = self.source
 			self.module_register_file = None
 				
@@ -68,12 +68,12 @@ class IvwPaths:
 			self.module_define = "<modules/" + self.module_name + "/" + self.module_name + "moduledefine.h>"
 			self.header_file = os.sep.join(abspath + [self.file_name + ".h"])
 			self.source = os.sep.join(abspath + [self.file_name])
-			self.include_define = "<" + os.path.relpath(self.header_file, os.sep.join(abspath[:module_pos])) +">"
+			self.include_define = "<" + util.useForwardSlash(os.path.relpath(self.header_file, os.sep.join(abspath[:module_pos]))) +">"
 			self.cmake_file = self.find_cmake_file(self.source)
-			self.cmake_header_file = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.header_file, self.cmake_file).split(os.sep))
-			self.cmake_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.source, self.cmake_file).split(os.sep))
+			self.cmake_header_file = "${CMAKE_CURRENT_SOURCE_DIR}/"  +  util.useForwardSlash(self.make_path_relative(self.header_file, self.cmake_file))
+			self.cmake_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + util.useForwardSlash(self.make_path_relative(self.source, self.cmake_file))
 			self.glsl_file_name = os.sep.join(abspath[:module_pos + 2] + ["glsl", self.file_name])
-			self.cmake_glsl_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + "/".join(self.make_path_relative(self.glsl_file_name, self.cmake_file).split(os.sep))
+			self.cmake_glsl_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  +  util.useForwardSlash(self.make_path_relative(self.glsl_file_name, self.cmake_file))
 			self.module_register_file = os.sep.join(abspath[:module_pos + 2] + [self.module_name + "module"])
 			
 	def get_source_file(self, ext = ".cpp"):
