@@ -1059,6 +1059,7 @@ bool NetworkEditor::saveNetwork(std::string fileName) {
         xmlSerializer.writeFile();
         filename_ = fileName;
         setModified(false);
+        LogInfo("Workspace saved to: " << fileName);
     } catch (SerializationException& exception) {
         util::log(exception.getContext(),
                   "Unable to save network " + fileName + " due to " + exception.getMessage(),
