@@ -292,8 +292,6 @@ void Property::setCurrentStateAsDefault() {
     semantics_.setAsDefault();
 }
 void Property::resetToDefaultState() {
-    readOnly_.reset();
-    notifyObserversOnSetReadOnly(readOnly_);
     propertyModified();
 }
 
