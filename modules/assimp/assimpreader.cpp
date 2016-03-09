@@ -78,8 +78,8 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
     std::clock_t start_readmetadata = std::clock();
 
-// logging
-    Assimp::DefaultLogger::create("AssimpImportLog.txt", Assimp::Logger::LogSeverity::NORMAL, nullptr);
+    // logging
+    Assimp::DefaultLogger::create("AssimpImportLog.txt", Assimp::Logger::LogSeverity::NORMAL, 0);
     Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Warn),
                                                Assimp::Logger::ErrorSeverity::Warn);
     Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Error),
