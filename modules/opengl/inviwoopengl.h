@@ -58,7 +58,7 @@ namespace inviwo {
 IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName, int lineNumber);
 
 #if defined(IVW_DEBUG)
-#define LGL_ERROR LogGLError(__FILE__, __FUNCTION__, __LINE__)
+#define LGL_ERROR inviwo::LogGLError(__FILE__, __FUNCTION__, __LINE__)
 #define LGL_ERROR_SUPPRESS glGetError()
 #else
 #define LGL_ERROR

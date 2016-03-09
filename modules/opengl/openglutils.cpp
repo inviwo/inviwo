@@ -287,7 +287,7 @@ utilgl::BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& 
 
 utilgl::BlendModeEquationState::~BlendModeEquationState() {
     if (state_ && (oldEqn_ != eqn_)) {
-        glBlendEquation(eqn_);
+        glBlendEquation(oldEqn_);
     }
 }
 
