@@ -89,9 +89,11 @@ SequenceTimerProperty* SequenceTimerProperty::clone() const {
 }
 
 void SequenceTimerProperty::updateMax(size_t max) {
-    index_.setMaxValue(static_cast<int>(max));
-    index_.set(1);
-    index_.setCurrentStateAsDefault();
+    if (max != index_.getMaxValue()) {
+        index_.setMaxValue(static_cast<int>(max));
+        index_.set(1);
+        index_.setCurrentStateAsDefault();
+    }
 }
 
 void inviwo::SequenceTimerProperty::onTimerEvent() {
