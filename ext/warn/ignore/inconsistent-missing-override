@@ -44,5 +44,11 @@
 #endif
 
 #if (__GNUC__)
-# pragma GCC diagnostic ignored "-Wsuggest-override"
+# if __GNUC__ > 4 || \
+    (__GNUC__ == 4 && (__GNUC_MINOR__ > 8 || \
+                       (__GNUC_MINOR__ == 8 && \
+                        __GNUC_PATCHLEVEL__ > 3)))
+    // gcc 4.8.3 does not support this warning
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
+# endif
 #endif
