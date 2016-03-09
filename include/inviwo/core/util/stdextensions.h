@@ -519,6 +519,18 @@ struct hash<std::pair<T, U>> {
 };
 
 
+template <class ForwardIt> 
+ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {
+#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
+    // gcc 4.8.x has no implementation for std::rotate with a return value
+    std::rotate(first, n_first, last);
+    return first + (last - n_first);
+#else
+    return std::rotate(first, n_first, last);
+#endif
+}
+
+
 }  // namespace std
 
 #endif  // IVW_STDEXTENSIONS_H
