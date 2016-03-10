@@ -52,7 +52,7 @@ enum class IVW_CORE_API LogAudience : int { User, Developer };
     {                                                                                             \
         std::ostringstream stream__;                                                              \
         stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->log(parseTypeIdName(std::string(typeid(this).name())),      \
+        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
                                           inviwo::LogLevel::Info, inviwo::LogAudience::Developer, \
                                           __FILE__, __FUNCTION__, __LINE__, stream__.str());      \
     }
@@ -60,7 +60,7 @@ enum class IVW_CORE_API LogAudience : int { User, Developer };
     {                                                                                             \
         std::ostringstream stream__;                                                              \
         stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->log(parseTypeIdName(std::string(typeid(this).name())),      \
+        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
                                           inviwo::LogLevel::Warn, inviwo::LogAudience::Developer, \
                                           __FILE__, __FUNCTION__, __LINE__, stream__.str());      \
     }
@@ -68,7 +68,7 @@ enum class IVW_CORE_API LogAudience : int { User, Developer };
     {                                                                                              \
         std::ostringstream stream__;                                                               \
         stream__ << message;                                                                       \
-        inviwo::LogCentral::getPtr()->log(parseTypeIdName(std::string(typeid(this).name())),       \
+        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
                                           inviwo::LogLevel::Error, inviwo::LogAudience::Developer, \
                                           __FILE__, __FUNCTION__, __LINE__, stream__.str());       \
     }
