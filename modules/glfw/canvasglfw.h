@@ -84,6 +84,8 @@ protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
 
+    virtual void releaseContext() override;
+
 private:
     std::string windowTitle_;
     GLFWwindow* glWindow_;

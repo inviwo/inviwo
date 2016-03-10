@@ -128,7 +128,7 @@ inline void ThreadPool::addWorker() {
     std::unique_lock<std::mutex> lock1(this->queue_mutex);
     workers.emplace_back([this, i] {
         util::OnScopeExit cleanup{[this](){
-            //RenderContext::getPtr()->clearContext();
+            RenderContext::getPtr()->releaseContext();
 
             std::unique_lock<std::mutex> lock(cleanup_mutex);
             cleanupThreads.push(std::this_thread::get_id());

@@ -72,6 +72,8 @@ protected:
     void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
+    virtual void releaseContext() override;
+
     static CanvasQGLWidget* sharedCanvas_;
 
 private:

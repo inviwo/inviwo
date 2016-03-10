@@ -123,4 +123,6 @@ void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     QGLWidget::resizeEvent(event);
 }
 
+void CanvasQGLWidget::releaseContext() {}
+
 }  // namespace

@@ -69,6 +69,8 @@ public:
     // used to create hidden canvases used for context in background threads.
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
 
+    virtual void releaseContext() = 0;
+
 protected:
     void activateDefaultRenderContext();
 

@@ -54,6 +54,8 @@ public:
     void clearContext();
     void clearContext(std::thread::id id);
 
+    void releaseContext();
+
 private: 
     Canvas* defaultContext_;
     std::thread::id mainThread_;

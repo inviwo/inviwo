@@ -79,6 +79,15 @@ void RenderContext::clearContext(std::thread::id id) {
     contextMap_.erase(id);
 }
 
+void RenderContext::releaseContext() {
+    auto id = std::this_thread::get_id();
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextMap_.find(id);
+    if (it != contextMap_.end()) {
+        (*it).second->releaseContext();
+    }
+}
+
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 
