@@ -73,7 +73,7 @@ SingleVoxel::SingleVoxel()
     dvec3Property_.setSemantics(PropertySemantics("Text"));
     dvec4Property_.setSemantics(PropertySemantics("Text"));
 
-    space_.addOption("texture", "Texture", SpatialCoordinateTransformer<3>::Space::Texture);
+    //space_.addOption("texture", "Texture", SpatialCoordinateTransformer<3>::Space::Texture);
     space_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
     space_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
     space_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
@@ -91,7 +91,7 @@ void SingleVoxel::process() {
     dvec2Property_.setVisible(comps == 2);
     dvec3Property_.setVisible(comps == 3);
     dvec4Property_.setVisible(comps == 4);
-
+    /*
     if (comps == 1) {
         VolumeSampler<1> sampler(vol);
         auto sample = sampler.sample(position_, space_.get());
@@ -112,7 +112,10 @@ void SingleVoxel::process() {
         auto sample = sampler.sample(position_, space_.get());
         dvec4Property_.set(sample);
     }
-
+    */
+    VolumeSampler sampler(vol);
+    auto sample = sampler.sample(position_);
+    dvec4Property_.set(sample);
 
 }
 
