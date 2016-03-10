@@ -52,6 +52,7 @@ public:
 
     void activateLocalRenderContext() const;
     void clearContext();
+    void clearContext(std::thread::id id);
 
 private: 
     Canvas* defaultContext_;
