@@ -162,10 +162,6 @@ vec3 BasicMesh::orthvec(const vec3& vec) {
     }
 }
 
-vec3 BasicMesh::calcnormal(const vec3& r, const vec3& p) {
-    return glm::normalize(r + glm::dot(r, r - p) / glm::dot(p - r, p - r) * (p - r));
-}
-
 vec3 BasicMesh::tospherical(const vec2& v) {
     return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
 }
@@ -198,34 +194,48 @@ std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& norma
 
 std::shared_ptr<BasicMesh> BasicMesh::cone(const vec3& start, const vec3& stop, const vec4& color,
                                            const float& radius, const size_t& segments) {
-    vec3 tc = vec3(0.5f, 0.5f, 0.0f);
-    vec3 tn = vec3(0.0f, 0.0f, 1.0f);
-    vec3 to = vec3(0.5f, 0.0f, 0.0f);
+    const vec3 tc(0.5f, 0.5f, 0.0f);
+    const vec3 tn(0.0f, 0.0f, 1.0f);
+    const vec3 to(0.5f, 0.0f, 0.0f);
 
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
+
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    vec3 normal = glm::normalize(stop - start);
-    vec3 orth = orthvec(normal);
+    vec3 e1 = glm::normalize(stop - start);
+    vec3 e2 = orthvec(e1);
+    vec3 e3 = glm::cross(e1, e2);
+    mat3 basis(e1, e2, e3);
+
+    float height = glm::length(stop - start);
+    float ratio = radius / height;
+
     double angle = 2.0 * M_PI / segments;
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
-        mesh->addVertex(stop,
-                        calcnormal(glm::rotate(orth, static_cast<float>((i + 0.5) * angle), normal),
-                                   stop - start),
-                        tc, color);
+        // first vertex at base
+        double x = cos(i * angle);
+        double y = sin(i * angle);
+        vec3 normal = basis * glm::normalize(vec3(ratio, x, y));
+        vec3 pos = start + basis * vec3(0.0, x * radius, y * radius);
+        vec3 texCoord = tc + vec3(0.5 * x, 0.5 * y, 0.0);
+        mesh->addVertex(pos, normal, texCoord, color);
 
-        mesh->addVertex(
-            start + radius * glm::rotate(orth, static_cast<float>(i * angle), normal),
-            calcnormal(glm::rotate(orth, static_cast<float>(i * angle), normal), stop - start),
-            tc + to * glm::rotate(orth, static_cast<float>(i * angle), tn), color);
+        // second vertex at base
+        x = cos((i + 1) * angle);
+        y = sin((i + 1) * angle);
+        normal = basis * glm::normalize(vec3(ratio, x, y));
+        pos = start + basis * vec3(0.0, x * radius, y * radius);
+        texCoord = tc + vec3(0.5 * x, 0.5 * y, 0.0);
+        mesh->addVertex(pos, normal, texCoord, color);
 
-        mesh->addVertex(
-            start + radius * glm::rotate(orth, static_cast<float>((i + 1.0) * angle), normal),
-            calcnormal(glm::rotate(orth, static_cast<float>((i + 1.0) * angle), normal),
-                       stop - start),
-            tc + to * glm::rotate(orth, static_cast<float>((i + 1.0) * angle), tn), color);
+        // third vertex at tip
+        x = cos((i + 0.5) * angle);
+        y = sin((i + 0.5) * angle);
+        normal = basis * glm::normalize(vec3(ratio, x, y));
+        mesh->addVertex(stop, normal, tc, color);
 
+        // add indices
         inds->add({i * 3 + 0, i * 3 + 1, i * 3 + 2});
     }
 
@@ -239,29 +249,38 @@ std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& st
     mesh->setModelMatrix(mat4(1.f));
 
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    vec3 normal = glm::normalize(stop - start);
-    vec3 orth = orthvec(normal);
-    vec3 o;
+    vec3 e1 = glm::normalize(stop - start);
+    vec3 e2 = orthvec(e1);
+    vec3 e3 = glm::cross(e1, e2);
+    mat3 basis(e1, e2, e3);
+
     double angle = 2.0 * M_PI / segments;
-    float j;
+    const auto ns = static_cast<std::uint32_t>(segments);
+    for (std::uint32_t i = 0; i < ns; ++i) {
+        // first vertex at base
+        double x = cos(i * angle);
+        double y = sin(i * angle);
+        vec3 normal = basis * vec3(0.0, x, y);
+        vec3 dir = basis * vec3(0.0, x * radius, y * radius);
+        vec3 texCoord = vec3(static_cast<float>(i) / segments, 0.0, 0.0);
+        
+        // vertex at base
+        mesh->addVertex(start + dir, normal, texCoord, color);
+        // vertex at top
+        mesh->addVertex(stop + dir, normal, texCoord + vec3(0.0, 1.0, 0.0), color);
 
-    for (size_t i = 0; i < segments; ++i) {
-        j = static_cast<float>(i);
-        o = glm::rotate(orth, static_cast<float>(i * angle), normal);
-        mesh->addVertex(start + radius * o, -o, vec3(j / segments, 0.0f, 0.0f), color);
-        mesh->addVertex(stop + radius * o, -o, vec3(j / segments, 1.0f, 0.0f), color);
+        // indices for two triangles filling the strip
+        inds->add(i * 2 + 1);
+        inds->add(i * 2 + 0);
+        inds->add(((i + 1) * 2) % (2 * ns) + 0);
 
-        inds->add(static_cast<std::uint32_t>(i * 2 + 1));
-        inds->add(static_cast<std::uint32_t>(i * 2 + 0));
-        inds->add(static_cast<std::uint32_t>(((i + 1) * 2) % (2 * segments) + 0));
-
-        inds->add(static_cast<std::uint32_t>(i * 2 + 1));
-        inds->add(static_cast<std::uint32_t>(((i + 1) * 2) % (2 * segments) + 0));
-        inds->add(static_cast<std::uint32_t>(((i + 1) * 2) % (2 * segments) + 1));
+        inds->add(i * 2 + 1);
+        inds->add(((i + 1) * 2) % (2 * ns) + 0);
+        inds->add(((i + 1) * 2) % (2 * ns) + 1);
     }
-
-    auto startcap = disk(start, -normal, color, radius, segments);
-    auto endcap = disk(stop, normal, color, radius, segments);
+    // add end caps
+    auto startcap = disk(start, -e1, color, radius, segments);
+    auto endcap = disk(stop, e1, color, radius, segments);
 
     mesh->append(startcap.get());
     mesh->append(endcap.get());

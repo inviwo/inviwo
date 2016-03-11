@@ -110,7 +110,6 @@ public:
 
 protected:
     static vec3 orthvec(const vec3& vec);
-    static vec3 calcnormal(const vec3& r, const vec3& p);
     static vec3 tospherical(const vec2& v);
 
     const Vec3BufferRAM* getVerticesRAM() const;
