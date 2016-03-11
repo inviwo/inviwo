@@ -34,6 +34,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
 
