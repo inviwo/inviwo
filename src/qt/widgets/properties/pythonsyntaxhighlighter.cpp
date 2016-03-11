@@ -54,15 +54,15 @@ namespace inviwo {
 class PythonCommentFormater : public SyntaxFormater {
 public:
     PythonCommentFormater(const QTextCharFormat& format)
-        : format_(format), oneLineComment_("^[\\s]*\\#") {}
+        : format_(format){}
 
     virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result res;
         res.format = &format_;
-
-        if (oneLineComment_.indexIn(text) != -1) {
-            res.start.push_back(0);
-            res.length.push_back(text.size());
+        auto index = text.indexOf('#');
+        if (index != -1) {
+            res.start.push_back(index);
+            res.length.push_back(text.size() - index);
             return res;
         }
 
@@ -71,9 +71,6 @@ public:
 
 private:
     QTextCharFormat format_;
-    QRegExp oneLineComment_;
-    QRegExp blockStart_;
-    QRegExp blockEnd_;
 };
 
 class PythonKeywordFormater : public SyntaxFormater {
