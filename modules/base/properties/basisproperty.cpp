@@ -43,10 +43,10 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     , c_("c", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
     , offset_("offset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f))
 
-    , overrideA_("overrideA", "A", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
-    , overrideB_("overrideB", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
-    , overrideC_("overrideC", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
-    , overrideOffset_("overrideOffset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
+    , overrideA_("overrideA", "A (override)", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
+    , overrideB_("overrideB", "B (override)", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
+    , overrideC_("overrideC", "C (override)", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
+    , overrideOffset_("overrideOffset", "Offset (override)", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
     a_.setReadOnly(true);
     a_.setSerializationMode(PropertySerializationMode::NONE);
     b_.setReadOnly(true);
