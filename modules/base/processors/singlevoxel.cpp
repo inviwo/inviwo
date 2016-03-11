@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "singlevoxel.h"
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
