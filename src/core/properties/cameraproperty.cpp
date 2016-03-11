@@ -70,8 +70,7 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
             MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
         new Action(this, &CameraProperty::changeFocusPoint))
 
-    , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true,
-                                InvalidationLevel::Valid)
+    , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
 
     , camera_()
     , inport_(inport)
