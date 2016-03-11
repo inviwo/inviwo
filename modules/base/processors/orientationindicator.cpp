@@ -140,9 +140,9 @@ void OrientationIndicator::process() {
     const static float baseHeadradius = 0.15f;
     float radius = radius_.get() * baseRadius;
     float headradius = radius_.get() * baseHeadradius;
-    auto xArrow = BasicMesh::arrow(start, endX, xColor_, xScale * radius, 0.25, xScale * headradius);
-    auto yArrow = BasicMesh::arrow(start, endY, yColor_, yScale * radius, 0.25, yScale * headradius);
-    auto zArrow = BasicMesh::arrow(start, endZ, zColor_, zScale * radius, 0.25, zScale * headradius);
+    auto xArrow = BasicMesh::arrow(start, endX, xColor_, xScale * radius, 0.25, xScale * headradius, 64);
+    auto yArrow = BasicMesh::arrow(start, endY, yColor_, yScale * radius, 0.25, yScale * headradius, 64);
+    auto zArrow = BasicMesh::arrow(start, endZ, zColor_, zScale * radius, 0.25, zScale * headradius, 64);
 
     auto base = BasicMesh::sphere(start, scale * radius * 2, baseColor_);
 
