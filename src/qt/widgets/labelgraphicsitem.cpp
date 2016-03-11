@@ -39,17 +39,16 @@
 
 namespace inviwo {
 
-LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent)
+LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent, Qt::Alignment alignment)
     : QGraphicsTextItem(parent), LabelGraphicsItemObservable()
     , maxBefore_(0)
     , maxAfter_(0)
     , focusOut_(false)
     , orgText_("")
+    , alignment_(alignment)
 {
     font().setPixelSize(4);
 }
-
-LabelGraphicsItem::~LabelGraphicsItem() {}
 
 QString LabelGraphicsItem::text() const {
     if (isCropped())
@@ -60,7 +59,7 @@ QString LabelGraphicsItem::text() const {
 
 void LabelGraphicsItem::setText(const QString& str) {
     if (doCrop(str)) {
-        if (toolTip()==orgText_)
+        if (toolTip() == orgText_)
             setToolTip(str);
 
         orgText_ = str;
@@ -71,6 +70,36 @@ void LabelGraphicsItem::setText(const QString& str) {
         setToolTip(orgText_);
         setPlainText(str);
     }
+    updatePosition();
+}
+
+void LabelGraphicsItem::setHtml(const QString& str) {
+    QGraphicsTextItem::setHtml(str);
+    updatePosition();
+}
+
+void LabelGraphicsItem::updatePosition() {
+    // adjust transformation
+    QRectF b = QGraphicsTextItem::boundingRect();
+    double x = b.x();
+    double y = b.y();
+    // horizontal alignment
+    if (alignment_ & Qt::AlignHCenter) {
+        x -= b.width() / 2.0;
+    }
+    else if (alignment_ & Qt::AlignRight) {
+        x -= b.width();
+    }
+    // vertical alignment
+    if (alignment_ & Qt::AlignVCenter) {
+        y -= b.height() / 2.0;
+    }
+    else if (alignment_ & Qt::AlignBottom) {
+        y -= b.height();
+    }
+
+    QTransform t(QTransform::fromTranslate(x, y));
+    setTransform(t);
 }
 
 QString LabelGraphicsItem::croppedText() const {
@@ -93,6 +122,12 @@ void LabelGraphicsItem::setNoFocusOut() {
 
 bool LabelGraphicsItem::isFocusOut() const {
     return focusOut_;
+}
+
+void LabelGraphicsItem::setAlignment(Qt::Alignment alignment) {
+    QGraphicsTextItem::prepareGeometryChange();
+    alignment_ = alignment;
+    updatePosition();
 }
 
 bool LabelGraphicsItem::doCrop(const QString& str) {

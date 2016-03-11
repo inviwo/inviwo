@@ -157,12 +157,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     }
 
     #if IVW_PROFILING
-    countLabel_ = new LabelGraphicsItem(this);
+    countLabel_ = new LabelGraphicsItem(this, Qt::AlignRight | Qt::AlignVCenter);
     countLabel_->setCrop(9,8);
-    countLabel_->setPos(rect().left() + labelHeight, height / 2 - labelHeight*2.5);
+    countLabel_->setPos(width / 2.0 - labelHeight, height / 2 - labelHeight*2.5);
     countLabel_->setDefaultTextColor(Qt::lightGray);
     countLabel_->setFont(classFont);
-    countLabel_->setTextWidth(width - 2*labelHeight);
     #endif
 
     setVisible(processorMeta_->isVisible());
@@ -392,7 +391,7 @@ void ProcessorGraphicsItem::onProcessorPortAdded(Processor *, Port *port){
 #if IVW_PROFILING
 void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     processCount_++;
-    countLabel_->setHtml(QString::fromStdString("<p align=\"right\">"+toString(processCount_)+"</p>"));
+    countLabel_->setText(QString::number(processCount_));
     clock_.start();
 }
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
@@ -403,7 +402,7 @@ void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
 }
 void ProcessorGraphicsItem::resetTimeMeasurements(){
     processCount_ = 0;
-    countLabel_->setHtml(QString("<p align=\"right\">0</p>"));
+    countLabel_->setText("0");
     maxEvalTime_ = 0.0;
     evalTime_ = 0.0;
     totEvalTime_ = 0.0;

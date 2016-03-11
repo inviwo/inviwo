@@ -62,11 +62,12 @@ public:
 class IVW_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem, public LabelGraphicsItemObservable {
 
 public:
-    LabelGraphicsItem(QGraphicsItem* parent);
-    ~LabelGraphicsItem();
+    LabelGraphicsItem(QGraphicsItem* parent, Qt::Alignment alignment=Qt::AlignLeft | Qt::AlignTop);
+    ~LabelGraphicsItem() = default;
 
     QString text() const;
     void setText(const QString&);
+    void setHtml(const QString &str);
 
     QString croppedText() const;
     void setCrop(int, int);
@@ -74,6 +75,8 @@ public:
 
     void setNoFocusOut();
     bool isFocusOut() const;
+
+    void setAlignment(Qt::Alignment alignment);
 
 protected:
     bool doCrop(const QString& str);
@@ -83,11 +86,15 @@ protected:
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
 
+    void updatePosition();
+
 private:
     int maxBefore_;
     int maxAfter_;
     bool focusOut_;
     QString orgText_;
+
+    Qt::Alignment alignment_; // Qt::AlignLeft/Right/HCenter | Qt::AlignTop/Bottom/VCenter
 };
 
 } // namespace
