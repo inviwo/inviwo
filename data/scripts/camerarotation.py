@@ -1,5 +1,6 @@
 # Inviwo Python script 
 import inviwo 
+import inviwo_utils
 import math 
 import time
 
@@ -13,6 +14,7 @@ for i in range(0, steps):
    x = d*math.sin(r)
    z = -d*math.cos(r)
    inviwo.setPropertyValue("EntryExitPoints.camera",((x*scale,3*scale,z*scale),(0,0,0),(0,1,0)))
+   inviwo_utils.update() # Needed for canvas to update
 
 
 for i in range(0, steps):
@@ -20,7 +22,7 @@ for i in range(0, steps):
    x = 1.0*math.sin(r)
    z = 1.0*math.cos(r)
    inviwo.setCameraUp("EntryExitPoints.camera",(x*scale,z*scale,0))
-
+   inviwo_utils.update() # Needed for canvas to update
 
 end = time.clock()
 fps = 2*steps / (end - start)

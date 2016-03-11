@@ -50,6 +50,10 @@ Python3Module::Python3Module(InviwoApplication* app)
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         PythonScript s;
         auto filename = pythonScriptArg_.getValue();
+        if (!filesystem::fileExists(filename)) {
+            LogWarn("Could not run script, file does not exist: " << filename);
+            return;
+        }
         std::ifstream file(filename.c_str());
         std::string src((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         file.close();
