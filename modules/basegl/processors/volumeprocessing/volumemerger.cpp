@@ -90,7 +90,6 @@ void VolumeMerger::preProcess(TextureUnitContainer &cont)
     bool b = vol3_.isConnected();
     bool c = vol4_.isConnected();
 
-    int numVolumes = 1;
     if (a && !b && !c) {
         utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
     }
