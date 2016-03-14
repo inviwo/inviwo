@@ -398,6 +398,7 @@ typedef OrdinalPropertyWidgetQt<double, dvec3> DoubleVec3PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<double, dvec4> DoubleVec4PropertyWidgetQt;
 
 typedef OrdinalPropertyWidgetQt<int, int> IntPropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size_t> IntSizeTPropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec2> IntVec2PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec3> IntVec3PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec4> IntVec4PropertyWidgetQt;

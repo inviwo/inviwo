@@ -258,6 +258,10 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<IntVec2Property>();
     registerProperty<IntVec3Property>();
     registerProperty<IntVec4Property>();
+    registerProperty<IntSizeTProperty>();
+    registerProperty<IntSize2Property>();
+    registerProperty<IntSize3Property>();
+    registerProperty<IntSize4Property>();
     registerProperty<OptionPropertyDouble>();
     registerProperty<OptionPropertyFloat>();
     registerProperty<OptionPropertyInt>();

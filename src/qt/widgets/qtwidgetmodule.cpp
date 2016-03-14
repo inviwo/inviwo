@@ -120,6 +120,8 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerPropertyWidget<IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty>("Text");
     registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Default");
     registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Text");
+    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Default");
+    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Text");
     registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Default");
     registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Text");
     registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Default");

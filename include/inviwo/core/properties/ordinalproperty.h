@@ -86,6 +86,7 @@ private:
 // Scalar properties
 using FloatProperty = OrdinalProperty<float>;
 using IntProperty = OrdinalProperty<int>;
+using IntSizeTProperty = OrdinalProperty<size_t>;
 using Int64Property = OrdinalProperty<glm::i64>;
 using DoubleProperty = OrdinalProperty<double>;
 
