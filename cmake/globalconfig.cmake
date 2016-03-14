@@ -236,19 +236,27 @@ mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 if(WIN32 AND MSVC)
     if(SHARED_LIBS)
         set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
+    else()
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
+    endif()
+    
+    # Determine runtime library linkage depending on SHARED_LIBS setting.
+    # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
+    option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
+    mark_as_advanced(IVW_FORCE_SHARED_CRT)
+    if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
     else()
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
     endif()
 
-    if(MSVC_VERSION LESS 1900) # Pre visualstdio 2015
+    if(MSVC_VERSION LESS 1900) # Pre visual studio 2015
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Zi")
     else()
