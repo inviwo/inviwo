@@ -189,6 +189,18 @@ static PyMethodDef Inviwo_METHODS[] =
     {"setProcessorWidgetDimensions", py_setProcessorWidgetDimensions, METH_VARARGS, "Set processor widget dimensions"},
     {"getProcessorWidgetDimensions", py_getProcessorWidgetDimensions, METH_VARARGS, "Get processor widget dimensions"},
 
+    // Defined in pynetwork
+    {"getProcessors",    py_getProcessors,    METH_VARARGS, "Get a list of all processors"},
+    {"addProcessor",     py_addProcessor,     METH_VARARGS, "Add a processor using classIdentifier and identifier"},
+    {"removeProcessor",  py_removeProcessor,  METH_VARARGS, "Remove a processor using a identifier"},
+
+    {"getConnections",   py_getConnections,   METH_VARARGS, "Get a list of all connections"},
+    {"addConnection",    py_addConnection,    METH_VARARGS, "Add a connection using two processor id and port id"},
+    {"removeConnection", py_removeConnection, METH_VARARGS, "Remove a connection using processor id and port id"},
+
+    {"getLinks",         py_getLinks,         METH_VARARGS, "Get a list of all links"},
+    {"addLink",          py_addLink,          METH_VARARGS, "Add a link using two property paths"},
+    {"removeLink",       py_removeLink,       METH_VARARGS, "Remove a link using two property paths"},
 
     nullptr
 };

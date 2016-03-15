@@ -31,20 +31,20 @@
 #define IVW_PYNETWORK_H
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-/**
- * \class PyNetwork
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_PYTHON3_API PyNetwork { 
-public:
-    PyNetwork();
-    virtual ~PyNetwork();
-};
+PyObject* py_getProcessors(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_addProcessor(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_removeProcessor(PyObject* /*self*/, PyObject* /*args*/);
+
+PyObject* py_getConnections(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_addConnection(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_removeConnection(PyObject* /*self*/, PyObject* /*args*/);
+
+PyObject* py_getLinks(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_addLink(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_removeLink(PyObject* /*self*/, PyObject* /*args*/);
 
 } // namespace
 

@@ -30,10 +30,10 @@
 
 #include <modules/python3/pythonincluder.h>
 
-#include <modules/python3/defaultinterface/utilities.h>
 #include <modules/python3/defaultinterface/pyprocessor.h>
 #include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/defaultinterface/utilities.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
