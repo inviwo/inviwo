@@ -93,20 +93,20 @@ struct repeat<T, N, IntSequence<Indices...>> {
 template <typename T>
 using glmToTupleType = typename repeat<typename T::value_type, util::flat_extent<T>::value>::type;
 
-
 template <typename T, int N, typename... Args>
-typename std::enable_if<0 == N, glmToTupleType<T>>::type glm2tupleImpl(T& val, Args... args) {
+typename std::enable_if<0 == N, glmToTupleType<T>>::type glmToFlatTupleImpl(const T& val,
+                                                                            Args... args) {
     return std::make_tuple(args...);
 }
 template <typename T, int N, typename... Args>
-typename std::enable_if<0 < N, glmToTupleType<T>>::type glm2tupleImpl(T& val, Args... args) {
-    return glm2tupleImpl<T, N - 1>(val, util::glmcomp(val, N - 1), args...);
+typename std::enable_if<0 < N, glmToTupleType<T>>::type glmToFlatTupleImpl(const T& val,
+                                                                           Args... args) {
+    return glmToFlatTupleImpl<T, N - 1>(val, util::glmcomp(val, N - 1), args...);
 }
 template <typename T>
-auto glmToFlatTuple(T arg) -> glmToTupleType<T> {
-    return glm2tupleImpl<T, util::flat_extent<T>::value>(arg);
+auto glmToFlatTuple(const T& arg) -> glmToTupleType<T> {
+    return glmToFlatTupleImpl<T, util::flat_extent<T>::value>(arg);
 }
-
 
 template <typename T>
 struct typeToPy {
@@ -140,7 +140,7 @@ template <typename U, typename V>
 struct typeToPy<std::pair<U, V>> {
     static std::string str() { return "(" + typeToPy<U>::str() + typeToPy<V>::str() + ")"; }
 
-    static auto data(std::pair<U, V> p)
+    static auto data(const std::pair<U, V>& p)
         -> decltype(std::tuple_cat(typeToPy<U>::data(std::declval<U>()),
                                    typeToPy<V>::data(std::declval<V>()))) {
         return std::tuple_cat(typeToPy<U>::data(p.first), typeToPy<V>::data(p.second));
@@ -209,7 +209,7 @@ struct typeToPy<std::string> {
     static auto data(const std::string& f)
         -> decltype(std::make_tuple(std::declval<std::string>().c_str(),
                                     std::declval<std::string>().size())) {
-        return std::make_tuple( );
+        return std::make_tuple(f.c_str(), f.size());
     }
 };
 
@@ -239,21 +239,18 @@ T parse(PyObject* args) {
 // Build C++ -> PyObject
 
 template <typename T, int... S>
-PyObject* build2helper(const std::string& ts, const T& params, IntSequence<S...>) {
-    return Py_BuildValue(ts.c_str(), std::get<S>(params)...);
+PyObject* buildHelper(const std::string& ts, const T& params, IntSequence<S...>) {
+    auto obj = Py_BuildValue(ts.c_str(), std::get<S>(params)...);
+    return obj;
 }
 
 template <typename T>
-PyObject* build(T arg) {
+PyObject* build(const T& arg) {
     auto str = typeToPy<T>::str();
     auto vals = typeToPy<T>::data(arg);
-    return build2helper(str, vals,
-                      typename GenerateIntSequence<std::tuple_size<decltype(vals)>::value>::type());
+    return buildHelper(
+        str, vals, typename GenerateIntSequence<std::tuple_size<decltype(vals)>::value>::type());
 }
-
-
-
-
 
 // Test, check PyObject
 template <typename T, typename std::enable_if<
