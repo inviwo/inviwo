@@ -58,7 +58,7 @@ void ProcessorMetaData::setPosition(const ivec2& pos) {
 
 ivec2 ProcessorMetaData::getPosition() const { return position_; }
 
-void ProcessorMetaData::setVisibile(bool visibility) {
+void ProcessorMetaData::setVisible(bool visibility) {
     if (visibility != visibility_) {
         visibility_ = visibility;
         for (auto o : observers_) o->onProcessorMetaDataVisibilityChange();

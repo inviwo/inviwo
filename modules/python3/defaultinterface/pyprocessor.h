@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,24 +24,37 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_PYLISTMEHTODSINVIWO_H
-#define IVW_PYLISTMEHTODSINVIWO_H
-
-
+#ifndef IVW_PYPROCESSOR_H
+#define IVW_PYPROCESSOR_H
 
 #include <modules/python3/python3moduledefine.h>
 
 namespace inviwo {
-PyObject* py_listProperties(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/);
+
+PyObject* py_setProcessorSelected(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_isProcessorSelected(PyObject* /*self*/, PyObject* /*args*/);
+
+PyObject* py_setProcessorVisible(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_isProcessorVisible(PyObject* /*self*/, PyObject* /*args*/);
+
+PyObject* py_setProcessorPosition(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorPosition(PyObject* /*self*/, PyObject* /*args*/);
 
 
-} //namespace
+PyObject* py_getProcessorClassIdentifier(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorDisplayName(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorCategory(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorState(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorTags(PyObject* /*self*/, PyObject* /*args*/);
 
+PyObject* py_getProcessorInports(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorOutports(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorProperties(PyObject* /*self*/, PyObject* /*args*/);
 
-#endif // IVW_PYLISTMEHTODSINVIWO_H
+} // namespace
 
+#endif // IVW_PYPROCESSOR_H
 

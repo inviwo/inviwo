@@ -329,7 +329,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
         case QGraphicsItem::ItemVisibleHasChanged:
-            if (processorMeta_) processorMeta_->setVisibile(isVisible());
+            if (processorMeta_) processorMeta_->setVisible(isVisible());
             break;
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();

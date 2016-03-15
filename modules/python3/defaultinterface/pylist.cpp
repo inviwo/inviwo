@@ -81,7 +81,7 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
         std::vector<Processor*> processors =
             InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();

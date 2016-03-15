@@ -61,7 +61,7 @@ public:
 
     void setPosition(const ivec2& pos);
     ivec2 getPosition() const;
-    void setVisibile(bool visibility);
+    void setVisible(bool visibility);
     bool isVisible() const;
     void setSelected(bool selection);
     bool isSelected() const;
