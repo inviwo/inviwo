@@ -236,7 +236,7 @@ T parse(PyObject* args) {
 
 // Build C++ -> PyObject
 
-template <typename T, int... S>
+template <typename T, size_t... S>
 PyObject* buildHelper(const std::string& ts, const T& params, IntSequence<S...>) {
     return Py_BuildValue(ts.c_str(), std::get<S>(params)...);;
 }
