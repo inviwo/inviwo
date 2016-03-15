@@ -620,12 +620,26 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::t
 auto glmcomp(T& elem, size_t i) -> T& {
     return elem;
 }
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+auto glmcomp(const T& elem, size_t i) -> const T& {
+    return elem;
+}
+
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
 auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
     return elem[i];
 }
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
+    return elem[i];
+}
+
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
 auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
 }
 
@@ -634,12 +648,26 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::t
 auto glmcomp(T& elem, size_t i, size_t j) -> T& {
     return elem;
 }
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+auto glmcomp(const T& elem, size_t i, size_t j) -> const T& {
+    return elem;
+}
+
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
 auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type& {
     return elem[i];
 }
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
+    return elem[i];
+}
+
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
 auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
+    return elem[i][j];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
     return elem[i][j];
 }
 
