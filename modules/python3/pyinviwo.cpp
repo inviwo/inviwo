@@ -44,6 +44,7 @@
 #include <modules/python3/defaultinterface/pyutil.h>
 #include <modules/python3/defaultinterface/pyvolume.h>
 #include <modules/python3/defaultinterface/pyprocessor.h>
+#include <modules/python3/defaultinterface/pyprocessorwidget.h>
 #include <modules/python3/defaultinterface/pynetwork.h>
 
 namespace inviwo {
@@ -160,7 +161,7 @@ static PyMethodDef Inviwo_METHODS[] =
     {"clearTransferfunction",      py_clearTransferfunction,    METH_VARARGS, "Clears a transfer function." },
     {"addPointToTransferFunction", py_addPointTransferFunction, METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
     
-    // Defined in pyyprocessor
+    // Defined in pyprocessor
     {"setProcessorSelected", py_setProcessorSelected, METH_VARARGS, "Control whether a processor is selected"},
     {"isProcessorSelected",  py_isProcessorSelected,  METH_VARARGS, "Is processor selected"},
     {"setProcessorVisible",  py_setProcessorVisible,  METH_VARARGS, "Control whether a processor is visible"},
@@ -176,6 +177,18 @@ static PyMethodDef Inviwo_METHODS[] =
     {"getProcessorTags",            py_getProcessorTags,            METH_VARARGS, "Get the Processor tags"},
 
     {"getProcessorProperties",      py_getProcessorProperties,      METH_VARARGS, "Get all properties for processor"},
+    {"getProcessorInports",         py_getProcessorInports,         METH_VARARGS, "Get all inports for processor"},
+    {"getProcessorOutports",        py_getProcessorOutports,        METH_VARARGS, "Get all outports for processor"},
+
+    // Defined in pyprocessorwidget
+    {"hasProcessorWidget",           py_hasProcessorWidget,           METH_VARARGS, "Does processor have a widget"},
+    {"setProcessorWidgetVisible",    py_setProcessorWidgetVisible,    METH_VARARGS, "Set processor widget visibility"},
+    {"isProcessorWidgetVisible",     py_isProcessorWidgetVisible,     METH_VARARGS, "Is processor widget visible"},
+    {"setProcessorWidgetPosition",   py_setProcessorWidgetPosition,   METH_VARARGS, "Set processor widget position"},
+    {"getProcessorWidgetPosition",   py_getProcessorWidgetPosition,   METH_VARARGS, "Get processor widget position"},
+    {"setProcessorWidgetDimensions", py_setProcessorWidgetDimensions, METH_VARARGS, "Set processor widget dimensions"},
+    {"getProcessorWidgetDimensions", py_getProcessorWidgetDimensions, METH_VARARGS, "Get processor widget dimensions"},
+
 
     nullptr
 };

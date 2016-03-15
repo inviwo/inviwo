@@ -61,30 +61,29 @@ public:
 
 namespace detail {
 
-template<int...>
+template<size_t...>
 struct IntSequence { };
 
-template<int N, int... S>
+template<size_t N, size_t... S>
 struct GenerateIntSequence : GenerateIntSequence<N-1, N-1, S...> { };
 
-template<int... S>
+template<size_t... S>
 struct GenerateIntSequence<0, S...> {
   typedef IntSequence<S...> type;
 };
 
-template <int N>
+template <size_t N>
 using GenerateIntSequence_t = typename GenerateIntSequence<N>::type;
 
 
-template<typename Dependent, int Index>
+template<typename Dependent, size_t Index>
 using DependOn = Dependent;
 
-template<typename T, int N, typename I = GenerateIntSequence_t<N>>
+template<typename T, size_t N, typename I = GenerateIntSequence_t<N>>
 struct repeat;
 
-template<typename T, int N, int... Indices>
+template<typename T, size_t N, size_t... Indices>
 struct repeat<T, N, IntSequence<Indices...>> {
-    // Can be an actual type-list instead of (ab)using std::tuple
     using type = std::tuple<DependOn<T, Indices>...>;
 };
 
@@ -146,7 +145,6 @@ struct typeToPy<std::pair<U, V>> {
         return std::tuple_cat(typeToPy<U>::data(p.first), typeToPy<V>::data(p.second));
     }
 };
-
 
 template <>
 struct typeToPy<unsigned char>{
@@ -240,8 +238,7 @@ T parse(PyObject* args) {
 
 template <typename T, int... S>
 PyObject* buildHelper(const std::string& ts, const T& params, IntSequence<S...>) {
-    auto obj = Py_BuildValue(ts.c_str(), std::get<S>(params)...);
-    return obj;
+    return Py_BuildValue(ts.c_str(), std::get<S>(params)...);;
 }
 
 template <typename T>
@@ -249,7 +246,7 @@ PyObject* build(const T& arg) {
     auto str = typeToPy<T>::str();
     auto vals = typeToPy<T>::data(arg);
     return buildHelper(
-        str, vals, typename GenerateIntSequence<std::tuple_size<decltype(vals)>::value>::type());
+        str, vals, GenerateIntSequence_t<std::tuple_size<decltype(vals)>::value>());
 }
 
 // Test, check PyObject

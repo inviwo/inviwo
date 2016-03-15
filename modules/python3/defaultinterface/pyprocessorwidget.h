@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,35 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_PYSNAPSHOTMEHTODINVIWO_H
-#define IVW_PYSNAPSHOTMEHTODINVIWO_H
+#ifndef IVW_PYPROCESSORWIDGET_H
+#define IVW_PYPROCESSORWIDGET_H
 
 #include <modules/python3/python3moduledefine.h>
 
 namespace inviwo {
 
-PyObject* py_wait(PyObject* self, PyObject* args);
-PyObject* py_snapshot(PyObject* self, PyObject* args);
-PyObject* py_snapshotCanvas(PyObject* self, PyObject* args);
-PyObject* py_snapshotAllCanvases(PyObject* self, PyObject* args);
-PyObject* py_getBasePath(PyObject* self, PyObject* args);
-PyObject* py_getOutputPath(PyObject* self, PyObject* args);
-PyObject* py_getDataPath(PyObject* self, PyObject* args);
-PyObject* py_getWorkspaceSavePath(PyObject* self, PyObject* args);
-PyObject* py_getVolumePath(PyObject* self, PyObject* args);
-PyObject* py_getImagePath(PyObject* self, PyObject* args);
-PyObject* py_getModulePath(PyObject* self, PyObject* args);
-PyObject* py_getTransferFunctionPath(PyObject* self, PyObject* args);
+PyObject* py_hasProcessorWidget(PyObject* /*self*/, PyObject* /*args*/);
 
-PyObject* py_getMemoryUsage(PyObject* self, PyObject* args);
-PyObject* py_clearResourceManager(PyObject* self, PyObject* args);
+PyObject* py_setProcessorWidgetVisible(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_isProcessorWidgetVisible(PyObject* /*self*/, PyObject* /*args*/);
 
-PyObject* py_disableEvaluation(PyObject* self, PyObject* args);
-PyObject* py_enableEvaluation(PyObject* self, PyObject* args);
+PyObject* py_setProcessorWidgetPosition(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorWidgetPosition(PyObject* /*self*/, PyObject* /*args*/);
 
-}  // namespace
+PyObject* py_setProcessorWidgetDimensions(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getProcessorWidgetDimensions(PyObject* /*self*/, PyObject* /*args*/);
 
-#endif  // IVW_PYSNAPSHOTMEHTODINVIWO_H
+} // namespace
+
+#endif // IVW_PYPROCESSORWIDGET_H
+

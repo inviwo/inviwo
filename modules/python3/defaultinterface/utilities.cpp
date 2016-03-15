@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,35 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_PYSNAPSHOTMEHTODINVIWO_H
-#define IVW_PYSNAPSHOTMEHTODINVIWO_H
-
-#include <modules/python3/python3moduledefine.h>
+#include <modules/python3/defaultinterface/utilities.h>
 
 namespace inviwo {
 
-PyObject* py_wait(PyObject* self, PyObject* args);
-PyObject* py_snapshot(PyObject* self, PyObject* args);
-PyObject* py_snapshotCanvas(PyObject* self, PyObject* args);
-PyObject* py_snapshotAllCanvases(PyObject* self, PyObject* args);
-PyObject* py_getBasePath(PyObject* self, PyObject* args);
-PyObject* py_getOutputPath(PyObject* self, PyObject* args);
-PyObject* py_getDataPath(PyObject* self, PyObject* args);
-PyObject* py_getWorkspaceSavePath(PyObject* self, PyObject* args);
-PyObject* py_getVolumePath(PyObject* self, PyObject* args);
-PyObject* py_getImagePath(PyObject* self, PyObject* args);
-PyObject* py_getModulePath(PyObject* self, PyObject* args);
-PyObject* py_getTransferFunctionPath(PyObject* self, PyObject* args);
-
-PyObject* py_getMemoryUsage(PyObject* self, PyObject* args);
-PyObject* py_clearResourceManager(PyObject* self, PyObject* args);
-
-PyObject* py_disableEvaluation(PyObject* self, PyObject* args);
-PyObject* py_enableEvaluation(PyObject* self, PyObject* args);
+ProcessorMetaData* utilpy::getProcessorMetaData(const std::string& identifier) {
+    if (auto p = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(
+            identifier)) {
+        return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    }
+    return nullptr;
+}
 
 }  // namespace
-
-#endif  // IVW_PYSNAPSHOTMEHTODINVIWO_H
