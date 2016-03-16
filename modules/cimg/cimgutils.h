@@ -49,33 +49,32 @@ namespace cimgutil {
         Lanczos = 6           // lanczos interpolation.
     };
 
-
     /**
     * Loads layer data from a specified filePath.
     **/
-    void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
-                               DataFormatId& formatId, bool rescaleToDim = false);
+    IVW_MODULE_CIMG_API void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
+                                            DataFormatId& formatId, bool rescaleToDim = false);
 
     /**
     * Loads volume data from a specified filePath.
     **/
-    void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
-                                DataFormatId& formatId);
+    IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath,
+                                             size3_t& out_dim, DataFormatId& formatId);
 
     /**
     * Saves an layer of an image to a specified filename.
     * @param filePath the path including name to file that is to be stored.
     * @param inputImage specifies the image that is to be saved.
     **/
-    void saveLayer(const std::string& filePath, const Layer* inputImage);
+    IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
 
     /**
     * Saves an layer of an buffer.
     * @param file type the requested file type, which can be altered by this method
     * @param inputImage specifies the image that is to be saved.
     **/
-    std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string& fileType,
-                                                                         const Layer* inputImage);
+    IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
+        std::string& fileType, const Layer* inputImage);
 
     /**
      * \brief Rescales Layer of given image data
@@ -84,7 +83,7 @@ namespace cimgutil {
      * @param uvec2 dst_dim is destination dimensions
      * @param void* rescaled raw data
      */
-    void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
+    IVW_MODULE_CIMG_API void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
 
     /**
      * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
@@ -93,12 +92,12 @@ namespace cimgutil {
      * @param uvec2 dst_dim is destination dimensions
      * @param void* rescaled raw data
      */
-    void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
+    IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
 
-    bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
+    IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 
-};
+    } // namespace cimgutil
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CIMGUTILS_H
