@@ -46,9 +46,6 @@ std::string OpenGLCapabilities::preferredProfile_ = "core";
 int OpenGLCapabilities::glVersion_ = 0;
 std::string OpenGLCapabilities::glVersionStr_ = "0";
 
-#define OpenGLInfoNotFound(message) \
-    { LogInfoCustom("OpenGLInfo", message << " Info could not be retrieved"); }
-
 OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0), profile_("") {}
 
 OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num), profile_("") {}
@@ -110,111 +107,96 @@ OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
                 hasOutputedGLSLVersionOnce) {
                 ShaderManager::getPtr()->rebuildAllShaders();
                 if (preferredProfile_ != settings->selectedOpenGLProfile_.getSelectedValue()) {
-                    LogInfoCustom("OpenGLInfo",
-                                  "Restart application to enable "
-                                      << settings->selectedOpenGLProfile_.getSelectedValue()
-                                      << " mode.");
+                    print("Restart application to enable " +
+                          settings->selectedOpenGLProfile_.getSelectedValue() + " mode.");
                 }
             }
             hasOutputedGLSLVersionOnce = true;
         });
 }
 
-OpenGLCapabilities::~OpenGLCapabilities() { TextureUnit::deinitialize(); }
+OpenGLCapabilities::~OpenGLCapabilities() { 
+    TextureUnit::deinitialize(); 
+
+    // reset stuff.
+    glewInitialized_ = false;
+    preferredProfile_ = "core";
+    glVersion_ = 0;
+    glVersionStr_ = "0";
+}
 
 void OpenGLCapabilities::printInfo() {
     // OpenGL General Info
-    LogInfoCustom("OpenGLInfo", "GPU Vendor: " << glVendorStr_);
-    LogInfoCustom("OpenGLInfo", "GPU Renderer: " << glRenderStr_);
+    print("GPU Vendor: ", glVendorStr_);
+    print("GPU Renderer: ", glRenderStr_);
     if (isTexturesSupported()) {
-        glm::u64 totalMem = getTotalAvailableTextureMem();
-        LogInfoCustom("OpenGLInfo",
-                      "Dedicated video memory: " << (totalMem > 0 ? formatBytesToString(totalMem)
-                                                                  : "UNKNOWN"));
+        auto totalMem = getTotalAvailableTextureMem();
+        print("Dedicated video memory: ",
+              (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
     }
-    LogInfoCustom("OpenGLInfo", "OpenGL Version: " << glVersionStr_);
+    print("OpenGL Version: ", glVersionStr_);
     std::string profile = preferredProfile_;
     profile[0] = toupper(profile[0]);
-    LogInfoCustom("OpenGLInfo", "OpenGL Profile: " << profile);
+    print("OpenGL Profile: ", profile);
 
     if (isShadersSupported()) {
-        LogInfoCustom("OpenGLInfo", "GLSL version: " << glslVersionStr_);
+        print("GLSL version: ", glslVersionStr_);
     }
 }
 
 void OpenGLCapabilities::printDetailedInfo() {
     // OpenGL General Info
-    LogInfoCustom("OpenGLInfo", "GPU Vendor: " << glVendorStr_);
-    LogInfoCustom("OpenGLInfo", "GPU Renderer: " << glRenderStr_);
-    LogInfoCustom("OpenGLInfo", "OpenGL Version: " << glVersionStr_);
+    print("GPU Vendor: " + glVendorStr_);
+    print("GPU Renderer: " + glRenderStr_);
+    print("OpenGL Version: " + glVersionStr_);
     std::string profile = preferredProfile_;
     profile[0] = toupper(profile[0]);
-    LogInfoCustom("OpenGLInfo", "OpenGL Profile: " << profile);
+    print("OpenGL Profile: " + profile);
 
     // GLSL
     if (isShadersSupported()) {
-        LogInfoCustom("OpenGLInfo", "GLSL version: " << glslVersionStr_);
-        LogInfoCustom("OpenGLInfo",
-                      "Current set global GLSL version: "
-                          << getCurrentShaderVersion().getVersionAndProfileAsString());
-        LogInfoCustom("OpenGLInfo", "Shaders supported: YES");
+        print("GLSL version: ", glslVersionStr_);
+        print("Current set global GLSL version: ",
+              getCurrentShaderVersion().getVersionAndProfileAsString());
+        print("Shaders supported: YES");
     } else if (isShadersSupportedARB()) {
-        LogInfoCustom("OpenGLInfo", "GLSL version: " << glslVersionStr_);
-        LogInfoCustom("OpenGLInfo",
-                      "Current set global GLSL version: "
-                          << getCurrentShaderVersion().getVersionAndProfileAsString());
-        LogInfoCustom("OpenGLInfo", "Shaders supported: YES(ARB)");
-    } else
-        LogInfoCustom("OpenGLInfo", "Shaders supported: NO");
+        print("GLSL version: ", glslVersionStr_);
+        print("Current set global GLSL version: ",
+              getCurrentShaderVersion().getVersionAndProfileAsString());
+        print("Shaders supported: YES(ARB)");
+    } else {
+        print("Shaders supported: NO");
+    }
 
     if (isGeometryShadersSupported()) {
-        LogInfoCustom("OpenGLInfo", "Geometry shaders supported: YES");
-
-        LogInfoCustom("OpenGLInfo",
-                      "Geometry shaders: Max output vertices : " << geometryShadersMaxVertices_);
-        LogInfoCustom("OpenGLInfo", "Geometry shaders: Max output components: "
-                                        << geometryShadersMaxOutputComponents_);
-        LogInfoCustom("OpenGLInfo", "Geometry shaders: Max total output components: "
-                                        << geometryShadersMaxTotalOutputComponents_);
+        print("Geometry shaders supported: YES");
+        print("Geometry shaders: Max output vertices : ", geometryShadersMaxVertices_);
+        print("Geometry shaders: Max output components: ", geometryShadersMaxOutputComponents_);
+        print("Geometry shaders: Max total output components: ",
+              geometryShadersMaxTotalOutputComponents_);
     } else {
-        LogInfoCustom("OpenGLInfo", "Geometry shaders supported: NO");
+        print("Geometry shaders supported: NO");
     }
 
-    LogInfoCustom("OpenGLInfo",
-                  "Framebuffer objects supported: " << (isFboSupported() ? "YES" : "NO "));
+    print("Framebuffer objects supported: ", (isFboSupported() ? "YES" : "NO "));
     // Texturing
-    LogInfoCustom("OpenGLInfo",
-                  "1D/2D textures supported: " << (isTexturesSupported() ? "YES" : "NO "));
-    LogInfoCustom("OpenGLInfo",
-                  "3D textures supported: " << (is3DTexturesSupported() ? "YES" : "NO "));
-    LogInfoCustom("OpenGLInfo",
-                  "Array textures supported: " << (isTextureArraysSupported() ? "YES" : "NO "));
+    print("1D/2D textures supported: ", (isTexturesSupported() ? "YES" : "NO "));
+    print("3D textures supported: ", (is3DTexturesSupported() ? "YES" : "NO "));
+    print("Array textures supported: ", (isTextureArraysSupported() ? "YES" : "NO "));
+
+    if (isTexturesSupported()) print("Max 1D/2D texture size: ", getMaxTexSize());
+    if (is3DTexturesSupported()) print("Max 3D texture size: ", getMax3DTexSize());
+    if (isTextureArraysSupported()) print("Max array texture size: ", getMaxArrayTexSize());
+    if (isFboSupported()) print("Max color attachments: ", getMaxColorAttachments());
 
     if (isTexturesSupported()) {
-        LogInfoCustom("OpenGLInfo", "Max 1D/2D texture size: " << getMaxTexSize());
-    }
-
-    if (is3DTexturesSupported()) {
-        LogInfoCustom("OpenGLInfo", "Max 3D texture size: " << getMax3DTexSize());
-    }
-
-    if (isTextureArraysSupported()) {
-        LogInfoCustom("OpenGLInfo", "Max array texture size: " << getMaxArrayTexSize());
-    }
-
-    if (isFboSupported()) {
-        LogInfoCustom("OpenGLInfo", "Max color attachments: " << getMaxColorAttachments());
-    }
-
-    if (isTexturesSupported()) {
-        LogInfoCustom("OpenGLInfo", "Max number of texture units: " << getNumTexUnits());
-        glm::u64 totalMem = getTotalAvailableTextureMem();
-        LogInfoCustom("OpenGLInfo",
-                      "Total available texture memory: "
-                          << (totalMem > 0 ? formatBytesToString(totalMem) : "UNKNOWN"));
-        glm::u64 curMem = getCurrentAvailableTextureMem();
-        LogInfoCustom("OpenGLInfo", "Current available texture memory: "
-                                        << (curMem > 0 ? formatBytesToString(curMem) : "UNKNOWN"));
+        print("Max number of texture units: ", getNumTexUnits());
+        auto totalMem = getTotalAvailableTextureMem();
+        print("Total available texture memory: ",
+              (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
+        auto curMem = getCurrentAvailableTextureMem();
+        print("Current available texture memory: ",
+              (curMem > 0 ? util::formatBytesToString(curMem) : "UNKNOWN"));
     }
 }
 
@@ -224,37 +206,26 @@ bool OpenGLCapabilities::canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvai
 
 uvec3 OpenGLCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
                                                     glm::u8 percentageOfAvailableMemory) {
-    uvec3 currentBrickDimensions = dimensions;
+    uvec3 dim = dimensions;
 
-    while (!canAllocate(getMemorySizeInBytes(currentBrickDimensions, formatSizeInBytes),
-                        percentageOfAvailableMemory)) {
-        int theMaxDim = (currentBrickDimensions.x > currentBrickDimensions.y
-                             ? (currentBrickDimensions.x > currentBrickDimensions.z ? 0 : 2)
-                             : (currentBrickDimensions.y > currentBrickDimensions.z ? 1 : 2));
-
-        if (currentBrickDimensions[theMaxDim] % 2 != 0)
-            currentBrickDimensions[theMaxDim]++;  // Make the dim we are dividing even
-
-        currentBrickDimensions[theMaxDim] /= 2;
+    // adapt brick size according to available memory
+    while (
+        !canAllocate(getMemorySizeInBytes(dim, formatSizeInBytes), percentageOfAvailableMemory)) {
+        int maxDim = (dim.x > dim.y ? (dim.x > dim.z ? 0 : 2) : (dim.y > dim.z ? 1 : 2));
+        if (dim[maxDim] % 2 != 0) dim[maxDim]++;  // Make the dim we are dividing even
+        dim[maxDim] /= 2;
     }
 
     // adapt brick size according to maximum texture dimension
     unsigned int maxGPUTextureDim = static_cast<unsigned int>(getMaxTexSize());
 
-    while (currentBrickDimensions.x > maxGPUTextureDim ||
-           currentBrickDimensions.y > maxGPUTextureDim ||
-           currentBrickDimensions.z > maxGPUTextureDim) {
-        int theMaxDim = (currentBrickDimensions.x > currentBrickDimensions.y
-                             ? (currentBrickDimensions.x > currentBrickDimensions.z ? 0 : 2)
-                             : (currentBrickDimensions.y > currentBrickDimensions.z ? 1 : 2));
-
-        if (currentBrickDimensions[theMaxDim] % 2 != 0)
-            currentBrickDimensions[theMaxDim]++;  // Make the dim we are dividing even
-
-        currentBrickDimensions[theMaxDim] /= 2;
+    while (dim.x > maxGPUTextureDim || dim.y > maxGPUTextureDim || dim.z > maxGPUTextureDim) {
+        int maxDim = (dim.x > dim.y ? (dim.x > dim.z ? 0 : 2) : (dim.y > dim.z ? 1 : 2));
+        if (dim[maxDim] % 2 != 0) dim[maxDim]++;  // Make the dim we are dividing even
+        dim[maxDim] /= 2;
     }
 
-    return currentBrickDimensions;
+    return dim;
 }
 
 int OpenGLCapabilities::getOpenGLVersion() { return glVersion_; }
@@ -348,7 +319,7 @@ glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
         }
 
         currentAvailableTexMeminBytes =
-            KILOBYTES_TO_BYTES(static_cast<glm::u64>(nCurAvailMemoryInKB[0]));
+            util::kilobytes_to_bytes(static_cast<glm::u64>(nCurAvailMemoryInKB[0]));
     } catch (const Exception& e) {
         LogWarn("Failed to fetch current available texture memory: " << e.what());
     }
@@ -365,7 +336,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             GLint nTotalAvailMemoryInKB[4] = {0};
             glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, nTotalAvailMemoryInKB);
             totalAvailableTexMemInBytes =
-                KILOBYTES_TO_BYTES(static_cast<glm::u64>(nTotalAvailMemoryInKB[0]));
+                util::kilobytes_to_bytes(static_cast<glm::u64>(nTotalAvailMemoryInKB[0]));
 #endif
         } else if (glVendor_ == GlVendor::Amd) {
 #if defined(WGL_AMD_gpu_association)
@@ -375,7 +346,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             wglGetGPUIDsAMD(n, ids);
             wglGetGPUInfoAMD(ids[0], WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
                              &total_mem_mb);
-            totalAvailableTexMemInBytes = MEGABYTES_TO_BYTES(static_cast<glm::u64>(total_mem_mb));
+            totalAvailableTexMemInBytes = util::megabytes_to_bytes(static_cast<glm::u64>(total_mem_mb));
 #elif defined(GLX_AMD_gpu_association)
             UINT n = glXGetGPUIDsAMD(0, 0);
             UINT* ids = new UINT[n];
@@ -383,7 +354,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             glXGetGPUIDsAMD(n, ids);
             glXGetGPUInfoAMD(ids[0], GLX_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
                              &total_mem_mb);
-            totalAvailableTexMemInBytes = MEGABYTES_TO_BYTES(static_cast<glm::u64>(total_mem_mb));
+            totalAvailableTexMemInBytes = util::megabytes_to_bytes(static_cast<glm::u64>(total_mem_mb));
 #endif
         }
     } catch (const Exception& e) {
@@ -415,8 +386,9 @@ bool OpenGLCapabilities::setPreferredProfile(std::string profile, bool showMessa
     size_t i = 0;
     while (i < supportedShaderVersions_.size() &&
            (supportedShaderVersions_[i].hasProfile() &&
-            supportedShaderVersions_[i].getProfile() != preferredProfile_))
+            supportedShaderVersions_[i].getProfile() != preferredProfile_)) {
         i++;
+    }
 
     bool changed = false;
     if (i != currentGlobalGLSLVersionIdx_) {
@@ -424,10 +396,10 @@ bool OpenGLCapabilities::setPreferredProfile(std::string profile, bool showMessa
         changed = true;
     }
 
-    if (changed || showMessage)
-        LogInfoCustom("OpenGLInfo",
-                      "Current set global GLSL version: "
-                          << getCurrentShaderVersion().getVersionAndProfileAsString());
+    if (changed || showMessage) {
+        print("Current set global GLSL version: ",
+              getCurrentShaderVersion().getVersionAndProfileAsString());
+    }
 
     return changed;
 }
@@ -439,16 +411,17 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     glVendorStr_ =
         std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
-    if (glVendorStr_.find("NVIDIA") != std::string::npos)
+    if (glVendorStr_.find("NVIDIA") != std::string::npos) {
         glVendor_ = GlVendor::Nvidia;
-    else if (glVendorStr_.find("AMD") != std::string::npos ||
-             glVendorStr_.find("ATI") != std::string::npos)
+    } else if (glVendorStr_.find("AMD") != std::string::npos ||
+             glVendorStr_.find("ATI") != std::string::npos) {
         glVendor_ = GlVendor::Amd;
-    else if (glVendorStr_.find("INTEL") != std::string::npos ||
-             glVendorStr_.find("Intel") != std::string::npos)
+    } else if (glVendorStr_.find("INTEL") != std::string::npos ||
+             glVendorStr_.find("Intel") != std::string::npos) {
         glVendor_ = GlVendor::Intel;
-    else
+    } else {
         glVendor_ = GlVendor::Unknown;
+    }
 
     const GLubyte* glrender = glGetString(GL_RENDERER);
     glRenderStr_ =
@@ -553,8 +526,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_LOOP_COUNT_NV, &i);
 
         if (i > 0) {
-            // Restrict cycles to realistic samplingRate*maximumDimension, 20*(10 000) slices = 200
-            // 000
+            // Restrict cycles to realistic samplingRate*maximumDimension, 
+            // 20*(10 000) slices = 200000
             maxProgramLoopCount_ = std::min<int>(static_cast<int>(i), 200000);
         }
     }
@@ -625,40 +598,37 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 void OpenGLCapabilities::retrieveDynamicInfo() {}
 
 void OpenGLCapabilities::rebuildGLSLHeader() {
-    currentGlobalGLSLHeader_ =
-        "#version " +
-        supportedShaderVersions_[currentGlobalGLSLVersionIdx_].getVersionAndProfileAsString() +
-        "\n";
+    auto current = supportedShaderVersions_[currentGlobalGLSLVersionIdx_];
+    std::stringstream ss;
 
-    if (supportedShaderVersions_[currentGlobalGLSLVersionIdx_].getVersion() == 140 &&
-        preferredProfile_ == "compatibility")
-        currentGlobalGLSLHeader_ += "#extension GL_ARB_compatibility : enable\n";
+    ss << "#version " + current.getVersionAndProfileAsString() + "\n";
 
-    if (supportedShaderVersions_[currentGlobalGLSLVersionIdx_].hasProfile()) {
-        currentGlobalGLSLHeader_ +=
-            "#define GLSL_PROFILE_" +
-            toUpper(supportedShaderVersions_[currentGlobalGLSLVersionIdx_].getProfile()) + "\n";
+    if (current.getVersion() == 140 && preferredProfile_ == "compatibility")
+        ss << "#extension GL_ARB_compatibility : enable\n";
+
+    if (current.hasProfile()) {
+        ss << "#define GLSL_PROFILE_" + toUpper(current.getProfile()) + "\n";
     }
 
-    if (supportedShaderVersions_[currentGlobalGLSLVersionIdx_].getVersion() < 150) {
-        currentGlobalGLSLHeader_ += "#define texture(t, s) texture2D(t, s)\n";
-        currentGlobalGLSLHeader_ += "#define texture(t, s) texture3D(t, s)\n";
+    if (current.getVersion() < 150) {
+        ss << "#define texture(t, s) texture2D(t, s)\n";
+        ss << "#define texture(t, s) texture3D(t, s)\n";
     }
 
     int lastVersion = -1;
 
     for (size_t i = currentGlobalGLSLVersionIdx_; i < supportedShaderVersions_.size(); i++) {
         if (lastVersion != supportedShaderVersions_[i].getVersion()) {
-            currentGlobalGLSLHeader_ +=
-                "#define GLSL_VERSION_" + supportedShaderVersions_[i].getVersionAsString() + "\n";
+            ss << "#define GLSL_VERSION_" + supportedShaderVersions_[i].getVersionAsString() + "\n";
             lastVersion = supportedShaderVersions_[i].getVersion();
         }
     }
 
     if (getMaxProgramLoopCount() > 0) {
-        currentGlobalGLSLHeader_ +=
-            "#define MAX_PROGRAM_LOOP_COUNT " + toString(getMaxProgramLoopCount()) + "\n";
+        ss << "#define MAX_PROGRAM_LOOP_COUNT " + toString(getMaxProgramLoopCount()) + "\n";
     }
+
+    currentGlobalGLSLHeader_ = ss.str();
 }
 
 void OpenGLCapabilities::rebuildGLSLVertexDefines() {
@@ -700,15 +670,16 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
         versionStr.erase(std::remove_if(versionStr.begin(), versionStr.end(), [](char c) {
                              return !(std::isspace(c) || std::isalnum(c));
                          }), versionStr.end());
-        std::vector<std::string> versionSplit = splitString(versionStr);
-
-        if (versionSplit.size() > 1 &&
-            (versionSplit[1].compare("core") == 0 || versionSplit[1].compare("compatibility") == 0))
+        
+        auto versionSplit = splitString(versionStr);
+        if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 ||
+                                        versionSplit[1].compare("compatibility") == 0)) {
             addShaderVersionIfEqualOrLower(
                 GLSLShaderVersion(stringTo<int>(versionSplit[0]), versionSplit[1]), compVersion);
-        else
+        } else {
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(stringTo<int>(versionSplit[0])),
                                            compVersion);
+        }
     }
 }
 
@@ -716,8 +687,8 @@ int OpenGLCapabilities::parseAndRetrieveVersion(std::string versionStr) {
     // Assumes format <version><space><desc> example "4.1 ATI-1.20.11"
     // Version to int mapping, 4.1 => 410, 4.40 => 440
     if (!versionStr.empty()) {
-        std::vector<std::string> versionSplit = splitString(versionStr, ' ');
-        std::vector<std::string> numberSplit = splitString(versionSplit[0], '.');
+        auto versionSplit = splitString(versionStr, ' ');
+        auto numberSplit = splitString(versionSplit[0], '.');
         int factor = 1;
         if (numberSplit.size() > 1) {
             if (numberSplit[1].size() == 1) {

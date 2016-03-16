@@ -46,6 +46,7 @@ public:
     TextureUnit(TextureUnit&& rhs);
     TextureUnit& operator=(TextureUnit&& that);
     
+    // These are called from OpenGLCapabilities retrieveStaticInfo/destructor.
     static void initialize(int numUnits);
     static void deinitialize();
 

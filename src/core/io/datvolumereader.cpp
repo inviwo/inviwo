@@ -311,7 +311,7 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::
             volumes->back()->addRepresentation(diskRepr);
         }
 
-        std::string size = formatBytesToString(bytes * sequences);
+        std::string size = util::formatBytesToString(bytes * sequences);
         if (enableLogOutput_) {
             LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
         }

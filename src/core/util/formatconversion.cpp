@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,37 +24,39 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_FORMATCONVERSION_H
-#define IVW_FORMATCONVERSION_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <string>
+#include <inviwo/core/util/formatconversion.h>
+#include <sstream>
 
 namespace inviwo {
 
-namespace util {
+glm::u64 util::bytes_to_kilobytes(glm::u64 bytes) { return bytes / byte_swap; }
 
-static const glm::u64 byte_swap = 1024;
-static const glm::u64 byte_size = 1;
-static const glm::u64 kilo_byte_size = byte_swap * byte_size;
-static const glm::u64 mega_byte_size = byte_swap * kilo_byte_size;
-static const glm::u64 giga_byte_size = byte_swap * mega_byte_size;
-static const glm::u64 tera_byte_size = byte_swap * giga_byte_size;
-static const double byte_div = 1.0 / byte_swap;
+glm::u64 util::bytes_to_megabytes(glm::u64 bytes) { return bytes / (byte_swap * byte_swap); }
 
-IVW_CORE_API glm::u64 bytes_to_kilobytes(glm::u64 bytes);
-IVW_CORE_API glm::u64 bytes_to_megabytes(glm::u64 bytes);
-IVW_CORE_API glm::u64 kilobytes_to_bytes(glm::u64 bytes);
-IVW_CORE_API glm::u64 megabytes_to_bytes(glm::u64 bytes);
+glm::u64 util::kilobytes_to_bytes(glm::u64 bytes) { return bytes * byte_swap; }
 
-IVW_CORE_API std::string formatBytesToString(glm::u64 bytes);;
+glm::u64 util::megabytes_to_bytes(glm::u64 bytes) { return bytes * byte_swap * byte_swap; }
 
-} // namespace
+std::string util::formatBytesToString(glm::u64 bytes) {
+    std::ostringstream stream;
+    stream.precision(2);
+    stream.setf(std::ios::fixed, std::ios::floatfield);
 
-} // namespace
+    if (bytes > tera_byte_size)
+        stream << static_cast<float>(bytes / giga_byte_size) * byte_div << " TB";
+    else if (bytes > giga_byte_size)
+        stream << static_cast<float>(bytes / mega_byte_size) * byte_div << " GB";
+    else if (bytes > mega_byte_size)
+        stream << static_cast<float>(bytes / kilo_byte_size) * byte_div << " MB";
+    else if (bytes > kilo_byte_size)
+        stream << static_cast<float>(bytes) * byte_div << " KB";
+    else
+        stream << static_cast<float>(bytes) << " B";
 
-#endif // IVW_FORMATCONVERSION_H
+    return stream.str();
+}
+
+}  // namespace

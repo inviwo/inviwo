@@ -161,17 +161,17 @@ void SystemSettings::allocationTest() {
         IntProperty* useRAMPercent =
             dynamic_cast<IntProperty*>(getPropertyByIdentifier("useRAMPercent"));
         glm::u64 memBytesAlloc = sysInfo->getAvailableMemory();  // In Bytes
-        LogInfo("Maximum Available Memory is " << formatBytesToString(memBytesAlloc));
+        LogInfo("Maximum Available Memory is " << util::formatBytesToString(memBytesAlloc));
         memBytesAlloc /= 100;                   // 1% of total available memory
         memBytesAlloc *= useRAMPercent->get();  //?% of total available memory
 
         try {
             allocTest_ = new glm::u32[static_cast<glm::u32>(memBytesAlloc / 4)];
-            LogInfo("Allocated " << formatBytesToString(memBytesAlloc) << ", which is "
+            LogInfo("Allocated " << util::formatBytesToString(memBytesAlloc) << ", which is "
                                  << useRAMPercent->get() << "% of available memory");
             delete allocTest_;
         } catch (std::bad_alloc&) {
-            LogError("Failed allocation of " << formatBytesToString(memBytesAlloc) << ", which is "
+            LogError("Failed allocation of " << util::formatBytesToString(memBytesAlloc) << ", which is "
                                              << useRAMPercent->get() << "% of available memory");
         }
     }

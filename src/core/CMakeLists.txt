@@ -445,6 +445,7 @@ set(SOURCE_FILES
     util/fileextension.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
+    util/formatconversion.cpp
     util/formats.cpp
     util/imagecache.cpp
     util/imagesampler.cpp

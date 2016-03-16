@@ -36,8 +36,6 @@
 
 namespace inviwo {
 
-#define SystemInfoNotFound(message) { LogInfoCustom("SystemInfo",message << " Info could not be retrieved"); }
-
 SystemCapabilities::SystemCapabilities() {
 #ifdef IVW_SIGAR
     sigar_open(&sigar_);
@@ -50,25 +48,24 @@ SystemCapabilities::~SystemCapabilities() {
 #endif
 }
 
-
 bool SystemCapabilities::canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory) {
-    return getAvailableMemory()*percentageOfAvailableMemory/100 >= dataSize;
+    return getAvailableMemory() * percentageOfAvailableMemory / 100 >= dataSize;
 }
 
-uvec3 SystemCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory) {
-    uvec3 currentBrickDimensions = dimensions;
+uvec3 SystemCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
+                                                    glm::u8 percentageOfAvailableMemory) {
+    uvec3 dim = dimensions;
 
-    while (!canAllocate(getMemorySizeInBytes(currentBrickDimensions, formatSizeInBytes), percentageOfAvailableMemory)) {
-        int theMaxDim = (currentBrickDimensions.x > currentBrickDimensions.y ? (currentBrickDimensions.x > currentBrickDimensions.z ? 0 : 2) :
-                         (currentBrickDimensions.y > currentBrickDimensions.z ? 1 : 2));
+    while (
+        !canAllocate(getMemorySizeInBytes(dim, formatSizeInBytes), percentageOfAvailableMemory)) {
+        int theMaxDim = (dim.x > dim.y ? (dim.x > dim.z ? 0 : 2) : (dim.y > dim.z ? 1 : 2));
 
-        if (currentBrickDimensions[theMaxDim] % 2 != 0)
-            currentBrickDimensions[theMaxDim]++; //Make the dim we are dividing even
+        if (dim[theMaxDim] % 2 != 0) dim[theMaxDim]++;  // Make the dim we are dividing even
 
-        currentBrickDimensions[theMaxDim] /= 2;
+        dim[theMaxDim] /= 2;
     }
 
-    return currentBrickDimensions;
+    return dim;
 }
 
 void SystemCapabilities::retrieveStaticInfo() {
@@ -84,21 +81,22 @@ void SystemCapabilities::retrieveDynamicInfo() {
 
 bool SystemCapabilities::lookupOSInfo() {
 #ifdef IVW_SIGAR
-    int status;
     sigar_sys_info_t systeminfo;
-    status = sigar_sys_info_get(sigar_, &systeminfo);
-    bool SUCCESS = (status == SIGAR_OK);
+    int status = sigar_sys_info_get(sigar_, &systeminfo);
 
-    if (SUCCESS) {
+    if (status == SIGAR_OK) {
         infoOS_.description = std::string(systeminfo.description);
 
         if (strcmp(systeminfo.arch, "x86") == 0)
             infoOS_.platform = 32;
         else
             infoOS_.platform = 64;
+
+        return true;
+    } else {
+        return false;
     }
 
-    return SUCCESS;
 #else
     return false;
 #endif
@@ -108,12 +106,11 @@ bool SystemCapabilities::lookupOSInfo() {
 bool SystemCapabilities::lookupCPUInfo() {
     infoCPUs_.clear();
 #ifdef IVW_SIGAR
-    int status;
     sigar_cpu_info_list_t cpulinfolist;
-    status = sigar_cpu_info_list_get(sigar_, &cpulinfolist);
-    bool SUCCESS = (status == SIGAR_OK);
+    int status = sigar_cpu_info_list_get(sigar_, &cpulinfolist);
+    bool success = (status == SIGAR_OK);
 
-    if (SUCCESS) {
+    if (success) {
         infoCPUs_.resize(cpulinfolist.number);
 
         for (unsigned long i=0; i<cpulinfolist.number; i++) {
@@ -125,7 +122,7 @@ bool SystemCapabilities::lookupCPUInfo() {
     }
 
     sigar_cpu_info_list_destroy(sigar_, &cpulinfolist);
-    return SUCCESS;
+    return success;
 #else
     return false;
 #endif
@@ -133,17 +130,14 @@ bool SystemCapabilities::lookupCPUInfo() {
 
 bool SystemCapabilities::lookupMemoryInfo() {
 #ifdef IVW_SIGAR
-    int status;
     sigar_mem_t meminfo;
-    status = sigar_mem_get(sigar_, &meminfo);
-    bool SUCCESS = (status == SIGAR_OK);
-
-    if (SUCCESS) {
-        infoRAM_.total = MEGABYTES_TO_BYTES(static_cast<glm::u64>(meminfo.ram));
+    if (sigar_mem_get(sigar_, &meminfo) == SIGAR_OK) {
+        infoRAM_.total = util::megabytes_to_bytes(static_cast<glm::u64>(meminfo.ram));
         infoRAM_.available = static_cast<glm::u64>(meminfo.free);
+        return true;
+    } else {
+        return false;
     }
-
-    return SUCCESS;
 #else
     return false;
 #endif
@@ -152,13 +146,12 @@ bool SystemCapabilities::lookupMemoryInfo() {
 bool SystemCapabilities::lookupDiskInfo() {
     infoDisks_.clear();
 #ifdef IVW_SIGAR
-    int status;
     sigar_file_system_list_t diskinfolist;
     sigar_file_system_usage_t diskusageinfo;
-    status = sigar_file_system_list_get(sigar_, &diskinfolist);
-    bool SUCCESS = (status == SIGAR_OK);
+    int status = sigar_file_system_list_get(sigar_, &diskinfolist);
+    bool success = (status == SIGAR_OK);
 
-    if (SUCCESS) {
+    if (success) {
         for (unsigned long i=0; i<diskinfolist.number; i++) {
             sigar_file_system_t disk_info = diskinfolist.data[i];
             status = sigar_file_system_usage_get(sigar_, disk_info.dir_name, &diskusageinfo);
@@ -170,8 +163,8 @@ bool SystemCapabilities::lookupDiskInfo() {
 
                 if (currentDiskInfo.diskType == "Local") {
                     currentDiskInfo.diskName = std::string(disk_info.dev_name);
-                    currentDiskInfo.total = KILOBYTES_TO_BYTES(static_cast<glm::u64>(diskusageinfo.total));
-                    currentDiskInfo.free = KILOBYTES_TO_BYTES(static_cast<glm::u64>(diskusageinfo.free));
+                    currentDiskInfo.total = util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.total));
+                    currentDiskInfo.free = util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.free));
                     infoDisks_.push_back(currentDiskInfo);
                 }
             }
@@ -179,7 +172,7 @@ bool SystemCapabilities::lookupDiskInfo() {
     }
 
     sigar_file_system_list_destroy(sigar_, &diskinfolist);
-    return SUCCESS;
+    return success;
 #else
     return false;
 #endif
@@ -187,18 +180,16 @@ bool SystemCapabilities::lookupDiskInfo() {
 
 bool SystemCapabilities::lookupProcessMemoryInfo() {
 #ifdef IVW_SIGAR
-    int status;
     sigar_proc_mem_t meminfo;
-    status = sigar_proc_mem_get(sigar_, sigar_pid_get(sigar_), &meminfo);
-    bool SUCCESS = (status == SIGAR_OK);
 
-    if (SUCCESS) {
+    if (sigar_proc_mem_get(sigar_, sigar_pid_get(sigar_), &meminfo) == SIGAR_OK) {
         infoProcRAM_.residentMem = static_cast<glm::u64>(meminfo.resident);
         infoProcRAM_.sharedMem = static_cast<glm::u64>(meminfo.share);
         infoProcRAM_.virtualMem = static_cast<glm::u64>(meminfo.size);
+        return true;
+    } else {
+        return false;
     }
-
-    return SUCCESS;
 #else
     return false;
 #endif
@@ -209,76 +200,78 @@ void SystemCapabilities::printInfo() {
 
     // Try to retrieve operating system information
     if (successOSInfo_) {
-        LogInfoCustom("SystemInfo","OS: " << infoOS_.description << " " << infoOS_.platform << "-bit");
+        LogInfoCustom("SystemInfo", "OS: " << infoOS_.description << " " << infoOS_.platform
+                                           << "-bit");
     } else {
-        SystemInfoNotFound("OS:");
+        LogInfoCustom("SystemInfo", "OS: Info could not be retrieved");
     }
 
     // Try to retrieve CPU information
     if (successCPUInfo_) {
         std::string prevCPU = std::string("");
         std::ostringstream cpuStream;
-        unsigned long count=0;
-        for (unsigned long i=0; i<infoCPUs_.size(); i++){
+        unsigned long count = 0;
+        for (unsigned long i = 0; i < infoCPUs_.size(); i++) {
             cpuStream.str("");
             cpuStream << infoCPUs_[i].vendor << " " << infoCPUs_[i].model;
-            if(prevCPU != cpuStream.str()){
-                if(!prevCPU.empty()){
-                    if(count>0){
-                        LogInfoCustom("SystemInfo","CPU " << i+1 << "-" << i+1+count << ": " << prevCPU);
-                    }
-                    else{
-                        LogInfoCustom("SystemInfo","CPU " << i+1 << ": " << prevCPU);
+            if (prevCPU != cpuStream.str()) {
+                if (!prevCPU.empty()) {
+                    if (count > 0) {
+                        LogInfoCustom("SystemInfo", "CPU " << i + 1 << "-" << i + 1 + count << ": "
+                                                           << prevCPU);
+                    } else {
+                        LogInfoCustom("SystemInfo", "CPU " << i + 1 << ": " << prevCPU);
                     }
                 }
                 prevCPU = cpuStream.str();
                 count = 0;
-            }
-            else{
+            } else {
                 count++;
             }
         }
-        if(!prevCPU.empty()){
-            if(count>0){
-                LogInfoCustom("SystemInfo","CPU " << infoCPUs_.size()-count << "-" << infoCPUs_.size() << ": " << prevCPU);
-            }
-            else{
-                LogInfoCustom("SystemInfo","CPU " << infoCPUs_.size() << ": " << prevCPU);
+        if (!prevCPU.empty()) {
+            if (count > 0) {
+                LogInfoCustom("SystemInfo", "CPU " << infoCPUs_.size() - count << "-"
+                                                   << infoCPUs_.size() << ": " << prevCPU);
+            } else {
+                LogInfoCustom("SystemInfo", "CPU " << infoCPUs_.size() << ": " << prevCPU);
             }
         }
+    } else {
+        LogInfoCustom("SystemInfo", "CPU: Info could not be retrieved");
     }
-    else
-        SystemInfoNotFound("CPU:");
 
     // Try to retrieve memory information
     if (successMemoryInfo_) {
-        LogInfoCustom("SystemInfo", "RAM: Total - " << formatBytesToString(infoRAM_.total)
-                                                    << ", Available - "
-                                                    << formatBytesToString(infoRAM_.available));
+        LogInfoCustom("SystemInfo", "RAM: Total - "
+                                        << util::formatBytesToString(infoRAM_.total)
+                                        << ", Available - "
+                                        << util::formatBytesToString(infoRAM_.available));
     } else {
-        SystemInfoNotFound("RAM:");
+        LogInfoCustom("SystemInfo", "RAM: Info could not be retrieved");
     }
 
     // Try to retrieve Disk information
     if (successDiskInfo_) {
         for (auto& elem : infoDisks_)
             LogInfoCustom("SystemInfo", "Disk: " << elem.diskName << " Total - "
-                                                 << formatBytesToString(elem.total) << ", Free - "
-                                                 << formatBytesToString(elem.free));
+                                                 << util::formatBytesToString(elem.total)
+                                                 << ", Free - "
+                                                 << util::formatBytesToString(elem.free));
+    } else {
+        LogInfoCustom("SystemInfo", "Disk: Info could not be retrieved");
     }
-    else
-        SystemInfoNotFound("Disk:");
 
     // Try to retrieve this process memory information
     if (successProcessMemoryInfo_) {
         LogInfoCustom("SystemInfo",
                       "Processor Memory: Resident - "
-                          << formatBytesToString(infoProcRAM_.residentMem) << ", Shared - "
-                          << formatBytesToString(infoProcRAM_.sharedMem) << ", Virtual - "
-                          << formatBytesToString(infoProcRAM_.virtualMem));
+                          << util::formatBytesToString(infoProcRAM_.residentMem) << ", Shared - "
+                          << util::formatBytesToString(infoProcRAM_.sharedMem) << ", Virtual - "
+                          << util::formatBytesToString(infoProcRAM_.virtualMem));
     } else {
-        SystemInfoNotFound("Processor Memory:");
-    }  //*/
+        LogInfoCustom("SystemInfo", "Processor Memory: Info could not be retrieved");
+    }
 }
 
 int SystemCapabilities::numberOfCores() const {
@@ -292,21 +285,21 @@ int SystemCapabilities::numberOfCores() const {
 glm::u64 SystemCapabilities::getAvailableMemory() {
     successMemoryInfo_ = lookupMemoryInfo();
 
-    if (successMemoryInfo_)
+    if (successMemoryInfo_) {
         return infoRAM_.available;
-
-    return 0;
+    } else {
+        return 0;
+    }
 }
-
 
 glm::u64 SystemCapabilities::getCurrentResidentMemoryUsage() {
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
 
-    if (successMemoryInfo_)
+    if (successMemoryInfo_) {
         return infoProcRAM_.residentMem;
-
-    return 0;
+    } else {
+        return 0;
+    }
 }
-
 
 } // namespace
