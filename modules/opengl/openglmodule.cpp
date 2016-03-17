@@ -54,7 +54,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     SharedOpenGLResources::init(sharedResources_.get());
     ShaderManager::init(shaderManager_.get());
 
-    addShaderResources(shaderManager_.get(), {getPath(ModulePath::GLSL)});
+    opengl::addShaderResources(shaderManager_.get(), {getPath(ModulePath::GLSL)});
 
     registerDrawer(util::make_unique<MeshDrawerGL>());
     registerRepresentationConverter(util::make_unique<LayerRAM2GLConverter>());

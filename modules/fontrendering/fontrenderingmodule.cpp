@@ -37,7 +37,7 @@
 namespace inviwo {
 
 FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(app, "FontRendering") {
-    addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
+    fontrendering::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
     registerProcessor<TextOverlayGL>();
 }
 
