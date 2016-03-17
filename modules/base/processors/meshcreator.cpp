@@ -61,7 +61,7 @@ MeshCreator::MeshCreator()
     meshType_.addOption("cube_basic_mesh", "Cube (Basic Mesh)", MeshType::CubeBasicMesh);
     meshType_.addOption("cube", "Cube (Simple Mesh)", MeshType::CubeSimpleMesh);
     meshType_.addOption("linecube", "Line cube", MeshType::LineCube);
-    meshType_.addOption("linecube", "Line cube adjancy", MeshType::LineCubeAdjacency);
+    meshType_.addOption("linecubeadjacency", "Line cube adjacency", MeshType::LineCubeAdjacency);
     meshType_.addOption("plane", "Plane", MeshType::Plane);
     meshType_.addOption("disk", "Disk", MeshType::Disk);
     meshType_.addOption("cone", "Cone", MeshType::Cone);
