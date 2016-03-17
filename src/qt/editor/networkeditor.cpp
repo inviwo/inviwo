@@ -1080,13 +1080,14 @@ void NetworkEditor::clearNetwork() {
     setModified(true);
 }
 
-bool NetworkEditor::saveNetwork(std::string fileName) {
+bool NetworkEditor::saveNetwork(std::string fileName, bool setAsFilename) {
     try {
         Serializer xmlSerializer(fileName);
         network_->serialize(xmlSerializer);
         network_->setModified(false);
         xmlSerializer.writeFile();
-        filename_ = fileName;
+        if(setAsFilename)
+            filename_ = fileName;
         setModified(false);
         LogInfo("Workspace saved to: " << fileName);
     } catch (SerializationException& exception) {
