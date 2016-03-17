@@ -354,6 +354,8 @@ void PythonEditorWidget::run() {
 }
 
 void PythonEditorWidget::show() {
+    InviwoDockWidget::show();
+    raise();
     updateStyle();
     setVisible(true);
 }

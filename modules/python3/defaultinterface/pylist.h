@@ -36,7 +36,8 @@
 
 namespace inviwo {
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_listCanvases(PyObject* /*self*/, PyObject* /*noargs*/);
 
 
 } //namespace

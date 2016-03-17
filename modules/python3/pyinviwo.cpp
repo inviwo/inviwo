@@ -132,7 +132,8 @@ static PyMethodDef Inviwo_METHODS[] =
 
     //Defined in pylist.h
     { "listProperties" , py_listProperties , METH_VARARGS, "List all properties for a processor." },
-    { "listProcesoors" , py_listProcesoors , METH_VARARGS, "Lists all processors in the current network." },
+    { "listProcessors" , py_listProcessors , METH_VARARGS, "Lists all processors in the current network." },
+    { "listCanvases" , py_listCanvases , METH_NOARGS, "Lists all canvas processors in the current network." },
 
     //Defined in pyutil.h
     { "wait" , py_wait , METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },

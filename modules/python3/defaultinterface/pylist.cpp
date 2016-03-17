@@ -81,10 +81,46 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
+PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
         std::vector<Processor*> processors =
             InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+
+        PyObject* lst = PyList_New(processors.size());
+        if (!lst) Py_RETURN_NONE;
+
+        int i = 0;
+        for (auto processor : processors) {
+            
+            std::string name = processor->getIdentifier();
+            std::string type = processor->getClassIdentifier();
+
+            PyObject* pair =
+                Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(), type.size());
+            if (!pair) {
+                Py_DECREF(lst);
+                Py_RETURN_NONE;
+            }
+
+            PyList_SET_ITEM(lst, i, pair);
+            ++i;
+        }
+        return lst;
+    }
+
+    Py_RETURN_NONE;
+}
+
+
+
+PyObject* py_listCanvases(PyObject* /*self*/, PyObject* /*noargs*/) {
+    if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
+        std::vector<Processor*> processors =
+            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+
+
+        util::erase_remove_if(processors, [](const Processor* p) { return dynamic_cast<const CanvasProcessor*>(p) == nullptr; });
+
 
         PyObject* lst = PyList_New(processors.size());
         if (!lst) Py_RETURN_NONE;
