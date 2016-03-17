@@ -268,9 +268,15 @@ if(WIN32 AND MSVC)
 
     # Disable deprecation warnings for standard C functions
     add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
-    string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm1000")
+
+    if(MSVC_VERSION LESS 1900) # Pre visualstdio 2015
+        # http://www.beta.microsoft.com/VisualStudio/feedbackdetail/view/746718/frequently-get-c1027-from-vc-100-compiler-after-installing-vs-2012-rc
+        # https://github.com/inviwo/inviwo-dev/commit/6054985bdd471b209b9d5ef7a8b9a1db66518cfa#commitcomment-16684802
+        string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
+    endif()
+    
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
