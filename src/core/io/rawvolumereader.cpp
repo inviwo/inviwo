@@ -133,7 +133,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
             util::make_unique<RawVolumeRAMLoader>(rawFile_, 0u, dimensions_, littleEndian_, format_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
-        std::string size = formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
+        std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
                                                (format_->getSize()));
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
