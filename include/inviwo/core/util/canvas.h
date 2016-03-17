@@ -71,6 +71,8 @@ public:
     using ContextID = const void*;
     virtual ContextID activeContext() const = 0; 
 
+    virtual void releaseContext() = 0;
+
 protected:
     void activateDefaultRenderContext();
 

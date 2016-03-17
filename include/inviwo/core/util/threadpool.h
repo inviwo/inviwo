@@ -103,13 +103,18 @@ private:
     void addWorker();
     void removeWorker();
 
+    void cleanupRenderContexts();
+
     // need to keep track of threads so we can join them
     std::vector<Worker> workers;
+    // garbage collection list of threads whose render contexts need to be cleaned up due to termination
+    std::queue<std::thread::id> cleanupThreads;
     // the task queue
     std::queue<std::function<void()>> tasks;
 
     // synchronization
     std::mutex queue_mutex;
+    std::mutex cleanup_mutex;
     std::condition_variable condition;
 };
 
@@ -122,8 +127,11 @@ inline void ThreadPool::addWorker() {
     size_t i = workers.size();
     std::unique_lock<std::mutex> lock1(this->queue_mutex);
     workers.emplace_back([this, i] {
-        util::OnScopeExit cleanup{[](){
-            RenderContext::getPtr()->clearContext();
+        util::OnScopeExit cleanup{[this](){
+            RenderContext::getPtr()->releaseContext();
+
+            std::unique_lock<std::mutex> lock(cleanup_mutex);
+            cleanupThreads.push(std::this_thread::get_id());
         }};
     
         for (;;) {
@@ -182,10 +190,20 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 inline void ThreadPool::setSize(size_t size) {
     while (workers.size() < size) addWorker();
     while (workers.size() > size) removeWorker();
+
+    cleanupRenderContexts();
 }
 
 inline size_t ThreadPool::getSize() const {
     return workers.size();
+}
+
+inline void ThreadPool::cleanupRenderContexts() {
+    std::unique_lock<std::mutex> lock(cleanup_mutex);
+    while (!cleanupThreads.empty()) {
+        RenderContext::getPtr()->clearContext(cleanupThreads.front());
+        cleanupThreads.pop();
+    }
 }
 
 // the destructor joins all threads
@@ -196,6 +214,8 @@ inline ThreadPool::~ThreadPool() {
     }
     condition.notify_all();
     for (auto& worker : workers) worker.thread.join();
+
+    cleanupRenderContexts();
 }
 
 }  // namespace
