@@ -108,6 +108,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             result.rgb = APPLY_LIGHTING(lighting, vec3(1.0), vec3(1.0), vec3(1.0),
                                         worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
+			tDepth = t;
             t += tEnd;
             break;
         } else if (sampOutside != outside) {
