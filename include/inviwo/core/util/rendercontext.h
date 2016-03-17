@@ -33,37 +33,46 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/canvas.h>
 
 namespace inviwo {
 
-class Canvas;
 /**
  * \class RenderContext
  * \brief Keeper of the default render context.
  */
-class IVW_CORE_API RenderContext : public Singleton<RenderContext>{ 
+class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
 public:
-    RenderContext();
-    virtual ~RenderContext();
+    RenderContext() = default;
+    virtual ~RenderContext() = default;
 
-    Canvas* getDefaultRenderContext(); 
+    Canvas* getDefaultRenderContext();
     void setDefaultRenderContext(Canvas* canvas);
     void activateDefaultRenderContext() const;
 
     void activateLocalRenderContext() const;
+    Canvas::ContextID activeContext() const;
+
+    template <typename T>
+    std::shared_ptr<std::function<void()>> beforeDefaultContextChange(T&& callback);
+
     void clearContext();
-    void clearContext(std::thread::id id);
 
-    void releaseContext();
-
-private: 
-    Canvas* defaultContext_;
+private:
+    Canvas* defaultContext_ = nullptr;
     std::thread::id mainThread_;
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
+
+    Dispatcher<void()> beforeDefaultContextChange_;
 };
 
-} // namespace
+template <typename T>
+std::shared_ptr<std::function<void()>> RenderContext::beforeDefaultContextChange(T&& callback) {
+    return beforeDefaultContextChange_.add(std::forward<T>(callback));
+}
 
-#endif // IVW_RENDERCONTEXT_H
+}  // namespace
 
+#endif  // IVW_RENDERCONTEXT_H

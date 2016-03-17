@@ -66,24 +66,21 @@ void RenderContext::activateLocalRenderContext() const {
 
 void RenderContext::clearContext() {
     auto id = std::this_thread::get_id();
-    std::unique_lock<std::mutex> lock(mutex_);
-    contextMap_.erase(id);
-}
-
-void RenderContext::clearContext(std::thread::id id) {
-    std::unique_lock<std::mutex> lock(mutex_);
-    contextMap_.erase(id);
-}
-
-void RenderContext::releaseContext() {
-    auto id = std::this_thread::get_id();
-    std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextMap_.find(id);
-    if (it != contextMap_.end()) {
-        (*it).second->releaseContext();
+    if (id == mainThread_) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        contextMap_.erase(id);
+    } else {
+        std::unique_lock<std::mutex> lock(mutex_);
+        auto it = contextMap_.find(id);
+        if (it != contextMap_.end()) {
+            it->second->releaseContext();
+            auto canvas = it->second.release();
+            dispatchFront([canvas](){
+                delete canvas;
+            });
+        }
     }
 }
-
 
 inviwo::Canvas::ContextID RenderContext::activeContext() const {
     return defaultContext_ ? defaultContext_->activeContext() : nullptr;
