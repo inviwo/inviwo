@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
