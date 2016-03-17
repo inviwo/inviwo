@@ -62,7 +62,10 @@ BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
 }
 
 BufferObjectArray::~BufferObjectArray() { 
+    LGL_ERROR;
+    auto ci = RenderContext::getPtr()->activeContext();
     glDeleteVertexArrays(1, &id_); 
+    LGL_ERROR;
 }
 
 GLuint BufferObjectArray::getId() const { return id_; }
@@ -79,6 +82,7 @@ void BufferObjectArray::clear() {
 
 void BufferObjectArray::bind() const {
     if (id_ == 0) {
+        auto ci = RenderContext::getPtr()->activeContext();
         glGenVertexArrays(1, &id_);
     }
     glBindVertexArray(id_);
