@@ -337,7 +337,18 @@ std::unique_ptr<Mesh> planeRect() {
 
 const MeshGL* imagePlaneRect() {
     static std::unique_ptr<Mesh> mesh = planeRect();
-    const static MeshGL* square{ mesh->getRepresentation<MeshGL>() };
+    const static MeshGL* square{mesh->getRepresentation<MeshGL>()};
+    static std::shared_ptr<std::function<void()>> callback =
+        RenderContext::getPtr()->beforeDefaultContextChange([&]() {
+            mesh.reset();
+            square = nullptr;
+        });
+
+    if (!square) {
+        mesh = planeRect();
+        square = mesh->getRepresentation<MeshGL>();
+    }
+
     return square;
 }
 

@@ -83,7 +83,9 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
 }
 
 void CanvasQGLWidget::activate() {
+    LGL_ERROR;
     makeCurrent();
+    LGL_ERROR;
 }
 
 void CanvasQGLWidget::initializeGL() {
@@ -111,6 +113,11 @@ void CanvasQGLWidget::paintGL() {
 
 void CanvasQGLWidget::resize(uvec2 size) {
     QGLWidget::resize(size.x, size.y); // this should trigger a resize event.
+}
+
+Canvas::ContextID CanvasQGLWidget::activeContext() const {
+    LGL_ERROR;
+    return static_cast<ContextID>(QGLContext::currentContext());
 }
 
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {

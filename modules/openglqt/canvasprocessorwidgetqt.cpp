@@ -51,10 +51,12 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 
     canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y)), [&](CanvasQt* c){
+        //c->activate();
+        RenderContext::getPtr()->activeContext();
         layout()->removeWidget(c);
-        c->activate();
         delete c;
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        RenderContext::getPtr()->activeContext();
+        //RenderContext::getPtr()->activateDefaultRenderContext();
     });
 
     canvas_->setEventPropagator(processor_);

@@ -268,4 +268,8 @@ std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     return res.get();
 }
 
+Canvas::ContextID CanvasGLFW::activeContext() const {
+    return static_cast<ContextID>(glfwGetCurrentContext());
+}
+
 }  // namespace
