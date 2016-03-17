@@ -49,7 +49,7 @@ namespace inviwo {
 OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL") {
     ShaderManager::init();
 
-    addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
+    OPENGL_addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
 
     registerDrawer(util::make_unique<MeshDrawerGL>());
     registerRepresentationConverter(util::make_unique<LayerRAM2GLConverter>());
