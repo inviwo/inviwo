@@ -40,6 +40,6 @@ out vec4 vColor_;
 void main() {
     vColor_ = in_Color;
     worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal;
-    gl_Position = worldPosition_;//camera.worldToClip * worldPosition_;
+    normal_ = in_Normal;
+    gl_Position = worldPosition_;
 }  
