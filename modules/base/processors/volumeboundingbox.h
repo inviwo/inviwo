@@ -73,6 +73,13 @@ private:
     VolumeInport volume_;
     MeshOutport mesh_;
     FloatVec4Property color_;
+
+    BoolProperty showFrontFace_;
+    BoolProperty showBackFace_;
+    BoolProperty showRightFace_;
+    BoolProperty showLeftFace_;
+    BoolProperty showTopFace_;
+    BoolProperty showBottomFace_;
 };
 
 } // namespace
