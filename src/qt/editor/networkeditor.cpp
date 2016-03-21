@@ -340,7 +340,6 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 // Add processors to the network
                 for (auto& processor : portInspector->getProcessors()) {
                     network_->addProcessor(processor);
-                    //RenderContext::getPtr()->activateDefaultRenderContext();
                 }
 
                 // Connect the port to inspect to the inports of the inspector network
