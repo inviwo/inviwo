@@ -61,7 +61,7 @@ const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorIn
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
     , inport_("volume")
-    , outport_("outport")
+    , outport_("outport", DataFormat<glm::u8vec4>::get(), false)
     , shader_("standard.vert", "volumeslice.frag", false)
     , indicatorShader_("standard.vert", "standard.frag", true)
     , trafoGroup_("trafoGroup", "Transformations")
