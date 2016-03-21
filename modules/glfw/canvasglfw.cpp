@@ -127,7 +127,7 @@ int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 void CanvasGLFW::update() {
     activate();
     CanvasGL::update();
-    activateDefaultRenderContext();
+    RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {

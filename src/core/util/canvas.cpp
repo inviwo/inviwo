@@ -71,10 +71,6 @@ void Canvas::resize(uvec2 canvasSize) {
 
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
 
-void Canvas::activateDefaultRenderContext() {
-    RenderContext::getPtr()->activateDefaultRenderContext();
-}
-
 void Canvas::interactionEvent(Event* event) {
     if (propagator_) {
         NetworkLock lock;

@@ -74,8 +74,6 @@ public:
     virtual void releaseContext() = 0;
 
 protected:
-    void activateDefaultRenderContext();
-
     void interactionEvent(Event* e);
 
     void mousePressEvent(MouseEvent* e);
