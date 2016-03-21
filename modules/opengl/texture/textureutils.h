@@ -181,7 +181,6 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageOutport&
  * @return std::unique_ptr<Mesh>
 */
 IVW_MODULE_OPENGL_API std::unique_ptr<Mesh> planeRect();
-IVW_MODULE_OPENGL_API const MeshGL* imagePlaneRect();
 IVW_MODULE_OPENGL_API void singleDrawImagePlaneRect();
 IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
 

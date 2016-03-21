@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,34 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RENDERCONTEXT_H
-#define IVW_RENDERCONTEXT_H
+#ifndef IVW_SHAREDOPENGLRESOURCES_H
+#define IVW_SHAREDOPENGLRESOURCES_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/canvas.h>
 
 namespace inviwo {
 
+class Mesh;
+class MeshGL;
+
 /**
- * \class RenderContext
- * \brief Keeper of the default render context.
+ * \class SharedOpenGLResources
  */
-class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
+class IVW_MODULE_OPENGL_API SharedOpenGLResources : public Singleton<SharedOpenGLResources> {
 public:
-    RenderContext() = default;
-    virtual ~RenderContext() = default;
-
-    Canvas* getDefaultRenderContext();
-    void setDefaultRenderContext(Canvas* canvas);
-    void activateDefaultRenderContext() const;
-
-    void activateLocalRenderContext() const;
-    Canvas::ContextID activeContext() const;
-
-    void clearContext();
-
+    SharedOpenGLResources() = default;
+    virtual ~SharedOpenGLResources() = default;
+    
+    const MeshGL* imagePlaneRect();
+    
 private:
-    Canvas* defaultContext_ = nullptr;
-    std::thread::id mainThread_;
-    mutable std::mutex mutex_;
-    mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
+    std::unique_ptr<Mesh> planeRectMesh_;
+    const MeshGL* planeRectMeshGl_ = nullptr;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_RENDERCONTEXT_H
+#endif // IVW_SHAREDOPENGLRESOURCES_H
+

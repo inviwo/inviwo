@@ -35,6 +35,8 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
 #include <inviwo/core/datastructures/light/directionallight.h>
+#include <modules/opengl/sharedopenglresources.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -198,40 +200,44 @@ void LightVolumeGL::process() {
     propagationShader_.setUniform("lightVolumeParameters_.dimensions", volumeDimOutF_);
     propagationShader_.setUniform("lightVolumeParameters_.reciprocalDimensions", volumeDimOutFRCP_);
 
-    utilgl::imagePlaneRect()->enable();
-    glDepthFunc(GL_ALWAYS);
+    {
+        auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+        utilgl::Enable<MeshGL> enable(rect);
+        utilgl::DepthFuncState depth(GL_ALWAYS);
 
-    //Perform propagation passes
-    for (int i=0; i<2; ++i) {
-        propParams_[i].fbo->activate();
-        glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
+        // Perform propagation passes
+        for (int i = 0; i < 2; ++i) {
+            propParams_[i].fbo->activate();
+            glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x),
+                       static_cast<GLsizei>(volumeDimOut_.y));
 
-        if (reattach)
-            propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture().get(), 0);
+            if (reattach)
+                propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture().get(), 0);
 
-        propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
-        propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
+            propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
+            propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
 
-        if (lightSource_.getData()->getLightSourceType() == LightSourceType::LIGHT_POINT) {
-            propagationShader_.setUniform("lightPos_", lightPos_);
-            propagationShader_.setUniform("permutedLightMatrix_", propParams_[i].axisPermutationLight);
+            if (lightSource_.getData()->getLightSourceType() == LightSourceType::LIGHT_POINT) {
+                propagationShader_.setUniform("lightPos_", lightPos_);
+                propagationShader_.setUniform("permutedLightMatrix_",
+                                              propParams_[i].axisPermutationLight);
+            } else {
+                propagationShader_.setUniform("permutedLightDirection_",
+                                              propParams_[i].permutedLightDirection);
+            }
+
+            for (unsigned int z = 0; z < volumeDimOut_.z; ++z) {
+                glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                                          GL_TEXTURE_3D, propParams_[i].vol->getTexture()->getID(),
+                                          0, z);
+                propagationShader_.setUniform("sliceNum_", static_cast<GLint>(z));
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                glFlush();
+            }
+
+            propParams_[i].fbo->deactivate();
         }
-        else {
-            propagationShader_.setUniform("permutedLightDirection_", propParams_[i].permutedLightDirection);
-        }
-
-        for (unsigned int z=0; z<volumeDimOut_.z; ++z) {
-            glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_3D, propParams_[i].vol->getTexture()->getID(), 0, z);
-            propagationShader_.setUniform("sliceNum_", static_cast<GLint>(z));
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-            glFlush();
-        }
-
-        propParams_[i].fbo->deactivate();
     }
-
-    utilgl::imagePlaneRect()->disable();
-    glDepthFunc(GL_LESS);
 
     propagationShader_.deactivate();
     mergeShader_.activate();
@@ -242,12 +248,11 @@ void LightVolumeGL::process() {
     mergeShader_.setUniform("permMatInv_", propParams_[0].axisPermutationINV);
     mergeShader_.setUniform("permMatInvSec_", propParams_[1].axisPermutationINV);
     mergeShader_.setUniform("blendingFactor_", blendingFactor_);
-    //Perform merge pass
+    // Perform merge pass
     mergeFBO_->activate();
     glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
-    if (reattach)
-        mergeFBO_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
+    if (reattach) mergeFBO_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(volumeDimOut_.z));
     mergeShader_.deactivate();

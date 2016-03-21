@@ -33,7 +33,6 @@
 namespace inviwo {
 
 void RenderContext::setDefaultRenderContext(Canvas* canvas) {
-    beforeDefaultContextChange_.invoke();
     defaultContext_ = canvas;
     mainThread_ = std::this_thread::get_id();
 }
@@ -76,6 +75,7 @@ void RenderContext::clearContext() {
         if (it != contextMap_.end()) {
             it->second->releaseContext();
             auto canvas = it->second.release();
+            contextMap_.erase(it);
             dispatchFront([canvas](){
                 delete canvas;
             });
