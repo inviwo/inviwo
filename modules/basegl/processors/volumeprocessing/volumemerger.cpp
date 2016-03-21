@@ -45,7 +45,7 @@ const ProcessorInfo VolumeMerger::getProcessorInfo() const {
 }
 
 VolumeMerger::VolumeMerger()
-    : VolumeGLProcessor("volume_merger.frag"), vol2_("volume2"), vol3_("volume3"), vol4_("volume4") {
+    : VolumeGLProcessor("volumemerger.frag"), vol2_("volume2"), vol3_("volume3"), vol4_("volume4") {
     
     addPort(vol2_);
     addPort(vol3_);
@@ -61,20 +61,40 @@ VolumeMerger::VolumeMerger()
         bool c = vol4_.isConnected();
 
         int numVolumes = 1;
-        if (a && !b && !c) {
-            numVolumes = 2;
+        if (a ) {
+            numVolumes++;
+            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL2");
         }
-        else if (a && b && !c) {
-            numVolumes = 3;
+        else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL2");
         }
-        else if (a && b && c) {
-            numVolumes = 4;
+
+        if (b) {
+            numVolumes++;
+            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL3");
         }
+        else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL3");
+        }        
+        
+        if (c) {
+            numVolumes++;
+            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL4");
+        }
+        else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL4");
+        }
+
+        shader_.build();
 
         auto inDF = inport_.getData()->getDataFormat();
         dataFormat_ = DataFormatBase::get(inDF->getNumericType(), numVolumes, inDF->getSize() * 8);
 
         internalInvalid_ = true;
+
+
+        
+
 
     };
 
@@ -90,14 +110,14 @@ void VolumeMerger::preProcess(TextureUnitContainer &cont)
     bool b = vol3_.isConnected();
     bool c = vol4_.isConnected();
 
-    if (a && !b && !c) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
+    if (a) {
+        utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "vol2");
     }
-    else if (a && b && !c) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol3_.getData(), "volume3");
+    if (b) {
+        utilgl::bindAndSetUniforms(shader_, cont, *vol3_.getData(), "vol3");
     }
-    else if (a && b && c) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "volume4");
+    if (c) {
+        utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "vol4");
     }
 }
 
