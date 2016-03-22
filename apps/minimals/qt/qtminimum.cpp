@@ -47,6 +47,9 @@ int main(int argc, char** argv) {
     std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
     InviwoApplicationQt inviwoApp(appName, argc, argv, false);
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
+    inviwoApp.setProgressCallback([](std::string m) {
+        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+    });
 
     // Initialize all modules
     inviwoApp.registerModules(&inviwo::registerAllModules);

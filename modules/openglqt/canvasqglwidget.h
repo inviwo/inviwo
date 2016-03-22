@@ -67,7 +67,6 @@ public:
 
     virtual void resize(uvec2 size) override;
     virtual ContextID activeContext() const override;
-
 protected:
     void initializeGL() override;
     void paintGL() override;

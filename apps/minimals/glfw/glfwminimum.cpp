@@ -53,6 +53,9 @@ int main(int argc, char** argv) {
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
+    inviwoApp.setProgressCallback([](std::string m) {
+        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+    });
 
     CanvasGLFW::setAlwaysOnTopByDefault(false);
 

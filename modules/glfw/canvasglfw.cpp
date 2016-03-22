@@ -29,7 +29,6 @@
 
 #include "canvasglfw.h"
 #include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 
@@ -78,9 +77,6 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
     glfwSetWindowPosCallback(glWindow_, move);
-
-    activate();
-    OpenGLCapabilities::initializeGLEW();
 }
 
 CanvasGLFW::~CanvasGLFW() { 

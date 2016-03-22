@@ -51,7 +51,7 @@ class GestureEvent;
 class IVW_CORE_API Canvas {
 public:
     Canvas(uvec2 dimensions);
-    virtual ~Canvas();
+    virtual ~Canvas() = default;
 
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0) = 0;

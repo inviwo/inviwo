@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,32 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLEXCEPTION_H
-#define IVW_OPENGLEXCEPTION_H
+#ifndef IVW_GLFWEXCEPTION_H
+#define IVW_GLFWEXCEPTION_H
 
-#include <modules/opengl/openglmoduledefine.h>
+#include <modules/glfw/glfwmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API OpenGLException : public Exception {
+/**
+ * \class GLFWException
+ */
+class IVW_MODULE_GLFW_API GLFWException : public Exception {
 public:
-    OpenGLException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLException() throw() {}
+    GLFWException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~GLFWException() throw() {}
 };
 
-class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
+class IVW_MODULE_GLFW_API GLFWInitException : public ModuleInitException {
 public:
-    OpenGLInitException(const std::string& message = "",
-                        ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLInitException() throw() {}
+    GLFWInitException(const std::string& message = "",
+                      ExceptionContext context = ExceptionContext());
+    virtual ~GLFWInitException() throw() {}
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_OPENGLEXCEPTION_H
+#endif // IVW_GLFWEXCEPTION_H
+

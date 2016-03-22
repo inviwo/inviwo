@@ -61,7 +61,6 @@ namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , nonSupportedTags_()
     , progressCallback_()
     , commandLineParser_(argc, argv)
     , pool_(0)
@@ -139,9 +138,48 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     // Create and register other modules
     modulesFactoryObjects_ = regModuleFunc();
 
+    std::vector<std::string> failed;
+    auto checkdepends = [&](const std::vector<std::string>& deps) {
+        for (const auto& dep : deps) {
+            auto it = util::find(failed, dep);
+            if (it != failed.end()) return it;
+        }
+        return failed.end();
+    };
+
     for (auto& moduleObj : modulesFactoryObjects_) {
         postProgress("Loading module: " + moduleObj->name_);
-        registerModule(moduleObj->create(this));
+        try {
+            auto it = checkdepends(moduleObj->depends_);
+            if (it == failed.end()) {
+                registerModule(moduleObj->create(this));
+            } else {
+                LogError("Could not register module: " + moduleObj->name_ + " since dependency: " +
+                         *it + " failed to register");
+            }
+        } catch (const ModuleInitException& e) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: " + e.getMessage());
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+
+            std::vector<std::string> toDeregister;
+            for (const auto& m : e.getModulesToDeregister()) {
+                util::append(toDeregister, findDependentModules(m));
+                toDeregister.push_back(toLower(m));
+            }
+            for (const auto& dereg : toDeregister) {
+                util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
+                    if (toLower(m->getIdentifier()) == dereg) {
+                        LogError("De-registering " + m->getIdentifier() + " because " +
+                                 moduleObj->name_ + " failed to register");
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                util::push_back_unique(failed, dereg);
+            }
+        }
     }
 
     postProgress("Loading Capabilities");
@@ -248,14 +286,23 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     return allModuleSettings;
 }
 
-void InviwoApplication::addNonSupportedTags(const Tags t) {
-    for (auto& elem : t.tags_) {
-        nonSupportedTags_.addTag(elem);
-    }
-}
 void InviwoApplication::cleanupSingletons() { SingletonBase::deleteAllSingeltons(); }
-bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const {
-    return (nonSupportedTags_.getMatches(t) == 0);
+
+std::vector<std::string> InviwoApplication::findDependentModules(std::string module) const {
+    std::vector<std::string> dependencies;
+    for (const auto& item : modulesFactoryObjects_) {
+        if (util::contains(item->depends_, module)) {
+           auto name = toLower(item->name_);
+           auto deps = findDependentModules(name);
+           util::append(dependencies, deps);
+           dependencies.push_back(name);
+        }
+    }
+    std::vector<std::string> unique;
+    for(const auto& item : dependencies) {
+        util::push_back_unique(unique, item);
+    }
+    return unique;
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }

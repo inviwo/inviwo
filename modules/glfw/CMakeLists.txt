@@ -11,6 +11,7 @@ ivw_module(GLFW)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasglfw.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetglfw.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glfwexception.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glfwmodule.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -20,6 +21,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasglfw.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetglfw.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glfwexception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glfwmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
