@@ -35,6 +35,7 @@
 #include <string>
 #include <functional>
 #include <stdexcept>
+#include <vector>
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>
