@@ -51,6 +51,7 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QLayout>
+#include <QMimeData>
 #include <warn/pop>
 
 namespace inviwo {
@@ -270,9 +271,53 @@ void PropertyWidgetQt::generateContextMenu() {
 
         connect(resetAction, SIGNAL(triggered()), this, SLOT(resetPropertyToDefaultState()));
 
-        connect(copyAction_, SIGNAL(triggered()), this, SLOT(copy()));
-        connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
-        connect(copyPathAction_, SIGNAL(triggered()), this, SLOT(copyPath()));
+        connect(copyAction_, &QAction::triggered, [&](){
+            if (!property_) return;
+            
+            Serializer serializer("");
+            std::vector<Property*> properties = {property_};
+            serializer.serialize("Properties", properties, "Property");
+
+            std::stringstream ss;
+            serializer.writeFile(ss);
+            auto str = ss.str();
+            QByteArray data(str.c_str(), static_cast<int>(str.length()));
+
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(QString("application/x.vnd.inviwo.property+xml"), data);
+
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release());
+        });
+        connect(pasteAction_, &QAction::triggered, [&]() {
+            if (!property_) return;
+
+            auto clipboard = QApplication::clipboard();
+            auto mimeData = clipboard->mimeData();
+            QByteArray data;
+            if (mimeData->formats().contains(QString("application/x.vnd.inviwo.property+xml"))) {
+                data = mimeData->data(QString("application/x.vnd.inviwo.property+xml"));
+            } else if (mimeData->formats().contains(QString("text/plain"))) {
+                data = mimeData->data(QString("text/plain"));
+            }
+            std::stringstream ss;
+            for (auto d : data) ss << d;
+
+            try {
+                Deserializer deserializer(InviwoApplication::getPtr(), ss, "");
+                std::vector<std::unique_ptr<Property>> properties;
+                deserializer.deserialize("Properties", properties, "Property");
+                if (!properties.empty() && properties.front()) {
+                    property_->set(properties.front().get());
+                }
+            } catch (AbortException& e) {
+            }
+        });
+        connect(copyPathAction_, &QAction::triggered, [&](){
+            if (!property_) return;
+            std::string path = joinString(property_->getPath(), ".");
+            QApplication::clipboard()->setText(path.c_str());
+        });
 
         // Module actions.
         generateModuleMenuActions();
@@ -454,21 +499,6 @@ void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoD
     baseContainer_ = widget;
 }
 
-void PropertyWidgetQt::copy() { copySource = property_; }
-void PropertyWidgetQt::paste() {
-    if (copySource) {
-        NetworkLock lock(property_);
-        property_->set(copySource);
-    }
-}
-
-void PropertyWidgetQt::copyPath() {
-    if (!property_) return;
-
-    std::string path = joinString(property_->getPath(), ".");
-    QApplication::clipboard()->setText(path.c_str());
-}
-
 void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
     if (hasEditorWidget()) {
         // Validates editor widget position
@@ -528,8 +558,6 @@ void PropertyWidgetQt::paintEvent(QPaintEvent* pe) {
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 };
-
-const Property* PropertyWidgetQt::copySource = nullptr;
 
 //////////////////////////////////////////////////////////////////////////
 
