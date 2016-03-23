@@ -40,7 +40,7 @@ class CompositePropertyWidgetQt;
 
 ABufferGLModule::ABufferGLModule(InviwoApplication* app) : InviwoModule(app, "ABufferGL") {
     
-	addShaderResources(ShaderManager::getPtr(),
+	abuffergl::addShaderResources(ShaderManager::getPtr(),
 		{getPath(ModulePath::GLSL), getPath(ModulePath::GLSL) + "/abuffer"}
 	);
 

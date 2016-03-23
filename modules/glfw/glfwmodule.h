@@ -42,7 +42,7 @@ public:
     virtual ~GLFWModule();
 
 private:
-    CanvasGLFW* GLFWSharedCanvas_;
+    std::unique_ptr<CanvasGLFW> GLFWSharedCanvas_;
 };
 
 }  // namespace

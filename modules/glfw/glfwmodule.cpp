@@ -33,28 +33,27 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/glfw/canvasprocessorwidgetglfw.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/glfw/glfwexception.h>
 
 namespace inviwo {
 
 GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
-    if (!glfwInit()) {
-        LogError("GLFW could not be initialized.");
-        return;
-    }
+    if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
-    GLFWSharedCanvas_ = new CanvasGLFW(app->getDisplayName());
-
-    RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_);
+    GLFWSharedCanvas_ = util::make_unique<CanvasGLFW>(app->getDisplayName());
+    GLFWSharedCanvas_->activate();
+    OpenGLCapabilities::initializeGLEW(); 
     GLFWSharedCanvas_->defaultGLState();
 
+    RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 }
 
 GLFWModule::~GLFWModule() {
-    if (GLFWSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (GLFWSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
-    delete GLFWSharedCanvas_;
 }
 
 } // namespace

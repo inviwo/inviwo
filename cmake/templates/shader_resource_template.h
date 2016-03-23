@@ -7,6 +7,8 @@
 
 namespace inviwo {
 
+namespace @L_MODULE@ {
+
 inline void addGeneratedShaderResources(ShaderManager* manager) {
 @ADD_RESOURCES@
 }
@@ -21,6 +23,8 @@ inline void addShaderResources(ShaderManager* manager, std::vector<std::string> 
 #endif
 }
 
-}
+}  // namespace
+
+}  // namespace
 
 #endif

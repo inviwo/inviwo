@@ -66,11 +66,13 @@ public:
     virtual void update() override;
 
     virtual void resize(uvec2 size) override;
-
+    virtual ContextID activeContext() const override;
 protected:
     void initializeGL() override;
     void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
+
+    virtual void releaseContext() override;
 
     static CanvasQGLWidget* sharedCanvas_;
 

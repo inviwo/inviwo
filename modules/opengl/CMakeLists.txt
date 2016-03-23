@@ -36,6 +36,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sharedopenglresources.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.h
@@ -82,6 +83,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sharedopenglresources.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.cpp

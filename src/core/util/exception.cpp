@@ -51,6 +51,13 @@ AbortException::AbortException(const std::string& message, ExceptionContext cont
 FileException::FileException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
+ModuleInitException::ModuleInitException(const std::string& message, ExceptionContext context,  std::vector<std::string> modulesToDeregister)
+    : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
+
+const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
+    return modulesToDeregister_;
+}
+
 void StandardExceptionHandler::operator()(ExceptionContext context) {
     try {
         throw;
@@ -82,5 +89,6 @@ const std::string& ExceptionContext::getFunction() {
 const int& ExceptionContext::getLine() {
     return line_;
 }
+
 
 }  // namespace

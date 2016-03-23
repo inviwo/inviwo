@@ -49,12 +49,6 @@ Canvas::Canvas(uvec2 dimensions)
     , pickingContainer_()
     , ownerWidget_(nullptr) {}
 
-Canvas::~Canvas() {
-    if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
-        RenderContext::getPtr()->setDefaultRenderContext(nullptr);
-    }
-}
-
 void Canvas::resize(uvec2 canvasSize) {
     uvec2 previousScreenDimensions_ = screenDimensions_;
     screenDimensions_ = canvasSize;
@@ -62,18 +56,13 @@ void Canvas::resize(uvec2 canvasSize) {
     if (propagator_) {
         NetworkLock lock;
         RenderContext::getPtr()->activateDefaultRenderContext();
-        ResizeEvent* resizeEvent = new ResizeEvent(screenDimensions_);
-        resizeEvent->setPreviousSize(previousScreenDimensions_);
-        propagator_->propagateResizeEvent(resizeEvent, nullptr);
-        delete resizeEvent;
+        ResizeEvent resizeEvent(screenDimensions_);
+        resizeEvent.setPreviousSize(previousScreenDimensions_);
+        propagator_->propagateResizeEvent(&resizeEvent, nullptr);
     }
 }
 
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
-
-void Canvas::activateDefaultRenderContext() {
-    RenderContext::getPtr()->activateDefaultRenderContext();
-}
 
 void Canvas::interactionEvent(Event* event) {
     if (propagator_) {
@@ -104,9 +93,8 @@ void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
 void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
 
 void Canvas::touchEvent(TouchEvent* e) {
-    if(!touchEnabled())
-        return;
-    
+    if (!touchEnabled()) return;
+
     NetworkLock lock;
 
     if (!pickingContainer_.performTouchPick(e)) {

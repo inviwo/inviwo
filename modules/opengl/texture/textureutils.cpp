@@ -39,6 +39,8 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/sharedopenglresources.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -335,28 +337,18 @@ std::unique_ptr<Mesh> planeRect() {
     return m;
 }
 
-const MeshGL* imagePlaneRect() {
-    static std::unique_ptr<Mesh> mesh = planeRect();
-    const static MeshGL* square{ mesh->getRepresentation<MeshGL>() };
-    return square;
-}
-
 void singleDrawImagePlaneRect() {
-    LGL_ERROR;
-    imagePlaneRect()->enable();
-    glDepthFunc(GL_ALWAYS);
+    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    imagePlaneRect()->disable();
-    glDepthFunc(GL_LESS);
-    LGL_ERROR;
 }
 
 void multiDrawImagePlaneRect(int instances) {
-    imagePlaneRect()->enable();
-    glDepthFunc(GL_ALWAYS);
+    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
-    imagePlaneRect()->disable();
-    glDepthFunc(GL_LESS);
 }
 
 void bindTexture(const Texture& texture, GLenum texUnit) {

@@ -36,8 +36,12 @@ namespace inviwo {
 
 CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
     : CanvasProcessorWidget(p)
-    , canvas_(util::make_unique<CanvasGLFW>(processor_->getIdentifier(), getDimensions())) {
-    
+    , canvas_{new CanvasGLFW(processor_->getIdentifier(), getDimensions()), [&](CanvasGLFW* c) {
+                  c->activate();
+                  delete c;
+                  RenderContext::getPtr()->activateDefaultRenderContext();
+              }} {
+
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setWindowSize(getDimensions());

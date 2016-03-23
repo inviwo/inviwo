@@ -79,10 +79,13 @@ public:
     static void setAlwaysOnTopByDefault(bool);
     
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    virtual ContextID activeContext() const override;
 
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
+
+    virtual void releaseContext() override;
 
 private:
     std::string windowTitle_;

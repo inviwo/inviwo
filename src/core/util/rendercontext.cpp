@@ -28,13 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
-
-RenderContext::RenderContext() : defaultContext_(nullptr) {}
-
-RenderContext::~RenderContext() {}
 
 void RenderContext::setDefaultRenderContext(Canvas* canvas) {
     defaultContext_ = canvas;
@@ -70,10 +66,26 @@ void RenderContext::activateLocalRenderContext() const {
 
 void RenderContext::clearContext() {
     auto id = std::this_thread::get_id();
-    std::unique_lock<std::mutex> lock(mutex_);
-    contextMap_.erase(id);
+    if (id == mainThread_) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        contextMap_.erase(id);
+    } else {
+        std::unique_lock<std::mutex> lock(mutex_);
+        auto it = contextMap_.find(id);
+        if (it != contextMap_.end()) {
+            it->second->releaseContext();
+            auto canvas = it->second.release();
+            contextMap_.erase(it);
+            dispatchFront([canvas](){
+                delete canvas;
+            });
+        }
+    }
 }
 
+inviwo::Canvas::ContextID RenderContext::activeContext() const {
+    return defaultContext_ ? defaultContext_->activeContext() : nullptr;
+}
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 

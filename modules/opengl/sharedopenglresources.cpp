@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,20 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RENDERCONTEXT_H
-#define IVW_RENDERCONTEXT_H
+#include <modules/opengl/sharedopenglresources.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/canvas.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
-/**
- * \class RenderContext
- * \brief Keeper of the default render context.
- */
-class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
-public:
-    RenderContext() = default;
-    virtual ~RenderContext() = default;
+const MeshGL* SharedOpenGLResources::imagePlaneRect() {
+    if (!planeRectMesh_) {
+        planeRectMesh_ = utilgl::planeRect();
+        planeRectMeshGl_ = planeRectMesh_->getRepresentation<MeshGL>();
+    }
+    return planeRectMeshGl_;
+}
 
-    Canvas* getDefaultRenderContext();
-    void setDefaultRenderContext(Canvas* canvas);
-    void activateDefaultRenderContext() const;
+} // namespace
 
-    void activateLocalRenderContext() const;
-    Canvas::ContextID activeContext() const;
-
-    void clearContext();
-
-private:
-    Canvas* defaultContext_ = nullptr;
-    std::thread::id mainThread_;
-    mutable std::mutex mutex_;
-    mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
-};
-
-}  // namespace
-
-#endif  // IVW_RENDERCONTEXT_H

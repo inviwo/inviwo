@@ -52,7 +52,8 @@ public:
     virtual Canvas* getCanvas() const override;
 
 private:
-    std::unique_ptr<CanvasGLFW> canvas_;
+    using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
+    canvas_ptr canvas_;
 };
 
 } // namespace

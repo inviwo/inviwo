@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,32 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RENDERCONTEXT_H
-#define IVW_RENDERCONTEXT_H
+#ifndef IVW_GLFWEXCEPTION_H
+#define IVW_GLFWEXCEPTION_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/glfw/glfwmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
 /**
- * \class RenderContext
- * \brief Keeper of the default render context.
+ * \class GLFWException
  */
-class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
+class IVW_MODULE_GLFW_API GLFWException : public Exception {
 public:
-    RenderContext() = default;
-    virtual ~RenderContext() = default;
-
-    Canvas* getDefaultRenderContext();
-    void setDefaultRenderContext(Canvas* canvas);
-    void activateDefaultRenderContext() const;
-
-    void activateLocalRenderContext() const;
-    Canvas::ContextID activeContext() const;
-
-    void clearContext();
-
-private:
-    Canvas* defaultContext_ = nullptr;
-    std::thread::id mainThread_;
-    mutable std::mutex mutex_;
-    mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
+    GLFWException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~GLFWException() throw() {}
 };
 
-}  // namespace
+class IVW_MODULE_GLFW_API GLFWInitException : public ModuleInitException {
+public:
+    GLFWInitException(const std::string& message = "",
+                      ExceptionContext context = ExceptionContext());
+    virtual ~GLFWInitException() throw() {}
+};
 
-#endif  // IVW_RENDERCONTEXT_H
+} // namespace
+
+#endif // IVW_GLFWEXCEPTION_H
+

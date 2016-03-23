@@ -39,6 +39,8 @@ function(ivw_handle_shader_resources path)
 
         string(TOUPPER ${_projectName} u_project_name)
         set(U_MODULE ${u_project_name})
+        string(TOLOWER ${_projectName} l_project_name)
+        set(L_MODULE ${l_project_name})
         set(ADD_INCLUDES "")
         set(ADD_RESOURCES "")
         configure_file(${IVW_CMAKE_TEMPLATES}/shader_resource_template.h 
@@ -73,6 +75,8 @@ function(ivw_generate_shader_resource parent_path)
     add_definitions(-D${u_project_name}_INCLUDE_SHADER_RESOURCES)
 
     set(U_MODULE ${u_project_name})
+    string(TOLOWER ${_projectName} l_project_name)
+    set(L_MODULE ${l_project_name})
     set(ADD_INCLUDES "${includes}")
     set(ADD_RESOURCES "${resources}")
     configure_file(${IVW_CMAKE_TEMPLATES}/shader_resource_template.h 

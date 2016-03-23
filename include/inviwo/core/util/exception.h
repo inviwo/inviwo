@@ -35,6 +35,7 @@
 #include <string>
 #include <functional>
 #include <stdexcept>
+#include <vector>
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>
@@ -96,6 +97,23 @@ class IVW_CORE_API FileException : public Exception {
 public:
     FileException(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~FileException() throw() {}
+};
+
+class IVW_CORE_API ModuleInitException : public Exception {
+public:
+    ModuleInitException(const std::string& message = "",
+                        ExceptionContext context = ExceptionContext(),
+                        std::vector<std::string> modulesToDeregister = {});
+    virtual ~ModuleInitException() throw() {}
+
+    /**
+     * When registering a module fails, also remove these modules. 
+     * Useful for implicit dependencies. Like OpenGL's dependency on GLFW or OpenGLQt module.
+     */
+    const std::vector<std::string>& getModulesToDeregister() const;
+
+private:
+    std::vector<std::string> modulesToDeregister_;
 };
 
 struct IVW_CORE_API StandardExceptionHandler {

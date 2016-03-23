@@ -32,14 +32,21 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <modules/opengl/sharedopenglresources.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
+
+class SharedOpenGLResources;
+class ShaderManager;
 
 class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
 public:
     OpenGLModule(InviwoApplication* app);
+    
+private:
+    std::unique_ptr<SharedOpenGLResources> sharedResources_;
+    std::unique_ptr<ShaderManager> shaderManager_;
 };
 
 } // namespace

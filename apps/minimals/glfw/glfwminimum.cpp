@@ -42,14 +42,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/utilities.h>
 #include <moduleregistration.h>
-#include <inviwo/core/processors/processorwidgetfactory.h>
 
 using namespace inviwo;
 
@@ -59,6 +53,9 @@ int main(int argc, char** argv) {
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
+    inviwoApp.setProgressCallback([](std::string m) {
+        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+    });
 
     CanvasGLFW::setAlwaysOnTopByDefault(false);
 
@@ -79,10 +76,6 @@ int main(int argc, char** argv) {
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
-
-    // Continue initialization of default context
-    auto sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
-    sharedCanvas->activate();
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();

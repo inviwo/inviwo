@@ -239,19 +239,18 @@ void OpenGLCapabilities::initializeGLEW() {
         std::string preferProfile = getPreferredProfile();
         if (preferProfile == "core") glewExperimental = GL_TRUE;
         GLenum glewError = glewInit();
-        if (GLEW_OK != glewError) {
-            LogErrorCustom("OpenGLInfo", glewGetErrorString(glewError));
-        } else {
+        if (GLEW_OK == glewError) {
             const GLubyte* glversion = glGetString(GL_VERSION);
             glVersionStr_ = std::string(
                 (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
             glVersion_ = parseAndRetrieveVersion(glVersionStr_);
+        } else {
+            std::stringstream ss;
+            ss << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
+            throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
         }
         LGL_ERROR_SUPPRESS;
         glewInitialized_ = true;
-
-        if (!hasSupportedOpenGLVersion())
-            InviwoApplication::getPtr()->addNonSupportedTags(Tags::GL);
     }
 }
 

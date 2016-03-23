@@ -33,6 +33,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QResizeEvent>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
@@ -113,6 +114,10 @@ void CanvasQGLWidget::resize(uvec2 size) {
     QGLWidget::resize(size.x, size.y); // this should trigger a resize event.
 }
 
+Canvas::ContextID CanvasQGLWidget::activeContext() const {
+    return static_cast<ContextID>(QGLContext::currentContext());
+}
+
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) return;
 
@@ -121,6 +126,12 @@ void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
 
     CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
     QGLWidget::resizeEvent(event);
+}
+
+void CanvasQGLWidget::releaseContext() {
+    doneCurrent();
+    context()->reset();
+    context()->moveToThread(QApplication::instance()->thread());
 }
 
 }  // namespace

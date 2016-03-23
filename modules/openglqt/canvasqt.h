@@ -111,12 +111,11 @@ CanvasQtBase<T>::CanvasQtBase(uvec2 dim) : T(nullptr, dim) {}
 template <typename T>
 std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto thread = QThread::currentThread();
+    // The context has to be created on the main thread.
     auto res = dispatchFront([&thread]() {
-        auto canvas = util::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();
-        
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+        auto canvas = util::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();       
+        canvas->doneCurrent();
         canvas->context()->moveToThread(thread);
-#endif
         return canvas;
     });
     return res.get();

@@ -29,9 +29,9 @@
 
 #include "canvasglfw.h"
 #include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <modules/openglqt/openglqtcapabilities.h>
 
 namespace inviwo {
 
@@ -78,9 +78,6 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
     glfwSetWindowPosCallback(glWindow_, move);
-
-    activate();
-    OpenGLCapabilities::initializeGLEW();
 }
 
 CanvasGLFW::~CanvasGLFW() { 
@@ -127,7 +124,7 @@ int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 void CanvasGLFW::update() {
     activate();
     CanvasGL::update();
-    activateDefaultRenderContext();
+    RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
@@ -150,6 +147,8 @@ CanvasGLFW* CanvasGLFW::getSharedContext() {
     else
         return nullptr;
 }
+
+void CanvasGLFW::releaseContext() {}
 
 void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -266,6 +265,10 @@ std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
         return std::move(canvas);
     });
     return res.get();
+}
+
+Canvas::ContextID CanvasGLFW::activeContext() const {
+    return static_cast<ContextID>(glfwGetCurrentContext());
 }
 
 }  // namespace

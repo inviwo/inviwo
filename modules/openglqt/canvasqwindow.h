@@ -70,6 +70,8 @@ public:
     QOpenGLContext* context() const;
     QWindow* parentWidget() const;
 
+    virtual void releaseContext() override;
+
 protected:
     void initializeGL();
     void paintGL();

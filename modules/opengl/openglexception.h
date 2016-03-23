@@ -41,6 +41,13 @@ public:
     virtual ~OpenGLException() throw() {}
 };
 
+class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
+public:
+    OpenGLInitException(const std::string& message = "",
+                        ExceptionContext context = ExceptionContext());
+    virtual ~OpenGLInitException() throw() {}
+};
+
 }  // namespace
 
 #endif  // IVW_OPENGLEXCEPTION_H

@@ -51,7 +51,7 @@ class GestureEvent;
 class IVW_CORE_API Canvas {
 public:
     Canvas(uvec2 dimensions);
-    virtual ~Canvas();
+    virtual ~Canvas() = default;
 
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0) = 0;
@@ -68,10 +68,12 @@ public:
 
     // used to create hidden canvases used for context in background threads.
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
+    using ContextID = const void*;
+    virtual ContextID activeContext() const = 0; 
+
+    virtual void releaseContext() = 0;
 
 protected:
-    void activateDefaultRenderContext();
-
     void interactionEvent(Event* e);
 
     void mousePressEvent(MouseEvent* e);

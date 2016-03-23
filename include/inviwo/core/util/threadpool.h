@@ -105,11 +105,14 @@ private:
 
     // need to keep track of threads so we can join them
     std::vector<Worker> workers;
+    // garbage collection list of threads whose render contexts need to be cleaned up due to termination
+    std::queue<std::thread::id> cleanupThreads;
     // the task queue
     std::queue<std::function<void()>> tasks;
 
     // synchronization
     std::mutex queue_mutex;
+    std::mutex cleanup_mutex;
     std::condition_variable condition;
 };
 
@@ -122,7 +125,7 @@ inline void ThreadPool::addWorker() {
     size_t i = workers.size();
     std::unique_lock<std::mutex> lock1(this->queue_mutex);
     workers.emplace_back([this, i] {
-        util::OnScopeExit cleanup{[](){
+        util::OnScopeExit cleanup{[this](){
             RenderContext::getPtr()->clearContext();
         }};
     

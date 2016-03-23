@@ -139,8 +139,6 @@ public:
     virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
     std::vector<Settings*> getModuleSettings(size_t startIdx = 0);
 
-    void addNonSupportedTags(const Tags);
-    bool checkIfAllTagsAreSupported(const Tags) const;
     virtual std::locale getUILocale() const;
 
     template <class F, class... Args>
@@ -188,6 +186,8 @@ protected:
     void cleanupSingletons();
 
 private:
+    std::vector<std::string> findDependentModules(std::string module) const;
+
     struct Queue {
         // Task queue
         std::queue<std::function<void()>> tasks;
@@ -199,7 +199,6 @@ private:
     };
 
     std::string displayName_;
-    Tags nonSupportedTags_;
 
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;

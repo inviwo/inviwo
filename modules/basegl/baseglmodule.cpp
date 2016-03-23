@@ -80,7 +80,8 @@
 namespace inviwo {
 
 BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
-    addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
+    
+    basegl::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
     
     registerProcessor<Background>();
     registerProcessor<DrawLines>();

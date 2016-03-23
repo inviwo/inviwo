@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RENDERCONTEXT_H
-#define IVW_RENDERCONTEXT_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/canvas.h>
+#include <modules/glfw/glfwexception.h>
 
 namespace inviwo {
 
-/**
- * \class RenderContext
- * \brief Keeper of the default render context.
- */
-class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
-public:
-    RenderContext() = default;
-    virtual ~RenderContext() = default;
+GLFWException::GLFWException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
-    Canvas* getDefaultRenderContext();
-    void setDefaultRenderContext(Canvas* canvas);
-    void activateDefaultRenderContext() const;
-
-    void activateLocalRenderContext() const;
-    Canvas::ContextID activeContext() const;
-
-    void clearContext();
-
-private:
-    Canvas* defaultContext_ = nullptr;
-    std::thread::id mainThread_;
-    mutable std::mutex mutex_;
-    mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
-};
+GLFWInitException::GLFWInitException(const std::string& message, ExceptionContext context)
+    : ModuleInitException(message, context, {"opengl"}) {}
 
 }  // namespace
-
-#endif  // IVW_RENDERCONTEXT_H

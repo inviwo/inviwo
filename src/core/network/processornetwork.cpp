@@ -56,12 +56,6 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
-    if (!application_->checkIfAllTagsAreSupported(processor->getTags())) {
-        LogNetworkWarn("Processor '" << processor->getDisplayName()
-                                     << "' was considered as not supported by the application.");
-        return false;
-    }
-
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
     processor->setNetwork(this);
@@ -502,6 +496,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         DeserializationErrorHandle<ErrorHandle> outport_err(d, "OutPort", &errorHandle,
                                                             &ErrorHandle::handlePortError);
 
+        RenderContext::getPtr()->activateDefaultRenderContext();
         std::vector<std::unique_ptr<Processor>> processors;
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {

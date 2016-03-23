@@ -34,12 +34,7 @@
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/util/canvas.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <moduleregistration.h>
 
@@ -52,6 +47,9 @@ int main(int argc, char** argv) {
     std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
     InviwoApplicationQt inviwoApp(appName, argc, argv, false);
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
+    inviwoApp.setProgressCallback([](std::string m) {
+        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+    });
 
     // Initialize all modules
     inviwoApp.registerModules(&inviwo::registerAllModules);
@@ -70,10 +68,6 @@ int main(int argc, char** argv) {
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
-
-    // Continue initialization of default context
-    Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
-    if (sharedCanvas) sharedCanvas->activate();
 
     QMainWindow mainWin;
     inviwoApp.setMainWindow(&mainWin);
