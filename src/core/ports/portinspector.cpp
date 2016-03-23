@@ -44,7 +44,9 @@ PortInspector::PortInspector(std::string portClassIdentifier,
     initialize();
 }
 
-PortInspector::~PortInspector() {}
+PortInspector::~PortInspector() {
+    InviwoApplication::getPtr()->unRegisterFileObserver(this);
+}
 
 void PortInspector::setActive(bool val) { active_ = val; }
 
@@ -58,11 +60,11 @@ std::vector<Inport*>& PortInspector::getInports() { return inPorts_; }
 
 CanvasProcessor* PortInspector::getCanvasProcessor() { return canvasProcessor_; }
 
-std::vector<PortConnection*>& PortInspector::getConnections() { return connections_; }
+std::vector<PortConnection>& PortInspector::getConnections() { return connections_; }
 std::vector<PropertyLink*>& PortInspector::getPropertyLinks() { return propertyLinks_; }
 std::vector<Processor*>& PortInspector::getProcessors() { return processors_; }
 
-void PortInspector::fileChanged(std::string fileName) { needsUpdate_ = true; }
+void PortInspector::fileChanged(const std::string& fileName) { needsUpdate_ = true; }
 
 void PortInspector::initialize() {
     if (active_ == false && needsUpdate_) {
@@ -105,7 +107,7 @@ void PortInspector::initialize() {
                 if (!inport->isConnected()) inPorts_.push_back(inport);
             }
 
-            ProcessorMetaData* meta =
+            auto meta =
                 processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             meta->setVisibile(false);
             meta->setSelected(false);
@@ -117,8 +119,11 @@ void PortInspector::initialize() {
         }
 
         // Store the connections and and disconnect them.
-        connections_ = inspectorNetwork_->getConnections();
-        for (auto& elem : connections_) elem->getInport()->disconnectFrom(elem->getOutport());
+        auto connections = inspectorNetwork_->getConnections(); 
+        for (auto& elem : connections) {
+            connections_.emplace_back(elem->getOutport(), elem->getInport());
+            inspectorNetwork_->removeConnection(elem->getOutport(), elem->getInport());
+        }
 
         // store the processor links.
         propertyLinks_ = inspectorNetwork_->getLinks();

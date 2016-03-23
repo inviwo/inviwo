@@ -54,7 +54,7 @@ public:
     std::vector<Processor*>& getProcessors();
     std::vector<Inport*>& getInports();
     CanvasProcessor* getCanvasProcessor();
-    std::vector<PortConnection*>& getConnections();
+    std::vector<PortConnection>& getConnections();
     std::vector<PropertyLink*>& getPropertyLinks();
 
 private:
@@ -68,11 +68,11 @@ private:
 
     std::vector<Processor*> processors_;
     std::vector<Inport*> inPorts_;
-    std::vector<PortConnection*> connections_;
+    std::vector<PortConnection> connections_;
     std::vector<PropertyLink*> propertyLinks_;
     CanvasProcessor* canvasProcessor_;
 
-    virtual void fileChanged(std::string fileName);
+    virtual void fileChanged(const std::string& fileName);
 };
 
 }  // namespace

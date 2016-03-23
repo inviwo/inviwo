@@ -242,13 +242,10 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
     if (!port) return false;
 
-    auto it = portInspectors_.find(port);
-    if (it != portInspectors_.end()) {
-        return false;
-    }
+    if (portInspectors_.find(port) != portInspectors_.end()) return false;
 
     auto factory = mainwindow_->getInviwoApplication()->getPortInspectorFactory();
-    PortInspector* portInspector = factory->createAndCache(port->getClassIdentifier());
+    auto portInspector = factory->createAndCache(port->getClassIdentifier());
 
     portInspectors_[port] = portInspector;
 
@@ -269,7 +266,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
         // Add connections to the network
         for (auto& connection : portInspector->getConnections()) {
-            network_->addConnection(connection->getOutport(), connection->getInport());
+            network_->addConnection(connection.getOutport(), connection.getInport());
         }
 
         // Add links to the network
@@ -277,7 +274,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             network_->addLink(link->getSourceProperty(), link->getDestinationProperty());
         }
 
-        // Do autolinking.
+        // Do auto linking.
         for (auto& processor : portInspector->getProcessors()) {
             network_->autoLinkProcessor(processor);
         }
@@ -343,13 +340,13 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 }
 
                 // Connect the port to inspect to the inports of the inspector network
-                for (auto inport : portInspector->getInports()) {
+                for (auto& inport : portInspector->getInports()) {
                     network_->addConnection(outport, inport);
                 }
 
                 // Add connections to the network
-                for (auto connection : portInspector->getConnections()) {
-                    network_->addConnection(connection->getOutport(), connection->getInport());
+                for (auto& connection : portInspector->getConnections()) {
+                    network_->addConnection(connection.getOutport(), connection.getInport());
                 }
 
                 // Add links to the network
@@ -358,7 +355,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 }
 
                 // Do auto-linking.
-                for (auto processor : portInspector->getProcessors()) {
+                for (auto& processor : portInspector->getProcessors()) {
                     network_->autoLinkProcessor(processor);
                 }
 

@@ -104,7 +104,7 @@ public:
      * Reloads programs from file and notifies processors.
      *
      */
-    virtual void fileChanged(std::string fileName);
+    virtual void fileChanged(const std::string& fileName) override;
 
     /**
      * Remove all kernels and stop observing the files.

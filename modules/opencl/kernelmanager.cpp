@@ -111,7 +111,7 @@ cl::Kernel* KernelManager::getKernel(cl::Program* program, const std::string& ke
     return nullptr;
 }
 
-void KernelManager::fileChanged(std::string fileName) {
+void KernelManager::fileChanged(const std::string& fileName) {
     std::pair <ProgramMap::iterator, ProgramMap::iterator> programRange = programs_.equal_range(fileName);
 
     for (ProgramMap::iterator programIt = programRange.first; programIt != programRange.second; ++programIt) {
