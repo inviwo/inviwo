@@ -692,6 +692,39 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     }
                 });
             }
+
+            QAction* delprocessor = menu.addAction(tr("Delete && Keep Connections"));
+            connect(delprocessor, &QAction::triggered, [this, processor]() {
+                auto p = processor->getProcessor();
+                for (auto& prop : p->getPropertiesRecursive()) {
+                    auto links = network_->getPropertiesLinkedTo(prop);
+                    auto bidirectional = util::copy_if(links, [&](Property* dst) {
+                        return network_->isLinkedBidirectional(prop, dst);
+                    });
+                    if (bidirectional.size() > 1) {
+                        for (size_t i = 1; i < bidirectional.size(); ++i) {
+                            network_->addLink(bidirectional[0], bidirectional[i]);
+                            network_->addLink(bidirectional[i], bidirectional[0]);
+                        }
+                    }
+                }
+
+                auto& inports = p->getInports();
+                auto& outports = p->getOutports();
+                for (size_t i = 0; i < std::min(inports.size(), outports.size()); ++i) {
+                    if (inports[i]->isConnected() && outports[i]->isConnected()) {
+                        auto out = inports[i]->getConnectedOutport();
+                        auto ins = outports[i]->getConnectedInports();
+                        network_->removeConnection(out, inports[i]);
+                        for (auto in : ins) {
+                            network_->removeConnection(outports[i], in);
+                            network_->addConnection(out, in);
+                        }
+                    }
+                }
+                network_->removeAndDeleteProcessor(p);
+            });
+
             break;
         }
 
