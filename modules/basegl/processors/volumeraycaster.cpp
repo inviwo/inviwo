@@ -100,8 +100,6 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(toggleShading_);
 }
 
-VolumeRaycaster::~VolumeRaycaster() {}
-
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
     return processorInfo_;
 }
