@@ -310,7 +310,7 @@ void PropertyWidgetQt::generateContextMenu() {
                 if (!properties.empty() && properties.front()) {
                     property_->set(properties.front().get());
                 }
-            } catch (AbortException& e) {
+            } catch (AbortException&) {
             }
         });
         connect(copyPathAction_, &QAction::triggered, [&](){
