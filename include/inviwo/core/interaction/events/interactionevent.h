@@ -62,7 +62,7 @@ public:
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
-    virtual bool matching(const Event* aEvent) const;
+    virtual bool matching(const Event* event) const;
     virtual bool equalSelectors(const Event* event) const;
 
 protected:
