@@ -88,19 +88,22 @@ std::string InteractionEvent::getClassIdentifier() const {
     return "org.inviwo.InteractionEvent";
 }
 
-bool InteractionEvent::matching(const Event* aEvent) const {
-    const InteractionEvent* event = dynamic_cast<const InteractionEvent*>(aEvent);
+bool InteractionEvent::matching(const Event* event) const {
+    auto interactionEvent = dynamic_cast<const InteractionEvent*>(event);
     if (event) {
-        return modifiers_ == event->modifiers_;
+        // check whether the modifiers are identical or whether one of them accepts any modifier
+        return ((modifiers_ == interactionEvent->modifiers_)
+                || (modifiers_ == InteractionEvent::MODIFIER_ANY)
+                || (interactionEvent->modifiers_ == InteractionEvent::MODIFIER_ANY));
     } else {
         return false;
     }
 }
 
 bool InteractionEvent::equalSelectors(const Event* event) const {
-    const InteractionEvent* ievent = dynamic_cast<const InteractionEvent*>(event);
-    if (ievent) {
-        return modifiers_ == ievent->modifiers_;
+    auto interactionEvent = dynamic_cast<const InteractionEvent*>(event);
+    if (interactionEvent) {
+        return modifiers_ == interactionEvent->modifiers_;
     } else {
         return false;
     }

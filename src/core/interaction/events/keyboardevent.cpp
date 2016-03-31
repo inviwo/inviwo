@@ -92,7 +92,7 @@ bool KeyboardEvent::matching(const Event* aEvent) const {
 bool KeyboardEvent::matching(const KeyboardEvent* aEvent) const {
     return key_ == aEvent->key_
         && (state_ & aEvent->state_)
-        && modifiers_ == aEvent->modifiers_;
+        && InteractionEvent::matching(aEvent);
 }
 
 bool KeyboardEvent::equalSelectors(const Event* aEvent) const {

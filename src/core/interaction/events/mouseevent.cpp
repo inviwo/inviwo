@@ -144,7 +144,7 @@ bool MouseEvent::matching(const MouseEvent* aEvent) const {
     return (button_ & aEvent->button_)
         && (state_ & aEvent->state_)
         && (wheelOrientation_ & aEvent->wheelOrientation_) 
-        && modifiers_ == aEvent->modifiers_;
+        && InteractionEvent::matching(aEvent);
 }
 
 bool MouseEvent::equalSelectors(const Event* aEvent) const {
