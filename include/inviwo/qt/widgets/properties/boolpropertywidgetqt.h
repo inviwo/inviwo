@@ -35,13 +35,8 @@
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QCheckBox>
-#include <warn/pop>
-
-
-
+class QCheckBox;
+class QLineEdit;
 
 namespace inviwo {
 
@@ -60,11 +55,13 @@ public:
 private:
     BoolProperty* property_;
     QCheckBox* checkBox_;
+    QLineEdit* lineEdit_;
     EditableLabelQt* label_;
     void generateWidget();
 
 public slots:
     void setPropertyValue();
+    void setPropertyValueFromString();
 };
 
 } // namespace

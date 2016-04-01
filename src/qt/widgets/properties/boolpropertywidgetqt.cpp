@@ -29,6 +29,15 @@
 
 #include <inviwo/qt/widgets/properties/boolpropertywidgetqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QRegExp>
+#include <QRegExpValidator>
+#include <warn/pop>
+
+
 namespace inviwo {
 
 BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property) 
@@ -46,22 +55,43 @@ void BoolPropertyWidgetQt::generateWidget() {
     label_ = new EditableLabelQt(this, property_, false);
     hLayout->addWidget(label_);
 
+    bool textSemantics = (property_->getSemantics() == PropertySemantics("Text"));
+
+    lineEdit_ = new QLineEdit();
+    lineEdit_->setEnabled(!property_->getReadOnly());
+    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0")));
+    lineEdit_->setVisible(textSemantics);
+    connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValueFromString()));
+
     checkBox_ = new QCheckBox();
     checkBox_->setEnabled(!property_->getReadOnly());
-    checkBox_->setFixedSize(QSize(15,15));
-   
+    checkBox_->setFixedSize(QSize(15, 15));
+    checkBox_->setVisible(!textSemantics);
+
     connect(checkBox_, SIGNAL(clicked()), this, SLOT(setPropertyValue()));
 
     hLayout->addWidget(checkBox_);
+    hLayout->addWidget(lineEdit_);
     setLayout(hLayout);
 }
 
 void BoolPropertyWidgetQt::setPropertyValue() {
     property_->set(checkBox_->isChecked());
+    // update text representation
+    lineEdit_->setText(property_->get() ? "true" : "false");
+}
+
+void BoolPropertyWidgetQt::setPropertyValueFromString() {
+    QString str(lineEdit_->text());
+    property_->set(str == "true" || str == "1");
+
+    // update checkbox
+    checkBox_->setChecked(property_->get());
 }
 
 void BoolPropertyWidgetQt::updateFromProperty() {
     checkBox_->setChecked(property_->get());
+    lineEdit_->setText(property_->get() ? "true" : "false");
 }
 
 } // namespace

@@ -69,6 +69,7 @@ namespace inviwo {
 
 QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWidget") {
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
+    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
     registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
 
