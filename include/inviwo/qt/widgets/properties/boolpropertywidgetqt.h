@@ -41,29 +41,21 @@ class QLineEdit;
 namespace inviwo {
 
 class IVW_QTWIDGETS_API BoolPropertyWidgetQt : public PropertyWidgetQt {
-
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
 public:
     BoolPropertyWidgetQt(BoolProperty* property);
+    virtual ~BoolPropertyWidgetQt() = default;
 
     void updateFromProperty();
 
 private:
+    void generateWidget();
+
     BoolProperty* property_;
     QCheckBox* checkBox_;
     QLineEdit* lineEdit_;
     EditableLabelQt* label_;
-    void generateWidget();
-
-public slots:
-    void setPropertyValue();
-    void setPropertyValueFromString();
 };
 
-} // namespace
+} // namespace inviwo
 
 #endif // IVW_BOOLPROPERTYWIDGETQT_H

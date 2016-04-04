@@ -22,7 +22,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processordockwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processorwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/anglepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/buttonpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h
@@ -58,6 +57,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtwidgetsdefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/labelgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qstringhelper.h
