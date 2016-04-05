@@ -296,4 +296,14 @@ div.flot-summary {
     height: 150px;
 }
 
+div.flot-plots {
+    width:100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
 
+div.flot-container {
+    width: 400px;
+    height: 250px;
+}

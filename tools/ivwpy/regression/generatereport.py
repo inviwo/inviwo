@@ -35,6 +35,7 @@ import glob
 import datetime
 import contextlib
 import lesscpy
+import json
 
 # Beautiful Soup 4 for dom manipulation
 import bs4
@@ -195,7 +196,6 @@ def testImages(testimg, refimg, diffimg, maskimg):
 				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
 
-
 def dataToJsArray(data):
 	return "[\n" + ",\n".join(["[" + str(x) + ", " + str(y) + "]" for x,y in data]) + "\n]"
 
@@ -238,6 +238,8 @@ class TestRun:
 				for key in ["path", "command", "returncode", "missing_imgs", 
 							"missing_refs", "output", "errors"]:
 					self.simple(key)
+
+				self.doc.asis(self.plots())
 
 				self.doc.asis(self.failures())
 
@@ -312,8 +314,7 @@ class TestRun:
 
 	def imageShort(self, img):
 		doc, tag, text = yattag.Doc().tagtext()
-	
-
+		
 		with tag('div', klass="imagename"):
 			text(img["image"])
 		with tag('div', klass="imagedifference"):
@@ -402,6 +403,14 @@ class TestRun:
 
 		return doc.getvalue()
 
+	def plots(self):
+		def plotting(id):
+			doc, tag, text = yattag.Doc().tagtext()
+			doc.stag('div', klass='flot-plots', id=id)
+			return doc.getvalue()
+		
+		return listItem(keyval("Plots", "..."), plotting(self.module + "/" + self.name))
+		
 	def failures(self):
 		nfail = len(self.report["failures"])
 		short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
@@ -423,6 +432,7 @@ class HtmlReport:
 						"jquery.flot.time.js",
 						"jquery.flot.selection.js",
 						"jquery.flot.stack.js",
+						"jquery.flot.tooltip.min.js",
 						"main.js"]
 		self.postScripts = [ "make-list.js", "make-flot.js" ]
 		
@@ -513,7 +523,8 @@ class HtmlReport:
 			print("var passdata = " +dataToJsArray([[x.timestamp()*1000, y[0]] for x,y in resulttimedata]), file = f)
 			print("var faildata = " +dataToJsArray([[x.timestamp()*1000, y[1]] for x,y in resulttimedata]), file = f)
 
-
+			plotdata = get_plot_data(self.db)
+			print("var plotdata = " + json.dumps(plotdata), file = f)
 
 	def saveHtml(self, filename):
 		file = self.basedir + "/" + filename + ".html"

@@ -31,7 +31,7 @@ $(document).ready(function() {
    	$('div.lihead').click(function() {
    			body = $(this).next(".libody") 			
    			body.slideToggle(100);
-           	$.sparkline_display_visible()
+           	$.sparkline_display_visible();
     });
 
 	$('.sparkline_elapsed_time').sparkline('html', {
