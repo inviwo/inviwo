@@ -597,10 +597,10 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
                     handleError(e);
                 }
             } else {
-                try {
-                    V* ptr = nullptr;
+                V* ptr = nullptr;
+                try {      
                     deserialize(itemKey, ptr);
-                    map.emplace(childkey, std:.unique_ptr<V>(ptr));
+                    map.emplace(childkey, std::unique_ptr<V>(ptr));
                 } catch (SerializationException& e) {
                     delete ptr;
                     handleError(e);

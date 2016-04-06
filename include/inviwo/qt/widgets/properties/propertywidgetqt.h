@@ -190,8 +190,6 @@ private:
     QMenu* contextMenu_;
     QMap<QString, QMenu*> moduleSubMenus_;
 
-    std::unordered_map<std::string, std::string> savedStates_;
-
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;
 };
