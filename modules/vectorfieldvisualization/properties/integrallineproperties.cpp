@@ -101,9 +101,9 @@ void IntegralLineProperties::setUpProperties() {
                                  IntegralLineProperties::IntegrationScheme::RK4);
     integrationScheme_.setSelectedValue(IntegralLineProperties::IntegrationScheme::RK4);
 
+    seedPointsSpace_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
     seedPointsSpace_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
     seedPointsSpace_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
-    seedPointsSpace_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
 
     addProperty(numberOfSteps_);
     addProperty(stepSize_);
