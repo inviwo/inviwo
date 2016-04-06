@@ -43,10 +43,10 @@ public:
     Layer(size2_t dimensions = size2_t(32, 32), const DataFormatBase* format = DataVec4UInt8::get(),
           LayerType type = LayerType::Color);
     Layer(std::shared_ptr<LayerRepresentation>);
-    Layer(const Layer&);
-    Layer& operator=(const Layer& that);
+    Layer(const Layer&) = default;
+    Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
-    virtual ~Layer();
+    virtual ~Layer() = default;
 
     virtual size2_t getDimensions() const override;
 

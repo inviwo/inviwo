@@ -678,6 +678,18 @@ Type1 invertY(Type1 vec, Type2 dim) {
     return Type1(vec.x, static_cast<T>(dim.y) - 1 - vec.y);
 }
 
+
+template <typename T>
+inline bool all(const T& t) {
+    return glm::all(t);
+}
+
+template <>
+inline bool all(const bool& t) {
+    return t;
+}
+
+
 } // namespace util
 
 } // namespace inviwo

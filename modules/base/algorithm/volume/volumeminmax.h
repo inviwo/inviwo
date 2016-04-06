@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,53 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/image/imagecontour.h>
+#ifndef IVW_VOLUMEMINMAX_H
+#define IVW_VOLUMEMINMAX_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
+namespace util {
+namespace detail {
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, double isoValue,
-                                          vec4 color) {
-    detail::ImageContourDispatcher disp;
-    auto df = in->getDataFormat();
-    if (df->getNumericType() != NumericType::Float) {
-        isoValue =
-            static_cast<double>(df->getMin()) +
-            isoValue * (static_cast<double>(df->getMax()) - static_cast<double>(df->getMin()));
+struct VolumeMinMaxDispatcher {
+    using type = std::pair<dvec4, dvec4>;
+
+    template <typename T>
+    std::pair<dvec4, dvec4> dispatch(const VolumeRAM* volume) {
+        using dataType = typename T::type;
+        using primitive = typename T::primitive;
+        auto data = static_cast<const dataType*>(volume->getData());
+        auto df = volume->getDataFormat();
+
+#include <warn/push>
+#include <warn/ignore/conversion>  // Visual Studio 2015 complains about type conversion despite static_cast
+        dataType minV(static_cast<primitive>(df->getMax()));
+        dataType maxV(static_cast<primitive>(df->getLowest()));
+#include <warn/pop>
+
+        const auto dim = volume->getDimensions();
+        const auto size = dim.x * dim.y * dim.z;
+        for (size_t i = 0; i < size; i++) {
+            auto v = data[i];
+
+            if (util::all(v != v + dataType(1))) {
+                minV = glm::min(minV, v);
+                maxV = glm::max(maxV, v);
+            }
+        }
+
+        return {util::glm_convert<dvec4>(minV), util::glm_convert<dvec4>(maxV)};
     }
-    return df->dispatch(disp, in, isoValue, color);
-}
+};
+}  // namespace
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const VolumeRAM* volume);
 
 }  // namespace
+
+}  // namespace
+
+#endif // IVW_VOLUMEMINMAX_H
+

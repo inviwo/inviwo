@@ -42,11 +42,6 @@
 
 namespace inviwo {
 
-/**
- * \class ImageContour
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_BASE_API ImageContour {
 public:
     static std::shared_ptr<Mesh> apply(const LayerRepresentation* in, double isoValue,

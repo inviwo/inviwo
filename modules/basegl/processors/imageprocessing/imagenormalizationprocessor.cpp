@@ -27,66 +27,13 @@
  *
  *********************************************************************************/
 
-#include "imagenormalizationprocessor.h"
+#include <modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/base/algorithm/image/layerminmax.h>
 
 namespace inviwo {
-
-namespace detail {
-
-template <typename T>
-bool all(const T& t) {
-    return glm::all(t);
-}
-
-template <>
-bool all(const bool& t) {
-    return t;
-}
-
-struct LayerMinMaxDispatcher {
-    using type = std::pair<dvec4, dvec4>;
-
-    template <typename T>
-    std::pair<dvec4, dvec4> dispatch(const LayerRAM* layer) {
-        using dataType = typename T::type;
-        auto data = static_cast<const dataType*>(layer->getData());
-        auto df = layer->getDataFormat();
-
-// Visual studio warns here even with the static casts, bug?  
-#include <warn/push>
-#include <warn/ignore/conversion>
-        auto minV = static_cast<dataType>(df->getMax());
-        auto maxV = static_cast<dataType>(df->getMin());
-#include <warn/pop>
-
-
-        for (size_t i = 0; i < layer->getDimensions().x * layer->getDimensions().y; i++) {
-            auto v = data[i];
-
-            if (all(v != v + dataType(1))) {
-                minV = glm::min(minV, v);
-                maxV = glm::max(maxV, v);
-            }
-        }
-
-        std::pair<dvec4, dvec4> out;
-        out.first = df->valueToVec4Double(&minV);
-        out.second = df->valueToVec4Double(&maxV);
-
-        return out;
-    }
-};
-}
-
-struct LayerMinMax {
-    static std::pair<dvec4, dvec4> getMinMax(const LayerRAM* layer) {
-        detail::LayerMinMaxDispatcher disp;
-        return layer->getDataFormat()->dispatch(disp, layer);
-    }
-};
 
 const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     "org.inviwo.ImageNormalization",  // Class identifier
@@ -174,7 +121,7 @@ void ImageNormalizationProcessor::invalidateMinMax() {
         }
     }
 
-    auto minMax = LayerMinMax::getMinMax(img);
+    auto minMax = util::layerMinMax(img);
 
     min_ = minMax.first;
     max_ = minMax.second;

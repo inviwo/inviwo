@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,13 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/image/imagecontour.h>
+#include <modules/base/algorithm/volume/volumeminmax.h>
 
 namespace inviwo {
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, double isoValue,
-                                          vec4 color) {
-    detail::ImageContourDispatcher disp;
-    auto df = in->getDataFormat();
-    if (df->getNumericType() != NumericType::Float) {
-        isoValue =
-            static_cast<double>(df->getMin()) +
-            isoValue * (static_cast<double>(df->getMax()) - static_cast<double>(df->getMin()));
-    }
-    return df->dispatch(disp, in, isoValue, color);
+std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume) {
+    detail::VolumeMinMaxDispatcher disp;
+    return volume->getDataFormat()->dispatch(disp, volume);
 }
 
 }  // namespace
