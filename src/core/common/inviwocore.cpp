@@ -41,6 +41,7 @@
 
 //Meta Data
 #include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
@@ -145,7 +146,9 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
     registerMetaData(util::make_unique<PropertyEditorWidgetMetaData>());
-    
+    registerMetaData(util::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
+    registerMetaData(util::make_unique<StdVectorMetaData<std::string>>());
+
     // Register Cameras
     registerCamera<PerspectiveCamera>("PerspectiveCamera");
     registerCamera<OrthographicCamera>("OrthographicCamera");

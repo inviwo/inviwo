@@ -39,15 +39,15 @@ namespace inviwo {
 class IVW_CORE_API MetaData : public Serializable {
 
 public:
-    MetaData();
-    MetaData(const MetaData& rhs);
-    MetaData& operator=(const MetaData& that);
-    virtual ~MetaData();
+    MetaData() = default;
+    MetaData(const MetaData& rhs) = default;
+    MetaData& operator=(const MetaData& that) = default;
+    virtual ~MetaData() = default;
     virtual std::string getClassIdentifier() const;
-    virtual MetaData* clone() const;
+    virtual MetaData* clone() const = 0;
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
-    virtual bool equal(const MetaData& rhs) const;
+    virtual bool equal(const MetaData& rhs) const = 0;
     friend bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
 };
 
