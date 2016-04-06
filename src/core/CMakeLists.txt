@@ -265,6 +265,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -473,6 +475,8 @@ set(SOURCE_FILES
     util/tooltiphelper.cpp
     util/utilities.cpp
     util/volumesampler.cpp
+    util/volumesequenceutils.cpp
+    util/volumesequencesampler.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -495,6 +499,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/filesystem-test.cpp
+    tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
