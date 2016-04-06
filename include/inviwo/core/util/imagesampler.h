@@ -120,4 +120,4 @@ private:
 
 }  // namespace
 
-#endif  // IVW_VOLUMESAMPLER_H
+#endif  // IVW_IMAGESAMPLER_H
