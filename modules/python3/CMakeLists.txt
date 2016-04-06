@@ -40,20 +40,6 @@ if(PYTHON_DEBUG_LIBRARY)
     option(IVW_PYTHON_LINK_DEBUG "Link python debug libraries" OFF)
 endif()
 
-if(PYTHON_EXECUTABLE)
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import struct;print( 8*struct.calcsize('P') , end='')"  OUTPUT_VARIABLE PYTHON_EXECUTABLE_BITS )
-    set(SYS_BITS 32)
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(SYS_BITS 64)
-    endif()
-
-    if(SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
-        ivw_message(FATAL_ERROR "Python is built for ${PYTHON_EXECUTABLE_BITS}bits while target output is ${SYS_BITS}bits")
-    endif()
-endif()
-
-
-
 if(IVW_PYTHON_LINK_DEBUG)
     ivw_add_definition(IVW_PYTHON_LINK_DEBUG)
     add_dependency_libs_to_module(${PYTHON_LIBRARIES})
@@ -166,3 +152,20 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 # endif()
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+
+#--------------------------------------------------------------------
+# Check that python is built with the right arch.
+find_package(PythonInterp 3)
+if(PYTHON_EXECUTABLE)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import struct;print(8*struct.calcsize('P'), end='')"
+        OUTPUT_VARIABLE PYTHON_EXECUTABLE_BITS )
+    set(SYS_BITS 32)
+    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SYS_BITS 64)
+    endif()
+
+    if(SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
+        ivw_message(FATAL_ERROR "Python is built for ${PYTHON_EXECUTABLE_BITS}bits"
+                    " while target output is ${SYS_BITS}bits")
+    endif()
+endif()
