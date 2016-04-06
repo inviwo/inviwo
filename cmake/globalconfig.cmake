@@ -340,6 +340,10 @@ if(WIN32 AND MSVC)
     endif()  
 endif()
 
+if (LINUX)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
+endif()
+
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs
 find_package(OpenMP QUIET)
