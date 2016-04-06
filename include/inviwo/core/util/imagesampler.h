@@ -47,7 +47,7 @@ class Layer;
 class LayerRAM;
 
 /**
- * \class VolumeSampler
+ * \class ImageSampler
  *
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  *
