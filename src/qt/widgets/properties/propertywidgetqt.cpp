@@ -29,6 +29,7 @@
 
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
@@ -48,6 +49,7 @@
 #include <QPainter>
 #include <QToolTip>
 #include <QHelpEvent>
+#include <QInputDialog>
 #include <QClipboard>
 #include <QMenu>
 #include <QLayout>
@@ -235,28 +237,61 @@ void PropertyWidgetQt::generateContextMenu() {
             semanticsActionGroup_ = new QActionGroup(this);
 
             auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-            std::vector<PropertySemantics> semantics =
-                factory->getSupportedSemanicsForProperty(property_);
+            auto semantics = factory->getSupportedSemanicsForProperty(property_);
 
             for (auto& semantic : semantics) {
-                QAction* semanticAction = new QAction(QString::fromStdString(semantic.getString()),
+                auto semanticAction = new QAction(QString::fromStdString(semantic.getString()),
                                                       semanticsActionGroup_);
-                semanticAction->setCheckable(true);
                 semanicsMenuItem_->addAction(semanticAction);
-                if (semantic == property_->getSemantics()) {
-                    semanticAction->setChecked(true);
-                } else {
-                    semanticAction->setChecked(false);
-                }
+                semanticAction->setCheckable(true);
+                semanticAction->setChecked(semantic == property_->getSemantics());
                 semanticAction->setData(QString::fromStdString(semantic.getString()));
             }
 
             connect(semanticsActionGroup_, SIGNAL(triggered(QAction*)), this,
                     SLOT(changeSemantics(QAction*)));
 
-            if (semantics.size() > 1) {
-                contextMenu_->addMenu(semanicsMenuItem_);
+            if (semantics.size() > 1) contextMenu_->addMenu(semanicsMenuItem_);
+
+            auto presets = contextMenu_->addMenu("Presets");
+            auto savestate = presets->addAction("Save...");
+            presets->addSeparator();
+
+            auto addLoadAction = [=](const std::string& name, const std::string& data) {
+                auto action = presets->addAction(QString::fromStdString(name));
+                connect(action, &QAction::triggered, [=]() {
+
+                    std::stringstream ss;
+                    ss << data;
+                    try {
+                        NetworkLock lock(property_);
+                        Deserializer deserializer(InviwoApplication::getPtr(), ss, "");
+                        property_->deserialize(deserializer);
+                    } catch (AbortException&) {
+                    }
+
+                });
+            };
+            using MT = StdUnorderedMapMetaData<std::string, std::string>;
+            auto state = property_->createMetaData<MT>("SavedState");
+            for (const auto& item : state->getMap()) {
+                addLoadAction(item.first, item.second);
             }
+
+            connect(savestate, &QAction::triggered, [=]() {
+                bool ok;
+                QString text = QInputDialog::getText(this, tr("Save Preset"), tr("Name:"),
+                                                     QLineEdit::Normal, "", &ok);
+                if (ok && !text.isEmpty()) {
+                    Serializer serializer("");
+                    property_->serialize(serializer);
+                    std::stringstream ss;
+                    serializer.writeFile(ss);
+                    state->getMap()[text.toStdString()] = ss.str();
+
+                    addLoadAction(text.toStdString(), ss.str());
+                }
+            });
         }
 
         QAction* resetAction = new QAction(tr("&Reset to default"), this);

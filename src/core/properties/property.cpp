@@ -93,15 +93,15 @@ Property* Property::clone() const {
     return nullptr; // See ticket #642 //make abstract...
 }
 
-Property::~Property() {}
-
 std::string Property::getIdentifier() const {
     return identifier_;
 }
 void Property::setIdentifier(const std::string& identifier) {
-    identifier_ = identifier;
-    notifyObserversOnSetIdentifier(identifier_);
-    notifyAboutChange();
+    if (identifier_ != identifier) {
+        identifier_ = identifier;
+        notifyObserversOnSetIdentifier(identifier_);
+        notifyAboutChange();
+    }
 }
 std::vector<std::string> Property::getPath() const {
     std::vector<std::string> path;
@@ -115,17 +115,21 @@ std::vector<std::string> Property::getPath() const {
 std::string Property::getDisplayName() const { return displayName_; }
 
 void Property::setDisplayName(const std::string& displayName) {
-    displayName_ = displayName;
-    notifyObserversOnSetDisplayName(displayName_);
-    notifyAboutChange();
+    if (displayName_ != displayName) {
+        displayName_ = displayName;
+        notifyObserversOnSetDisplayName(displayName_);
+        notifyAboutChange();
+    }
 }
 
 PropertySemantics Property::getSemantics() const { return semantics_; }
 
 void Property::setSemantics(const PropertySemantics& semantics) {
-    semantics_ = semantics;
-    notifyObserversOnSetSemantics(semantics_);
-    notifyAboutChange();
+    if (semantics_ != semantics) {
+        semantics_ = semantics;
+        notifyObserversOnSetSemantics(semantics_);
+        notifyAboutChange();
+    }
 }
 
 std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
@@ -133,10 +137,12 @@ std::string Property::getClassIdentifierForWidget() const { return getClassIdent
 bool Property::getReadOnly()const {
     return readOnly_;
 }
-void Property::setReadOnly(const bool& value) {
-    readOnly_ = value;
-    notifyObserversOnSetReadOnly(readOnly_);
-    notifyAboutChange();
+void Property::setReadOnly(const bool& readOnly) {
+    if (readOnly_ != readOnly) {
+        readOnly_ = readOnly;
+        notifyObserversOnSetReadOnly(readOnly_);
+        notifyAboutChange();
+    }
 }
 
 InvalidationLevel Property::getInvalidationLevel() const {
@@ -228,24 +234,39 @@ void Property::serialize(Serializer& s) const {
 void Property::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, true);
-    d.deserialize("identifier", identifier_, true);
-    notifyObserversOnSetIdentifier(identifier_);
 
-    d.deserialize(displayName_.name, displayName_.value, true);
-    notifyObserversOnSetDisplayName(displayName_);
-
-    semantics_.deserialize(d);
-    notifyObserversOnSetSemantics(semantics_);
-
-    int mode = static_cast<int>(usageMode_.value);
-    d.deserialize(usageMode_.name, mode);
-    usageMode_ = static_cast<UsageMode>(mode);
-    notifyObserversOnSetUsageMode(usageMode_);
-
-    visible_.deserialize(d);
-    notifyObserversOnSetVisible(visible_);
-    readOnly_.deserialize(d);
-    notifyObserversOnSetReadOnly(readOnly_);
+    {
+        auto old = identifier_;
+        d.deserialize("identifier", identifier_, true);
+        if (old != identifier_) notifyObserversOnSetIdentifier(identifier_);
+    }
+    {
+        auto old = displayName_.value;
+        d.deserialize(displayName_.name, displayName_.value, true);
+        if (old != displayName_.value) notifyObserversOnSetDisplayName(displayName_);
+    }
+    {
+        auto old = semantics_.value;
+        semantics_.deserialize(d);
+        if (old != semantics_.value) notifyObserversOnSetSemantics(semantics_);
+    }
+    {
+        auto old = usageMode_.value;
+        int mode = static_cast<int>(usageMode_.value);
+        d.deserialize(usageMode_.name, mode);
+        usageMode_ = static_cast<UsageMode>(mode);
+        if (old != usageMode_.value) notifyObserversOnSetUsageMode(usageMode_);
+    }
+    {
+        auto old = visible_.value;
+        visible_.deserialize(d);
+        if (old != visible_.value) notifyObserversOnSetVisible(visible_);
+    }
+    {
+        auto old = readOnly_.value;
+        readOnly_.deserialize(d);
+        if (old != readOnly_.value) notifyObserversOnSetReadOnly(readOnly_);
+    }
 
     MetaDataOwner::deserialize(d);
 }
@@ -254,24 +275,26 @@ inviwo::UsageMode Property::getUsageMode() const {
     return usageMode_;
 }
 void Property::setUsageMode(UsageMode usageMode) {
-    usageMode_ = usageMode;
-    notifyObserversOnSetUsageMode(usageMode_);
-    notifyAboutChange();
+    if (usageMode_ != usageMode) {
+        usageMode_ = usageMode;
+        notifyObserversOnSetUsageMode(usageMode_);
+        notifyAboutChange();
+    }
 }
 
 bool Property::getVisible() {
     return visible_;
 }
-
+void Property::setVisible(bool visible) {
+    if (visible_ != visible) {
+        visible_ = visible;
+        notifyObserversOnSetVisible(visible_);
+        notifyAboutChange();
+    }
+}
 
 const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToProperty() const {
     return autoLinkTo_;
-}
-
-void Property::setVisible(bool val) {
-    visible_ = val;
-    notifyObserversOnSetVisible(visible_);
-    notifyAboutChange();
 }
 
 // Call this when a property has changed in a way not related to it's "value"
@@ -279,8 +302,8 @@ void Property::setVisible(bool val) {
 // modified is __not__ called. This state changes should not effect the outcome of a 
 // network evaluation. 
 void Property::notifyAboutChange() {     
-    if (PropertyOwner* owner = getOwner()) { 
-        if (Processor* processor = owner->getProcessor()) {
+    if (auto owner = getOwner()) { 
+        if (auto processor = owner->getProcessor()) {
             // By putting a nullptr here we will avoid evaluation links.
             processor->notifyObserversAboutPropertyChange(nullptr);
         }
