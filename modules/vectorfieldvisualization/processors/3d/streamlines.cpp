@@ -63,7 +63,7 @@ void StreamLines::process() {
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    StreamLineTracer tracer(volume_.getData().get(), streamLineProperties_);
+    StreamLineTracer tracer(volume_.getData(), streamLineProperties_);
 
     std::vector<BasicMesh::Vertex> vertices;
 

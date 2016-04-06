@@ -48,6 +48,7 @@ Python3Module::Python3Module(InviwoApplication* app)
 
     pyInviwo_->addObserver(&pythonLogger_);
 
+
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         PythonScript s;
         auto filename = pythonScriptArg_.getValue();

@@ -46,8 +46,6 @@ namespace inviwo {
             invBasis_ = dmat3(glm::inverse(volumeSequence->at(0)->getBasis()));
             dimensions_ = volumeSequence->at(0)->getDimensions();
         }
-
-        sampler_.setVectorInterpolation(true);
     }
 
 PathLineTracer::~PathLineTracer() {}

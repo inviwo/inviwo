@@ -34,9 +34,9 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(const Volume *vol, const StreamLineProperties &properties)
+StreamLineTracer::StreamLineTracer(std::shared_ptr<const Volume> vol, const StreamLineProperties &properties)
     : IntegralLineTracer(properties)
-    , volumeSampler_(vol->getRepresentation<VolumeRAM>())
+    , volumeSampler_(vol)
     , invBasis_(dmat3(glm::inverse(vol->getBasis())))
     , dimensions_(vol->getDimensions())
     , normalizeSample_(properties.getNormalizeSamples())
@@ -44,7 +44,7 @@ StreamLineTracer::StreamLineTracer(const Volume *vol, const StreamLineProperties
 
 StreamLineTracer::~StreamLineTracer() {}
 
-void StreamLineTracer::addMetaVolume(const std::string &name, const VolumeRAM *vol) {
+void StreamLineTracer::addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol) {
     metaVolumes_.insert(std::make_pair(name, VolumeSampler(vol)));
 }
 
