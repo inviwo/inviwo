@@ -67,7 +67,7 @@ dvec4 ImageSampler::sample(const dvec2 &pos) const {
 
 dvec4 ImageSampler::getPixel(const size2_t &pos) const {
     auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
-    return layer_->getAsNormalizedDVec4(p);
+    return layer_->getAsDVec4(p);
 }
 
 }  // namespace
