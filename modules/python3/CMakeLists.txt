@@ -40,6 +40,17 @@ if(PYTHON_DEBUG_LIBRARY)
     option(IVW_PYTHON_LINK_DEBUG "Link python debug libraries" OFF)
 endif()
 
+if(PYTHON_EXECUTABLE)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import struct;print( 8*struct.calcsize('P') , end='')"  OUTPUT_VARIABLE PYTHON_EXECUTABLE_BITS )
+    set(SYS_BITS 32)
+    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SYS_BITS 64)
+    endif()
+
+    if(SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
+        ivw_message(FATAL_ERROR "Python is built for ${PYTHON_EXECUTABLE_BITS}bits while target output is ${SYS_BITS}bits")
+    endif()
+endif()
 
 
 
