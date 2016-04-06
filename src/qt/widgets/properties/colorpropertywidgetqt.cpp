@@ -54,7 +54,6 @@ void ColorPropertyWidgetQt::generateWidget() {
     setLayout(hLayout);
     
     btnColor_ = new IvwPushButton(this);
-    btnColor_->setEnabled(!property_->getReadOnly());
 
     connect(btnColor_, SIGNAL(clicked()), this, SLOT(openColorDialog()));
     label_ = new EditableLabelQt(this, property_);
