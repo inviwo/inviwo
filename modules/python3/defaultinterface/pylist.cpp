@@ -33,6 +33,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -43,19 +44,14 @@ namespace inviwo {
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
     std::string processorName;
-    if (tester.parse<std::string>(args, processorName)== -1) {
+    if (tester.parse<std::string>(args, processorName) == -1) {
         return nullptr;
     }
 
-    Processor* processor =
-        InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(processorName);
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
 
-    if (!processor) {
-        std::ostringstream errStr;
-        errStr << "listProperties(): no processor with name " << processorName << " could be found";
-        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-    } else {
-        std::vector<Property*> props = processor->getPropertiesRecursive();
+    if (auto processor = network->getProcessorByIdentifier(processorName)) {
+        auto props = processor->getPropertiesRecursive();
 
         PyObject* lst = PyList_New(props.size());
         if (!lst) Py_RETURN_NONE;
@@ -74,8 +70,11 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
             PyList_SET_ITEM(lst, i, pair);
             ++i;
         }
-
         return lst;
+    } else {
+        std::ostringstream errStr;
+        errStr << "listProperties(): no processor with name " << processorName << " could be found";
+        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
     }
 
     Py_RETURN_NONE;
@@ -83,15 +82,13 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
 
 PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
-        std::vector<Processor*> processors =
-            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+        auto processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
         PyObject* lst = PyList_New(processors.size());
         if (!lst) Py_RETURN_NONE;
 
         int i = 0;
         for (auto processor : processors) {
-            
             std::string name = processor->getIdentifier();
             std::string type = processor->getClassIdentifier();
 
@@ -110,17 +107,14 @@ PyObject* py_listProcessors(PyObject* /*self*/, PyObject* /*args*/) {
 
     Py_RETURN_NONE;
 }
-
-
 
 PyObject* py_listCanvases(PyObject* /*self*/, PyObject* /*noargs*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
-        std::vector<Processor*> processors =
-            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+        auto processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-
-        util::erase_remove_if(processors, [](const Processor* p) { return dynamic_cast<const CanvasProcessor*>(p) == nullptr; });
-
+        util::erase_remove_if(processors, [](const Processor* p) {
+            return dynamic_cast<const CanvasProcessor*>(p) == nullptr;
+        });
 
         PyObject* lst = PyList_New(processors.size());
         if (!lst) Py_RETURN_NONE;
@@ -145,5 +139,4 @@ PyObject* py_listCanvases(PyObject* /*self*/, PyObject* /*noargs*/) {
 
     Py_RETURN_NONE;
 }
-
 }
