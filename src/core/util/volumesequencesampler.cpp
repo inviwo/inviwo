@@ -40,12 +40,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-void VolumeSequenceSampler::setVectorInterpolation(bool enable) {
-    for (auto &s : samplers_) {
-        s.setVectorInterpolation(enable);
-    }
-}
-
 dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;
