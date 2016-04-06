@@ -30,9 +30,9 @@
 #ifndef IVW_PYINVIWO_H
 #define IVW_PYINVIWO_H
 
+#include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
-#include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 #include <modules/python3/pythonincluder.h>
 
@@ -66,8 +66,6 @@ public:
     * @param PyMethodDef * module static array of registered classes in a module
     */
     void addModulePath(const std::string& path);
-    // PyObject* getMainDictionary();
-    // PyObject* getModulesDictionary();
 
     std::vector<PyModule*> getAllPythonModules();
 
