@@ -25,7 +25,6 @@ if(NOT ${haspython} GREATER 0)
     endif()    
 endif()
 
-
 set(Python_ADDITIONAL_VERSIONS 3.5)
 find_package(PythonLibs 3)
 
@@ -57,7 +56,6 @@ else()
         list(GET PYTHON_LIBRARY_DIR 2 LIB_DIR2_TYPE)
         list(GET PYTHON_LIBRARY_DIR 3 LIB_DIR2_PATH)
 
-
         if(${LIB1_TYPE} STREQUAL "optimized")
             add_dependency_libs_to_module(${LIB1_PATH})
         elseif(${LIB2_TYPE} STREQUAL "optimized")
@@ -74,9 +72,6 @@ else()
         ivw_link_directories(${PYTHON_LIBRARY_DIR})
     endif()
 endif()
-
-
-
 
 #--------------------------------------------------------------------
 # Add header files
@@ -156,15 +151,17 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 #--------------------------------------------------------------------
 # Check that python is built with the right arch.
 find_package(PythonInterp 3)
-if(PYTHON_EXECUTABLE)
+if(PYTHON_EXECUTABLE AND (${PYTHON_VERSION_MAJOR} EQUAL 3))
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import struct;print(8*struct.calcsize('P'), end='')"
         OUTPUT_VARIABLE PYTHON_EXECUTABLE_BITS )
-    set(SYS_BITS 32)
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(SYS_BITS 64)
+    else()
+        set(SYS_BITS 32)
     endif()
 
-    if(SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
+    if(NOT SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
         ivw_message(FATAL_ERROR "Python is built for ${PYTHON_EXECUTABLE_BITS}bits"
                     " while target output is ${SYS_BITS}bits")
     endif()
