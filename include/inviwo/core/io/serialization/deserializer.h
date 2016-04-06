@@ -62,7 +62,7 @@ public:
      *
      * @param stream Stream with content that is to be deserialized.
      * @param path A path that will be used to decode the location of data during
-     *deserialization.
+     * deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
     Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
@@ -105,14 +105,13 @@ public:
     template <typename T>
     void deserialize(const std::string& key, std::vector<T>& sVector, const std::string& itemKey);
 
-
     template <typename T>
     void deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
-    const std::string& itemKey);
-
+                     const std::string& itemKey);
 
     template <typename T>
     void deserialize(const std::string& key, std::list<T>& sContainer, const std::string& itemKeyr);
+    
     /**
      * \brief  Deserialize a map
      *
@@ -151,13 +150,22 @@ public:
      *
      * @param key Map key or parent node of itemKey.
      * @param sMap  map to be deserialized - source / input map.
-     * @param itemKey map item key of childeren nodes.
+     * @param itemKey map item key of children nodes.
      * @param comparisionAttribute forced comparison attribute.
      */
     template <typename K, typename V, typename C, typename A>
-    void deserialize(
-        const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
-        const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+    void deserialize(const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
+                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+
+    template <typename K, typename V, typename C, typename A>
+    void deserialize(const std::string& key, std::map<K, V*, C, A>& sMap,
+                     const std::string& itemKey,
+                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+
+    template <typename K, typename V, typename C, typename A>
+    void deserialize(const std::string& key, std::map<K, std::unique_ptr<V>, C, A>& sMap,
+                     const std::string& itemKey,
+                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
 
     // Specializations for chars
     void deserialize(const std::string& key, signed char& data, const bool asAttribute = false);
@@ -515,8 +523,41 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
             K childkey;
             child->GetAttribute(comparisionAttribute, &childkey);
 
-            typename std::map<K, V, C, A>::iterator it = map.find(childkey);
-            V value = (it != map.end() ? it->second : nullptr);
+            V value;
+            auto it = map.find(childkey);
+            if(it != map.end()) value = it->second;
+            try {
+                deserialize(itemKey, value);
+                map[childkey] = value;
+            } catch (SerializationException& e) {
+                handleError(e);
+            }
+        }
+    } catch (TxException&) {
+    }
+}
+
+// Pointer specialization
+template <typename K, typename V, typename C, typename A>
+void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& map,
+                               const std::string& itemKey,
+                               const std::string& comparisionAttribute) {
+    if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
+        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+
+    try {
+        NodeSwitch mapNodeSwitch(*this, key);
+        TxEIt child(itemKey);
+
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            // In the next deserialization call do net fetch the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            K childkey;
+            child->GetAttribute(comparisionAttribute, &childkey);
+
+            auto it = map.find(childkey);
+            V*  value = (it != map.end() ? it->second : nullptr);
 
             try {
                 deserialize(itemKey, value);
@@ -528,6 +569,49 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
     } catch (TxException&) {
     }
 }
+
+// unique_ptr specialization
+template <typename K, typename V, typename C, typename A>
+void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_ptr<V>, C, A>& map,
+                               const std::string& itemKey,
+                               const std::string& comparisionAttribute) {
+    if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
+        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+
+    try {
+        NodeSwitch mapNodeSwitch(*this, key);
+        TxEIt child(itemKey);
+
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            // In the next deserialization call do net fetch the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            K childkey;
+            child->GetAttribute(comparisionAttribute, &childkey);
+
+            auto it = map.find(childkey);
+            if (it != map.end()){
+                try {
+                    deserialize(itemKey, it->second.get());
+                 } catch (SerializationException& e) {
+                    handleError(e);
+                }
+            } else {
+                try {
+                    V* ptr = nullptr;
+                    deserialize(itemKey, ptr);
+                    map.emplace(childkey, std:.unique_ptr<V>(ptr));
+                } catch (SerializationException& e) {
+                    delete ptr;
+                    handleError(e);
+                }
+            
+            }
+        }
+    } catch (TxException&) {
+    }
+}
+
 
 template <class T>
 inline void Deserializer::deserialize(const std::string& key, T*& data) {
