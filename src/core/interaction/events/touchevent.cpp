@@ -169,7 +169,7 @@ bool TouchEvent::matching(const Event* aEvent) const {
 }
 
 bool TouchEvent::matching(const TouchEvent* aEvent) const {
-    return modifiers_ == aEvent->modifiers_;
+    return InteractionEvent::matching(aEvent);
 }
 
 bool TouchEvent::equalSelectors(const Event* aEvent) const {

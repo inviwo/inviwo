@@ -76,7 +76,7 @@ public:
     
     std::string file() const; 
     
-    virtual void fileChanged(std::string fileName) override;
+    virtual void fileChanged(const std::string& fileName) override;
     
 private:
     std::string key_;

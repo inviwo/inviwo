@@ -1,4 +1,9 @@
+import os
+import os.path
 
+def ensureDirectory(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
 def update():
     try:
@@ -6,6 +11,15 @@ def update():
         qt.update();
     except: 
         pass
+
+
+def snapshotAllCanvasesWithWorkspace(basePath: str , workspaceName  , canvasFilenamePrefix="" , canvasFilenameSufix = "" , filetype="png"):
+    import inviwo as i
+    canvases = [];
+    for canvas in i.listCanvases():
+        canvases.append(canvas[0])
+    return snapshotWithWorkspace(basePath , canvases, workspaceName, canvasFilenamePrefix, canvasFilenameSufix , filetype )
+
 
 
 def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilenamePrefix="" , canvasFilenameSufix = "" , filetype="png"):
@@ -25,6 +39,13 @@ def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilen
         workspaceName = workspaceName + '.inv'
 
     inviwoqt.saveWorkspace(basePath + "/" + workspaceName );
+
+    workspacePath = basePath + "/" + workspaceName;
+    workspaceDir = os.path.dirname(workspacePath);
+    
+    ensureDirectory(basePath)
+    ensureDirectory(workspaceDir)
+
+    inviwoqt.saveWorkspace(basePath + "/" + workspaceName  , False);
     for c in canvasList:
-        print(c)
         inviwo.snapshot(basePath + "/" + canvasFilenamePrefix + c + canvasFilenameSufix + "." + filetype , c );

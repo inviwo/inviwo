@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-var options = {
+var summery_options = {
     yaxes: [ { 
         show : true,
         position : "right",
@@ -42,7 +42,13 @@ var options = {
     },
     grid: {
         show: true,
-        borderColor: "gray"
+        borderColor: "gray",
+        hoverable: true
+    },
+    tooltip: {
+        show: true,
+        xDateFormat: "%Y-%m-%d %H:%M:%S",
+        content: "%s | %x; %y.8"
     },
     legend: {
         show : true,
@@ -50,14 +56,16 @@ var options = {
         backgroundColor : null,
         backgroundOpacity : 0,
         noColumns : 3
+    },
+    selection: {
+            mode: "xy"
     }
 };
 
-$.plot($("#flot-summary"), 
-    [{
+summery_data = [{
         lines: { 
             show : true, 
-            fill : true,
+            //fill : true, some fire fox problem...
             steps : true,
             fillColor : "#E4FBE4;"
         },
@@ -93,6 +101,114 @@ $.plot($("#flot-summary"),
         color : "#907FC6",
         yaxis : 1
     }
-    ],
-    options 
-);
+];
+
+$("#flot-summary").plot(summery_data, summery_options);
+$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summery_data, summery_options);});
+
+$("#flot-summary").bind("plotselected", function (event, ranges) {
+    // clamp the zooming to prevent eternal zoom
+    if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
+        ranges.xaxis.to = ranges.xaxis.from + 0.00001;
+    }
+
+    if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
+        ranges.yaxis.to = ranges.yaxis.from + 0.00001;
+    }
+    // do the zooming
+    $("#flot-summary").plot(summery_data,
+        $.extend(true, {}, summery_options, {
+            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+            yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+        })
+        );
+});
+
+
+function makePlot(elem, data) {
+    var options = {
+        xaxis : {
+            show: true,
+            mode: "time",
+            timeformat: "%e %b",
+        },
+        yaxis : {
+            show: true,
+            position : "left"
+        },
+        grid: {
+            hoverable: true,
+        },
+        tooltip: {
+            show: true,
+            xDateFormat: "%Y-%m-%d %H:%M:%S",
+            content: "%s | %x, %y.8"
+        },
+        legend: {
+            show : true,
+            position : "ne",
+            backgroundColor : null,
+            backgroundOpacity : 0
+        },
+        lines: { show: true },
+        points: { show: true },
+        selection: {
+            mode: "xy"
+        }
+    };
+
+    $(elem).plot(data, options);
+
+    $(elem).dblclick(function () {$(elem).plot(data, options);});
+    
+    $(elem).bind("plotselected", function (event, ranges) {
+        // clamp the zooming to prevent eternal zoom
+        if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
+            ranges.xaxis.to = ranges.xaxis.from + 0.00001;
+        }
+
+        if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
+            ranges.yaxis.to = ranges.yaxis.from + 0.00001;
+        }
+        // do the zooming
+        $(elem).plot(data,
+            $.extend(true, {}, options, {
+                xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+                yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+            })
+        );
+    });
+}
+
+var groupBy = function(xs, f) {
+  return xs.reduce(function(rv, x) {
+    (rv[f(x)] = rv[f(x)] || []).push(x);
+    return rv;
+  }, {});
+};
+
+var plotted = {}
+$(".flot-plots").each(function (i, item) {
+    var cont = $(item);
+    var observer = new MutationObserver(function (mutations) {
+        if (!(cont.attr('id') in plotted)) {
+            plotted[cont.attr('id')] = true;
+            var data = plotdata[cont.attr('id')];
+            groups = groupBy(Object.keys(data), function (x) { return x.split(/\.|-/)[0];})
+
+            Object.keys(groups).forEach(function (key) {
+                var elem = $("<div class='flot-container'></div>)");
+                cont.append(elem);
+
+                datalist = groups[key].map(function (akey) {
+                    return {
+                        data : data[akey]["data"], 
+                        label : akey + " (" + data[akey]["unit"] + ")"
+                    }
+                });
+                makePlot(elem, datalist);
+            });
+        }   
+    });
+    observer.observe(cont.closest(".libody")[0], { attributes: true, attributeFilter: ['style']});
+});

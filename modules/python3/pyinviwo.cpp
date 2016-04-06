@@ -135,11 +135,11 @@ static PyMethodDef Inviwo_METHODS[] =
     // Defined in pylist.h
     {"listProperties" , py_listProperties, METH_VARARGS, "List all properties for a processor." },
     {"listProcessors" , py_listProcessors, METH_VARARGS, "Lists all processors in the current network." },
-
+    { "listCanvases"  , py_listCanvases,   METH_NOARGS,  "Lists all canvas processors in the current network." },
     // Defined in pyutil.h
     {"wait" ,                py_wait,                 METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },
     {"snapshot",             py_snapshot,             METH_VARARGS, "Saves a snapshot of the specified canvas to the given file. If no canvas name is "
-                                               "passed, the first canvas in the network is chosen." },
+                                                                    "passed, the first canvas in the network is chosen." },
     {"snapshotCanvas",       py_snapshotCanvas,       METH_VARARGS, "Saves a snapshot of the ith canvas to the given file." },
     {"snapshotAllCanvases",  py_snapshotAllCanvases,  METH_VARARGS, "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string)." },
     {"getBasePath",          py_getBasePath,          METH_VARARGS, "Returns the path to Inviwos base folder." },

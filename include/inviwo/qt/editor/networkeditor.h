@@ -93,7 +93,7 @@ public:
      * @return true if successful, false otherwise.
      */
     bool saveNetwork(std::ostream stream);
-    bool saveNetwork(std::string fileName);
+    bool saveNetwork(std::string fileName,bool setAsFilename = true);
 
     /**
      * Load network from a stream. The path will be used to calculate relative directories of data

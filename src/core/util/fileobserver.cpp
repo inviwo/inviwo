@@ -24,65 +24,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-void FileObserver::startFileObservation(std::string fileName) {
-    if (isObserved(fileName))
-        increaseNumObservers(fileName);
-    else {
+void FileObserver::startFileObservation(const std::string& fileName) {
+    auto it = observedFiles_.find(fileName);
+    if (it == observedFiles_.end()) {
         if (filesystem::fileExists(fileName)) {
-            observedFiles_.push_back(std::pair<std::string,int>(fileName, 1));
+            observedFiles_[fileName] = 1;
             InviwoApplication::getPtr()->startFileObservation(fileName);
         }
+    } else {
+        ++(it->second);
     }
 }
 
-void FileObserver::stopFileObservation(std::string fileName) {
-    if (isObserved(fileName)) {
-        if (getNumObservers(fileName) > 1)
-            decreaseNumObservers(fileName);
-        else {
-            observedFiles_.erase(std::remove(observedFiles_.begin(), observedFiles_.end(), std::pair<std::string,int>(fileName,
-                                             getNumObservers(fileName))), observedFiles_.end());
+void FileObserver::stopFileObservation(const std::string& fileName) {
+    auto it = observedFiles_.find(fileName);
+    if (it != observedFiles_.end()) {
+        --(it->second);
+
+        if (it->second == 0) {
+            observedFiles_.erase(it);
             InviwoApplication::getPtr()->stopFileObservation(fileName);
         }
     }
 }
 
-void FileObserver::increaseNumObservers(std::string fileName) {
-    for (auto& elem : observedFiles_)
-        if (elem.first == fileName) elem.second++;
+bool FileObserver::isObserved(const std::string& fileName) const {
+    return observedFiles_.find(fileName) != observedFiles_.end();
 }
 
-void FileObserver::decreaseNumObservers(std::string fileName) {
-    for (auto& elem : observedFiles_)
-        if (elem.first == fileName) elem.second--;
-}
-
-int FileObserver::getNumObservers(std::string fileName) {
-    for (auto& elem : observedFiles_)
-        if (elem.first == fileName) return elem.second;
-
-    return 0;
-}
-
-bool FileObserver::isObserved(std::string fileName) {
-    return (getNumObservers(fileName) > 0);
-}
-
-std::vector<std::string> FileObserver::getFiles() {
+std::vector<std::string> FileObserver::getFiles() const {
     std::vector<std::string> files;
-
     for (auto& elem : observedFiles_) files.push_back(elem.first);
-
     return files;
 }
 
-} // namespace
+}  // namespace

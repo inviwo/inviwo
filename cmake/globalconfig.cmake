@@ -220,15 +220,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)
 option(IVW_PROFILING "Enable profiling" OFF)
 
 #--------------------------------------------------------------------
-# Iterator debug level in Visual Studio
-# https://msdn.microsoft.com/en-us/library/hh697468.aspx
-# This does unfortunately _NOT_ work without recompiling Qt every time you change this flag
-#if(WIN32 AND MSVC)
-#    set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). IDL=0: Disables checked iterators and disables iterator debugging. IDL=1: Enables checked iterators and disables iterator debugging. IDL=2: Enables iterator debugging.")
-#    set_property(CACHE IVW_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
-#endif()
-
-#--------------------------------------------------------------------
 # Build unittest for all modules
 include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
 
@@ -290,8 +281,10 @@ if(WIN32 AND MSVC)
 
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx
-    ## This does unfortunately _NOT_ work without recompiling Qt every time you change this flag
-    #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_ITERATOR_DEBUG_LEVEL=${IVW_ITERATOR_DEBUG_LEVEL}")
+
+    set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). IDL=0: Disables checked iterators and disables iterator debugging. IDL=1: Enables checked iterators and disables iterator debugging. IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
+    set_property(CACHE IVW_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_ITERATOR_DEBUG_LEVEL=${IVW_ITERATOR_DEBUG_LEVEL}")
 
 
     # MSVC Variable checks and include redist in packs
@@ -345,6 +338,10 @@ if(WIN32 AND MSVC)
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
         endif()
     endif()  
+endif()
+
+if (LINUX)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
 endif()
 
 #--------------------------------------------------------------------

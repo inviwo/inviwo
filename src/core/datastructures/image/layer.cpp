@@ -44,21 +44,7 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     addRepresentation(in);
 }
 
-Layer::Layer(const Layer& rhs)
-    : Data<LayerRepresentation>(rhs), StructuredGridEntity<2>(rhs), layerType_(rhs.layerType_) {}
-
-Layer& Layer::operator=(const Layer& that) {
-    if (this != &that) {
-        Data<LayerRepresentation>::operator=(that);
-        StructuredGridEntity<2>::operator=(that);
-        layerType_ = that.layerType_;
-    }
-    return *this;
-}
-
 Layer* Layer::clone() const { return new Layer(*this); }
-
-Layer::~Layer() {}
 
 size2_t Layer::getDimensions() const {
     if (hasRepresentations() && lastValidRepresentation_) {

@@ -40,10 +40,10 @@ class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
     LayerRAM(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
              const DataFormatBase* format = DataVec4UInt8::get());
-    LayerRAM(const LayerRAM& rhs);
-    LayerRAM& operator=(const LayerRAM& that);
+    LayerRAM(const LayerRAM& rhs) = default;
+    LayerRAM& operator=(const LayerRAM& that) = default;
     LayerRAM* clone() const override = 0;
-    virtual ~LayerRAM();
+    virtual ~LayerRAM() = default;
 
     /**
      * Copy and resize the representations of this onto the target.

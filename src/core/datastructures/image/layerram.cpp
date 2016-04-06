@@ -39,15 +39,6 @@ namespace inviwo {
 LayerRAM::LayerRAM(size2_t dimensions, LayerType type, const DataFormatBase* format)
     : LayerRepresentation(dimensions, type, format) {}
 
-LayerRAM::LayerRAM(const LayerRAM& rhs) : LayerRepresentation(rhs) {}
-
-LayerRAM& LayerRAM::operator=(const LayerRAM& that) {
-    if (this != &that) LayerRepresentation::operator=(that);
-    return *this;
-}
-
-LayerRAM::~LayerRAM() {}
-
 bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
     static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
                                                      ->getDataWriterFactory()

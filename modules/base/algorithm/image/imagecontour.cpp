@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "imagecontour.h"
+#include <modules/base/algorithm/image/imagecontour.h>
 
 namespace inviwo {
 
@@ -40,7 +40,7 @@ std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, double 
             static_cast<double>(df->getMin()) +
             isoValue * (static_cast<double>(df->getMax()) - static_cast<double>(df->getMin()));
     }
-    return df->dispatch(disp, in, isoValue , color);
+    return df->dispatch(disp, in, isoValue, color);
 }
 
 }  // namespace

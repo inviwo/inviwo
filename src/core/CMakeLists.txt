@@ -118,6 +118,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkconditions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h   
+    ${IVW_INCLUDE_DIR}/inviwo/core/metadata/containermetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatamap.h

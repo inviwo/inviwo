@@ -85,7 +85,7 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) {
 }
 
 void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd) {
-    for (int i = 0; i <= steps_; i++) {
+    for (int i = 0; i <= steps; i++) {
         if (curPos.x < 0) break;
         if (curPos.y < 0) break;
         if (curPos.z < 0) break;

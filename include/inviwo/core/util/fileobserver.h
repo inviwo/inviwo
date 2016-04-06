@@ -32,8 +32,9 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <string>
-#include <vector>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 namespace inviwo {
 
@@ -43,23 +44,19 @@ public:
     FileObserver() = default;
     virtual ~FileObserver() = default;
 
-    void startFileObservation(std::string fileName);
-    void stopFileObservation(std::string fileName);
-    std::vector<std::string> getFiles();
+    void startFileObservation(const std::string& fileName);
+    void stopFileObservation(const std::string& fileName);
+    std::vector<std::string> getFiles() const;
+    bool isObserved(const std::string& fileName) const;
 
-    bool isObserved(std::string fileName);
-    void increaseNumObservers(std::string fileName);
-    void decreaseNumObservers(std::string fileName);
-    int getNumObservers(std::string fileName);
-
-    virtual void fileChanged(std::string fileName) = 0;
+    virtual void fileChanged(const std::string& fileName) = 0;
 
 private:
 
-// We can safely ingnore the C4251 warning for private members.
+// We can safely ignore the C4251 warning for private members.
 #pragma warning( push )
 #pragma warning( disable: 4251 )
-    std::vector<std::pair<std::string, int> > observedFiles_; ///< stores the files to be observed
+    std::unordered_map<std::string, int> observedFiles_; ///< stores the files to be observed
 #pragma warning( pop )
     ///< plus the number of observers for each
 };

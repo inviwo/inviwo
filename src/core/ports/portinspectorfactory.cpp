@@ -45,7 +45,7 @@ PortInspector* PortInspectorFactory::createAndCache(const std::string& className
     auto it = map_.find(className);
     if (it != map_.end()) {
         auto p = it->second->create();
-        PortInspector* res = p.get();
+        auto res = p.get();
         cache_[className].push_back(std::move(p));
         return res;
     }

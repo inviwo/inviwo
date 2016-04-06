@@ -196,7 +196,7 @@ void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
     pythonOutput_->append(msg.c_str());
 }
 
-void PythonEditorWidget::fileChanged(std::string fileName) {
+void PythonEditorWidget::fileChanged(const std::string& fileName) {
     std::string msg = "The file " + filesystem::getFileNameWithExtension(scriptFileName_) +
                       " has been modified outside of Inwivo, do you want to reload its contents";
     int ret = QMessageBox::question(this, "Python Editor", msg.c_str(), "Yes", "No");
@@ -354,6 +354,8 @@ void PythonEditorWidget::run() {
 }
 
 void PythonEditorWidget::show() {
+    InviwoDockWidget::show();
+    raise();
     updateStyle();
     setVisible(true);
 }

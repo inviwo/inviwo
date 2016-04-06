@@ -128,12 +128,9 @@ protected:
     friend class NodeSwitch;
 
 private:
-    template <class T>
-    void serializeVector(const std::string& key, const T& vector);
 
     /**
      * \brief Creates xml documents and initializes factories. Does not open files or streams.
-     *
      * @throws SerializationException
      */
     void initialize();

@@ -116,3 +116,18 @@ def result_time_stats(database):
 	#print(", ".join(["{:}/{:}".format(y[1],y[0]+y[1]) for k,y in sorted(result.items(), key = lambda a: a[0])]))
 	return [[datetime.datetime.fromtimestamp(k*timedelta), y] for k,y in sorted(result.items(), key = lambda a: a[0])]
 
+def get_plot_data(database):
+	result = {}
+	for module in database.getModules():
+		for test in module.tests:
+			lines = {}
+			for series in test.serieses:
+				line = []
+				for m in series.measurements:
+					line.append([m.created.timestamp()*1000, m.value])
+				lines[series.name] = {
+						"data" : line,
+						"unit" : series.quantity.unit
+					}
+			result[module.name + "/" + test.name] = lines
+	return result

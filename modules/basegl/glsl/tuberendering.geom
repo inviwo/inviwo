@@ -75,12 +75,20 @@ void emit(int a, int b, int c, int d)
     EndPrimitive(); 
 }
 
+vec3 getOrthogonalVector(vec3 v,vec3 A,vec3 B){
+    if(abs(1-dot(v,A))>0.001){
+        return normalize(cross(v,A));
+    }else{
+        return normalize(cross(v,B));
+    }
+}
+
 void main()
 {
     // Compute orientation vectors for the two connecting faces:
     vec3 p0, p1, p2, p3;
 
-#ifndef GLSL_VERSION_150
+#ifndef GLSL_VERSION_150 
     p0 = gl_PositionIn[0].xyz;
     p1 = gl_PositionIn[1].xyz;
     p2 = gl_PositionIn[2].xyz;
@@ -100,21 +108,29 @@ void main()
     gEndplanes[0] = u;
     gEndplanes[1] = v;
 
+
     startPos_ = p1;
     endPos_ = p2;
+
+
+    vec3 B = normalize((camera.viewToWorld * vec4(0,0,1,0)).xyz);
+    vec3 A = normalize((camera.viewToWorld * vec4(1,0,0,0)).xyz);
+    vec3 N1,N2; 
+    N1 = getOrthogonalVector(n1,A,B);
+    N2 = getOrthogonalVector(n2,A,B);
 
     // Declare scratch variables for basis vectors:
     vec3 i,j,k; float r = radius;
 
     // Compute face 1 of 2:
-    j = u; i = normalize(normal_[1]); k = normalize(cross(i, j)); i = normalize(cross(k, j)); ; i *= r; k *= r;
+    j = u; i = N1; k = normalize(cross(i, j)); i = normalize(cross(k, j)); ; i *= r; k *= r;
     prismoid[0] = vec4(p1 + i + k, 1);
     prismoid[1] = vec4(p1 + i - k, 1);
     prismoid[2] = vec4(p1 - i - k, 1);
     prismoid[3] = vec4(p1 - i + k, 1);
 
     // Compute face 2 of 2:
-    j = v; i = normalize(normal_[2]); k = normalize(cross(i, j)); i = normalize(cross(k, j)); i *= r; k *= r;
+    j = v; i = N2; k = normalize(cross(i, j)); i = normalize(cross(k, j)); i *= r; k *= r;
     prismoid[4] = vec4(p2 + i + k, 1);
     prismoid[5] = vec4(p2 + i - k, 1);
     prismoid[6] = vec4(p2 - i - k, 1);

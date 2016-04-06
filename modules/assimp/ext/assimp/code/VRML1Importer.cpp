@@ -83,10 +83,14 @@ bool VRML1Importer::CanRead(const std::string& pFile, IOSystem* pIOHandler, bool
 	// dont check for .iv!
 	// since its similar to VRML 1, we can read it but will
 	// do so only if there is no better .iv importer.
-	if (extension == "wrl") {
+	if ((extension == "wrl") && (!checkSig)) {
 		if (pIOHandler) {
+			const char* token_vrml[] = { "vrml" };
 			const char* token_version[] = {"2."};
-			return (false == SearchFileHeaderForToken(pIOHandler,pFile,token_version,1));
+			// right reader if .wrl and signature contains vrml and not 2. as version
+			// (assume everything not version 2 as 1 - compatibility)
+			return SearchFileHeaderForToken(pIOHandler, pFile, token_vrml, 1)
+				&& (false == SearchFileHeaderForToken(pIOHandler,pFile,token_version,1));
 		}
 	}
 
@@ -94,9 +98,11 @@ bool VRML1Importer::CanRead(const std::string& pFile, IOSystem* pIOHandler, bool
 		// Is vrml in the Header line?
 		const char* tokens[] = {"vrml"};
 		if (false == SearchFileHeaderForToken(pIOHandler,pFile,tokens,1)) {
-			// Open Inventor .iv?
-			const char* tokens_iv[] = {"inventor"};
-			return SearchFileHeaderForToken(pIOHandler,pFile,tokens_iv,1);
+			// Open Inventor .iv, Version 2 (is similar to vrml1 so we an try to read it)?
+			const char* tokens_inventor[] = { "inventor" };
+			const char* tokens_version[] = { "v2.0" };
+			return SearchFileHeaderForToken(pIOHandler, pFile, tokens_inventor, 1)
+				&& SearchFileHeaderForToken(pIOHandler, pFile, tokens_version, 1);
 		} else {
 			// Version 1 VRML?
 			const char* token_version[] = {"2."};

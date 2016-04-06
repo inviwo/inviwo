@@ -86,7 +86,7 @@ public:
     Property(const Property& rhs);
     Property& operator=(const Property& that);
     virtual Property* clone() const override;
-    virtual ~Property();
+    virtual ~Property() = default;
 
     virtual void setIdentifier(const std::string& identifier);
     virtual std::string getIdentifier() const;

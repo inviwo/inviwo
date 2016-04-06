@@ -56,7 +56,11 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
     IVW_UNUSED_PARAM(logLevel);
     IVW_UNUSED_PARAM(functionName);
     IVW_UNUSED_PARAM(lineNumber);
-    std::cout << "(" << logSource << ") " << logMsg << std::endl;
+    if (logLevel == LogLevel::Error) {
+        std::cerr << "(" << logSource << ") " << logMsg << std::endl;
+    } else {
+        std::cout << "(" << logSource << ") " << logMsg << std::endl;
+    }
 }
 
 FileLogger::FileLogger(std::string logPath) : Logger() {

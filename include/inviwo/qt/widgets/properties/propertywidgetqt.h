@@ -149,9 +149,6 @@ public slots:
     virtual void setDeveloperUsageMode(bool value);
     virtual void setApplicationUsageMode(bool value);
     virtual void changeSemantics(QAction* action);
-    virtual void copy();
-    virtual void paste();
-    virtual void copyPath();
 
     void moduleAction();
 signals:
@@ -193,7 +190,6 @@ private:
     QMenu* contextMenu_;
     QMap<QString, QMenu*> moduleSubMenus_;
 
-    static const Property* copySource;
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;
 };

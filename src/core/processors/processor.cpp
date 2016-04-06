@@ -210,7 +210,7 @@ void Processor::serialize(Serializer& s) const {
     s.serialize("OutPorts", outports_, "OutPort");
 
     PropertyOwner::serialize(s);
-    MetaDataOwner::serialize(s);
+    MetaDataOwner::serialize(s); 
 }
 
 void Processor::deserialize(Deserializer& d) {

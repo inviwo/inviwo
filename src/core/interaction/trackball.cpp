@@ -65,7 +65,7 @@ Trackball::Trackball(TrackballObject* object)
                 new Action(this, &Trackball::pan))
 
     , mouseReset_("mouseReset", "Reset",
-                  new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY, InteractionEvent::MODIFIER_NONE,
+                  new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY, InteractionEvent::MODIFIER_ANY,
                                  MouseEvent::MOUSE_STATE_RELEASE),
                   new Action(this, &Trackball::reset))
 

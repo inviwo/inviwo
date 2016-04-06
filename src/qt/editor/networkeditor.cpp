@@ -242,13 +242,10 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
     if (!port) return false;
 
-    auto it = portInspectors_.find(port);
-    if (it != portInspectors_.end()) {
-        return false;
-    }
+    if (portInspectors_.find(port) != portInspectors_.end()) return false;
 
     auto factory = mainwindow_->getInviwoApplication()->getPortInspectorFactory();
-    PortInspector* portInspector = factory->createAndCache(port->getClassIdentifier());
+    auto portInspector = factory->createAndCache(port->getClassIdentifier());
 
     portInspectors_[port] = portInspector;
 
@@ -269,7 +266,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
         // Add connections to the network
         for (auto& connection : portInspector->getConnections()) {
-            network_->addConnection(connection->getOutport(), connection->getInport());
+            network_->addConnection(connection.getOutport(), connection.getInport());
         }
 
         // Add links to the network
@@ -277,7 +274,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             network_->addLink(link->getSourceProperty(), link->getDestinationProperty());
         }
 
-        // Do autolinking.
+        // Do auto linking.
         for (auto& processor : portInspector->getProcessors()) {
             network_->autoLinkProcessor(processor);
         }
@@ -343,13 +340,13 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 }
 
                 // Connect the port to inspect to the inports of the inspector network
-                for (auto inport : portInspector->getInports()) {
+                for (auto& inport : portInspector->getInports()) {
                     network_->addConnection(outport, inport);
                 }
 
                 // Add connections to the network
-                for (auto connection : portInspector->getConnections()) {
-                    network_->addConnection(connection->getOutport(), connection->getInport());
+                for (auto& connection : portInspector->getConnections()) {
+                    network_->addConnection(connection.getOutport(), connection.getInport());
                 }
 
                 // Add links to the network
@@ -358,7 +355,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 }
 
                 // Do auto-linking.
-                for (auto processor : portInspector->getProcessors()) {
+                for (auto& processor : portInspector->getProcessors()) {
                     network_->autoLinkProcessor(processor);
                 }
 
@@ -695,6 +692,39 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     }
                 });
             }
+
+            QAction* delprocessor = menu.addAction(tr("Delete && Keep Connections"));
+            connect(delprocessor, &QAction::triggered, [this, processor]() {
+                auto p = processor->getProcessor();
+                for (auto& prop : p->getPropertiesRecursive()) {
+                    auto links = network_->getPropertiesLinkedTo(prop);
+                    auto bidirectional = util::copy_if(links, [&](Property* dst) {
+                        return network_->isLinkedBidirectional(prop, dst);
+                    });
+                    if (bidirectional.size() > 1) {
+                        for (size_t i = 1; i < bidirectional.size(); ++i) {
+                            network_->addLink(bidirectional[0], bidirectional[i]);
+                            network_->addLink(bidirectional[i], bidirectional[0]);
+                        }
+                    }
+                }
+
+                auto& inports = p->getInports();
+                auto& outports = p->getOutports();
+                for (size_t i = 0; i < std::min(inports.size(), outports.size()); ++i) {
+                    if (inports[i]->isConnected() && outports[i]->isConnected()) {
+                        auto out = inports[i]->getConnectedOutport();
+                        auto ins = outports[i]->getConnectedInports();
+                        network_->removeConnection(out, inports[i]);
+                        for (auto in : ins) {
+                            network_->removeConnection(outports[i], in);
+                            network_->addConnection(out, in);
+                        }
+                    }
+                }
+                network_->removeAndDeleteProcessor(p);
+            });
+
             break;
         }
 
@@ -1050,13 +1080,14 @@ void NetworkEditor::clearNetwork() {
     setModified(true);
 }
 
-bool NetworkEditor::saveNetwork(std::string fileName) {
+bool NetworkEditor::saveNetwork(std::string fileName, bool setAsFilename) {
     try {
         Serializer xmlSerializer(fileName);
         network_->serialize(xmlSerializer);
         network_->setModified(false);
         xmlSerializer.writeFile();
-        filename_ = fileName;
+        if(setAsFilename)
+            filename_ = fileName;
         setModified(false);
         LogInfo("Workspace saved to: " << fileName);
     } catch (SerializationException& exception) {

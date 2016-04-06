@@ -135,6 +135,7 @@ std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() cons
     return createVolumeRAM(getDimensions(), getDataFormat());
 }
 
+
 vec3 Volume::getWorldSpaceGradientSpacing() const {
     mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
@@ -156,10 +157,14 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     // bx' = dot(x, b) = b.x
     // cx' = dot(x, c) = c.x
     // and so on.
+    auto signedMax = [](const float &a, const float &b) {
+        return (std::abs(a) >= std::abs(b)) ? a : b;
+    };
+
     vec3 ds{ 
-        std::max(a.x, std::max(b.x, c.x)),
-        std::max(a.y, std::max(b.y, c.y)),
-        std::max(a.z, std::max(b.z, c.z)) };
+        signedMax(a.x, signedMax(b.x, c.x)),
+        signedMax(a.y, signedMax(b.y, c.y)),
+        signedMax(a.z, signedMax(b.z, c.z)) };
 
     // Return the spacing in world space,
     // actually given by:

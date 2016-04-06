@@ -41,6 +41,7 @@
 
 //Meta Data
 #include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
@@ -145,11 +146,13 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
     registerMetaData(util::make_unique<PropertyEditorWidgetMetaData>());
-    
+    registerMetaData(util::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
+    registerMetaData(util::make_unique<StdVectorMetaData<std::string>>());
+
     // Register Cameras
     registerCamera<PerspectiveCamera>("PerspectiveCamera");
-	registerCamera<OrthographicCamera>("OrthographicCamera");
-	registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
+    registerCamera<OrthographicCamera>("OrthographicCamera");
+    registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
     
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();
@@ -227,7 +230,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     // Register PortInspectors
     registerPortInspector("org.inviwo.ImageOutport", app->getPath(PathType::PortInspectors, "/imageportinspector.inv"));
     registerPortInspector("org.inviwo.VolumeOutport", app->getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
-    registerPortInspector("org.inviwo.GeometryOutport", app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
+    registerPortInspector("org.inviwo.MeshOutport", app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
     
     //registerProperty<EventProperty>(); TODO fix "default" contructor with 2 args...
     registerProperty<CompositeProperty>();

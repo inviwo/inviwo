@@ -117,14 +117,15 @@ PyObject* py_loadWorkspace(PyObject* self, PyObject* args) {
 }
 
 PyObject* py_saveWorkspace(PyObject* self, PyObject* args) {
-    static PythonParameterParser tester;
+    static PythonParameterParser tester(1);
     std::string filename;
-    if (tester.parse(args, filename) == -1) {
+    bool setAsFilename;
+    if (tester.parse(args, filename , setAsFilename) == -1) {
         return nullptr;
     }
     if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-            mw->getNetworkEditor()->saveNetwork(filename);
+            mw->getNetworkEditor()->saveNetwork(filename, setAsFilename);
         }
     }
 

@@ -71,6 +71,8 @@ namespace Assimp
 		 */
 		// *****************************************************************
 
+		bool has_prefix(std::string prefix, std::string str);
+
 		// importer meta information.
 		static const aiImporterDesc VRMLImporter_descr = {
 			"VRML (.wrl) Importer",

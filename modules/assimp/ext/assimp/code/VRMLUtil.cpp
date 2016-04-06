@@ -61,6 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 #include "VRMLUtil.h"
 #include "ParsingUtils.h"
@@ -106,6 +107,13 @@ void throw_aiException(std::string msg, const char *file, unsigned int line, con
 // utility functionality
 void str_to_lower(std::string &str) {
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+}
+
+// check for a prefix
+bool has_prefix(std::string prefix, std::string str) {
+	if (prefix.length() > str.length())
+		return false;
+	return prefix.end() == (std::mismatch(prefix.begin(), prefix.end(), str.begin())).first;
 }
 // ---------------------------------------------------------------------
 

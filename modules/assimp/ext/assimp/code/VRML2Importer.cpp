@@ -79,10 +79,12 @@ bool VRML2Importer::CanRead(const std::string& pFile, IOSystem* pIOHandler, bool
 {
 	const std::string extension = GetExtension(pFile);
 
-	if (extension == "wrl") {
+	if ((extension == "wrl") && (!checkSig)) {
 		if (pIOHandler) {
-			const char* token_version[] = {"2."};
-			return SearchFileHeaderForToken(pIOHandler,pFile,token_version,1);
+			const char* token_vrml[] = { "vrml" };
+			const char* token_version[] = { "2." };
+			return SearchFileHeaderForToken(pIOHandler, pFile, token_vrml, 1)
+				&& SearchFileHeaderForToken(pIOHandler, pFile, token_version, 1);
 		}
 	}
 
@@ -93,6 +95,12 @@ bool VRML2Importer::CanRead(const std::string& pFile, IOSystem* pIOHandler, bool
 			// Version 2 VRML?
 			const char* token_version[] = {"2."};
 			return SearchFileHeaderForToken(pIOHandler,pFile,token_version,1);
+		} else {
+			// we have a compatibility mode for Open Inventor 2.1 files, so try to read it if there is no better importer
+			const char* tokens_inventor[] = { "inventor" };
+			const char* tokens_version[] = { "v2.1" };
+			return SearchFileHeaderForToken(pIOHandler, pFile, tokens_inventor, 1)
+				&& SearchFileHeaderForToken(pIOHandler, pFile, tokens_version, 1);
 		}
 	}
 
@@ -118,6 +126,13 @@ void VRML2Importer::InternReadFile(const std::string& pFile, aiScene* pScene, IO
 	if (!VRML2)
 		ASSIMP_VRML_LOG_ERROR("Warning: cant load VRML1; this Importer is for Version 2!\n\
 							Most propably this *will* fail/result in wrong geometry!\n");
+
+	const char* tokens_iv[] = { "inventor" };
+	const char* tokens_21[] = { "v2.1" };
+	bool is_openinventor21 = SearchFileHeaderForToken(pIOHandler, pFile, tokens_iv, 1)
+		&& SearchFileHeaderForToken(pIOHandler, pFile, tokens_21, 1);
+	if (is_openinventor21)
+		ASSIMP_VRML_LOG_INFO("Loading file in OpenInvetor 2.1 compatibility mode.");
 
 	boost::scoped_ptr<IOStream> file(pIOHandler->Open(pFile, "rb"));
 
@@ -158,12 +173,21 @@ void VRML2Importer::InternReadFile(const std::string& pFile, aiScene* pScene, IO
 		while (sstream) {
 			std::string str;
 			sstream >> str;
+			
+			// open inventor 2.1 compatibility fix:
+			if (is_openinventor21) {
+				if ((str.length() > 4) && (VRML::has_prefix(std::string("VRML"), str))) {
+					// simply remove the VRML prefix
+					str = str.substr(4);
+				}
+			}
 
 			if ("{" == str) {
 				std::size_t pindex = pdata.scenegraph.back().nodeindex;
 
 				long unsigned int nind = pdata.nodes.size();
 				VRML2_sgentry sgnode;
+
 				sgnode.nodename = last;
 				sgnode.nodeindex = nind;
 				pdata.scenegraph.push_back(sgnode);
@@ -207,7 +231,6 @@ void VRML2Importer::InternReadFile(const std::string& pFile, aiScene* pScene, IO
 
 	ASSIMP_VRML_LOG_DEBUG("time to load: " + TypToStr<double>(double((std::clock() - start_import_time) / CLOCKS_PER_SEC)));
 }
-
 
 // *********************************************************************
 /*

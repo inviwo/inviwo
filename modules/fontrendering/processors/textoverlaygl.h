@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 
 namespace inviwo {
@@ -78,6 +79,8 @@ private:
     ImageOutport outport_;
     StringProperty text_;
     
+    BoolProperty enable_;
+
     FloatVec4Property color_;
     OptionPropertyInt fontSize_;
     FloatVec2Property fontPos_;

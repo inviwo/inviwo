@@ -61,7 +61,7 @@ std::string FileShaderResource::source() const {
 
 std::string FileShaderResource::file() const { return fileName_; }
 
-void FileShaderResource::fileChanged(std::string fileName) { 
+void FileShaderResource::fileChanged(const std::string& fileName) { 
     cache_ = "";
     callbacks_.invoke(this); 
 }
