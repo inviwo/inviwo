@@ -75,6 +75,19 @@ void OpenGLQtMenu::updateShadersMenu() {
         if (!shaderSubMenu) {
             shaderSubMenu = shadersItem_->addMenu(QString("Id %1").arg(shader->getID(), 2));
 
+            shader->onReload([this, shader, shaderSubMenu]() {
+                shaderSubMenu->clear();
+                shaderSubMenu->setTitle(QString("Id %1").arg(shader->getID()));
+
+                for (auto& item : shader->getShaderObjects()) {
+                    auto action = shaderSubMenu->addAction(
+                        QString::fromStdString(item.second->getResource()->key()));
+                    shaderSubMenu->setTitle(shaderSubMenu->title() + QString(", ") +
+                                            QString::fromStdString(item.second->getFileName()));
+                    connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
+                }
+            });
+
             for (auto& item : shader->getShaderObjects()) {
                 auto action = shaderSubMenu->addAction(
                     QString::fromStdString(item.second->getResource()->key()));
