@@ -89,7 +89,7 @@ VoumeSequence sortSequence(const VoumeSequence &seq) {
     return sorted;
 }
 
-std::pair<SharedVolume, SharedVolume> util::getVolumesForTimestep(
+std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
     const VoumeSequence &seq, double t, bool sorted) {
     if (seq.size() == 1) {
         return std::make_pair(seq.front(), seq.front());
