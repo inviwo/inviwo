@@ -34,6 +34,7 @@
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
