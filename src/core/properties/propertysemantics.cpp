@@ -58,6 +58,7 @@ std::ostream& operator<<(std::ostream& os, const inviwo::PropertySemantics& obj)
 }
 
 const PropertySemantics PropertySemantics::Default("Default");
+const PropertySemantics PropertySemantics::Text("Text");
 const PropertySemantics PropertySemantics::Color("Color");
 const PropertySemantics PropertySemantics::LightPosition("LightPosition");
 const PropertySemantics PropertySemantics::Multiline("Multiline");

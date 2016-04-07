@@ -90,7 +90,7 @@ void BoolPropertyWidgetQt::generateWidget() {
     setLayout(hLayout);
 
     // change visibility of checkbox and line edit depending on semantics
-    bool textSemantics = (property_->getSemantics() == PropertySemantics("Text"));
+    bool textSemantics = (property_->getSemantics() == PropertySemantics::Text);
     lineEdit_->setVisible(textSemantics);
     checkBox_->setVisible(!textSemantics);
 }
