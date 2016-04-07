@@ -111,13 +111,7 @@ ShaderType ShaderObject::getShaderType() const {
 }
 
 std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string fileName) {
-    auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
-    if (!resource) {
-        throw OpenGLException(
-            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
-            IvwContextCustom("ShaderObject"));
-    }
-    return resource;
+    return utilgl::findShaderResource(fileName);
 }
 
 void ShaderObject::build() {

@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
@@ -80,19 +81,25 @@ public:
     virtual bool isReady() const override;
 
 private:
-    void buildEquation();
+    std::string buildEquation() const;
+    void buildShader(const std::string& eqn);
+    void updateProperties();
+    void testEquation();
 
     DataInport<Volume, 0> inport_;
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
+    StringProperty description_;
     StringProperty eqn_;
     CompositeProperty scales_;
     BoolProperty useWorldSpaceCoordinateSystem_;
     FloatVec4Property borderValue_;
 
+    std::shared_ptr<StringShaderResource> fragment_;
     Shader shader_;
     FrameBufferObject fbo_;
-    bool validEquation_;
+
+    bool dirty_ = true;
 };
 
 } // namespace
