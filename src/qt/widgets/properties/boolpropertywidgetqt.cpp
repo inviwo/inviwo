@@ -60,7 +60,7 @@ void BoolPropertyWidgetQt::generateWidget() {
 
     lineEdit_->setEnabled(!property_->getReadOnly());
     // set up a validator accepting "true"/1 and "false"/0
-    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0")));
+    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
 
     auto setPropertyValueFromString = [=]() {
         QString str(lineEdit_->text());
