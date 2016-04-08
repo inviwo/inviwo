@@ -235,22 +235,16 @@ public:
     virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
 
-    inline void lock() { locked_++; }
-    inline void unlock() {
-        (locked_ > 0) ? locked_-- : locked_ = 0;
-        if (locked_ == 0) notifyObserversProcessorNetworkUnlocked();
-    }
-    inline bool islocked() const { return (locked_ != 0); }
+    void lock();
+    void unlock();
+    bool islocked() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-
     bool isDeserializing() const;
 
     /**
     * Clears the network objects processors, port connections, property links etc.,
-    * This function clears only the core objects and mainly used to abort any
-    * further operation.
     */
     void clear();
 
@@ -314,6 +308,13 @@ std::vector<T*> ProcessorNetwork::getProcessorsByType() const {
     }
     return processors;
 }
+
+inline void ProcessorNetwork::lock() { locked_++; }
+inline void ProcessorNetwork::unlock() {
+    (locked_ > 0) ? locked_-- : locked_ = 0;
+    if (locked_ == 0) notifyObserversProcessorNetworkUnlocked();
+}
+inline bool ProcessorNetwork::islocked() const { return (locked_ != 0); }
 
 }  // namespace
 

@@ -399,8 +399,6 @@ void ProcessorNetwork::clear() {
     }
 }
 
-
-
 void ProcessorNetwork::modified() { modified_ = true; }
 
 void ProcessorNetwork::setModified(bool modified) { modified_ = modified; }

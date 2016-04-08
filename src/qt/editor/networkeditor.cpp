@@ -1084,10 +1084,8 @@ bool NetworkEditor::saveNetwork(std::string fileName, bool setAsFilename) {
     try {
         Serializer xmlSerializer(fileName);
         network_->serialize(xmlSerializer);
-        network_->setModified(false);
         xmlSerializer.writeFile();
-        if(setAsFilename)
-            filename_ = fileName;
+        if (setAsFilename) filename_ = fileName;
         setModified(false);
         LogInfo("Workspace saved to: " << fileName);
     } catch (SerializationException& exception) {
@@ -1103,7 +1101,6 @@ bool NetworkEditor::saveNetwork(std::ostream stream) {
     try {
         Serializer xmlSerializer(filename_);
         network_->serialize(xmlSerializer);
-        network_->setModified(false);
         xmlSerializer.writeFile(stream);
         setModified(false);
     } catch (SerializationException& exception) {
@@ -1150,7 +1147,6 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
         }
-        network_->setModified(true);
         for (auto o : observers_) o->onNetworkEditorFileChanged(path);
         InviwoApplicationQt::processEvents();  // make sure the gui is ready before we unlock.
     }
