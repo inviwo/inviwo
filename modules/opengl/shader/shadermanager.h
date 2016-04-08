@@ -36,6 +36,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/dispatcher.h>
 
 #include <unordered_map>
 
@@ -79,6 +80,12 @@ public:
 
     void setOpenGLSettings(OpenGLSettings* settings);
     Shader::OnError getOnShaderError() const;
+    
+    using Callback = std::function<void(GLuint)>;
+    template <typename T>
+    std::shared_ptr<Callback> onDidAddShader(T&& callback);
+    template <typename T>
+    std::shared_ptr<Callback> onWillRemoveShader(T&& callback);
 
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();
@@ -94,7 +101,19 @@ private:
     
     TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
     TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_; // non-owning reference
+    
+    Dispatcher<void(GLuint)> shaderAddCallbacks_;
+    Dispatcher<void(GLuint)> shaderRemoveCallbacks_;
 };
+
+template <typename T>
+std::shared_ptr<ShaderManager::Callback> ShaderManager::onDidAddShader(T&& callback) {
+    return shaderAddCallbacks_.add(std::forward<T>(callback));
+}
+template <typename T>
+std::shared_ptr<ShaderManager::Callback> ShaderManager::onWillRemoveShader(T&& callback) {
+    return shaderRemoveCallbacks_.add(std::forward<T>(callback));
+}
 
 } // namespace
 
