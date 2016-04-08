@@ -39,14 +39,26 @@ if(MSVC)
         message(FATAL_ERROR "Inviwo requires C++11 features. " 
                 "You need at least Visual Studio 12 (Microsoft Visual Studio 2013)")
     endif()
+
+    if(MSVC_VERSION LESS 1900)
+        message(WARNING "Notice! The next release (0.9.7) will be the last one that will support Visual Studio 2013. "
+            "After 0.9.7 we will require Visual Studio 2015. The switch will happen in the beginning of May. "
+            "The latest Visual Studio version is available at https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
+    endif()
+
 else()
     include(CheckCXXCompilerFlag)
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     if(COMPILER_SUPPORTS_CXX11)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     else()
-        ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
     endif()
+endif()
+
+if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_LESS "3.2.0")
+    message(WARNING "After release 0.9.7 Inviwo will require a CMake version of at least 3.2.0 " 
+        "You have version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
