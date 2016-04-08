@@ -84,6 +84,7 @@ find_path(OPENCL_INCLUDE_DIR
     ENV CUDA_PATH
     ENV ATISTREAMSDKROOT
   PATH_SUFFIXES
+    ../include # Search in subdirectory since NVIDIA has started to add bin folder, "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\bin"
     include
     OpenCL/common/inc
     "AMD APP/include")
@@ -118,6 +119,8 @@ if(WIN32)
         ENV ATISTREAMSDKROOT
       PATH_SUFFIXES
         "AMD APP/lib/x86_64"
+        ../lib/x86_64 # Search in subdirectory since NVIDIA has started to add bin folder, "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\bin"
+        ../lib/x64
         lib/x86_64
         lib/x64
         OpenCL/common/lib/x64)
