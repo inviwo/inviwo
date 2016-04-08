@@ -1,7 +1,10 @@
 #--------------------------------------------------------------------
 # Inviwo OpenCL Module
 ivw_module(OpenCL)
-
+# Add OpenCL dependencies, 
+# ivw function ensures that dependent projects  also include dependencies 
+ivw_include_directories(${OpenCL_INCLUDE_DIR})
+add_dependency_libs_to_module(${OpenCL_LIBRARY})
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
