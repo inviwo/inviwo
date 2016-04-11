@@ -47,6 +47,9 @@ class Serializable;
 class VersionConverter;
 class InviwoApplication;
 class FactoryBase;
+template <typename T, typename K>
+class ContainerWrapper;
+
 
 class IVW_CORE_API Deserializer : public SerializeBase {
 public:
@@ -167,6 +170,12 @@ public:
                      const std::string& itemKey,
                      const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
 
+
+
+    template <typename T, typename K>
+    void deserialize(const std::string& key, ContainerWrapper<T, K>& container);
+
+
     // Specializations for chars
     void deserialize(const std::string& key, signed char& data, const bool asAttribute = false);
     void deserialize(const std::string& key, char& data, const bool asAttribute = false);
@@ -221,8 +230,9 @@ public:
     template <typename T>
     T* getNonRegisteredType();
 
-protected:
     friend class NodeSwitch;
+    template <typename T, typename K>
+    friend class ContainerWrapper;
 
 private:
     void registerFactories(InviwoApplication* app);
@@ -236,6 +246,260 @@ private:
     
     std::vector<FactoryBase*> registeredFactories_;
 };
+
+
+
+/**
+ * \class ContainerDeserializationWrapper
+ */
+template <typename T, typename K = std::string>
+class ContainerWrapper {
+public:
+    using ItemAndCallback = std::pair<T&, std::function<void(T&)>>;
+    using Getter = std::function<ItemAndCallback(K id, size_t ind)>;
+    using IdentityGetter = std::function<K(TxElement* node)>;
+
+    ContainerWrapper(std::string itemKey, Getter getItem)
+        : itemKey_(itemKey), getItem_(getItem) {}
+
+
+    virtual ~ContainerWrapper() = default;
+
+    const std::string& getItemKey() const {return itemKey_;}
+
+    void deserialize(Deserializer& d, TxElement* node, size_t ind) {
+        auto itemAndCallback = getItem_(idGetter_(node), ind);
+        try {
+            d.deserialize(itemKey_, itemAndCallback.first);
+            itemAndCallback.second(itemAndCallback.first);
+        } catch (SerializationException& e) {
+            d.handleError(e);
+        }
+    }
+
+    void setIdentityGetter(IdentityGetter getter){
+        idGetter_ = getter;
+    }
+
+
+private:
+    IdentityGetter idGetter_ = [](TxElement* node) {
+        K key{};
+        node->GetAttribute("identifier", &key, false);
+        return key;
+    };
+
+    Getter getItem_;
+    const std::string itemKey_;
+};
+
+namespace util {
+
+template <typename T>
+class IndexedDeserializer {
+public:
+
+    IndexedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
+
+    IndexedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
+        makeNewItem_ = makeNewItem;
+        return *this;
+    }
+    IndexedDeserializer<T>& onNew(std::function<void(T&)> onNewItem) {
+        onNewItem_ = onNewItem;
+        return *this;
+    }
+    IndexedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+        onRemoveItem_ = onRemoveItem;
+        return *this;
+    }
+
+    template <typename C>
+    void operator()(Deserializer& d, C& container) {
+        if( !makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
+            throw Exception("Not all callbacks are set!");
+        }
+        
+        T tmp{};
+        size_t count = 0;
+        ContainerWrapper<T> cont(
+            itemKey_,
+            [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::ItemAndCallback {
+                count++;
+                if (ind < container.size()) {
+                    return {container[ind], [&](T& val) {}};
+                } else {
+                    tmp = makeNewItem_();
+                    return {tmp, [&](T& val) { onNewItem_(val); }};
+                }
+            });
+
+        d.deserialize(key_, cont);
+
+        size_t n = 0;
+        util::erase_remove_if(container, [&](T& item) {
+            if (n < count) {
+                ++n;
+                return false;
+            } else {
+                ++n;
+                onRemoveItem_(item);
+                return true;
+            }
+        });
+    }
+
+private:
+    std::function<T()> makeNewItem_;
+    std::function<void(T&)> onNewItem_;
+    std::function<void(T&)> onRemoveItem_;
+
+    std::string key_;
+    std::string itemKey_;
+};
+
+template <typename T>
+class IdentifiedDeserializer {
+public:
+
+    IdentifiedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
+
+    IdentifiedDeserializer<T>& setGetId(std::function<std::string(T&)> getID) {
+        getID_ = getID;
+        return *this;
+    }
+    IdentifiedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
+        makeNewItem_ = makeNewItem;
+        return *this;
+    }
+    IdentifiedDeserializer<T>& onNew(std::function<void(T&)> onNewItem) {
+        onNewItem_ = onNewItem;
+        return *this;
+    }
+    IdentifiedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+        onRemoveItem_ = onRemoveItem;
+        return *this;
+    }
+
+
+    template <typename C>
+    void operator()(Deserializer& d, C& container) {
+        if( !getID_ || !makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
+            throw Exception("Not all callbacks are set!");
+        }
+        
+        T tmp{};
+        std::vector<std::string> visited;
+        ContainerWrapper<T> cont(
+            itemKey_,
+            [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::ItemAndCallback {
+                visited.push_back(id);
+                auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
+                if (it != container.end()) {
+                    return {*it, [&](T& val) {}};
+                } else {
+                    tmp = makeNewItem_();
+                    return {tmp, [&](T& val) { onNewItem_(val); }};
+                }
+            });
+
+        d.deserialize(key_, cont);
+
+        util::erase_remove_if(container, [&](T& i) {
+            if (!util::contains(visited, getID_(i))) {
+                onRemoveItem_(i);
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+private:
+    std::function<std::string(T&)> getID_;
+    std::function<T()> makeNewItem_;
+    std::function<void(T&)> onNewItem_;
+    std::function<void(T&)> onRemoveItem_;
+
+    std::string key_;
+    std::string itemKey_;
+};
+
+
+template <typename K, typename T>
+class MapDeserializer {
+public:
+
+    MapDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
+
+    MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
+        makeNewItem_ = makeNewItem;
+        return *this;
+    }
+    MapDeserializer<K, T>& onNew(std::function<void(std::pair<const K, T>&)> onNewItem) {
+        onNewItem_ = onNewItem;
+        return *this;
+    }
+    MapDeserializer<K, T>& onRemove(std::function<void(std::pair<const K, T>&)> onRemoveItem) {
+        onRemoveItem_ = onRemoveItem;
+        return *this;
+    }
+
+
+    template <typename C>
+    void operator()(Deserializer& d, C& container) {
+        if(!makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
+            throw Exception("Not all callbacks are set!");
+        }
+        
+        T tmp{};
+        std::vector<K> visited;
+        ContainerWrapper<T, K> cont(
+            itemKey_,
+            [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
+                visited.push_back(id);
+                auto it = container.find(id);
+                if (it != container.end()) {
+                    return {it->second, [&](T& val) {}};
+                } else {
+                    tmp = makeNewItem_();
+                    return {tmp, [&, id](T& val) {
+                        auto pair = std::pair<const K, T>(id, val);
+                        onNewItem_(pair);
+                    }};
+                }
+            });
+
+        cont.setIdentityGetter([](TxElement* node) {
+            K key{};
+            node->GetAttribute(SerializeConstants::KeyAttribute, &key);
+            return key;
+        });
+
+        d.deserialize(key_, cont);
+
+        util::map_erase_remove_if(container, [&](std::pair<const K, T>& item) {
+            if (!util::contains(visited, item.first)) {
+                onRemoveItem_(item);
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+private:
+    std::function<T()> makeNewItem_;
+    std::function<void(std::pair<const K, T>&)> onNewItem_;
+    std::function<void(std::pair<const K, T>&)> onRemoveItem_;
+
+    std::string key_;
+    std::string itemKey_;
+};
+
+
+}  // namespace
+
 
 template <typename T>
 T* Deserializer::getRegisteredType(const std::string& className) {
@@ -670,6 +934,24 @@ inline void Deserializer::deserialize(const std::string& key, T*& data) {
     if (data) {
         deserialize(key, *data);
         if (allowRef_ && !id_attr.empty()) refDataContainer_.insert(data, keyNode);
+    }
+}
+
+template <typename T, typename K>
+void Deserializer::deserialize(const std::string& key, ContainerWrapper<T, K>& container) {
+    try {
+        NodeSwitch vectorNodeSwitch(*this, key);
+        unsigned int i = 0;
+        TxEIt child(container.getItemKey());
+
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            // In the next deserialization call do net fetch the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            container.deserialize(*this, &(*child), i);
+            i++;
+        }
+    } catch (TxException&) {
     }
 }
 

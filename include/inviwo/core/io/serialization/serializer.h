@@ -44,14 +44,6 @@ class Serializable;
 class IVW_CORE_API Serializer : public SerializeBase {
 public:
     /**
-     * Copies parameters from other serializer.
-     *
-     * @param s object of similar type.
-     * @param allowReference disables or enables reference management schemes.
-     * @throws SerializationException
-     */
-    Serializer(Serializer& s, bool allowReference = true);
-    /**
      * \brief Initializes serializer with a file name that will be used to set relative paths to
      *data.
      * The specified file name will not be used to write any content until writeFile() is called.
@@ -89,7 +81,11 @@ public:
                    const std::string& itemKey);
 
     template <typename K, typename V, typename C, typename A>
-    void serialize(const std::string& key, const std::map<K, V, C, A>& sMap,
+    void serialize(const std::string& key, const std::map<K, V, C, A>& map,
+                   const std::string& itemKey);
+    
+    template <typename K, typename V, typename H, typename C, typename A>
+    void serialize(const std::string& key, const std::unordered_map<K, V, H, C, A>& map,
                    const std::string& itemKey);
 
     // Specializations for chars
@@ -126,14 +122,6 @@ public:
 
 protected:
     friend class NodeSwitch;
-
-private:
-
-    /**
-     * \brief Creates xml documents and initializes factories. Does not open files or streams.
-     * @throws SerializationException
-     */
-    void initialize();
 };
 
 template <typename T>
@@ -145,8 +133,9 @@ void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
-    for (typename std::vector<T>::const_iterator it = vector.begin(); it != vector.end(); ++it)
-        serialize(itemKey, (*it));
+    for (const auto& item : vector) {
+        serialize(itemKey, item);
+    }
 }
 
 template <typename T>
@@ -158,8 +147,9 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
     rootElement_->LinkEndChild(node.get());
 
     NodeSwitch nodeSwitch(*this, node.get());
-    for (typename std::list<T>::const_iterator it = container.begin(); it != container.end(); ++it)
-        serialize(itemKey, (*it));
+    for (const auto& item : container) {
+        serialize(itemKey, item);
+    }
 }
 
 template <typename K, typename V, typename C, typename A>
@@ -174,18 +164,37 @@ void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& m
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
-    for (typename std::map<K, V, C, A>::const_iterator it = map.begin(); it != map.end(); ++it) {
-        serialize(itemKey, it->second);
+    for (const auto& item : map) {
+        serialize(itemKey, item.second);
         rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
-                                                             it->first);
+                                                             item.first);
+    }
+}
+
+template <typename K, typename V, typename H, typename C, typename A>
+void Serializer::serialize(const std::string& key, const std::unordered_map<K, V, H, C, A>& map,
+                           const std::string& itemKey) {
+    if (!isPrimitiveType(typeid(K)))
+        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+
+    if (map.empty()) return;
+
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, node.get());
+
+    for (const auto& item : map) {
+        serialize(itemKey, item.second);
+        rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
+                                                             item.first);
     }
 }
 
 template <class T>
 inline void Serializer::serialize(const std::string& key, const T* const& data) {
-    if (!allowRef_)
+    if (!allowRef_) {
         serialize(key, *data);
-    else {
+    } else {
         if (refDataContainer_.find(data)) {
             TxElement* newNode = refDataContainer_.nodeCopy(data);
             newNode->SetValue(key);
