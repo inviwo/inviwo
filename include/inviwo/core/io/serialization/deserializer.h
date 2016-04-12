@@ -247,10 +247,8 @@ private:
     std::vector<FactoryBase*> registeredFactories_;
 };
 
-
-
 /**
- * \class ContainerDeserializationWrapper
+ * \class ContainerWrapper
  */
 template <typename T, typename K = std::string>
 class ContainerWrapper {
@@ -259,13 +257,11 @@ public:
     using Getter = std::function<ItemAndCallback(K id, size_t ind)>;
     using IdentityGetter = std::function<K(TxElement* node)>;
 
-    ContainerWrapper(std::string itemKey, Getter getItem)
-        : itemKey_(itemKey), getItem_(getItem) {}
-
+    ContainerWrapper(std::string itemKey, Getter getItem) : itemKey_(itemKey), getItem_(getItem) {}
 
     virtual ~ContainerWrapper() = default;
 
-    const std::string& getItemKey() const {return itemKey_;}
+    const std::string& getItemKey() const { return itemKey_; }
 
     void deserialize(Deserializer& d, TxElement* node, size_t ind) {
         auto itemAndCallback = getItem_(idGetter_(node), ind);
@@ -277,10 +273,7 @@ public:
         }
     }
 
-    void setIdentityGetter(IdentityGetter getter){
-        idGetter_ = getter;
-    }
-
+    void setIdentityGetter(IdentityGetter getter) { idGetter_ = getter; }
 
 private:
     IdentityGetter idGetter_ = [](TxElement* node) {
@@ -298,7 +291,6 @@ namespace util {
 template <typename T>
 class IndexedDeserializer {
 public:
-
     IndexedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
 
     IndexedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
@@ -309,30 +301,25 @@ public:
         onNewItem_ = onNewItem;
         return *this;
     }
-    IndexedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+    IndexedDeserializer<T>& onRemove(std::function<bool(T&)> onRemoveItem) {
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
 
     template <typename C>
     void operator()(Deserializer& d, C& container) {
-        if( !makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
-            throw Exception("Not all callbacks are set!");
-        }
-        
         T tmp{};
         size_t count = 0;
-        ContainerWrapper<T> cont(
-            itemKey_,
-            [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::ItemAndCallback {
-                count++;
-                if (ind < container.size()) {
-                    return {container[ind], [&](T& val) {}};
-                } else {
-                    tmp = makeNewItem_();
-                    return {tmp, [&](T& val) { onNewItem_(val); }};
-                }
-            });
+        ContainerWrapper<T> cont(itemKey_, [&](std::string id, size_t ind) ->
+                                 typename ContainerWrapper<T>::ItemAndCallback {
+                                     ++count;
+                                     if (ind < container.size()) {
+                                         return {container[ind], [&](T& val) {}};
+                                     } else {
+                                         tmp = makeNewItem_();
+                                         return {tmp, [&](T& val) { onNewItem_(val); }};
+                                     }
+                                 });
 
         d.deserialize(key_, cont);
 
@@ -343,57 +330,53 @@ public:
                 return false;
             } else {
                 ++n;
-                onRemoveItem_(item);
-                return true;
+                return onRemoveItem_(item);
             }
         });
     }
 
 private:
-    std::function<T()> makeNewItem_;
-    std::function<void(T&)> onNewItem_;
-    std::function<void(T&)> onRemoveItem_;
+    std::function<T()> makeNewItem_ = []() -> T {
+        throw Exception("MakeNewItem callback is not set!");
+    };
+    std::function<void(T&)> onNewItem_ = [](T&) {
+        throw Exception("OnNewItem callback is not set!");
+    };
+    std::function<bool(T&)> onRemoveItem_ = [](T&) { return true; };
 
     std::string key_;
     std::string itemKey_;
 };
 
-template <typename T>
+template <typename K, typename T>
 class IdentifiedDeserializer {
 public:
-
     IdentifiedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
 
-    IdentifiedDeserializer<T>& setGetId(std::function<std::string(T&)> getID) {
+    IdentifiedDeserializer<K, T>& setGetId(std::function<K(const T&)> getID) {
         getID_ = getID;
         return *this;
     }
-    IdentifiedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
+    IdentifiedDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<T>& onNew(std::function<void(T&)> onNewItem) {
+    IdentifiedDeserializer<K, T>& onNew(std::function<void(T&)> onNewItem) {
         onNewItem_ = onNewItem;
         return *this;
     }
-    IdentifiedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+    IdentifiedDeserializer<K, T>& onRemove(std::function<void(const K&)> onRemoveItem) {
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
 
-
     template <typename C>
     void operator()(Deserializer& d, C& container) {
-        if( !getID_ || !makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
-            throw Exception("Not all callbacks are set!");
-        }
-        
         T tmp{};
-        std::vector<std::string> visited;
-        ContainerWrapper<T> cont(
-            itemKey_,
-            [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::ItemAndCallback {
-                visited.push_back(id);
+        auto toRemove = util::transform(container, [&](const T& x)->K {return getID_(x);});
+        ContainerWrapper<T, K> cont(
+            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
+                util::erase_remove(toRemove, id);
                 auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
                 if (it != container.end()) {
                     return {*it, [&](T& val) {}};
@@ -404,69 +387,55 @@ public:
             });
 
         d.deserialize(key_, cont);
-
-        util::erase_remove_if(container, [&](T& i) {
-            if (!util::contains(visited, getID_(i))) {
-                onRemoveItem_(i);
-                return true;
-            } else {
-                return false;
-            }
-        });
+        for (auto& id : toRemove) onRemoveItem_(id);
     }
 
 private:
-    std::function<std::string(T&)> getID_;
-    std::function<T()> makeNewItem_;
-    std::function<void(T&)> onNewItem_;
-    std::function<void(T&)> onRemoveItem_;
+    std::function<K(const T&)> getID_ = [](const T&) -> K { throw Exception("GetID callback is not set!"); };
+    std::function<T()> makeNewItem_ = []() -> T {
+        throw Exception("MakeNew callback is not set!");
+    };
+    std::function<void(T&)> onNewItem_ = [](T&) { throw Exception("OnNew callback is not set!"); };
+    std::function<void(const K&)> onRemoveItem_ = [](const K&) {
+        throw Exception("OnRemove callback is not set!");
+    };
 
     std::string key_;
     std::string itemKey_;
 };
 
-
 template <typename K, typename T>
 class MapDeserializer {
 public:
-
     MapDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
 
     MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    MapDeserializer<K, T>& onNew(std::function<void(std::pair<const K, T>&)> onNewItem) {
+    MapDeserializer<K, T>& onNew(std::function<void(const K&, T&)> onNewItem) {
         onNewItem_ = onNewItem;
         return *this;
     }
-    MapDeserializer<K, T>& onRemove(std::function<void(std::pair<const K, T>&)> onRemoveItem) {
+    MapDeserializer<K, T>& onRemove(std::function<void(const K&)> onRemoveItem) {
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
 
-
     template <typename C>
     void operator()(Deserializer& d, C& container) {
-        if(!makeNewItem_ || !onNewItem_ || !onRemoveItem_) {
-            throw Exception("Not all callbacks are set!");
-        }
-        
         T tmp{};
-        std::vector<K> visited;
+        auto toRemove =
+            util::transform(container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
-            itemKey_,
-            [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
-                visited.push_back(id);
+            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
+                util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
                     return {it->second, [&](T& val) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {tmp, [&, id](T& val) {
-                        auto pair = std::pair<const K, T>(id, val);
-                        onNewItem_(pair);
-                    }};
+                    return {tmp, [&, id](T& val) { onNewItem_(id, val); }};
                 }
             });
 
@@ -478,25 +447,23 @@ public:
 
         d.deserialize(key_, cont);
 
-        util::map_erase_remove_if(container, [&](std::pair<const K, T>& item) {
-            if (!util::contains(visited, item.first)) {
-                onRemoveItem_(item);
-                return true;
-            } else {
-                return false;
-            }
-        });
+        for (auto& id : toRemove) onRemoveItem_(id);
     }
 
 private:
-    std::function<T()> makeNewItem_;
-    std::function<void(std::pair<const K, T>&)> onNewItem_;
-    std::function<void(std::pair<const K, T>&)> onRemoveItem_;
+    std::function<T()> makeNewItem_ = []() -> T {
+        throw Exception("MakeNew callback is not set!");
+    };
+    std::function<void(const K&, T&)> onNewItem_ = [](const K&, T&) {
+        throw Exception("OnNew callback is not set!");
+    };
+    std::function<void(const K&)> onRemoveItem_ = [](const K&) {
+        throw Exception("OnRemove callback is not set!");
+    };
 
     std::string key_;
     std::string itemKey_;
 };
-
 
 }  // namespace
 

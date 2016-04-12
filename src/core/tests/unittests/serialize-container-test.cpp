@@ -80,9 +80,9 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
         "Item", [&](std::string id,
                     size_t ind) -> ContainerWrapper<int>::ItemAndCallback {
             if (ind < vector.size()) {
-                return {vector[ind], [&](int& val) { visited[ind] = true; }};
+                return {vector[ind], [&visited, ind](int& val) { visited[ind] = true; }};
             } else {
-                return {tmp, [&](int& val) {
+                return {tmp, [&visited, &vector](int& val) {
                             visited.push_back(true);
                             vector.push_back(val);
                         }};
@@ -277,11 +277,20 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     vector.insert(vector.begin(), new Item("d",1));
 
     Deserializer deserializer(nullptr, ss, "");
-    auto des = util::IdentifiedDeserializer<Item*>("Vector", "Item")
-                   .setGetId([](Item* i) { return i->id_; })
+    auto des = util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
+                   .setGetId([](Item* const& i) { return i->id_; })
                    .setMakeNew([]() { return new Item(); })
                    .onNew([&](Item*& i) { vector.push_back(i); })
-                   .onRemove([](Item*& i) { delete i; });
+                   .onRemove([&](const std::string& id) {
+                       util::erase_remove_if(vector, [&](Item* i) {
+                           if (id == i->id_) {
+                               delete i;
+                               return true;
+                           } else {
+                               return false;
+                           }
+                       });
+                   });
 
     des(deserializer, vector);
 
@@ -314,7 +323,7 @@ TEST(ContainerSerialitionTest, ContainerTest5) {
     auto des = util::IndexedDeserializer<int>("Vector", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](int& i) { vector.push_back(i); })
-                   .onRemove([](int& i) {});
+                   .onRemove([](int& i) {return true;});
     
     des(deserializer, vector);
     
@@ -348,8 +357,8 @@ TEST(ContainerSerialitionTest, ContainerTest6) {
     Deserializer deserializer(nullptr, ss, "");
     auto des = util::MapDeserializer<std::string, int>("Map", "Item")
                    .setMakeNew([]() { return 0; })
-                   .onNew([&](Item& i) { map[i.first] = i.second; })
-                   .onRemove([](Item& i) {});
+                   .onNew([&](const std::string& k, int& v) { map[k] = v; })
+                   .onRemove([&](const std::string& k) {map.erase(k);});
 
     des(deserializer, map);
     
@@ -379,8 +388,8 @@ TEST(ContainerSerialitionTest, ContainerTest7) {
     Deserializer deserializer(nullptr, ss, "");
     auto des = util::MapDeserializer<int, std::string>("Map", "Item")
                    .setMakeNew([]() { return ""; })
-                   .onNew([&](Item& i) { map[i.first] = i.second; })
-                   .onRemove([](Item& i) {});
+                   .onNew([&](const int& k, std::string& v) { map[k] = v; })
+                   .onRemove([&](const int& k) {map.erase(k);});
 
     des(deserializer, map);
     
