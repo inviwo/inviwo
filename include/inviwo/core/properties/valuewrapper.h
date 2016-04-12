@@ -64,7 +64,18 @@ struct ValueWrapper {
 
     void serialize(Serializer& s,
                    PropertySerializationMode mode = PropertySerializationMode::DEFAULT) const {
-        if (mode == PropertySerializationMode::ALL || !isDefault()) s.serialize(name, value);
+        switch (mode) {
+            case inviwo::PropertySerializationMode::DEFAULT:
+                if (!isDefault()) s.serialize(name, value);
+                break;
+            case inviwo::PropertySerializationMode::ALL:
+                s.serialize(name, value);
+                break;
+            case inviwo::PropertySerializationMode::NONE:
+                break;
+            default:
+                break;
+        }
     }
 
     void deserialize(Deserializer& d) { d.deserialize(name, value); }
