@@ -253,18 +253,15 @@ void PropertyOwner::deserialize(Deserializer& d) {
     auto des = util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
                    .setGetId([](Property* const& p) { return p->getIdentifier(); })
                    .setMakeNew([]() { return nullptr; })
-                   .onNew([&](Property*& p) {
-                       if (util::contains(ownedIdentifiers, p->getIdentifier())) {
-                           addProperty(p, true);
-                       } else {
-                           delete p;
-                       }
+                   .setFilter([&](const std::string& id, size_t ind) {
+                       return util::contains(ownedIdentifiers, id);
                    })
+                   .onNew([&](Property*& p) { addProperty(p, true); })
                    .onRemove([&](const std::string& id) {
                        if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
                                return op->getIdentifier() == id;
                            })) {
-                           removeProperty(id);
+                           delete removeProperty(id);
                        }
                    });
 

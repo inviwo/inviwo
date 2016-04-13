@@ -258,8 +258,9 @@ template <typename T, typename K = std::string>
 class ContainerWrapper {
 public:
     using ItemAndCallback = std::pair<T&, std::function<void(T&)>>;
-    using Getter = std::function<ItemAndCallback(K id, size_t ind)>;
+    using Getter = std::function<ItemAndCallback(const K& id, size_t ind)>;
     using IdentityGetter = std::function<K(TxElement* node)>;
+    using Filter = std::function<bool(const K& id, size_t ind)>;
 
     ContainerWrapper(std::string itemKey, Getter getItem) : itemKey_(itemKey), getItem_(getItem) {}
 
@@ -268,16 +269,20 @@ public:
     const std::string& getItemKey() const { return itemKey_; }
 
     void deserialize(Deserializer& d, TxElement* node, size_t ind) {
-        auto itemAndCallback = getItem_(idGetter_(node), ind);
-        try {
-            d.deserialize(itemKey_, itemAndCallback.first);
-            itemAndCallback.second(itemAndCallback.first);
-        } catch (SerializationException& e) {
-            d.handleError(e);
+        auto id = idGetter_(node);
+        if (filter_(id, ind)) {
+            auto itemAndCallback = getItem_(id, ind);
+            try {
+                d.deserialize(itemKey_, itemAndCallback.first);
+                itemAndCallback.second(itemAndCallback.first);
+            } catch (SerializationException& e) {
+                d.handleError(e);
+            }
         }
     }
 
     void setIdentityGetter(IdentityGetter getter) { idGetter_ = getter; }
+    void setFilter(Filter filter) { filter_ = filter; }
 
 private:
     IdentityGetter idGetter_ = [](TxElement* node) {
@@ -285,6 +290,8 @@ private:
         node->GetAttribute("identifier", &key, false);
         return key;
     };
+
+    Filter filter_ = [](const K& id, size_t ind) {return true;};
 
     Getter getItem_;
     const std::string itemKey_;
@@ -365,6 +372,10 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
+    IdentifiedDeserializer<K, T>& setFilter(std::function<bool(const K& id, size_t ind)> filter) {
+        filter_ = filter;
+        return *this;
+    }
     IdentifiedDeserializer<K, T>& onNew(std::function<void(T&)> onNewItem) {
         onNewItem_ = onNewItem;
         return *this;
@@ -389,6 +400,7 @@ public:
                     return {tmp, [&](T& val) { onNewItem_(val); }};
                 }
             });
+        cont.setFilter(filter_);
 
         d.deserialize(key_, cont);
         for (auto& id : toRemove) onRemoveItem_(id);
@@ -404,6 +416,10 @@ private:
         throw Exception("OnRemove callback is not set!");
     };
 
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+        return true;
+    };
+
     std::string key_;
     std::string itemKey_;
 };
@@ -415,6 +431,10 @@ public:
 
     MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
+        return *this;
+    }
+    IdentifiedDeserializer<K, T>& setFilter(std::function<bool(const K& id, size_t ind)> filter) {
+        filter_ = filter;
         return *this;
     }
     MapDeserializer<K, T>& onNew(std::function<void(const K&, T&)> onNewItem) {
@@ -448,6 +468,7 @@ public:
             node->GetAttribute(SerializeConstants::KeyAttribute, &key);
             return key;
         });
+        cont.setFilter(filter_);
 
         d.deserialize(key_, cont);
 
@@ -463,6 +484,9 @@ private:
     };
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
         throw Exception("OnRemove callback is not set!");
+    };
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+        return true;
     };
 
     std::string key_;
