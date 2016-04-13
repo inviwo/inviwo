@@ -462,7 +462,7 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
     }
 }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 11;
+const int ProcessorNetwork::processorNetworkVersion_ = 12;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
@@ -584,8 +584,7 @@ bool ProcessorNetwork::isDeserializing() const { return deserializing_; }
 
 Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
     if (path.size() >= 2) {
-        Processor* processor = getProcessorByIdentifier(path[0]);
-        if (processor) {
+        if (auto processor = getProcessorByIdentifier(path[0])) {
             std::vector<std::string> propPath(path.begin() + 1, path.end());
             return processor->getPropertyByPath(propPath);
         }

@@ -175,22 +175,26 @@ public:
     template <typename T, typename K>
     void deserialize(const std::string& key, ContainerWrapper<T, K>& container);
 
-
     // Specializations for chars
-    void deserialize(const std::string& key, signed char& data, const bool asAttribute = false);
-    void deserialize(const std::string& key, char& data, const bool asAttribute = false);
-    void deserialize(const std::string& key, unsigned char& data, const bool asAttribute = false);
+    void deserialize(const std::string& key, signed char& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
+    void deserialize(const std::string& key, char& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
+    void deserialize(const std::string& key, unsigned char& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
 
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
                                                       std::is_floating_point<T>::value ||
                                                       util::is_string<T>::value,
                                                   int>::type = 0>
-    void deserialize(const std::string& key, T& data, const bool asAttribute = false);
+    void deserialize(const std::string& key, T& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
 
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-    void deserialize(const std::string& key, T& data, const bool asAttribute = false);
+    void deserialize(const std::string& key, T& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
     template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
@@ -512,8 +516,8 @@ template <typename T,
           typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
-void Deserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
-    if (asAttribute) {
+void Deserializer::deserialize(const std::string& key, T& data, const SerializationTarget& target) {
+    if (target == SerializationTarget::Attribute) {
         try {
             rootElement_->GetAttribute(key, &data);
         } catch (TxException&) {
@@ -534,10 +538,10 @@ void Deserializer::deserialize(const std::string& key, T& data, const bool asAtt
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void Deserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
+void Deserializer::deserialize(const std::string& key, T& data, const SerializationTarget& target) {
     using ET = typename std::underlying_type<T>::type;
     ET tmpdata{static_cast<ET>(data)};
-    deserialize(key, tmpdata, asAttribute);
+    deserialize(key, tmpdata, target);
     data = static_cast<T>(tmpdata);
 }
 

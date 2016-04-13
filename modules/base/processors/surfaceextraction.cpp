@@ -180,7 +180,7 @@ void SurfaceExtraction::updateColors() {
                                       defaultColor[(count - 1) % 11]);
             colorProp->setCurrentStateAsDefault();
             colorProp->setSemantics(PropertySemantics::Color);
-            colorProp->setSerializationMode(PropertySerializationMode::ALL);
+            colorProp->setSerializationMode(PropertySerializationMode::All);
             colors_.addProperty(colorProp);
         }
         colors_[count - 1]->setVisible(true);

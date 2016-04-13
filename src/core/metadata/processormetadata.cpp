@@ -77,15 +77,13 @@ void ProcessorMetaData::setSelected(bool selection) {
 bool ProcessorMetaData::isSelected() const { return selection_; }
 
 void ProcessorMetaData::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("position", position_);
     s.serialize("visibility", visibility_);
     s.serialize("selection", selection_);
 }
 
 void ProcessorMetaData::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, true);
     d.deserialize("position", position_);
     d.deserialize("visibility", visibility_);
     d.deserialize("selection", selection_);

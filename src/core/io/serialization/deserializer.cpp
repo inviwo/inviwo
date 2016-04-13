@@ -76,21 +76,21 @@ void Deserializer::deserialize(const std::string& key, Serializable& sObj) {
 }
 
 void Deserializer::deserialize(const std::string& key, signed char& data,
-                                  const bool asAttribute) {
+                                  const SerializationTarget& target) {
     int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, char& data,
-                                  const bool asAttribute) {
+                                  const SerializationTarget& target) {
     int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, unsigned char& data,
-                                  const bool asAttribute) {
+                                 const SerializationTarget& target) {
     unsigned int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<unsigned char>(val);
 }
 

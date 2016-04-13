@@ -74,6 +74,8 @@ private:
     std::string identifier_;
 };
 
+enum class IVW_CORE_API SerializationTarget {Node, Attribute};
+
 class Serializable;
 
 class IVW_CORE_API SerializeBase {

@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-enum class IVW_CORE_API PropertySerializationMode { DEFAULT = 0, ALL, NONE };
+enum class IVW_CORE_API PropertySerializationMode { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {
@@ -63,15 +63,15 @@ struct ValueWrapper {
     void setAsDefault() { defaultValue = value; }
 
     void serialize(Serializer& s,
-                   PropertySerializationMode mode = PropertySerializationMode::DEFAULT) const {
+                   PropertySerializationMode mode = PropertySerializationMode::Default) const {
         switch (mode) {
-            case inviwo::PropertySerializationMode::DEFAULT:
+            case PropertySerializationMode::Default:
                 if (!isDefault()) s.serialize(name, value);
                 break;
-            case inviwo::PropertySerializationMode::ALL:
+            case PropertySerializationMode::All:
                 s.serialize(name, value);
                 break;
-            case inviwo::PropertySerializationMode::NONE:
+            case PropertySerializationMode::None:
                 break;
             default:
                 break;

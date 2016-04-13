@@ -113,11 +113,11 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
         Item(std::string id, int value) : id_(id), value_(value) {}
 
         virtual void serialize(Serializer& s) const override {
-            s.serialize("identifier", id_, true);
+            s.serialize("identifier", id_, SerializationTarget::Attribute);
             s.serialize("value", value_);
         }
         virtual void deserialize(Deserializer& d) override {
-            d.deserialize("identifier", id_, true);
+            d.deserialize("identifier", id_, SerializationTarget::Attribute);
             d.deserialize("value", value_);
         }
 
@@ -173,11 +173,11 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
         Item(std::string id, int value) : id_(id), value_(value) {}
 
         virtual void serialize(Serializer& s) const override {
-            s.serialize("identifier", id_, true);
+            s.serialize("identifier", id_, SerializationTarget::Attribute);
             s.serialize("value", value_);
         }
         virtual void deserialize(Deserializer& d) override {
-            d.deserialize("identifier", id_, true);
+            d.deserialize("identifier", id_, SerializationTarget::Attribute);
             d.deserialize("value", value_);
         }
 
@@ -248,11 +248,11 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
         Item(std::string id, int value) : id_(id), value_(value) {}
 
         virtual void serialize(Serializer& s) const override {
-            s.serialize("identifier", id_, true);
+            s.serialize("identifier", id_, SerializationTarget::Attribute);
             s.serialize("value", value_);
         }
         virtual void deserialize(Deserializer& d) override {
-            d.deserialize("identifier", id_, true);
+            d.deserialize("identifier", id_, SerializationTarget::Attribute);
             d.deserialize("value", value_);
         }
 

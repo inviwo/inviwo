@@ -42,11 +42,11 @@ InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) {
 }
 
 void InviwoSetupInfo::ModuleSetupInfo::serialize(Serializer& s) const {
-    s.serialize("name", name_, true);
+    s.serialize("name", name_, SerializationTarget::Attribute);
     s.serialize("Processors", processors_, "Processor");
 }
 void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
-    d.deserialize("name", name_, true);
+    d.deserialize("name", name_, SerializationTarget::Attribute);
     d.deserialize("Processors", processors_, "Processor");
 }
 

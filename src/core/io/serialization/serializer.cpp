@@ -62,15 +62,16 @@ void Serializer::serialize(const std::string& key, const Serializable& sObj) {
 }
 
 void Serializer::serialize(const std::string& key, const signed char& data,
-                           const bool asAttribute) {
-    serialize(key, static_cast<int>(data), asAttribute);
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<int>(data), target);
 }
-void Serializer::serialize(const std::string& key, const char& data, const bool asAttribute) {
-    serialize(key, static_cast<int>(data), asAttribute);
+void Serializer::serialize(const std::string& key, const char& data,
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<int>(data), target);
 }
 void Serializer::serialize(const std::string& key, const unsigned char& data,
-                           const bool asAttribute) {
-    serialize(key, static_cast<unsigned int>(data), asAttribute);
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<unsigned int>(data), target);
 }
 
 void Serializer::writeFile() {

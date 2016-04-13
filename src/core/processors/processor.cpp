@@ -202,8 +202,8 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
 }
 
 void Processor::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
-    s.serialize("identifier", identifier_, true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("identifier", identifier_, SerializationTarget::Attribute);
 
     s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
     s.serialize("InPorts", inports_, "InPort");
@@ -215,7 +215,7 @@ void Processor::serialize(Serializer& s) const {
 
 void Processor::deserialize(Deserializer& d) {
     std::string identifier;
-    d.deserialize("identifier", identifier, true);
+    d.deserialize("identifier", identifier, SerializationTarget::Attribute);
     setIdentifier(identifier);  // Need to use setIdentifier to make sure we get a unique id.
 
     d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");

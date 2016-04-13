@@ -35,16 +35,6 @@ std::string MetaData::getClassIdentifier() const {
     return "MetaData";
 }
 
-
-void MetaData::serialize(Serializer& s) const {
-    IVW_UNUSED_PARAM(s);
-}
-
-void MetaData::deserialize(Deserializer& d) {
-    IVW_UNUSED_PARAM(d);
-}
-
-
 bool operator==(const MetaData& lhs, const MetaData& rhs) {
     return lhs.equal(rhs);
 }

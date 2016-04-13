@@ -48,21 +48,21 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     , overrideC_("overrideC", "C (override)", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
     , overrideOffset_("overrideOffset", "Offset (override)", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
     a_.setReadOnly(true);
-    a_.setSerializationMode(PropertySerializationMode::NONE);
+    a_.setSerializationMode(PropertySerializationMode::None);
     b_.setReadOnly(true);
-    b_.setSerializationMode(PropertySerializationMode::NONE);
+    b_.setSerializationMode(PropertySerializationMode::None);
     c_.setReadOnly(true);
-    c_.setSerializationMode(PropertySerializationMode::NONE);
+    c_.setSerializationMode(PropertySerializationMode::None);
     offset_.setReadOnly(true);
-    offset_.setSerializationMode(PropertySerializationMode::NONE);
+    offset_.setSerializationMode(PropertySerializationMode::None);
 
-    overrideA_.setSerializationMode(PropertySerializationMode::ALL);
+    overrideA_.setSerializationMode(PropertySerializationMode::All);
     overrideA_.setVisible(false);
-    overrideB_.setSerializationMode(PropertySerializationMode::ALL);
+    overrideB_.setSerializationMode(PropertySerializationMode::All);
     overrideB_.setVisible(false);
-    overrideC_.setSerializationMode(PropertySerializationMode::ALL);
+    overrideC_.setSerializationMode(PropertySerializationMode::All);
     overrideC_.setVisible(false);
-    overrideOffset_.setSerializationMode(PropertySerializationMode::ALL);
+    overrideOffset_.setSerializationMode(PropertySerializationMode::All);
     overrideOffset_.setVisible(false);
 
     addProperty(overRideDefaults_);

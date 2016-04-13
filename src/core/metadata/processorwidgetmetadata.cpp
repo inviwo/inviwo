@@ -88,15 +88,13 @@ bool ProcessorWidgetMetaData::isVisible() const {
 }
 
 void ProcessorWidgetMetaData::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
 }
 
 void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, true);
     d.deserialize("position", position_);
     d.deserialize("dimensions", dimensions_);
     d.deserialize("visibility", visibility_);

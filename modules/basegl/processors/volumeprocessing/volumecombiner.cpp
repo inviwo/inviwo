@@ -85,7 +85,7 @@ VolumeCombiner::VolumeCombiner()
         size_t i = scales_.size();
         auto p = util::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1),
                                                   1.0f, -2.f, 2.f, 0.01f);
-        p->setSerializationMode(PropertySerializationMode::ALL);
+        p->setSerializationMode(PropertySerializationMode::All);
         scales_.addProperty(p.release());
     });
 

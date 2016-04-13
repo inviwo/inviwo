@@ -89,21 +89,25 @@ public:
                    const std::string& itemKey);
 
     // Specializations for chars
-    void serialize(const std::string& key, const signed char& data, const bool asAttribute = false);
-    void serialize(const std::string& key, const char& data, const bool asAttribute = false);
+    void serialize(const std::string& key, const signed char& data,
+                   const SerializationTarget& target = SerializationTarget::Node);
+    void serialize(const std::string& key, const char& data,
+                   const SerializationTarget& target = SerializationTarget::Node);
     void serialize(const std::string& key, const unsigned char& data,
-                   const bool asAttribute = false);
+                   const SerializationTarget& target = SerializationTarget::Node);
 
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
                                                       std::is_floating_point<T>::value ||
                                                       util::is_string<T>::value,
                                                   int>::type = 0>
-    void serialize(const std::string& key, const T& data, const bool asAttribute = false);
+    void serialize(const std::string& key, const T& data,
+                   const SerializationTarget& target = SerializationTarget::Node);
 
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-    void serialize(const std::string& key, const T& data, const bool asAttribute = false);
+    void serialize(const std::string& key, const T& data,
+                   const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
     template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
@@ -212,8 +216,9 @@ template <typename T,
           typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
-void Serializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
-    if (asAttribute) {
+void Serializer::serialize(const std::string& key, const T& data,
+                           const SerializationTarget& target) {
+    if (target == SerializationTarget::Attribute) {
         rootElement_->SetAttribute(key, data);
     } else {
         auto node = util::make_unique<TxElement>(key);
@@ -224,10 +229,11 @@ void Serializer::serialize(const std::string& key, const T& data, const bool asA
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void Serializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
+void Serializer::serialize(const std::string& key, const T& data,
+                           const SerializationTarget& target) {
     using ET = typename std::underlying_type<T>::type;
     const ET tmpdata{static_cast<const ET>(data)};
-    serialize(key, tmpdata, asAttribute);
+    serialize(key, tmpdata, target);
 }
 
 // glm vector types

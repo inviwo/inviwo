@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_CORE_API PropertyEditorWidgetDockStatus {
 public:
     PropertyEditorWidgetDockStatus();
-    PropertyEditorWidgetDockStatus(const std::string &dockStatus);
+    PropertyEditorWidgetDockStatus(const std::string& dockStatus);
     PropertyEditorWidgetDockStatus(const PropertyEditorWidgetDockStatus& rhs);
     virtual ~PropertyEditorWidgetDockStatus() {}
     PropertyEditorWidgetDockStatus& operator=(const PropertyEditorWidgetDockStatus& rhs);
@@ -50,6 +50,7 @@ public:
     static const PropertyEditorWidgetDockStatus Floating;
     static const PropertyEditorWidgetDockStatus DockedLeft;
     static const PropertyEditorWidgetDockStatus DockedRight;
+
 private:
     std::string dockStatus_;
 };

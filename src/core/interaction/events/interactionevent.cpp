@@ -59,7 +59,7 @@ InteractionEvent* InteractionEvent::clone() const {
 InteractionEvent::~InteractionEvent() {}
 
 void InteractionEvent::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("modifiers", modifiers_);
 }
 
