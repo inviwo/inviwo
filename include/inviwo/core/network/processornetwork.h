@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-    class InviwoApplication;
+class InviwoApplication;
 
 /**
  * This class manages the current processor network. It can be thought of as a container of
@@ -234,6 +234,7 @@ public:
     virtual void onProcessorInvalidationEnd(Processor*) override;
     virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
     void lock();
     void unlock();

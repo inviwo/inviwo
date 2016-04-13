@@ -583,6 +583,8 @@ void inviwo::BaseTemplateOptionProperty<T>::setCurrentStateAsDefault() {
 template <typename T>
 void BaseTemplateOptionProperty<T>::serialize(Serializer& s) const {
     BaseOptionProperty::serialize(s);
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
+
     if ((this->serializationMode_ == PropertySerializationMode::All ||
          options_ != defaultOptions_) &&
         options_.size() > 0) {

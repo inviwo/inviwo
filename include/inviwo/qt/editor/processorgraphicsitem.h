@@ -61,7 +61,7 @@ public:
     ProcessorGraphicsItem(Processor* processor);
     ~ProcessorGraphicsItem();
 
-    Processor* getProcessor() const { return processor_; }
+    Processor* getProcessor() const;
     std::string getIdentifier() const;
 
     ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port);
@@ -84,6 +84,7 @@ public:
     // ProcessorObserver overrides
     virtual void onProcessorIdentifierChange(Processor*) override;
     virtual void onProcessorPortAdded(Processor*, Port*) override;
+    virtual void onProcessorPortRemoved(Processor*, Port*) override;
     #if IVW_PROFILING
     virtual void onProcessorAboutToProcess(Processor*) override;
     virtual void onProcessorFinishedProcess(Processor*) override;
@@ -101,6 +102,8 @@ protected:
 
     void addInport(Inport *port);
     void addOutport(Outport *port);
+    void removeInport(Inport *port);
+    void removeOutport(Outport *port);
 
     virtual void onProcessorMetaDataPositionChange() override;
     virtual void onProcessorMetaDataVisibilityChange() override;
@@ -120,9 +123,15 @@ private:
     std::map<Outport*, ProcessorOutportGraphicsItem*> outportItems_;
     
     bool highlight_;
-    qreal inportX,inportY;
-    qreal outportX,outportY;
-    
+
+    static const QSizeF size_;
+    static const float roundedCorners_;
+    static const int labelHeight_;
+    static const QPointF inportPos_;
+    static const QPointF outportPos_;
+    static const QPointF inportDelta_;
+    static const QPointF outportDelta_;
+
     #if IVW_PROFILING 
     size_t processCount_;
     LabelGraphicsItem* countLabel_;

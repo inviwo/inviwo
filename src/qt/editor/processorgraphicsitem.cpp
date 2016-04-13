@@ -63,10 +63,13 @@
 
 namespace inviwo {
 
-static const int width = 150;
-static const int height = 50;
-static const float roundedCorners = 9.f;
-static const int labelHeight = 8;
+const QSizeF ProcessorGraphicsItem::size_ = {150.f, 50.f};
+const float ProcessorGraphicsItem::roundedCorners_ = 9.0f;
+const int ProcessorGraphicsItem::labelHeight_ = 8;
+const QPointF ProcessorGraphicsItem::inportPos_ = { 12.5f, 4.5f };
+const QPointF ProcessorGraphicsItem::inportDelta_ = { 12.5f, 0.0f };
+const QPointF ProcessorGraphicsItem::outportPos_ = { 12.5f, -4.5f };
+const QPointF ProcessorGraphicsItem::outportDelta_ = { 12.5f, 0.0f };
 
 int pointSizeToPixelSize(const int pointSize) {
     // compute pixel size for fonts by assuming 96 dpi as basis
@@ -94,25 +97,25 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setZValue(PROCESSORGRAPHICSITEM_DEPTH);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    setRect(-width / 2, -height / 2, width, height);
+    setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
     QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
     processorShadowEffect->setOffset(3.0);
     processorShadowEffect->setBlurRadius(3.0);
     setGraphicsEffect(processorShadowEffect);
     nameLabel_ = new LabelGraphicsItem(this);
     nameLabel_->setCrop(9, 8);
-    nameLabel_->setPos(-width / 2.0 + labelHeight, -height / 2.0 + 0.6 * labelHeight);
+    nameLabel_->setPos(rect().topLeft() + QPointF(labelHeight_,  0.6 * labelHeight_));
     nameLabel_->setDefaultTextColor(Qt::white);
-    QFont nameFont("Segoe", labelHeight, QFont::Black, false);
-    nameFont.setPixelSize(pointSizeToPixelSize(labelHeight));
+    QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
+    nameFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
     nameLabel_->setFont(nameFont);
     LabelGraphicsItemObserver::addObservation(nameLabel_);
     classLabel_ = new LabelGraphicsItem(this);
     classLabel_->setCrop(9, 8);
-    classLabel_->setPos(-width / 2.0 + labelHeight, -height / 2.0 + labelHeight * 2.0);
+    classLabel_->setPos(rect().topLeft() + QPointF(labelHeight_, 2.0f * labelHeight_));
     classLabel_->setDefaultTextColor(Qt::lightGray);
-    QFont classFont("Segoe", labelHeight, QFont::Normal, true);
-    classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
+    QFont classFont("Segoe", labelHeight_, QFont::Normal, true);
+    classFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
     classLabel_->setFont(classFont);
 
     nameLabel_->setText(QString::fromStdString(processor_->getIdentifier()));
@@ -125,20 +128,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 
     linkItem_ = new ProcessorLinkGraphicsItem(this);
 
-
-    std::vector<Inport*> inports = processor_->getInports();
-    std::vector<Outport*> outports = processor_->getOutports();
-
-    inportX = rect().left() + 12.5f;
-    inportY = rect().top() + 4.5f;
-    outportX = rect().left() + 12.5f;
-    outportY = rect().bottom() - 4.5f;
-
-    for (auto& inport : inports) {
+    for (auto& inport : processor_->getInports()) {
         addInport(inport);
     }
 
-    for (auto& outport : outports) {
+    for (auto& outport : processor_->getOutports()) {
         addOutport(outport);
     }
 
@@ -157,9 +151,9 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     }
 
     #if IVW_PROFILING
-    countLabel_ = new LabelGraphicsItem(this, Qt::AlignRight | Qt::AlignVCenter);
+    countLabel_ = new LabelGraphicsItem(this, Qt::AlignRight);
     countLabel_->setCrop(9,8);
-    countLabel_->setPos(width / 2.0 - labelHeight, height / 2 - labelHeight*2.5);
+    countLabel_->setPos(rect().bottomRight() - QPointF(labelHeight_, 2.5*labelHeight_));
     countLabel_->setDefaultTextColor(Qt::lightGray);
     countLabel_->setFont(classFont);
     #endif
@@ -170,15 +164,37 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 }
 
 
-void ProcessorGraphicsItem::addInport(Inport *port){
-    inportItems_[port] = new ProcessorInportGraphicsItem(this, QPointF(inportX,inportY), port);
-    inportX += (25 / 2.0);
+void ProcessorGraphicsItem::addInport(Inport *port) {
+    auto pos = rect().topLeft() + inportPos_ + inportDelta_*inportItems_.size();
+    inportItems_[port] = new ProcessorInportGraphicsItem(this, pos, port);
 }
 
 void ProcessorGraphicsItem::addOutport(Outport *port){
-    outportItems_[port] =
-        new ProcessorOutportGraphicsItem(this, QPointF(outportX, outportY), port);
-    outportX += (25 / 2.0);
+    auto pos = rect().bottomLeft() + outportPos_ + outportDelta_*outportItems_.size();
+    outportItems_[port] = new ProcessorOutportGraphicsItem(this, pos, port);
+}
+
+void ProcessorGraphicsItem::removeInport(Inport* port) {
+    delete inportItems_[port];
+    inportItems_.erase(port);
+
+    size_t count = 0;
+    for (auto& item : inportItems_) {
+        auto pos = rect().topLeft() + inportPos_ + inportDelta_ * count;
+        item.second->setPos(pos);
+        count++;
+    }
+}
+
+void ProcessorGraphicsItem::removeOutport(Outport* port) {
+    delete outportItems_[port];
+    outportItems_.erase(port);
+    size_t count = 0;
+    for (auto& item : outportItems_) {
+        auto pos = rect().bottomLeft() + outportPos_ + outportDelta_ * count;
+        item.second->setPos(pos);
+        count++;
+    }
 }
 
 void ProcessorGraphicsItem::onProcessorMetaDataPositionChange() {
@@ -209,6 +225,10 @@ ProcessorOutportGraphicsItem* ProcessorGraphicsItem::getOutportGraphicsItem(Outp
 }
 
 ProcessorGraphicsItem::~ProcessorGraphicsItem() {}
+
+inviwo::Processor* ProcessorGraphicsItem::getProcessor() const {
+    return processor_;
+}
 
 void ProcessorGraphicsItem::editProcessorName() {
     setFocus();
@@ -247,7 +267,7 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     }
 
     QRectF bRect = rect();
-    QPainterPath roundRectPath = makeRoundedBox(rect(), roundedCorners);
+    QPainterPath roundRectPath = makeRoundedBox(rect(), roundedCorners_);
 
     p->setBrush(grad);
     p->drawPath(roundRectPath);
@@ -265,14 +285,14 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
 
     QPainterPath highlightPath;
     double highlightLength = bRect.width() / 8.0;
-    highlightPath.moveTo(bRect.left(), bRect.top() + roundedCorners);
-    highlightPath.lineTo(bRect.left(), bRect.bottom() - roundedCorners);
-    highlightPath.arcTo(bRect.left(), bRect.bottom() - (2 * roundedCorners), (2 * roundedCorners),
-                        (2 * roundedCorners), 180.0, 90.0);
+    highlightPath.moveTo(bRect.left(), bRect.top() + roundedCorners_);
+    highlightPath.lineTo(bRect.left(), bRect.bottom() - roundedCorners_);
+    highlightPath.arcTo(bRect.left(), bRect.bottom() - (2 * roundedCorners_), (2 * roundedCorners_),
+                        (2 * roundedCorners_), 180.0, 90.0);
     highlightPath.lineTo(bRect.left() + (bRect.width() / 2.0) + highlightLength, bRect.bottom());
     highlightPath.lineTo(bRect.left() + (bRect.width() / 2.0) - highlightLength, bRect.top());
-    highlightPath.lineTo(bRect.left() + roundedCorners, bRect.top());
-    highlightPath.arcTo(bRect.left(), bRect.top(), (2 * roundedCorners), (2 * roundedCorners), 90.0,
+    highlightPath.lineTo(bRect.left() + roundedCorners_, bRect.top());
+    highlightPath.arcTo(bRect.left(), bRect.top(), (2 * roundedCorners_), (2 * roundedCorners_), 90.0,
                         90.0);
 
     p->setBrush(highlightGrad);
@@ -386,6 +406,13 @@ void ProcessorGraphicsItem::onProcessorPortAdded(Processor *, Port *port){
     Outport *outport = dynamic_cast<Outport*>(port);
     if(inport) addInport(inport);
     else if(outport) addOutport(outport);
+}
+
+void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
+    Inport *inport = dynamic_cast<Inport*>(port);
+    Outport *outport = dynamic_cast<Outport*>(port);
+    if (inport) removeInport(inport);
+    else if (outport) removeOutport(outport);
 }
 
 #if IVW_PROFILING

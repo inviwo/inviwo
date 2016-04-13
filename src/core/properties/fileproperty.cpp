@@ -87,6 +87,8 @@ void FileProperty::serialize(Serializer& s) const {
 
     */
     Property::serialize(s);
+
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
     
     const std::string absolutePath = get();
     std::string workspaceRelativePath;

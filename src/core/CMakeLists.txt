@@ -233,7 +233,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h

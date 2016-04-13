@@ -257,10 +257,13 @@ private:
 template <typename T, typename K = std::string>
 class ContainerWrapper {
 public:
-    using ItemAndCallback = std::pair<T&, std::function<void(T&)>>;
-    using Getter = std::function<ItemAndCallback(const K& id, size_t ind)>;
+    struct Item {
+        bool doDeserialize;
+        T& value;
+        std::function<void(T&)> callback;
+    };
+    using Getter = std::function<Item(const K& id, size_t ind)>;
     using IdentityGetter = std::function<K(TxElement* node)>;
-    using Filter = std::function<bool(const K& id, size_t ind)>;
 
     ContainerWrapper(std::string itemKey, Getter getItem) : itemKey_(itemKey), getItem_(getItem) {}
 
@@ -269,12 +272,11 @@ public:
     const std::string& getItemKey() const { return itemKey_; }
 
     void deserialize(Deserializer& d, TxElement* node, size_t ind) {
-        auto id = idGetter_(node);
-        if (filter_(id, ind)) {
-            auto itemAndCallback = getItem_(id, ind);
+        auto item = getItem_(idGetter_(node), ind);
+        if (item.doDeserialize) {
             try {
-                d.deserialize(itemKey_, itemAndCallback.first);
-                itemAndCallback.second(itemAndCallback.first);
+                d.deserialize(itemKey_, item.value);
+                item.callback(item.value);
             } catch (SerializationException& e) {
                 d.handleError(e);
             }
@@ -282,7 +284,6 @@ public:
     }
 
     void setIdentityGetter(IdentityGetter getter) { idGetter_ = getter; }
-    void setFilter(Filter filter) { filter_ = filter; }
 
 private:
     IdentityGetter idGetter_ = [](TxElement* node) {
@@ -290,8 +291,6 @@ private:
         node->GetAttribute("identifier", &key, false);
         return key;
     };
-
-    Filter filter_ = [](const K& id, size_t ind) {return true;};
 
     Getter getItem_;
     const std::string itemKey_;
@@ -322,13 +321,13 @@ public:
         T tmp{};
         size_t count = 0;
         ContainerWrapper<T> cont(itemKey_, [&](std::string id, size_t ind) ->
-                                 typename ContainerWrapper<T>::ItemAndCallback {
+                                 typename ContainerWrapper<T>::Item {
                                      ++count;
                                      if (ind < container.size()) {
-                                         return {container[ind], [&](T& val) {}};
+                                         return {true, container[ind], [&](T& val) {}};
                                      } else {
                                          tmp = makeNewItem_();
-                                         return {tmp, [&](T& val) { onNewItem_(val); }};
+                                         return {true, tmp, [&](T& val) { onNewItem_(val); }};
                                      }
                                  });
 
@@ -372,7 +371,8 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<K, T>& setFilter(std::function<bool(const K& id, size_t ind)> filter) {
+    IdentifiedDeserializer<K, T>& setNewFilter(
+        std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
     }
@@ -390,17 +390,16 @@ public:
         T tmp{};
         auto toRemove = util::transform(container, [&](const T& x)->K {return getID_(x);});
         ContainerWrapper<T, K> cont(
-            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
+            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
                 util::erase_remove(toRemove, id);
                 auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
                 if (it != container.end()) {
-                    return {*it, [&](T& val) {}};
+                    return {true, *it, [&](T& val) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {tmp, [&](T& val) { onNewItem_(val); }};
+                    return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val); }};
                 }
             });
-        cont.setFilter(filter_);
 
         d.deserialize(key_, cont);
         for (auto& id : toRemove) onRemoveItem_(id);
@@ -433,7 +432,8 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<K, T>& setFilter(std::function<bool(const K& id, size_t ind)> filter) {
+    IdentifiedDeserializer<K, T>& setNewFilter(
+        std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
     }
@@ -452,14 +452,14 @@ public:
         auto toRemove =
             util::transform(container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
-            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::ItemAndCallback {
+            itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
                 util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
-                    return {it->second, [&](T& val) {}};
+                    return {true, it->second, [&](T& val) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {tmp, [&, id](T& val) { onNewItem_(id, val); }};
+                    return {filter_(id, ind), tmp, [&, id](T& val) { onNewItem_(id, val); }};
                 }
             });
 
@@ -468,7 +468,6 @@ public:
             node->GetAttribute(SerializeConstants::KeyAttribute, &key);
             return key;
         });
-        cont.setFilter(filter_);
 
         d.deserialize(key_, cont);
 

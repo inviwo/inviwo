@@ -433,6 +433,18 @@ void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
     processors_[processor->getIdentifier()] = processor;
 }
 
+void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
+    std::vector<std::pair<Outport*, Inport*>> toDelete;
+    for (auto item : connectionsVec_) {
+        if (item->getInport() == port || item->getOutport() == port){
+            toDelete.emplace_back(item->getOutport(), item->getInport());    
+        }
+    }
+    for (auto& item : toDelete) {
+        removeConnection(item.first, item.second);
+    }
+}
+
 void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
     if (modifiedProperty) linkEvaluator_.evaluateLinksFromProperty(modifiedProperty);
     notifyObserversProcessorNetworkChanged();

@@ -78,11 +78,11 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
     std::vector<bool> visited(vector.size(), false);
     ContainerWrapper<int> cont(
         "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<int>::ItemAndCallback {
+                    size_t ind) -> ContainerWrapper<int>::Item {
             if (ind < vector.size()) {
-                return {vector[ind], [&visited, ind](int& val) { visited[ind] = true; }};
+                return {true, vector[ind], [&visited, ind](int& val) { visited[ind] = true; }};
             } else {
-                return {tmp, [&visited, &vector](int& val) {
+                return {true, tmp, [&visited, &vector](int& val) {
                             visited.push_back(true);
                             vector.push_back(val);
                         }};
@@ -141,13 +141,13 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
     std::vector<std::string> visited;
     ContainerWrapper<Item> cont(
         "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<Item>::ItemAndCallback {
+                    size_t ind) -> ContainerWrapper<Item>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
-                return {*it, [&](Item& val) {}};
+                return {true, *it, [&](Item& val) {}};
             } else {
-                return {tmp, [&](Item& val) { vector.push_back(val); }};
+                return {true, tmp, [&](Item& val) { vector.push_back(val); }};
             }
         });
 
@@ -205,14 +205,14 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     std::vector<std::string> visited;
     ContainerWrapper<Item*> cont(
         "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<Item*>::ItemAndCallback {
+                    size_t ind) -> ContainerWrapper<Item*>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
-                return {*it, [&](Item*& val) {}};
+                return {true, *it, [&](Item*& val) {}};
             } else {
                 tmp = new Item();
-                return {tmp, [&](Item*& val) { vector.push_back(val); }};
+                return {true, tmp, [&](Item*& val) { vector.push_back(val); }};
             }
         });
 

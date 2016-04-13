@@ -63,7 +63,7 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
 void PropertyOwner::addProperty(Property* property, bool owner) {
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
-            "Can't add property identifier, " + property->getIdentifier() + " already exist",
+            "Can't add property, identifier: " + property->getIdentifier() + " already exist",
             IvwContext);
     }
 
@@ -253,7 +253,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
     auto des = util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
                    .setGetId([](Property* const& p) { return p->getIdentifier(); })
                    .setMakeNew([]() { return nullptr; })
-                   .setFilter([&](const std::string& id, size_t ind) {
+                   .setNewFilter([&](const std::string& id, size_t ind) {
                        return util::contains(ownedIdentifiers, id);
                    })
                    .onNew([&](Property*& p) { addProperty(p, true); })
