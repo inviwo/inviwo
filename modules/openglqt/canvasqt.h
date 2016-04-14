@@ -289,6 +289,19 @@ bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
                                 EventConverterQt::getModifier(keyEvent),
                                 KeyboardEvent::KEY_STATE_PRESS);
 
+    // set respective modifier if the pressed key is one of those
+    int modifier = static_cast<int>(pressKeyEvent.modifiers());
+    if (keyEvent->key() == Qt::Key_Alt) {
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_ALT);
+    }
+    else if (keyEvent->key() == Qt::Key_Control) {
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_CTRL);
+    }
+    else if (keyEvent->key() == Qt::Key_Shift) {
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_SHIFT);
+    }
+    pressKeyEvent.setModifiers(modifier);
+    
     Canvas::keyPressEvent(&pressKeyEvent);
     if (pressKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
