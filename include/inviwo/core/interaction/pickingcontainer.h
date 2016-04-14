@@ -57,9 +57,31 @@ public:
 protected:
     PickingObject* findPickingObject(const uvec2& coord);
 
-    vec2 pixelMoveVector(const uvec2& previous, const uvec2& current);
-    vec2 normalizedCoordinates(const uvec2& coord);
-    uvec2 mousePosToPixelCoordinates(ivec2 mpos, ivec2 dim);
+    /** 
+     * \brief normalized delta, i.e. (current - previous), with respect to canvas size
+     *
+     * @param previous  old position in screen coordinates
+     * @param current   new position in screen coordinates
+     * @return normalized delta
+     */
+    vec2 normalizedMovement(const uvec2& previous, const uvec2& current) const;
+
+    /** 
+     * \brief normalize coordinates with respect to the canvas size
+     * 
+     * @param coord   position in screen coordinates
+     * @return normalized position
+     */
+    vec2 normalizedCoordinates(const uvec2& coord) const;
+
+    /** 
+     * \brief clamps 2D position to be within the given rectangle [0, dim - 1]
+     * 
+     * @param pos   coordinate in screen coordinates which needs to be clamped
+     * @param dim   canvas dimensions used for clamping
+     * @return clamped position
+     */
+    static uvec2 clampToScreenCoords(ivec2 mpos, ivec2 dim);
 
 private:
     std::shared_ptr<const Image> src_;
