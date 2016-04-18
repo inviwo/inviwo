@@ -84,7 +84,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
                    false, "", "file name")
     , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
-                     "file name") {
+                     "file name")
+    , undoManager_(this) {
     networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = new ConsoleWidget(this);
@@ -106,13 +107,19 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resize(size);
     move(pos);
 
-    app->getCommandLineParser().add(&snapshotArg_, [this]() {
-        saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
-    }, 1000);
+    app->getCommandLineParser().add(&snapshotArg_,
+                                    [this]() {
+                                        saveCanvases(app_->getCommandLineParser().getOutputPath(),
+                                                     snapshotArg_.getValue());
+                                    },
+                                    1000);
 
-    app->getCommandLineParser().add(&screenGrabArg_, [this]() {
-        getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
-    }, 1000);
+    app->getCommandLineParser().add(&screenGrabArg_,
+                                    [this]() {
+                                        getScreenGrab(app_->getCommandLineParser().getOutputPath(),
+                                                      screenGrabArg_.getValue());
+                                    },
+                                    1000);
 }
 
 InviwoMainWindow::~InviwoMainWindow() {
@@ -327,6 +334,27 @@ void InviwoMainWindow::addActions() {
 
     // Edit
     {
+        auto undoAction = new QAction(tr("&Undo"), this);
+        actions_["Undo"] = undoAction;
+        undoAction->setShortcut(QKeySequence::Undo);
+        editMenuItem->addAction(undoAction);
+        connect(undoAction, &QAction::triggered, [&]() {
+            undoManager_.undoState();
+        });
+    }
+    {
+        auto redoAction = new QAction(tr("&Redo"), this);
+        actions_["Redo"] = redoAction;
+        redoAction->setShortcut(QKeySequence::Redo);
+        editMenuItem->addAction(redoAction);
+        connect(redoAction, &QAction::triggered, [&]() {
+            undoManager_.redoState();
+        });
+    }
+
+    editMenuItem->addSeparator();
+    
+    {
         auto cutAction = new QAction(tr("&Cut"), this);
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
@@ -452,11 +480,11 @@ void InviwoMainWindow::addActions() {
         lockNetworkAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
         evalMenuItem->addAction(lockNetworkAction);
         evalToolBar->addAction(lockNetworkAction);
-        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction]() {
+        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction,this]() {
             if (lockNetworkAction->isChecked()) {
-                InviwoApplicationQt::getPtr()->getProcessorNetwork()->lock();
+                app_->getProcessorNetwork()->lock();
             } else {
-                InviwoApplicationQt::getPtr()->getProcessorNetwork()->unlock();
+                app_->getProcessorNetwork()->unlock();
             }
         });
     }

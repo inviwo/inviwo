@@ -36,6 +36,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorprogressgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -68,6 +69,7 @@ set(SOURCE_FILES
     processorstatusgraphicsitem.cpp
     resourcemanagerwidget.cpp
     settingswidget.cpp
+    undomanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
