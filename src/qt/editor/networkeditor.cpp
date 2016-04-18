@@ -165,9 +165,9 @@ void NetworkEditor::removeAndDeletePropertyWidgets(Processor* processor) {
     mainwindow_->getPropertyListWidget()->removeAndDeleteProcessorProperties(processor);
 }
 
-ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(PortConnection* connection) {
-    Outport* outport = connection->getOutport();
-    Inport* inport = connection->getInport();
+ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConnection& connection) {
+    Outport* outport = connection.getOutport();
+    Inport* inport = connection.getInport();
 
     auto outProcessor = getProcessorGraphicsItem(outport->getProcessor());
     auto inProcessor = getProcessorGraphicsItem(inport->getProcessor());
@@ -189,7 +189,7 @@ void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsI
     network_->removeConnection(outport, inport);
 }
 
-void NetworkEditor::removeConnectionGraphicsItem(PortConnection* connection) {
+void NetworkEditor::removeConnectionGraphicsItem(const PortConnection& connection) {
     ConnectionGraphicsItem* connectionGraphicsItem = connectionGraphicsItems_[connection];
     if (oldConnectionTarget_ == connectionGraphicsItem) oldConnectionTarget_ = nullptr;
     connectionGraphicsItems_.erase(connection);
@@ -217,7 +217,7 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
 
     NetworkLock lock(network_);
     for (auto& link : links) {
-        network_->removeLink(link->getSourceProperty(), link->getDestinationProperty());
+        network_->removeLink(link.getSource(), link.getDestination());
     }
 }
 
@@ -266,12 +266,12 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
         // Add connections to the network
         for (auto& connection : portInspector->getConnections()) {
-            network_->addConnection(connection.getOutport(), connection.getInport());
+            network_->addConnection(connection);
         }
 
         // Add links to the network
         for (auto& link : portInspector->getPropertyLinks()) {
-            network_->addLink(link->getSourceProperty(), link->getDestinationProperty());
+            network_->addLink(link);
         }
 
         // Do auto linking.
@@ -346,12 +346,12 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
 
                 // Add connections to the network
                 for (auto& connection : portInspector->getConnections()) {
-                    network_->addConnection(connection.getOutport(), connection.getInport());
+                    network_->addConnection(connection);
                 }
 
                 // Add links to the network
                 for (auto& link : portInspector->getPropertyLinks()) {
-                    network_->addLink(link->getSourceProperty(), link->getDestinationProperty());
+                    network_->addLink(link);
                 }
 
                 // Do auto-linking.
@@ -413,15 +413,15 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
     }
 
     for (auto connection : processorNetwork->getConnections()) {
-        Outport* outport = connection->getOutport();
-        Inport* inport = connection->getInport();
+        Outport* outport = connection.getOutport();
+        Inport* inport = connection.getInport();
         // first remove the connection from the loaded network to avoid an already connected warning
         processorNetwork->removeConnection(outport, inport);
         network_->addConnection(outport, inport);
     }
 
     for (auto& link : processorNetwork->getLinks()) {
-        network_->addLink(link->getSourceProperty(), link->getDestinationProperty());
+        network_->addLink(link);
     }
 }
 
@@ -493,11 +493,11 @@ ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItem(Processor* key) c
     return util::map_find_or_null(processorGraphicsItems_, key);
 }
 
-ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItem(PortConnection* key) const {
+ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItem(const PortConnection& key) const {
     return util::map_find_or_null(connectionGraphicsItems_, key);
 }
 
-LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(ProcessorPair key) const {
+LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(const ProcessorPair& key) const {
     return util::map_find_or_null(linkGraphicsItems_, key);
 }
 
@@ -989,13 +989,13 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
 
     NetworkLock lock(network_);
 
-    std::vector<std::pair<Outport*, Inport*>> newConnections;
+    std::vector<PortConnection> newConnections;
 
     for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
         for (auto outport : oldInports[i]->getConnectedOutports()) {
             if (inports[i]->canConnectTo(outport)) {
                 // save new connection connectionOutportoldInport-processorInport
-                newConnections.push_back(std::make_pair(outport, inports[i]));
+                newConnections.emplace_back(outport, inports[i]);
             }
         }
     }
@@ -1004,7 +1004,7 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
         for (auto inport : oldOutports[i]->getConnectedInports()) {
             if (inport->canConnectTo(outports[i])) {
                 // save new connection processorOutport-connectionInport
-                newConnections.push_back(std::make_pair(outports[i], inport));
+                newConnections.emplace_back(outports[i], inport);
             }
         }
     }
@@ -1029,24 +1029,24 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
     auto links = network_->getLinks();
     for (auto oldProp : oldProps) {
         for (auto link : links) {
-            if (link->getDestinationProperty() == oldProp) {
+            if (link.getDestination() == oldProp) {
                 auto match = propertymap.find(oldProp);
                 if (match != propertymap.end()) {
                     // add link from
-                    Property* start = link->getSourceProperty();
+                    Property* start = link.getSource();
                     // to
                     Property* end = match->second;
 
                     network_->addLink(start, end);
                 }
             }
-            if (link->getSourceProperty() == oldProp) {
+            if (link.getSource() == oldProp) {
                 auto match = propertymap.find(oldProp);
                 if (match != propertymap.end()) {
                     // add link from
                     Property* start = match->second;
                     // to
-                    Property* end = link->getDestinationProperty();
+                    Property* end = link.getDestination();
 
                     network_->addLink(start, end);
                 }
@@ -1059,8 +1059,7 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
     delete oldProcessor;
 
     // create all new connections
-    for (auto& newConnection : newConnections)
-        network_->addConnection(newConnection.first, newConnection.second);
+    for (auto& con : newConnections) network_->addConnection(con);
 }
 
 ///////////////////////////////
@@ -1349,36 +1348,36 @@ void NetworkEditor::onProcessorNetworkWillRemoveProcessor(Processor* processor) 
     removeProcessorRepresentations(processor);
 }
 
-void NetworkEditor::onProcessorNetworkDidAddConnection(PortConnection* connection) {
+void NetworkEditor::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     addConnectionGraphicsItem(connection);
     updateLeds();
     setModified(true);
 }
-void NetworkEditor::onProcessorNetworkWillRemoveConnection(PortConnection* connection) {
+void NetworkEditor::onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {
     removeConnectionGraphicsItem(connection);
     updateLeds();
     setModified(true);
 }
 
-void NetworkEditor::onProcessorNetworkDidAddLink(PropertyLink* propertyLink) {
+void NetworkEditor::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
     setModified(true);
-    Processor* p1 = propertyLink->getSourceProperty()->getOwner()->getProcessor();
-    Processor* p2 = propertyLink->getDestinationProperty()->getOwner()->getProcessor();
+    Processor* p1 = propertyLink.getSource()->getOwner()->getProcessor();
+    Processor* p2 = propertyLink.getDestination()->getOwner()->getProcessor();
     auto link = getLinkGraphicsItem(p1, p2);
     if (!link) {
         addLinkGraphicsItem(p1, p2);
     }
 }
 
-void NetworkEditor::onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) {
+void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
     setModified(true);
     if (network_->getLinksBetweenProcessors(
-                    propertyLink->getSourceProperty()->getOwner()->getProcessor(),
-                    propertyLink->getDestinationProperty()->getOwner()->getProcessor())
+                    propertyLink.getSource()->getOwner()->getProcessor(),
+                    propertyLink.getDestination()->getOwner()->getProcessor())
             .size() == 0) {
         removeLinkGraphicsItem(getLinkGraphicsItem(
-            propertyLink->getSourceProperty()->getOwner()->getProcessor(),
-            propertyLink->getDestinationProperty()->getOwner()->getProcessor()));
+            propertyLink.getSource()->getOwner()->getProcessor(),
+            propertyLink.getDestination()->getOwner()->getProcessor()));
     }
 }
 

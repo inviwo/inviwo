@@ -265,7 +265,7 @@ public:
     using Getter = std::function<Item(const K& id, size_t ind)>;
     using IdentityGetter = std::function<K(TxElement* node)>;
 
-    ContainerWrapper(std::string itemKey, Getter getItem) : itemKey_(itemKey), getItem_(getItem) {}
+    ContainerWrapper(std::string itemKey, Getter getItem) : getItem_(getItem), itemKey_(itemKey) {}
 
     virtual ~ContainerWrapper() = default;
 
@@ -426,7 +426,7 @@ private:
 template <typename K, typename T>
 class MapDeserializer {
 public:
-    MapDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
+    MapDeserializer(std::string key, std::string itemKey, std::string attribKey = SerializeConstants::KeyAttribute) : key_(key), itemKey_(itemKey), attribKey_(attribKey) {}
 
     MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
@@ -463,9 +463,9 @@ public:
                 }
             });
 
-        cont.setIdentityGetter([](TxElement* node) {
+        cont.setIdentityGetter([&](TxElement* node) {
             K key{};
-            node->GetAttribute(SerializeConstants::KeyAttribute, &key);
+            node->GetAttribute(attribKey_, &key);
             return key;
         });
 
@@ -488,8 +488,9 @@ private:
         return true;
     };
 
-    std::string key_;
-    std::string itemKey_;
+    const std::string key_;
+    const std::string itemKey_;
+    const std::string attribKey_;
 };
 
 }  // namespace

@@ -323,55 +323,52 @@ void LinkConnectionGraphicsItem::updateShape() {
     prepareGeometryChange();
 }
 
-std::string getLinkInfoTableRows(const std::vector<PropertyLink*>& links,
+std::string getLinkInfoTableRows(const std::vector<PropertyLink>& links,
                                  const std::string& imgName) {
     std::string str;
-    std::vector<PropertyLink*>::const_iterator it = links.begin();
-    while (it != links.end()) {
-        Property* srcProperty = (*it)->getSourceProperty();
-        Property* dstProperty = (*it)->getDestinationProperty();
+    for (auto& item : links) {
+        auto srcProperty = item.getSource();
+        auto dstProperty = item.getDestination();
         str += "<tr><td align='center'>" + srcProperty->getDisplayName() +
                "</td><td width='30px' align='center' valign='middle'><img src='" + imgName +
                "'></td><td align='center'>" + dstProperty->getDisplayName() + "</td></tr>";
-        ++it;
     }
     return str;
 }
 
 class LinkConnectionGraphicsItemMatchReverse {
 public:
-    LinkConnectionGraphicsItemMatchReverse(PropertyLink* link) : link_(link) {}
-    bool operator()(const PropertyLink* link) const {
-        return link->getDestinationProperty() == link_->getSourceProperty() &&
-               link->getSourceProperty() == link_->getDestinationProperty();
+    LinkConnectionGraphicsItemMatchReverse(PropertyLink link) : link_(link) {}
+    bool operator()(const PropertyLink& link) const {
+        return link.getDestination() == link_.getSource() &&
+               link.getSource() == link_.getDestination();
     }
 
 private:
-    PropertyLink* link_;
+    PropertyLink link_;
 };
 
 void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     Processor* p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
     Processor* p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
 
-    const std::vector<PropertyLink*> propertyLinks =
+    auto propertyLinks =
         InviwoApplication::getPtr()->getProcessorNetwork()->getLinksBetweenProcessors(p1, p2);
 
     // collect all links based on their direction
 
-    std::vector<PropertyLink*> bidirectional;
-    std::vector<PropertyLink*> outgoing;  // from processor 1
-    std::vector<PropertyLink*> incoming;  // toward processor 1
+    std::vector<PropertyLink> bidirectional;
+    std::vector<PropertyLink> outgoing;  // from processor 1
+    std::vector<PropertyLink> incoming;  // toward processor 1
 
     for (const auto& propertyLink : propertyLinks) {
-        Processor* linkSrc = dynamic_cast<Processor*>(
-            (propertyLink)->getSourceProperty()->getOwner()->getProcessor());
+        Processor* linkSrc =
+            dynamic_cast<Processor*>(propertyLink.getSource()->getOwner()->getProcessor());
 
         if (linkSrc == p1) {
             // forward link
-            std::vector<PropertyLink*>::iterator sit =
-                std::find_if(incoming.begin(), incoming.end(),
-                             LinkConnectionGraphicsItemMatchReverse(propertyLink));
+            auto sit = std::find_if(incoming.begin(), incoming.end(),
+                                    LinkConnectionGraphicsItemMatchReverse(propertyLink));
             if (sit != incoming.end()) {
                 bidirectional.push_back(propertyLink);
                 incoming.erase(sit);
@@ -379,9 +376,8 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
                 outgoing.push_back(propertyLink);
             }
         } else {  // if (linkSrc == processorB)
-            std::vector<PropertyLink*>::iterator sit =
-                std::find_if(outgoing.begin(), outgoing.end(),
-                             LinkConnectionGraphicsItemMatchReverse(propertyLink));
+            auto sit = std::find_if(outgoing.begin(), outgoing.end(),
+                                    LinkConnectionGraphicsItemMatchReverse(propertyLink));
             if (sit != outgoing.end()) {
                 bidirectional.push_back(propertyLink);
                 outgoing.erase(sit);

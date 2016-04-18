@@ -66,7 +66,7 @@ QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const {
 
 DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     LinkDialogPropertyGraphicsItem* startProperty, LinkDialogPropertyGraphicsItem* endProperty,
-    PropertyLink* propertyLink)
+    const PropertyLink& propertyLink)
     : DialogCurveGraphicsItem(startProperty->pos(), endProperty->pos(), uvec3(38, 38, 38))
     , startPropertyGraphicsItem_(startProperty)
     , endPropertyGraphicsItem_(endProperty)
@@ -88,7 +88,6 @@ DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
         endPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
         endPropertyGraphicsItem_ = nullptr;
     }
-    propertyLink_ = nullptr;
 }
 
 void DialogConnectionGraphicsItem::updateStartEndPoint() {
@@ -110,11 +109,10 @@ void DialogConnectionGraphicsItem::updateStartEndPoint() {
 bool DialogConnectionGraphicsItem::isBidirectional() {
     auto linkscene = qobject_cast<LinkDialogGraphicsScene*>(scene());
     return linkscene->getNetwork()->isLinkedBidirectional(
-        propertyLink_->getSourceProperty(), propertyLink_->getDestinationProperty());
+        propertyLink_.getSource(), propertyLink_.getDestination());
 }
 
 void DialogConnectionGraphicsItem::updateConnectionDrawing() {
-    if (!propertyLink_) return;
     startPropertyGraphicsItem_->prepareGeometryChange();
     endPropertyGraphicsItem_->prepareGeometryChange();
     updateStartEndPoint();

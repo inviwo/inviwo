@@ -136,7 +136,7 @@ std::string Processor::setIdentifier(const std::string& identifier) {
         util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
         i = std::stoi(parts.back());
         baseIdentifier = joinString(parts.begin(), parts.end() - 1, " ");
-        newIdentifier = baseIdentifier;
+        newIdentifier = baseIdentifier + " " + toString(i);
     }
 
     while (usedIdentifiers_.find(newIdentifier) != usedIdentifiers_.end()) {

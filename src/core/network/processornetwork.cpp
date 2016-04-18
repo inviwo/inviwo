@@ -78,27 +78,24 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
     // Remove all connections for this processor 
     for (auto outport : processor->getOutports()) {
-        auto inports = outport->getConnectedInports();
+        std::vector<Inport*> inports = outport->getConnectedInports();
         for (auto inport : inports) {
             removeConnection(outport, inport);
         }
     }
     for (auto inport : processor->getInports()) {
-        auto outports = inport->getConnectedOutports();
+        std::vector<Outport*> outports = inport->getConnectedOutports();
         for (auto outport : outports) {
             removeConnection(outport, inport);
         }
     }
 
     // Remove all links for this processor
-    PropertyLinkMap propertyLinks = links_;
-    for (auto& propertyLink : propertyLinks) {
-        if (propertyLink.second->getSourceProperty()->getOwner()->getProcessor() == processor ||
-            propertyLink.second->getDestinationProperty()->getOwner()->getProcessor() ==
-                processor) {
-            removeLink(propertyLink.second->getSourceProperty(),
-                       propertyLink.second->getDestinationProperty());
-        }
+    auto toDelete = util::copy_if(links_, [&](const PropertyLink& link) {
+        return link.involves(processor);
+    });
+    for (auto& link : toDelete) {
+        removeLink(link.getSource(), link.getDestination());
     }
 
     // remove processor itself
@@ -127,53 +124,59 @@ std::vector<Processor*> ProcessorNetwork::getProcessors() const {
                            [](ProcessorMap::const_reference elem) { return elem.second; });
 }
 
-PortConnection* ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
-    if (!isPortInNetwork(src) || !isPortInNetwork(dst)) return nullptr;
-
-    PortConnection* connection = getConnection(src, dst);
-
-    if (!connection && src && dst && dst->canConnectTo(src)) {
+void ProcessorNetwork::addConnection(const PortConnection& connection) {
+    addConnection(connection.getOutport(), connection.getInport());
+}
+void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
+    if (!isPortInNetwork(src)) throw Exception("Outport not found in network");
+    if (!isPortInNetwork(dst)) throw Exception("Inport not found in network");
+    
+    if (src && dst && !isConnected(src, dst) && dst->canConnectTo(src)) {
         NetworkLock lock(this);
-        connection = new PortConnection(src, dst);
+
+        PortConnection connection(src, dst);
         notifyObserversProcessorNetworkWillAddConnection(connection);
 
-        connections_[std::make_pair(src, dst)] = connection;
-        connectionsVec_.push_back(connection);
+        connections_.emplace(src, dst);
+        connectionsVec_.emplace_back(src, dst);
         modified();
+        
         dst->connectTo(src);
 
         notifyObserversProcessorNetworkDidAddConnection(connection);
     }
-
-    return connection;
 }
 
-void ProcessorNetwork::removeConnection(Outport* src, Inport* dst) {
-    auto itm = connections_.find(std::make_pair(src, dst));
-    if (itm != connections_.end()) {
+void ProcessorNetwork::removeConnection(const PortConnection& connection){
+    auto it = connections_.find(connection);
+    if (it != connections_.end()) {
         NetworkLock lock(this);
-        PortConnection* connection = itm->second;
+
         notifyObserversProcessorNetworkWillRemoveConnection(connection);
 
         modified();
-        dst->disconnectFrom(src);
-        connections_.erase(itm);
+        connection.getInport()->disconnectFrom(connection.getOutport());
+        connections_.erase(it);
         util::erase_remove(connectionsVec_, connection);
 
         notifyObserversProcessorNetworkDidRemoveConnection(connection);
-        delete connection;
     }
 }
-
-bool ProcessorNetwork::isConnected(Outport* src, Inport* dst) {
-    return getConnection(src, dst) != nullptr;
+void ProcessorNetwork::removeConnection(Outport* src, Inport* dst) {
+    PortConnection connection(src, dst);
+    removeConnection(connection);
 }
 
-PortConnection* ProcessorNetwork::getConnection(Outport* src, Inport* dst) {
-    return util::map_find_or_null(connections_, std::make_pair(src, dst));
+bool ProcessorNetwork::isConnected(const PortConnection& connection) const {
+     return connections_.find(connection) != connections_.end();
+}
+bool ProcessorNetwork::isConnected(Outport* src, Inport* dst) const {
+    return isConnected(PortConnection(src, dst));
 }
 
-std::vector<PortConnection*> ProcessorNetwork::getConnections() const { return connectionsVec_; }
+const std::vector<PortConnection>& ProcessorNetwork::getConnections() const {
+    return connectionsVec_;
+}
 
 bool ProcessorNetwork::isPortInNetwork(Port* port) const {
     if (auto processor = port->getProcessor()) {
@@ -184,35 +187,38 @@ bool ProcessorNetwork::isPortInNetwork(Port* port) const {
     return false;
 }
 
-PropertyLink* ProcessorNetwork::addLink(Property* src, Property* dst) {
-    if (!isPropertyInNetwork(src) || !isPropertyInNetwork(dst)) return nullptr;
+void ProcessorNetwork::addLink(const PropertyLink& link) {
+    addLink(link.getSource(), link.getDestination());
+}
+void ProcessorNetwork::addLink(Property* src, Property* dst) {
+    if (!isPropertyInNetwork(src)) throw Exception("Source property not found in network");
+    if (!isPropertyInNetwork(dst)) throw Exception("Destination property not found in network");
 
-    auto link = getLink(src, dst);
-    if (!link) {
+    if (!isLinked(src, dst)) {
         NetworkLock lock(this);
-        link = new PropertyLink(src, dst);
+        PropertyLink link(src, dst);
         notifyObserversProcessorNetworkWillAddLink(link);
-        links_[std::make_pair(src, dst)] = link;
+        links_.insert(link);
         linkEvaluator_.addLink(link);  // add to cache
         modified();
         notifyObserversProcessorNetworkDidAddLink(link);
     }
-    return link;
 }
 
-void ProcessorNetwork::removeLink(Property* src, Property* dst) {
-    auto it = links_.find(std::make_pair(src, dst));
+void ProcessorNetwork::removeLink(const PropertyLink& link) {
+    auto it = links_.find(link);
     if (it != links_.end()) {
         NetworkLock lock(this);
-        PropertyLink* link = it->second;
         notifyObserversProcessorNetworkWillRemoveLink(link);
         linkEvaluator_.removeLink(link);
         links_.erase(it);
         modified();
         notifyObserversProcessorNetworkDidRemoveLink(link);
-        delete link;
     }
-
+}
+void ProcessorNetwork::removeLink(Property* src, Property* dst) {
+    PropertyLink link(src, dst);
+    removeLink(link);
 }
 
 void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t index) {
@@ -224,25 +230,20 @@ void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t index) {
         }
     }
 
-    auto toDelete = util::copy_if(links_, [&](const PropertyLinkMap::value_type& elem) {
-        return elem.first.first == property || elem.first.second == property;
-    });
-    for (auto& item : toDelete) {
-        removeLink(item.first.first, item.first.second);
-    }
+    auto toDelete =
+        util::copy_if(links_, [&](const PropertyLink& link) { return link.involves(property); });
+    for (auto& link : toDelete) removeLink(link);
 }
 
-bool ProcessorNetwork::isLinked(Property* src, Property* dst) {
-    return getLink(src, dst) != nullptr;
+bool ProcessorNetwork::isLinked(const PropertyLink& link) const {
+    return links_.find(link) != links_.end();
+}
+bool ProcessorNetwork::isLinked(Property* src, Property* dst) const {
+    return isLinked(PropertyLink(src, dst));
 }
 
-PropertyLink* ProcessorNetwork::getLink(Property* src, Property* dst) const {
-    return util::map_find_or_null(links_, std::make_pair(src, dst));
-}
-
-std::vector<PropertyLink*> ProcessorNetwork::getLinks() const {
-    return util::transform(links_,
-                           [](PropertyLinkMap::const_reference elem) { return elem.second; });
+std::vector<PropertyLink> ProcessorNetwork::getLinks() const {
+    return util::transform(links_, [](PropertyLinks::const_reference elem) { return elem; });
 }
 
 bool ProcessorNetwork::isLinkedBidirectional(Property* src, Property* dst) {
@@ -253,8 +254,8 @@ std::vector<Property*> ProcessorNetwork::getPropertiesLinkedTo(Property* propert
     return linkEvaluator_.getPropertiesLinkedTo(property);
 }
 
-std::vector<PropertyLink*> ProcessorNetwork::getLinksBetweenProcessors(Processor* p1,
-                                                                       Processor* p2) {
+std::vector<PropertyLink> ProcessorNetwork::getLinksBetweenProcessors(Processor* p1,
+                                                                      Processor* p2) {
     return linkEvaluator_.getLinksBetweenProcessors(p1, p2);
 }
 
@@ -434,14 +435,11 @@ void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
-    std::vector<std::pair<Outport*, Inport*>> toDelete;
-    for (auto item : connectionsVec_) {
-        if (item->getInport() == port || item->getOutport() == port){
-            toDelete.emplace_back(item->getOutport(), item->getInport());    
-        }
-    }
+    auto toDelete = util::copy_if(connectionsVec_, [&](const PortConnection& item) {
+        return item.getInport() == port || item.getOutport() == port;
+    });
     for (auto& item : toDelete) {
-        removeConnection(item.first, item.second);
+        removeConnection(item.getOutport(), item.getInport());
     }
 }
 
@@ -477,6 +475,8 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 const int ProcessorNetwork::processorNetworkVersion_ = 12;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
+    NetworkLock lock(this);
+    
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     util::KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
@@ -496,7 +496,6 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     d.deserialize("InviwoSetup", info);
 
     ErrorHandle errorHandle(info);
-
     // Processors
     try {
         DeserializationErrorHandle<ErrorHandle> processor_err(d, "Processor", &errorHandle,
@@ -507,15 +506,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                                                             &ErrorHandle::handlePortError);
 
         RenderContext::getPtr()->activateDefaultRenderContext();
-        std::vector<std::unique_ptr<Processor>> processors;
-        d.deserialize("Processors", processors, "Processor");
-        for (size_t i = 0; i < processors.size(); ++i) {
-            if (processors[i]) {
-                addProcessor(processors[i].release());
-            } else {
-                LogNetworkWarn("Failed deserialization: Processor Nr." << i);
-            }
-        }
+
+        auto des =
+            util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
+                .setMakeNew([]() { return nullptr; })
+                .onNew([&](const std::string& id, Processor*& p) { addProcessor(p); })
+                .onRemove([&](const std::string& id) {
+                    removeAndDeleteProcessor(getProcessorByIdentifier(id));
+                });
+        des(d, processors_);
+
     } catch (const SerializationException& exception) {
         clear();
         throw AbortException("DeSerialization exception " + exception.getMessage(),
@@ -531,23 +531,20 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
-        std::vector<std::unique_ptr<PortConnection>> portConnections;
+        
         DeserializationErrorHandle<ErrorHandle> connection_err(d, "Connection", &errorHandle,
                                                                &ErrorHandle::handleConnectionError);
-        d.deserialize("Connections", portConnections, "Connection");
 
-        for (size_t i = 0; i < portConnections.size(); i++) {
-            if (portConnections[i]) {
-                Outport* outPort = portConnections[i]->getOutport();
-                Inport* inPort = portConnections[i]->getInport();
+        auto toDelete = connections_;
+        std::vector<PortConnection> connections;
+        d.deserialize("Connections", connections, "Connection");
 
-                if (!(outPort && inPort && addConnection(outPort, inPort))) {
-                    LogNetworkWarn("Unable to establish port connection Nr." << i);
-                }
-            } else {
-                LogNetworkWarn("Failed deserialization: Port Connection Nr." << i);
-            }
+        for (auto& con : connections) {
+            if (!isConnected(con)) addConnection(con);
+            toDelete.erase(con);
         }
+        for (auto& con : toDelete) removeConnection(con);
+
     } catch (const SerializationException& exception) {
         throw IgnoreException("DeSerialization Exception " + exception.getMessage(),
                               exception.getContext());
@@ -558,23 +555,18 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Links
     try {
-        std::vector<std::unique_ptr<PropertyLink>> propertyLinks;
         DeserializationErrorHandle<ErrorHandle> connection_err(d, "PropertyLink", &errorHandle,
                                                                &ErrorHandle::handleLinkError);
-        d.deserialize("PropertyLinks", propertyLinks, "PropertyLink");
 
-        for (size_t j = 0; j < propertyLinks.size(); j++) {
-            if (propertyLinks[j]) {
-                Property* srcProperty = propertyLinks[j]->getSourceProperty();
-                Property* destProperty = propertyLinks[j]->getDestinationProperty();
+        auto toDelete = links_;
+        std::vector<PropertyLink> links;
+        d.deserialize("PropertyLinks", links, "PropertyLink");
 
-                if (!(srcProperty && destProperty && addLink(srcProperty, destProperty))) {
-                    LogNetworkWarn("Unable to establish property link Nr: " << j);
-                }
-            } else {
-                LogNetworkWarn("Unable to establish property link Nr: " << j);
-            }
+        for (auto& link : links) {
+            if (!isLinked(link)) addLink(link);
+            toDelete.erase(link);
         }
+        for (auto& link : toDelete) removeLink(link);
 
         if (!errorHandle.messages.empty()) {
             LogNetworkWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +

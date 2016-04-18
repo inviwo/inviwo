@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/links/propertylink.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,7 +54,6 @@ class ProcessorNetwork;
 class Processor;
 class Property;
 class PropertyOwner;
-class PropertyLink;
 
 class IVW_QTEDITOR_API LinkDialogGraphicsScene : public QGraphicsScene,
                                                  public ProcessorNetworkObserver {
@@ -81,8 +81,8 @@ public:
 
     void wheelAction(float offset);
 
-    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink) override;
-    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) override;
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
 
     void makePropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink,
@@ -109,8 +109,8 @@ protected:
 
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
 
-    DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(PropertyLink* propLink);
-    void removePropertyLinkRepresentation(PropertyLink* propLink);
+    DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(const PropertyLink& propLink);
+    void removePropertyLinkRepresentation(const PropertyLink& propLink);
 
     DialogConnectionGraphicsItem* getConnectionGraphicsItem(LinkDialogPropertyGraphicsItem*,
                                                             LinkDialogPropertyGraphicsItem*) const;

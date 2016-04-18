@@ -146,11 +146,11 @@ public:
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
     virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
 
-    virtual void onProcessorNetworkDidAddConnection(PortConnection* connection) override;
-    virtual void onProcessorNetworkWillRemoveConnection(PortConnection* connection) override;
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& connection) override;
 
-    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink) override;
-    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) override;
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
@@ -198,8 +198,8 @@ private:
 
     // Connections
     void removeConnection(ConnectionGraphicsItem* connectionGraphicsItem);
-    ConnectionGraphicsItem* addConnectionGraphicsItem(PortConnection* connection);
-    void removeConnectionGraphicsItem(PortConnection* connection);
+    ConnectionGraphicsItem* addConnectionGraphicsItem(const PortConnection& connection);
+    void removeConnectionGraphicsItem(const PortConnection& connection);
 
     // Links
     void removeLink(LinkConnectionGraphicsItem* linkGraphicsItem);
@@ -208,8 +208,8 @@ private:
     void showLinkDialog(Processor* processor1, Processor* processor2);
 
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
-    ConnectionGraphicsItem* getConnectionGraphicsItem(PortConnection* key) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItem(ProcessorPair key) const;
+    ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
 
@@ -233,7 +233,7 @@ private:
     void deleteItems(QList<QGraphicsItem*> items);
 
     typedef std::map<Processor*, ProcessorGraphicsItem*> ProcessorMap;
-    typedef std::map<PortConnection*, ConnectionGraphicsItem*> ConnectionMap;
+    typedef std::map<PortConnection, ConnectionGraphicsItem*> ConnectionMap;
     typedef std::map<ProcessorPair, LinkConnectionGraphicsItem*> LinkMap;
     typedef std::map<Outport*, PortInspector*> PortInspectorMap;
 

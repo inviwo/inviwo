@@ -87,4 +87,17 @@ void PortConnection::deserialize(Deserializer& d) {
     }
 }
 
+bool operator==(const PortConnection& lhs, const PortConnection& rhs) {
+    return lhs.outport_ == rhs.outport_ && lhs.inport_ == rhs.inport_;
+}
+bool operator!=(const PortConnection& lhs, const PortConnection& rhs) { return !operator==(lhs, rhs); }
+
+bool operator<(const PortConnection& lhs, const PortConnection& rhs) {
+    if (lhs.outport_ != rhs.outport_) {
+        return lhs.outport_ < rhs.outport_;
+    } else {
+        return lhs.inport_ < rhs.inport_;
+    }
+}
+
 }  // namespace

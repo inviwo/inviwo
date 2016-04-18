@@ -49,5 +49,19 @@ IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 
 } // namespace
 
+namespace std {
+
+template<>
+struct hash<inviwo::ProcessorPair> {
+    size_t operator()(const inviwo::ProcessorPair& p) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, p.processor1_);
+        inviwo::util::hash_combine(h, p.processor2_);
+        return h;
+    }
+};
+
+}  // namespace std
+
 #endif // IVW_PROCESSORPAIR_H
 

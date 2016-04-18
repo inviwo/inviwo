@@ -55,7 +55,7 @@ public:
     std::vector<Inport*>& getInports();
     CanvasProcessor* getCanvasProcessor();
     std::vector<PortConnection>& getConnections();
-    std::vector<PropertyLink*>& getPropertyLinks();
+    std::vector<PropertyLink>& getPropertyLinks();
 
 private:
     void initialize();
@@ -69,7 +69,7 @@ private:
     std::vector<Processor*> processors_;
     std::vector<Inport*> inPorts_;
     std::vector<PortConnection> connections_;
-    std::vector<PropertyLink*> propertyLinks_;
+    std::vector<PropertyLink> propertyLinks_;
     CanvasProcessor* canvasProcessor_;
 
     virtual void fileChanged(const std::string& fileName);
