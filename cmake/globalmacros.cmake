@@ -746,13 +746,17 @@ macro(ivw_add_dependencies)
     foreach (package ${ARGN})
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
-        
-        # Make string upper case
+
+        # Look for <package>_FOUND and <PACKAGE>_FOUND to figure out whether to use
+        # incoming casing or upper case name. Upper case is default, but not all use that.
+        # If the incoming casing exists, use that. 
         ivw_depend_name(u_package ${package})
-        if(NOT DEFINED ${u_package}_FOUND AND DEFINED ${package}_FOUND)
+        if(NOT DEFINED ${package}_FOUND AND DEFINED ${u_package}_FOUND)
+            set(u_package ${u_package})
+        else()
             set(u_package ${package})
         endif()
-        
+ 
         # Set includes and append to list
         if(DEFINED ${u_package}_USE_FILE)
             if(NOT "${${u_package}_USE_FILE}" STREQUAL "")
