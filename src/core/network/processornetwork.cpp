@@ -243,7 +243,7 @@ bool ProcessorNetwork::isLinked(Property* src, Property* dst) const {
 }
 
 std::vector<PropertyLink> ProcessorNetwork::getLinks() const {
-    return util::transform(links_, [](PropertyLinks::const_reference elem) { return elem; });
+    return util::transform(links_, [](PropertyLink elem) { return elem; });
 }
 
 bool ProcessorNetwork::isLinkedBidirectional(Property* src, Property* dst) {
