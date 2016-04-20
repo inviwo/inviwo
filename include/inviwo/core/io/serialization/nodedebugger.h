@@ -31,9 +31,11 @@
 #define IVW_NODEDEBUGGER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ticpp.h>
+
 #include <string>
 #include <vector>
+
+class TxElement;
 
 namespace inviwo {
 
@@ -48,7 +50,8 @@ struct IVW_CORE_API NodeDebugger {
 
     NodeDebugger(TxElement* node);
 
-    Node operator[](std::size_t idx) const;
+    const Node& operator[](std::size_t idx) const;
+    std::string toString(std::size_t idx) const;
     std::vector<std::string> getPath() const;
     std::string getDescription() const;
     size_t size() const;

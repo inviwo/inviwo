@@ -93,17 +93,6 @@ macro(ivw_add_cmake_find_package_path)
 endmacro()
 
 #--------------------------------------------------------------------
-# Convert name to upper (if not certain string)
-function(ivw_depend_name retval)
-    set(result ${ARGN})
-        string(REGEX MATCH "(^Qt5)" found_item ${result})
-        if(NOT found_item)
-            string(TOUPPER ${result} result)
-        endif()
-    set(${retval} ${result} PARENT_SCOPE)
-endfunction()
-
-#--------------------------------------------------------------------
 # Register the use of modules
 macro(ivw_register_use_of_modules)
     foreach(module ${ARGN})
@@ -692,9 +681,7 @@ macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
-      
-        # Make string upper case
-        ivw_depend_name(u_package ${package})
+        ivw_find_package_name(${package} u_package)
       
         # Append library directories to project list
         set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
@@ -747,15 +734,7 @@ macro(ivw_add_dependencies)
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
 
-        # Look for <package>_FOUND and <PACKAGE>_FOUND to figure out whether to use
-        # incoming casing or upper case name. Upper case is default, but not all use that.
-        # If the incoming casing exists, use that. 
-        ivw_depend_name(u_package ${package})
-        if(NOT DEFINED ${package}_FOUND AND DEFINED ${u_package}_FOUND)
-            set(u_package ${u_package})
-        else()
-            set(u_package ${package})
-        endif()
+        ivw_find_package_name(${package} u_package)
  
         # Set includes and append to list
         if(DEFINED ${u_package}_USE_FILE)
