@@ -36,7 +36,9 @@ PortConnection::PortConnection() : inport_(nullptr), outport_(nullptr) {}
 PortConnection::PortConnection(Outport* outport, Inport* inport)
     : inport_(inport), outport_(outport) {}
 
-PortConnection::~PortConnection() {}
+PortConnection::operator bool() const {
+    return inport_ && outport_;
+}
 
 void PortConnection::serialize(Serializer& s) const {
     s.serialize("OutPort", outport_);
@@ -74,14 +76,14 @@ void PortConnection::deserialize(Deserializer& d) {
     } else if (out.error) {
         std::string message = "Could not create Connection from \"" + out.data.nd.getDescription() +
                               " to port \"" + inport_->getIdentifier() + "\" in processor \"" +
-                              inport_->getProcessor()->getIdentifier() + "\". Outport not found";
+                              inport_->getProcessor()->getIdentifier() + "\". Outport not found.";
         delete outport_;
         throw SerializationException(message, IvwContext, "Connection");
     } else if (in.error) {
         std::string message = "Could not create Connection from port \"" +
                               outport_->getIdentifier() + "\" in processor \"" +
                               outport_->getProcessor()->getIdentifier() + "\" to " +
-                              in.data.nd.getDescription() + ". Inport not found";
+                              in.data.nd.getDescription() + ". Inport not found.";
         delete inport_;
         throw SerializationException(message, IvwContext, "Connection");
     }

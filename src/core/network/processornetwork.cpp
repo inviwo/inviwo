@@ -495,16 +495,10 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     InviwoSetupInfo info;
     d.deserialize("InviwoSetup", info);
 
-    ErrorHandle errorHandle(info);
+    DeserializationErrorHandle<ErrorHandle> errorHandle(d, info, d);
+
     // Processors
     try {
-        DeserializationErrorHandle<ErrorHandle> processor_err(d, "Processor", &errorHandle,
-                                                              &ErrorHandle::handleProcessorError);
-        DeserializationErrorHandle<ErrorHandle> inport_err(d, "InPort", &errorHandle,
-                                                           &ErrorHandle::handlePortError);
-        DeserializationErrorHandle<ErrorHandle> outport_err(d, "OutPort", &errorHandle,
-                                                            &ErrorHandle::handlePortError);
-
         RenderContext::getPtr()->activateDefaultRenderContext();
 
         auto des =
@@ -518,23 +512,19 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     } catch (const SerializationException& exception) {
         clear();
-        throw AbortException("DeSerialization exception " + exception.getMessage(),
+        throw AbortException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
     } catch (Exception& exception) {
         clear();
-        throw AbortException("Error deserializing network " + exception.getMessage(),
+        throw AbortException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception.", IvwContext);
+        throw AbortException("Deserialization error", IvwContext);
     }
 
     // Connections
     try {
-        
-        DeserializationErrorHandle<ErrorHandle> connection_err(d, "Connection", &errorHandle,
-                                                               &ErrorHandle::handleConnectionError);
-
         auto toDelete = connections_;
         std::vector<PortConnection> connections;
         d.deserialize("Connections", connections, "Connection");
@@ -546,18 +536,15 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         for (auto& con : toDelete) removeConnection(con);
 
     } catch (const SerializationException& exception) {
-        throw IgnoreException("DeSerialization Exception " + exception.getMessage(),
+        throw IgnoreException("Deserialization error: " + exception.getMessage(),
                               exception.getContext());
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception.", IvwContext);
+        throw AbortException("Deserialization error:", IvwContext);
     }
 
     // Links
     try {
-        DeserializationErrorHandle<ErrorHandle> connection_err(d, "PropertyLink", &errorHandle,
-                                                               &ErrorHandle::handleLinkError);
-
         auto toDelete = links_;
         std::vector<PropertyLink> links;
         d.deserialize("PropertyLinks", links, "PropertyLink");
@@ -567,11 +554,6 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
             toDelete.erase(link);
         }
         for (auto& link : toDelete) removeLink(link);
-
-        if (!errorHandle.messages.empty()) {
-            LogNetworkWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
-                           joinString(errorHandle.messages, "\n"));
-        }
 
     } catch (const SerializationException& exception) {
         throw IgnoreException("DeSerialization Exception " + exception.getMessage(),

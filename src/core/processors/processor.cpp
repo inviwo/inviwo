@@ -57,7 +57,8 @@ Processor::~Processor() {
 
 void Processor::addPort(Inport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
-        throw Exception("Can't add port, identifier: " + port->getIdentifier() + " already exist",
+        throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
+                        port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
     port->setProcessor(this);
@@ -72,7 +73,8 @@ void Processor::addPort(Inport& port, const std::string& portGroup) {
 
 void Processor::addPort(Outport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
-        throw Exception("Can't add port, identifier: " + port->getIdentifier() + " already exist",
+        throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
+                        port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
     port->setProcessor(this);
@@ -192,7 +194,7 @@ const std::string& Processor::getPortGroup(Port* port) const {
     if (it != portGroups_.end()) {
         return it->second;
     } else {
-        throw Exception("Can't find group for port, identifier: " + port->getIdentifier(),
+        throw Exception("Can't find group for port: \"" + port->getIdentifier() + "\".",
                         IvwContext);
     }
 }
@@ -210,7 +212,7 @@ const std::vector<Port*>& Processor::getPortsInGroup(const std::string& portGrou
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
-        throw Exception("Can't find portgroup: " + portGroup, IvwContext);
+        throw Exception("Can't find port group: \"" + portGroup  + "\".", IvwContext);
     }
 }
 

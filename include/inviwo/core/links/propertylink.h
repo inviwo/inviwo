@@ -43,7 +43,9 @@ public:
     PropertyLink(Property* srcProperty, Property* dstProperty);
     PropertyLink(const PropertyLink&) = default;
     PropertyLink& operator=(const PropertyLink&) = default;
-    virtual ~PropertyLink();
+    virtual ~PropertyLink() = default;
+
+    operator bool() const;
 
     Property* getSource() const { return src_; }
     Property* getDestination() const { return dst_; }

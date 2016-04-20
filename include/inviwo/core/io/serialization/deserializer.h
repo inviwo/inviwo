@@ -36,7 +36,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/serialization/deserializationerrorhandler.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 #include <type_traits>
 #include <list>
@@ -70,9 +69,6 @@ public:
      */
     Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
                  bool allowReference = true);
-
-    void pushErrorHandler(BaseDeserializationErrorHandler*);
-    BaseDeserializationErrorHandler* popErrorHandler();
 
     virtual ~Deserializer();
 
@@ -215,6 +211,8 @@ public:
     template <class T>
     void deserialize(const std::string& key, T*& data);
 
+    void setExceptionHandler(ExceptionHandler handler);
+
     void convertVersion(VersionConverter* converter);
     
     /**
@@ -243,9 +241,9 @@ private:
 
     void storeReferences(TxElement* node);
 
-    void handleError(SerializationException&);
+    void handleError(const ExceptionContext& context);
 
-    std::vector<BaseDeserializationErrorHandler*> errorHandlers_;
+    ExceptionHandler exceptionHandler_;
     std::map<std::string, TxElement*> referenceLookup_;
     
     std::vector<FactoryBase*> registeredFactories_;
@@ -277,8 +275,8 @@ public:
             try {
                 d.deserialize(itemKey_, item.value);
                 item.callback(item.value);
-            } catch (SerializationException& e) {
-                d.handleError(e);
+            } catch (...) {
+                d.handleError(IvwContext);
             }
         }
     }
@@ -514,26 +512,32 @@ T* Deserializer::getNonRegisteredType() {
 template <typename T>
 class DeserializationErrorHandle {
 public:
-    typedef void (T::*Callback)(SerializationException&);
-    DeserializationErrorHandle(Deserializer&, std::string type, T* obj, Callback callback);
+    template <typename... Args>
+    DeserializationErrorHandle(Deserializer& d, Args&&... args);
     virtual ~DeserializationErrorHandle();
-
+    T& getHandler();
 private:
+    T handler_;
     Deserializer& d_;
 };
 
 template <typename T>
-inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(Deserializer& d,
-                                                                  std::string type, T* obj,
-                                                                  Callback callback)
-    : d_(d) {
-    d_.pushErrorHandler(new DeserializationErrorHandler<T>(type, obj, callback));
+template <typename... Args>
+DeserializationErrorHandle<T>::DeserializationErrorHandle(Deserializer& d, Args&&... args)
+    : handler_(std::forward<Args>(args)...), d_(d) {
+    d_.setExceptionHandler([this](ExceptionContext c) {handler_(c);});
 }
 
 template <typename T>
-inviwo::DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
-    delete d_.popErrorHandler();
+DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
+     d_.setExceptionHandler(nullptr);
 }
+
+template <typename T>
+T& DeserializationErrorHandle<T>::getHandler() {
+    return handler_;
+}
+
 
 // integers, reals, strings
 template <typename T,
@@ -611,15 +615,15 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 try {
                     deserialize(itemKey, item);
                     vector.push_back(item);
-                } catch (SerializationException& e) {
+                } catch (...) {
                     delete item;
-                    handleError(e);
+                    handleError(IvwContext);
                 }
             } else {
                 try {
                     deserialize(itemKey, vector[i]);
-                } catch (SerializationException& e) {
-                    handleError(e);
+                } catch (...) {
+                    handleError(IvwContext);
                 }
             }
             i++;
@@ -646,16 +650,16 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
                 try {
                     deserialize(itemKey, item);
                     vector.emplace_back(item);
-                } catch (SerializationException& e) {
+                } catch (...) {
                     delete item;
-                    handleError(e);
+                    handleError(IvwContext);
                 }
             } else {
                 try {
                     auto ptr = vector[i].get();
                     deserialize(itemKey, ptr);
-                } catch (SerializationException& e) {
-                    handleError(e);
+                } catch (...) {
+                    handleError(IvwContext);
                 }
             }
             i++;
@@ -683,8 +687,8 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 try {
                     deserialize(itemKey, *it);
                     lastInsertion = it;
-                } catch (SerializationException& e) {
-                    handleError(e);
+                } catch (...) {
+                    handleError(IvwContext);
                 }
             } else {  // No item in vector matches item on disk, create a new one.
                 T* item = nullptr;
@@ -694,9 +698,9 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                     // Insert new item after the previous item deserialized
                     lastInsertion = lastInsertion == vector.end() ? lastInsertion : ++lastInsertion;
                     lastInsertion = vector.insert(lastInsertion, item);
-                } catch (SerializationException& e) {
+                } catch (...) {
                     delete item;
-                    handleError(e);
+                    handleError(IvwContext);
                 }
             }
         }
@@ -725,8 +729,8 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
                 } else {
                     deserialize(itemKey, vector[i]);
                 }
-            } catch (SerializationException& e) {
-                handleError(e);
+            } catch (...) {
+                handleError(IvwContext);
             }
             i++;
         }
@@ -755,8 +759,8 @@ void Deserializer::deserialize(const std::string& key, std::list<T>& container,
                 } else {
                     deserialize(itemKey, *std::next(container.begin(), i));
                 }
-            } catch (SerializationException& e) {
-                handleError(e);
+            } catch (...) {
+                handleError(IvwContext);
             }
             i++;
         }
@@ -788,8 +792,8 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
             try {
                 deserialize(itemKey, value);
                 map[childkey] = value;
-            } catch (SerializationException& e) {
-                handleError(e);
+            } catch (...) {
+                handleError(IvwContext);
             }
         }
     } catch (TxException&) {
@@ -821,8 +825,8 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& ma
             try {
                 deserialize(itemKey, value);
                 map[childkey] = value;
-            } catch (SerializationException& e) {
-                handleError(e);
+            } catch (...) {
+                handleError(IvwContext);
             }
         }
     } catch (TxException&) {
@@ -852,17 +856,17 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
             if (it != map.end()){
                 try {
                     deserialize(itemKey, it->second.get());
-                 } catch (SerializationException& e) {
-                    handleError(e);
+                 } catch (...) {
+                    handleError(IvwContext);
                 }
             } else {
                 V* ptr = nullptr;
                 try {      
                     deserialize(itemKey, ptr);
                     map.emplace(childkey, std::unique_ptr<V>(ptr));
-                } catch (SerializationException& e) {
+                } catch (...) {
                     delete ptr;
-                    handleError(e);
+                    handleError(IvwContext);
                 }
             
             }
@@ -871,11 +875,9 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
     }
 }
 
-
 template <class T>
-inline void Deserializer::deserialize(const std::string& key, T*& data) {
-    TxElement* keyNode =
-        retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+void Deserializer::deserialize(const std::string& key, T*& data) {
+    auto keyNode = retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
     if (!keyNode) return;
 
     const std::string type_attr(keyNode->GetAttribute(SerializeConstants::TypeAttribute));
@@ -888,14 +890,12 @@ inline void Deserializer::deserialize(const std::string& key, T*& data) {
             // and set the pointer to it.
             data = static_cast<T*>(refDataContainer_.find(type_attr, ref_attr));
             if (!data) {
-                std::map<std::string, TxElement*>::iterator it = referenceLookup_.find(ref_attr);
+                auto it = referenceLookup_.find(ref_attr);
                 if (it != referenceLookup_.end()) {
                     NodeDebugger error(keyNode);
                     throw SerializationException(
-                        "Reference to " + error[0].key + " not instantiated: \"" +
-                            error[0].identifier + "\" of class \"" + error[0].type + "\" at line " +
-                            toString(error[0].line),
-                        IvwContext, error[0].key, error[0].type, error[0].identifier, it->second);
+                        "Reference to " + error.toString(0) + " not instantiated", IvwContext,
+                        error[0].key, error[0].type, error[0].identifier, it->second);
                 } else {
                     throw SerializationException(
                         "Could not find reference to " + key + ": " + type_attr, IvwContext, key,
@@ -905,23 +905,33 @@ inline void Deserializer::deserialize(const std::string& key, T*& data) {
             return;
 
         } else if (!type_attr.empty()) {
-            data = getRegisteredType<T>(type_attr);
-            if (!data) {
+            try {
+                data = getRegisteredType<T>(type_attr);
+            } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Could not create " + key + ": \"" + error[0].identifier + "\" of class \"" +
-                        error[0].type + "\" at line: " + toString(error[0].line),
-                    IvwContext, key, type_attr, error[0].identifier, keyNode);
+                    "Could not create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    e.getContext(), key, type_attr, error[0].identifier, keyNode);
+            }
+            if (!data) {
+                NodeDebugger error(keyNode);
+                throw SerializationException("Could not create " + error.toString(0), IvwContext,
+                                             key, type_attr, error[0].identifier, keyNode);
             }
 
         } else {
-            data = getNonRegisteredType<T>();
-            if (!data) {
+            try {
+                data = getNonRegisteredType<T>();
+            } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Could not create " + key + ": \"" + error[0].identifier + "\" of class \"" +
-                        error[0].type + "\" at line: " + toString(error[0].line),
-                    IvwContext, key, type_attr, error[0].identifier, keyNode);
+                    "Could not create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    e.getContext(), key, type_attr, error[0].identifier, keyNode);
+            }
+            if (!data) {
+                NodeDebugger error(keyNode);
+                throw SerializationException("Could not create " + error.toString(0), IvwContext,
+                                             key, type_attr, error[0].identifier, keyNode);
             }
         }
     }

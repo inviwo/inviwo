@@ -63,7 +63,7 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
 void PropertyOwner::addProperty(Property* property, bool owner) {
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
-            "Can't add property, identifier: " + property->getIdentifier() + " already exist",
+            "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
             IvwContext);
     }
 

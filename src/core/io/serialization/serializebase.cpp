@@ -180,7 +180,7 @@ SerializeBase::~SerializeBase() {
 }
 
 
-const std::string& SerializeBase::getFileName() {
+const std::string& SerializeBase::getFileName() const {
     return fileName_;
 }
 

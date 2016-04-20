@@ -244,29 +244,39 @@ private:
     void removePropertyOwnerObservation(PropertyOwner*);
 
     struct ErrorHandle {
-        ErrorHandle(const InviwoSetupInfo& info) : info_(info){};
+        ErrorHandle(const InviwoSetupInfo& info, const Deserializer& d) : info_(info), d_(d) {};
 
-        void handleProcessorError(SerializationException& error) {
-            std::string module = info_.getModuleForProcessor(error.getType());
-            if (!module.empty()) {
-                messages.push_back(error.getMessage() + " Processor was in module: \"" + module +
-                                   "\"");
-            } else {
-                messages.push_back(error.getMessage());
+        ~ErrorHandle() {
+            if (!messages.empty()) {
+                LogNetworkError("There were errors while loading workspace: " + d_.getFileName() +
+                               "\n" + joinString(messages, "\n"));
             }
         }
-        void handleConnectionError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-        void handleLinkError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-        void handlePortError(SerializationException& error) {
-            messages.push_back(error.getMessage());
+
+        void operator()(ExceptionContext c) {
+            try {
+                throw;
+            } catch (SerializationException& error) {
+                auto key = error.getKey();
+                if (key == "Processor") {
+                    std::string module = info_.getModuleForProcessor(error.getType());
+                    if (!module.empty()) {
+                        messages.push_back(error.getMessage() + " Processor was in module: \"" +
+                                           module + "\".");
+                    } else {
+                        messages.push_back(error.getMessage());
+                    }
+                } else {
+                    messages.push_back(error.getMessage());
+                }
+            } catch (Exception& exception) {
+                messages.push_back("Deserialization error: " + exception.getMessage());
+            }
         }
 
         std::vector<std::string> messages;
         const InviwoSetupInfo& info_;
+        const Deserializer& d_;
     };
 
     static const int processorNetworkVersion_;

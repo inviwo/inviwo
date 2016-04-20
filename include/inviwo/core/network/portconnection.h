@@ -45,7 +45,9 @@ public:
     PortConnection(Outport* outport, Inport* inport);
     PortConnection(const PortConnection&) = default;
     PortConnection& operator=(const PortConnection&) = default;
-    virtual ~PortConnection();
+    virtual ~PortConnection() = default;
+
+    operator bool() const;
 
     Inport* getInport() const { return inport_; }
     Outport* getOutport() const { return outport_; }
@@ -54,6 +56,7 @@ public:
         return (inport_->getProcessor()==processor ||
                 outport_->getProcessor()==processor);
     }
+
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
