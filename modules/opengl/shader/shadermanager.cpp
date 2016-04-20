@@ -73,9 +73,11 @@ Shader::OnError ShaderManager::getOnShaderError() const {
 void ShaderManager::registerShader(Shader* shader) {
     shaders_.push_back(shader);
     if (uniformWarnings_) shader->setUniformWarningLevel(uniformWarnings_->get());
+    shaderAddCallbacks_.invoke(shader->getID());
 }
 
 void ShaderManager::unregisterShader(Shader* shader) {
+    shaderRemoveCallbacks_.invoke(shader->getID());
     util::erase_remove(shaders_, shader);
 }
 

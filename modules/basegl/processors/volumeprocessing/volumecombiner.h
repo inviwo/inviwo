@@ -36,9 +36,12 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
@@ -60,7 +63,7 @@ namespace inviwo {
 * ### Properties
 *   * __Volume 1 Scaling__ Scaling factor for volume 1.
 *   * __Volume 2 Scaling__ Scaling factor for volume 2.
-*   * __useWorldSpaceCoordinateSystem__ Retrieve data in world space. 
+*   * __useWorldSpace__ Retrieve data in world space corrdinate system. 
 *   * __borderValue__ Value to use for coordinates outside the first volume.
 */
 
@@ -80,19 +83,28 @@ public:
     virtual bool isReady() const override;
 
 private:
-    void buildEquation();
+    std::string buildEquation() const;
+    void buildShader(const std::string& eqn);
+    void updateProperties();
 
     DataInport<Volume, 0> inport_;
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
+    StringProperty description_;
     StringProperty eqn_;
     CompositeProperty scales_;
-    BoolProperty useWorldSpaceCoordinateSystem_;
+    ButtonProperty addScale_;
+    ButtonProperty removeScale_;
+
+    BoolCompositeProperty useWorldSpace_;
     FloatVec4Property borderValue_;
 
+    std::shared_ptr<StringShaderResource> fragment_;
     Shader shader_;
     FrameBufferObject fbo_;
-    bool validEquation_;
+
+    bool dirty_ = true;
+    bool valid_ = true;
 };
 
 } // namespace

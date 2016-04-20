@@ -63,7 +63,7 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
 void PropertyOwner::addProperty(Property* property, bool owner) {
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
-            "Can't add property identifier, " + property->getIdentifier() + " already exist",
+            "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
             IvwContext);
     }
 
@@ -234,11 +234,11 @@ const Processor* PropertyOwner::getProcessor() const {
 }
 
 void PropertyOwner::serialize(Serializer& s) const {
-    std::vector<Property*> props;
-    std::copy_if(properties_.begin(), properties_.end(), std::back_inserter(props), [](Property* p) {
-        return p->getSerializationMode() != PropertySerializationMode::NONE;
-    });
-    s.serialize("Properties", props, "Property");
+    auto ownedIdentifiers = util::transform(
+        ownedProperties_, [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
+    s.serialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
+
+    s.serialize("Properties", properties_, "Property");
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
@@ -246,38 +246,26 @@ void PropertyOwner::deserialize(Deserializer& d) {
     NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
-    std::vector<std::string> identifers;
-    for (Property* p : properties_) identifers.push_back(p->getIdentifier());
+    
+    std::vector<std::string> ownedIdentifiers;
+    d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
 
-    StandardIdentifier<Property> propertyIdentifier;
-    d.deserialize("Properties", properties_, "Property", propertyIdentifier);
+    auto des = util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
+                   .setGetId([](Property* const& p) { return p->getIdentifier(); })
+                   .setMakeNew([]() { return nullptr; })
+                   .setNewFilter([&](const std::string& id, size_t ind) {
+                       return util::contains(ownedIdentifiers, id);
+                   })
+                   .onNew([&](Property*& p) { addProperty(p, true); })
+                   .onRemove([&](const std::string& id) {
+                       if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
+                               return op->getIdentifier() == id;
+                           })) {
+                           delete removeProperty(id);
+                       }
+                   });
 
-    for (size_t i = 0; i < properties_.size(); ++i) {
-        Property* p = properties_[i];
-        auto it =
-            std::find_if(identifers.begin(), identifers.end(),
-                         [&p](const std::string& id) -> bool { return id == p->getIdentifier(); });
-
-        // Property is created in the de-serialization, assume ownership
-        if (it == identifers.end()) {
-            // check that we don't already own it. Could be added by some callback
-            // in the deserialization.
-            if (!util::contains_if(ownedProperties_, [&](const std::unique_ptr<Property>& o) {
-                    return o.get() == p;
-                })) {
-                notifyObserversWillAddProperty(p, i);
-                p->setOwner(this);
-                if (dynamic_cast<EventProperty*>(p)) {
-                    eventProperties_.push_back(static_cast<EventProperty*>(p));
-                }
-                if (dynamic_cast<CompositeProperty*>(p)) {
-                    compositeProperties_.push_back(static_cast<CompositeProperty*>(p));
-                }
-                ownedProperties_.emplace_back(p);
-                notifyObserversDidAddProperty(p, i);
-            }
-        }
-    }
+    des(d, properties_);
 }
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {

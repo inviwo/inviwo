@@ -60,12 +60,13 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
     if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
         mouseIsDown_ = false;
         mousePickingOngoing_ = false;
+        mousePickObj_ = nullptr;
         return false;
     }
     else if (!mouseIsDown_ || e->state() == MouseEvent::MOUSE_STATE_PRESS){
         mouseIsDown_ = true;
 
-        uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
+        uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
         prevMouseCoord_ = coord;
 
         mousePickObj_ = findPickingObject(coord);
@@ -87,8 +88,8 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
     }
     else if (e->state() == MouseEvent::MOUSE_STATE_MOVE){
         if (mousePickingOngoing_){
-            uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
-            mousePickObj_->setPickingMove(pixelMoveVector(prevMouseCoord_, coord));
+            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
+            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
             mousePickObj_->setPickingMouseEvent(*e);
             prevMouseCoord_ = coord;
             mousePickObj_->picked();
@@ -123,7 +124,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         bool isAssociated = false;
         if (touchPoint->state() == TouchPoint::TOUCH_STATE_STARTED) {
             // Find out if new touch point is touching inside a picking object
-            uvec2 coord = mousePosToPixelCoordinates(touchPoint->getPos(), e->canvasSize());
+            uvec2 coord = clampToScreenCoords(touchPoint->getPos(), e->canvasSize());
             PickingObject* pickObj = findPickingObject(coord);
 
             // If it is, put it in the TouchIDPickingMap
@@ -177,15 +178,15 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     for (pickedTouchPoints_it = pickedTouchPoints_.begin(); pickedTouchPoints_it != pickedTouchPoints_.end(); ++pickedTouchPoints_it){
         // Treat one touch point the same as mouse event, for now
         if (pickedTouchPoints_it->second.size() == 1){
-            uvec2 coord = mousePosToPixelCoordinates(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
+            uvec2 coord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
             if (pickedTouchPoints_it->second[0].state() & TouchPoint::TOUCH_STATE_STARTED){
                 pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
                 pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
                 pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));
             }
             else{
-                uvec2 prevCoord = mousePosToPixelCoordinates(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
-                pickedTouchPoints_it->first->setPickingMove(pixelMoveVector(prevCoord, coord));
+                uvec2 prevCoord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
+                pickedTouchPoints_it->first->setPickingMove(normalizedMovement(prevCoord, coord));
             }
             // One touch point is currently treated as mouse event as well...
             // So prepare for that
@@ -200,7 +201,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     // One touch point is currently treated as mouse event as well...
     // So prepare for that
     if (touchPoints.size() == 1){
-        prevMouseCoord_ = mousePosToPixelCoordinates(touchPoints[0].getPos(), e->canvasSize());
+        prevMouseCoord_ = clampToScreenCoords(touchPoints[0].getPos(), e->canvasSize());
         touchPickingOn_ = false;
     }
 
@@ -231,17 +232,15 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
     return nullptr;
 }
 
-vec2 PickingContainer::pixelMoveVector(const uvec2& previous, const uvec2& current) {
-    return vec2((static_cast<float>(current.x)-static_cast<float>(previous.x))/static_cast<float>(src_->getDimensions().x),
-                (static_cast<float>(current.y)-static_cast<float>(previous.y))/static_cast<float>(src_->getDimensions().y));
+vec2 PickingContainer::normalizedMovement(const uvec2& previous, const uvec2& current) const {
+    return normalizedCoordinates(current - previous);
 }
 
-vec2 PickingContainer::normalizedCoordinates(const uvec2& coord) {
-    return vec2(static_cast<float>(coord.x)/static_cast<float>(src_->getDimensions().x),
-                static_cast<float>(coord.y)/static_cast<float>(src_->getDimensions().y));
+vec2 PickingContainer::normalizedCoordinates(const uvec2& coord) const {
+    return vec2(coord) / vec2(src_->getDimensions());
 }
 
-uvec2 PickingContainer::mousePosToPixelCoordinates(ivec2 mpos, ivec2 dim) {
+uvec2 PickingContainer::clampToScreenCoords(ivec2 mpos, ivec2 dim) {
     ivec2 pos = mpos;
     pos.x = std::max(pos.x - 1, 0);
     pos.x = std::min(pos.x, dim.x - 1);

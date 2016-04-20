@@ -74,7 +74,7 @@ VolumeRaycaster::VolumeRaycaster()
     addPort(outport_, "ImagePortGroup1");
 
     channel_.addOption("Channel 1", "Channel 1", 0);
-    channel_.setSerializationMode(PropertySerializationMode::ALL);
+    channel_.setSerializationMode(PropertySerializationMode::All);
     channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);

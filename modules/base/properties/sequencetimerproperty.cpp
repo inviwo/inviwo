@@ -50,7 +50,7 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 
     framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
-    index_.setSerializationMode(PropertySerializationMode::ALL);
+    index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);
     addProperty(framesPerSecond_);
@@ -65,7 +65,7 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     , playPause_(rhs.playPause_)
     , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
     framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
-    index_.setSerializationMode(PropertySerializationMode::ALL);
+    index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);
     addProperty(framesPerSecond_);

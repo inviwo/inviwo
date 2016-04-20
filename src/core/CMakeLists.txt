@@ -103,7 +103,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h  
@@ -233,7 +232,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
@@ -353,7 +351,6 @@ set(SOURCE_FILES
     io/ivfvolumewriter.cpp  
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
-    io/serialization/deserializationerrorhandler.cpp
     io/serialization/deserializer.cpp
     io/serialization/nodedebugger.cpp
     io/serialization/serializationexception.cpp
@@ -494,6 +491,7 @@ set(TEST_FILES
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
+    tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/conversion-test.cpp

@@ -37,7 +37,6 @@
 
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
-#include <inviwo/core/network/portconnection.h>
 
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -217,8 +216,8 @@ void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* i
 
 ConnectionGraphicsItem::ConnectionGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                ProcessorInportGraphicsItem* inport,
-                                               PortConnection* connection)
-    : ConnectionDragGraphicsItem(outport, QPointF(0.0f,0.0f), connection->getInport()->getColorCode())
+                                               const PortConnection& connection)
+    : ConnectionDragGraphicsItem(outport, QPointF(0.0f,0.0f), connection.getInport()->getColorCode())
     , inport_(inport)
     , connection_(connection) {
     setFlags(ItemIsSelectable | ItemIsFocusable);
@@ -244,9 +243,9 @@ ProcessorGraphicsItem* ConnectionGraphicsItem::getInProcessor() const {
     return inport_->getProcessor();
 }
 
-Outport* ConnectionGraphicsItem::getOutport() const { return connection_->getOutport(); }
+Outport* ConnectionGraphicsItem::getOutport() const { return connection_.getOutport(); }
 
-Inport* ConnectionGraphicsItem::getInport() const { return connection_->getInport(); }
+Inport* ConnectionGraphicsItem::getInport() const { return connection_.getInport(); }
 
 QPointF ConnectionGraphicsItem::getEndPoint() const {   
     return inport_->mapToScene(inport_->rect().center());

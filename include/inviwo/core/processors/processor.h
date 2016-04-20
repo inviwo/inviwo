@@ -41,7 +41,6 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/util/group.h>
 
 namespace inviwo {
 
@@ -205,10 +204,10 @@ public:
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
 
-    std::vector<std::string> getPortDependencySets() const;
-    std::vector<Port*> getPortsByDependencySet(const std::string& portDependencySet) const;
-    std::string getPortDependencySet(Port* port) const;
-    std::vector<Port*> getPortsInSameSet(Port* port) const;
+    const std::string& getPortGroup(Port* port) const;
+    std::vector<std::string> getPortGroups() const;
+    const std::vector<Port*>& getPortsInGroup(const std::string& portGroup) const;
+    const std::vector<Port*>& getPortsInSameGroup(Port* port) const;
 
     bool allInportsConnected() const;
     bool allInportsAreReady() const;
@@ -282,23 +281,31 @@ public:
     static const std::string getCodeStateString(CodeState state);
 
 protected:
-    void addPort(Inport* port, const std::string& portDependencySet = "default");
-    void addPort(Inport& port, const std::string& portDependencySet = "default");
+    void addPort(Inport* port, const std::string& portGroup = "default");
+    void addPort(Inport& port, const std::string& portGroup = "default");
+    void addPort(Outport* port, const std::string& portGroup = "default");
+    void addPort(Outport& port, const std::string& portGroup = "default");
 
-    void addPort(Outport* port, const std::string& portDependencySet = "default");
-    void addPort(Outport& port, const std::string& portDependencySet = "default");
+    Port* removePort(const std::string& identifier);
+    Inport* removePort(Inport* port);
+    Outport* removePort(Outport* port);
 
     virtual void performEvaluateRequest();
 
     std::unique_ptr<ProcessorWidget> processorWidget_;
 
 private:
+    void addPortToGroup(Port* port, const std::string& portGroup);
+    void removePortFromGroups(Port* port);
+
     std::string identifier_;
     std::vector<Inport*> inports_;
     std::vector<Outport*> outports_;
     std::vector<InteractionHandler*> interactionHandlers_;
 
-    Group<std::string, Port*> portDependencySets_;
+    std::unordered_map<std::string, std::vector<Port*>> groupPorts_;
+    std::unordered_map<Port*, std::string> portGroups_;
+
     static std::unordered_set<std::string> usedIdentifiers_;
 
     ProcessorNetwork* network_;

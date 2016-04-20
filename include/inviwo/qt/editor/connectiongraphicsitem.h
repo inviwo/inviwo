@@ -41,11 +41,11 @@
 #include <warn/pop>
 
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/core/network/portconnection.h>
 
 namespace inviwo {
 
 class Port;
-class PortConnection;
 class Inport;
 class Outport;
 class ProcessorGraphicsItem;
@@ -137,7 +137,7 @@ public:
      * flow network.
      */
     ConnectionGraphicsItem(ProcessorOutportGraphicsItem* outport,
-                           ProcessorInportGraphicsItem* inport, PortConnection* connection);
+                           ProcessorInportGraphicsItem* inport, const PortConnection& connection);
 
     ~ConnectionGraphicsItem();
 
@@ -158,7 +158,7 @@ public:
 
 private:
     ProcessorInportGraphicsItem* inport_;
-    PortConnection* connection_;  //< Non-owning reference
+    PortConnection connection_;
 };
 
 }  // namespace

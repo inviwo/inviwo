@@ -33,16 +33,13 @@ namespace inviwo {
 PropertyClassIdentifier(PositionProperty, "org.inviwo.PositionProperty");
 
 PositionProperty::PositionProperty(std::string identifier, std::string displayName,
-    FloatVec3Property position,
-    CameraProperty* camera,
-    InvalidationLevel invalidationLevel,
-    PropertySemantics semantics)
+                                   FloatVec3Property position, CameraProperty* camera,
+                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , referenceFrame_("referenceFrame", "Space")
     , position_(position)
     , positionWorldSpace_(position_.get())
-    , camera_(camera)
-{
+    , camera_(camera) {
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
     if (camera_) {
         referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
@@ -59,25 +56,22 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
 
     referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
     position_.onChange(this, &PositionProperty::positionChanged);
-    if (camera_)
-        camera_->onChange(this, &PositionProperty::cameraChanged);
+    if (camera_) camera_->onChange(this, &PositionProperty::cameraChanged);
 }
 
-PositionProperty::PositionProperty(const PositionProperty& rhs) 
+PositionProperty::PositionProperty(const PositionProperty& rhs)
     : CompositeProperty(rhs)
     , referenceFrame_(rhs.referenceFrame_)
     , position_(rhs.position_)
     , positionWorldSpace_(rhs.positionWorldSpace_)
-    , camera_(rhs.camera_)
-{
+    , camera_(rhs.camera_) {
     // Add properties
     addProperty(referenceFrame_);
     addProperty(position_);
 
     referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
     position_.onChange(this, &PositionProperty::positionChanged);
-    if (camera_)
-        camera_->onChange(this, &PositionProperty::cameraChanged);
+    if (camera_) camera_->onChange(this, &PositionProperty::cameraChanged);
 }
 
 PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
@@ -91,30 +85,27 @@ PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
     return *this;
 }
 
-PositionProperty* PositionProperty::clone() const {
-    return new PositionProperty(*this);
-}
+PositionProperty* PositionProperty::clone() const { return new PositionProperty(*this); }
 
-const vec3& PositionProperty::get() const {
-    return positionWorldSpace_;
-}
+const vec3& PositionProperty::get() const { return positionWorldSpace_; }
 
 void PositionProperty::set(const vec3& worldSpacePos) {
     // The onChange callback positionChanged() will update positionWorldSpace_,
     // so there is no need to update that here
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
-    case Space::VIEW:
-        position_.set( camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
-            : worldSpacePos);
-        break;
-    case Space::WORLD:
-    default:
-        position_.set(worldSpacePos);
+        case Space::VIEW:
+            position_.set(camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
+                                  : worldSpacePos);
+            break;
+        case Space::WORLD:
+        default:
+            position_.set(worldSpacePos);
     }
 }
 
 void PositionProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
     s.serialize("positionWorldSpace", positionWorldSpace_);
 }
 
@@ -126,9 +117,7 @@ void PositionProperty::deserialize(Deserializer& d) {
     set(positionWorldSpace_);
 }
 
-void PositionProperty::referenceFrameChanged() {
-    set(positionWorldSpace_);
-}
+void PositionProperty::referenceFrameChanged() { set(positionWorldSpace_); }
 
 void PositionProperty::positionChanged() {
     if (camera_ && static_cast<Space>(referenceFrame_.getSelectedValue()) == Space::VIEW)
@@ -148,5 +137,4 @@ void PositionProperty::cameraChanged() {
     }
 }
 
-} // namespace
-
+}  // namespace

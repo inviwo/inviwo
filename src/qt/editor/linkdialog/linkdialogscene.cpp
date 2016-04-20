@@ -220,10 +220,8 @@ void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
-    DialogConnectionGraphicsItem* linkGraphicsItem =
-        getSceneGraphicsItemAt<DialogConnectionGraphicsItem>(e->scenePos());
-
-    if (linkGraphicsItem && linkGraphicsItem->getPropertyLink()) {
+    if (auto linkGraphicsItem =
+            getSceneGraphicsItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
         QMenu menu;
         QAction* deleteAction = menu.addAction("Delete");
         QAction* biDirectionAction = menu.addAction("BiDirectional");
@@ -358,11 +356,14 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
     LinkDialogPropertyGraphicsItem* startProperty = propertyLink->getStartProperty();
     LinkDialogPropertyGraphicsItem* endProperty = propertyLink->getEndProperty();
 
-    PropertyLink* propLink = network_->getLink(endProperty->getItem(), startProperty->getItem());
     if (isBidirectional) {
-        if (!propLink) network_->addLink(endProperty->getItem(), startProperty->getItem());
+        if (!network_->isLinked(endProperty->getItem(), startProperty->getItem())) {
+            network_->addLink(endProperty->getItem(), startProperty->getItem());
+        }
     } else {
-        if (propLink) network_->removeLink(endProperty->getItem(), startProperty->getItem());
+        if (network_->isLinked(endProperty->getItem(), startProperty->getItem())){
+            network_->removeLink(endProperty->getItem(), startProperty->getItem());
+        }
     }
 
     propertyLink->updateConnectionDrawing();
@@ -372,11 +373,9 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
 void LinkDialogGraphicsScene::switchPropertyLinkDirection(
     DialogConnectionGraphicsItem* propertyLink) {
     if (!propertyLink->isBidirectional()) {
-        PropertyLink* link = propertyLink->getPropertyLink();
-        Property* source = link->getSourceProperty();
-        Property* destination = link->getDestinationProperty();
-        network_->removeLink(source, destination);
-        network_->addLink(destination, source);
+        auto& link = propertyLink->getPropertyLink();
+        network_->removeLink(link.getSource(), link.getDestination());
+        network_->addLink(link.getDestination(), link.getSource());
     }
 }
 
@@ -392,11 +391,11 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem
 }
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRepresentation(
-    PropertyLink* propertyLink) {
+    const PropertyLink& propertyLink) {
     auto start = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
-        getPropertyGraphicsItemOf(propertyLink->getSourceProperty()));
+        getPropertyGraphicsItemOf(propertyLink.getSource()));
     auto end = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
-        getPropertyGraphicsItemOf(propertyLink->getDestinationProperty()));
+        getPropertyGraphicsItemOf(propertyLink.getDestination()));
 
     if (start == nullptr || end == nullptr) return nullptr;
 
@@ -415,8 +414,8 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
     return cItem;
 }
 
-void LinkDialogGraphicsScene::removePropertyLinkRepresentation(PropertyLink* propertyLink) {
-    auto it = util::find_if(connections_, [propertyLink](DialogConnectionGraphicsItem* i){
+void LinkDialogGraphicsScene::removePropertyLinkRepresentation(const PropertyLink& propertyLink) {
+    auto it = util::find_if(connections_, [&propertyLink](DialogConnectionGraphicsItem* i){
         return i->getPropertyLink() == propertyLink;
     });
     
@@ -438,11 +437,11 @@ void LinkDialogGraphicsScene::removePropertyLinkRepresentation(PropertyLink* pro
     }
 }
 
-void LinkDialogGraphicsScene::onProcessorNetworkDidAddLink(PropertyLink* propertyLink) {
+void LinkDialogGraphicsScene::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
     initializePropertyLinkRepresentation(propertyLink);
 }
 
-void LinkDialogGraphicsScene::onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) {
+void LinkDialogGraphicsScene::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
     removePropertyLinkRepresentation(propertyLink);
 }
 

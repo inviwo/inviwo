@@ -60,7 +60,7 @@ void BoolPropertyWidgetQt::generateWidget() {
 
     lineEdit_->setEnabled(!property_->getReadOnly());
     // set up a validator accepting "true"/1 and "false"/0
-    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0")));
+    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
 
     auto setPropertyValueFromString = [=]() {
         QString str(lineEdit_->text());
@@ -90,7 +90,7 @@ void BoolPropertyWidgetQt::generateWidget() {
     setLayout(hLayout);
 
     // change visibility of checkbox and line edit depending on semantics
-    bool textSemantics = (property_->getSemantics() == PropertySemantics("Text"));
+    bool textSemantics = (property_->getSemantics() == PropertySemantics::Text);
     lineEdit_->setVisible(textSemantics);
     checkBox_->setVisible(!textSemantics);
 }

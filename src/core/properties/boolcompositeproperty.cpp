@@ -69,6 +69,14 @@ void BoolCompositeProperty::setChecked(bool checked) {
     }
 }
 
+BoolCompositeProperty::operator bool&() {
+    return checked_.get();
+}
+
+BoolCompositeProperty::operator const bool&() const {
+    return checked_.get();
+}
+
 BoolProperty* BoolCompositeProperty::getBoolProperty() { return &checked_; }
 
 } // namespace

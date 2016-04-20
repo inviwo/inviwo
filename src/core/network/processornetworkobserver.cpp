@@ -64,42 +64,42 @@ void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveProcess
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddConnection(
-    PortConnection* portConnection) const {
+    const PortConnection& portConnection) const {
     for (auto o : observers_) o->onProcessorNetworkWillAddConnection(portConnection);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddConnection(
-    PortConnection* portConnection) const {
+    const PortConnection& portConnection) const {
     for (auto o : observers_) o->onProcessorNetworkDidAddConnection(portConnection);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveConnection(
-    PortConnection* portConnection) const {
+    const PortConnection& portConnection) const {
     for (auto o : observers_) o->onProcessorNetworkWillRemoveConnection(portConnection);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveConnection(
-    PortConnection* portConnection) const {
+    const PortConnection& portConnection) const {
     for (auto o : observers_) o->onProcessorNetworkDidRemoveConnection(portConnection);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddLink(
-    PropertyLink* propertyLink) const {
+    const PropertyLink& propertyLink) const {
     for (auto o : observers_) o->onProcessorNetworkWillAddLink(propertyLink);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddLink(
-    PropertyLink* propertyLink) const {
+    const PropertyLink& propertyLink) const {
     for (auto o : observers_) o->onProcessorNetworkDidAddLink(propertyLink);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveLink(
-    PropertyLink* propertyLink) const {
+    const PropertyLink& propertyLink) const {
     for (auto o : observers_) o->onProcessorNetworkWillRemoveLink(propertyLink);
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveLink(
-    PropertyLink* propertyLink) const {
+    const PropertyLink& propertyLink) const {
     for (auto o : observers_) o->onProcessorNetworkDidRemoveLink(propertyLink);
 }
 

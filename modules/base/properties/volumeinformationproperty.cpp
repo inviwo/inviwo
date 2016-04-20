@@ -47,14 +47,14 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
     dimensions_.setReadOnly(true);
     format_.setReadOnly(true);
-    dimensions_.setSerializationMode(PropertySerializationMode::NONE);
-    format_.setSerializationMode(PropertySerializationMode::NONE);
+    dimensions_.setSerializationMode(PropertySerializationMode::None);
+    format_.setSerializationMode(PropertySerializationMode::None);
     dimensions_.setCurrentStateAsDefault();
     format_.setCurrentStateAsDefault();
 
-    dataRange_.setSerializationMode(PropertySerializationMode::ALL);
-    valueRange_.setSerializationMode(PropertySerializationMode::ALL);
-    valueUnit_.setSerializationMode(PropertySerializationMode::ALL);
+    dataRange_.setSerializationMode(PropertySerializationMode::All);
+    valueRange_.setSerializationMode(PropertySerializationMode::All);
+    valueUnit_.setSerializationMode(PropertySerializationMode::All);
 
     addProperty(dimensions_);
     addProperty(format_);

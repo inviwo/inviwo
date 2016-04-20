@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networklock.h>
@@ -44,9 +43,9 @@ namespace inviwo {
 
 LinkEvaluator::LinkEvaluator(ProcessorNetwork* network) : network_(network) {}
 
-void LinkEvaluator::addLink(PropertyLink* propertyLink) {
-    Property* src = propertyLink->getSourceProperty();
-    Property* dst = propertyLink->getDestinationProperty();
+void LinkEvaluator::addLink(const PropertyLink& propertyLink) {
+    Property* src = propertyLink.getSource();
+    Property* dst = propertyLink.getDestination();
 
     // Update ProcessorLink cache
     Processor* p1 = src->getOwner()->getProcessor();
@@ -64,9 +63,9 @@ void LinkEvaluator::addLink(PropertyLink* propertyLink) {
     propertyLinkSecondaryCache_.clear();
 }
 
-void LinkEvaluator::removeLink(PropertyLink* propertyLink) {
-    Property* src = propertyLink->getSourceProperty();
-    Property* dst = propertyLink->getDestinationProperty();
+void LinkEvaluator::removeLink(const PropertyLink& propertyLink) {
+    Property* src = propertyLink.getSource();
+    Property* dst = propertyLink.getDestination();
 
     // Update ProcessorLink cache
     Processor* p1 = src->getOwner()->getProcessor();
@@ -89,12 +88,12 @@ void LinkEvaluator::removeLink(PropertyLink* propertyLink) {
     propertyLinkSecondaryCache_.clear();
 }
 
-std::vector<PropertyLink*> LinkEvaluator::getLinksBetweenProcessors(Processor* p1, Processor* p2) {
+std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1, Processor* p2) {
     auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
     if (it != processorLinksCache_.end()) {
         return it->second;
     } else {
-        return std::vector<PropertyLink*>();
+        return std::vector<PropertyLink>();
     }
 }
 

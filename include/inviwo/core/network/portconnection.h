@@ -43,7 +43,11 @@ class IVW_CORE_API PortConnection : public Serializable {
 public:
     PortConnection();
     PortConnection(Outport* outport, Inport* inport);
-    virtual ~PortConnection();
+    PortConnection(const PortConnection&) = default;
+    PortConnection& operator=(const PortConnection&) = default;
+    virtual ~PortConnection() = default;
+
+    operator bool() const;
 
     Inport* getInport() const { return inport_; }
     Outport* getOutport() const { return outport_; }
@@ -53,14 +57,38 @@ public:
                 outport_->getProcessor()==processor);
     }
 
+
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
+
+    friend bool IVW_CORE_API operator==(const PortConnection& lhs, const PortConnection& rhs);
+    friend bool IVW_CORE_API operator<(const PortConnection& lhs, const PortConnection& rhs);
 
 private:
     Inport* inport_;
     Outport* outport_;
 };
 
+bool IVW_CORE_API operator==(const PortConnection& lhs, const PortConnection& rhs);
+bool IVW_CORE_API operator!=(const PortConnection& lhs, const PortConnection& rhs);
+bool IVW_CORE_API operator<(const PortConnection& lhs, const PortConnection& rhs);
+
 } // namespace
+
+
+namespace std {
+
+template<>
+struct hash<inviwo::PortConnection> {
+    size_t operator()(const inviwo::PortConnection& p) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, p.getOutport());
+        inviwo::util::hash_combine(h, p.getInport());
+        return h;
+    }
+};
+
+}  // namespace std
+
 
 #endif // IVW_PORTCONNECTION_H

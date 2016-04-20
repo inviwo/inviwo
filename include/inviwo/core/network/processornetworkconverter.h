@@ -58,6 +58,7 @@ class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
         void updatePropertyLinks(TxElement* node);
         void updatePortsInProcessors(TxElement* node);
         void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
+        void updateDisplayName(TxElement* node);
 
         void traverseNodes(TxElement* node, updateType update);
     };

@@ -50,7 +50,6 @@ class Processor;
 class IVW_CORE_API ProcessorObserver : public Observer {
 public:
     ProcessorObserver() : Observer(){};
-    // TODO: Use separate class for property observation if necessary
     virtual void onAboutPropertyChange(Property*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
@@ -58,6 +57,7 @@ public:
     virtual void onProcessorIdentifierChange(Processor*){};
 
     virtual void onProcessorPortAdded(Processor*, Port*){};
+    virtual void onProcessorPortRemoved(Processor*, Port*){};
 
 #if IVW_PROFILING
     virtual void onProcessorAboutToProcess(Processor*){};
@@ -66,9 +66,6 @@ public:
 };
 
 /** \class ProcessorObservable
- *
- * Can call notifyObserversInvalidationBegin and notifyObserversInvalidationEnd
- *
  * @see ProcessorObserver
  */
 class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {
@@ -104,6 +101,11 @@ public:
     void notifyObserversProcessorPortAdded(Processor* p, Port* port) const {
         ObserverSet localObservers = observers_;
         for (auto o : localObservers) o->onProcessorPortAdded(p, port);
+    }
+
+    void notifyObserversProcessorPortRemoved(Processor* p, Port* port) const {
+        ObserverSet localObservers = observers_;
+        for (auto o : localObservers) o->onProcessorPortRemoved(p, port);
     }
 
 #if IVW_PROFILING

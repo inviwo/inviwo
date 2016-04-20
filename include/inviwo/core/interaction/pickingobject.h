@@ -58,9 +58,31 @@ public:
     size_t getSize() const;
 
     vec3 getPickingColor(size_t id = 0) const;
+    /**
+    * \brief returns initial position of picking. The current position (mouse move) 
+    *        is encoded in the MouseEvent.
+    *
+    * @return initial picking position
+    *
+    * \see getPickingMouseEvent
+    */
     const vec2& getPickingPosition() const;
+    /**
+    * \brief returns the delta of the last mouse movement
+    *
+    * @return last mouse movement delta (normalized with respect to screen coordinates)
+    */
     const vec2& getPickingMove() const;
     const double& getPickingDepth() const;
+
+    /** 
+     * \brief returns delta between current mouse position and initial picking position
+     * 
+     * @return delta of current mouse position and picking start (normalized with respect to screen coordinates)
+     *
+     * \see getPickingPosition
+     */
+    vec2 getPickingTotalDelta() const;
 
     void picked() const;
 

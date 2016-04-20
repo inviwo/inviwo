@@ -62,13 +62,13 @@ ImageEditorProperty* ImageEditorProperty::clone() const {
 ImageEditorProperty::~ImageEditorProperty() {}
 
 void ImageLabel::serialize(Serializer& s) const {
-    s.serialize("labelName", name_, true);
+    s.serialize("labelName", name_, SerializationTarget::Attribute);
     s.serialize("topLeft", startPoint_);
     s.serialize("size", rectSize_);
 }
 
 void ImageLabel::deserialize(Deserializer& d) {
-    d.deserialize("labelName", name_, true);
+    d.deserialize("labelName", name_, SerializationTarget::Attribute);
     d.deserialize("topLeft", startPoint_);
     d.deserialize("size", rectSize_);
 }

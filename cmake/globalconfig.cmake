@@ -39,14 +39,26 @@ if(MSVC)
         message(FATAL_ERROR "Inviwo requires C++11 features. " 
                 "You need at least Visual Studio 12 (Microsoft Visual Studio 2013)")
     endif()
+
+    if(MSVC_VERSION LESS 1900)
+        message(WARNING "Notice! The next release (0.9.7) will be the last one that will support Visual Studio 2013. "
+            "After 0.9.7 we will require Visual Studio 2015. The switch will happen in the beginning of May. "
+            "The latest Visual Studio version is available at https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
+    endif()
+
 else()
     include(CheckCXXCompilerFlag)
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     if(COMPILER_SUPPORTS_CXX11)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     else()
-        ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
     endif()
+endif()
+
+if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_LESS "3.2.0")
+    message(WARNING "After release 0.9.7 Inviwo will require a CMake version of at least 3.2.0 " 
+        "You have version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
@@ -314,14 +326,15 @@ if(WIN32 AND MSVC)
         set(MSVC_ACRO "14")
         set(MSVC_DLLNAMES "msvcp" "concrt" "vccorlib" "vcruntime")
     endif()
+    set(MSVC_REDIST_DIR ${MSVC${MSVC_ACRO}_REDIST_DIR})
 
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
         if(DEFINED MSVC_ACRO)
             foreach(dllname ${MSVC_DLLNAMES})
                 # debug build
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
                 # release build
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
             endforeach()
         endif()
     endif()
@@ -354,9 +367,9 @@ if(OPENMP_FOUND)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
         if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-            if(WIN32 AND MSVC AND DEFINED MSVC_ACRO)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugOpenMP/vcomp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.OPENMP/vcomp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+            if(WIN32 AND MSVC AND DEFINED MSVC_ACRO AND DEFINED MSVC_REDIST_DIR)
+                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugOpenMP/vcomp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.OPENMP/vcomp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
             endif()
         endif()
     endif()

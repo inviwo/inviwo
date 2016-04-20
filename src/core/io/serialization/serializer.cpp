@@ -27,26 +27,15 @@
  *
  *********************************************************************************/
 
-#pragma warning(disable: 4251)
-#include <inviwo/core/io/serialization/serializer.h>
+#pragma warning(disable : 4251)
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-Serializer::Serializer(Serializer& s, bool allowReference)
-    : SerializeBase(s.getFileName(), allowReference) {
-    initialize();
-}
-
 Serializer::Serializer(const std::string& fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
-    initialize();
-}
-
-Serializer::~Serializer() { delete rootElement_; }
-
-void Serializer::initialize() {
     try {
         auto decl = util::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
         doc_.LinkEndChild(decl.get());
@@ -63,6 +52,8 @@ void Serializer::initialize() {
     }
 }
 
+Serializer::~Serializer() { delete rootElement_; }
+
 void Serializer::serialize(const std::string& key, const Serializable& sObj) {
     auto newNode = util::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(newNode.get());
@@ -70,16 +61,17 @@ void Serializer::serialize(const std::string& key, const Serializable& sObj) {
     sObj.serialize(*this);
 }
 
-
-void Serializer::serialize(const std::string& key, const signed char& data, const bool asAttribute) {
-    serialize(key, static_cast<int>(data), asAttribute);
+void Serializer::serialize(const std::string& key, const signed char& data,
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<int>(data), target);
 }
-void Serializer::serialize(const std::string& key, const char& data, const bool asAttribute) {
-    serialize(key, static_cast<int>(data), asAttribute);
+void Serializer::serialize(const std::string& key, const char& data,
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<int>(data), target);
 }
 void Serializer::serialize(const std::string& key, const unsigned char& data,
-                              const bool asAttribute) {
-    serialize(key, static_cast<unsigned int>(data), asAttribute);
+                           const SerializationTarget& target) {
+    serialize(key, static_cast<unsigned int>(data), target);
 }
 
 void Serializer::writeFile() {

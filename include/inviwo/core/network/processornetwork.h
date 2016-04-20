@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-    class InviwoApplication;
+class InviwoApplication;
 
 /**
  * This class manages the current processor network. It can be thought of as a container of
@@ -70,9 +70,9 @@ class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public ProcessorObserver,
                                       public PropertyOwnerObserver {
 public:
-    using ProcessorMap = std::map<std::string, Processor*>;
-    using PortConnectionMap = std::map<std::pair<Outport*, Inport*>, PortConnection*>;
-    using PropertyLinkMap = std::map<std::pair<Property*, Property*>, PropertyLink*>;
+    using ProcessorMap = std::unordered_map<std::string, Processor*>;
+    using PortConnections = std::unordered_set<PortConnection>;
+    using PropertyLinks = std::unordered_set<PropertyLink>;
 
     ProcessorNetwork(InviwoApplication* application);
     virtual ~ProcessorNetwork();
@@ -127,10 +127,11 @@ public:
     * between the two specified ports, as well as adding this connection to the ProcessorNetwork.
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
-    * @return The newly created connection. nullptr if a connection could not be made.
     * @see removeConnection()
     */
-    PortConnection* addConnection(Outport* sourcePort, Inport* destPort);
+    void addConnection(Outport* sourcePort, Inport* destPort);
+    void addConnection(const PortConnection& connection);
+
 
     /**
      * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the
@@ -141,6 +142,7 @@ public:
      * @see addConnection()
      */
     void removeConnection(Outport* sourcePort, Inport* destPort);
+    void removeConnection(const PortConnection& connection);
 
     /**
     * Checks weather two port are connected
@@ -149,18 +151,10 @@ public:
     * @return Weather the two port are connected
     * @see addConnection()
     */
-    bool isConnected(Outport* sourcePort, Inport* destPort);
+    bool isConnected(Outport* sourcePort, Inport* destPort) const;
+    bool isConnected(const PortConnection& connection) const;
 
-    /**
-    * Get a connection between two ports
-    * @param[in] sourcePort The outport.
-    * @param[in] destPort The inport.
-    * @return The PortConnection between the ports or nullptr if there is none.
-    * @see addConnection()
-    */
-    PortConnection* getConnection(Outport* sourcePort, Inport* destPort);
-
-    std::vector<PortConnection*> getConnections() const;
+    const std::vector<PortConnection>& getConnections() const;
 
     bool isPortInNetwork(Port* port) const;
 
@@ -171,7 +165,8 @@ public:
      * @param[in] destinationProperty Property at which link ends
      * @return PropertyLink* Newly added link
      */
-    PropertyLink* addLink(Property* sourceProperty, Property* destinationProperty);
+    void addLink(Property* source, Property* destination);
+    void addLink(const PropertyLink& link);
 
     /**
      * Remove and delete Property Link from the network
@@ -180,7 +175,8 @@ public:
      * @param[in] destinationProperty Property at which link ends
      * @return void
      */
-    void removeLink(Property* sourceProperty, Property* destinationProperty);
+    void removeLink(Property* source, Property* destination);
+    void removeLink(const PropertyLink& link);
 
     /**
      * Check whether Property Link exists
@@ -189,18 +185,10 @@ public:
      * @param[in] destinationProperty Property at which link ends
      * @return bool true if link exists otherwise returns false
      */
-    bool isLinked(Property* sourceProperty, Property* destinationProperty);
+    bool isLinked(Property* source, Property* destination) const;
+    bool isLinked(const PropertyLink& link) const;
 
-    /**
-     * Find Property Link
-     * Search and return link between two properties, that are owned by processor network.
-     * @param[in] sourceProperty Property at which link starts
-     * @param[in] destinationProperty Property at which link ends
-     * @return PropertyLink* returns pointer to link if it exists otherwise returns nullptr
-     */
-    PropertyLink* getLink(Property* sourceProperty, Property* destinationProperty) const;
-
-    std::vector<PropertyLink*> getLinks() const;
+    std::vector<PropertyLink> getLinks() const;
     /**
       * Is Property Link bidirectional
       * Searches for bidirectional link between start and end properties
@@ -212,7 +200,7 @@ public:
     bool isLinkedBidirectional(Property* source, Property* destination);
 
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
-    std::vector<PropertyLink*> getLinksBetweenProcessors(Processor* p1, Processor* p2);
+    std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     Property* getProperty(std::vector<std::string> path) const;
     bool isPropertyInNetwork(Property* prop) const;
@@ -234,23 +222,18 @@ public:
     virtual void onProcessorInvalidationEnd(Processor*) override;
     virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
-    inline void lock() { locked_++; }
-    inline void unlock() {
-        (locked_ > 0) ? locked_-- : locked_ = 0;
-        if (locked_ == 0) notifyObserversProcessorNetworkUnlocked();
-    }
-    inline bool islocked() const { return (locked_ != 0); }
+    void lock();
+    void unlock();
+    bool islocked() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-
     bool isDeserializing() const;
 
     /**
     * Clears the network objects processors, port connections, property links etc.,
-    * This function clears only the core objects and mainly used to abort any
-    * further operation.
     */
     void clear();
 
@@ -261,29 +244,39 @@ private:
     void removePropertyOwnerObservation(PropertyOwner*);
 
     struct ErrorHandle {
-        ErrorHandle(const InviwoSetupInfo& info) : info_(info){};
+        ErrorHandle(const InviwoSetupInfo& info, const Deserializer& d) : info_(info), d_(d) {};
 
-        void handleProcessorError(SerializationException& error) {
-            std::string module = info_.getModuleForProcessor(error.getType());
-            if (!module.empty()) {
-                messages.push_back(error.getMessage() + " Processor was in module: \"" + module +
-                                   "\"");
-            } else {
-                messages.push_back(error.getMessage());
+        ~ErrorHandle() {
+            if (!messages.empty()) {
+                LogNetworkError("There were errors while loading workspace: " + d_.getFileName() +
+                               "\n" + joinString(messages, "\n"));
             }
         }
-        void handleConnectionError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-        void handleLinkError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-        void handlePortError(SerializationException& error) {
-            messages.push_back(error.getMessage());
+
+        void operator()(ExceptionContext c) {
+            try {
+                throw;
+            } catch (SerializationException& error) {
+                auto key = error.getKey();
+                if (key == "Processor") {
+                    std::string module = info_.getModuleForProcessor(error.getType());
+                    if (!module.empty()) {
+                        messages.push_back(error.getMessage() + " Processor was in module: \"" +
+                                           module + "\".");
+                    } else {
+                        messages.push_back(error.getMessage());
+                    }
+                } else {
+                    messages.push_back(error.getMessage());
+                }
+            } catch (Exception& exception) {
+                messages.push_back("Deserialization error: " + exception.getMessage());
+            }
         }
 
         std::vector<std::string> messages;
         const InviwoSetupInfo& info_;
+        const Deserializer& d_;
     };
 
     static const int processorNetworkVersion_;
@@ -295,11 +288,11 @@ private:
     InviwoApplication* application_;
 
     ProcessorMap processors_;
-    PortConnectionMap connections_;
+    PortConnections connections_;
     // This vector is needed to keep the connections in chronological order, since some processors
     // depends on the order of connections, ideally we would get rid of this.
-    std::vector<PortConnection*> connectionsVec_;
-    PropertyLinkMap links_;
+    std::vector<PortConnection> connectionsVec_;
+    PropertyLinks links_;
 
     LinkEvaluator linkEvaluator_;
     std::vector<Processor*> processorsInvalidating_;
@@ -314,6 +307,13 @@ std::vector<T*> ProcessorNetwork::getProcessorsByType() const {
     }
     return processors;
 }
+
+inline void ProcessorNetwork::lock() { locked_++; }
+inline void ProcessorNetwork::unlock() {
+    (locked_ > 0) ? locked_-- : locked_ = 0;
+    if (locked_ == 0) notifyObserversProcessorNetworkUnlocked();
+}
+inline bool ProcessorNetwork::islocked() const { return (locked_ != 0); }
 
 }  // namespace
 

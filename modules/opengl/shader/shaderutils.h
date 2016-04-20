@@ -139,6 +139,9 @@ IVW_MODULE_OPENGL_API std::string getShaderInfoLog(GLuint id);
 
 IVW_MODULE_OPENGL_API std::string getProgramInfoLog(GLuint id);
 
+IVW_MODULE_OPENGL_API std::shared_ptr<const ShaderResource> findShaderResource(
+    const std::string& fileName);
+
 }  // namespace utilgl
 
 }  // namespace

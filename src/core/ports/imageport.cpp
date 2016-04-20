@@ -127,7 +127,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
 
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
     // This functionality needs testing.
-    for (auto port : getProcessor()->getPortsInSameSet(this)) {
+    for (auto port : getProcessor()->getPortsInSameGroup(this)) {
         auto imageOutport = dynamic_cast<ImageOutport*>(port);
         if (imageOutport && imageOutport != this) {
             imageOutport->setDimensions(newDimensions);

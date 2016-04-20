@@ -138,7 +138,7 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
     } else {
         fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
         comp->addProperty(fov, true);
-        fov->setSerializationMode(PropertySerializationMode::ALL);
+        fov->setSerializationMode(PropertySerializationMode::All);
     }
 
     fov->onChange([this, fov]() { setFovy(fov->get()); });
@@ -190,7 +190,7 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp) {
     } else {
         widthProp = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
         comp->addProperty(widthProp, true);
-        widthProp->setSerializationMode(PropertySerializationMode::ALL);
+        widthProp->setSerializationMode(PropertySerializationMode::All);
     }
 
     widthProp->onChange([this, widthProp]() {
@@ -238,67 +238,67 @@ void OrthographicCamera::deserialize(Deserializer& d) {
 
 
 SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
-	float farPlane, vec4 frustum, vec2 frustumOffset)
-	: Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum), frustumSkewOffset_(frustumOffset){};
+    float farPlane, vec4 frustum, vec2 frustumOffset)
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum), frustumSkewOffset_(frustumOffset){};
 
 SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const { return new SkewedPerspectiveCamera(*this); }
 
 bool SkewedPerspectiveCamera::update(const Camera* source) {
-	if (auto skewedPerspectiveCamera = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
-		*this = *skewedPerspectiveCamera;
-		return true;
-	}
-	else {
-		return false;
-	}
+    if (auto skewedPerspectiveCamera = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
+        *this = *skewedPerspectiveCamera;
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 
 void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
-	auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("skewed-frustum-width"));
-	if (widthProp) {
-		const float oldWidth{ frustum_.y - frustum_.x };
-		const float oldHeight{ frustum_.w - frustum_.z };
-		auto aspect = oldWidth / oldHeight;
-		const float width = widthProp->get();
-		setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
-	}
-	else {
-		widthProp = new FloatProperty("skewed-frustum-width", "Skewed Frustum Width", 0.1f, 0.001f, 10.0f, 0.0001f);
-		comp->addProperty(widthProp, true);
-        widthProp->setSerializationMode(PropertySerializationMode::ALL);
-	}
+    auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("skewed-frustum-width"));
+    if (widthProp) {
+        const float oldWidth{ frustum_.y - frustum_.x };
+        const float oldHeight{ frustum_.w - frustum_.z };
+        auto aspect = oldWidth / oldHeight;
+        const float width = widthProp->get();
+        setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
+    }
+    else {
+        widthProp = new FloatProperty("skewed-frustum-width", "Skewed Frustum Width", 0.1f, 0.001f, 10.0f, 0.0001f);
+        comp->addProperty(widthProp, true);
+        widthProp->setSerializationMode(PropertySerializationMode::All);
+    }
 
-	widthProp->onChange([this, widthProp]() {
-		// Left, right, bottom, top view volume
-		const float oldWidth{ frustum_.y - frustum_.x };
-		const float oldHeight{ frustum_.w - frustum_.z };
-		auto aspect = oldWidth / oldHeight;
-		const float width = widthProp->get();
-		setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
-	});
+    widthProp->onChange([this, widthProp]() {
+        // Left, right, bottom, top view volume
+        const float oldWidth{ frustum_.y - frustum_.x };
+        const float oldHeight{ frustum_.w - frustum_.z };
+        auto aspect = oldWidth / oldHeight;
+        const float width = widthProp->get();
+        setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
+    });
 
 
-	auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("seperation"));
-	if (offsetProp) {		
-		const vec2 offset = offsetProp->get();
-		setFrustumOffset(offset);
-	}
-	else {
-		offsetProp = new FloatVec2Property("seperation", "Separation", vec2(0.0f), vec2(-10.0f), vec2(10.0f), vec2(0.01f));
-		comp->addProperty(offsetProp, true);
-        offsetProp->setSerializationMode(PropertySerializationMode::ALL);
-	}
+    auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("seperation"));
+    if (offsetProp) {		
+        const vec2 offset = offsetProp->get();
+        setFrustumOffset(offset);
+    }
+    else {
+        offsetProp = new FloatVec2Property("seperation", "Separation", vec2(0.0f), vec2(-10.0f), vec2(10.0f), vec2(0.01f));
+        comp->addProperty(offsetProp, true);
+        offsetProp->setSerializationMode(PropertySerializationMode::All);
+    }
 
-	offsetProp->onChange([this, offsetProp, widthProp]() {
-		const vec2 offset = offsetProp->get();
-		const float oldWidth{ frustum_.y - frustum_.x };
-		const float oldHeight{ frustum_.w - frustum_.z };
-		auto aspect = oldWidth / oldHeight;
-		const float width = widthProp->get();
-		setFrustumOffset(offset);
-		setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
-	});
+    offsetProp->onChange([this, offsetProp, widthProp]() {
+        const vec2 offset = offsetProp->get();
+        const float oldWidth{ frustum_.y - frustum_.x };
+        const float oldHeight{ frustum_.w - frustum_.z };
+        auto aspect = oldWidth / oldHeight;
+        const float width = widthProp->get();
+        setFrustumOffset(offset);
+        setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
+    });
 }
 
 bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs) {
@@ -312,40 +312,40 @@ bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamer
 }
 
 float SkewedPerspectiveCamera::getAspectRatio() const {
-	// Left, right, bottom, top view volume
-	const float width{ frustum_.y - frustum_.x };
-	const float height{ frustum_.w - frustum_.z };
-	return width / height;
+    // Left, right, bottom, top view volume
+    const float width{ frustum_.y - frustum_.x };
+    const float height{ frustum_.w - frustum_.z };
+    return width / height;
 }
 
 void SkewedPerspectiveCamera::setAspectRatio(float val) {
-	// Left, right, bottom, top view volume
-	const float width{ frustum_.y - frustum_.x };
-	const float height{ width / val };
-	frustum_.z = -height / 2.0f;
-	frustum_.w = +height / 2.0f;
-	invalidateProjectionMatrix();
+    // Left, right, bottom, top view volume
+    const float width{ frustum_.y - frustum_.x };
+    const float height{ width / val };
+    frustum_.z = -height / 2.0f;
+    frustum_.w = +height / 2.0f;
+    invalidateProjectionMatrix();
 }
 
 mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
-	vec4 f(frustum_);
-	float left = f.x + frustumSkewOffset_.x;
-	float right = (f.x + frustumSkewOffset_.x) + (f.y - f.x);
-	float up = f.z + frustumSkewOffset_.y;
-	float down = (f.z + frustumSkewOffset_.y) + (f.w - f.z);
-	return glm::frustum(left, right, up, down, nearPlaneDist_, farPlaneDist_);
+    vec4 f(frustum_);
+    float left = f.x + frustumSkewOffset_.x;
+    float right = (f.x + frustumSkewOffset_.x) + (f.y - f.x);
+    float up = f.z + frustumSkewOffset_.y;
+    float down = (f.z + frustumSkewOffset_.y) + (f.w - f.z);
+    return glm::frustum(left, right, up, down, nearPlaneDist_, farPlaneDist_);
 };
 
 
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {
-	Camera::serialize(s);
-	s.serialize("frustum", frustum_);
-	s.serialize("frustumOffset", frustumSkewOffset_);
+    Camera::serialize(s);
+    s.serialize("frustum", frustum_);
+    s.serialize("frustumOffset", frustumSkewOffset_);
 }
 void SkewedPerspectiveCamera::deserialize(Deserializer& d) {
-	d.deserialize("frustum", frustum_);
-	d.deserialize("frustumOffset", frustumSkewOffset_);
-	Camera::deserialize(d);
+    d.deserialize("frustum", frustum_);
+    d.deserialize("frustumOffset", frustumSkewOffset_);
+    Camera::deserialize(d);
 }
 
 }  // namespace

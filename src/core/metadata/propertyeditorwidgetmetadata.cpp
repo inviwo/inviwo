@@ -32,11 +32,11 @@
 namespace inviwo {
 
 PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus() : dockStatus_("Floating") {}
-PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus(const std::string &dockStatus)
+PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus(const std::string& dockStatus)
     : dockStatus_(dockStatus) {}
 PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus(
     const PropertyEditorWidgetDockStatus& rhs)
-    : dockStatus_(rhs.dockStatus_) {};
+    : dockStatus_(rhs.dockStatus_){};
 PropertyEditorWidgetDockStatus& PropertyEditorWidgetDockStatus::operator=(
     const PropertyEditorWidgetDockStatus& that) {
     if (this != &that) dockStatus_ = that.dockStatus_;
@@ -44,18 +44,14 @@ PropertyEditorWidgetDockStatus& PropertyEditorWidgetDockStatus::operator=(
     return *this;
 }
 bool PropertyEditorWidgetDockStatus::operator==(const PropertyEditorWidgetDockStatus& that) {
-    if (this->getString() ==  that.getString())
-        return true;
+    if (this->getString() == that.getString()) return true;
 
     return false;
 }
-const std::string& PropertyEditorWidgetDockStatus::getString() const {
-    return dockStatus_;
-}
+const std::string& PropertyEditorWidgetDockStatus::getString() const { return dockStatus_; }
 const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::Floating("Floating");
 const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::DockedLeft("DockedLeft");
 const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::DockedRight("DockedRight");
-
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -122,7 +118,7 @@ const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDocStatus(
 }
 
 void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
@@ -130,28 +126,17 @@ void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
 }
 
 void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
-    std::string className;
-  
-    std::string dockStatus("");
-    d.deserialize("type", className, true);
     d.deserialize("position", position_);
     d.deserialize("dimensions", dimensions_);
     d.deserialize("visibility", visibility_);
-    d.deserialize("dockstatus", dockStatus);
-
-    if (dockStatus.empty())
-        dockStatus="Floating";
-
+    d.deserialize("dockstatus", dockStatus_);
+    if (dockStatus_.empty()) dockStatus_="Floating";
 }
 
 bool PropertyEditorWidgetMetaData::equal(const MetaData& rhs) const {
-    const PropertyEditorWidgetMetaData* tmp =
-        dynamic_cast<const PropertyEditorWidgetMetaData*>(&rhs);
-    if (tmp) {
-        return tmp->position_ == position_ &&
-               tmp->visibility_ == visibility_ &&
-               tmp->visibility_ == visibility_ &&
-               tmp->dockStatus_ == dockStatus_;
+    if (auto tmp = dynamic_cast<const PropertyEditorWidgetMetaData*>(&rhs)) {
+        return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
+               tmp->visibility_ == visibility_ && tmp->dockStatus_ == dockStatus_;
     } else {
         return false;
     }

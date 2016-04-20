@@ -111,13 +111,7 @@ ShaderType ShaderObject::getShaderType() const {
 }
 
 std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string fileName) {
-    auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
-    if (!resource) {
-        throw OpenGLException(
-            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
-            IvwContextCustom("ShaderObject"));
-    }
-    return resource;
+    return utilgl::findShaderResource(fileName);
 }
 
 void ShaderObject::build() {
@@ -245,15 +239,18 @@ void ShaderObject::compile() {
     glCompileShader(id_);
     if (!isReady()) {
         throw OpenGLException(
-            utilgl::reformatInfoLog(lineNumberResolver_, utilgl::getShaderInfoLog(id_)),
+            resource_->key() + " " +
+                utilgl::reformatInfoLog(lineNumberResolver_, utilgl::getShaderInfoLog(id_)),
             IvwContext);
     }
 
 #ifdef IVW_DEBUG
     auto log = utilgl::getShaderInfoLog(id_);
-    if (!log.empty())
-        util::log(IvwContext, utilgl::reformatInfoLog(lineNumberResolver_, log), LogLevel::Info,
-                  LogAudience::User);
+    if (!log.empty()) {
+        util::log(IvwContext,
+                  resource_->key() + " " + utilgl::reformatInfoLog(lineNumberResolver_, log),
+                  LogLevel::Info, LogAudience::User);
+    }
 #endif
 }
 

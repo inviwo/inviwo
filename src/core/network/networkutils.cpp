@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/network/networkutils.h>
 #include <iterator>
 
 namespace inviwo {
@@ -105,55 +105,58 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
         return m->isSelected();
     });
 
-    std::vector<PortConnection*> connections;
+    std::vector<PortConnection> connections;
     util::copy_if(network->getConnections(), std::back_inserter(connections),
-                  [&selected](PortConnection* c) {
-                      auto in = c->getInport()->getProcessor();
-                      auto out = c->getOutport()->getProcessor();
+                  [&selected](const PortConnection& c) {
+                      auto in = c.getInport()->getProcessor();
+                      auto out = c.getOutport()->getProcessor();
                       return util::contains(selected, in) && util::contains(selected, out);
                   });
 
-    std::vector<PortConnection*> partialInConnections;
+    std::vector<PortConnection> partialInConnections;
     util::copy_if(network->getConnections(), std::back_inserter(partialInConnections),
-                  [&selected](PortConnection* c) {
-                      auto in = c->getInport()->getProcessor();
-                      auto out = c->getOutport()->getProcessor();
+                  [&selected](const PortConnection& c) {
+                      auto in = c.getInport()->getProcessor();
+                      auto out = c.getOutport()->getProcessor();
                       return util::contains(selected, in) && !util::contains(selected, out);
                   });
 
-    auto partialIn = util::transform(partialInConnections, [](PortConnection* c) {
-        return detail::PartialConnection{c->getOutport()->getProcessor()->getIdentifier() + "/" +
-                                             c->getOutport()->getIdentifier(),
-                                         c->getInport()};
+    auto partialIn = util::transform(partialInConnections, [](const PortConnection& c) {
+        return detail::PartialConnection{
+            c.getOutport()->getProcessor()->getIdentifier() + "/" + c.getOutport()->getIdentifier(),
+            c.getInport()};
     });
 
-    std::vector<PropertyLink*> links;
-    util::copy_if(network->getLinks(), std::back_inserter(links), [&selected](PropertyLink* c) {
-        auto src = c->getSourceProperty()->getOwner()->getProcessor();
-        auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-        return util::contains(selected, src) && util::contains(selected, dst);
+    std::vector<PropertyLink> links;
+    util::copy_if(network->getLinks(), std::back_inserter(links),
+                  [&selected](const PropertyLink& c) {
+                      auto src = c.getSource()->getOwner()->getProcessor();
+                      auto dst = c.getDestination()->getOwner()->getProcessor();
+                      return util::contains(selected, src) && util::contains(selected, dst);
+                  });
+
+    std::vector<PropertyLink> srcLinks;
+    util::copy_if(network->getLinks(), std::back_inserter(srcLinks),
+                  [&selected](const PropertyLink& c) {
+                      auto src = c.getSource()->getOwner()->getProcessor();
+                      auto dst = c.getDestination()->getOwner()->getProcessor();
+                      return util::contains(selected, src) && !util::contains(selected, dst);
+                  });
+    auto partialSrcLinks = util::transform(srcLinks, [](const PropertyLink& c) {
+        return detail::PartialSrcLink{c.getSource(),
+                                      joinString(c.getDestination()->getPath(), ".")};
     });
 
-    std::vector<PropertyLink*> srcLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(srcLinks), [&selected](PropertyLink* c) {
-        auto src = c->getSourceProperty()->getOwner()->getProcessor();
-        auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-        return util::contains(selected, src) && !util::contains(selected, dst);
-    });
-    auto partialSrcLinks = util::transform(srcLinks, [](PropertyLink* c) {
-        return detail::PartialSrcLink{c->getSourceProperty(),
-                                      joinString(c->getDestinationProperty()->getPath(), ".")};
-    });
-
-    std::vector<PropertyLink*> dstLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(dstLinks), [&selected](PropertyLink* c) {
-        auto src = c->getSourceProperty()->getOwner()->getProcessor();
-        auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-        return !util::contains(selected, src) && util::contains(selected, dst);
-    });
-    auto partialDstLinks = util::transform(dstLinks, [](PropertyLink* c) {
-        return detail::PartialDstLink{joinString(c->getSourceProperty()->getPath(), "."),
-                                      c->getDestinationProperty()};
+    std::vector<PropertyLink> dstLinks;
+    util::copy_if(network->getLinks(), std::back_inserter(dstLinks),
+                  [&selected](const PropertyLink& c) {
+                      auto src = c.getSource()->getOwner()->getProcessor();
+                      auto dst = c.getDestination()->getOwner()->getProcessor();
+                      return !util::contains(selected, src) && util::contains(selected, dst);
+                  });
+    auto partialDstLinks = util::transform(dstLinks, [](const PropertyLink& c) {
+        return detail::PartialDstLink{joinString(c.getSource()->getPath(), "."),
+                                      c.getDestination()};
     });
 
     Serializer xmlSerializer(refPath);
@@ -167,8 +170,10 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
     xmlSerializer.writeFile(os);
 }
 
-IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                           const std::string& refPath, InviwoApplication* app) {
+IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
+                                                              std::istream& is,
+                                                              const std::string& refPath,
+                                                              InviwoApplication* app) {
     std::vector<Processor*> addedProcessors;
     try {
         Deserializer xmlDeserializer(app, is, refPath);
@@ -210,7 +215,7 @@ IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* 
         }
 
         for (auto& l : links) {
-            network->addLink(l->getSourceProperty(), l->getDestinationProperty());
+            network->addLink(l->getSource(), l->getDestination());
         }
         for (auto& l : partialSrcLinks) {
             auto path = splitString(l->dstPath_, '.');

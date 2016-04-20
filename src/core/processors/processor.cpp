@@ -55,28 +55,73 @@ Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
 }
 
-void Processor::addPort(Inport* port, const std::string& portDependencySet) {
-    // TODO: check if port with same name has been added before
+void Processor::addPort(Inport* port, const std::string& portGroup) {
+    if (getPort(port->getIdentifier()) != nullptr) {
+        throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
+                        port->getIdentifier() + "\" already exist.",
+                        IvwContext);
+    }
     port->setProcessor(this);
     inports_.push_back(port);
-    portDependencySets_.insert(portDependencySet, port);
+    addPortToGroup(port, portGroup);
     notifyObserversProcessorPortAdded(this, port);
 }
 
-void Processor::addPort(Inport& port, const std::string& portDependencySet) {
-    addPort(&port, portDependencySet);
+void Processor::addPort(Inport& port, const std::string& portGroup) {
+    addPort(&port, portGroup);
 }
 
-void Processor::addPort(Outport* port, const std::string& portDependencySet) {
-    // TODO: check if port with same name has been added before
+void Processor::addPort(Outport* port, const std::string& portGroup) {
+    if (getPort(port->getIdentifier()) != nullptr) {
+        throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
+                        port->getIdentifier() + "\" already exist.",
+                        IvwContext);
+    }
     port->setProcessor(this);
     outports_.push_back(port);
-    portDependencySets_.insert(portDependencySet, port);
+    addPortToGroup(port, portGroup);
     notifyObserversProcessorPortAdded(this, port);
 }
 
 void Processor::addPort(Outport& port, const std::string& portDependencySet) {
     addPort(&port, portDependencySet);
+}
+
+Port* Processor::removePort(const std::string& identifier) {
+    if (auto port = getPort(identifier)) {
+        if (auto inport = dynamic_cast<Inport*>(port)) return removePort(inport);
+        if (auto outport = dynamic_cast<Outport*>(port)) return removePort(outport);
+    }
+    return nullptr;
+}
+
+Inport* Processor::removePort(Inport* port) {   
+    notifyObserversProcessorPortRemoved(this, port);
+    port->setProcessor(nullptr);
+    util::erase_remove(inports_, port);
+    removePortFromGroups(port);
+    return port;
+}
+
+Outport* Processor::removePort(Outport* port) {
+    notifyObserversProcessorPortRemoved(this, port);
+    port->setProcessor(nullptr);
+    util::erase_remove(outports_, port);
+    removePortFromGroups(port);
+    return port;
+}
+
+void Processor::addPortToGroup(Port* port, const std::string& portGroup) {
+    portGroups_[port] = portGroup;
+    groupPorts_[portGroup].push_back(port);
+}
+
+void Processor::removePortFromGroups(Port* port) {
+    auto group = portGroups_[port];
+    util::erase_remove(groupPorts_[group], port);
+    if(groupPorts_[group].empty()) groupPorts_.erase(group);
+    portGroups_.erase(port);
+    
 }
 
 std::string Processor::setIdentifier(const std::string& identifier) {
@@ -93,7 +138,7 @@ std::string Processor::setIdentifier(const std::string& identifier) {
         util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
         i = std::stoi(parts.back());
         baseIdentifier = joinString(parts.begin(), parts.end() - 1, " ");
-        newIdentifier = baseIdentifier;
+        newIdentifier = baseIdentifier + " " + toString(i);
     }
 
     while (usedIdentifiers_.find(newIdentifier) != usedIdentifiers_.end()) {
@@ -144,21 +189,35 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
-std::vector<Port*> Processor::getPortsByDependencySet(
-    const std::string& portDependencySet) const {
-    return portDependencySets_.getGroupedData(portDependencySet);
+const std::string& Processor::getPortGroup(Port* port) const {
+    auto it = portGroups_.find(port);
+    if (it != portGroups_.end()) {
+        return it->second;
+    } else {
+        throw Exception("Can't find group for port: \"" + port->getIdentifier() + "\".",
+                        IvwContext);
+    }
 }
 
-std::vector<std::string> Processor::getPortDependencySets() const {
-    return portDependencySets_.getGroupKeys();
+std::vector<std::string> Processor::getPortGroups() const {
+    std::vector<std::string> groups;
+    for (const auto& item : groupPorts_) {
+        groups.push_back(item.first);
+    }
+    return groups;
 }
 
-std::string Processor::getPortDependencySet(Port* port) const {
-    return portDependencySets_.getKey(port);
+const std::vector<Port*>& Processor::getPortsInGroup(const std::string& portGroup) const {
+    auto it = groupPorts_.find(portGroup);
+    if (it != groupPorts_.end()) {
+        return it->second;
+    } else {
+        throw Exception("Can't find port group: \"" + portGroup  + "\".", IvwContext);
+    }
 }
 
-std::vector<Port*> Processor::getPortsInSameSet(Port* port) const {
-    return portDependencySets_.getGroupedData(portDependencySets_.getKey(port));
+const std::vector<Port*>& Processor::getPortsInSameGroup(Port* port) const {
+    return getPortsInGroup(getPortGroup(port));
 }
 
 void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
@@ -202,10 +261,15 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
 }
 
 void Processor::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
-    s.serialize("identifier", identifier_, true);
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("identifier", identifier_, SerializationTarget::Attribute);
 
     s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
+
+    std::map<std::string, std::string> portGroups;
+    for (auto& item : portGroups_) portGroups[item.first->getIdentifier()] = item.second;
+    s.serialize("PortGroups", portGroups, "PortGroup");
+
     s.serialize("InPorts", inports_, "InPort");
     s.serialize("OutPorts", outports_, "OutPort");
 
@@ -215,21 +279,31 @@ void Processor::serialize(Serializer& s) const {
 
 void Processor::deserialize(Deserializer& d) {
     std::string identifier;
-    d.deserialize("identifier", identifier, true);
+    d.deserialize("identifier", identifier, SerializationTarget::Attribute);
     setIdentifier(identifier);  // Need to use setIdentifier to make sure we get a unique id.
 
     d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    StandardIdentifier<Port> inportIdentifier;
-    d.deserialize("InPorts", inports_, "InPort", inportIdentifier);
-    d.deserialize("OutPorts", outports_, "OutPort", inportIdentifier);
+    std::map<std::string, std::string> portGroups;
+    d.deserialize("PortGroups", portGroups, "PortGroup");
 
-    for (auto elem : inports_) {
-        elem->setProcessor(this);
-    }
-    for (auto elem : outports_) {
-        elem->setProcessor(this);
-    }
+    auto desInports =
+        util::IdentifiedDeserializer<std::string, Inport*>("InPorts", "InPort")
+            .setGetId([](Inport* const& port) { return port->getIdentifier(); })
+            .setMakeNew([]() { return nullptr; })
+            .onNew([&](Inport*& port) { addPort(port, portGroups[port->getIdentifier()]); })
+            .onRemove([&](const std::string& id) { delete removePort(id); });
+
+    desInports(d, inports_);
+
+    auto desOutports =
+        util::IdentifiedDeserializer<std::string, Outport*>("OutPorts", "OutPort")
+            .setGetId([](Outport* const& port) { return port->getIdentifier(); })
+            .setMakeNew([]() { return nullptr; })
+            .onNew([&](Outport*& port) { addPort(port, portGroups[port->getIdentifier()]); })
+            .onRemove([&](const std::string& id) { delete removePort(id); });
+
+    desOutports(d, outports_);
 
     PropertyOwner::deserialize(d);
     MetaDataOwner::deserialize(d);
@@ -265,7 +339,7 @@ void Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) 
     if (resizeEvent->hasVisitedProcessor(this)) return;
     resizeEvent->markAsVisited(this);
 
-    for (auto port : getPortsInSameSet(source)) {
+    for (auto port : getPortsInSameGroup(source)) {
         if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
             imageInport->propagateResizeEvent(resizeEvent);
         }

@@ -30,8 +30,8 @@
 #ifndef IVW_PROPERYLINK_H
 #define IVW_PROPERYLINK_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
@@ -41,10 +41,18 @@ class IVW_CORE_API PropertyLink : public Serializable {
 public:
     PropertyLink();
     PropertyLink(Property* srcProperty, Property* dstProperty);
-    virtual ~PropertyLink();
+    PropertyLink(const PropertyLink&) = default;
+    PropertyLink& operator=(const PropertyLink&) = default;
+    virtual ~PropertyLink() = default;
 
-    Property* getSourceProperty() const { return srcProperty_; }
-    Property* getDestinationProperty() const { return dstProperty_; }
+    operator bool() const;
+
+    Property* getSource() const { return src_; }
+    Property* getDestination() const { return dst_; }
+        
+    bool involves(Processor* processor) const;
+    bool involves(Property* property) const;
+
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
@@ -52,8 +60,8 @@ public:
     friend bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
 private:
-    Property* srcProperty_;
-    Property* dstProperty_;
+    Property* src_;
+    Property* dst_;
 };
 
 bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
@@ -61,5 +69,19 @@ bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
 }  // namespace
+
+namespace std {
+
+template <>
+struct hash<inviwo::PropertyLink> {
+    size_t operator()(const inviwo::PropertyLink& p) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, p.getSource());
+        inviwo::util::hash_combine(h, p.getDestination());
+        return h;
+    }
+};
+
+}  // namespace std
 
 #endif  // IVW_PROPERYLINK_H

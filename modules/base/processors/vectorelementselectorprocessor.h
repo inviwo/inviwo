@@ -30,13 +30,13 @@
 #ifndef IVW_VECTORELEMENTSELECTORPROCESSOR_H
 #define IVW_VECTORELEMENTSELECTORPROCESSOR_H
 
-#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/basemoduledefine.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
 namespace inviwo {
@@ -55,11 +55,11 @@ namespace inviwo {
  *   * __Time Step__ ...
  *
  */
-template< typename T,typename OutportType = DataOutport<T>>
+template <typename T, typename OutportType = DataOutport<T>>
 class VectorElementSelectorProcessor : public Processor {
 public:
     VectorElementSelectorProcessor();
-    virtual ~VectorElementSelectorProcessor() {};
+    virtual ~VectorElementSelectorProcessor(){};
 
     virtual const ProcessorInfo getProcessorInfo() const override = 0;
 
@@ -74,15 +74,16 @@ protected:
     DoubleProperty timestamp_;
 };
 
-template< typename T,typename OutportType>
-VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
+template <typename T, typename OutportType>
+VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , timeStep_("timeStep", "Step") 
-    , name_("name","Name")
-    , timestamp_("timestamp","Timestamp")
-{
+    , timeStep_("timeStep", "Step")
+    , name_("name", "Name")
+    , timestamp_("timestamp", "Timestamp", 0, std::numeric_limits<double>::lowest(),
+                 std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(),
+                 InvalidationLevel::Valid, PropertySemantics("Text")) {
     addPort(inport_);
     addPort(outport_);
 
@@ -98,38 +99,37 @@ VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
     timestamp_.setCurrentStateAsDefault();
 
     // This needs to be added by the child class
-    //timeStep_.index_.autoLinkToProperty<VectorElementSelectorProcessor<T>>("timeStep.selectedSequenceIndex");
+    // timeStep_.index_.autoLinkToProperty<VectorElementSelectorProcessor<T>>("timeStep.selectedSequenceIndex");
 
     timeStep_.onChange([this]() {
         if (auto data = inport_.getData()) {
-            size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
+            size_t index =
+                std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
             auto selectedData = data->at(index).get();
             if (auto metadataowner = dynamic_cast<const MetaDataOwner*>(selectedData)) {
                 if (metadataowner->hasMetaData<StringMetaData>("name")) {
                     name_.set(metadataowner->getMetaData<StringMetaData>("name")->get());
                     name_.setVisible(true);
-                }
-                else {
+                } else {
                     name_.setVisible(false);
                 }
 
-                if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") || metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
+                if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") ||
+                    metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
                     if (auto metadata1 = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
                         timestamp_.set(metadata1->get());
                         timestamp_.setVisible(true);
-                    }
-                    else if (auto metadata2 = metadataowner->getMetaData<FloatMetaData>("timestamp")) {
+                    } else if (auto metadata2 =
+                                   metadataowner->getMetaData<FloatMetaData>("timestamp")) {
                         timestamp_.set(static_cast<double>(metadata2->get()));
                         timestamp_.setVisible(true);
                     }
-                }
-                else {
+                } else {
                     timestamp_.setVisible(false);
                 }
             }
 
-        }
-        else {
+        } else {
             name_.setVisible(false);
             timestamp_.setVisible(false);
         }
@@ -142,7 +142,7 @@ VectorElementSelectorProcessor<T,OutportType>::VectorElementSelectorProcessor()
     });
 }
 
-template< typename T,typename OutportType>
+template <typename T, typename OutportType>
 void VectorElementSelectorProcessor<T, OutportType>::process() {
     if (!inport_.isReady()) return;
 
@@ -153,7 +153,6 @@ void VectorElementSelectorProcessor<T, OutportType>::process() {
     }
 }
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VECTORELEMENTSELECTORPROCESSOR_H
-
+#endif  // IVW_VECTORELEMENTSELECTORPROCESSOR_H
