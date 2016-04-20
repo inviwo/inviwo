@@ -49,11 +49,7 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
 }
 
 const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const {
-    if (idx < nodes_.size()) {
-        return nodes_[idx];
-    } else {
-        return Node("UnKnown", "UnKnown");
-    }
+    return nodes_[idx];
 }
 
 std::string NodeDebugger::toString(std::size_t idx) const {
