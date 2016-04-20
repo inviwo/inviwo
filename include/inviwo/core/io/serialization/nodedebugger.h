@@ -35,11 +35,11 @@
 #include <string>
 #include <vector>
 
-class ticpp::Element;
+namespace ticpp {
+    class Element;
+}
 
 namespace inviwo {
-
-
 
 struct IVW_CORE_API NodeDebugger {
     struct Node {
