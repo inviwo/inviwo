@@ -157,10 +157,19 @@ public:
     void removeObserver(T* observer);
 
 protected:
+    template <typename C>
+    void for_each(C callback);
+
+
     typedef std::unordered_set<T*> ObserverSet;
     ObserverSet observers_;
 
 private:
+    size_t invocation_count_ = 0;
+    ObserverSet toAdd_;
+    ObserverSet toRemove_;
+
+
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
     virtual void removeObservers() override;
@@ -211,14 +220,33 @@ void Observable<T>::removeObservers() {
 
 template <typename T>
 void Observable<T>::addObserver(T* observer) {
-    auto inserted = observers_.insert(observer);
-    if (inserted.second) addObservationHelper(observer);
+    if (invocation_count_ == 0) {
+        auto inserted = observers_.insert(observer);
+        if (inserted.second) addObservationHelper(observer);
+    } else {
+        toAdd_.insert(observer);
+    }
 }
 
 template <typename T>
 void Observable<T>::removeObserver(T* observer) {
-    if (observers_.erase(observer) > 0) {
-        removeObservationHelper(observer);
+    if (invocation_count_ == 0) {
+        if (observers_.erase(observer) > 0) removeObservationHelper(observer);
+    } else {
+        toRemove_.insert(observer);
+    }
+}
+
+template <typename T>
+template <typename C>
+void Observable<T>::for_each(C callback) {
+    ++invocation_count_;
+    for (auto o : observers_) callback(o);
+    --invocation_count_;
+
+    if (invocation_count_ == 0) {
+        for (auto o : toAdd_) addObserver(o);
+        for (auto o : toRemove_) removeObserver(o);
     }
 }
 
@@ -245,3 +273,5 @@ void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
 }  // namespace
 
 #endif  // IVW_OBSERVER_H
+
+

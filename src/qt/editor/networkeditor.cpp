@@ -35,6 +35,7 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -92,6 +93,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
     , filename_("")
     , modified_(false) {
+
     network_->addObserver(this);
 
     // The default BSP tends to crash...
@@ -105,8 +107,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
         actions["Delete"]->setEnabled(enable);
     });
 }
-
-NetworkEditor::~NetworkEditor() {}
 
 ////////////////////////////////////////////////////////
 //   PRIVATE METHODS FOR ADDING/REMOVING PROCESSORS   //
@@ -390,101 +390,6 @@ void NetworkEditor::setModified(const bool modified) {
     }
 }
 
-////////////////////////////////////////////////////////
-//   LOAD AND GET SNAPSHOT FROM EXTERNAL NETWORK      //
-////////////////////////////////////////////////////////
-
-void NetworkEditor::addExternalNetwork(std::string fileName, std::string identifierPrefix,
-                                       ivec2 pos, unsigned int networkEditorFlags,
-                                       ivec2 canvasSize) {
-    NetworkLock lock(network_);
-
-    auto app = mainwindow_->getInviwoApplication();
-    Deserializer xmlDeserializer(app, fileName);
-    ProcessorNetwork* processorNetwork = new ProcessorNetwork(app);
-    processorNetwork->deserialize(xmlDeserializer);
-
-    for (auto& processor : processorNetwork->getProcessors()) {
-        std::string newIdentifier = identifierPrefix + "_" + processor->getIdentifier();
-        processor->setIdentifier(newIdentifier);
-        auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        meta->setPosition(meta->getPosition() + pos);
-        network_->addProcessor(processor);
-    }
-
-    for (auto connection : processorNetwork->getConnections()) {
-        Outport* outport = connection.getOutport();
-        Inport* inport = connection.getInport();
-        // first remove the connection from the loaded network to avoid an already connected warning
-        processorNetwork->removeConnection(outport, inport);
-        network_->addConnection(outport, inport);
-    }
-
-    for (auto& link : processorNetwork->getLinks()) {
-        network_->addLink(link);
-    }
-}
-
-std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
-    std::string externalNetworkFile, std::string identifierPrefix) {
-    // turnoff sound
-    auto app = mainwindow_->getInviwoApplication();
-    BoolProperty* soundProperty =
-        dynamic_cast<BoolProperty*>(app->getSettingsByType<SystemSettings>()
-                                        ->getPropertyByIdentifier("enableSound"));
-    bool isSoundEnabled = soundProperty->get();
-
-    if (isSoundEnabled) soundProperty->set(false);
-
-    std::vector<std::string> canvasSnapShotFiles;
-    std::string directory = filesystem::getFileDirectory(externalNetworkFile);
-    std::string workSpaceName = filesystem::getFileNameWithExtension(externalNetworkFile);
-    std::string newFileName = filesystem::replaceFileExtension(workSpaceName, "png");
-
-    for (auto& processor : network_->getProcessors()) {
-        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos) {
-            CanvasProcessor* canvasProcessor = dynamic_cast<CanvasProcessor*>(processor);
-
-            if (canvasProcessor) {
-                std::string snapShotFilePath =
-                    directory + "/" + "snapshot_" + canvasProcessor->getIdentifier() + newFileName;
-                canvasSnapShotFiles.push_back(snapShotFilePath);
-                canvasProcessor->saveImageLayer(snapShotFilePath);
-            }
-        }
-    }
-
-    if (isSoundEnabled) soundProperty->set(true);
-
-    return canvasSnapShotFiles;
-}
-
-void NetworkEditor::removeExternalNetwork(std::string identifierPrefix) {
-    NetworkLock lock(network_);
-
-    for (auto& processor : network_->getProcessors()) {
-        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos)
-            network_->removeProcessor(processor);
-    }
-}
-
-std::vector<std::string> NetworkEditor::getSnapshotsOfExternalNetwork(std::string fileName) {
-    std::vector<std::string> snapshotFileNames;
-    // load external network
-    QRectF rect = sceneRect();
-    ivec2 pos(rect.width() / 2, rect.height() / 2);
-    std::string identifierPrefix = "TemporaryExternalNetwork";
-    unsigned int networkEditorFlags =
-        NetworkEditor::UseOriginalCanvasSize | NetworkEditor::CanvasHidden;
-    addExternalNetwork(fileName, identifierPrefix, pos, networkEditorFlags);
-    network_->setModified(true);
-    mainwindow_->getInviwoApplication()->getProcessorNetworkEvaluator()->requestEvaluate();
-    // save snapshot
-    snapshotFileNames = saveSnapshotsInExternalNetwork(fileName, identifierPrefix);
-    // unload external network
-    removeExternalNetwork(identifierPrefix);
-    return snapshotFileNames;
-}
 
 ////////////////////////////////////////////
 //   OBTAIN GRAPHICS ITEMS FROM NETWORK   //
@@ -1265,6 +1170,7 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
     linkCurve_->show();
 }
 
+
 void NetworkEditor::updateLeds() {
     // Update the status items
     for (auto& elem : processorGraphicsItems_) {
@@ -1383,7 +1289,6 @@ void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& property
 
 void NetworkEditor::onProcessorNetworkChange() {
     setModified();
-    updateLeds();
 }
 
 void PortInspectorObserver::onProcessorWidgetHide(ProcessorWidget* widget) {

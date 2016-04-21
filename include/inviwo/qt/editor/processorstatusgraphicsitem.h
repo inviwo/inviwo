@@ -34,6 +34,8 @@
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/activityindicator.h>
+#include <inviwo/core/processors/processorobserver.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QEvent>
@@ -46,7 +48,8 @@ class Processor;
 
 class IVW_QTEDITOR_API ProcessorStatusGraphicsItem : public EditorGraphicsItem,
                                                      public ProcessorWidgetObserver,
-                                                     public ActivityIndicatorObserver{
+                                                     public ProcessorObserver,
+                                                     public ActivityIndicatorObserver {
 public:
     ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
     virtual ~ProcessorStatusGraphicsItem() {}
@@ -66,6 +69,8 @@ public:
 protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual void activityIndicatorChanged(bool active) override;
+
+    virtual void onProcessorAboutToProcess(Processor*) override;
 
 private:
     enum class State {Invalid, Running, Ready};

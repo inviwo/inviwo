@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,17 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 namespace inviwo {
 
-void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onWillAddProperty(property, index); });
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationBegin() {
+    for_each([](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationBegin(); });
 }
 
-void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onDidAddProperty(property, index); });
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationEnd() {
+    for_each([](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
 }
 
-void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onWillRemoveProperty(property, index); });
-}
+} // namespace
 
-void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onDidRemoveProperty(property, index); });
-}
-
-}  // namespace

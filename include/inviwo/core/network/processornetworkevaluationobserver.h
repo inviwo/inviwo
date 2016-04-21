@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertyownerobserver.h>
+#ifndef IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
+#define IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
-void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onWillAddProperty(property, index); });
-}
+class ProcessorNetworkEvaluationObservable;
 
-void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onDidAddProperty(property, index); });
-}
+/**
+ * \class ProcessorNetworkEvaluationObserver
+ */
+class IVW_CORE_API ProcessorNetworkEvaluationObserver : public Observer {
+public:
+    friend ProcessorNetworkEvaluationObservable;
+    ProcessorNetworkEvaluationObserver() = default;
+    virtual ~ProcessorNetworkEvaluationObserver() = default;
 
-void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onWillRemoveProperty(property, index); });
-}
+    virtual void onProcessorNetworkEvaluationBegin(){};
+    virtual void onProcessorNetworkEvaluationEnd(){};
+};
 
-void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property, size_t index) {
-    for_each([&](PropertyOwnerObserver* o) { o->onDidRemoveProperty(property, index); });
-}
+class IVW_CORE_API ProcessorNetworkEvaluationObservable
+    : public Observable<ProcessorNetworkEvaluationObserver> {
+public:
+    ProcessorNetworkEvaluationObservable() = default;
+
+    virtual void notifyObserversProcessorNetworkEvaluationBegin();
+    virtual void notifyObserversProcessorNetworkEvaluationEnd();
+};
 
 }  // namespace
+
+#endif  // IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
