@@ -56,6 +56,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/eventconverterqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtwidgetsdefine.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/keyboardutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/labelgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h
@@ -80,6 +81,7 @@ set(SOURCE_FILES
     inviwodockwidgettitlebar.cpp
     inviwofiledialog.cpp
     inviwoqtutils.cpp
+    keyboardutils.cpp
     labelgraphicsitem.cpp
     lightpositionwidgetqt.cpp
     ordinaleditorwidget.cpp

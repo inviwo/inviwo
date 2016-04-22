@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/eventconverterqt.h>
+#include <inviwo/qt/widgets/keyboardutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -115,7 +116,7 @@ InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEve
 }
 
 int EventConverterQt::getKeyButton(const QKeyEvent* e) {
-    return e->key();
+    return static_cast<int>(util::mapKeyFromQt(e));
 }
 
 } // namespace

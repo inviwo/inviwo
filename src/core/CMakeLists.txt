@@ -80,6 +80,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gestureevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/interactionevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardkeys.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
