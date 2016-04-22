@@ -258,6 +258,7 @@ void Observable<T>::addObserver(T* observer) {
         if (inserted.second) addObservationHelper(observer);
     } else {
         toAdd_.insert(observer);
+        addObservationHelper(observer);
     }
 }
 
@@ -267,6 +268,7 @@ void Observable<T>::removeObserver(T* observer) {
         if (observers_.erase(observer) > 0) removeObservationHelper(observer);
     } else {
         toRemove_.insert(observer);
+        removeObservationHelper(observer);
     }
 }
 
@@ -279,8 +281,10 @@ void Observable<T>::forEachObserver(C callback) {
 
     // Add and Remove any observers that was added/removed while we invoked the callbacks.
     if (invocationCount_ == 0) {
-        for (auto o : toAdd_) addObserver(o);
-        for (auto o : toRemove_) removeObserver(o);
+        for (auto o : toAdd_) observers_.insert(o);
+        toAdd_.clear();
+        for (auto o : toRemove_) observers_.erase(o);
+        toRemove_.clear();
     }
 }
 
@@ -295,13 +299,21 @@ void Observable<T>::removeObserver(Observer* observer) {
 }
 
 template <typename T>
-void Observable<T>::addObserverInternal(Observer* observer) {
-    addObserver(observer);
+void inviwo::Observable<T>::addObserverInternal(Observer* observer) {
+    if (invocationCount_ == 0) {
+        observers_.insert(static_cast<T*>(observer));
+    } else {
+        toAdd_.insert(static_cast<T*>(observer));
+    }
 }
 
 template <typename T>
-void Observable<T>::removeObserverInternal(Observer* observer) {
-    removeObserver(observer);
+void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
+    if (invocationCount_ == 0) {
+        observers_.erase(static_cast<T*>(observer));
+    } else {
+        toRemove_.insert(static_cast<T*>(observer));
+    }
 }
 
 }  // namespace
