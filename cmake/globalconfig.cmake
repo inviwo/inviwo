@@ -203,12 +203,6 @@ set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
 )
     
 #--------------------------------------------------------------------
-# Disable deprecation warnings for standard C functions
-if(CMAKE_COMPILER_2005)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-endif(CMAKE_COMPILER_2005)
-
-#--------------------------------------------------------------------
 # Mac specific
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(-DDARWIN)
@@ -353,7 +347,7 @@ if(WIN32 AND MSVC)
     endif()  
 endif()
 
-if (LINUX)
+if(UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
 endif()
 
