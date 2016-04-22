@@ -188,6 +188,8 @@ private:
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
+    void updateActionStates();
+    
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
     void removeProcessorRepresentations(Processor* processor);
@@ -237,7 +239,8 @@ private:
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
 
-    QList<QGraphicsItem*> toBeDeleted_;
+    QList<QGraphicsItem*> clickedOnItems_;
+    std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;
@@ -246,7 +249,7 @@ private:
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
 
-    static const int GRID_SPACING;
+    static const int gridSpacing_;
     std::string filename_;
     bool modified_;
     bool doingContextMenu_ = false;
