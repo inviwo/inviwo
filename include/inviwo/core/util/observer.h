@@ -76,7 +76,7 @@ protected:
     void addObservation(ObservableInterface* observable);
 
     // Storing observables connected to this observer enables removal upon destruction.
-    typedef std::unordered_set<ObservableInterface*> ObservableSet;
+    using ObservableSet = std::unordered_set<ObservableInterface*>;
     ObservableSet observables_;
 
 private:
@@ -123,23 +123,54 @@ private:
  * \section Observable.example Example
  * Example of how to apply it to a simple button.
  * @code
- *    class IVW_XXX_API ButtonObserver: public Observer {
- *    public:
- *        ButtonObserver(): Observer() {};
- *        // Will be notified when the observed button is pressed.
- *        void buttonPressed(){};
- *    };
+ *     class ButtonObservable;
  *
- *    class IVW_XXX_API Button: public Observable<ButtonObserver> {
- *    public:
- *        Button(): Observable<ButtonObserver>() {};
- *        void pressButton() {
- *            // Do stuff
- *            // Notify observers
- *            for (auto o : observers_) o->buttonPressed();
- *        }
- *    };
+ *     class IVW_XXX_API ButtonObserver: public Observer {
+ *     public:
+ *         friend ButtonObservable;
+ *         ButtonObserver() = default
+ *         // Override to be notified when the observed button is pressed.
+ *         virtual void onButtonPressed(){};
+ *     };
+ *
+ *     class IVW_XXX_API ButtonObservable: public Observable<ButtonObserver> {
+ *     protected:
+ *         ButtonObservable() = default;
+ *         void notifyObserversAboutButtonPressed() {
+ *             forEachObserver([](ButtonObserver* o) { o->onButtonPressed(); });
+ *         }
+ *     };
  * @endcode
+ *
+ * Usage: 
+ * @code
+ *     class Button : public ButtonObservable {
+ *         ...
+ *         void handleButtonPress() {
+ *             ...
+ *             notifyObserversAboutButtonPressed();
+ *             ...
+ *         }
+ *         ...
+ *     };
+ * @endcode
+ *
+ * @code
+ *     class MyClass : public ButtonObserver {
+ *     public:
+ *         MyClass(Button* button) {
+ *             button->addObserver(this);
+ *         }
+ *
+ *         ...
+ *     private:
+ *         virtual void onButtonPressed() override {
+ *             // Do stuff on button press
+ *         };
+ *         ...
+ *     };
+ * @endcode
+ *
  * @see Observer
  * @see VoidObserver
  */
@@ -158,17 +189,19 @@ public:
 
 protected:
     template <typename C>
-    void for_each(C callback);
+    void forEachObserver(C callback);
 
-
-    typedef std::unordered_set<T*> ObserverSet;
+    using ObserverSet = std::unordered_set<T*> ;
     ObserverSet observers_;
 
 private:
-    size_t invocation_count_ = 0;
+    // invocationCount counts how may time we have called forEachObserver
+    // Add we will only add and remove observers when that it is zero to avoid
+    // Invalidation the iterators. This is needed since a observer might remove it
+    // self in the on... callback.
+    size_t invocationCount_ = 0;
     ObserverSet toAdd_;
     ObserverSet toRemove_;
-
 
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
@@ -220,7 +253,7 @@ void Observable<T>::removeObservers() {
 
 template <typename T>
 void Observable<T>::addObserver(T* observer) {
-    if (invocation_count_ == 0) {
+    if (invocationCount_ == 0) {
         auto inserted = observers_.insert(observer);
         if (inserted.second) addObservationHelper(observer);
     } else {
@@ -230,7 +263,7 @@ void Observable<T>::addObserver(T* observer) {
 
 template <typename T>
 void Observable<T>::removeObserver(T* observer) {
-    if (invocation_count_ == 0) {
+    if (invocationCount_ == 0) {
         if (observers_.erase(observer) > 0) removeObservationHelper(observer);
     } else {
         toRemove_.insert(observer);
@@ -239,12 +272,13 @@ void Observable<T>::removeObserver(T* observer) {
 
 template <typename T>
 template <typename C>
-void Observable<T>::for_each(C callback) {
-    ++invocation_count_;
+void Observable<T>::forEachObserver(C callback) {
+    ++invocationCount_;
     for (auto o : observers_) callback(o);
-    --invocation_count_;
+    --invocationCount_;
 
-    if (invocation_count_ == 0) {
+    // Add and Remove any observers that was added/removed while we invoked the callbacks.
+    if (invocationCount_ == 0) {
         for (auto o : toAdd_) addObserver(o);
         for (auto o : toRemove_) removeObserver(o);
     }
@@ -261,13 +295,13 @@ void Observable<T>::removeObserver(Observer* observer) {
 }
 
 template <typename T>
-void inviwo::Observable<T>::addObserverInternal(Observer* observer) {
-    observers_.insert(static_cast<T*>(observer));
+void Observable<T>::addObserverInternal(Observer* observer) {
+    addObserver(observer);
 }
 
 template <typename T>
-void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
-    observers_.erase(static_cast<T*>(observer));
+void Observable<T>::removeObserverInternal(Observer* observer) {
+    removeObserver(observer);
 }
 
 }  // namespace

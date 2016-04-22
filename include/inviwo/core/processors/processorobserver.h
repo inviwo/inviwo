@@ -39,6 +39,7 @@ namespace inviwo {
 
 class Processor;
 class ProcessorObservable;
+class ProcessorNetworkEvaluator;
 
 /** \class ProcessorObserver
  *
@@ -71,43 +72,46 @@ public:
  * @see ProcessorObserver
  */
 class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {
-public:
+protected:
+    friend ProcessorNetworkEvaluator;
+    friend Property;
+    
     ProcessorObservable() = default;
     virtual ~ProcessorObservable() = default; 
 
     void notifyObserversAboutPropertyChange(Property* p) {
-        for_each([&](ProcessorObserver* o) { o->onAboutPropertyChange(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onAboutPropertyChange(p); });
     }
 
     void notifyObserversInvalidationBegin(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorInvalidationBegin(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorInvalidationBegin(p); });
     }
 
     void notifyObserversInvalidationEnd(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorInvalidationEnd(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorInvalidationEnd(p); });
     }
 
     void notifyObserversRequestEvaluate(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorRequestEvaluate(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorRequestEvaluate(p); });
     }
 
     void notifyObserversIdentifierChange(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorIdentifierChange(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorIdentifierChange(p); });
     }
 
     void notifyObserversProcessorPortAdded(Processor* p, Port* port) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorPortAdded(p, port); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorPortAdded(p, port); });
     }
 
     void notifyObserversProcessorPortRemoved(Processor* p, Port* port) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorPortRemoved(p, port); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorPortRemoved(p, port); });
     }
 
     void notifyObserversAboutToProcess(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorAboutToProcess(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorAboutToProcess(p); });
     }
     void notifyObserversFinishedProcess(Processor* p) {
-        for_each([&](ProcessorObserver* o) { o->onProcessorFinishedProcess(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishedProcess(p); });
     }
 };
 

@@ -32,11 +32,13 @@
 namespace inviwo {
 
 void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationBegin() {
-    for_each([](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationBegin(); });
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationBegin(); });
 }
 
 void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationEnd() {
-    for_each([](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
 }
 
 } // namespace
