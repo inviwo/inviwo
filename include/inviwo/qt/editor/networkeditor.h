@@ -241,6 +241,7 @@ private:
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
+    mutable size_t pasteCount_ = 0;
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;

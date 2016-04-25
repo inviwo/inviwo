@@ -1111,6 +1111,8 @@ QByteArray NetworkEditor::copy() const {
     
     for (auto& item : items) item->setSelected(false);
     
+    pasteCount_ = 0;
+    
     return byteArray;
 }
 
@@ -1132,9 +1134,10 @@ void NetworkEditor::paste(QByteArray mimeData) {
         top = glm::min(top, m->getPosition());
     }
 
-    ivec2 pos = clickedPosition_.first
-                    ? clickedPosition_.second - top
-                    : ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+    ivec2 pos =
+        clickedPosition_.first
+            ? clickedPosition_.second - top
+            : ivec2(++pasteCount_) * ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
 
     for (auto p : added) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
