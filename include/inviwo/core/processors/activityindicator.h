@@ -51,7 +51,7 @@ public:
     bool isActive() const;
 
 private: 
-    void notifyActivityIndicatorChanged(bool active) const;
+    void notifyActivityIndicatorChanged(bool active);
     bool active_ = false;
 };
 

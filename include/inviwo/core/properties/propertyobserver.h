@@ -55,12 +55,12 @@ class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
 protected:
     PropertyObservable() = default;
 
-    void notifyObserversOnSetIdentifier(const std::string& identifier) const;
-    void notifyObserversOnSetDisplayName(const std::string& displayName) const;
-    void notifyObserversOnSetSemantics(const PropertySemantics& semantics) const;
-    void notifyObserversOnSetReadOnly(bool readonly) const;
-    void notifyObserversOnSetVisible(bool visible) const;
-    void notifyObserversOnSetUsageMode(UsageMode usageMode) const;
+    void notifyObserversOnSetIdentifier(const std::string& identifier);
+    void notifyObserversOnSetDisplayName(const std::string& displayName);
+    void notifyObserversOnSetSemantics(const PropertySemantics& semantics);
+    void notifyObserversOnSetReadOnly(bool readonly);
+    void notifyObserversOnSetVisible(bool visible);
+    void notifyObserversOnSetUsageMode(UsageMode usageMode);
 };
 
 }  // namespace

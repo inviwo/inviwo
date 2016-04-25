@@ -66,8 +66,8 @@ public:
  */
 class IVW_CORE_API ProgressBarObservable : public Observable<ProgressBarObserver> {
 protected:
-    void notifyProgressChanged() const;
-    void notifyVisibilityChanged() const;
+    void notifyProgressChanged();
+    void notifyVisibilityChanged();
 };
 
 /** \class ProgressBar

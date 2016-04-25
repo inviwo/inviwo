@@ -260,9 +260,7 @@ template <typename T>
 T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
     for (int i = 0; i < graphicsItems.size(); i++) {
-        T* item = qgraphicsitem_cast<T*>(graphicsItems[i]);
-
-        if (item) return item;
+        if (auto item = qgraphicsitem_cast<T*>(graphicsItems[i])) return item;
     }
     return nullptr;
 }
@@ -294,20 +292,6 @@ private:
     static QEvent::Type PortInspectorEventType;
 };
 
-class SignalMapperObject : public QObject {
-    Q_OBJECT
-public:
-    SignalMapperObject() : QObject(), item_(nullptr) {}
-
-public slots:
-    void tiggerAction() { emit(triggered(item_)); }
-
-signals:
-    void triggered(EditorGraphicsItem*);
-
-public:
-    EditorGraphicsItem* item_;
-};
 
 }  // namespace
 

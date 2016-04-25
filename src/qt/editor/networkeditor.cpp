@@ -382,7 +382,7 @@ bool NetworkEditor::isModified() const { return modified_; }
 void NetworkEditor::setModified(const bool modified) {
     if (modified != modified_) {
         modified_ = modified;
-        for (auto o : observers_) o->onModifiedStatusChanged(modified);
+        forEachObserver([&](NetworkEditorObserver* o) { o->onModifiedStatusChanged(modified); });
     }
 }
 
@@ -1074,7 +1074,7 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
         }
-        for (auto o : observers_) o->onNetworkEditorFileChanged(path);
+        forEachObserver([&](NetworkEditorObserver* o) { o->onNetworkEditorFileChanged(path); });
         InviwoApplicationQt::processEvents();  // make sure the gui is ready before we unlock.
     }
 

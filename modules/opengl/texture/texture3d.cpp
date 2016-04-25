@@ -96,7 +96,7 @@ Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
 
 void Texture3D::initialize(const void* data) {
     // Notify observers
-    for (auto o : observers_) o->notifyBeforeTextureInitialization();
+    forEachObserver([](TextureObserver* o) { o->notifyBeforeTextureInitialization(); });
 
     // Allocate data
     bind();
@@ -106,8 +106,7 @@ void Texture3D::initialize(const void* data) {
                  static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z), 0,
                  format_, dataType_, data);
     LGL_ERROR;
-
-    for (auto o : observers_) o->notifyAfterTextureInitialization();  
+    forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
 }
 
 size_t Texture3D::getNumberOfValues() const {

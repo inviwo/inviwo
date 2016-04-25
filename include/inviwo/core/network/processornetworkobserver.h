@@ -77,27 +77,27 @@ public:
     ProcessorNetworkObservable() = default;
     virtual ~ProcessorNetworkObservable() = default;
 
-    void notifyObserversProcessorNetworkChanged() const;
-    void notifyObserversProcessorNetworkEvaluateRequest() const;
-    void notifyObserversProcessorNetworkUnlocked() const;
+    void notifyObserversProcessorNetworkChanged();
+    void notifyObserversProcessorNetworkEvaluateRequest();
+    void notifyObserversProcessorNetworkUnlocked();
 
     // Processors
-    void notifyObserversProcessorNetworkWillAddProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkDidAddProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkWillRemoveProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkDidRemoveProcessor(Processor* processor) const;
+    void notifyObserversProcessorNetworkWillAddProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkDidAddProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkWillRemoveProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkDidRemoveProcessor(Processor* processor);
 
     // Connections
-    void notifyObserversProcessorNetworkWillAddConnection(const PortConnection& connection) const;
-    void notifyObserversProcessorNetworkDidAddConnection(const PortConnection& connection) const;
-    void notifyObserversProcessorNetworkWillRemoveConnection(const PortConnection& connection) const;
-    void notifyObserversProcessorNetworkDidRemoveConnection(const PortConnection& connection) const;
+    void notifyObserversProcessorNetworkWillAddConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkDidAddConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkWillRemoveConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkDidRemoveConnection(const PortConnection& connection);
 
     // Links
-    void notifyObserversProcessorNetworkWillAddLink(const PropertyLink& propertyLink) const;
-    void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink) const;
-    void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink) const;
-    void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) const;
+    void notifyObserversProcessorNetworkWillAddLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
 
 };
 
