@@ -36,6 +36,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -272,7 +273,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
         // Do auto linking.
         for (auto& processor : portInspector->getProcessors()) {
-            network_->autoLinkProcessor(processor);
+            util::autoLinkProcessor(network_, processor);
         }
 
         // Setup the widget
@@ -352,7 +353,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
 
                 // Do auto-linking.
                 for (auto& processor : portInspector->getProcessors()) {
-                    network_->autoLinkProcessor(processor);
+                    util::autoLinkProcessor(network_, processor);
                 }
 
                 int size = mainwindow_->getInviwoApplication()
@@ -858,7 +859,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
                 }
 
                 network_->addProcessor(processor);
-                network_->autoLinkProcessor(processor);
+                util::autoLinkProcessor(network_, processor);
 
                 if (oldConnectionTarget_) {
                     placeProcessorOnConnection(processor, oldConnectionTarget_);
