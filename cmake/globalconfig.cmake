@@ -181,7 +181,7 @@ set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 set(IVW_CMAKE_TEMPLATES         ${IVW_ROOT_DIR}/cmake/templates)
 
 #Generate headers
-generate_module_paths_header()
+ivw_generate_module_paths_header()
 configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h 
                ${CMAKE_BINARY_DIR}/modules/_generated/inviwocommondefines.h 
                @ONLY IMMEDIATE)

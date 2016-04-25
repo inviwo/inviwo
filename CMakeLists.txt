@@ -134,7 +134,7 @@ add_subdirectory(apps)
 
 #--------------------------------------------------------------------
 # Add external projects
-add_external_projects()
+ivw_add_external_projects()
 
 #--------------------------------------------------------------------
 # Package creation
