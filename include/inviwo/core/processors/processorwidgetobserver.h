@@ -31,15 +31,16 @@
 #define IVW_PROCESSORWIDGETOBSERVER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
 class ProcessorWidget;
+class ProcessorWidgetObservable;
 
 class IVW_CORE_API ProcessorWidgetObserver : public Observer {
 public:
+    friend ProcessorWidgetObservable;
     ProcessorWidgetObserver();
     virtual ~ProcessorWidgetObserver();
     

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,19 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "colorconversion.cl" // Conversion from rgb to grayscale, from opencl module
-#include "samplers.cl"        // Image sampler
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
-__kernel void grayscaleKernel(read_only image2d_t src, write_only image2d_t dst) 
-{ 
-    if (get_global_id(0) >= get_image_width(dst) || get_global_id(1) >= get_image_height(dst)) { return; }
+namespace inviwo {
 
-    float4 color = read_imagef(src, smpUNormNoClampNearest, (int2)(get_global_id(0), get_global_id(1)));
-    float gray = rgb2gray(color.xyz);
-    float4 result = (float4)(gray, gray, gray, color.w);
-   
-    write_imagef(dst, (int2)(get_global_id(0), get_global_id(1)), result);
-};
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationBegin() {
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationBegin(); });
+}
+
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationEnd() {
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
+}
+
+} // namespace
+

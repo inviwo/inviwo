@@ -32,11 +32,13 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/observer.h>
-#include <inviwo/core/processors/processorwidgetobserver.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
+#include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
@@ -53,6 +55,7 @@ namespace inviwo {
 class Inport;
 class Outport;
 class PortInspector;
+class ProcessorNetwork;
 class EditorGraphicsItem;
 class ProcessorGraphicsItem;
 class ProcessorOutportGraphicsItem;
@@ -81,7 +84,7 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
 #include <warn/pop>
 public:
     NetworkEditor(InviwoMainWindow* mainwindow);
-    virtual ~NetworkEditor();
+    virtual ~NetworkEditor() = default;
 
     void clearNetwork();
 
@@ -93,7 +96,7 @@ public:
      * @return true if successful, false otherwise.
      */
     bool saveNetwork(std::ostream stream);
-    bool saveNetwork(std::string fileName,bool setAsFilename = true);
+    bool saveNetwork(std::string fileName, bool setAsFilename = true);
 
     /**
      * Load network from a stream. The path will be used to calculate relative directories of data
@@ -117,8 +120,6 @@ public:
     void removeAndDeletePropertyWidgets(Processor* processor);
     void removePropertyWidgets(Processor* processor);
 
-    std::vector<std::string> getSnapshotsOfExternalNetwork(std::string fileName);
-
     bool isModified() const;
     void setModified(const bool modified = true);
 
@@ -139,18 +140,6 @@ public:
 
     void updateLeds();
     bool doingContextMenu() const;
-
-    // Overrides for ProcessorNetworkObserver
-    virtual void onProcessorNetworkChange() override;
-
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
-
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& connection) override;
-
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
@@ -184,12 +173,23 @@ protected:
     virtual bool event(QEvent* e) override;
 
 private:
-
-    enum NetworkEditorFlags { None = 0, CanvasHidden = 1, UseOriginalCanvasSize = 1 << 2 };
-
     friend class ProcessorGraphicsItem;
     friend class ConnectionGraphicsItem;
 
+    // Overrides for ProcessorNetworkObserver
+    virtual void onProcessorNetworkChange() override;
+
+    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
+
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& connection) override;
+
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
+
+    void updateActionStates();
+    
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
     void removeProcessorRepresentations(Processor* processor);
@@ -221,13 +221,6 @@ private:
     ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
-    void addExternalNetwork(std::string fileName, std::string processorPrefix, ivec2 pos,
-                            unsigned int networkEditorFlags = NetworkEditor::None,
-                            ivec2 canvasSize = ivec2(128));
-    void removeExternalNetwork(std::string identifierPrefix);
-    std::vector<std::string> saveSnapshotsInExternalNetwork(std::string externalNetworkFile,
-                                                            std::string identifierPrefix);
-
     void drawBackground(QPainter* painter, const QRectF& rect) override;
 
     void deleteItems(QList<QGraphicsItem*> items);
@@ -246,7 +239,9 @@ private:
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
 
-    QList<QGraphicsItem*> toBeDeleted_;
+    QList<QGraphicsItem*> clickedOnItems_;
+    std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
+    mutable size_t pasteCount_ = 0;
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;
@@ -255,7 +250,7 @@ private:
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
 
-    static const int GRID_SPACING;
+    static const int gridSpacing_;
     std::string filename_;
     bool modified_;
     bool doingContextMenu_ = false;

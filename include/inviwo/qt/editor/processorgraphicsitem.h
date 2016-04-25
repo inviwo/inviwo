@@ -93,6 +93,8 @@ public:
 
     void setHighlight(bool val);
 
+    static const QSizeF size_;
+
 protected:
     void setIdentifier(QString text);
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
@@ -124,7 +126,6 @@ private:
     
     bool highlight_;
 
-    static const QSizeF size_;
     static const float roundedCorners_;
     static const int labelHeight_;
     static const QPointF inportPos_;
