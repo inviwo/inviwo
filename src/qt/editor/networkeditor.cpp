@@ -35,6 +35,7 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -61,10 +62,12 @@
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
 #include <inviwo/qt/editor/processorprogressgraphicsitem.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/eventconverterqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -80,7 +83,7 @@
 
 namespace inviwo {
 
-const int NetworkEditor::GRID_SPACING = 25;
+const int NetworkEditor::gridSpacing_ = 25;
 
 NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     : QGraphicsScene()
@@ -92,21 +95,14 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
     , filename_("")
     , modified_(false) {
+
     network_->addObserver(this);
 
     // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
     
-    connect(this, &QGraphicsScene::selectionChanged, [&](){
-        auto actions = mainwindow_->getActions();
-        auto enable = selectedItems().size()>0;
-        actions["Copy"]->setEnabled(enable);
-        actions["Cut"]->setEnabled(enable);
-        actions["Delete"]->setEnabled(enable);
-    });
+    connect(this, &QGraphicsScene::selectionChanged, [&](){updateActionStates();});
 }
-
-NetworkEditor::~NetworkEditor() {}
 
 ////////////////////////////////////////////////////////
 //   PRIVATE METHODS FOR ADDING/REMOVING PROCESSORS   //
@@ -390,101 +386,6 @@ void NetworkEditor::setModified(const bool modified) {
     }
 }
 
-////////////////////////////////////////////////////////
-//   LOAD AND GET SNAPSHOT FROM EXTERNAL NETWORK      //
-////////////////////////////////////////////////////////
-
-void NetworkEditor::addExternalNetwork(std::string fileName, std::string identifierPrefix,
-                                       ivec2 pos, unsigned int networkEditorFlags,
-                                       ivec2 canvasSize) {
-    NetworkLock lock(network_);
-
-    auto app = mainwindow_->getInviwoApplication();
-    Deserializer xmlDeserializer(app, fileName);
-    ProcessorNetwork* processorNetwork = new ProcessorNetwork(app);
-    processorNetwork->deserialize(xmlDeserializer);
-
-    for (auto& processor : processorNetwork->getProcessors()) {
-        std::string newIdentifier = identifierPrefix + "_" + processor->getIdentifier();
-        processor->setIdentifier(newIdentifier);
-        auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        meta->setPosition(meta->getPosition() + pos);
-        network_->addProcessor(processor);
-    }
-
-    for (auto connection : processorNetwork->getConnections()) {
-        Outport* outport = connection.getOutport();
-        Inport* inport = connection.getInport();
-        // first remove the connection from the loaded network to avoid an already connected warning
-        processorNetwork->removeConnection(outport, inport);
-        network_->addConnection(outport, inport);
-    }
-
-    for (auto& link : processorNetwork->getLinks()) {
-        network_->addLink(link);
-    }
-}
-
-std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
-    std::string externalNetworkFile, std::string identifierPrefix) {
-    // turnoff sound
-    auto app = mainwindow_->getInviwoApplication();
-    BoolProperty* soundProperty =
-        dynamic_cast<BoolProperty*>(app->getSettingsByType<SystemSettings>()
-                                        ->getPropertyByIdentifier("enableSound"));
-    bool isSoundEnabled = soundProperty->get();
-
-    if (isSoundEnabled) soundProperty->set(false);
-
-    std::vector<std::string> canvasSnapShotFiles;
-    std::string directory = filesystem::getFileDirectory(externalNetworkFile);
-    std::string workSpaceName = filesystem::getFileNameWithExtension(externalNetworkFile);
-    std::string newFileName = filesystem::replaceFileExtension(workSpaceName, "png");
-
-    for (auto& processor : network_->getProcessors()) {
-        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos) {
-            CanvasProcessor* canvasProcessor = dynamic_cast<CanvasProcessor*>(processor);
-
-            if (canvasProcessor) {
-                std::string snapShotFilePath =
-                    directory + "/" + "snapshot_" + canvasProcessor->getIdentifier() + newFileName;
-                canvasSnapShotFiles.push_back(snapShotFilePath);
-                canvasProcessor->saveImageLayer(snapShotFilePath);
-            }
-        }
-    }
-
-    if (isSoundEnabled) soundProperty->set(true);
-
-    return canvasSnapShotFiles;
-}
-
-void NetworkEditor::removeExternalNetwork(std::string identifierPrefix) {
-    NetworkLock lock(network_);
-
-    for (auto& processor : network_->getProcessors()) {
-        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos)
-            network_->removeProcessor(processor);
-    }
-}
-
-std::vector<std::string> NetworkEditor::getSnapshotsOfExternalNetwork(std::string fileName) {
-    std::vector<std::string> snapshotFileNames;
-    // load external network
-    QRectF rect = sceneRect();
-    ivec2 pos(rect.width() / 2, rect.height() / 2);
-    std::string identifierPrefix = "TemporaryExternalNetwork";
-    unsigned int networkEditorFlags =
-        NetworkEditor::UseOriginalCanvasSize | NetworkEditor::CanvasHidden;
-    addExternalNetwork(fileName, identifierPrefix, pos, networkEditorFlags);
-    network_->setModified(true);
-    mainwindow_->getInviwoApplication()->getProcessorNetworkEvaluator()->requestEvaluate();
-    // save snapshot
-    snapshotFileNames = saveSnapshotsInExternalNetwork(fileName, identifierPrefix);
-    // unload external network
-    removeExternalNetwork(identifierPrefix);
-    return snapshotFileNames;
-}
 
 ////////////////////////////////////////////
 //   OBTAIN GRAPHICS ITEMS FROM NETWORK   //
@@ -638,6 +539,7 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
 
 void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     QMenu menu;
+    ProcessorGraphicsItem* clickedProcessor = nullptr;
 
     for (auto& item : items(e->scenePos())) {
         if (auto outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
@@ -664,6 +566,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+            clickedProcessor = processor;
+            
             QAction* renameAction = menu.addAction(tr("Rename Processor"));
             connect(renameAction, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -725,6 +629,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 network_->removeAndDeleteProcessor(p);
             });
 
+            QAction* helpAction = menu.addAction(tr("Show Help"));
+            connect(helpAction, &QAction::triggered, [this, processor]() {
+                auto help = mainwindow_->getHelpWidget();
+                help->showDocForClassName(processor->getProcessor()->getClassIdentifier());
+                if(!help->isVisible()) help->show();
+                help->raise();
+            });
+
             break;
         }
 
@@ -767,20 +679,36 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addAction(actions["Cut"]);
     menu.addAction(actions["Paste"]);
     menu.addSeparator();
+    
+    clickedOnItems_.append(items(e->scenePos()));
+    clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
+    
+    bool enable = clickedProcessor || selectedItems().size() > 0;
+    actions["Copy"]->setEnabled(enable);
+    actions["Cut"]->setEnabled(enable);
 
     QAction* deleteAction = actions["Delete"];
     menu.addAction(deleteAction);
-    toBeDeleted_.append(items(e->scenePos()));
-  
+    
+    actions["Delete"]->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
     
     doingContextMenu_ = true;
     menu.exec(QCursor::pos());
     e->accept();
-    toBeDeleted_.clear();
+    clickedOnItems_.clear();
+    clickedPosition_ = {false, ivec2{0,0}};
     doingContextMenu_ = false;
 }
 bool NetworkEditor::doingContextMenu() const {
     return doingContextMenu_;
+}
+
+void NetworkEditor::updateActionStates() {
+    auto actions = mainwindow_->getActions();
+    auto enable = selectedItems().size() > 0;
+    actions["Copy"]->setEnabled(enable);
+    actions["Cut"]->setEnabled(enable);
+    actions["Delete"]->setEnabled(enable);
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
@@ -794,8 +722,8 @@ void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEve
 }
 
 void NetworkEditor::deleteSelection() {
-    deleteItems(toBeDeleted_);
-    toBeDeleted_.clear();
+    deleteItems(clickedOnItems_);
+    clickedOnItems_.clear();
     deleteItems(selectedItems());
 }
 
@@ -1167,9 +1095,24 @@ bool NetworkEditor::event(QEvent* e) {
 
 QByteArray NetworkEditor::copy() const {
     std::stringstream ss;
+    std::vector<ProcessorGraphicsItem*> items;
+    for (auto& item : clickedOnItems_) {
+        if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+            if (!processor->isSelected()) {
+                processor->setSelected(true);
+                items.push_back(processor);
+            }
+        }
+    }
+    
     util::serializeSelected(network_, ss, "");
     auto str = ss.str();
     QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+    
+    for (auto& item : items) item->setSelected(false);
+    
+    pasteCount_ = 0;
+    
     return byteArray;
 }
 
@@ -1183,10 +1126,22 @@ void NetworkEditor::paste(QByteArray mimeData) {
     std::stringstream ss;
     for (auto d : mimeData) ss << d;
     auto added = util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
+    
+    ivec2 top{std::numeric_limits<int>::max()};
+    
+    for (auto p : added) {
+        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        top = glm::min(top, m->getPosition());
+    }
+
+    ivec2 pos =
+        clickedPosition_.first
+            ? clickedPosition_.second - top
+            : ivec2(++pasteCount_) * ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
 
     for (auto p : added) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        m->setPosition(m->getPosition() + ivec2(50, 50));
+        m->setPosition(m->getPosition() + pos);
     }
 }
 
@@ -1203,8 +1158,8 @@ QPointF NetworkEditor::snapToGrid(QPointF pos) {
     float ox = pos.x() > 0.0f ? 0.5f : -0.5f;
     float oy = pos.y() > 0.0f ? 0.5f : -0.5f;
 
-    result.setX((int(pos.x() / GRID_SPACING + ox)) * GRID_SPACING);
-    result.setY((int(pos.y() / GRID_SPACING + oy)) * GRID_SPACING);
+    result.setX((int(pos.x() / gridSpacing_ + ox)) * gridSpacing_);
+    result.setY((int(pos.y() / gridSpacing_ + oy)) * gridSpacing_);
     return result;
 }
 
@@ -1212,17 +1167,17 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->save();
     painter->setWorldMatrixEnabled(true);
     painter->fillRect(rect, Qt::darkGray);
-    qreal left = int(rect.left()) - (int(rect.left()) % GRID_SPACING);
-    qreal top = int(rect.top()) - (int(rect.top()) % GRID_SPACING);
+    qreal left = int(rect.left()) - (int(rect.left()) % gridSpacing_);
+    qreal top = int(rect.top()) - (int(rect.top()) % gridSpacing_);
     QVarLengthArray<QLineF, 100> linesX;
     painter->setPen(QColor(153, 153, 153));
 
-    for (qreal x = left; x < rect.right(); x += GRID_SPACING)
+    for (qreal x = left; x < rect.right(); x += gridSpacing_)
         linesX.append(QLineF(x, rect.top(), x, rect.bottom()));
 
     QVarLengthArray<QLineF, 100> linesY;
 
-    for (qreal y = top; y < rect.bottom(); y += GRID_SPACING)
+    for (qreal y = top; y < rect.bottom(); y += gridSpacing_)
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
 
     painter->drawLines(linesX.data(), linesX.size());
@@ -1264,6 +1219,7 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
     linkCurve_->setZValue(DRAGING_ITEM_DEPTH);
     linkCurve_->show();
 }
+
 
 void NetworkEditor::updateLeds() {
     // Update the status items
@@ -1383,7 +1339,6 @@ void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& property
 
 void NetworkEditor::onProcessorNetworkChange() {
     setModified();
-    updateLeds();
 }
 
 void PortInspectorObserver::onProcessorWidgetHide(ProcessorWidget* widget) {

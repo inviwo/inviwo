@@ -210,19 +210,8 @@ public:
     void autoLinkProcessor(Processor* processor);
     void evaluateLinksFromProperty(Property*);
 
-    void modified();
-    void setModified(bool modified);
-    bool isModified() const;
     bool isInvalidating() const;
     bool isLinking() const;
-
-    // ProcessorObserver overrides.
-    virtual void onAboutPropertyChange(Property*) override;
-    virtual void onProcessorInvalidationBegin(Processor*) override;
-    virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
-    virtual void onProcessorIdentifierChange(Processor*) override;
-    virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
     void lock();
     void unlock();
@@ -237,9 +226,18 @@ public:
     */
     void clear();
 
+private:
+    // PropertyOwnerObserver overrides
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
-private:
+    // ProcessorObserver overrides.
+    virtual void onAboutPropertyChange(Property*) override;
+    virtual void onProcessorInvalidationBegin(Processor*) override;
+    virtual void onProcessorInvalidationEnd(Processor*) override;
+    virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
+    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorPortRemoved(Processor*, Port* port) override;
+
     void addPropertyOwnerObservation(PropertyOwner*);
     void removePropertyOwnerObservation(PropertyOwner*);
 
@@ -281,7 +279,6 @@ private:
 
     static const int processorNetworkVersion_;
 
-    bool modified_ = true;
     unsigned int locked_ = 0;
     bool deserializing_ = false;
 

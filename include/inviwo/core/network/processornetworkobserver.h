@@ -38,11 +38,13 @@ namespace inviwo {
 class Processor;
 class PortConnection;
 class PropertyLink;
+class ProcessorNetworkObservable;
 
 class IVW_CORE_API ProcessorNetworkObserver: public Observer {
 public:
-    ProcessorNetworkObserver(): Observer() {};
-
+    ProcessorNetworkObserver() = default;
+    virtual ~ProcessorNetworkObserver() = default;
+    friend ProcessorNetworkObservable;
     /**
     * This method will be called when observed object changes.
     * Override it to add behavior.
@@ -72,7 +74,8 @@ public:
 
 class IVW_CORE_API ProcessorNetworkObservable: public Observable<ProcessorNetworkObserver> {
 public:
-    ProcessorNetworkObservable(): Observable<ProcessorNetworkObserver>() {};
+    ProcessorNetworkObservable() = default;
+    virtual ~ProcessorNetworkObservable() = default;
 
     void notifyObserversProcessorNetworkChanged() const;
     void notifyObserversProcessorNetworkEvaluateRequest() const;

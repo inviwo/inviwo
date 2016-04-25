@@ -105,7 +105,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    inviwoApp.getProcessorNetwork()->setModified(true);
     inviwoApp.getProcessorNetwork()->unlock();
 
     cmdparser.processCallbacks(); // run any command line callbacks from modules.

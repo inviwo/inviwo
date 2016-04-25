@@ -108,7 +108,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    inviwoApp.getProcessorNetwork()->setModified(true);
     inviwoApp.processFront();
     inviwoApp.getProcessorNetwork()->unlock();
 

@@ -53,6 +53,8 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
 
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setPos(QPointF(64.0f, -15.0f));
+
+    processor->ProcessorObservable::addObserver(this);
 }
 
 void ProcessorStatusGraphicsItem::setRunning(bool running) {
@@ -120,6 +122,10 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
 
 void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) {
     setRunning(active);
+}
+
+void ProcessorStatusGraphicsItem::onProcessorAboutToProcess(Processor*) {
+    update();
 }
 
 void ProcessorStatusGraphicsItem::onProcessorWidgetShow(ProcessorWidget*) { update(); }

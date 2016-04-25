@@ -67,7 +67,6 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     }
     
     processor->invalidate(InvalidationLevel::InvalidResources);
-    modified();
     notifyObserversProcessorNetworkDidAddProcessor(processor);
     return true;
 }
@@ -105,7 +104,6 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
     processor->setProcessorWidget(nullptr);
-    modified();
     notifyObserversProcessorNetworkDidRemoveProcessor(processor);
 }
 
@@ -139,7 +137,6 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
 
         connections_.emplace(src, dst);
         connectionsVec_.emplace_back(src, dst);
-        modified();
         
         dst->connectTo(src);
 
@@ -154,7 +151,6 @@ void ProcessorNetwork::removeConnection(const PortConnection& connection){
 
         notifyObserversProcessorNetworkWillRemoveConnection(connection);
 
-        modified();
         connection.getInport()->disconnectFrom(connection.getOutport());
         connections_.erase(it);
         util::erase_remove(connectionsVec_, connection);
@@ -200,7 +196,6 @@ void ProcessorNetwork::addLink(Property* src, Property* dst) {
         notifyObserversProcessorNetworkWillAddLink(link);
         links_.insert(link);
         linkEvaluator_.addLink(link);  // add to cache
-        modified();
         notifyObserversProcessorNetworkDidAddLink(link);
     }
 }
@@ -212,7 +207,6 @@ void ProcessorNetwork::removeLink(const PropertyLink& link) {
         notifyObserversProcessorNetworkWillRemoveLink(link);
         linkEvaluator_.removeLink(link);
         links_.erase(it);
-        modified();
         notifyObserversProcessorNetworkDidRemoveLink(link);
     }
 }
@@ -243,7 +237,7 @@ bool ProcessorNetwork::isLinked(Property* src, Property* dst) const {
 }
 
 std::vector<PropertyLink> ProcessorNetwork::getLinks() const {
-    return util::transform(links_, [](PropertyLinks::const_reference elem) { return elem; });
+    return util::transform(links_, [](PropertyLink elem) { return elem; });
 }
 
 bool ProcessorNetwork::isLinkedBidirectional(Property* src, Property* dst) {
@@ -399,12 +393,6 @@ void ProcessorNetwork::clear() {
         removeAndDeleteProcessor(processor);
     }
 }
-
-void ProcessorNetwork::modified() { modified_ = true; }
-
-void ProcessorNetwork::setModified(bool modified) { modified_ = modified; }
-
-bool ProcessorNetwork::isModified() const { return modified_; }
 
 bool ProcessorNetwork::isInvalidating() const { return !processorsInvalidating_.empty(); }
 

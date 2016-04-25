@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,17 +26,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
+#ifndef IVW_KEYBOARDUTILS_H
+#define IVW_KEYBOARDUTILS_H
 
-#include "colorconversion.cl" // Conversion from rgb to grayscale, from opencl module
-#include "samplers.cl"        // Image sampler
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
-__kernel void grayscaleKernel(read_only image2d_t src, write_only image2d_t dst) 
-{ 
-    if (get_global_id(0) >= get_image_width(dst) || get_global_id(1) >= get_image_height(dst)) { return; }
+class QKeyEvent;
 
-    float4 color = read_imagef(src, smpUNormNoClampNearest, (int2)(get_global_id(0), get_global_id(1)));
-    float gray = rgb2gray(color.xyz);
-    float4 result = (float4)(gray, gray, gray, color.w);
-   
-    write_imagef(dst, (int2)(get_global_id(0), get_global_id(1)), result);
-};
+namespace inviwo {
+
+namespace util {
+
+IVW_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
+
+} // namespace util
+
+} //namespace inviwo
+
+#endif // IVW_KEYBOARDUTILS_H

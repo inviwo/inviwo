@@ -37,9 +37,11 @@
 namespace inviwo {
 
 class Property;
+class PropertyOwnerObservable;
 
 class IVW_CORE_API PropertyOwnerObserver : public Observer {
 public:
+    friend PropertyOwnerObservable;
     PropertyOwnerObserver() = default;
     virtual ~PropertyOwnerObserver() = default;
 
@@ -57,12 +59,13 @@ public:
 class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {
 public:
     PropertyOwnerObservable() = default;
+    virtual ~PropertyOwnerObservable() = default;
 
-    void notifyObserversWillAddProperty(Property* property, size_t index) const;
-    void notifyObserversDidAddProperty(Property* property, size_t index) const;
+    void notifyObserversWillAddProperty(Property* property, size_t index);
+    void notifyObserversDidAddProperty(Property* property, size_t index);
 
-    void notifyObserversWillRemoveProperty(Property* property, size_t index) const;
-    void notifyObserversDidRemoveProperty(Property* property, size_t index) const;
+    void notifyObserversWillRemoveProperty(Property* property, size_t index);
+    void notifyObserversDidRemoveProperty(Property* property, size_t index);
 };
 
 }  // namespace
