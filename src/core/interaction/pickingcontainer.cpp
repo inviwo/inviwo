@@ -59,9 +59,19 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
 
     if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
         mouseIsDown_ = false;
-        mousePickingOngoing_ = false;
-        mousePickObj_ = nullptr;
-        return false;
+        if (mousePickingOngoing_) {
+            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
+            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
+            mousePickObj_->setPickingMouseEvent(*e);
+            prevMouseCoord_ = coord;
+            mousePickObj_->picked();
+            mousePickingOngoing_ = false;
+            return true;
+        }
+        else {
+            mousePickObj_ = nullptr;
+            return false;
+        }
     }
     else if (!mouseIsDown_ || e->state() == MouseEvent::MOUSE_STATE_PRESS){
         mouseIsDown_ = true;
