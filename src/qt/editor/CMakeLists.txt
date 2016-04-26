@@ -102,20 +102,7 @@ foreach(qtarget Qt5Sql Qt5Network)
     ivw_qt_add_to_install(${qtarget} qt_editor)
 endforeach()
 
-ivw_add_dependencies(InviwoQtWidgets )
-
-if(IVW_PACKAGE_PROJECT)
-    if(WIN32)
-        if(Qt5Help_FOUND)
-            set(QT_BINARY_DIR "${Qt5Help_DIR}/../../../bin")
-            install(FILES ${QT_BINARY_DIR}/Qt5Help${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-            install(FILES ${QT_BINARY_DIR}/Qt5Help.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-        endif()
-    endif()
-endif()
-
-
-
+ivw_add_dependencies(InviwoQtWidgets)
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
@@ -125,3 +112,4 @@ ivw_compile_optimize_inviwo_core()
 # Make package (for other projects to find)
 ivw_set_cpack_name(qt_editor)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
+

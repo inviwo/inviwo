@@ -24,26 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTURE3D_H
 #define IVW_TEXTURE3D_H
 
-#include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/texture/texture.h>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture3D : public Texture {
-
 public:
     Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+              GLenum filtering, GLint level = 0);
     Texture3D(const Texture3D& other);
-    Texture3D(Texture3D&& other); // move constructor
+    Texture3D(Texture3D&& other);  // move constructor
     Texture3D& operator=(const Texture3D& other);
     Texture3D& operator=(Texture3D&& other);
     virtual ~Texture3D() = default;
@@ -67,6 +67,6 @@ private:
     size3_t dimensions_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTURE3D_H
+#endif  // IVW_TEXTURE3D_H

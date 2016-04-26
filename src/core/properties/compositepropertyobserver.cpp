@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-void CompositePropertyObservable::notifyObserversOnSetCollapsed(bool collapsed) const {
-    for (auto o : observers_) o->onSetCollapsed(collapsed);
+void CompositePropertyObservable::notifyObserversOnSetCollapsed(bool collapsed) {
+    forEachObserver([&](CompositePropertyObserver* o) { o->onSetCollapsed(collapsed); });
 }
 
 }  // namespace

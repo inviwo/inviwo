@@ -191,10 +191,10 @@ protected:
     template <typename C>
     void forEachObserver(C callback);
 
+private:
     using ObserverSet = std::unordered_set<T*> ;
     ObserverSet observers_;
 
-private:
     // invocationCount counts how may time we have called forEachObserver
     // Add we will only add and remove observers when that it is zero to avoid
     // Invalidation the iterators. This is needed since a observer might remove it

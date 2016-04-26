@@ -41,8 +41,8 @@ class ProcessorWidgetObservable;
 class IVW_CORE_API ProcessorWidgetObserver : public Observer {
 public:
     friend ProcessorWidgetObservable;
-    ProcessorWidgetObserver();
-    virtual ~ProcessorWidgetObserver();
+    ProcessorWidgetObserver() = default;
+    virtual ~ProcessorWidgetObserver() = default;
     
     virtual void onProcessorWidgetShow(ProcessorWidget*);
     virtual void onProcessorWidgetHide(ProcessorWidget*);
@@ -50,11 +50,11 @@ public:
 
 class IVW_CORE_API ProcessorWidgetObservable : public Observable<ProcessorWidgetObserver> {
 public:
-    ProcessorWidgetObservable();
-    virtual ~ProcessorWidgetObservable();
+    ProcessorWidgetObservable() = default;
+    virtual ~ProcessorWidgetObservable() = default;
     
-    void notifyObserversAboutShow(ProcessorWidget* p) const;
-    void notifyObserversAboutHide(ProcessorWidget* p) const;
+    void notifyObserversAboutShow(ProcessorWidget* p);
+    void notifyObserversAboutHide(ProcessorWidget* p);
 };
 
 

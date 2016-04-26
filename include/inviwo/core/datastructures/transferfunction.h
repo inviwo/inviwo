@@ -40,7 +40,7 @@ class Layer;
 
 class IVW_CORE_API TransferFunctionObserver: public Observer {
 public:
-    TransferFunctionObserver(): Observer() {};
+    TransferFunctionObserver() = default;
 
     virtual void onControlPointAdded(TransferFunctionDataPoint* p) {};
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p) {};
@@ -48,10 +48,10 @@ public:
 };
 class IVW_CORE_API TransferFunctionObservable: public Observable<TransferFunctionObserver> {
 public:
-    TransferFunctionObservable(): Observable<TransferFunctionObserver>() {};
-    void notifyControlPointAdded(TransferFunctionDataPoint* p) const;
-    void notifyControlPointRemoved(TransferFunctionDataPoint* p) const;
-    void notifyControlPointChanged(const TransferFunctionDataPoint* p) const;
+    TransferFunctionObservable() = default;
+    void notifyControlPointAdded(TransferFunctionDataPoint* p);
+    void notifyControlPointRemoved(TransferFunctionDataPoint* p);
+    void notifyControlPointChanged(const TransferFunctionDataPoint* p);
 };
 
 

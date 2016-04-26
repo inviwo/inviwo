@@ -28,25 +28,6 @@
  #################################################################################
 
 #--------------------------------------------------------------------
-# Creates a inviwo module
-# Defines:  (example project_name = OpenGL)
-#    _packageName           -> InviwoOpenGLModule
-#    _preModuleDependencies -> ""
-#   PARENT_SCOPE:
-#   IVW_MODULE_CLASS        -> OpenGL
-#   IVW_MODULE_CLASS_PATH   -> opengl/openglmodule
-#   IVW_MODULE_PACKAGE_NAME -> InviwoOpenGLModule
-macro(ivw_module project_name)
-    string(TOLOWER ${project_name} l_project_name)
-    ivw_project(${l_project_name})
-    set(_packageName Inviwo${project_name}Module)
-    set(_preModuleDependencies "")
-    set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
-    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
-    set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
-endmacro()
-
-#--------------------------------------------------------------------
 # Creates project with initial variables
 # Creates a CMake projects
 # Defines:  (example project_name = OpenGL)
@@ -79,6 +60,25 @@ macro(ivw_project project_name)
 endmacro()
 
 #--------------------------------------------------------------------
+# Creates a inviwo module
+# Defines:  (example project_name = OpenGL)
+#    _packageName           -> InviwoOpenGLModule
+#    _preModuleDependencies -> ""
+#   PARENT_SCOPE:
+#   IVW_MODULE_CLASS        -> OpenGL
+#   IVW_MODULE_CLASS_PATH   -> opengl/openglmodule
+#   IVW_MODULE_PACKAGE_NAME -> InviwoOpenGLModule
+macro(ivw_module project_name)
+    string(TOLOWER ${project_name} l_project_name)
+    ivw_project(${l_project_name})
+    set(_packageName Inviwo${project_name}Module)
+    set(_preModuleDependencies "")
+    set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
+    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
+    set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
+endmacro()
+
+#--------------------------------------------------------------------
 # Creates project with initial variables
 macro(ivw_set_cpack_name cpack_name)
     set(_cpackName ${cpack_name})
@@ -103,7 +103,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Generate a list of all available module packages
-function(create_module_package_list)
+function(ivw_private_create_module_package_list)
     ivw_to_mod_name(modules ${ARGN})
     set(ivw_all_registered_modules ${modules} CACHE INTERNAL "All registered inviwo modules")
 endfunction()
@@ -116,7 +116,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate header for external modules
-function(generate_module_paths_header)
+function(ivw_generate_module_paths_header)
     set(dirs "")
     foreach(dir ${IVW_ROOT_DIR}/modules ${IVW_EXTERNAL_MODULES})
         if(IS_DIRECTORY ${dir})
@@ -139,7 +139,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
-function(generate_module_registration_file module_classes modules_class_paths)
+function(ivw_private_generate_module_registration_file module_classes modules_class_paths)
     list(LENGTH module_classes len1)
     math(EXPR len0 "${len1} - 1")
 
@@ -225,11 +225,11 @@ macro(ivw_register_modules)
         string(STRIP ${module_root_path} module_root_path)
 
         #Generate module options
-        generate_unset_mod_options_and_depend_sort(${module_root_path} sorted_modules)
+        ivw_generate_unset_mod_options_and_depend_sort(${module_root_path} sorted_modules)
 
         #Resolve dependencies for selected modules
         if(DEFINED sorted_modules)
-            resolve_module_dependencies(${module_root_path} ${sorted_modules})
+            ivw_resolve_module_dependencies(${module_root_path} ${sorted_modules})
 
             if(IVW_MODULE_OPENGLQT OR IVW_MODULE_PYTHONQT OR IVW_MODULE_PYTHON3QT)
                 # Find the QtWidgets library
@@ -260,8 +260,8 @@ macro(ivw_register_modules)
     list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
     list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
     #Generate module registration file
-    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-    create_module_package_list(${IVW_MODULE_CLASSES})
+    ivw_private_generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+    ivw_private_create_module_package_list(${IVW_MODULE_CLASSES})
 
     ivw_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${IVW_MODULE_CLASSES}")
 endmacro()
@@ -273,7 +273,7 @@ endmacro()
 # defines:  (example project_name = OpenGL)
 # INVIWOOPENGLMODULE_description  -> </readme.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
-function(generate_unset_mod_options_and_depend_sort module_root_path retval)
+function(ivw_generate_unset_mod_options_and_depend_sort module_root_path retval)
     file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
     set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
@@ -326,7 +326,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Turn On Dependent Module Options
-function(resolve_module_dependencies module_root_path)   
+function(ivw_resolve_module_dependencies module_root_path)   
     # Reverse list (as it is depend sorted) and go over dependencies one more time
     # If build is ON, then switch dependencies ON
     set(dir_list ${ARGN})
@@ -337,7 +337,7 @@ function(resolve_module_dependencies module_root_path)
             ivw_dir_to_mod_dep(mod_dep ${dir})
             ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
             foreach(dependency ${module_dependencies})
-                build_module_dependency(${dependency} ${mod_name})
+                ivw_private_build_module_dependency(${dependency} ${mod_name})
             endforeach()
         endif()
     endforeach()
@@ -346,7 +346,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Add all minimal applications in folder
-macro(add_minimal_applications)
+macro(ivw_add_minimal_applications)
     file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
     list(REMOVE_ITEM sub-dir .svn)
     set(sorted_dirs ${sub-dir})
@@ -355,7 +355,7 @@ macro(add_minimal_applications)
             string(TOUPPER ${dir} u_dir)
             option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
             if(NOT ${u_dir} STREQUAL "QT")
-                build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
+                ivw_private_build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
             endif()
             if(IVW_TINY_${u_dir}_APPLICATION)
                 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
@@ -366,7 +366,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Add all external modules specified in cmake string IVW_EXTERNAL_MODULES
-macro(add_external_projects)
+macro(ivw_add_external_projects)
     foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})
         string(STRIP ${project_root_path} project_root_path)
         get_filename_component(FOLDER_NAME ${project_root_path} NAME)
@@ -382,7 +382,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Set module build option to true if the owner is built
-function(build_module_dependency the_module the_owner)
+function(ivw_private_build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
@@ -472,13 +472,13 @@ endfunction()
 #--------------------------------------------------------------------
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name target_name)
-    # Set the compiler flags
 
+    # Set the compiler flags
     ivw_to_macro_name(u_project_name ${project_name})
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
 
-    if(WIN32)          
+    if(WIN32)
         # Large memory support
         if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
             if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
@@ -491,16 +491,16 @@ macro(ivw_define_standard_definitions project_name target_name)
                 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
             endif()
         endif()
-
-    else(WIN32)
+    else()
         target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
-    endif(WIN32)
+    endif()
         
     if(MSVC)
         target_compile_definitions(${target_name} PRIVATE -DUNICODE)
         target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS 
                                                           -D_CRT_SECURE_NO_DEPRECATE)
     endif()
+
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 endmacro()
 
@@ -584,36 +584,16 @@ macro(ivw_create_module)
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} ${target_name})
 
+    # Add stuff to the installer
+    ivw_private_install_module_dirs()
+
     ivw_make_unittest_target("${_projectName}" "${${mod_dep}_dependencies}")
 endmacro()
 
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
 macro(ivw_make_package package_name project_name)
-
-    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-       # Add to package
-        if(WIN32)
-           install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    COMPONENT ${_cpackName})
-        
-        elseif(APPLE)
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${_cpackName})
-        else()
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${_cpackName})
-        endif()
-    endif()
+    ivw_private_install_package(${project_name})
 
     list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
     if(WIN32 AND BUILD_SHARED_LIBS)
@@ -647,6 +627,54 @@ macro(ivw_make_package package_name project_name)
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
                    ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
 endmacro()
+
+
+#--------------------------------------------------------------------
+# Install files
+function(ivw_private_install_package project_name)
+   # Add to package
+   if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
+        if(WIN32)
+           install(TARGETS ${project_name}
+                    RUNTIME DESTINATION bin
+                    COMPONENT ${_cpackName})
+        
+        elseif(APPLE)
+            install(TARGETS ${project_name}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION .
+                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+                    COMPONENT ${_cpackName})
+        else()
+            install(TARGETS ${project_name}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION bin
+                    ARCHIVE DESTINATION lib
+                    LIBRARY DESTINATION lib
+                    COMPONENT ${_cpackName})
+        endif()
+    endif()
+endfunction()
+
+function(ivw_private_install_module_dirs)
+    if(IVW_PACKAGE_PROJECT) 
+        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        foreach(folder ${CMAKE_CURRENT_SOURCE_DIR}/data)
+            if(EXISTS ${folder})
+                if(APPLE)
+                    install(DIRECTORY ${folder}
+                             DESTINATION Inviwo.app/Contents/Resources/modules/${FOLDER_NAME}
+                             COMPONENT ${_cpackName})
+                else()
+                    install(DIRECTORY ${folder}
+                             DESTINATION modules/${FOLDER_NAME}
+                             COMPONENT ${_cpackName})
+                endif()
+            endif()
+        endforeach()
+    endif()
+endfunction()
 
 #--------------------------------------------------------------------
 # Add includes
@@ -905,7 +933,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Set header ignore paths for cotire
-macro(cotire_ignore)
+macro(ivw_cotire_ignore)
     get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${_projectName} COTIRE_PREFIX_HEADER_IGNORE_PATH)
     if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
         set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -925,7 +953,7 @@ macro(ivw_compile_optimize_inviwo_core)
             set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
         endif()
 
-        cotire_ignore()
+        ivw_cotire_ignore()
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
         set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
@@ -937,7 +965,7 @@ endmacro()
 # Optimize compilation with pre-compilied headers
 macro(ivw_compile_optimize)
     if(PRECOMPILED_HEADERS)
-        cotire_ignore()
+        ivw_cotire_ignore()
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
         set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")

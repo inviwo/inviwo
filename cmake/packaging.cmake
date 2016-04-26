@@ -180,8 +180,9 @@ if(IVW_PACKAGE_PROJECT)
             configure_file(${IVW_CMAKE_TEMPLATES}/info_plist_template.txt
                ${CMAKE_BINARY_DIR}/Info.plist
                @ONLY IMMEDIATE)
-        
-            set(CPACK_MONOLITHIC_INSTALL 1) #Can't get components to work with DragNDrop
+            
+            unset(CPACK_COMPONENTS_ALL)
+            set(CPACK_MONOLITHIC_INSTALL ON) #Can't get components to work with DragNDrop
             #http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
             set(CPACK_GENERATOR "DragNDrop")
             set(CPACK_BUNDLE_NAME "Inviwo")

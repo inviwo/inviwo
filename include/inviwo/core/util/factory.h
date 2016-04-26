@@ -53,11 +53,11 @@ public:
 template <typename T>
 class FactoryObservable : public Observable<FactoryObserver<T>> {
 protected:
-    void notifyObserversOnRegister(T* p) const {
-        for (auto o : this->observers_) o->onRegister(p);
+    void notifyObserversOnRegister(T* p) {
+        this->forEachObserver([&](FactoryObserver<T>* o) { o->onRegister(p); });
     }
-    void notifyObserversOnUnRegister(T* p) const {
-        for (auto o : this->observers_) o->onUnRegister(p);
+    void notifyObserversOnUnRegister(T* p) {
+        this->forEachObserver([&](FactoryObserver<T>* o) { o->onUnRegister(p); });
     }
 };
 

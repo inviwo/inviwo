@@ -33,26 +33,13 @@ namespace inviwo {
 
 ProcessorMetaData::ProcessorMetaData() : position_(0, 0), visibility_(true), selection_(false) {}
 
-ProcessorMetaData::ProcessorMetaData(const ProcessorMetaData& rhs)
-    : position_(rhs.position_), visibility_(rhs.visibility_), selection_(rhs.selection_) {}
-
-ProcessorMetaData& ProcessorMetaData::operator=(const ProcessorMetaData& that) {
-    if (this != &that) {
-        position_ = that.position_;
-        visibility_ = that.visibility_;
-        selection_ = that.selection_;
-    }
-    return *this;
-}
-
-ProcessorMetaData::~ProcessorMetaData() {}
-
 ProcessorMetaData* ProcessorMetaData::clone() const { return new ProcessorMetaData(*this); }
 
 void ProcessorMetaData::setPosition(const ivec2& pos) {
     if (pos != position_) {
         position_ = pos;
-        for (auto o : observers_) o->onProcessorMetaDataPositionChange();
+        forEachObserver(
+            [&](ProcessorMetaDataObserver* o) { o->onProcessorMetaDataPositionChange(); });
     }
 }
 
@@ -61,7 +48,8 @@ ivec2 ProcessorMetaData::getPosition() const { return position_; }
 void ProcessorMetaData::setVisibile(bool visibility) {
     if (visibility != visibility_) {
         visibility_ = visibility;
-        for (auto o : observers_) o->onProcessorMetaDataVisibilityChange();
+        forEachObserver(
+            [&](ProcessorMetaDataObserver* o) { o->onProcessorMetaDataVisibilityChange(); });
     }
 }
 
@@ -70,7 +58,8 @@ bool ProcessorMetaData::isVisible() const { return visibility_; }
 void ProcessorMetaData::setSelected(bool selection) {
     if (selection != selection_) {
         selection_ = selection;
-        for (auto o : observers_) o->onProcessorMetaDataSelectionChange();
+        forEachObserver(
+            [&](ProcessorMetaDataObserver* o) { o->onProcessorMetaDataSelectionChange(); });
     }
 }
 
@@ -90,8 +79,7 @@ void ProcessorMetaData::deserialize(Deserializer& d) {
 }
 
 bool ProcessorMetaData::equal(const MetaData& rhs) const {
-    const ProcessorMetaData* tmp = dynamic_cast<const ProcessorMetaData*>(&rhs);
-    if (tmp) {
+    if (auto tmp = dynamic_cast<const ProcessorMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
                tmp->selection_ == selection_;
     } else {
