@@ -60,6 +60,15 @@ void BaseSliderWidgetQt::generateWidget() {
     connect(slider_, SIGNAL(valueChanged(int)), this, SLOT(updateFromSlider()));
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBox()));
 
+
+    connect(slider_, &QSlider::sliderPressed, [](){
+        InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
+    });
+    connect(slider_, &QSlider::sliderReleased, []() {
+        InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
+    });
+
+
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);

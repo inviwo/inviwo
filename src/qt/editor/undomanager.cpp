@@ -44,12 +44,18 @@ namespace inviwo {
 
 UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow) {
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
+
+    interactionEndCallback_ =
+        mainWindow_->getInviwoApplication()->getInteractionStateManager().onInteractionEnd(
+            [&]() { if (dirty_) pushState(); });
+
     pushState();
 }
 
 void UndoManager::pushState() {
     if (isRestoring) return;
-    
+    if (mainWindow_->getInviwoApplication()->getProcessorNetwork()->islocked()) return;
+    if (mainWindow_->getInviwoApplication()->getInteractionStateManager().isInteracting()) return;
 
     auto path = mainWindow_->getCurrentWorkspace();
     Serializer s(path);
@@ -57,6 +63,8 @@ void UndoManager::pushState() {
     std::stringstream stream;
     s.writeFile(stream);
     auto str = stream.str();
+    
+    dirty_ = false;
 
     if (head_ >= 0 && str == undoBuffer_[head_]) return; // No Change
     
@@ -65,6 +73,8 @@ void UndoManager::pushState() {
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
 
     undoBuffer_.emplace_back(str);
+
+    LogInfo("Push state:" << head_ << " (" << undoBuffer_.size() << ")");
 }
 void UndoManager::undoState() {
     if (head_ > 0) {
@@ -76,6 +86,10 @@ void UndoManager::undoState() {
         stream << undoBuffer_[head_];
         Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
+
+        dirty_ = false;
+
+        LogInfo("Undo state:" << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 void UndoManager::redoState() {
@@ -89,22 +103,43 @@ void UndoManager::redoState() {
         stream << undoBuffer_[head_];
         Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
+
+        dirty_ = false;
+
+        LogInfo("Redo state:" << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 
+void UndoManager::onProcessorNetworkUnlocked() { 
+    if (dirty_) pushState(); 
+}
+
 void UndoManager::onProcessorNetworkChange() {
-    //auto buttons = QGuiApplication::mouseButtons();
-    //if (buttons != Qt::NoButton) return;
+    dirty_ = true;
     pushState();
 }
-void UndoManager::onProcessorNetworkDidAddProcessor(Processor* processor) { pushState(); }
-void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor* processor) { pushState(); }
+void UndoManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
+    dirty_ = true;
+    pushState();
+}
+void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
+    dirty_ = true;
+    pushState();
+}
 void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
+    dirty_ = true;
     pushState();
 }
 void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {
+    dirty_ = true;
     pushState();
 }
-void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) { pushState(); }
-void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) { pushState(); }
+void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
+    dirty_ = true;
+    pushState();
+}
+void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
+    dirty_ = true;
+    pushState();
+}
 }  // namespace

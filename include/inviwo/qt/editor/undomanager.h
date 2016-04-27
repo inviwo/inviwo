@@ -50,6 +50,7 @@ public:
     void undoState();
     void redoState();
     
+    virtual void onProcessorNetworkUnlocked() override;
     virtual void onProcessorNetworkChange() override;
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
     virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
@@ -60,6 +61,8 @@ public:
 private:
     InviwoMainWindow* mainWindow_;
 
+    std::shared_ptr<std::function<void()>> interactionEndCallback_;
+    bool dirty_ = true;
     bool isRestoring = false;
     std::vector<std::string>::iterator::difference_type head_ = -1;
     std::vector<std::string> undoBuffer_;
