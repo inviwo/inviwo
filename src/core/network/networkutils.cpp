@@ -90,7 +90,7 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
 
     std::vector<Processor*> endProcessors;
     util::copy_if(network->getProcessors(), std::back_inserter(endProcessors),
-                  [](Processor* p) { return p->isEndProcessor(); });
+                  [](Processor* p) { return p->isSink(); });
 
     ProcessorStates state;
     std::vector<Processor*> sorted;
