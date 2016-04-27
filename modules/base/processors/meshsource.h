@@ -51,7 +51,7 @@ namespace inviwo {
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
     MeshSource();
-    virtual ~MeshSource();
+    virtual ~MeshSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

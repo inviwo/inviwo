@@ -55,19 +55,12 @@ VolumeSequenceSource::VolumeSequenceSource()
     , filter_("filter_","Filter","*.*")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
-    , information_("Information", "Data information")
-    , isDeserializing_(false) {
+    , information_("Information", "Data information") {
+
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
     folder_.setContentType("volume");
     folder_.setDisplayName("Volume folder");
-
-    file_.onChange([this]() { load(); });
-    reload_.onChange([this]() { load(); });
-    folder_.onChange([this]() { load(); });
-    folder_.onChange([this]() { load(); });
-    filter_.onChange([this]() { load(); });
-    
 
     addFileNameFilters();
 
@@ -84,19 +77,18 @@ VolumeSequenceSource::VolumeSequenceSource()
     inputType_.addOption("singlefile", "SingleFile", InputType::SingleFile);
     inputType_.addOption("folder", "Folder", InputType::Folder);
     inputType_.setCurrentStateAsDefault();
-    inputType_.onChange([&](){
+    
+    auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
         folder_.setVisible(inputType_.get() == InputType::Folder);
         filter_.setVisible(inputType_.get() == InputType::Folder);
-    });
-
-    file_.setVisible(inputType_.get() == InputType::SingleFile);
-    folder_.setVisible(inputType_.get() == InputType::Folder);
-    filter_.setVisible(inputType_.get() == InputType::Folder);
+    };
+    
+    inputType_.onChange(updateVisible);
+    updateVisible();
 }
 
 void VolumeSequenceSource::load(bool deserialize) {
-    if (isDeserializing_) return;
     switch (inputType_.get()) {
     case InputType::Folder:
         loadFolder();
@@ -140,28 +132,21 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
         auto file = folder_.get() + "/" + f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
             std::string ext = filesystem::getFileExtension(file);
-            if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-                try {
+            try {
+                if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
                     auto volume = reader1->readData(file);
                     volumes_->push_back(volume);
-                }
-                catch (DataReaderException const& e) {
-                    LogProcessorError(e.getMessage());
-                }
-            }
-            else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-                try {
+
+                } else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
                     auto volumes = reader2->readData(file);
                     for (auto volume : *volumes) {
                         volumes_->push_back(volume);
                     }
+                } else {
+                    LogProcessorError("Could not find a data reader for file: " << file);
                 }
-                catch (DataReaderException const& e) {
-                    LogProcessorError(e.getMessage());
-                }
-            }
-            else {
-                LogProcessorError("Could not find a data reader for file: " << file);
+            } catch (DataReaderException const& e) {
+                LogProcessorError(e.getMessage());
             }
         }
     }
@@ -174,16 +159,22 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 
 void VolumeSequenceSource::addFileNameFilters() {
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-    auto extensions = rf->getExtensionsForType<VolumeSequence>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
+    file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
+}
+
+bool VolumeSequenceSource::isSink() const {
+    return true;
 }
 
 void VolumeSequenceSource::process() {
-    if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
+    if (file_.isModified() || reload_.isModified() || folder_.isModified() || filter_.isModified()) {
+        load(deserialized_);
+        deserialized_ = false;
+    }
+
+    if (volumes_ && !volumes_->empty()) {
         for (auto& vol : *volumes_) {
             basis_.updateEntity(*vol);
             information_.updateVolume(*vol);
@@ -193,13 +184,9 @@ void VolumeSequenceSource::process() {
 }
 
 void VolumeSequenceSource::deserialize(Deserializer& d) {
-    {
-        isDeserializing_ = true;
-        Processor::deserialize(d);
-        addFileNameFilters();
-        isDeserializing_ = false;
-    }
-    load(true);
+    Processor::deserialize(d);
+    addFileNameFilters();
+    deserialized_ = true;
 }
 }  // namespace
 

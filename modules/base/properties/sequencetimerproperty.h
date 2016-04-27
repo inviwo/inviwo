@@ -54,9 +54,9 @@ public:
 
     void updateMax(size_t max);
 
-    IntProperty index_;
+    IntSizeTProperty index_;
     BoolProperty play_;
-    IntProperty framesPerSecond_;
+    IntSizeTProperty framesPerSecond_;
     EventProperty playPause_;
     Timer timer_;
 
