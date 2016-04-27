@@ -230,11 +230,11 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     if (prog.size() > 3 && !header.empty()) {
         size_t offset = 0;
         // https://en.wikipedia.org/wiki/Byte_order_mark
-        std::array<char, 3> utf8 = {static_cast<char>(0xEF), static_cast<char>(0xBB), static_cast<char>(0xBF)};
-        std::array<char, 2> utf16BE = {static_cast<char>(0xFE), static_cast<char>(0xFF)};
-        std::array<char, 2> utf16LE = {static_cast<char>(0xFE), static_cast<char>(0xFE)};
-        std::array<char, 4> utf32BE = {0x00, 0x00, static_cast<char>(0xFE), static_cast<char>(0xFF)};
-        std::array<char, 4> utf32LE = {static_cast<char>(0xFF), static_cast<char>(0xFE), 0x00, 0x00};
+        std::array<char, 3> utf8 = {static_cast<char>(0xEFu), static_cast<char>(0xBBu), static_cast<char>(0xBFu)};
+        std::array<char, 2> utf16BE = {static_cast<char>(0xFEu), static_cast<char>(0xFFu)};
+        std::array<char, 2> utf16LE = {static_cast<char>(0xFEu), static_cast<char>(0xFEu)};
+        std::array<char, 4> utf32BE = {0x00, 0x00, static_cast<char>(0xFEu), static_cast<char>(0xFFu)};
+        std::array<char, 4> utf32LE = {static_cast<char>(0xFFu), static_cast<char>(0xFEu), 0x00, 0x00};
         
         if (std::equal(std::begin(utf8), std::end(utf8), std::begin(prog)))
             offset = utf8.size();
