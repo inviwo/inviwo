@@ -84,6 +84,7 @@ public:
 
     virtual void addNameFilter(std::string);
     virtual void addNameFilter(FileExtension);
+    virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
     virtual std::vector<FileExtension> getNameFilters();
 

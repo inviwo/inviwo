@@ -181,6 +181,10 @@ void FileProperty::addNameFilter(FileExtension filter) {
     nameFilters_.push_back(filter);
 }
 
+void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
+    util::append(nameFilters_, filters);
+}
+
 void FileProperty::clearNameFilters() {
     nameFilters_.clear(); 
 }
