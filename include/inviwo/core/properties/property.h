@@ -156,8 +156,8 @@ public:
     virtual void resetToDefaultState();
 
     virtual void propertyModified();
-    virtual void setPropertyModified(bool modified);
-    virtual bool isPropertyModified() const;
+    virtual void setModified(bool modified);
+    virtual bool isModified() const;
     virtual void set(const Property* src);
 
     virtual void serialize(Serializer& s) const override;

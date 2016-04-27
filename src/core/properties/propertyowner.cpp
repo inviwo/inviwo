@@ -213,7 +213,7 @@ bool PropertyOwner::isValid() const {
 }
 
 void PropertyOwner::setValid() {
-    for (auto& elem : properties_) elem->setPropertyModified(false);
+    for (auto& elem : properties_) elem->setModified(false);
     invalidationLevel_ = InvalidationLevel::Valid;
 }
 
