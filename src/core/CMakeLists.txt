@@ -85,6 +85,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
@@ -334,6 +335,7 @@ set(SOURCE_FILES
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
     interaction/interactionhandler.cpp
+    interaction/interactionstatemanager.cpp
     interaction/pickingcontainer.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp

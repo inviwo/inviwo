@@ -40,6 +40,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/interaction/interactionstatemanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -180,6 +181,8 @@ public:
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID);
 
+    InteractionStateManager& getInteractionStateManager();
+
 protected:
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
@@ -204,6 +207,8 @@ private:
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
+
+    InteractionStateManager interactionState_;
 
     util::OnScopeExit clearDataFormats_;
     util::OnScopeExit clearAllSingeltons_;
