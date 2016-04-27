@@ -166,7 +166,6 @@ void TransferFunctionProperty::set(const TransferFunction& value) {
 
 void TransferFunctionProperty::set(const Property *property) {
     if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
-        set(tfp->get());
         TemplateProperty<TransferFunction>::set(tfp);
     }
 }
