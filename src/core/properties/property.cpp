@@ -191,7 +191,7 @@ bool Property::hasWidgets() const {
 void Property::propertyModified() {
     NetworkLock lock(this);
     onChangeCallback_.invokeAll();
-    setPropertyModified(true);
+    setModified(true);
 
     PropertyOwner* owner = getOwner();
     if (owner) {
@@ -209,11 +209,11 @@ void Property::propertyModified() {
     updateWidgets();
 }
 
-void Property::setPropertyModified(bool modified) {
+void Property::setModified(bool modified) {
     propertyModified_ = modified;
 }
 
-bool Property::isPropertyModified() const {
+bool Property::isModified() const {
     return propertyModified_;
 }
 
