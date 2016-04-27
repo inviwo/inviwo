@@ -62,13 +62,10 @@ VolumeSource::VolumeSource()
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
-    , volumeSequence_("Sequence", "Sequence")
-    , isDeserializing_(false) {
+    , volumeSequence_("Sequence", "Sequence") {
+    
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
-
-    file_.onChange([this]() { load(); });
-    reload_.onChange([this]() { load(); });
 
     volumeSequence_.setVisible(false);
 
@@ -84,29 +81,25 @@ VolumeSource::VolumeSource()
 }
 
 void VolumeSource::load(bool deserialize) {
-    if (isDeserializing_ || file_.get().empty()) return;
+    if (file_.get().empty()) return;
 
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-        try {
+
+    try {
+        if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
             auto volumes = volVecReader->readData(file_.get());
             std::swap(volumes, volumes_);
-        } catch (DataReaderException const& e) {
-            LogProcessorError(e.getMessage());
-        }
-    } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-        try {
-            auto volume(volreader->readData(file_.get()));
+        } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+            auto volume = volreader->readData(file_.get());
             auto volumes = std::make_shared<VolumeSequence>();
             volumes->push_back(volume);
             std::swap(volumes, volumes_);
-        } catch (DataReaderException const& e) {
-            LogProcessorError(e.getMessage());
+        } else {
+            LogProcessorError("Could not find a data reader for file: " << file_.get());
         }
-    } else {
-        LogProcessorError("Could not find a data reader for file: " << file_.get());
+    } catch (DataReaderException const& e) {
+        LogProcessorError(e.getMessage());
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
@@ -120,22 +113,25 @@ void VolumeSource::load(bool deserialize) {
 
 void VolumeSource::addFileNameFilters() {
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-    auto extensions = rf->getExtensionsForType<Volume>();
+    
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
-    extensions = rf->getExtensionsForType<VolumeSequence>();
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
+    file_.addNameFilters(rf->getExtensionsForType<Volume>());
+    file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
+}
+
+bool VolumeSource::isSink() const {
+    return true;
 }
 
 void VolumeSource::process() {
-    if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
-        size_t index =
-            std::min(volumes_->size() - 1, static_cast<size_t>(volumeSequence_.index_.get() - 1));
+    if (file_.isModified() || reload_.isModified()) {
+        load(deserialized_);
+        deserialized_ = false;
+    }
+
+    if (volumes_ && !volumes_->empty()) {
+        const size_t index = std::min(volumes_->size(), volumeSequence_.index_.get()) - 1;
 
         if (!(*volumes_)[index]) return;
 
@@ -147,13 +143,9 @@ void VolumeSource::process() {
 }
 
 void VolumeSource::deserialize(Deserializer& d) {
-    {
-        isDeserializing_ = true;
-        Processor::deserialize(d);
-        addFileNameFilters();
-        isDeserializing_ = false;
-    }
-    load(true);
+    Processor::deserialize(d);
+    addFileNameFilters();
+    deserialized_ = true;
 }
 
 }  // namespace

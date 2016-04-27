@@ -89,9 +89,8 @@ SequenceTimerProperty* SequenceTimerProperty::clone() const {
 }
 
 void SequenceTimerProperty::updateMax(size_t max) {
-    auto imax = static_cast<int>(max);
-    if (imax != index_.getMaxValue()) {
-        index_.setMaxValue(imax);
+    if (max != index_.getMaxValue()) {
+        index_.setMaxValue(max);
         index_.set(1);
         index_.setCurrentStateAsDefault();
     }

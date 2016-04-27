@@ -47,9 +47,6 @@ MeshSource::MeshSource() : DataSource<Mesh, MeshOutport>() {
     DataSource<Mesh, MeshOutport>::file_.setDisplayName("Geometry file");
 }
 
-MeshSource::~MeshSource() {
-}
-
 } // namespace
 
 

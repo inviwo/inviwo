@@ -54,11 +54,13 @@ ImageSource::ImageSource()
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
                       InvalidationLevel::Valid, PropertySemantics("Text"))
     , isDeserializing_(false) {
+
     addPort(outport_);
 
-    auto extensions =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
-    for (auto& ext : extensions) file_.addNameFilter(ext);
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    file_.clearNameFilters();
+    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilters(rf->getExtensionsForType<Layer>());
 
     addProperty(file_);
 
@@ -102,18 +104,12 @@ void ImageSource::process() {
     }
 }
 
-/**
- * Deserialize everything first then load the data
- */
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto extensions =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
+    file_.addNameFilters(rf->getExtensionsForType<Layer>());
 }
 
 }  // namespace
