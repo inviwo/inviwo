@@ -63,8 +63,6 @@ TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
     datapoint->addObserver(this);
 }
 
-TransferFunctionEditorControlPoint::~TransferFunctionEditorControlPoint() {}
-
 void TransferFunctionEditorControlPoint::paint(QPainter* painter,
                                                const QStyleOptionGraphicsItem* options,
                                                QWidget* widget) {
