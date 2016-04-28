@@ -274,6 +274,8 @@ std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
                                                               std::istream& is,
                                                               const std::string& refPath,
                                                               InviwoApplication* app) {
+    NetworkLock lock(network);
+
     std::vector<Processor*> addedProcessors;
     try {
         Deserializer xmlDeserializer(app, is, refPath);

@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_CORE_API VersionConverter {
 public:
     VersionConverter();
-    virtual ~VersionConverter() {}
+    virtual ~VersionConverter() = default;
     virtual bool convert(TxElement* root) = 0;
 };
 
@@ -51,7 +51,7 @@ public:
     NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     NodeVersionConverter(std::function<bool(TxElement*)> fun);
 
-    virtual ~NodeVersionConverter() {}
+    virtual ~NodeVersionConverter() = default;
     virtual bool convert(TxElement* root);
 
 private:

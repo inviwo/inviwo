@@ -60,8 +60,9 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
                           &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
         case 11:
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
+            return true; // Changes has been made.
         default:
-            break;
+            return false; // No changes
     }
 
     return true;
