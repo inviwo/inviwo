@@ -83,6 +83,8 @@ protected slots:
     void updateSplitterPosition(int pos, int idx);
     void middleMoved(int delta);
 
+    virtual bool eventFilter(QObject *, QEvent *) override;
+
 private:
     int range_[2];
     int value_[2];

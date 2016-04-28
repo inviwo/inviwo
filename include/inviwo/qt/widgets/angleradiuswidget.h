@@ -52,10 +52,10 @@ public:
     AngleRadiusWidget(QWidget*);
     virtual ~AngleRadiusWidget() {};
 
-    virtual void paintEvent(QPaintEvent *);
+    virtual void paintEvent(QPaintEvent *) override;
 
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
 
     void setAngle(double angle);
     double getAngle() const { return angle_;}
@@ -96,6 +96,8 @@ private:
      * @param const QPoint & pos given in pixels
      */
     void setAngleRadiusAtPosition(const QPoint& pos);
+
+    virtual void mouseReleaseEvent(QMouseEvent *) override;
 
     double angle_;
     double radius_;

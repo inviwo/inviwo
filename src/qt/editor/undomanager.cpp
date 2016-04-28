@@ -35,7 +35,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-
+#include <QAction>
 #include <QGuiApplication>
 
 #include <warn/pop>
@@ -48,6 +48,20 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow)
     interactionEndCallback_ =
         mainWindow_->getInviwoApplication()->getInteractionStateManager().onInteractionEnd(
             [&]() { if (dirty_) pushState(); });
+
+    undoAction_ = new QAction(QAction::tr("&Undo"), mainWindow_);
+    undoAction_->setShortcut(QKeySequence::Undo);
+    undoAction_->connect(undoAction_, &QAction::triggered, [&]() {
+        undoState();
+    });
+
+    redoAction_ = new QAction(QAction::tr("&Redo"), mainWindow_);
+    redoAction_->setShortcut(QKeySequence::Redo);
+    redoAction_->connect(redoAction_, &QAction::triggered, [&]() {
+        redoState();
+    });
+
+    updateActions();
 
     pushState();
 }
@@ -63,18 +77,17 @@ void UndoManager::pushState() {
     std::stringstream stream;
     s.writeFile(stream);
     auto str = stream.str();
-    
-    dirty_ = false;
-
+   
     if (head_ >= 0 && str == undoBuffer_[head_]) return; // No Change
-    
+   
     ++head_;
     auto offset = std::min(std::distance(undoBuffer_.begin(), undoBuffer_.end()), head_);
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
-
     undoBuffer_.emplace_back(str);
+    dirty_ = false;
+    updateActions();
 
-    LogInfo("Push state:" << head_ << " (" << undoBuffer_.size() << ")");
+    LogInfo("Push state: " << head_ << " (" << undoBuffer_.size() << ")");
 }
 void UndoManager::undoState() {
     if (head_ > 0) {
@@ -88,12 +101,13 @@ void UndoManager::undoState() {
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
 
         dirty_ = false;
+        updateActions();
 
-        LogInfo("Undo state:" << head_ << " (" << undoBuffer_.size() << ")");
+        LogInfo("Undo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 void UndoManager::redoState() {
-    if (head_ >= -1 && head_ < undoBuffer_.size()-1) {
+    if (head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size())-1) {
 
         util::KeepTrueWhileInScope restore(&isRestoring);
         auto path = mainWindow_->getCurrentWorkspace();
@@ -105,12 +119,26 @@ void UndoManager::redoState() {
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
 
         dirty_ = false;
+        updateActions();
 
-        LogInfo("Redo state:" << head_ << " (" << undoBuffer_.size() << ")");
+        LogInfo("Redo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 
-void UndoManager::onProcessorNetworkUnlocked() { 
+QAction* UndoManager::getUndoAction() const {
+    return undoAction_;
+}
+
+QAction* UndoManager::getRedoAction() const {
+    return redoAction_;
+}
+
+void UndoManager::updateActions() {
+    undoAction_->setEnabled(head_>0);
+    redoAction_->setEnabled(head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1);
+}
+
+void UndoManager::onProcessorNetworkUnlocked() {
     if (dirty_) pushState(); 
 }
 

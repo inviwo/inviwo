@@ -334,22 +334,14 @@ void InviwoMainWindow::addActions() {
 
     // Edit
     {
-        auto undoAction = new QAction(tr("&Undo"), this);
+        auto undoAction = undoManager_.getUndoAction();
         actions_["Undo"] = undoAction;
-        undoAction->setShortcut(QKeySequence::Undo);
         editMenuItem->addAction(undoAction);
-        connect(undoAction, &QAction::triggered, [&]() {
-            undoManager_.undoState();
-        });
     }
     {
-        auto redoAction = new QAction(tr("&Redo"), this);
+        auto redoAction = undoManager_.getRedoAction();
         actions_["Redo"] = redoAction;
-        redoAction->setShortcut(QKeySequence::Redo);
         editMenuItem->addAction(redoAction);
-        connect(redoAction, &QAction::triggered, [&]() {
-            undoManager_.redoState();
-        });
     }
 
     editMenuItem->addSeparator();

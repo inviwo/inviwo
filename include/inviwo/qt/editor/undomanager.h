@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 
+class QAction;
+
 namespace inviwo {
 
 class InviwoMainWindow;
@@ -49,7 +51,16 @@ public:
     void pushState();
     void undoState();
     void redoState();
+
+    QAction* getUndoAction() const;
+    QAction* getRedoAction() const;
+
+private:
+    using DiffType = std::vector<std::string>::iterator::difference_type;
     
+    void updateActions();
+
+    // ProcessorNetworkObserver overrides;
     virtual void onProcessorNetworkUnlocked() override;
     virtual void onProcessorNetworkChange() override;
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
@@ -58,14 +69,18 @@ public:
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-private:
+
+
     InviwoMainWindow* mainWindow_;
 
     std::shared_ptr<std::function<void()>> interactionEndCallback_;
     bool dirty_ = true;
     bool isRestoring = false;
-    std::vector<std::string>::iterator::difference_type head_ = -1;
+    DiffType head_ = -1;
     std::vector<std::string> undoBuffer_;
+
+    QAction* undoAction_;
+    QAction* redoAction_;
 };
 
 } // namespace

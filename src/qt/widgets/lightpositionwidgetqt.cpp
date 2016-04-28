@@ -58,6 +58,7 @@ void inviwo::LightPositionWidgetQt::generateWidget() {
 
 
 void LightPositionWidgetQt::mousePressEvent(QMouseEvent* e) {
+    InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
     mouseDown_ = true;
 }
 
@@ -67,6 +68,7 @@ void LightPositionWidgetQt::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void LightPositionWidgetQt::mouseReleaseEvent(QMouseEvent* e) {
+    InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
     setNewPosition(e);
     mouseDown_ = false;
 }
