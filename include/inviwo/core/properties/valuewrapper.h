@@ -78,7 +78,10 @@ struct ValueWrapper {
         }
     }
 
-    void deserialize(Deserializer& d) { d.deserialize(name, value); }
+    void deserialize(Deserializer& d) {
+        reset();
+        d.deserialize(name, value);
+    }
 
     T value;
     T defaultValue;
