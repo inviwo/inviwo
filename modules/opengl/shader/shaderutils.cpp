@@ -27,8 +27,9 @@
  *
  *********************************************************************************/
 
-#include "shaderutils.h"
 #include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
@@ -380,6 +381,16 @@ std::string getProgramInfoLog(GLuint id) {
     } else {
         return "";
     }
+}
+
+std::shared_ptr<const ShaderResource> findShaderResource(const std::string& fileName) {
+    auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
+    if (!resource) {
+        throw OpenGLException(
+            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
+            IvwContextCustom("ShaderUtils"));
+    }
+    return resource;
 }
 
 }  // namespace utilgl

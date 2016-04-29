@@ -31,28 +31,28 @@
 
 namespace inviwo {
 
-void PropertyObservable::notifyObserversOnSetIdentifier(const std::string& identifier) const {
-    for (auto o : observers_) o->onSetIdentifier(identifier);
+void PropertyObservable::notifyObserversOnSetIdentifier(const std::string& identifier) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetIdentifier(identifier); });
 }
 
-void PropertyObservable::notifyObserversOnSetDisplayName(const std::string& displayName) const {
-    for (auto o : observers_) o->onSetDisplayName(displayName);
+void PropertyObservable::notifyObserversOnSetDisplayName(const std::string& displayName) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetDisplayName(displayName); });
 }
 
-void PropertyObservable::notifyObserversOnSetSemantics(const PropertySemantics& semantics) const {
-    for (auto o : observers_) o->onSetSemantics(semantics);
+void PropertyObservable::notifyObserversOnSetSemantics(const PropertySemantics& semantics) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetSemantics(semantics); });
 }
 
-void PropertyObservable::notifyObserversOnSetReadOnly(bool readonly) const {
-    for (auto o : observers_) o->onSetReadOnly(readonly);
+void PropertyObservable::notifyObserversOnSetReadOnly(bool readonly) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetReadOnly(readonly); });
 }
 
-void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
-    for (auto o : observers_) o->onSetVisible(visible);
+void PropertyObservable::notifyObserversOnSetVisible(bool visible) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetVisible(visible); });
 }
 
-void PropertyObservable::notifyObserversOnSetUsageMode(UsageMode usageMode) const {
-    for (auto o : observers_) o->onSetUsageMode(usageMode);
+void PropertyObservable::notifyObserversOnSetUsageMode(UsageMode usageMode) {
+    forEachObserver([&](PropertyObserver* o) { o->onSetUsageMode(usageMode); });
 }
 
 }  // namespace

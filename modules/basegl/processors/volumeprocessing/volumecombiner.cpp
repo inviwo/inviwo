@@ -52,123 +52,152 @@ VolumeCombiner::VolumeCombiner()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , eqn_("eqn", "Equation", "s1*v1")
+    , description_("description", "Volumes")
+    , eqn_("eqn", "Equation", "v1")
     , scales_("scales", "Scale factors")
-    , useWorldSpaceCoordinateSystem_("useWorldSpaceCoordinateSystem", "World space", false)
+    , addScale_("addScale", "Add Scale Factor")
+    , removeScale_("removeScale", "Remove Scale Factor")
+    , useWorldSpace_("useWorldSpaceCoordinateSystem", "World Space", false)
     , borderValue_("borderValue", "Border value", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.1f))
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "volume_combiner.frag", false)
-    , fbo_()
-    , validEquation_(false) {
+    , fragment_{std::make_shared<StringShaderResource>("volumecombiner.frag", "")}
+    , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
+               {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
+               {ShaderType::Fragment, fragment_}},
+              Shader::Build::No)
+    , fbo_() {
+
+    description_.setSemantics(PropertySemantics::Multiline);
+    description_.setReadOnly(true);
+    description_.setCurrentStateAsDefault();
 
     addPort(inport_);
     addPort(outport_);
+    addProperty(description_);
     addProperty(eqn_);
+    addProperty(addScale_);
+    addProperty(removeScale_);
     addProperty(scales_);
-    addProperty(useWorldSpaceCoordinateSystem_);
-    addProperty(borderValue_);
+    addProperty(useWorldSpace_);
 
-    inport_.onChange([this]() {
-        size_t i = 0;
-        for (const auto& item : inport_.getSourceVectorData()) {
-            if (scales_.getProperties().size() <= i) {
-                auto p = new FloatProperty(
-                    "scale" + (i == 0 ? "" : toString(i)),
-                    "s" + toString(i + 1) + ", " + item.first->getProcessor()->getIdentifier(),
-                    1.0f, -2.f, 2.f, 0.01f);
-                p->setSerializationMode(PropertySerializationMode::ALL);
-                scales_.addProperty(p);
-            } else {
-                scales_.getProperties()[i]->setDisplayName(
-                    "s" + toString(i + 1) + ", " + item.first->getProcessor()->getIdentifier());
-            }
-            i++;
-        }
-        while (scales_.getProperties().size() > i) {
-            auto p = scales_.removeProperty(scales_.getProperties().back());
-            delete p;
-        }
-        buildEquation();
+    useWorldSpace_.addProperty(borderValue_);
+
+    addScale_.onChange([&]() {
+        size_t i = scales_.size();
+        auto p = util::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1),
+                                                  1.0f, -2.f, 2.f, 0.01f);
+        p->setSerializationMode(PropertySerializationMode::All);
+        scales_.addProperty(p.release());
     });
 
-    eqn_.onChange([this]() { 
-        if (Processor::isReady()) {
-            buildEquation(); 
+    removeScale_.onChange([&]() {
+        if (scales_.size() > 0) {
+            dirty_ = true;
+            delete scales_.removeProperty(scales_.getProperties().back());
         }
     });
 
-    useWorldSpaceCoordinateSystem_.onChange([this]() {
-        if (Processor::isReady()) {
-            buildEquation();
-        }
-        borderValue_.setVisible(useWorldSpaceCoordinateSystem_);
-    });
-    borderValue_.setVisible(useWorldSpaceCoordinateSystem_);
-    borderValue_.onChange([this]() {
-        if (Processor::isReady()) {
-            buildEquation();
-        }
+    eqn_.onChange([&]() { 
+        dirty_ = true; 
     });
 
-    buildEquation();
+    inport_.onConnect([&]() {
+        dirty_ = true;
+        updateProperties();
+    });
+    inport_.onDisconnect([&]() {
+        dirty_ = true;
+        updateProperties();
+    });
+
+    useWorldSpace_.onChange([this]() {
+        dirty_ = true;
+    });
 }
 
-bool VolumeCombiner::isReady() const  {
-    return Processor::isReady() && validEquation_;
+bool VolumeCombiner::isReady() const {
+    return Processor::isReady() && (valid_ || dirty_);
 }
 
 #include <warn/push>
 #include <warn/ignore/unused-variable>
-void VolumeCombiner::buildEquation() {
-    try {
-        std::map<std::string, double> vars = {};
-        std::map<std::string, std::string> symbols;
-        std::stringstream uniforms;
-        std::stringstream sample;
-        
-        int i = 0;
-        uniforms << "uniform vec4 " << borderValue_.getIdentifier() << ";";
-        for (const auto& dummy : inport_) {
-            const std::string id(i == 0 ? "" : toString(i));
-            
-            symbols["s" + toString(i + 1)] = "scale" + id;
-            symbols["v" + toString(i + 1)] = "vol" + id;
+std::string VolumeCombiner::buildEquation() const {
+    std::map<std::string, double> vars = {};
+    std::map<std::string, std::string> symbols;
 
-            uniforms << "uniform sampler3D volume" << id << ";";
-            uniforms << "uniform VolumeParameters volume" << id << "Parameters;";
-            uniforms << "uniform float scale" << id << ";";
-            if (useWorldSpaceCoordinateSystem_) {
-                // Retrieve data from world space 
-                // and use border value if outside of volume
-                sample << "vec4 coord" << id << " = volume" << id << "Parameters.worldToTexture*volumeParameters.textureToWorld*texCoord_; ";
-                sample << "vec4 vol" << id << ";";
-                sample << "if (any(lessThan(coord.xyz, vec3(0))) || any(greaterThan(coord.xyz, vec3(1)))) { vol" << id << " = borderValue; }";
-                sample << "else { ";
-                sample << "vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
-                       << "Parameters, coord" << id << ".xyz); ";
-                sample << "}";
-            } else {
-                sample << "vec4 vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
-                    << "Parameters, texCoord_.xyz); ";
-            }
-
-            i++;
-        }
-
-        std::string eqn = shuntingyard::Calculator::shaderCode(eqn_.get(), vars, symbols);
-
-        shader_.getFragmentShaderObject()->addShaderDefine("GEN_UNIFORMS", uniforms.str());
-        shader_.getFragmentShaderObject()->addShaderDefine("GEN_SAMPLING", sample.str());
-        shader_.getFragmentShaderObject()->addShaderDefine("EQUATION", eqn);
-        shader_.build();
-        validEquation_ = true;
-
-    } catch (Exception& e) {
-        validEquation_ = false;
-        LogProcessorError("Error: " << e.getMessage());
+    size_t i = 0;
+    for (const auto& dummy : inport_) {
+        symbols["s" + toString(i + 1)] = "scale" + toString(i);
+        symbols["v" + toString(i + 1)] = "vol" + toString(i);
+        ++i;
     }
-}
-#include <warn/pop>
 
+    return shuntingyard::Calculator::shaderCode(eqn_.get(), vars, symbols);
+}
+
+void VolumeCombiner::buildShader(const std::string& eqn) {
+    std::stringstream ss;
+    ss << "#include \"utils/structs.glsl\"\n";
+    ss << "#include \"utils/sampler3d.glsl\"\n\n";
+    ss << "in vec4 texCoord_;\n";
+
+    ss << "uniform vec4 " << borderValue_.getIdentifier() << ";\n";
+    
+    size_t id = 0;
+    for (const auto& dummy : inport_) {
+        ss << "uniform sampler3D volume" << id << ";\n";
+        ss << "uniform VolumeParameters volume" << id << "Parameters;\n";
+        ++id;
+    }
+    for (auto prop : scales_.getProperties()) {
+        ss << "uniform float " << prop->getIdentifier() << ";\n";
+    }
+          
+    ss << "\nvoid main() {\n";
+
+    id = 0;
+    for (const auto& dummy : inport_) {
+        const std::string vol = "vol" + toString(id);
+        const std::string v = "volume" + toString(id);
+        const std::string vp = "volume" + toString(id) + "Parameters";
+        if (useWorldSpace_) {
+            const std::string coord = "coord" + toString(id);
+            // Retrieve data from world space and use border value if outside of volume
+            ss << "    vec3 " << coord << " = (" << vp << ".worldToTexture * "
+               << "volume0Parameters.textureToWorld * texCoord_).xyz;\n";
+            ss << "    vec4 " << vol << ";\n";
+            ss << "    if (all(greaterThanEqual(" << coord << ", vec3(0))) &&"
+               << " all(lessThanEqual(" << coord << ", vec3(1)))) {\n";
+            ss << "        " << vol << " = getNormalizedVoxel(" << v << ", " << vp << ", " << coord
+               << ");\n";
+            ss << "    } else {\n";
+            ss << "        " << vol << " = borderValue;\n";
+            ss << "    }\n\n";
+        } else {
+            ss << "    vec4 " << vol << " = getNormalizedVoxel(" << v << ", " << vp
+               << ", texCoord_.xyz);\n";
+        }
+        ++id;
+    }
+
+    ss << "    FragData0 = " << eqn << ";\n";
+    ss << "    gl_FragDepth = 1.0;\n";
+    ss << "}\n";
+
+    fragment_->setSource(ss.str());
+    shader_.build();
+}
+
+void VolumeCombiner::updateProperties() {
+    size_t i = 0;
+    std::stringstream desc;
+    for (const auto& port : inport_.getConnectedOutports()) {
+        desc << "v" + toString(i + 1) + ": " + port->getProcessor()->getIdentifier() << "\n";       
+        i++;
+    }
+    description_.set(desc.str());
+}
+
+#include <warn/pop>
 
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
@@ -181,20 +210,31 @@ void VolumeCombiner::process() {
         volume_->dataMap_ = inport_.getData()->dataMap_;
         outport_.setData(volume_);
     }
+
+    if (dirty_) {
+        dirty_ = false;
+        try {
+            buildShader(buildEquation());
+            valid_ = true;
+        } catch (Exception& e) {
+            valid_ = false;
+            throw Exception(e.getMessage() + ": " + eqn_.get(), IvwContext);
+        }     
+    }
+
     shader_.activate();
 
     TextureUnitContainer cont;
     int i = 0;
     for (const auto& vol : inport_) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume" + (i == 0 ? "" : toString(i)));
-        i++;
+        utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume" + toString(i));
+        ++i;
     }
 
-    for (auto prop : scales_.getProperties()) {
-        const FloatProperty& prop2 = *static_cast<FloatProperty*>(prop);
-        utilgl::setUniforms(shader_, prop2);
-    }
     utilgl::setUniforms(shader_, borderValue_);
+    for (auto prop : scales_.getProperties()) {
+        utilgl::setUniforms(shader_, *static_cast<FloatProperty*>(prop));
+    }
 
     const size3_t dim{inport_.getData()->getDimensions()};
     fbo_.activate();

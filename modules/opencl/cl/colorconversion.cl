@@ -235,3 +235,17 @@ float3 lab2rgb(float3 lab) {
 
     return xyz2rgb(xyz);
 }
+
+/**
+ * \brief Convert rgb color in [0 1] to grayscale.  
+ *
+ * Computes the nonlinear luma component from the RGB color using a weighted sum:
+ * Y' = 0.2989*R + 0.5870*G + 0.1140*B 
+ * The same method is used to convert color in video systems (PAL/NTSC):
+ * https://en.wikipedia.org/wiki/Grayscale
+ *
+ * @return Gray scale in [0 1]
+ */
+float rgb2gray(float3 rgb) {
+    return 0.2989f*rgb.x + 0.5870f*rgb.y + 0.1140f*rgb.z;
+}

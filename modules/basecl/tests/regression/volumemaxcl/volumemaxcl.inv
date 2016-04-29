@@ -58,10 +58,10 @@
         </Processor>
         <Processor type="org.inviwo.VolumeMaxCL" identifier="Volume Max">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="volume" id="ref1" />
+                <InPort type="org.inviwo.VolumeInport" identifier="inVolume" id="ref1" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.VolumeOutport" identifier="volume" id="ref2" />
+                <OutPort type="org.inviwo.VolumeOutport" identifier="outVolume" id="ref2" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.IntProperty" identifier="region" />

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/eventconverterqt.h>
+#include <inviwo/qt/widgets/keyboardutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -103,18 +104,19 @@ GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(const QGest
 }
 
 InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEvent* e) {
+    int modifier = static_cast<int>(InteractionEvent::MODIFIER_NONE);
     if (e->modifiers() == Qt::ShiftModifier)
-        return InteractionEvent::MODIFIER_SHIFT;
-    else if (e->modifiers() == Qt::ControlModifier)
-        return InteractionEvent::MODIFIER_CTRL;
-    else if (e->modifiers() == Qt::AltModifier)
-        return InteractionEvent::MODIFIER_ALT;
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_SHIFT);
+    if (e->modifiers() == Qt::ControlModifier)
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_CTRL);
+    if (e->modifiers() == Qt::AltModifier)
+        modifier |= static_cast<int>(InteractionEvent::MODIFIER_ALT);
 
-    return InteractionEvent::MODIFIER_NONE;
+    return static_cast<InteractionEvent::Modifier>(modifier);
 }
 
 int EventConverterQt::getKeyButton(const QKeyEvent* e) {
-    return e->key();
+    return static_cast<int>(util::mapKeyFromQt(e));
 }
 
 } // namespace

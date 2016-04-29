@@ -31,24 +31,20 @@
 
 namespace inviwo {
 
-void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property,
-                                                             size_t index) const {
-    for (auto o : observers_) o->onWillAddProperty(property, index);
+void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property, size_t index) {
+    forEachObserver([&](PropertyOwnerObserver* o) { o->onWillAddProperty(property, index); });
 }
 
-void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property,
-                                                            size_t index) const {
-    for (auto o : observers_) o->onDidAddProperty(property, index);
+void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property, size_t index) {
+    forEachObserver([&](PropertyOwnerObserver* o) { o->onDidAddProperty(property, index); });
 }
 
-void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property,
-                                                                size_t index) const {
-    for (auto o : observers_) o->onWillRemoveProperty(property, index);
+void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property, size_t index) {
+    forEachObserver([&](PropertyOwnerObserver* o) { o->onWillRemoveProperty(property, index); });
 }
 
-void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property,
-                                                               size_t index) const {
-    for (auto o : observers_) o->onDidRemoveProperty(property, index);
+void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property, size_t index) {
+    forEachObserver([&](PropertyOwnerObserver* o) { o->onDidRemoveProperty(property, index); });
 }
 
 }  // namespace

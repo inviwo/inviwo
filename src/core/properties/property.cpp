@@ -40,7 +40,7 @@ namespace inviwo {
     : PropertyObservable()
     , Serializable()
     , MetaDataOwner()
-    , serializationMode_(PropertySerializationMode::DEFAULT)
+    , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
     , displayName_("displayName", displayName)
     , readOnly_("readonly", false)
@@ -191,7 +191,7 @@ bool Property::hasWidgets() const {
 void Property::propertyModified() {
     NetworkLock lock(this);
     onChangeCallback_.invokeAll();
-    setPropertyModified(true);
+    setModified(true);
 
     PropertyOwner* owner = getOwner();
     if (owner) {
@@ -209,20 +209,18 @@ void Property::propertyModified() {
     updateWidgets();
 }
 
-void Property::setPropertyModified(bool modified) {
+void Property::setModified(bool modified) {
     propertyModified_ = modified;
 }
 
-bool Property::isPropertyModified() const {
+bool Property::isModified() const {
     return propertyModified_;
 }
 
 void Property::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
-    s.serialize("identifier", identifier_, true);
-    if (serializationMode_ == PropertySerializationMode::ALL || !displayName_.isDefault()) {
-        s.serialize(displayName_.name, displayName_.value, true);
-    }
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+    displayName_.serialize(s, serializationMode_);
     semantics_.serialize(s, serializationMode_);
     usageMode_.serialize(s, serializationMode_);
     visible_.serialize(s, serializationMode_);
@@ -233,16 +231,16 @@ void Property::serialize(Serializer& s) const {
 
 void Property::deserialize(Deserializer& d) {
     std::string className;
-    d.deserialize("type", className, true);
+    d.deserialize("type", className, SerializationTarget::Attribute);
 
     {
         auto old = identifier_;
-        d.deserialize("identifier", identifier_, true);
+        d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
         if (old != identifier_) notifyObserversOnSetIdentifier(identifier_);
     }
     {
         auto old = displayName_.value;
-        d.deserialize(displayName_.name, displayName_.value, true);
+        displayName_.deserialize(d);
         if (old != displayName_.value) notifyObserversOnSetDisplayName(displayName_);
     }
     {

@@ -84,9 +84,10 @@ public:
 
     virtual MetaData* clone() const override { return new StdUnorderedMapMetaData<K, T>(*this); }
 
-    virtual void serialize(Serializer& s) const override { 
-        s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(), true);
-        s.serialize("Map", map_, "Item"); 
+    virtual void serialize(Serializer& s) const override {
+        s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(),
+                    SerializationTarget::Attribute);
+        s.serialize("Map", map_, "Item");
     }
 
     virtual void deserialize(Deserializer& d) override { d.deserialize("Map", map_, "Item"); }

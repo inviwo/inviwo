@@ -53,7 +53,7 @@ class IVW_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
 #include <warn/pop>
 public:
     BaseSliderWidgetQt();
-    virtual ~BaseSliderWidgetQt();
+    virtual ~BaseSliderWidgetQt() = default;
 
 protected: 
     virtual double transformValueToSpinner() = 0;
@@ -96,7 +96,7 @@ private:
     */
     void updateSlider();
 
-    static const int SLIDER_MAX = 10000;
+    static const int sliderMax_ = 10000;
     CustomDoubleSpinBoxQt* spinBox_;
     QSlider* slider_;
     double spinnerValue_;
@@ -128,13 +128,13 @@ public:
         , increment_(0) {}
     virtual ~TemplateSliderWidget() {}
 
-    virtual T getValue();
-    virtual void setValue(T value);
-    virtual void initValue(T value);
-    virtual void setMinValue(T minValue);
-    virtual void setMaxValue(T maxValue);
-    virtual void setRange(T minValue, T maxValue);
-    virtual void setIncrement(T increment);
+    virtual T getValue() override;
+    virtual void setValue(T value) override;
+    virtual void initValue(T value) override;
+    virtual void setMinValue(T minValue) override;
+    virtual void setMaxValue(T maxValue) override;
+    virtual void setRange(T minValue, T maxValue) override;
+    virtual void setIncrement(T increment) override;
 
 protected:
     // Define the transforms
@@ -144,21 +144,21 @@ protected:
     virtual double reprToSpinner(T val) = 0;
 
     // Has default implementations using above transformations.
-    virtual double transformValueToSpinner();
-    virtual int transformValueToSlider();
+    virtual double transformValueToSpinner() override;
+    virtual int transformValueToSlider() override;
 
-    virtual double transformMinValueToSpinner();
-    virtual int transformMinValueToSlider();
+    virtual double transformMinValueToSpinner() override;
+    virtual int transformMinValueToSlider() override;
 
-    virtual double transformMaxValueToSpinner();
-    virtual int transformMaxValueToSlider();
+    virtual double transformMaxValueToSpinner() override;
+    virtual int transformMaxValueToSlider() override;
 
-    virtual double transformIncrementToSpinner();
-    virtual int transformIncrementToSpinnerDecimals();
-    virtual int transformIncrementToSlider();
+    virtual double transformIncrementToSpinner() override;
+    virtual int transformIncrementToSpinnerDecimals() override;
+    virtual int transformIncrementToSlider() override;
 
-    virtual void newSliderValue(int val);
-    virtual void newSpinnerValue(double val);
+    virtual void newSliderValue(int val) override;
+    virtual void newSpinnerValue(double val) override;
 
     T value_;
     T minValue_;
@@ -166,64 +166,51 @@ protected:
     T increment_;
 };
 
-// Default case for fractional numbers
+template <typename T, bool floatingPoint = std::is_floating_point<T>::value>
+class SliderWidgetQt {};
+
+// For fractional numbers
 template <typename T>
-class SliderWidgetQt : public TemplateSliderWidget<T> {
+class SliderWidgetQt<T, true> : public TemplateSliderWidget<T> {
 public:
-    SliderWidgetQt() : TemplateSliderWidget<T>() {}
-    virtual ~SliderWidgetQt() {}
-
-protected:  
-    // Defines the transform
-    virtual T sliderToRepr(int val) {
-        return this->minValue_ + (static_cast<T>(val) * (this->maxValue_ - this->minValue_) / static_cast<T>(SLIDER_MAX));
-    }
-    virtual int reprToSlider(T val) {
-        return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) * SLIDER_MAX);
-    } 
-    virtual T spinnerToRepr(double val) {
-        return static_cast<T>(val);
-    }
-    virtual double reprToSpinner(T val) {
-        return static_cast<double>(val);
-    }
-
-    // Custom min and max for the slider
-    virtual int transformMinValueToSlider() {
-        return 0;
-    }
-    virtual int transformMaxValueToSlider() {
-        return SLIDER_MAX;
-    };
-
-private:
-    static const int SLIDER_MAX = 10000;
-};
-
-// Specialization for integer types
-template <>
-class SliderWidgetQt<int> : public TemplateSliderWidget<int>{
-public:
-    SliderWidgetQt() : TemplateSliderWidget<int>() {}
-    virtual ~SliderWidgetQt() {}
+    SliderWidgetQt() = default;
+    virtual ~SliderWidgetQt() = default;
 
 protected:
     // Defines the transform
-    virtual int sliderToRepr(int val) {
-        return val;
+    virtual T sliderToRepr(int val) override {
+        return this->minValue_ + (static_cast<T>(val) * (this->maxValue_ - this->minValue_) /
+                                  static_cast<T>(sliderMax_));
     }
-    virtual int reprToSlider(int val) {
-        return val;
+    virtual int reprToSlider(T val) override {
+        return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) *
+                                sliderMax_);
     }
-    virtual int spinnerToRepr(double val) {
-        return static_cast<int>(val);
-    }
-    virtual double reprToSpinner(int val) {
-        return static_cast<double>(val);
-    }
-    virtual int transformIncrementToSpinnerDecimals() {
-        return 0;
-    }
+    virtual T spinnerToRepr(double val) override { return static_cast<T>(val); }
+    virtual double reprToSpinner(T val) override { return static_cast<double>(val); }
+
+    // Custom min and max for the slider
+    virtual int transformMinValueToSlider() override { return 0; }
+    virtual int transformMaxValueToSlider() override { return sliderMax_; };
+
+private:
+    static const int sliderMax_ = 10000;
+};
+
+// For integer types
+template <typename T>
+class SliderWidgetQt<T, false> : public TemplateSliderWidget<T> {
+public:
+    SliderWidgetQt() = default;
+    virtual ~SliderWidgetQt() = default;
+
+protected:
+    // Defines the transform
+    virtual T sliderToRepr(int val) override { return static_cast<T>(val); }
+    virtual int reprToSlider(T val) override { return static_cast<int>(val); }
+    virtual T spinnerToRepr(double val) override { return static_cast<T>(val); }
+    virtual double reprToSpinner(T val) override { return static_cast<double>(val); }
+    virtual int transformIncrementToSpinnerDecimals() override { return 0; }
 };
 
 typedef SliderWidgetQt<int> IntSliderWidgetQt;

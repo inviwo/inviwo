@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/io/serialization/deserializationerrorhandler.h>
+#ifndef IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
+#define IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
-    BaseDeserializationErrorHandler::BaseDeserializationErrorHandler() {}
-    BaseDeserializationErrorHandler::~BaseDeserializationErrorHandler() {}
-} // namespace
 
+class ProcessorNetworkEvaluationObservable;
+
+/**
+ * \class ProcessorNetworkEvaluationObserver
+ */
+class IVW_CORE_API ProcessorNetworkEvaluationObserver : public Observer {
+public:
+    friend ProcessorNetworkEvaluationObservable;
+    ProcessorNetworkEvaluationObserver() = default;
+    virtual ~ProcessorNetworkEvaluationObserver() = default;
+
+    virtual void onProcessorNetworkEvaluationBegin(){};
+    virtual void onProcessorNetworkEvaluationEnd(){};
+};
+
+class IVW_CORE_API ProcessorNetworkEvaluationObservable
+    : public Observable<ProcessorNetworkEvaluationObserver> {
+public:
+    ProcessorNetworkEvaluationObservable() = default;
+
+    virtual void notifyObserversProcessorNetworkEvaluationBegin();
+    virtual void notifyObserversProcessorNetworkEvaluationEnd();
+};
+
+}  // namespace
+
+#endif  // IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H

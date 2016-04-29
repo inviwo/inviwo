@@ -87,6 +87,8 @@ void FileProperty::serialize(Serializer& s) const {
 
     */
     Property::serialize(s);
+
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
     
     const std::string absolutePath = get();
     std::string workspaceRelativePath;
@@ -177,6 +179,10 @@ void FileProperty::addNameFilter(std::string filter) {
 
 void FileProperty::addNameFilter(FileExtension filter) {
     nameFilters_.push_back(filter);
+}
+
+void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
+    util::append(nameFilters_, filters);
 }
 
 void FileProperty::clearNameFilters() {

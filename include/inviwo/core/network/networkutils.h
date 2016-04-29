@@ -143,6 +143,23 @@ void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
 
 IVW_CORE_API std::vector<Processor*> topologicalSort(ProcessorNetwork* network);
 
+struct IVW_CORE_API PropertyDistanceSorter {
+    PropertyDistanceSorter();
+    void setTarget(const Property* target);
+    bool operator()(const Property* a, const Property* b);
+
+private:
+    vec2 getPosition(const Property* p);
+    vec2 getPosition(const Processor* processor);
+
+    vec2 pos_ = {0,0};
+    std::map<const Property*, vec2> cache_;
+};
+
+
+IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
+
+
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
 

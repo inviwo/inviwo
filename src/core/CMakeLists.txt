@@ -80,6 +80,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gestureevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/interactionevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardkeys.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
@@ -103,7 +104,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h  
@@ -132,6 +132,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/portconnection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetwork.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkconverter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
@@ -233,7 +234,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
@@ -355,7 +355,6 @@ set(SOURCE_FILES
     io/ivfvolumewriter.cpp  
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
-    io/serialization/deserializationerrorhandler.cpp
     io/serialization/deserializer.cpp
     io/serialization/nodedebugger.cpp
     io/serialization/serializationexception.cpp
@@ -380,6 +379,7 @@ set(SOURCE_FILES
     network/portconnection.cpp
     network/processornetwork.cpp
     network/processornetworkconverter.cpp
+    network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
     ports/imageport.cpp
@@ -497,6 +497,7 @@ set(TEST_FILES
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
+    tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp

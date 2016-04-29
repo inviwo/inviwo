@@ -33,6 +33,7 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 #include <unordered_map>
 
@@ -47,26 +48,28 @@ namespace inviwo {
 class ShaderObject;
 class ShaderWidget;
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QObject, public ProcessorNetworkObserver {
+class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QObject {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT
     #include <warn/pop>
 public:
     OpenGLQtMenu();
-    virtual ~OpenGLQtMenu() {}
-
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
+    virtual ~OpenGLQtMenu() = default;
 
 private:
     void showShader(const ShaderObject* obj);
     void shadersReload();
     void updateShadersMenu();
 
-    QMenu* shadersItem_;
+    void addShaderObjects(Shader* shader, QMenu* menuItem);
+
+    QMenu* menu_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
     std::unordered_map<unsigned int, ShaderWidget*> editors_;
+    
+    std::shared_ptr<ShaderManager::Callback> onAddShader_;
+    std::shared_ptr<ShaderManager::Callback> onRemoveShader_;
 };
 
 }  // namespace

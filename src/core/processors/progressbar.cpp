@@ -93,12 +93,12 @@ void ProgressBar::deserialize(Deserializer& d) {
     notifyVisibilityChanged();
 }
 
-void ProgressBarObservable::notifyProgressChanged() const {
-    for (auto o : observers_) o->progressChanged();
+void ProgressBarObservable::notifyProgressChanged() {
+    forEachObserver([](ProgressBarObserver* o) { o->progressChanged(); });
 }
 
-void ProgressBarObservable::notifyVisibilityChanged() const {
-    for (auto o : observers_) o->progressBarVisibilityChanged();
+void ProgressBarObservable::notifyVisibilityChanged() {
+    forEachObserver([](ProgressBarObserver* o) { o->progressBarVisibilityChanged(); });
 }
 
 }  // namespace

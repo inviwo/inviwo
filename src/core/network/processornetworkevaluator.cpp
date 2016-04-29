@@ -44,38 +44,26 @@ namespace inviwo {
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
+    , processorsSorted_(util::topologicalSort(processorNetwork_))
     , evaulationQueued_(false)
     , exceptionHandler_(StandardExceptionHandler()) {
     
     processorNetwork_->addObserver(this);
 }
 
-ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {}
-
 void ProcessorNetworkEvaluator::setExceptionHandler(ExceptionHandler handler) {
     exceptionHandler_ = handler;
 }
 
-void ProcessorNetworkEvaluator::onProcessorInvalidationEnd(Processor* p) {
-    processorNetwork_->onProcessorInvalidationEnd(p);
-    p->ProcessorObservable::removeObserver(this);
-
-    if (evaulationQueued_) {
-        evaulationQueued_ = false;
-        requestEvaluate();
-    }
-}
-
 void ProcessorNetworkEvaluator::onProcessorNetworkEvaluateRequest() {
     // Direct request, thus we don't want to queue the evaluation anymore
-    if (evaulationQueued_) evaulationQueued_ = false;
-
+    evaulationQueued_ = false;
     requestEvaluate();
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkUnlocked() {
     // Only evaluate if an evaluation is queued or the network is modified
-    if (evaulationQueued_ || processorNetwork_->isModified()) {
+    if (evaulationQueued_) {
         evaulationQueued_ = false;
         requestEvaluate();
     }
@@ -112,14 +100,10 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     NetworkLock lock(processorNetwork_);
-    RenderContext::getPtr()->activateDefaultRenderContext();
 
-    // if the processor network has changed determine the new processor order
-    if (processorNetwork_->isModified()) {
-        // network topology has changed, update internal processor states
-        processorsSorted_ = util::topologicalSort(processorNetwork_);
-        processorNetwork_->setModified(false);
-    }
+    notifyObserversProcessorNetworkEvaluationBegin();
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
@@ -133,34 +117,57 @@ void ProcessorNetworkEvaluator::evaluate() {
                     for (auto inport : processor->getInports()) {
                         inport->callOnChangeIfChanged();
                     }
-                } catch (Exception&) {
+                } catch (...) {
                     exceptionHandler_(IvwContext);
                     processor->setValid();
                     continue;
                 }
 
-#if IVW_PROFILING
                 processor->notifyObserversAboutToProcess(processor);
-#endif
 
                 try {
                     IVW_CPU_PROFILING_IF(500, "Processed " << processor->getDisplayName());
                     // do the actual processing
                     processor->process();
-                } catch (Exception&) {
+                } catch (...) {
                     exceptionHandler_(IvwContext);
                 }
                 // set processor as valid
                 processor->setValid();
 
-#if IVW_PROFILING
                 processor->notifyObserversFinishedProcess(processor);
-#endif
+
             } else {
-                processor->doIfNotReady();
+                processor->notifyObserversAboutToProcess(processor);
+                try {
+                    processor->doIfNotReady();
+                } catch (...) {
+                    exceptionHandler_(IvwContext);
+                }
+                processor->notifyObserversFinishedProcess(processor);
             }
         }
     }
+
+    notifyObserversProcessorNetworkEvaluationEnd();
+}
+
+void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor* processor) {
+    processorsSorted_ = util::topologicalSort(processorNetwork_);
+}
+
+void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
+    processorsSorted_ = util::topologicalSort(processorNetwork_);
+}
+
+void ProcessorNetworkEvaluator::onProcessorNetworkDidAddConnection(
+    const PortConnection& connection) {
+    processorsSorted_ = util::topologicalSort(processorNetwork_);
+}
+
+void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveConnection(
+    const PortConnection& connection) {
+    processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
 }  // namespace

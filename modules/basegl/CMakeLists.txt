@@ -143,7 +143,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectormagnitudeprocessor.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_binary.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_combiner.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_difference.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_gpu.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_gpu.vert

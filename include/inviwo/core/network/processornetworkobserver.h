@@ -38,11 +38,13 @@ namespace inviwo {
 class Processor;
 class PortConnection;
 class PropertyLink;
+class ProcessorNetworkObservable;
 
 class IVW_CORE_API ProcessorNetworkObserver: public Observer {
 public:
-    ProcessorNetworkObserver(): Observer() {};
-
+    ProcessorNetworkObserver() = default;
+    virtual ~ProcessorNetworkObserver() = default;
+    friend ProcessorNetworkObservable;
     /**
     * This method will be called when observed object changes.
     * Override it to add behavior.
@@ -58,43 +60,44 @@ public:
     virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) {};
 
     // Connections
-    virtual void onProcessorNetworkWillAddConnection(PortConnection* connection) {};
-    virtual void onProcessorNetworkDidAddConnection(PortConnection* connection) {};
-    virtual void onProcessorNetworkWillRemoveConnection(PortConnection* connection) {};
-    virtual void onProcessorNetworkDidRemoveConnection(PortConnection* connection) {};
+    virtual void onProcessorNetworkWillAddConnection(const PortConnection& connection) {};
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) {};
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {};
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {};
 
     // Links
-    virtual void onProcessorNetworkWillAddLink(PropertyLink* propertyLink) {};
-    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink) {};
-    virtual void onProcessorNetworkWillRemoveLink(PropertyLink* propertyLink) {};
-    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) {};
+    virtual void onProcessorNetworkWillAddLink(const PropertyLink& propertyLink) {};
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {};
+    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink) {};
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {};
 };
 
 class IVW_CORE_API ProcessorNetworkObservable: public Observable<ProcessorNetworkObserver> {
 public:
-    ProcessorNetworkObservable(): Observable<ProcessorNetworkObserver>() {};
+    ProcessorNetworkObservable() = default;
+    virtual ~ProcessorNetworkObservable() = default;
 
-    void notifyObserversProcessorNetworkChanged() const;
-    void notifyObserversProcessorNetworkEvaluateRequest() const;
-    void notifyObserversProcessorNetworkUnlocked() const;
+    void notifyObserversProcessorNetworkChanged();
+    void notifyObserversProcessorNetworkEvaluateRequest();
+    void notifyObserversProcessorNetworkUnlocked();
 
     // Processors
-    void notifyObserversProcessorNetworkWillAddProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkDidAddProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkWillRemoveProcessor(Processor* processor) const;
-    void notifyObserversProcessorNetworkDidRemoveProcessor(Processor* processor) const;
+    void notifyObserversProcessorNetworkWillAddProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkDidAddProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkWillRemoveProcessor(Processor* processor);
+    void notifyObserversProcessorNetworkDidRemoveProcessor(Processor* processor);
 
     // Connections
-    void notifyObserversProcessorNetworkWillAddConnection(PortConnection* connection) const;
-    void notifyObserversProcessorNetworkDidAddConnection(PortConnection* connection) const;
-    void notifyObserversProcessorNetworkWillRemoveConnection(PortConnection* connection) const;
-    void notifyObserversProcessorNetworkDidRemoveConnection(PortConnection* connection) const;
+    void notifyObserversProcessorNetworkWillAddConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkDidAddConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkWillRemoveConnection(const PortConnection& connection);
+    void notifyObserversProcessorNetworkDidRemoveConnection(const PortConnection& connection);
 
     // Links
-    void notifyObserversProcessorNetworkWillAddLink(PropertyLink* propertyLink) const;
-    void notifyObserversProcessorNetworkDidAddLink(PropertyLink* propertyLink) const;
-    void notifyObserversProcessorNetworkWillRemoveLink(PropertyLink* propertyLink) const;
-    void notifyObserversProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) const;
+    void notifyObserversProcessorNetworkWillAddLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
+    void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
 
 };
 

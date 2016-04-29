@@ -24,14 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONDATAPOINT_H
 #define IVW_TRANSFERFUNCTIONDATAPOINT_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -40,18 +40,12 @@ class TransferFunctionDataPoint;
 
 class IVW_CORE_API TransferFunctionPointObserver : public Observer {
 public:
-    TransferFunctionPointObserver() : Observer() {};
-    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p) {};
+    TransferFunctionPointObserver() : Observer(){};
+    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p){};
 };
 
-class IVW_CORE_API TransferFunctionPointObservable
-    : public Observable<TransferFunctionPointObserver> {
-public:
-    TransferFunctionPointObservable() : Observable<TransferFunctionPointObserver>() {};
-    void notifyTransferFunctionPointObservers() const;
-};
 
-class IVW_CORE_API TransferFunctionDataPoint : public TransferFunctionPointObservable,
+class IVW_CORE_API TransferFunctionDataPoint : public Observable<TransferFunctionPointObserver>,
                                                public Serializable {
 public:
     TransferFunctionDataPoint(const vec2& pos = vec2(0), const vec4& rgba = vec4(0));
@@ -69,17 +63,17 @@ public:
     void setPosA(const vec2& pos, float alpha);
 
     void setNotificationsEnabled(bool enabled) { notify_ = enabled; }
-    void notifyTransferFunctionPointObservers() const;
+    void notifyTransferFunctionPointObservers();
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     friend IVW_CORE_API bool operator==(const TransferFunctionDataPoint& lhs,
-                           const TransferFunctionDataPoint& rhs);
+                                        const TransferFunctionDataPoint& rhs);
 
     // Compare points by their "x" value
     friend IVW_CORE_API bool operator<(const TransferFunctionDataPoint& lhs,
-                          const TransferFunctionDataPoint& rhs);
+                                       const TransferFunctionDataPoint& rhs);
 
 private:
     vec2 pos_;

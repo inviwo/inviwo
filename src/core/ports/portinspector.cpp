@@ -61,7 +61,7 @@ std::vector<Inport*>& PortInspector::getInports() { return inPorts_; }
 CanvasProcessor* PortInspector::getCanvasProcessor() { return canvasProcessor_; }
 
 std::vector<PortConnection>& PortInspector::getConnections() { return connections_; }
-std::vector<PropertyLink*>& PortInspector::getPropertyLinks() { return propertyLinks_; }
+std::vector<PropertyLink>& PortInspector::getPropertyLinks() { return propertyLinks_; }
 std::vector<Processor*>& PortInspector::getProcessors() { return processors_; }
 
 void PortInspector::fileChanged(const std::string& fileName) { needsUpdate_ = true; }
@@ -121,8 +121,8 @@ void PortInspector::initialize() {
         // Store the connections and and disconnect them.
         auto connections = inspectorNetwork_->getConnections(); 
         for (auto& elem : connections) {
-            connections_.emplace_back(elem->getOutport(), elem->getInport());
-            inspectorNetwork_->removeConnection(elem->getOutport(), elem->getInport());
+            connections_.emplace_back(elem.getOutport(), elem.getInport());
+            inspectorNetwork_->removeConnection(elem.getOutport(), elem.getInport());
         }
 
         // store the processor links.

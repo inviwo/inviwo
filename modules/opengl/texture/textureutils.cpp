@@ -46,15 +46,17 @@ namespace inviwo {
 
 namespace utilgl {
 
-void activateTarget(ImageOutport& outport, ImageType type) {
-    auto outImage = outport.getEditableData();
-    auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
-    outImageGL->activateBuffer(type);
-}
-
 void activateTarget(Image& image, ImageType type) {
     auto outImageGL = image.getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
+}
+
+void activateTarget(ImageOutport& outport, ImageType type) {
+    if (!outport.hasEditableData()) {
+       outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat())); 
+    }
+    auto outImage = outport.getEditableData();
+    activateTarget(*outImage, type);
 }
 
 void activateAndClearTarget(ImageOutport& outport, ImageType type) {
@@ -67,15 +69,21 @@ void activateAndClearTarget(Image& image, ImageType type) {
     clearCurrentTarget();
 }
 
-void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, ImageType type) {
-    auto outImage = outport.getEditableData();
-    auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
+void activateTargetAndCopySource(Image& outImage, ImageInport& inport, ImageType type) {
+     auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
 
     auto inImage = inport.getData();
     auto inImageGL = inImage->getRepresentation<ImageGL>();
     inImageGL->copyRepresentationsTo(outImageGL);
-
     outImageGL->activateBuffer(type);
+}
+
+void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, ImageType type) {
+    if (!outport.hasEditableData()) {
+        outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat()));
+    }
+    auto outImage = outport.getEditableData();
+    activateTargetAndCopySource(*outImage, inport, type);
 }
 
 void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -83,6 +91,9 @@ void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
 void updateAndActivateTarget(ImageOutport& outport, ImageInport& inport) {
+    if (!outport.hasEditableData()) {
+        outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat()));
+    }
     auto outImage = outport.getEditableData();
     auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->updateFrom(inport.getData()->getRepresentation<ImageGL>());

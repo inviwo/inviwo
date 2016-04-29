@@ -132,7 +132,7 @@ public:
     ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UInt8::get(),
                  bool handleResizeEvents = true);
 
-    virtual ~ImageOutport();
+    virtual ~ImageOutport() = default;
 
     virtual void setData(std::shared_ptr<const Image>) override;
     virtual void setData(const Image* data) override; // will assume ownership of data.
@@ -147,6 +147,7 @@ public:
      * Handle resize event
      */
     void propagateResizeEvent(ResizeEvent* resizeEvent);
+    const DataFormatBase* getDataFormat() const;
     size2_t getDimensions() const;   
     /**
      * Set the dimensions of this port without propagating the size
@@ -174,6 +175,7 @@ public:
 private:
     std::shared_ptr<Image> image_;
     size2_t defaultDimensions_;
+    const DataFormatBase* format_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
     ImageCache cache_;

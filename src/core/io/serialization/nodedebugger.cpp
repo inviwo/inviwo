@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/nodedebugger.h>
-#include <sstream>
-
-
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/serialization/ticpp.h>
+
+#include <sstream>
 
 namespace inviwo {
 
@@ -48,11 +48,16 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
     }
 }
 
-inviwo::NodeDebugger::Node NodeDebugger::operator[](std::size_t idx) const {
+const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const {
+    return nodes_[idx];
+}
+
+std::string NodeDebugger::toString(std::size_t idx) const {
     if (idx < nodes_.size()) {
-        return nodes_[idx];
+        return nodes_[idx].key + ": \"" + nodes_[idx].identifier + "\" of class \"" +
+               nodes_[idx].type + "\" at line: " + inviwo::toString(nodes_[idx].line);
     } else {
-        return Node("UnKnown", "UnKnown");
+        return "";
     }
 }
 

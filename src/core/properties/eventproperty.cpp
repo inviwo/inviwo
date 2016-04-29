@@ -67,6 +67,7 @@ EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
     if (!event_->equalSelectors(defaultEvent_.get())) {
         s.serialize("Event", event_.get());
     }

@@ -244,7 +244,7 @@ std::shared_ptr<BasicMesh> BasicMesh::cone(const vec3& start, const vec3& stop, 
 
 std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& stop,
                                                const vec4& color, const float& radius,
-                                               const size_t& segments) {
+                                               const size_t& segments, bool caps) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
 
@@ -279,11 +279,13 @@ std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& st
         inds->add(((i + 1) * 2) % (2 * ns) + 1);
     }
     // add end caps
-    auto startcap = disk(start, -e1, color, radius, segments);
-    auto endcap = disk(stop, e1, color, radius, segments);
+    if (caps) {
+        auto startcap = disk(start, -e1, color, radius, segments);
+        auto endcap = disk(stop, e1, color, radius, segments);
 
-    mesh->append(startcap.get());
-    mesh->append(endcap.get());
+        mesh->append(startcap.get());
+        mesh->append(endcap.get());
+    }
 
     return mesh;
 }

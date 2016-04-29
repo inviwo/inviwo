@@ -29,19 +29,21 @@
 
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
 
 namespace inviwo {
 
-PropertyLink::PropertyLink() : srcProperty_(nullptr), dstProperty_(nullptr) {}
+PropertyLink::PropertyLink() : src_(nullptr), dst_(nullptr) {}
 
-PropertyLink::~PropertyLink() {}
+PropertyLink::operator bool() const {
+    return src_ && dst_;
+}
 
-PropertyLink::PropertyLink(Property* srcProperty, Property* destProperty)
-    : srcProperty_(srcProperty), dstProperty_(destProperty) {}
+PropertyLink::PropertyLink(Property* src, Property* dst) : src_(src), dst_(dst) {}
 
 void PropertyLink::serialize(Serializer& s) const {
-    s.serialize("SourceProperty", srcProperty_);
-    s.serialize("DestinationProperty", dstProperty_);
+    s.serialize("SourceProperty", src_);
+    s.serialize("DestinationProperty", dst_);
 }
 
 void PropertyLink::deserialize(Deserializer& d) {
@@ -50,51 +52,60 @@ void PropertyLink::deserialize(Deserializer& d) {
         bool error;
         SerializationException::SerializationExceptionData data;
     };
-    LinkError src, dest;
+    LinkError srcError, dstError;
 
     try {
-        d.deserialize("SourceProperty", srcProperty_);
+        d.deserialize("SourceProperty", src_);
     } catch (SerializationException& e) {
-        src.error = true;
-        src.data = e.getData();
+        srcError.error = true;
+        srcError.data = e.getData();
     }
 
     try {
-        d.deserialize("DestinationProperty", dstProperty_);
+        d.deserialize("DestinationProperty", dst_);
     } catch (SerializationException& e) {
-        dest.error = true;
-        dest.data = e.getData();
+        dstError.error = true;
+        dstError.data = e.getData();
     }
 
-    if (src.error && dest.error) {
-        throw SerializationException(
-            "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
-                dest.data.nd.getDescription() + ". Source and destination properties not found.", IvwContext,
-            "PropertyLink");
+    if (srcError.error && dstError.error) {
+        throw SerializationException("Could not create Property Link from " +
+                                         srcError.data.nd.getDescription() + " to " +
+                                         dstError.data.nd.getDescription() +
+                                         ". Source and destination properties not found.",
+                                     IvwContext, "PropertyLink");
 
-    } else if (src.error) {
+    } else if (srcError.error) {
         throw SerializationException(
-            "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
-                joinString(dstProperty_->getPath(), ".") + "\". Source property not found.", IvwContext,
-            "PropertyLink");
-    } else if (dest.error) {
+            "Could not create Property Link from " + srcError.data.nd.getDescription() + " to " +
+                joinString(dst_->getPath(), ".") + "\". Source property not found.",
+            IvwContext, "PropertyLink");
+    } else if (dstError.error) {
         throw SerializationException(
-            "Could not create Property Link from \"" + joinString(srcProperty_->getPath(), ".") +
-                "\" to " + dest.data.nd.getDescription() + ". Destination property not found.", IvwContext,
-            "PropertyLink");
+            "Could not create Property Link from \"" + joinString(src_->getPath(), ".") + "\" to " +
+                dstError.data.nd.getDescription() + ". Destination property not found.",
+            IvwContext, "PropertyLink");
     }
 }
 
+bool PropertyLink::involves(Processor* processor) const {
+    return src_->getOwner()->getProcessor() == processor ||
+           dst_->getOwner()->getProcessor() == processor;
+}
+bool PropertyLink::involves(Property* property) const {
+    return src_ == property || dst_ == property;
+}
+
 bool operator==(const PropertyLink& lhs, const PropertyLink& rhs) {
-    return lhs.srcProperty_ == rhs.srcProperty_ && lhs.dstProperty_ == rhs.dstProperty_;
+    return lhs.src_ == rhs.src_ && lhs.dst_ == rhs.dst_;
 }
 bool operator!=(const PropertyLink& lhs, const PropertyLink& rhs) { return !operator==(lhs, rhs); }
 
 bool operator<(const PropertyLink& lhs, const PropertyLink& rhs) {
-    if (lhs.srcProperty_ != rhs.srcProperty_) {
-        return lhs.srcProperty_ < rhs.srcProperty_;
+    if (lhs.src_ != rhs.src_) {
+        return lhs.src_ < rhs.src_;
     } else {
-        return lhs.dstProperty_ < rhs.dstProperty_;
+        return lhs.dst_ < rhs.dst_;
     }
 }
 

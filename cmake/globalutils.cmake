@@ -302,3 +302,28 @@ function(ivw_dir_to_module_taget_name retval)
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
+
+# Look for <package>_<vars> and <PACKAGE>_<vars> to figure out whether to use
+# incoming casing or upper case name. Upper case is default, but not all use that.
+function(ivw_find_package_name name retval)
+    set(input 0)
+    set(upper 0)
+
+    string(TOUPPER ${name} u_name)
+
+    foreach(prefix FOUND LIBRARY LIBRARIES LIBRARY_DIR LIBRARY_DIRS 
+        DEFINITIONS INCLUDE_DIR INCLUDE_DIRS LINK_FLAGS) 
+    if(DEFINED ${name}_${prefix})
+        MATH(EXPR input "${input}+1")
+    endif()
+    if(DEFINED ${u_name}_${prefix})
+        MATH(EXPR upper "${upper}+1")
+    endif()
+    endforeach()
+
+    if(${input} GREATER ${upper})
+        set(${retval} ${name} PARENT_SCOPE)
+    else()
+        set(${retval} ${u_name} PARENT_SCOPE)
+    endif()
+endfunction()

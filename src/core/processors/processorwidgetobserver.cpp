@@ -33,22 +33,14 @@
 
 namespace inviwo {
 
-ProcessorWidgetObserver::ProcessorWidgetObserver() : Observer(){};
-ProcessorWidgetObserver::~ProcessorWidgetObserver(){};
-
 void ProcessorWidgetObserver::onProcessorWidgetShow(ProcessorWidget*){};
 void ProcessorWidgetObserver::onProcessorWidgetHide(ProcessorWidget*){};
 
-ProcessorWidgetObservable::ProcessorWidgetObservable() : Observable<ProcessorWidgetObserver>() {}
-ProcessorWidgetObservable::~ProcessorWidgetObservable(){};
-
-void ProcessorWidgetObservable::notifyObserversAboutShow(ProcessorWidget* p) const {
-    ObserverSet localObservers = observers_;
-    for (auto o : localObservers) o->onProcessorWidgetShow(p);
+void ProcessorWidgetObservable::notifyObserversAboutShow(ProcessorWidget* p) {
+    forEachObserver([&](ProcessorWidgetObserver* o) { o->onProcessorWidgetShow(p); });
 }
-void ProcessorWidgetObservable::notifyObserversAboutHide(ProcessorWidget* p) const {
-    ObserverSet localObservers = observers_;
-    for (auto o : localObservers) o->onProcessorWidgetHide(p);
+void ProcessorWidgetObservable::notifyObserversAboutHide(ProcessorWidget* p) {
+    forEachObserver([&](ProcessorWidgetObserver* o) { o->onProcessorWidgetHide(p); });
 }
 
 }  // namespace

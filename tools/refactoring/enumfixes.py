@@ -249,6 +249,14 @@ geometryTypeReplacements = {
 	"ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES" : "ConnectivityType::NumberOfConnectivityTypes",
 }
 
+propertySerializationModeReplacements  = {
+	"PropertySerializationMode::DEFAULT" : "PropertySerializationMode::Default",
+	"PropertySerializationMode::ALL" : "PropertySerializationMode::All",
+	"PropertySerializationMode::NONE" : "PropertySerializationMode::None"
+	}
+
+print("Looking in " + str(len(files)) + " files")
+
 # order matters here...
 # for k,v in numericTypeReplacements.items():
 # 	replace(k,v)
@@ -286,9 +294,10 @@ geometryTypeReplacements = {
 #for k,v in pathTypeReplacements.items():
 #	replace(r"\b"+k+r"\b", v)
 
-print("Looking in " + str(len(files)) + " files")
+#for k,v in geometryTypeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
 
-for k,v in geometryTypeReplacements.items():
+for k,v in propertySerializationModeReplacements.items():
 	replace(r"\b"+k+r"\b", v)
 
 

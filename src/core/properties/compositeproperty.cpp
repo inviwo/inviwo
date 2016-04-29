@@ -72,14 +72,14 @@ void CompositeProperty::setOwner(PropertyOwner* owner) {
     for (Property* property: properties_) property->setOwner(this);
 }
 
-void CompositeProperty::setPropertyModified(bool modified) {
-    for (Property* property: properties_) property->setPropertyModified(modified);
-    Property::setPropertyModified(modified);
+void CompositeProperty::setModified(bool modified) {
+    for (Property* property: properties_) property->setModified(modified);
+    Property::setModified(modified);
 }
 
-bool CompositeProperty::isPropertyModified() const {
+bool CompositeProperty::isModified() const {
     for (Property* property : properties_)
-        if (property->isPropertyModified()) return true;
+        if (property->isModified()) return true;
 
     return false;
 }

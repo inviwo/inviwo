@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorpair.h>
+#include <inviwo/core/links/propertylink.h>
+
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -44,8 +47,7 @@ class ProcessorNetwork;
 
 class IVW_CORE_API LinkEvaluator {
 public:
-    using PropertyLinkMap = std::map<std::pair<Property*, Property*>, PropertyLink*>;
-    using ProcessorLinkMap = std::map<ProcessorPair, std::vector<PropertyLink*>>;
+    using ProcessorLinkMap = std::unordered_map<ProcessorPair, std::vector<PropertyLink>>;
 
     LinkEvaluator(ProcessorNetwork* network);
 
@@ -59,10 +61,10 @@ public:
       * @return std::vector<Property*> List of all properties that are affected by given property
       */
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
-    std::vector<PropertyLink*> getLinksBetweenProcessors(Processor* p1, Processor* p2);
+    std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
-    void addLink(PropertyLink* propertyLink);
-    void removeLink(PropertyLink* propertyLink);
+    void addLink(const PropertyLink& propertyLink);
+    void removeLink(const PropertyLink& propertyLink);
     bool isLinking() const;
 
 private:
@@ -83,10 +85,10 @@ private:
 
     // The primary link cache is a map with all source properties and a vector of properties that
     // they link directly to
-    std::map<Property*, std::vector<Property*>> propertyLinkPrimaryCache_;
+    std::unordered_map<Property*, std::vector<Property*>> propertyLinkPrimaryCache_;
     // The secondary link cache is a map with all source properties and a vector of ALL the
     // properties that they link to. Directly or indirectly.
-    std::map<Property*, std::vector<Link>> propertyLinkSecondaryCache_;
+    std::unordered_map<Property*, std::vector<Link>> propertyLinkSecondaryCache_;
     // A cache of all links between two processors.
     ProcessorLinkMap processorLinksCache_;
 

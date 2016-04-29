@@ -57,7 +57,6 @@ namespace inviwo {
  *   * __File name__ File to load.
  */
 
-
 /**
  * \class VolumeSequenceSource
  * \brief Loads a vector of volumes
@@ -82,6 +81,8 @@ private:
     void loadFolder(bool deserialize = false);
     void addFileNameFilters();
 
+    virtual bool isSink() const override;
+
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeSequenceOutport outport_;
@@ -96,7 +97,7 @@ private:
     BasisProperty basis_;
     VolumeInformationProperty information_;
 
-    bool isDeserializing_;
+    bool deserialized_ = false;
 };
 
 } // namespace

@@ -156,7 +156,7 @@ class App:
 		report['image_tests'] = []
 
 		olddirs = list(reversed(sorted(glob.glob(outputdir+"/../*"))))
-		if len(olddirs)>=1:
+		if len(olddirs) > 1:
 			lastoutdir = olddirs[1]
 		else:
 			lastoutdir = None

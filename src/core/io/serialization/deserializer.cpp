@@ -76,22 +76,26 @@ void Deserializer::deserialize(const std::string& key, Serializable& sObj) {
 }
 
 void Deserializer::deserialize(const std::string& key, signed char& data,
-                                  const bool asAttribute) {
+                                  const SerializationTarget& target) {
     int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, char& data,
-                                  const bool asAttribute) {
+                                  const SerializationTarget& target) {
     int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, unsigned char& data,
-                                  const bool asAttribute) {
+                                 const SerializationTarget& target) {
     unsigned int val = data;
-    deserialize(key, val, asAttribute);
+    deserialize(key, val, target);
     data = static_cast<unsigned char>(val);
+}
+
+void Deserializer::setExceptionHandler(ExceptionHandler handler) {
+    exceptionHandler_ = handler;
 }
 
 void Deserializer::convertVersion(VersionConverter* converter) {
@@ -101,25 +105,16 @@ void Deserializer::convertVersion(VersionConverter* converter) {
     storeReferences(doc_.FirstChildElement());
 }
 
-void Deserializer::pushErrorHandler(BaseDeserializationErrorHandler* handler) {
-    errorHandlers_.push_back(handler);
-}
-
-BaseDeserializationErrorHandler* Deserializer::popErrorHandler() {
-    BaseDeserializationErrorHandler* back = errorHandlers_.back();
-    errorHandlers_.pop_back();
-    return back;
-}
-
-void Deserializer::handleError(SerializationException& e) {
-    for (auto it = errorHandlers_.rbegin(); it != errorHandlers_.rend(); ++it) {
-        if ((*it)->getKey() == e.getKey()) {
-            (*it)->handleError(e);
-            return;
+void Deserializer::handleError(const ExceptionContext& context) {
+    if (exceptionHandler_) {
+        exceptionHandler_(context);
+    } else { // If no error handler found:
+        try {
+            throw;
+        } catch (SerializationException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
         }
     }
-    // If no error handler found:
-    util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
 }
 
 void Deserializer::storeReferences(TxElement* node) {

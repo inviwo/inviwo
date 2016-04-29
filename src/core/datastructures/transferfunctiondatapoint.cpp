@@ -88,9 +88,10 @@ void TransferFunctionDataPoint::setPosA(const vec2& pos, float alpha) {
     notifyTransferFunctionPointObservers();
 }
 
-void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() const {
-    if(notify_) {
-        for (auto o : observers_) o->onTransferFunctionPointChange(this);
+void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() {
+    if (notify_) {
+        forEachObserver(
+            [&](TransferFunctionPointObserver* o) { o->onTransferFunctionPointChange(this); });
     }
 }
 

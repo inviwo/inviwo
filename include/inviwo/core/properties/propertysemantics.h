@@ -54,7 +54,7 @@ public:
     friend std::ostream& operator << (std::ostream& os, const inviwo::PropertySemantics& obj);
 
     static const PropertySemantics Default;
-
+    static const PropertySemantics Text;
     static const PropertySemantics Color;
     static const PropertySemantics LightPosition;
     static const PropertySemantics TextEditor;

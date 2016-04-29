@@ -273,7 +273,7 @@ void MinMaxProperty<T>::setCurrentStateAsDefault() {
 
 template <typename T>
 void MinMaxProperty<T>::serialize(Serializer& s) const {
-    TemplateProperty<range_type >::serialize(s);
+    TemplateProperty<range_type>::serialize(s);
     range_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
     minSeparation_.serialize(s, this->serializationMode_);

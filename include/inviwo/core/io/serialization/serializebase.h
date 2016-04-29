@@ -74,6 +74,8 @@ private:
     std::string identifier_;
 };
 
+enum class IVW_CORE_API SerializationTarget {Node, Attribute};
+
 class Serializable;
 
 class IVW_CORE_API SerializeBase {
@@ -132,7 +134,7 @@ public:
     /**
      * \brief gets the xml file name.
      */
-    virtual const std::string& getFileName();
+    virtual const std::string& getFileName() const;
 
     /**
      * \brief Checks whether the given type is a primitive type.

@@ -77,7 +77,7 @@ public:
     void loadFile(std::string fileName, bool askForSave = true);
 
     virtual void onPyhonExecutionOutput(const std::string& msg,
-                                        const PythonExecutionOutputStream& outputType);
+                                        const PythonExecutionOutputStream& outputType) override;
 
     bool hasFocus() const;
 

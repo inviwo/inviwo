@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,55 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DESERIALIZATIONERRORHANDLER_H
-#define IVW_DESERIALIZATIONERRORHANDLER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 namespace inviwo {
 
-class IVW_CORE_API BaseDeserializationErrorHandler {
-public:
-    BaseDeserializationErrorHandler();
-    virtual ~BaseDeserializationErrorHandler();
-
-    virtual void handleError(SerializationException&) = 0;
-    virtual std::string getKey() = 0;
-};
-
-template <typename T>
-class DeserializationErrorHandler : public BaseDeserializationErrorHandler {
-public:
-    typedef void (T::*Callback)(SerializationException&);
-
-    DeserializationErrorHandler(std::string type, T* obj, Callback callback);
-    virtual ~DeserializationErrorHandler() {}
-
-    virtual void handleError(SerializationException&);
-    virtual std::string getKey();
-
-private:
-    std::string key_;
-    T* obj_;
-    Callback callback_;
-};
-
-template <typename T>
-DeserializationErrorHandler<T>::DeserializationErrorHandler(std::string type, T* obj,
-                                                            Callback callback)
-    : key_(type), obj_(obj), callback_(callback) {}
-
-template <typename T>
-std::string DeserializationErrorHandler<T>::getKey() {
-    return key_;
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationBegin() {
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationBegin(); });
 }
 
-template <typename T>
-void inviwo::DeserializationErrorHandler<T>::handleError(SerializationException& e) {
-    (*obj_.*callback_)(e);
+void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvaluationEnd() {
+    forEachObserver(
+        [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
 }
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_DESERIALIZATIONERRORHANDLER_H

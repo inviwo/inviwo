@@ -100,9 +100,8 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
 BufferObject& BufferObject::operator=(BufferObject&& rhs) {
     if (this != &rhs) {
         // Notify observers
-        for (auto observer : observers_) {
-            observer->onBeforeBufferInitialization();
-        }
+        forEachObserver([](BufferObjectObserver* o) { o->onBeforeBufferInitialization(); });
+
         // Free existing resources
         glDeleteBuffers(1, &id_);
 
@@ -117,9 +116,8 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
 
         // Release resources from source object
         rhs.id_ = 0;
-        for (auto observer : observers_) {
-            observer->onAfterBufferInitialization();
-        }
+        
+        forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
     }
     return *this;
 }
@@ -140,9 +138,7 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
 
     // Notify observers
-    for (auto observer : observers_) {
-        observer->onBeforeBufferInitialization();
-    }
+    forEachObserver([](BufferObjectObserver* o) { o->onBeforeBufferInitialization(); });
 
     bind();
     // Allocate and transfer possible data
@@ -150,9 +146,7 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     // errors (OpenCL sharing) so ensure at least one byte
     glBufferData(target_, sizeInBytes <= 0 ? 1 : sizeInBytes, data, usageGL_);
 
-    for (auto observer : observers_) {
-        observer->onAfterBufferInitialization();
-    }
+    forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
 }
 
 void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes) {

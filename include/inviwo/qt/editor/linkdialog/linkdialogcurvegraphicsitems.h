@@ -35,6 +35,7 @@
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+#include <inviwo/core/links/propertylink.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,8 +55,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
-class PropertyLink;
 
 class IVW_QTEDITOR_API DialogCurveGraphicsItem : public CurveGraphicsItem {
 public:
@@ -80,10 +79,10 @@ class IVW_QTEDITOR_API DialogConnectionGraphicsItem : public DialogCurveGraphics
 public:
     DialogConnectionGraphicsItem(LinkDialogPropertyGraphicsItem* startProperty,
                                  LinkDialogPropertyGraphicsItem* endProperty,
-                                 PropertyLink* propertyLink);
+                                 const PropertyLink& propertyLink);
     virtual ~DialogConnectionGraphicsItem();
 
-    PropertyLink* getPropertyLink() const { return propertyLink_; }
+    const PropertyLink& getPropertyLink() const { return propertyLink_; }
     LinkDialogPropertyGraphicsItem* getStartProperty() const { return startPropertyGraphicsItem_; }
     LinkDialogPropertyGraphicsItem* getEndProperty() const { return endPropertyGraphicsItem_; }
 
@@ -98,7 +97,7 @@ protected:
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;
     LinkDialogPropertyGraphicsItem* endPropertyGraphicsItem_;
-    PropertyLink* propertyLink_;
+    PropertyLink propertyLink_;
 };
 
 }  // namespace

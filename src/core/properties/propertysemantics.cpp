@@ -45,11 +45,11 @@ PropertySemantics& PropertySemantics::operator=(const PropertySemantics& that) {
 const std::string& PropertySemantics::getString() const { return semantic_; }
 
 void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, true);
+    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
 }
 
 void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, true);
+    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
 }
 
 std::ostream& operator<<(std::ostream& os, const inviwo::PropertySemantics& obj) {
@@ -58,6 +58,7 @@ std::ostream& operator<<(std::ostream& os, const inviwo::PropertySemantics& obj)
 }
 
 const PropertySemantics PropertySemantics::Default("Default");
+const PropertySemantics PropertySemantics::Text("Text");
 const PropertySemantics PropertySemantics::Color("Color");
 const PropertySemantics PropertySemantics::LightPosition("LightPosition");
 const PropertySemantics PropertySemantics::Multiline("Multiline");

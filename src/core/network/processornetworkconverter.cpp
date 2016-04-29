@@ -58,6 +58,8 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         case 10:
             traverseNodes(root,
                           &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
+        case 11:
+            traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
         default:
             break;
     }
@@ -394,6 +396,22 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
             } else {
                 node->SetAttribute("type", newtype);
             }
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateDisplayName(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Property") {
+        if (node->HasAttribute("displayName")) {
+            std::string displayName = node->GetAttributeOrDefault("displayName", "");
+
+            TxElement newNode;
+            newNode.SetValue("displayName");
+            newNode.SetAttribute("content", displayName);
+            node->InsertEndChild(newNode);
         }
     }
 }

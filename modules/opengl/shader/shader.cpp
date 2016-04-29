@@ -178,12 +178,16 @@ void Shader::linkShader(bool notifyRebuild /*= false*/) {
     glLinkProgram(id_);
 
     if (!isReady()) {
-        throw OpenGLException(processLog(utilgl::getProgramInfoLog(id_)), IvwContext);
+        throw OpenGLException(
+            "Id: " + toString(id_) + " " + processLog(utilgl::getProgramInfoLog(id_)), IvwContext);
     }
 
 #ifdef IVW_DEBUG
     auto log = utilgl::getProgramInfoLog(id_);
-    if (!log.empty()) util::log(IvwContext, processLog(log), LogLevel::Info, LogAudience::User);
+    if (!log.empty()) {
+        util::log(IvwContext, "Id: " + toString(id_) + " " + processLog(log), LogLevel::Info,
+                  LogAudience::User);
+    }
 #endif
 
     LGL_ERROR;

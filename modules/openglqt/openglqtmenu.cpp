@@ -29,7 +29,7 @@
 
 #include "openglqtmenu.h"
 
-#include <modules/opengl/shader/shadermanager.h>
+
 #include <modules/opengl/shader/shaderresource.h>
 
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
@@ -45,60 +45,59 @@
 
 namespace inviwo {
 
- OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr) {
+OpenGLQtMenu::OpenGLQtMenu() : menu_(nullptr) {
     if (auto qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto win = qtApp->getMainWindow()) {
-            qtApp->getProcessorNetwork()->addObserver(this);
+            menu_ = win->menuBar()->addMenu(tr("&Shaders"));
+            QAction* reloadShaders = menu_->addAction("Reload All");
+            connect(reloadShaders, &QAction::triggered, [&]() { shadersReload(); });
 
-            shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
+            onAddShader_ = ShaderManager::getPtr()->onDidAddShader([&](GLuint id) {
+                const auto& shaders = ShaderManager::getPtr()->getShaders();
+                auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
+                if (it != shaders.end()) {
+                    auto shader = *it;
+                    auto menuItem = menu_->addMenu(QString("Id %1").arg(shader->getID(), 2));
+                    shadersItems_[id] = menuItem;
+                    
+                    addShaderObjects(shader, menuItem);
+                    
+                    shader->onReload([this, shader, menuItem]() {
+                        menuItem->clear();
+                        menuItem->setTitle(QString("Id %1").arg(shader->getID()));
+                        addShaderObjects(shader, menuItem);
+                    });
+                }
+            });
 
-            QAction* reloadShaders = shadersItem_->addAction("Reload All");
-            connect(reloadShaders, &QAction::triggered,[&](){ shadersReload(); });
+            onRemoveShader_ = ShaderManager::getPtr()->onWillRemoveShader([&](GLuint id) {
+                {
+                    // Close any open editors.
+                    const auto& shaders = ShaderManager::getPtr()->getShaders();
+                    auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
+                    for (auto& obj : (*it)->getShaderObjects()) {
+                        auto editor = editors_.find(obj.second->getID());
+                        if (editor != editors_.end()) editor->second->close();
+                    }
+                }
+                
+                auto it = shadersItems_.find(id);
+                if (it != shadersItems_.end()){
+                    menu_->removeAction(it->second->menuAction());
+                    shadersItems_.erase(it);
+                }
+            });
         }
     }
 }
 
-void OpenGLQtMenu::updateShadersMenu() {
-    if (!shadersItem_) return;
-
-    const auto shaders = ShaderManager::getPtr()->getShaders();
-    std::vector<QMenu*> reused;
-
-
-    auto unusedEditors = util::transform(editors_, [](std::pair<const unsigned int, ShaderWidget*> item){
-        return item.first;
-    });
-
-    for (auto shader : shaders) {
-        QMenu*& shaderSubMenu = shadersItems_[shader->getID()];
-
-        if (!shaderSubMenu) {
-            shaderSubMenu = shadersItem_->addMenu(QString("Id %1").arg(shader->getID(), 2));
-
-            for (auto& item : shader->getShaderObjects()) {
-                auto action = shaderSubMenu->addAction(
-                    QString::fromStdString(item.second->getResource()->key()));
-                shaderSubMenu->setTitle(shaderSubMenu->title() + QString(", ") +
-                                        QString::fromStdString(item.second->getFileName()));
-                connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
-                
-                util::erase_remove(unusedEditors, item.second->getID());
-            }
-        }
-        reused.push_back(shaderSubMenu);
+void OpenGLQtMenu::addShaderObjects(Shader* shader, QMenu* menuItem) {
+    for (auto& item : shader->getShaderObjects()) {
+        auto name = QString::fromStdString(item.second->getFileName());
+        auto action = menuItem->addAction(name);
+        menuItem->setTitle(menuItem->title() + QString(", ") + name);
+        connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
     }
-
-    util::map_erase_remove_if(shadersItems_, [&](std::pair<const unsigned int, QMenu*> item) {
-        if (!util::contains(reused, item.second)) {
-            shadersItem_->removeAction(item.second->menuAction());
-            delete item.second;
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    for(auto id : unusedEditors) editors_[id]->close();
 }
 
 void OpenGLQtMenu::showShader(const ShaderObject* obj) {
@@ -121,9 +120,5 @@ void OpenGLQtMenu::showShader(const ShaderObject* obj) {
 
 void OpenGLQtMenu::shadersReload() { ShaderManager::getPtr()->rebuildAllShaders(); }
 
-void OpenGLQtMenu::onProcessorNetworkDidAddProcessor(Processor* processor) { updateShadersMenu(); }
-void OpenGLQtMenu::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
-    updateShadersMenu();
-}
 
 }  // namespace

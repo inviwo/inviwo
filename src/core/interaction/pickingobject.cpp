@@ -75,6 +75,10 @@ const double& PickingObject::getPickingDepth() const {
     return depth_;
 }
 
+vec2 PickingObject::getPickingTotalDelta() const {
+    return mouseEvent_.posNormalized() - pos_;
+}
+
 void PickingObject::picked() const {
     callback_(this);
 }

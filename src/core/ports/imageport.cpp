@@ -37,13 +37,12 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier)
     , defaultDimensions_(8, 8)
+    , format_(format)
     , handleResizeEvents_(handleResizeEvents) {
  
     // create a default image
     setData(std::make_shared<Image>(defaultDimensions_, format));
 }
-
-ImageOutport::~ImageOutport() {}
 
 void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     if (invalidationLevel > InvalidationLevel::Valid) {
@@ -127,7 +126,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
 
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
     // This functionality needs testing.
-    for (auto port : getProcessor()->getPortsInSameSet(this)) {
+    for (auto port : getProcessor()->getPortsInSameGroup(this)) {
         auto imageOutport = dynamic_cast<ImageOutport*>(port);
         if (imageOutport && imageOutport != this) {
             imageOutport->setDimensions(newDimensions);
@@ -138,6 +137,10 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     getProcessor()->propagateResizeEvent(newEvent.get(), this);
     
     if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
+}
+
+const inviwo::DataFormatBase* ImageOutport::getDataFormat() const {
+    return format_;
 }
 
 std::shared_ptr<const Image> ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
@@ -164,11 +167,11 @@ size2_t ImageOutport::getDimensions() const {
 }
 
 
-std::shared_ptr<Image> ImageOutport::getEditableData() const {
+std::shared_ptr<Image> ImageOutport::getEditableData() const {  
     if (image_) {
         return image_;
     } else {
-        return std::shared_ptr<Image>();
+        return nullptr;
     }
 }
 

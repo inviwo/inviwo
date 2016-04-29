@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
+#ifndef IVW_KEYBOARDUTILS_H
+#define IVW_KEYBOARDUTILS_H
 
-#include "utils/structs.glsl"
-#include "utils/sampler3d.glsl"
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
-GEN_UNIFORMS
+class QKeyEvent;
 
-in vec4 texCoord_;
+namespace inviwo {
 
-void main() {
-    GEN_SAMPLING
-    FragData0 = EQUATION;
-    gl_FragDepth = 1.0;
-}
+namespace util {
+
+IVW_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
+
+} // namespace util
+
+} //namespace inviwo
+
+#endif // IVW_KEYBOARDUTILS_H
