@@ -339,4 +339,11 @@ void Property::removeOnChange(const BaseCallBack* callback) {
     onChangeCallback_.remove(callback);
 }
 
+Property::OnChangeBlocker::OnChangeBlocker(Property& property) : property_(property) {
+    property_.onChangeCallback_.startBlockingCallbacks();
+}
+Property::OnChangeBlocker::~OnChangeBlocker() {
+    property_.onChangeCallback_.stopBlockingCallbacks();
+}
+
 } // namespace
