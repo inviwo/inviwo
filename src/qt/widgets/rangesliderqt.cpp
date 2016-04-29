@@ -74,13 +74,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent)
     QSplitter::setChildrenCollapsible(false);    
     connect(this, SIGNAL(splitterMoved(int, int)), this, SLOT(updateSplitterPosition(int, int)));
     updateSlidersFromState();
-
-
-    this->handle(1)->installEventFilter(this);
-    this->handle(2)->installEventFilter(this);
 }
-
-RangeSliderQt::~RangeSliderQt() {}
 
 int RangeSliderQt::minValue() {
     return value_[0];
@@ -242,36 +236,14 @@ void RangeSliderQt::middleMoved(int delta) {
     this->updateSplitterPosition(0, 0);
 }
 
-
-bool RangeSliderQt::eventFilter(QObject*, QEvent* event) {
-#include <warn/push>
-#include <warn/ignore/switch-enum>
-    switch (event->type()) {
-        case QEvent::MouseButtonPress:
-            InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
-            break;
-        case QEvent::MouseButtonRelease:
-            InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
-            break;
-        default:
-            break;
-    }
-#include <warn/pop>
-    return false;
-}
-
 RangeSliderMiddle::RangeSliderMiddle(QWidget *parent)
     : QFrame(parent)
     , lastMouseX_(0)
     , drag_(false) {
 }
 
-RangeSliderMiddle::~RangeSliderMiddle() {
-}
-
 void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
         // map to global position since the widget will move
         lastMouseX_ = this->mapToGlobal(event->pos()).x();
         drag_ = true;
@@ -280,7 +252,6 @@ void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {
 
 void RangeSliderMiddle::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         drag_ = false;
     }
 }

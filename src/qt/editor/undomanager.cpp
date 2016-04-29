@@ -36,11 +36,14 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QAction>
+#include <QEvent>
+#include <QApplication>
 #include <QGuiApplication>
 
 #include <warn/pop>
 
 namespace inviwo {
+
 
 UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow) {
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);

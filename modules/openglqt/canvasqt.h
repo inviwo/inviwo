@@ -135,7 +135,6 @@ template <typename T>
 bool CanvasQtBase<T>::event(QEvent* e) {
     switch (e->type()) {
         case QEvent::KeyPress: {
-            InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
             auto keyEvent = static_cast<QKeyEvent*>(e);
             auto parent = this->parentWidget();
             if (parent && keyEvent->key() == Qt::Key_F &&
@@ -149,16 +148,13 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapKeyPressEvent(keyEvent);
         }
         case QEvent::KeyRelease: {
-            InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
             return mapKeyReleaseEvent(static_cast<QKeyEvent*>(e));
         }
         case QEvent::MouseButtonPress:
-            InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
             return mapMousePressEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonDblClick:
             return mapMouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonRelease:
-            InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
             return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseMove:
             return mapMouseMoveEvent(static_cast<QMouseEvent*>(e));
@@ -167,11 +163,9 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapWheelEvent(static_cast<QWheelEvent*>(e));
 
         case QEvent::TouchBegin:
-            InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
             touchFallback(static_cast<QTouchEvent*>(e));
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchEnd:
-            InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
             touchFallback(static_cast<QTouchEvent*>(e));
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchUpdate: {

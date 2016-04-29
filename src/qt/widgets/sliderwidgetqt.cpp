@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <limits>
 #include <warn/push>
@@ -59,14 +58,6 @@ void BaseSliderWidgetQt::generateWidget() {
     setLayout(hLayout);
     connect(slider_, SIGNAL(valueChanged(int)), this, SLOT(updateFromSlider()));
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBox()));
-
-
-    connect(slider_, &QSlider::sliderPressed, [](){
-        InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
-    });
-    connect(slider_, &QSlider::sliderReleased, []() {
-        InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
-    });
 
 
     QSizePolicy sp = sizePolicy();

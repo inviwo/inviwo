@@ -85,6 +85,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                    false, "", "file name")
     , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
                      "file name")
+    , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
     networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
@@ -96,6 +97,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
     const float maxRatio = 0.8f;
+
+    QApplication::instance()->installEventFilter(&eventFilter_);
 
     QSize size(1920, 1080);
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));

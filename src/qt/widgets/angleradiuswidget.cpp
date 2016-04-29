@@ -142,7 +142,6 @@ void AngleRadiusWidget::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void AngleRadiusWidget::mousePressEvent(QMouseEvent* e) {
-    InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
     if (e->button() == Qt::LeftButton)
         setAngleRadiusAtPosition(e->pos());
 }
@@ -246,8 +245,5 @@ void AngleRadiusWidget::setAngleRadiusAtPosition(const QPoint& pos) {
     setRadius(radius);
 }
 
-void AngleRadiusWidget::mouseReleaseEvent(QMouseEvent *) {
-    InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
-}
 
 }  // namespace

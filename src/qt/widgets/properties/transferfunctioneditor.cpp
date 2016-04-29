@@ -105,7 +105,6 @@ void TransferFunctionEditor::resetTransferFunction() {
 }
 
 void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
 
     TransferFunctionEditorControlPoint* controlPointGraphicsItem =
         getControlPointGraphicsItemAt(e->scenePos());
@@ -200,7 +199,6 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     }
     #include <warn/pop>
     mouseDrag_ = false;
-    InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
 
     if (!e->isAccepted()) {
         QGraphicsScene::mouseReleaseEvent(e);

@@ -75,8 +75,8 @@ public:
     void setMaxRadius(double radius);
     double getMaxRadius() const { return maxRadius_;}
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 signals:
     void angleChanged();
     void radiusChanged();
@@ -96,8 +96,6 @@ private:
      * @param const QPoint & pos given in pixels
      */
     void setAngleRadiusAtPosition(const QPoint& pos);
-
-    virtual void mouseReleaseEvent(QMouseEvent *) override;
 
     double angle_;
     double radius_;

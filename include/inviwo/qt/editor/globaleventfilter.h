@@ -27,62 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_UNDOMANAGER_H
-#define IVW_UNDOMANAGER_H
+#ifndef IVW_GLOBALEVENTFILTER_H
+#define IVW_GLOBALEVENTFILTER_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/interaction/interactionstatemanager.h>
 
-class QAction;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QObject>
+
+#include <warn/pop>
+
+class QEvent;
 
 namespace inviwo {
 
-class InviwoMainWindow;
-
 /**
- * \class UndoManager
+ * \class GlobalEventFilter
  */
-class IVW_QTEDITOR_API UndoManager : public ProcessorNetworkObserver{
+class IVW_QTEDITOR_API GlobalEventFilter : public QObject {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    UndoManager(InviwoMainWindow* mainWindow);
-    virtual ~UndoManager() = default;
+    GlobalEventFilter(InteractionStateManager& manager);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
     
-    void pushState();
-    void undoState();
-    void redoState();
-
-    QAction* getUndoAction() const;
-    QAction* getRedoAction() const;
-
 private:
-    using DiffType = std::vector<std::string>::iterator::difference_type;
-    
-    void updateActions();
-
-    // ProcessorNetworkObserver overrides;
-    virtual void onProcessorNetworkUnlocked() override;
-    virtual void onProcessorNetworkChange() override;
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-
-    InviwoMainWindow* mainWindow_;
-
-    std::shared_ptr<std::function<void()>> interactionEndCallback_;
-    bool dirty_ = true;
-    bool isRestoring = false;
-    DiffType head_ = -1;
-    std::vector<std::string> undoBuffer_;
-
-    QAction* undoAction_;
-    QAction* redoAction_;
+    InteractionStateManager& manager_;
+    int pressCount_ = 0;
 };
 
 } // namespace
 
-#endif // IVW_UNDOMANAGER_H
+#endif // IVW_GLOBALEVENTFILTER_H
 
