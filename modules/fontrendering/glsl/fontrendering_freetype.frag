@@ -34,5 +34,6 @@ in vec2 texCoord;
 
 void main(void) {
     FragData0 = vec4(1.0, 1.0, 1.0, texture(tex, texCoord).r) * color;
+    PickingData = vec4(0.0);
     gl_FragDepth = 0.0;
 }
