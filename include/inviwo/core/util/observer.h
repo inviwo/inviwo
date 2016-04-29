@@ -99,6 +99,9 @@ class IVW_CORE_API ObservableInterface {
 public:
     virtual ~ObservableInterface() = default;
 
+    virtual void startBlockingNotifications() = 0;
+    virtual void stopBlockingNotifications() = 0;
+
 protected:
     virtual void addObserver(Observer* observer) = 0;
     virtual void removeObserver(Observer* observer) = 0;
@@ -186,6 +189,9 @@ public:
 
     void addObserver(T* observer);
     void removeObserver(T* observer);
+    
+    virtual void startBlockingNotifications() override final;
+    virtual void stopBlockingNotifications() override final;
 
 protected:
     template <typename C>
@@ -202,6 +208,8 @@ private:
     size_t invocationCount_ = 0;
     ObserverSet toAdd_;
     ObserverSet toRemove_;
+
+    size_t notificationsBlocked_ = 0;
 
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
@@ -273,8 +281,19 @@ void Observable<T>::removeObserver(T* observer) {
 }
 
 template <typename T>
+void Observable<T>::startBlockingNotifications() {
+    ++notificationsBlocked_;
+}
+template <typename T>
+void Observable<T>::stopBlockingNotifications() {
+    --notificationsBlocked_;
+}
+
+
+template <typename T>
 template <typename C>
 void Observable<T>::forEachObserver(C callback) {
+    if (notificationsBlocked_ > 0) return;
     ++invocationCount_;
     for (auto o : observers_) callback(o);
     --invocationCount_;
@@ -315,6 +334,22 @@ void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
         toRemove_.insert(static_cast<T*>(observer));
     }
 }
+
+namespace util {
+class IVW_CORE_API NotificationBlocker {
+public:
+    NotificationBlocker(ObservableInterface& observable);
+    NotificationBlocker() = delete;
+    NotificationBlocker(const NotificationBlocker&) = delete;
+    NotificationBlocker(NotificationBlocker&&) = delete;
+    NotificationBlocker& operator=(NotificationBlocker) = delete;
+    ~NotificationBlocker();
+private:
+    ObservableInterface& observable_;
+};
+
+}  // namespace
+
 
 }  // namespace
 
