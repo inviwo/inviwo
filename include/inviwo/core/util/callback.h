@@ -84,7 +84,11 @@ public:
         clear();
     }
 
+    void startBlockingCallbacks() {++callbacksBlocked_;}
+    void stopBlockingCallbacks() {--callbacksBlocked_;}
+
     void invokeAll() const {
+        if (callbacksBlocked_>0) return;
         for (BaseCallBack* cb : callBackList_) cb->invoke();
     }
 
@@ -143,10 +147,9 @@ public:
     }
 
 private:
+    int callbacksBlocked_{0};
     std::vector<BaseCallBack*> callBackList_;
 };
-
-// SingleCallBack removed use std::function instead.
 
 }  // namespace
 
