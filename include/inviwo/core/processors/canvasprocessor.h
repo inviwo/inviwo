@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/metadata/processorwidgetmetadata.h>
 
 namespace inviwo {
 
@@ -48,7 +49,7 @@ class ProcessorNetworkEvaluator;
 template<typename T>
 class DataWriterType;
 
-class IVW_CORE_API CanvasProcessor : public Processor {
+class IVW_CORE_API CanvasProcessor : public Processor, public ProcessorWidgetMetaDataObserver {
 public:
     CanvasProcessor();
     virtual ~CanvasProcessor();
@@ -79,6 +80,8 @@ public:
     virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:
+    virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
+
     void performEvaluationAtNextShow();
     virtual void performEvaluateRequest() override;
 
@@ -104,6 +107,8 @@ private:
     ivec2 calcSize();
 
     ivec2 previousImageSize_;
+    
+    ProcessorWidgetMetaData* widgetMetaData_;
 
     CanvasProcessorWidget* canvasWidget_;   //< non-owning reference
     bool queuedRequest_;

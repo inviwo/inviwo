@@ -33,14 +33,14 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
+#include <inviwo/core/metadata/processorwidgetmetadata.h>
 
 namespace inviwo {
 
 class Processor;
-class ProcessorWidgetMetaData;
-    
-class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable {
 
+class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable,
+                                     public ProcessorWidgetMetaDataObserver {
 public:
     ProcessorWidget(Processor* p);
     virtual ~ProcessorWidget() = default;
@@ -58,6 +58,14 @@ public:
     virtual void setPosition(ivec2);
     
 protected:
+    virtual void updateVisible(bool visible) = 0;
+    virtual void updateDimensions(ivec2) = 0;
+    virtual void updatePosition(ivec2) = 0;
+
+    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
+    virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
+    virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
+
     Processor* processor_; //< non owning reference.
     ProcessorWidgetMetaData* metaData_; //< non owning reference.
 };

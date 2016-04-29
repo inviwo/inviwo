@@ -52,6 +52,10 @@ public:
     virtual Canvas* getCanvas() const override;
 
 private:
+    virtual void updateVisible(bool visible) override;
+    virtual void updateDimensions(ivec2) override;
+    virtual void updatePosition(ivec2) override;
+
     using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
     canvas_ptr canvas_;
 };
