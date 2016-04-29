@@ -91,7 +91,12 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(320);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#ifdef __APPLE__
+    // Scrollbars are overlayed in different way on mac...
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#else
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+#endif
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
 
@@ -99,8 +104,13 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     listLayout_ = new QVBoxLayout();
     listWidget_->setLayout(listLayout_);
     listLayout_->setAlignment(Qt::AlignTop);
+#ifdef __APPLE__
+    // Add some space for the scrollbar on mac
+    listLayout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 10, PropertyWidgetQt::SPACING);
+#else
     listLayout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
-    listLayout_->setSpacing(7);
+#endif
+    listLayout_->setSpacing(PropertyWidgetQt::SPACING);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     scrollArea_->setWidget(listWidget_);
