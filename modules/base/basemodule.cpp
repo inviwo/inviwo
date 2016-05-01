@@ -70,6 +70,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/base/processors/pixelvalue.h>
 
 namespace inviwo {
 
@@ -112,6 +113,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<SingleVoxel>();
 
     registerProcessor<OrientationIndicator>();
+    registerProcessor<PixelValue>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
