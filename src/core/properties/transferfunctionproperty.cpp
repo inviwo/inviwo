@@ -109,17 +109,23 @@ void TransferFunctionProperty::setCurrentStateAsDefault() {
 }
 
 void TransferFunctionProperty::serialize(Serializer& s) const {
+    Property::serialize(s);
+
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     showHistogram_.serialize(s, this->serializationMode_);
-    TemplateProperty<TransferFunction>::serialize(s);
+    value_.serialize(s, this->serializationMode_);
 }
 
-void TransferFunctionProperty::deserialize(Deserializer& d) { 
-    zoomH_.deserialize(d);
-    zoomV_.deserialize(d);
-    showHistogram_.deserialize(d);
-    TemplateProperty<TransferFunction>::deserialize(d);
+void TransferFunctionProperty::deserialize(Deserializer& d) {
+    Property::deserialize(d);
+
+    bool modified = false;
+    modified |= zoomH_.deserialize(d);
+    modified |= zoomV_.deserialize(d);
+    modified |= showHistogram_.deserialize(d);
+    modified |= value_.deserialize(d);
+    if (modified) propertyModified();
 }
 
 void TransferFunctionProperty::setMask(float maskMin, float maskMax) {
