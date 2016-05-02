@@ -218,6 +218,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
@@ -440,6 +441,7 @@ set(SOURCE_FILES
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
+    util/colorbrewer.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
     util/dialogfactory.cpp
