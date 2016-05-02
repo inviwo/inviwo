@@ -42,6 +42,12 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo{
 namespace colorbrewer {
 
+    class ColorBrewerException : public Exception {
+    public:
+        ColorBrewerException(const std::string &message) : Exception(message, ExceptionContext()) {}
+        virtual ~ColorBrewerException() throw() {}
+    };
+
 ##PLACEHOLDER##
 
 } // namespace

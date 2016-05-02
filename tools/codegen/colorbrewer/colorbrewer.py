@@ -1,4 +1,4 @@
-import json 
+﻿import json 
 import re
 import sys
 import argparse
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 imp.append("\t\t return std::vector<dvec4>({"+','.join(colors)+"});")
 
             imp.append("\tdefault:")
-            imp.append('\t\tthrow std::exception("unsupported number of colors");')
+            imp.append('\t\tthrow ColorBrewerException("unsupported number of colors");')
             imp.append('\t\treturn std::vector<dvec4>();')
 
             imp.append("\t};")

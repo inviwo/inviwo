@@ -26,12 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
- 
+
 /**
 This complete file is auto-generated with python script 
 tools/codegen/colorbrewer/colorbrewer.py
 **/
-
+ 
 #ifndef IWW_COLORBREWER_H
 #define IWW_COLORBREWER_H
 
@@ -41,6 +41,12 @@ tools/codegen/colorbrewer/colorbrewer.py
 
 namespace inviwo{
 namespace colorbrewer {
+
+    class ColorBrewerException : public Exception {
+    public:
+        ColorBrewerException(const std::string &message) : Exception(message, ExceptionContext()) {}
+        virtual ~ColorBrewerException() throw() {}
+    };
 
 IVW_CORE_API std::vector<dvec4> Accent(int dataClasses);
 IVW_CORE_API std::vector<dvec4> Blues(int dataClasses);
