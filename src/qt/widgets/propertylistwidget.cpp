@@ -199,11 +199,11 @@ bool PropertyListWidget::event(QEvent* e) {
         if (!p) return true;
         
         switch (ple->action_) {
-            case PropertyListEvent::ADD: {
+            case PropertyListEvent::Action::Add: {
                 addProcessorProperties(p);
                 break;
             }
-            case PropertyListEvent::REMOVE: {
+            case PropertyListEvent::Action::Remove: {
                 removeProcessorProperties(p);
                 break;
             }
@@ -215,6 +215,6 @@ bool PropertyListWidget::event(QEvent* e) {
     }
 }
 
-QEvent::Type PropertyListEvent::PROPERY_LIST_EVENT = QEvent::None;
+QEvent::Type PropertyListEvent::PropertyListEventType = QEvent::None;
 
 }  // namespace

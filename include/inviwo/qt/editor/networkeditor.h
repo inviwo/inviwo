@@ -277,7 +277,7 @@ public:
 class IVW_QTEDITOR_API PortInspectorEvent : public QEvent {
     Q_GADGET
 public:
-    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEventType), port_(port) {}
+    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEvent::type()), port_(port) {}
 
     static QEvent::Type type() {
         if (PortInspectorEventType == QEvent::None) {
