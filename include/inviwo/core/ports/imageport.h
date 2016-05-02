@@ -130,7 +130,8 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler
 
 public:
     ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UInt8::get(),
-                 bool handleResizeEvents = true);
+        bool handleResizeEvents = true);
+    ImageOutport(std::string identifier, bool handleResizeEvents);
 
     virtual ~ImageOutport() = default;
 

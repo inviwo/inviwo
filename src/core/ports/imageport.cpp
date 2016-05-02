@@ -44,6 +44,9 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
     setData(std::make_shared<Image>(defaultDimensions_, format));
 }
 
+ImageOutport::ImageOutport(std::string identifier, bool handleResizeEvents)
+    : ImageOutport(identifier, DataVec4UInt8::get(), handleResizeEvents) {}
+
 void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     if (invalidationLevel > InvalidationLevel::Valid) {
         cache_.setInvalid();
