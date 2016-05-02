@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+/**
+This complete file is auto-generated with python script
+tools/codegen/colorbrewer/colorbrewer.py
+**/
+
 #include <inviwo/core/util/colorbrewer.h>
 
 namespace inviwo {

@@ -36,6 +36,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 #define IWW_COLORBREWER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <vector>
 
 namespace inviwo{
