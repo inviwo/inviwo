@@ -31,7 +31,8 @@
 
 #ifdef _WIN32
  // needed for virtual key codes on Windows
-#include "winuser.h"
+#include <windows.h>
+#include <winuser.h>
 #endif
 
  // for Qt key codes

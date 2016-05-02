@@ -89,7 +89,7 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
 
     for (p = text; *p; p++) {
         if (FT_Load_Char(fontface_, *p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char");
+            LogWarn("FreeType: could not render char: '" << *p << "' (0x" << std::hex << *p << ")");
             continue;
         }
 
@@ -138,40 +138,40 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
 
     char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
     char tab = (char)0x9;  // Tab Ascii
-
+    
     for (p = text; *p; p++) {
         if (FT_Load_Char(fontface_, *p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char");
+            LogWarn("FreeType: could not render char: '" << *p << "' (0x" << std::hex << *p << ")");
             continue;
         }
 
-        float w = fontface_->glyph->bitmap.width * scale.x;
-        float h = fontface_->glyph->bitmap.rows * scale.y;
+        float w = fontface_->glyph->bitmap.width;
+        float h = fontface_->glyph->bitmap.rows;
 
-        if (y == 0.0f) y += 2 * h;
+        if (y == 0.0f) y += h;
 
         if (*p == lf) {
-            y += (2 * h);
-            x += (fontface_->glyph->advance.x >> 6) * scale.x;
-            y += (fontface_->glyph->advance.y >> 6) * scale.y;
+            y += 2 * h;
+            x += (fontface_->glyph->advance.x >> 6);
+            y += (fontface_->glyph->advance.y >> 6);
             maxx = std::max(maxx, x);
             x = 0.0f;
             continue;
         } else if (*p == tab) {
-            x += (fontface_->glyph->advance.x >> 6) * scale.x;
-            y += (fontface_->glyph->advance.y >> 6) * scale.y;
+            x += (fontface_->glyph->advance.x >> 6);
+            y += (fontface_->glyph->advance.y >> 6);
             x += (4 * w);  // 4 times glyph character width
             maxx = std::max(maxx, x);
             continue;
         }
-        x += (fontface_->glyph->advance.x >> 6) * scale.x;
+        x += (fontface_->glyph->advance.x >> 6);
         maxx = std::max(maxx, x);
 
-        y += (fontface_->glyph->advance.y >> 6) * scale.y;
+        y += (fontface_->glyph->advance.y >> 6);
         maxy = std::max(maxy, y);
     }
 
-    return vec2(maxx, maxy);
+    return vec2(maxx, maxy) * scale;
 }
 
 void TextRenderer::initMesh() {
