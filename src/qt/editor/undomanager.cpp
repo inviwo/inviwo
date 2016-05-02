@@ -90,7 +90,7 @@ void UndoManager::pushState() {
     dirty_ = false;
     updateActions();
 
-    LogInfo("Push state: " << head_ << " (" << undoBuffer_.size() << ")");
+    //LogInfo("Push state: " << head_ << " (" << undoBuffer_.size() << ")");
 }
 void UndoManager::undoState() {
     if (head_ > 0) {
@@ -106,7 +106,7 @@ void UndoManager::undoState() {
         dirty_ = false;
         updateActions();
 
-        LogInfo("Undo state: " << head_ << " (" << undoBuffer_.size() << ")");
+        //LogInfo("Undo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 void UndoManager::redoState() {
@@ -124,7 +124,7 @@ void UndoManager::redoState() {
         dirty_ = false;
         updateActions();
 
-        LogInfo("Redo state: " << head_ << " (" << undoBuffer_.size() << ")");
+        //LogInfo("Redo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 
