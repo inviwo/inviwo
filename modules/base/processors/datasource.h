@@ -48,7 +48,7 @@ public:
     DataSource();
     virtual ~DataSource() = default;
 
-    virtual bool isReady() const;
+    virtual bool isReady() const override;
     virtual void process() override;
     virtual void deserialize(Deserializer& d) override;
 

@@ -73,9 +73,17 @@ void ProcessorMetaData::serialize(Serializer& s) const {
 }
 
 void ProcessorMetaData::deserialize(Deserializer& d) {
-    d.deserialize("position", position_);
-    d.deserialize("visibility", visibility_);
-    d.deserialize("selection", selection_);
+    ivec2 position{0,0};
+    d.deserialize("position", position);
+    setPosition(position);
+    
+    bool visibility{true};
+    d.deserialize("visibility", visibility);
+    setVisibile(visibility);
+    
+    bool selection{false};
+    d.deserialize("selection", selection);
+    setSelected(selection);
 }
 
 bool ProcessorMetaData::equal(const MetaData& rhs) const {

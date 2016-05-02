@@ -246,6 +246,4 @@ void AngleRadiusWidget::setAngleRadiusAtPosition(const QPoint& pos) {
 }
 
 
-
-
 }  // namespace

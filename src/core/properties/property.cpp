@@ -232,39 +232,23 @@ void Property::serialize(Serializer& s) const {
 void Property::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        LogWarn("Deserialized property: " + joinString(getPath(), ".") +
+                " with class identifier: " + getClassIdentifier() +
+                " from a serialized property with a different class identifier: " + className);
+    }
 
     {
         auto old = identifier_;
         d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
         if (old != identifier_) notifyObserversOnSetIdentifier(identifier_);
     }
-    {
-        auto old = displayName_.value;
-        displayName_.deserialize(d);
-        if (old != displayName_.value) notifyObserversOnSetDisplayName(displayName_);
-    }
-    {
-        auto old = semantics_.value;
-        semantics_.deserialize(d);
-        if (old != semantics_.value) notifyObserversOnSetSemantics(semantics_);
-    }
-    {
-        auto old = usageMode_.value;
-        int mode = static_cast<int>(usageMode_.value);
-        d.deserialize(usageMode_.name, mode);
-        usageMode_ = static_cast<UsageMode>(mode);
-        if (old != usageMode_.value) notifyObserversOnSetUsageMode(usageMode_);
-    }
-    {
-        auto old = visible_.value;
-        visible_.deserialize(d);
-        if (old != visible_.value) notifyObserversOnSetVisible(visible_);
-    }
-    {
-        auto old = readOnly_.value;
-        readOnly_.deserialize(d);
-        if (old != readOnly_.value) notifyObserversOnSetReadOnly(readOnly_);
-    }
+
+    if (displayName_.deserialize(d)) notifyObserversOnSetDisplayName(displayName_);
+    if (semantics_.deserialize(d)) notifyObserversOnSetSemantics(semantics_);
+    if (usageMode_.deserialize(d)) notifyObserversOnSetUsageMode(usageMode_);
+    if (visible_.deserialize(d)) notifyObserversOnSetVisible(visible_);
+    if (readOnly_.deserialize(d)) notifyObserversOnSetReadOnly(readOnly_);
 
     MetaDataOwner::deserialize(d);
 }
@@ -337,6 +321,13 @@ const BaseCallBack* Property::onChange(std::function<void()> callback) {
 
 void Property::removeOnChange(const BaseCallBack* callback) {
     onChangeCallback_.remove(callback);
+}
+
+Property::OnChangeBlocker::OnChangeBlocker(Property& property) : property_(property) {
+    property_.onChangeCallback_.startBlockingCallbacks();
+}
+Property::OnChangeBlocker::~OnChangeBlocker() {
+    property_.onChangeCallback_.stopBlockingCallbacks();
 }
 
 } // namespace

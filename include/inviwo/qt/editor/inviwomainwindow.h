@@ -33,6 +33,9 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/qt/editor/undomanager.h>
+#include <inviwo/qt/editor/globaleventfilter.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
@@ -191,6 +194,9 @@ private:
     // command line switches
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
+    
+    GlobalEventFilter eventFilter_;
+    UndoManager undoManager_;
 };
 
 }  // namespace

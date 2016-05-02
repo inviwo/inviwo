@@ -105,6 +105,7 @@ void TransferFunctionEditor::resetTransferFunction() {
 }
 
 void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+
     TransferFunctionEditorControlPoint* controlPointGraphicsItem =
         getControlPointGraphicsItemAt(e->scenePos());
     // Need to store these since they are deselected in mousePressEvent.
@@ -198,6 +199,7 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     }
     #include <warn/pop>
     mouseDrag_ = false;
+
     if (!e->isAccepted()) {
         QGraphicsScene::mouseReleaseEvent(e);
     }
@@ -377,7 +379,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         }
 
         QList<QGraphicsItem*> selitems = selectedItems();
-        if (keyEvent->modifiers() & Qt::ControlModifier) { // Create group
+        if (keyEvent->modifiers() & Qt::ControlModifier) {  // Create group
             groups_[group].clear();
             for (auto& selitem : selitems) {
                 TransferFunctionEditorControlPoint* p =
@@ -386,13 +388,13 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
             }
         } else {
             if (!(keyEvent->modifiers() & Qt::ShiftModifier)) {
-                            for (auto& selitem : selitems) {
-                                selitem->setSelected(false);
-                 }
+                for (auto& selitem : selitems) {
+                    selitem->setSelected(false);
+                }
             }
             for (auto& elem : groups_[group]) {
                 elem->setSelected(true);
-            }     
+            }
         }
     } else {
         keyEvent->ignore();

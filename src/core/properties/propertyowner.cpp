@@ -270,12 +270,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {
     std::vector<const CompositeProperty*> props;
-    for (auto it = properties_.begin(); it != properties_.end(); ++it) {
-        CompositeProperty* cp = dynamic_cast<CompositeProperty*>(*it);
-        if(cp){
-            props.push_back(cp);
-        }
-    }
+    std::copy(compositeProperties_.begin(), compositeProperties_.end(), std::back_inserter(props));
     return util::xmlFindMatchingSubPropertiesForComposites(node, props);
 }
 

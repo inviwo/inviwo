@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLERAYCASTINGPROPERTY_H
-#define IVW_SIMPLERAYCASTINGPROPERTY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/interaction/interactionstatemanager.h>
 
 namespace inviwo {
 
-class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty { 
-public:
-    InviwoPropertyInfo();
-    SimpleRaycastingProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel = InvalidationLevel::InvalidResources,
-                             PropertySemantics semantics = PropertySemantics::Default);
-    
-    SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);
-    SimpleRaycastingProperty& operator=(const SimpleRaycastingProperty& that);
-    virtual SimpleRaycastingProperty* clone() const override;
-    virtual ~SimpleRaycastingProperty() = default;
-        
-    OptionPropertyString classificationMode_;
-    OptionPropertyString compositingMode_;
-    OptionPropertyString gradientComputationMode_;
+void InteractionStateManager::beginInteraction() {
+    isInteracting_ = true;
+    onInteractionBegin_.invoke();
+}
 
-    FloatProperty samplingRate_;
-    FloatProperty isoValue_;
-};
+void InteractionStateManager::endInteraction() {
+    isInteracting_ = false;
+    onInteractionEnd_.invoke();
+}
 
-} // namespace
+bool InteractionStateManager::isInteracting() const { return isInteracting_; }
 
-#endif // IVW_SIMPLERAYCASTINGPROPERTY_H
-
+}  // namespace

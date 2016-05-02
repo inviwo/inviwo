@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/simpleraycastingproperty.h>
@@ -33,17 +33,17 @@ namespace inviwo {
 
 PropertyClassIdentifier(SimpleRaycastingProperty, "org.inviwo.SimpleRaycastingProperty");
 
-SimpleRaycastingProperty::SimpleRaycastingProperty(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel, PropertySemantics semantics)
+SimpleRaycastingProperty::SimpleRaycastingProperty(std::string identifier, std::string displayName,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , classificationMode_("classificationMode", "Classification", InvalidationLevel::InvalidResources)
+    , classificationMode_("classificationMode", "Classification",
+                          InvalidationLevel::InvalidResources)
     , compositingMode_("compositingMode", "Compositing", InvalidationLevel::InvalidResources)
     , gradientComputationMode_("gradientComputationMode", "Gradient",
-    InvalidationLevel::InvalidResources)
+                               InvalidationLevel::InvalidResources)
     , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 10.0f)
     , isoValue_("isoValue", "Iso value", 0.5f, 0.0f, 1.0f) {
-
     classificationMode_.addOption("none", "None");
     classificationMode_.addOption("transfer-function", "Transfer function");
     classificationMode_.setSelectedIdentifier("transfer-function");
@@ -82,9 +82,8 @@ SimpleRaycastingProperty::SimpleRaycastingProperty(const SimpleRaycastingPropert
     , classificationMode_(rhs.classificationMode_)
     , compositingMode_(rhs.compositingMode_)
     , gradientComputationMode_(rhs.gradientComputationMode_)
-    , samplingRate_(rhs.samplingRate_) 
+    , samplingRate_(rhs.samplingRate_)
     , isoValue_(rhs.isoValue_) {
-    
     addProperty(classificationMode_);
     addProperty(compositingMode_);
     addProperty(gradientComputationMode_);
@@ -92,7 +91,8 @@ SimpleRaycastingProperty::SimpleRaycastingProperty(const SimpleRaycastingPropert
     addProperty(isoValue_);
 }
 
-SimpleRaycastingProperty& SimpleRaycastingProperty::operator=(const SimpleRaycastingProperty& that) {
+SimpleRaycastingProperty& SimpleRaycastingProperty::operator=(
+    const SimpleRaycastingProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         classificationMode_ = that.classificationMode_;
@@ -107,7 +107,5 @@ SimpleRaycastingProperty& SimpleRaycastingProperty::operator=(const SimpleRaycas
 SimpleRaycastingProperty* SimpleRaycastingProperty::clone() const {
     return new SimpleRaycastingProperty(*this);
 }
-
-SimpleRaycastingProperty::~SimpleRaycastingProperty() {}
 
 }  // namespace

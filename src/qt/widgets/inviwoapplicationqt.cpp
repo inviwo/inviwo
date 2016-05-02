@@ -266,6 +266,6 @@ bool InviwoApplicationQt::event(QEvent* e) {
     }
 }
 
-QEvent::Type InviwoQtEvent::INVIWO_QT_EVENT = QEvent::None;
+QEvent::Type InviwoQtEvent::InviwoQtEventType = QEvent::None;
 
 }  // namespace

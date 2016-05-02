@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +24,52 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLERAYCASTINGPROPERTY_H
-#define IVW_SIMPLERAYCASTINGPROPERTY_H
+#include <inviwo/qt/editor/globaleventfilter.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QAction>
+#include <QEvent>
+#include <QApplication>
+#include <QGuiApplication>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty { 
-public:
-    InviwoPropertyInfo();
-    SimpleRaycastingProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel = InvalidationLevel::InvalidResources,
-                             PropertySemantics semantics = PropertySemantics::Default);
-    
-    SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);
-    SimpleRaycastingProperty& operator=(const SimpleRaycastingProperty& that);
-    virtual SimpleRaycastingProperty* clone() const override;
-    virtual ~SimpleRaycastingProperty() = default;
-        
-    OptionPropertyString classificationMode_;
-    OptionPropertyString compositingMode_;
-    OptionPropertyString gradientComputationMode_;
+GlobalEventFilter::GlobalEventFilter(InteractionStateManager &manager) : manager_(manager) {}
 
-    FloatProperty samplingRate_;
-    FloatProperty isoValue_;
-};
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+
+bool GlobalEventFilter::eventFilter(QObject *obj, QEvent *event) {
+    switch (event->type()) {
+        case QEvent::MouseButtonPress:
+            if (pressCount_ == 0) manager_.beginInteraction();
+            ++pressCount_;
+            break;
+        case QEvent::MouseButtonRelease:
+            --pressCount_;
+            if (pressCount_ == 0) manager_.endInteraction();
+            break;
+
+        case QEvent::TouchBegin:
+            if (pressCount_ == 0) manager_.beginInteraction();
+            ++pressCount_;
+            break;
+        case QEvent::TouchEnd:
+            --pressCount_;
+            if (pressCount_ == 0) manager_.endInteraction();
+            break;
+        default:
+            break;
+    }
+    return QObject::eventFilter(obj, event);
+}
+
+#include <warn/pop>
 
 } // namespace
-
-#endif // IVW_SIMPLERAYCASTINGPROPERTY_H
 

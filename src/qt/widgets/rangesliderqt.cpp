@@ -76,8 +76,6 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent)
     updateSlidersFromState();
 }
 
-RangeSliderQt::~RangeSliderQt() {}
-
 int RangeSliderQt::minValue() {
     return value_[0];
 }
@@ -238,16 +236,10 @@ void RangeSliderQt::middleMoved(int delta) {
     this->updateSplitterPosition(0, 0);
 }
 
-
-
-RangeSliderMiddle::RangeSliderMiddle(QWidget *parent) 
+RangeSliderMiddle::RangeSliderMiddle(QWidget *parent)
     : QFrame(parent)
     , lastMouseX_(0)
-    , drag_(false)
-{
-}
-
-RangeSliderMiddle::~RangeSliderMiddle() {
+    , drag_(false) {
 }
 
 void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {

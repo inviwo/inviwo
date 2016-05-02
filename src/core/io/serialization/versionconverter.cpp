@@ -96,7 +96,7 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
                 match = true;
             }
         }
-        res = res && match;
+        res = res || match;
     }
 
     for (auto& elem : toBeDeleted) {
@@ -139,7 +139,7 @@ bool util::xmlFindMatchingSubPropertiesForComposites(
     TxElement* processornode, const std::vector<const CompositeProperty*>& props) {
     std::vector<TxElement*> pelm = util::xmlGetMatchingElements(processornode, "Properties");
 
-    bool res = true;
+    bool res = false;
 
     for (auto& prop : props) {
         if (!util::xmlHasProp(pelm[0], *prop)) {
@@ -149,7 +149,7 @@ bool util::xmlFindMatchingSubPropertiesForComposites(
             if (!foundMatchingComposite) {
                 foundSubProp = util::xmlCopyMatchingSubPropsIntoComposite(pelm[0], *prop);
             }
-            res = res && (foundSubProp || foundMatchingComposite);
+            res = res || foundSubProp || foundMatchingComposite;
         }
     }
     return res;
@@ -210,6 +210,7 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
 
 void util::renamePort(Deserializer& d, std::initializer_list<std::pair<const Port*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
+        bool didChanges = false;
         for (auto rule : rules) {
             TxElement* elem = nullptr;
             if (auto p = dynamic_cast<const Outport*>(rule.first)) {
@@ -219,22 +220,29 @@ void util::renamePort(Deserializer& d, std::initializer_list<std::pair<const Por
                 elem = util::xmlGetElement(node, "InPorts/InPort&type=" + p->getClassIdentifier() +
                                            "&identifier=" + rule.second);
             }
-            if (elem) elem->SetAttribute("identifier", rule.first->getIdentifier());
+            if (elem) {
+                elem->SetAttribute("identifier", rule.first->getIdentifier());
+                didChanges = true;
+            }
         }
-        return true;
+        return didChanges;
     });
     d.convertVersion(&vc);
 }
 
 void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
+        bool didChanges = false;
         for (auto rule : rules) {
             TxElement* p = util::xmlGetElement(node, "Properties/Property&type=" +
                                                rule.first->getClassIdentifier() +
                                                "&identifier=" + rule.second);
-            if (p) p->SetAttribute("identifier", rule.first->getIdentifier());
+            if (p) {
+                p->SetAttribute("identifier", rule.first->getIdentifier());
+                didChanges = true;
+            }
         }
-        return true;
+        return didChanges;
     });
     d.convertVersion(&vc);
 }
@@ -242,13 +250,17 @@ void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const
 void util::changePropertyType(
     Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
+        bool didChanges = false;
         for (auto rule : rules) {
             TxElement* p = util::xmlGetElement(
                 node, "Properties/Property&type=" + rule.first->getClassIdentifier() +
                 "&identifier=" + rule.first->getIdentifier());
-            if (p) p->SetAttribute("type", rule.second);
+            if (p) {
+                p->SetAttribute("type", rule.second);
+                didChanges = true;
+            }
         }
-        return true;
+        return didChanges;
     });
     d.convertVersion(&vc);
 }

@@ -50,7 +50,7 @@ class IVW_QTWIDGETS_API RangeSliderQt : public QSplitter {
 
 public:
     RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr);
-    virtual ~RangeSliderQt();
+    virtual ~RangeSliderQt() = default;
 
 public slots:
     int minValue();
@@ -73,11 +73,10 @@ signals:
     void valuesSet(int min, int max);
 
 protected:
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent* event) override;
 
     void updateStateFromSliders();
     void updateSlidersFromState();
-
 
 protected slots:
     void updateSplitterPosition(int pos, int idx);
@@ -97,7 +96,7 @@ class IVW_QTWIDGETS_API RangeSliderMiddle : public QFrame {
     #include <warn/pop>
 public:
     RangeSliderMiddle(QWidget* parent = nullptr);
-    virtual ~RangeSliderMiddle();
+    virtual ~RangeSliderMiddle() = default;
 
 signals:
     void middleMoved(int delta);

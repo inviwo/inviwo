@@ -101,8 +101,13 @@ void TransferFunctionDataPoint::serialize(Serializer& s) const {
 }
 
 void TransferFunctionDataPoint::deserialize(Deserializer& d) {
+    auto oldPos = pos_;
+    auto oldRgba = rgba_;
     d.deserialize("pos", pos_);
     d.deserialize("rgba", rgba_);
+    if (oldPos != pos_ || oldRgba != rgba_) {
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 bool operator==(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {

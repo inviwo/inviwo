@@ -91,4 +91,10 @@ void ObservableInterface::removeObservationHelper(Observer* observer) {
     observer->removeObservationInternal(this);
 }
 
+util::NotificationBlocker::NotificationBlocker(ObservableInterface& observable)
+    : observable_(observable) {
+    observable_.startBlockingNotifications();
+}
+util::NotificationBlocker::~NotificationBlocker() { observable_.stopBlockingNotifications(); }
+
 }  // namespace

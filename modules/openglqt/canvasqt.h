@@ -163,7 +163,11 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapWheelEvent(static_cast<QWheelEvent*>(e));
 
         case QEvent::TouchBegin:
+            touchFallback(static_cast<QTouchEvent*>(e));
+            return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchEnd:
+            touchFallback(static_cast<QTouchEvent*>(e));
+            return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchUpdate: {
             touchFallback(static_cast<QTouchEvent*>(e));
             return mapTouchEvent(static_cast<QTouchEvent*>(e));

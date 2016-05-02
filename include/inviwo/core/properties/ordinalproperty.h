@@ -247,18 +247,24 @@ void OrdinalProperty<T>::setCurrentStateAsDefault() {
 
 template <typename T>
 void OrdinalProperty<T>::serialize(Serializer& s) const {
+    Property::serialize(s);
+    
     minValue_.serialize(s, this->serializationMode_);
     maxValue_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
-    TemplateProperty<T>::serialize(s);
+    value_.serialize(s, this->serializationMode_);
 }
 
 template <typename T>
 void OrdinalProperty<T>::deserialize(Deserializer& d) {
-    minValue_.deserialize(d);
-    maxValue_.deserialize(d);
-    increment_.deserialize(d);
-    TemplateProperty<T>::deserialize(d);
+    Property::deserialize(d);
+
+    bool modified = false;
+    modified |= minValue_.deserialize(d);
+    modified |= maxValue_.deserialize(d);
+    modified |= increment_.deserialize(d);
+    modified |= value_.deserialize(d);
+    if(modified) this->propertyModified();
 }
 
 }  // namespace

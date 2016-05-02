@@ -8,6 +8,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/globaleventfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanagerwidget.h
@@ -36,6 +37,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorprogressgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -48,6 +50,7 @@ set(SOURCE_FILES
     connectiongraphicsitem.cpp
     consolewidget.cpp
     editorgrapicsitem.cpp
+    globaleventfilter.cpp
     helpwidget.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp
@@ -68,6 +71,7 @@ set(SOURCE_FILES
     processorstatusgraphicsitem.cpp
     resourcemanagerwidget.cpp
     settingswidget.cpp
+    undomanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

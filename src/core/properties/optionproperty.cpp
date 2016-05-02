@@ -70,8 +70,6 @@ OptionPropertyString* OptionPropertyString::clone() const {
     return new OptionPropertyString(*this);
 }
 
-OptionPropertyString::~OptionPropertyString() {}
-
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) : Property(rhs) {}
 
 BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
@@ -79,7 +77,6 @@ BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displ
                                        PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
-BaseOptionProperty::~BaseOptionProperty() {}
 
 void BaseOptionProperty::set(const Property* srcProperty) {
     if (auto optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty)) {

@@ -50,16 +50,16 @@ class IVW_QTWIDGETS_API InviwoQtEvent : public QEvent {
 #include <warn/pop>
 
 public:
-    InviwoQtEvent() : QEvent(INVIWO_QT_EVENT) {}
+    InviwoQtEvent() : QEvent(InviwoQtEvent::type()) {}
     static QEvent::Type type() {
-        if (INVIWO_QT_EVENT == QEvent::None) {
-            INVIWO_QT_EVENT = static_cast<QEvent::Type>(QEvent::registerEventType());
+        if (InviwoQtEventType == QEvent::None) {
+            InviwoQtEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
         }
-        return INVIWO_QT_EVENT;
+        return InviwoQtEventType;
     }
 
 private:
-    static QEvent::Type INVIWO_QT_EVENT;
+    static QEvent::Type InviwoQtEventType;
 };
 
 class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {

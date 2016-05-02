@@ -53,7 +53,7 @@ class IVW_QTWIDGETS_API TransferFunctionEditorControlPoint : public QGraphicsIte
 public:
     TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
                                        const DataMapper& dataMap);
-    ~TransferFunctionEditorControlPoint();
+    ~TransferFunctionEditorControlPoint() = default;
 
     void setDataPoint(TransferFunctionDataPoint* dataPoint);
     TransferFunctionDataPoint* getPoint() const;

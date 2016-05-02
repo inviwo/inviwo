@@ -35,32 +35,6 @@
 
 namespace inviwo {
 
-SerializeBase::NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node,
-                                         bool retrieveChild)
-    : serializer_(serializer)
-    , storedNode_(serializer_.rootElement_)
-    , storedRetrieveChild_(serializer_.retrieveChild_) {
-    serializer_.rootElement_ = node;
-    serializer_.retrieveChild_ = retrieveChild;
-}
-
-SerializeBase::NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key,
-                                         bool retrieveChild)
-    : serializer_(serializer)
-    , storedNode_(serializer_.rootElement_)
-    , storedRetrieveChild_(serializer_.retrieveChild_) {
-    serializer_.rootElement_ = serializer_.retrieveChild_
-                                   ? serializer_.rootElement_->FirstChildElement(key)
-                                   : serializer_.rootElement_;
-
-    serializer_.retrieveChild_ = retrieveChild;
-}
-
-SerializeBase::NodeSwitch::~NodeSwitch() {
-    serializer_.rootElement_ = storedNode_;
-    serializer_.retrieveChild_ = storedRetrieveChild_;
-}
-
 SerializeBase::ReferenceDataContainer::ReferenceDataContainer() {
     referenceCount_ = 0;
 }
@@ -209,5 +183,33 @@ std::string SerializeBase::nodeToString(const TxElement& node) {
         return "No valid root node";
     }
 }
+
+NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
+    : serializer_(serializer)
+    , storedNode_(serializer_.rootElement_)
+    , storedRetrieveChild_(serializer_.retrieveChild_) {
+
+    serializer_.rootElement_ = node;
+    serializer_.retrieveChild_ = retrieveChild;
+}
+
+NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild)
+    : serializer_(serializer)
+    , storedNode_(serializer_.rootElement_)
+    , storedRetrieveChild_(serializer_.retrieveChild_) {
+
+    serializer_.rootElement_ = serializer_.retrieveChild_
+                                   ? serializer_.rootElement_->FirstChildElement(key, false)
+                                   : serializer_.rootElement_;
+
+    serializer_.retrieveChild_ = retrieveChild;
+}
+
+NodeSwitch::~NodeSwitch() {
+    serializer_.rootElement_ = storedNode_;
+    serializer_.retrieveChild_ = storedRetrieveChild_;
+}
+
+NodeSwitch::operator bool() const { return serializer_.rootElement_ != nullptr;}
 
 } //namespace

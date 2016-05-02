@@ -50,22 +50,29 @@ public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
    
-    virtual void setVisible(bool visible); // Override QWidget && ProcessorWidget
-    virtual void show(); // Override ProcessorWidget
-    virtual void hide(); // Override ProcessorWidget
-    virtual void setPosition(glm::ivec2 pos); // Override ProcessorWidget
-    virtual void setDimensions(ivec2 dimensions); // Override ProcessorWidget
+    virtual void setVisible(bool visible) override; // Override QWidget && ProcessorWidget
+    virtual void show() override; // Override ProcessorWidget
+    virtual void hide() override; // Override ProcessorWidget
+    virtual void setPosition(ivec2 pos) override; // Override ProcessorWidget
+    virtual void setDimensions(ivec2 dime) override; // Override ProcessorWidget
 
     virtual void move(ivec2 pos); // Mirror QWidget::move
     
 protected:
-    // Override QWidget events
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void closeEvent(QCloseEvent*);
-    virtual void showEvent(QShowEvent*);
-    virtual void hideEvent(QHideEvent*);
-    virtual void moveEvent(QMoveEvent*);
+    virtual void updateVisible(bool visible) override;
+    virtual void updateDimensions(ivec2) override;
+    virtual void updatePosition(ivec2) override;
 
+
+    // Override QWidget events
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void closeEvent(QCloseEvent*) override;
+    virtual void showEvent(QShowEvent*) override;
+    virtual void hideEvent(QHideEvent*) override;
+    virtual void moveEvent(QMoveEvent*) override;
+
+    bool ignoreEvents_{false};
+    bool ignoreUpdate_{false};
 };
 
 } // namespace

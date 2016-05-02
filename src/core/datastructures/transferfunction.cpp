@@ -182,8 +182,8 @@ void TransferFunction::calcTransferValues() {
 
         // if (interpolationType_==TransferFunction::InterpolationLinear) {
         // linear interpolation
-        std::vector<TransferFunctionDataPoint*>::iterator pLeft = points_.begin();
-        std::vector<TransferFunctionDataPoint*>::iterator pRight = points_.begin() + 1;
+        auto pLeft = points_.begin();
+        auto pRight = points_.begin() + 1;
 
         while (pRight != points_.end()) {
             int n = static_cast<int>(ceil((*pLeft)->getPos().x * (textureSize_ - 1)));
@@ -224,10 +224,21 @@ void TransferFunction::serialize(Serializer& s) const {
 void TransferFunction::deserialize(Deserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
-    d.deserialize("dataPoints", points_, "point");
-    for (auto& elem : points_) {
-        (elem)->addObserver(this);
-    }
+
+    TFPoints toAdd;
+    TFPoints toRemove;
+
+    auto desPoints = util::IndexedDeserializer<TransferFunctionDataPoint*>("dataPoints", "point")
+                         .setMakeNew([]() { return nullptr; })
+                         .onNew([&](TransferFunctionDataPoint*& point) { toAdd.push_back(point); })
+                         .onRemove([&](TransferFunctionDataPoint*& point) {
+                             toRemove.push_back(point);
+                             return false;
+                         });
+    desPoints(d, points_);
+    for (auto point : toRemove) removePoint(point);
+    for (auto point : toAdd) addPoint(point);
+
     int type = static_cast<int>(interpolationType_);
     d.deserialize("interpolationType_", type);
     interpolationType_ = static_cast<TransferFunction::InterpolationType>(type);
