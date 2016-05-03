@@ -34,20 +34,43 @@
 
 namespace inviwo {
 
-Image::Image(size2_t dimensions, const DataFormatBase* format) : DataGroup() {
-    colorLayers_.push_back(std::make_shared<Layer>(dimensions, format));
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
-    pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
+Image::Image(size2_t dimensions, const DataFormatBase* format)
+    : DataGroup()
+    , depthLayer_{createDepthLayer(dimensions)}
+    , pickingLayer_{createPickingLayer(dimensions, format)} {
+    colorLayers_.push_back(createColorLayer(dimensions, format));
 }
 
-Image::Image(std::shared_ptr<Layer> colorLayer) : DataGroup() {
-    if(!colorLayer) throw Exception("No valid colorLayer", IvwContext);
-    colorLayers_.push_back(colorLayer);
-    auto dimensions = colorLayer->getDimensions();
-    auto format = colorLayer->getDataFormat();
+Image::Image(std::shared_ptr<Layer> layer) : DataGroup() {
+    if (layer) {
+        auto dimensions = layer->getDimensions();
 
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
-    pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
+        switch (layer->getLayerType()) {
+            case LayerType::Color: {
+                auto format = layer->getDataFormat();
+                colorLayers_.push_back(layer);
+                depthLayer_ = createDepthLayer(dimensions);
+                pickingLayer_ = createPickingLayer(dimensions, format);
+                break;
+            }
+            case LayerType::Depth: {
+                colorLayers_.push_back(createColorLayer(dimensions));
+                depthLayer_ = layer;
+                pickingLayer_ =createPickingLayer(dimensions);
+                break;
+            }
+            case LayerType::Picking: {
+                colorLayers_.push_back(createColorLayer(dimensions));
+                depthLayer_ = createDepthLayer(dimensions);
+                pickingLayer_ = layer;
+                break;
+            }
+        }
+    } else {
+        colorLayers_.push_back(createColorLayer());
+        depthLayer_ = createDepthLayer();
+        pickingLayer_ = createPickingLayer();
+    }
 }
 
 Image::Image(const Image& rhs) : DataGroup(rhs) {
@@ -87,6 +110,16 @@ Image& Image::operator=(const Image& that) {
 
 Image* Image::clone() const {
     return new Image(*this);
+}
+
+std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFormatBase* format) {
+    return std::make_shared<Layer>(dimensions, format, LayerType::Color);
+}
+std::shared_ptr<Layer> Image::createDepthLayer(size2_t dimensions) {
+    return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
+}
+std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions, const DataFormatBase* format) {
+    return std::make_shared<Layer>(dimensions, format, LayerType::Picking);
 }
 
 const Layer* Image::getLayer(LayerType type, size_t idx) const {
