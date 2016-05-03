@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PIXELVALUE_H
@@ -49,47 +49,46 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
 
-
 /**
  * \class PixelValue
- * \brief <brief description> 
+ * \brief <brief description>
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_BASE_API PixelValue : public Processor { 
+class IVW_MODULE_BASE_API PixelValue : public Processor {
 public:
     PixelValue();
     virtual ~PixelValue() = default;
-     
+
     virtual void process() override;
 
     void mouseMoveEvent(Event* theevent);
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     ImageInport inport_;
     ImageOutport outport_;
-    
+
     IntSize2Property coordinates_;
-    DoubleVec4Property pixelValue_;
+    std::vector<DoubleVec4Property> pixelValues_;
+    std::vector<FloatVec4Property> pixelValuesNormalized_;
     DoubleVec4Property pickingValue_;
     DoubleProperty depthValue_;
 
-    StringProperty pixelStrValue_;
+    std::vector<StringProperty> pixelStrValues_;
     StringProperty pickingStrValue_;
     StringProperty depthStrValue_;
 
     EventProperty mouseMove_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PIXELVALUE_H
-
+#endif  // IVW_PIXELVALUE_H

@@ -35,11 +35,18 @@ tools/codegen/colorbrewer/colorbrewer.py
 #ifndef IWW_COLORBREWER_H
 #define IWW_COLORBREWER_H
 
-
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <vector>
 
 namespace inviwo{
 namespace colorbrewer {
+
+    class ColorBrewerException : public Exception {
+    public:
+        ColorBrewerException(const std::string &message) : Exception(message, ExceptionContext()) {}
+        virtual ~ColorBrewerException() throw() {}
+    };
 
 ##PLACEHOLDER##
 
