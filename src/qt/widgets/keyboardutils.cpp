@@ -31,7 +31,8 @@
 
 #ifdef _WIN32
  // needed for virtual key codes on Windows
-#include "winuser.h"
+#include <windows.h>
+#include <winuser.h>
 #endif
 
  // for Qt key codes
@@ -83,22 +84,36 @@ IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
     case VK_ADD:
         return IvwKey::KPAdd;
     /* modifier keys */
-    case VK_LSHIFT:
-        return IvwKey::LeftShift;
-    case VK_RSHIFT:
-        return IvwKey::RightShift;
-    case VK_LCONTROL:
-        return IvwKey::LeftControl;
-    case VK_RCONTROL:
-        return IvwKey::RightControl;
-    case VK_LMENU:
-        return IvwKey::LeftAlt;
-    case VK_RMENU:
-        return IvwKey::RightAlt;
-    case Qt::Key_Super_L:
-        return IvwKey::LeftSuper;
-    case Qt::Key_Super_R:
-        return IvwKey::RightSuper;
+    case VK_SHIFT:
+        if (GetKeyState(VK_LSHIFT) & 0x8000) {
+            return IvwKey::LeftShift;
+        }
+        else if (GetKeyState(VK_RSHIFT) & 0x8000) {
+            return IvwKey::RightShift;
+        }
+        // cannot distinguish between left and right, 
+        // use regular case further down as fallback option
+        break;
+    case VK_CONTROL:
+        if (GetKeyState(VK_LCONTROL) & 0x8000) {
+            return IvwKey::LeftControl;
+        }
+        else if (GetKeyState(VK_RCONTROL) & 0x8000) {
+            return IvwKey::RightControl;
+        }
+        // cannot distinguish between left and right, 
+        // use regular case further down as fallback option
+        break;
+    case VK_MENU:
+        if (GetKeyState(VK_LMENU) & 0x8000) {
+            return IvwKey::LeftAlt;
+        }
+        else if (GetKeyState(VK_RMENU) & 0x8000) {
+            return IvwKey::RightAlt;
+        }
+        // cannot distinguish between left and right, 
+        // use regular case further down as fallback option
+        break;
     default:
         // do nothing, the virtual key might be 0 although key() contains information
         break;
@@ -336,6 +351,16 @@ IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
     case Qt::Key_F25:
         return IvwKey::F25;
     /* modifier keys */
+    // TODO: Shift, Control, and Alt keys are ambiguous (see issue #1216)
+    //       returning the corresponding left key for now!
+    case Qt::Key_Shift:
+        return IvwKey::LeftShift;
+    case Qt::Key_Control:
+        return IvwKey::LeftControl;
+    case Qt::Key_Meta:
+        return IvwKey::LeftMeta;
+    case Qt::Key_Alt:
+        return IvwKey::LeftAlt;
     case Qt::Key_Super_L:
         return IvwKey::LeftSuper;
     case Qt::Key_Super_R:

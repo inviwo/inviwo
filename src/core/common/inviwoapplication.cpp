@@ -352,4 +352,8 @@ void InviwoApplication::playSound(Message soundID) {
     LogWarn("this application have not implemented the playSound function");
 }
 
+InteractionStateManager& InviwoApplication::getInteractionStateManager() {
+    return interactionState_;
+}
+
 }  // namespace

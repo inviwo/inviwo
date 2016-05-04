@@ -31,76 +31,92 @@
 
 namespace inviwo {
 
-void ProcessorNetworkObservable::notifyObserversProcessorNetworkChanged() const {
-    for (auto o : observers_) o->onProcessorNetworkChange();
+void ProcessorNetworkObservable::notifyObserversProcessorNetworkChanged() {
+    forEachObserver([](ProcessorNetworkObserver* o) { o->onProcessorNetworkChange(); });
 }
 
-void ProcessorNetworkObservable::notifyObserversProcessorNetworkEvaluateRequest() const {
-    for (auto o : observers_) o->onProcessorNetworkEvaluateRequest();
+void ProcessorNetworkObservable::notifyObserversProcessorNetworkEvaluateRequest() {
+    forEachObserver([](ProcessorNetworkObserver* o) { o->onProcessorNetworkEvaluateRequest(); });
 }
 
-void ProcessorNetworkObservable::notifyObserversProcessorNetworkUnlocked() const {
-    for (auto o : observers_) o->onProcessorNetworkUnlocked();
+void ProcessorNetworkObservable::notifyObserversProcessorNetworkUnlocked() {
+    forEachObserver([](ProcessorNetworkObserver* o) { o->onProcessorNetworkUnlocked(); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddProcessor(
-    Processor* processor) const {
-    for (auto o : observers_) o->onProcessorNetworkWillAddProcessor(processor);
+    Processor* processor) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkWillAddProcessor(processor); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddProcessor(
-    Processor* processor) const {
-    for (auto o : observers_) o->onProcessorNetworkDidAddProcessor(processor);
+    Processor* processor) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidAddProcessor(processor); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveProcessor(
-    Processor* processor) const {
-    for (auto o : observers_) o->onProcessorNetworkWillRemoveProcessor(processor);
+    Processor* processor) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkWillRemoveProcessor(processor); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveProcessor(
-    Processor* processor) const {
-    for (auto o : observers_) o->onProcessorNetworkDidRemoveProcessor(processor);
+    Processor* processor) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidRemoveProcessor(processor); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddConnection(
-    const PortConnection& portConnection) const {
-    for (auto o : observers_) o->onProcessorNetworkWillAddConnection(portConnection);
+    const PortConnection& portConnection) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkWillAddConnection(portConnection);
+    });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddConnection(
-    const PortConnection& portConnection) const {
-    for (auto o : observers_) o->onProcessorNetworkDidAddConnection(portConnection);
+    const PortConnection& portConnection) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkDidAddConnection(portConnection);
+    });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveConnection(
-    const PortConnection& portConnection) const {
-    for (auto o : observers_) o->onProcessorNetworkWillRemoveConnection(portConnection);
+    const PortConnection& portConnection) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkWillRemoveConnection(portConnection);
+    });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveConnection(
-    const PortConnection& portConnection) const {
-    for (auto o : observers_) o->onProcessorNetworkDidRemoveConnection(portConnection);
+    const PortConnection& portConnection) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkDidRemoveConnection(portConnection);
+    });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddLink(
-    const PropertyLink& propertyLink) const {
-    for (auto o : observers_) o->onProcessorNetworkWillAddLink(propertyLink);
+    const PropertyLink& propertyLink) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkWillAddLink(propertyLink); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddLink(
-    const PropertyLink& propertyLink) const {
-    for (auto o : observers_) o->onProcessorNetworkDidAddLink(propertyLink);
+    const PropertyLink& propertyLink) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidAddLink(propertyLink); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveLink(
-    const PropertyLink& propertyLink) const {
-    for (auto o : observers_) o->onProcessorNetworkWillRemoveLink(propertyLink);
+    const PropertyLink& propertyLink) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkWillRemoveLink(propertyLink); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveLink(
-    const PropertyLink& propertyLink) const {
-    for (auto o : observers_) o->onProcessorNetworkDidRemoveLink(propertyLink);
+    const PropertyLink& propertyLink) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidRemoveLink(propertyLink); });
 }
 
 }  // namespace

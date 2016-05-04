@@ -44,7 +44,7 @@ namespace inviwo {
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
-    , processorsSorted_{util::topologicalSort(processorNetwork_)}
+    , processorsSorted_(util::topologicalSort(processorNetwork_))
     , evaulationQueued_(false)
     , exceptionHandler_(StandardExceptionHandler()) {
     

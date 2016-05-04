@@ -62,23 +62,23 @@ class IVW_QTWIDGETS_API PropertyListEvent : public QEvent {
     Q_GADGET
 #include <warn/pop>
 public:
-    enum Action { ADD = 0, REMOVE = 1};
+    enum class Action { Add = 0, Remove = 1};
 
     PropertyListEvent(Action action, std::string processorId)
-        : QEvent(PROPERY_LIST_EVENT), action_(action), processorId_(processorId) {}
+        : QEvent(PropertyListEvent::type()), action_(action), processorId_(processorId) {}
 
     static QEvent::Type type() {
-        if (PROPERY_LIST_EVENT == QEvent::None) {
-            PROPERY_LIST_EVENT = static_cast<QEvent::Type>(QEvent::registerEventType());
+        if (PropertyListEventType == QEvent::None) {
+            PropertyListEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
         }
-        return PROPERY_LIST_EVENT;
+        return PropertyListEventType;
     }
 
     Action action_;
     std::string processorId_;
 
 private:
-    static QEvent::Type PROPERY_LIST_EVENT;
+    static QEvent::Type PropertyListEventType;
 };
 
 class IVW_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {

@@ -61,12 +61,18 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , previousImageSize_(customInputDimensions_)
+    , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
+          ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
     , canvasWidget_(nullptr)
     , queuedRequest_(false) {
+
+    widgetMetaData_->addObserver(this);
+    
     addPort(inport_);
     addProperty(inputSize_);
-
-    dimensions_.onChange(this, &CanvasProcessor::resizeCanvas);
+    
+    dimensions_.setSerializationMode(PropertySerializationMode::None);
+    dimensions_.onChange([this](){widgetMetaData_->setDimensions(dimensions_.get());});
     inputSize_.addProperty(dimensions_);
 
     enableCustomInputDimensions_.onChange(this, &CanvasProcessor::sizeChanged);
@@ -132,13 +138,11 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
     Processor::setProcessorWidget(std::move(processorWidget));
 }
 
-// Called by dimensions onChange.
-void CanvasProcessor::resizeCanvas() {
-    NetworkLock lock(this);
-    if (canvasWidget_ && canvasWidget_->getDimensions() != dimensions_.get()) {
-        canvasWidget_->setDimensions(dimensions_.get());
+void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
+    if (widgetMetaData_->getDimensions() != dimensions_.get()) {
+        Property::OnChangeBlocker blocker{dimensions_};
+        dimensions_.set(widgetMetaData_->getDimensions());
     }
-    inputSize_.invalidate(InvalidationLevel::Valid, &dimensions_);
 }
 
 void CanvasProcessor::setCanvasSize(ivec2 dim) {

@@ -121,6 +121,8 @@ public:
     std::vector<T*> getProcessorsByType() const;
 
     std::vector<Processor*> getProcessors() const;
+    template <typename C>
+    void forEachProcessor(C callback);
 
     /**
     * Adds a PortConnection to the ProcessorNetwork. This involves creating the connection
@@ -155,6 +157,9 @@ public:
     bool isConnected(const PortConnection& connection) const;
 
     const std::vector<PortConnection>& getConnections() const;
+    template <typename C>
+    void forEachConnection(C callback);
+
 
     bool isPortInNetwork(Port* port) const;
 
@@ -189,6 +194,9 @@ public:
     bool isLinked(const PropertyLink& link) const;
 
     std::vector<PropertyLink> getLinks() const;
+    template <typename C>
+    void forEachLink(C callback);
+
     /**
       * Is Property Link bidirectional
       * Searches for bidirectional link between start and end properties
@@ -207,7 +215,6 @@ public:
 
     InviwoApplication* getApplication() const;
 
-    void autoLinkProcessor(Processor* processor);
     void evaluateLinksFromProperty(Property*);
 
     bool isInvalidating() const;
@@ -303,6 +310,21 @@ std::vector<T*> ProcessorNetwork::getProcessorsByType() const {
         if (processor) processors.push_back(processor);
     }
     return processors;
+}
+
+template <typename C>
+void ProcessorNetwork::forEachProcessor(C callback) {
+    for (auto& item : processors_) callback(item.second);
+}
+
+template <typename C>
+void ProcessorNetwork::forEachConnection(C callback) {
+    for (auto& item : connectionsVec_) callback(item);
+}
+
+template <typename C>
+void ProcessorNetwork::forEachLink(C callback) {
+    for (auto& item : links_) callback(item);
 }
 
 inline void ProcessorNetwork::lock() { locked_++; }

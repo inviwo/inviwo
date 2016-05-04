@@ -29,6 +29,10 @@
 
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/linksettings.h>
+#include <inviwo/core/links/linkconditions.h>
+
 #include <iterator>
 
 namespace inviwo {
@@ -86,7 +90,7 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
 
     std::vector<Processor*> endProcessors;
     util::copy_if(network->getProcessors(), std::back_inserter(endProcessors),
-                  [](Processor* p) { return p->isEndProcessor(); });
+                  [](Processor* p) { return p->isSink(); });
 
     ProcessorStates state;
     std::vector<Processor*> sorted;
@@ -97,7 +101,103 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
-IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
+
+util::PropertyDistanceSorter::PropertyDistanceSorter() {}
+void util::PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
+
+bool util::PropertyDistanceSorter::operator()(const Property* a, const Property* b) {
+    float da = glm::distance(pos_, getPosition(a));
+    float db = glm::distance(pos_, getPosition(b));
+    return da < db;
+}
+
+vec2 util::PropertyDistanceSorter::getPosition(const Property* p) {
+    auto it = cache_.find(p);
+    if (it != cache_.end()) return it->second;
+    return cache_[p] = getPosition(p->getOwner()->getProcessor());
+}
+
+vec2 util::PropertyDistanceSorter::getPosition(const Processor* processor) {
+    if (auto meta =
+            processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+        return static_cast<vec2>(meta->getPosition());
+    }
+    return vec2(0, 0);
+}
+
+void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
+    auto app = network->getApplication();
+    auto linkSettings = app->getSettingsByType<LinkSettings>();
+
+    auto linkChecker = [&](const Property* p) { return !linkSettings->isLinkable(p); };
+
+    auto allNewPropertes = processor->getPropertiesRecursive();
+
+    std::vector<Property*> properties;
+    network->forEachProcessor([&](Processor* p) {
+        if (p != processor) {
+            std::vector<Property*> props = p->getPropertiesRecursive();
+            properties.insert(properties.end(), props.begin(), props.end());
+        }
+    });
+
+    auto destprops = allNewPropertes;
+    // remove properties for which auto linking is disabled
+    util::erase_remove_if(properties, linkChecker);
+    util::erase_remove_if(destprops, linkChecker);
+
+    util::PropertyDistanceSorter distSorter;
+
+    // auto link based on global settings
+    for (auto& destprop : destprops) {
+        std::vector<Property*> candidates = properties;
+
+        auto isNotAutoLinkAble = [&](const Property* p) {
+            return !AutoLinker::canLink(p, destprop, LinkMatchingTypeAndId);
+        };
+        util::erase_remove_if(candidates, isNotAutoLinkAble);
+
+        if (candidates.size() > 0) {
+            distSorter.setTarget(destprop);
+            std::sort(candidates.begin(), candidates.end(), distSorter);
+
+            network->addLink(candidates.front(), destprop);
+            // Propagate the link to the new Processor.
+            network->evaluateLinksFromProperty(candidates.front());
+            network->addLink(destprop, candidates.front());
+        }
+    }
+
+    // Auto link based property
+    for (auto& destprop : allNewPropertes) {
+        std::vector<Property*> candidates;
+        for (auto& srcPropertyIdentifier : destprop->getAutoLinkToProperty()) {
+            auto& classID = srcPropertyIdentifier.first;
+            auto& path = srcPropertyIdentifier.second;
+
+            network->forEachProcessor([&](Processor* srcProcessor) {
+                if (srcProcessor != processor && srcProcessor->getClassIdentifier() == classID) {
+                    if (auto src = srcProcessor->getPropertyByPath(splitString(path, '.'))) {
+                        candidates.push_back(src);
+                    }
+                }
+            });
+        }
+
+        if (candidates.size() > 0) {
+            distSorter.setTarget(destprop);
+            std::sort(candidates.begin(), candidates.end(), distSorter);
+
+            network->addLink(candidates.front(), destprop);
+            // Propagate the link to the new Processor.
+            network->evaluateLinksFromProperty(candidates.front());
+            network->addLink(destprop, candidates.front());
+        }
+    }
+}
+
+
+void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                           const std::string& refPath) {
     std::vector<Processor*> selected;
     util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
@@ -170,10 +270,12 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
     xmlSerializer.writeFile(os);
 }
 
-IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
+std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
                                                               std::istream& is,
                                                               const std::string& refPath,
                                                               InviwoApplication* app) {
+    NetworkLock lock(network);
+
     std::vector<Processor*> addedProcessors;
     try {
         Deserializer xmlDeserializer(app, is, refPath);
@@ -197,7 +299,7 @@ IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* 
 
         for (auto& p : processors) {
             network->addProcessor(p.get());
-            network->autoLinkProcessor(p.get());
+            util::autoLinkProcessor(network, p.get());
             addedProcessors.push_back(p.get());
             p.release();
         }
@@ -235,5 +337,6 @@ IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* 
     }
     return addedProcessors;
 }
+
 
 }  // namespace

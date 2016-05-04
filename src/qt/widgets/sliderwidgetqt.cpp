@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
+
 #include <limits>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,14 +42,12 @@ BaseSliderWidgetQt::BaseSliderWidgetQt()
     generateWidget();
 }
 
-BaseSliderWidgetQt::~BaseSliderWidgetQt() {}
-
 void BaseSliderWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     slider_ = new QSlider();
     slider_->setOrientation(Qt::Horizontal);
     slider_->setPageStep(1);
-    slider_->setMaximum(SLIDER_MAX);
+    slider_->setMaximum(sliderMax_);
     spinBox_ = new CustomDoubleSpinBoxQt();
     spinBox_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
 
@@ -59,6 +58,7 @@ void BaseSliderWidgetQt::generateWidget() {
     setLayout(hLayout);
     connect(slider_, SIGNAL(valueChanged(int)), this, SLOT(updateFromSlider()));
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBox()));
+
 
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);

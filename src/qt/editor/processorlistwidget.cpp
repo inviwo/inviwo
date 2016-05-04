@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
@@ -178,7 +179,7 @@ void ProcessorTreeWidget::addProcessor(std::string className) {
             meta->setPosition(*min + ivec2(0, 75));
 
             network->addProcessor(p.get());
-            network->autoLinkProcessor(p.get());
+            util::autoLinkProcessor(network, p.get());
             p.release();
         }
     } catch (Exception& exception) {

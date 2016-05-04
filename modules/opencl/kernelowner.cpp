@@ -35,18 +35,15 @@
 namespace inviwo {
 
 void KernelObservable::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
-    // Notify observers
-    for (auto o : observers_) o->onKernelCompiled(kernel);
+    forEachObserver([&](KernelObserver* o) { o->onKernelCompiled(kernel); });
 }
 
-
-cl::Kernel* KernelOwner::addKernel(const std::string& fileName
-    , const std::string& kernelName 
-    , const std::string& header /*= ""*/
-    , const std::string& defines /*= ""*/ ) {
+cl::Kernel* KernelOwner::addKernel(const std::string& fileName, const std::string& kernelName,
+                                   const std::string& header, const std::string& defines) {
     if (fileName.length() > 0) {
         bool wasBuilt;
-        cl::Program* program = KernelManager::getPtr()->buildProgram(fileName, header, defines, wasBuilt);
+        cl::Program* program =
+            KernelManager::getPtr()->buildProgram(fileName, header, defines, wasBuilt);
 
         cl::Kernel* kernel = KernelManager::getPtr()->getKernel(program, kernelName, this);
         if (kernel) {
@@ -54,7 +51,9 @@ cl::Kernel* KernelOwner::addKernel(const std::string& fileName
         }
         return kernel;
 
-    } else return nullptr;
+    } else {
+        return nullptr;
+    }
 }
 
 KernelOwner::~KernelOwner() {

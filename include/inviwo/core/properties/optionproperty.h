@@ -49,9 +49,9 @@ public:
                        PropertySemantics semantics = PropertySemantics::Default);
 
     BaseOptionProperty(const BaseOptionProperty& rhs);
-    virtual ~BaseOptionProperty();
+    virtual ~BaseOptionProperty() = default;
 
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string getClassIdentifier() const override = 0;
 
     virtual void clearOptions() = 0;
 
@@ -70,12 +70,12 @@ public:
     virtual bool isSelectedIdentifier(std::string identifier) const = 0;
     virtual bool isSelectedDisplayName(std::string name) const = 0;
 
-    virtual void set(const Property* srcProperty);
+    virtual void set(const Property* srcProperty) override;
 };
 
 template <typename T>
 struct OptionPropertyOption : public Serializable {
-    OptionPropertyOption() {}
+    OptionPropertyOption() = default;
     OptionPropertyOption(const std::string& id, const std::string& name, T value)
         : id_(id), name_(name), value_(value) {}
 
@@ -151,7 +151,7 @@ public:
     BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs);
     BaseTemplateOptionProperty<T>& operator=(const BaseTemplateOptionProperty<T>& that);
     // virtual BaseTemplateOptionProperty<T>* clone() const = 0;
-    virtual ~BaseTemplateOptionProperty();
+    virtual ~BaseTemplateOptionProperty() = default;
 
     /**
      * \brief Adds an option to the property
@@ -229,7 +229,7 @@ public:
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
     //    virtual TemplateOptionProperty<T>* clone() const;
-    virtual ~TemplateOptionProperty();
+    virtual ~TemplateOptionProperty() = default;
 };
 
 namespace detail {
@@ -278,7 +278,7 @@ public:
     OptionPropertyString(const OptionPropertyString& rhs);
     OptionPropertyString& operator=(const OptionPropertyString& that);
     virtual OptionPropertyString* clone() const override;
-    virtual ~OptionPropertyString();
+    virtual ~OptionPropertyString() = default;
 
     virtual void addOption(std::string identifier, std::string displayName,
                            std::string value) override;
@@ -341,8 +341,6 @@ BaseTemplateOptionProperty<T>& BaseTemplateOptionProperty<T>::operator=(
     return *this;
 }
 
-template <typename T>
-BaseTemplateOptionProperty<T>::~BaseTemplateOptionProperty() {}
 
 template <typename T>
 void BaseTemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
@@ -442,7 +440,7 @@ bool BaseTemplateOptionProperty<T>::setSelectedIndex(size_t option) {
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string identifier) {
-    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(identifier));
+    auto it = util::find_if(options_, MatchId<T>(identifier));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -457,7 +455,7 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string id
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string name) {
-    auto it = std::find_if(options_.begin(), options_.end(), MatchName<T>(name));
+    auto it = util::find_if(options_, MatchName<T>(name));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -472,7 +470,7 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string n
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
-    auto it = std::find_if(options_.begin(), options_.end(), MatchValue<T>(val));
+    auto it = util::find_if(options_, MatchValue<T>(val));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -496,29 +494,28 @@ void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::stri
     for (size_t i = 0; i < ids.size(); i++)
         options_.emplace_back(ids[i], displayNames[i], values[i]);
 
-    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
-    if (it != options_.end())
+    auto it = util::find_if(options_, MatchId<T>(selectId));
+    if (it != options_.end()) {
         selectedIndex_ = std::distance(options_.begin(), it);
-    else
+    } else {
         selectedIndex_ = 0;
-
+    }
     propertyModified();
 }
 
 template <typename T>
-void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<OptionPropertyOption<T>> options) {
+void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(
+    std::vector<OptionPropertyOption<T>> options) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
-    options_.clear();
-    std::copy(options.begin(), options.end(), std::back_inserter(options_));
-
-    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
-    if (it != options_.end())
+    options_ = std::move(options);
+    auto it = util::find_if(options_, MatchId<T>(selectId));
+    if (it != options_.end()) {
         selectedIndex_ = std::distance(options_.begin(), it);
-    else
+    } else {
         selectedIndex_ = 0;
-
+    }
     propertyModified();
 }
 
@@ -601,17 +598,27 @@ template <typename T>
 void BaseTemplateOptionProperty<T>::deserialize(Deserializer& d) {
     BaseOptionProperty::deserialize(d);
 
+    auto oldIndex = selectedIndex_;
+    auto oldOptions = options_;
+
+    // We need to reset to default since that state was never serialized.
+    options_ = defaultOptions_;
+    selectedIndex_ = defaultSelectedIndex_;
     d.deserialize("options", options_, "option");
 
     if (!options_.empty()) {
-        std::string id = getSelectedIdentifier();
-        d.deserialize("selectedIdentifier", id);
-        setSelectedIdentifier(id);
-
-        T value = getSelectedValue();
-        d.deserialize("value", value);
-        setSelectedValue(value);
+        std::string identifier;
+        d.deserialize("selectedIdentifier", identifier);
+        auto it = util::find_if(options_, MatchId<T>(identifier));
+        if (it != options_.end()) {
+            selectedIndex_ = std::distance(options_.begin(), it);
+        }
+    } else {
+        selectedIndex_ = 0;
     }
+    
+    if (oldIndex != selectedIndex_ || oldOptions != options_) propertyModified();
+    
 }
 
 template <typename T>
@@ -646,9 +653,6 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
 // TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
 //     return new TemplateOptionProperty<T>(*this);
 // }
-
-template <typename T>
-TemplateOptionProperty<T>::~TemplateOptionProperty() {}
 
 }  // namespace inviwo
 

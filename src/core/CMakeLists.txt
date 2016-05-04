@@ -85,6 +85,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
@@ -218,6 +219,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
@@ -334,6 +336,7 @@ set(SOURCE_FILES
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
     interaction/interactionhandler.cpp
+    interaction/interactionstatemanager.cpp
     interaction/pickingcontainer.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
@@ -438,6 +441,7 @@ set(SOURCE_FILES
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
+    util/colorbrewer.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
     util/dialogfactory.cpp

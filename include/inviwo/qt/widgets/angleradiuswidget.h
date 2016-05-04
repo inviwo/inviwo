@@ -52,10 +52,10 @@ public:
     AngleRadiusWidget(QWidget*);
     virtual ~AngleRadiusWidget() {};
 
-    virtual void paintEvent(QPaintEvent *);
+    virtual void paintEvent(QPaintEvent *) override;
 
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
 
     void setAngle(double angle);
     double getAngle() const { return angle_;}
@@ -75,8 +75,8 @@ public:
     void setMaxRadius(double radius);
     double getMaxRadius() const { return maxRadius_;}
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 signals:
     void angleChanged();
     void radiusChanged();

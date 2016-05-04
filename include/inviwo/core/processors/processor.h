@@ -212,7 +212,8 @@ public:
     bool allInportsConnected() const;
     bool allInportsAreReady() const;
 
-    virtual bool isEndProcessor() const;
+    virtual bool isSource() const;
+    virtual bool isSink() const;
     virtual bool isReady() const;
 
     /**

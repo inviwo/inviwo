@@ -273,18 +273,24 @@ void MinMaxProperty<T>::setCurrentStateAsDefault() {
 
 template <typename T>
 void MinMaxProperty<T>::serialize(Serializer& s) const {
-    TemplateProperty<range_type>::serialize(s);
+    Property::serialize(s);
+
     range_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
     minSeparation_.serialize(s, this->serializationMode_);
+    value_.serialize(s, this->serializationMode_);
 }
 
 template <typename T>
 void MinMaxProperty<T>::deserialize(Deserializer& d) {
-    range_.deserialize(d);
-    increment_.deserialize(d);
-    minSeparation_.deserialize(d);
-    TemplateProperty<range_type >::deserialize(d);
+    Property::deserialize(d);
+
+    bool modified = false;
+    modified |= range_.deserialize(d);
+    modified |= increment_.deserialize(d);
+    modified |= minSeparation_.deserialize(d);
+    modified |= value_.deserialize(d);
+    if (modified) this->propertyModified();
 }
 
 template <typename T>
@@ -308,7 +314,7 @@ void MinMaxProperty<T>::validateValues() {
             val.x = range_.value.y - minSeparation_;
         }
     }
-    TemplateProperty<range_type >::propertyModified();
+    TemplateProperty<range_type>::propertyModified();
 }
 
 }  // namespace

@@ -24,35 +24,34 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/processors/processorwidgetqt.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QResizeEvent>
 #include <QMoveEvent>
+#include <QResizeEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
 ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), ProcessorWidget(p) {
-
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
-    
+
     QWidget::resize(dim.x, dim.y);
 
     if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-       QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x,pos.y), this->size());
+        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), this->size());
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             QWidget::move(newPos);
-        } else { // We guess that this is a new widget and give a new position
+        } else {  // We guess that this is a new widget and give a new position
             newPos = app->getMainWindow()->pos();
             newPos += app->offsetWidget();
             QWidget::move(newPos);
@@ -65,22 +64,16 @@ void ProcessorWidgetQt::setVisible(bool visible) {
     QWidget::setVisible(visible);
 }
 
-void ProcessorWidgetQt::show() {
-    ProcessorWidgetQt::setVisible(true);
-}
+void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
 
-void ProcessorWidgetQt::hide() {
-    ProcessorWidgetQt::setVisible(false);
-}
+void ProcessorWidgetQt::hide() { ProcessorWidgetQt::setVisible(false); }
 
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    //ProcessorWidget::setPosition(pos); Will be called by the Move event.
+    // ProcessorWidget::setPosition(pos); Will be called by the Move event.
     QWidget::move(pos.x, pos.y);
 }
-    
-void ProcessorWidgetQt::move(ivec2 pos) {
-    ProcessorWidgetQt::setPosition(pos);
-}
+
+void ProcessorWidgetQt::move(ivec2 pos) { ProcessorWidgetQt::setPosition(pos); }
 
 void ProcessorWidgetQt::setDimensions(ivec2 dimensions) {
     // ProcessorWidget::setDimensions(dimensions);  Will be called by the Resize event.
@@ -88,28 +81,53 @@ void ProcessorWidgetQt::setDimensions(ivec2 dimensions) {
 }
 
 void ProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setDimensions(ivec2(event->size().width(), event->size().height()));
     QWidget::resizeEvent(event);
 }
 
 void ProcessorWidgetQt::showEvent(QShowEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(true);
     QWidget::showEvent(event);
 }
 
 void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(false);
     QWidget::closeEvent(event);
 }
 
 void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+
     ProcessorWidget::setVisible(false);
     QWidget::hideEvent(event);
 }
-    
+
 void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     ProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
     QWidget::moveEvent(event);
 }
 
-} // namespace
+void ProcessorWidgetQt::updateVisible(bool visible) {
+    if (ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    QWidget::setVisible(visible);
+}
+void ProcessorWidgetQt::updateDimensions(ivec2 dim) {
+    if (ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    QWidget::move(dim.x, dim.y);
+}
+void ProcessorWidgetQt::updatePosition(ivec2 pos) {
+    if (ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    QWidget::move(pos.x, pos.y);
+}
+
+}  // namespace

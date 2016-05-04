@@ -31,8 +31,13 @@
 #include <modules/openglqt/canvasqt.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGridLayout>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -108,11 +113,17 @@ void CanvasProcessorWidgetQt::hide() {
 }
 
 void CanvasProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    QWidget::move(pos.x, pos.y); // This will trigger a move event.
+    LogInfo("setPos " << pos);
+
+    if( pos != utilqt::toGLM(QWidget::pos())) {
+        QWidget::move(pos.x, pos.y); // This will trigger a move event.
+    }
 }
 
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    QWidget::resize(dimensions.x, dimensions.y); // This will trigger a resize event.
+    if( dimensions != utilqt::toGLM(QWidget::size())) {
+        QWidget::resize(dimensions.x, dimensions.y); // This will trigger a resize event.
+    }
 }
 
 Canvas* CanvasProcessorWidgetQt::getCanvas() const {
@@ -120,11 +131,13 @@ Canvas* CanvasProcessorWidgetQt::getCanvas() const {
 }
 
 void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
+    if(ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+    
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
 
-    ivec2 dim(event->size().width(), event->size().height());
-    CanvasProcessorWidget::setDimensions(dim);
+    CanvasProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
 
     if (!event->spontaneous()) {       
         QWidget::resizeEvent(event);
@@ -132,23 +145,35 @@ void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
 }
 
 void CanvasProcessorWidgetQt::closeEvent(QCloseEvent* event) {
+    if(ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+    
     canvas_->hide();
     CanvasProcessorWidget::setVisible(false);
     QWidget::closeEvent(event);
 }
 
 void CanvasProcessorWidgetQt::showEvent(QShowEvent* event) {
+    if(ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+    
     CanvasProcessorWidget::setVisible(true);
     QWidget::showEvent(event);
 }
 
 void CanvasProcessorWidgetQt::hideEvent(QHideEvent* event) {
+    if(ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+    
     CanvasProcessorWidget::setVisible(false);
     QWidget::hideEvent(event);
 }
 
 void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
-    CanvasProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
+    if(ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+    
+    CanvasProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
     QWidget::moveEvent(event);
 }
 
@@ -156,6 +181,19 @@ void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
 
-
-
+void CanvasProcessorWidgetQt::updateVisible(bool visible) {
+    if(ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    setVisible(visible);
+}
+void CanvasProcessorWidgetQt::updateDimensions(ivec2 dim) {
+    if(ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    setDimensions(dim);
+}
+void CanvasProcessorWidgetQt::updatePosition(ivec2 pos) {
+    if(ignoreUpdate_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    setPosition(pos);
+}
 }  // namespace

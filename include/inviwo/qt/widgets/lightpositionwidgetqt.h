@@ -60,9 +60,9 @@ public:
     vec3 getPosition() const;
     virtual ~LightPositionWidgetQt();
 
-    float getX() const;;
-    float getY() const;;
-    float getZ() const;;
+    float getX() const;
+    float getY() const;
+    float getZ() const;
 
     void setRadius(float radius);
     float getRadius() const;

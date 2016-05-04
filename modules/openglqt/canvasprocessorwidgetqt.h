@@ -69,6 +69,10 @@ public:
     virtual void onProcessorIdentifierChange(Processor*) override;
 
 protected:
+    virtual void updateVisible(bool visible) override;
+    virtual void updateDimensions(ivec2) override;
+    virtual void updatePosition(ivec2) override;
+
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void closeEvent(QCloseEvent*) override;
@@ -79,6 +83,9 @@ protected:
 private:
     using canvas_ptr = std::unique_ptr<CanvasQt, std::function<void(CanvasQt*)>>;
     canvas_ptr canvas_;
+    
+    bool ignoreEvents_{false};
+    bool ignoreUpdate_{false};
 };
 
 }  // namespace

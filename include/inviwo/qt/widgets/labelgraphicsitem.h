@@ -42,7 +42,7 @@ namespace inviwo {
 
 class IVW_QTWIDGETS_API LabelGraphicsItemObserver: public Observer {
 public:
-    LabelGraphicsItemObserver(): Observer() {};
+    LabelGraphicsItemObserver() = default;
 
     /**
     * This method will be called when observed object changes.
@@ -52,10 +52,10 @@ public:
 };
 class IVW_QTWIDGETS_API LabelGraphicsItemObservable: public Observable<LabelGraphicsItemObserver> {
 public:
-    LabelGraphicsItemObservable(): Observable<LabelGraphicsItemObserver>() {};
+    LabelGraphicsItemObservable() = default;
 
-    void notifyLabelGraphicsItemObservers() const {
-        for (auto o : observers_) o->onLabelGraphicsItemChange();
+    void notifyLabelGraphicsItemObservers() {
+        forEachObserver([](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemChange(); });
     }
 };
 

@@ -46,23 +46,20 @@ template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:
     DataSource();
-    virtual ~DataSource();
+    virtual ~DataSource() = default;
 
-    virtual bool isReady() const;
-    void load();
+    virtual bool isReady() const override;
+    virtual void process() override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     void load(bool deserialized);
-    bool isDeserializing() const;
+    virtual bool isSink() const override;
 
     // Called when we load new data.
     virtual void dataLoaded(std::shared_ptr<DataType> data){};
     // Called when we deserialized old data.
     virtual void dataDeserialized(std::shared_ptr<DataType> data){};
-
-    virtual void invalidateOutput();
-
-    virtual void deserialize(Deserializer& d);
 
     PortType port_;
     FileProperty file_;
@@ -70,7 +67,7 @@ protected:
     std::shared_ptr<DataType> loadedData_;
 
 private:
-    bool isDeserializing_;
+    bool deserialized_ = false;
 };
 
 template <typename DataType, typename PortType>
@@ -78,35 +75,30 @@ DataSource<DataType, PortType>::DataSource()
     : Processor()
     , port_("data")
     , file_("filename", "File")
-    , reload_("reload", "Reload data")
-    , loadedData_()
-    , isDeserializing_(false) {
+    , reload_("reload", "Reload data") {
+
     addPort(port_);
-    file_.onChange(this, &DataSource::load);
-
-    auto app = InviwoApplication::getPtr();
-    auto extensions = app->getDataReaderFactory()->getExtensionsForType<DataType>();
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
-
-    reload_.onChange(this, &DataSource::load);
 
     addProperty(file_);
     addProperty(reload_);
+
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    file_.clearNameFilters();
+    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
 }
 
 template <typename DataType, typename PortType>
-DataSource<DataType, PortType>::~DataSource() {}
-
-template <typename DataType, typename PortType>
-bool DataSource<DataType, PortType>::isDeserializing() const {
-    return isDeserializing_;
+void inviwo::DataSource<DataType, PortType>::process() {
+    if (file_.isModified() || reload_.isModified()) {
+        load(deserialized_);
+        deserialized_ = false;
+    }
 }
 
 template <typename DataType, typename PortType>
-void DataSource<DataType, PortType>::invalidateOutput() {
-    invalidate(InvalidationLevel::InvalidOutput);
+bool inviwo::DataSource<DataType, PortType>::isSink() const {
+    return true;
 }
 
 template <typename DataType, typename PortType>
@@ -115,23 +107,12 @@ bool DataSource<DataType, PortType>::isReady() const {
 }
 
 template <typename DataType, typename PortType>
-void DataSource<DataType, PortType>::load() {
-    load(false);
-}
-
-/**
- * load is called when the filename changes, and after the deserialization
- */
-template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
-    if (isDeserializing_ || file_.get() == "") {
-        return;
-    }
-
+    if (file_.get().empty() ) return;
+   
     std::string ext = filesystem::getFileExtension(file_.get());
-    auto app = InviwoApplication::getPtr();
-    if (auto reader =
-            app->getDataReaderFactory()->template getReaderForTypeAndExtension<DataType>(ext)) {
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(ext)) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);
@@ -149,22 +130,14 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     }
 }
 
-/**
- * Deserialize everything first then load the data
- */
 template <typename DataType, typename PortType>
 void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
-    isDeserializing_ = true;
     Processor::deserialize(d);
-    auto app = InviwoApplication::getPtr();
-    auto extensions = app->getDataReaderFactory()->template getExtensionsForType<DataType>();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
-    isDeserializing_ = false;
-    load(true);
+    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
+    deserialized_ = true;
 }
 
 }  // namespace

@@ -74,9 +74,7 @@ namespace inviwo {
 
 class PropertyOwner;
 
-class IVW_CORE_API Property : public PropertyObservable,
-                              public Serializable,
-                              public MetaDataOwner {
+class IVW_CORE_API Property : public PropertyObservable, public Serializable, public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;
 
@@ -156,8 +154,8 @@ public:
     virtual void resetToDefaultState();
 
     virtual void propertyModified();
-    virtual void setPropertyModified(bool modified);
-    virtual bool isPropertyModified() const;
+    virtual void setModified(bool modified);
+    virtual bool isModified() const;
     virtual void set(const Property* src);
 
     virtual void serialize(Serializer& s) const override;
@@ -186,6 +184,19 @@ public:
     void autoLinkToProperty(const std::string& propertyPath);
     const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
 
+    class IVW_CORE_API OnChangeBlocker {
+    public:
+        OnChangeBlocker(Property& property);
+        OnChangeBlocker() = delete;
+        OnChangeBlocker(const OnChangeBlocker&) = delete;
+        OnChangeBlocker(OnChangeBlocker&&) = delete;
+        OnChangeBlocker& operator=(OnChangeBlocker) = delete;
+        ~OnChangeBlocker();
+
+    private:
+        Property& property_;
+    };
+
 protected:
     void notifyAboutChange();
 
@@ -210,7 +221,6 @@ private:
     PropertyWidget* initiatingWidget_;
 
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
-
 };
 
 template <typename T>

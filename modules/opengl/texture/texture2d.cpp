@@ -94,13 +94,14 @@ Texture2D* Texture2D::clone() const { return new Texture2D(*this); }
 
 void Texture2D::initialize(const void* data) {
     // Notify observers
-    for (auto o : observers_) o->notifyBeforeTextureInitialization();
+    forEachObserver([](TextureObserver* o) { o->notifyBeforeTextureInitialization(); });
+    
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
                  static_cast<GLsizei>(dimensions_.y), 0, format_, dataType_, data);
     LGL_ERROR;
-    for (auto o : observers_) o->notifyAfterTextureInitialization();
+    forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
 }
 
 size_t Texture2D::getNumberOfValues() const { return dimensions_.x * dimensions_.y; }

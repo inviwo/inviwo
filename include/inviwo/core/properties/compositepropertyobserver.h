@@ -47,7 +47,7 @@ public:
 class IVW_CORE_API CompositePropertyObservable : public Observable<CompositePropertyObserver> {
 protected:
     CompositePropertyObservable() = default;
-    void notifyObserversOnSetCollapsed(bool collapsed) const;
+    void notifyObserversOnSetCollapsed(bool collapsed);
 };
 
 }  // namespace

@@ -45,8 +45,8 @@ namespace inviwo {
  */
 class IVW_CORE_API ResourceManagerObserver: public Observer {
 public:
-    ResourceManagerObserver(): Observer() {};
-
+    ResourceManagerObserver() = default;
+    
     /**
     * This method will be called when an item has been added to the observed object.
     * Override it to add behavior.
@@ -70,14 +70,14 @@ public:
  */
 class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {
 public:
-    ResourceManagerObservable() : Observable<ResourceManagerObserver>(){};
+    ResourceManagerObservable() = default;
 
-    void notifyResourceAdded(const Resource* item) const {
-        for (auto o : observers_) o->resourceAdded(item);
+    void notifyResourceAdded(const Resource* item) {
+        forEachObserver([&](ResourceManagerObserver* o) { o->resourceAdded(item); });
     }
 
-    void notifyResourceRemoved(const Resource* item) const {
-        for (auto o : observers_) o->resourceRemoved(item);
+    void notifyResourceRemoved(const Resource* item) {
+        forEachObserver([&](ResourceManagerObserver* o) { o->resourceRemoved(item); });
     }
 };
 

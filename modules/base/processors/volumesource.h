@@ -56,9 +56,9 @@ namespace inviwo {
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
     using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
     VolumeSource();
     virtual ~VolumeSource() = default;
 
@@ -69,6 +69,8 @@ private:
     void load(bool deserialize = false);
     void addFileNameFilters();
 
+    virtual bool isSink() const override;
+
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeOutport outport_;
@@ -78,7 +80,8 @@ private:
     BasisProperty basis_;
     VolumeInformationProperty information_;
     SequenceTimerProperty volumeSequence_;
-    bool isDeserializing_;
+
+    bool deserialized_ = false;
 };
 
 }  // namespace

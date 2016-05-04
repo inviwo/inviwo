@@ -29,7 +29,7 @@
 
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/metadata/processorwidgetmetadata.h>
+
 
 namespace inviwo {
 
@@ -37,7 +37,10 @@ ProcessorWidget::ProcessorWidget(Processor* p)
     : ProcessorWidgetObservable()
     , processor_(p)
     , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
-          ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {}
+          ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {
+        
+    metaData_->addObserver(this);
+}
 
 void ProcessorWidget::setVisible(bool visible) {
     metaData_->setVisibile(visible);
@@ -66,5 +69,18 @@ void ProcessorWidget::setDimensions(glm::ivec2 dimensions) { metaData_->setDimen
 
 glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(); }
 void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos); }
+
+
+void ProcessorWidget::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
+    updatePosition(metaData_->getPosition());
+}
+void ProcessorWidget::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
+    updateDimensions(metaData_->getDimensions());
+}
+void ProcessorWidget::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    updateVisible(metaData_->isVisible());
+}
+
+
 
 }  // namespace

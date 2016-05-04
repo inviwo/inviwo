@@ -37,13 +37,15 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier)
     , defaultDimensions_(8, 8)
+    , format_(format)
     , handleResizeEvents_(handleResizeEvents) {
  
     // create a default image
     setData(std::make_shared<Image>(defaultDimensions_, format));
 }
 
-ImageOutport::~ImageOutport() {}
+ImageOutport::ImageOutport(std::string identifier, bool handleResizeEvents)
+    : ImageOutport(identifier, DataVec4UInt8::get(), handleResizeEvents) {}
 
 void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     if (invalidationLevel > InvalidationLevel::Valid) {
@@ -140,6 +142,10 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }
 
+const inviwo::DataFormatBase* ImageOutport::getDataFormat() const {
+    return format_;
+}
+
 std::shared_ptr<const Image> ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
     return cache_.getImage(requiredDimensions);
 }
@@ -164,11 +170,11 @@ size2_t ImageOutport::getDimensions() const {
 }
 
 
-std::shared_ptr<Image> ImageOutport::getEditableData() const {
+std::shared_ptr<Image> ImageOutport::getEditableData() const {  
     if (image_) {
         return image_;
     } else {
-        return std::shared_ptr<Image>();
+        return nullptr;
     }
 }
 

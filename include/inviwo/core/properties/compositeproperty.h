@@ -63,8 +63,8 @@ public:
 
     virtual void set(const Property* src) override;
     void set(const CompositeProperty* src);
-    virtual void setPropertyModified(bool modified) override;
-    virtual bool isPropertyModified() const override;
+    virtual void setModified(bool modified) override;
+    virtual bool isModified() const override;
     virtual InvalidationLevel getInvalidationLevel() const override;
 
     virtual void setCurrentStateAsDefault() override;

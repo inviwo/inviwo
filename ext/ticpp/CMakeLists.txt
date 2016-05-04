@@ -48,7 +48,7 @@ ivw_folder(ticpp ext)
 ivw_set_cpack_name(core)
 ivw_make_package(TiCPP ticpp)
 
-if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+if(APPLE)
   #Ignore warnings in external packages
   set_target_properties(ticpp PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+endif()

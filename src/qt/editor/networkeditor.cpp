@@ -36,6 +36,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -145,14 +146,14 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
         mainwindow_->getPropertyListWidget(),
-        new PropertyListEvent(PropertyListEvent::ADD, processor->getIdentifier()),
+        new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
 void NetworkEditor::removePropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
         mainwindow_->getPropertyListWidget(),
-        new PropertyListEvent(PropertyListEvent::REMOVE, processor->getIdentifier()),
+        new PropertyListEvent(PropertyListEvent::Action::Remove, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
@@ -272,7 +273,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
         // Do auto linking.
         for (auto& processor : portInspector->getProcessors()) {
-            network_->autoLinkProcessor(processor);
+            util::autoLinkProcessor(network_, processor);
         }
 
         // Setup the widget
@@ -352,7 +353,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
 
                 // Do auto-linking.
                 for (auto& processor : portInspector->getProcessors()) {
-                    network_->autoLinkProcessor(processor);
+                    util::autoLinkProcessor(network_, processor);
                 }
 
                 int size = mainwindow_->getInviwoApplication()
@@ -382,7 +383,7 @@ bool NetworkEditor::isModified() const { return modified_; }
 void NetworkEditor::setModified(const bool modified) {
     if (modified != modified_) {
         modified_ = modified;
-        for (auto o : observers_) o->onModifiedStatusChanged(modified);
+        forEachObserver([&](NetworkEditorObserver* o) { o->onModifiedStatusChanged(modified); });
     }
 }
 
@@ -858,7 +859,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
                 }
 
                 network_->addProcessor(processor);
-                network_->autoLinkProcessor(processor);
+                util::autoLinkProcessor(network_, processor);
 
                 if (oldConnectionTarget_) {
                     placeProcessorOnConnection(processor, oldConnectionTarget_);
@@ -1074,7 +1075,7 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
         }
-        for (auto o : observers_) o->onNetworkEditorFileChanged(path);
+        forEachObserver([&](NetworkEditorObserver* o) { o->onNetworkEditorFileChanged(path); });
         InviwoApplicationQt::processEvents();  // make sure the gui is ready before we unlock.
     }
 

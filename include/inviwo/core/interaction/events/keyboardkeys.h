@@ -184,6 +184,8 @@ enum class IvwKey {
     RightAlt         = 346,
     RightSuper       = 347,
     Menu             = 348,
+    LeftMeta         = 349,
+    RightMeta        = 350,
 };
 
 }  // namespace inviwo

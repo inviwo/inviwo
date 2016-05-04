@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -80,7 +81,8 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (PropertySemantics::Default == it->second->getSematics()) {
             LogWarn("Requested property widget semantics ("
-                    << sematics << ") for property (" << property->getClassIdentifier()
+                    << sematics << ") for property (" << property->getDisplayName() << ", "
+                    << joinString(property->getPath(), "/")
                     << ") does not exist, returning default semantics.");
             return it->second->create(property);
         }

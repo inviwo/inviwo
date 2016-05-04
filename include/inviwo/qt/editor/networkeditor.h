@@ -241,7 +241,7 @@ private:
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
-    mutable size_t pasteCount_ = 0;
+    mutable int pasteCount_ = 0;
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;
@@ -260,9 +260,7 @@ template <typename T>
 T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
     for (int i = 0; i < graphicsItems.size(); i++) {
-        T* item = qgraphicsitem_cast<T*>(graphicsItems[i]);
-
-        if (item) return item;
+        if (auto item = qgraphicsitem_cast<T*>(graphicsItems[i])) return item;
     }
     return nullptr;
 }
@@ -279,7 +277,7 @@ public:
 class IVW_QTEDITOR_API PortInspectorEvent : public QEvent {
     Q_GADGET
 public:
-    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEventType), port_(port) {}
+    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEvent::type()), port_(port) {}
 
     static QEvent::Type type() {
         if (PortInspectorEventType == QEvent::None) {
@@ -294,20 +292,6 @@ private:
     static QEvent::Type PortInspectorEventType;
 };
 
-class SignalMapperObject : public QObject {
-    Q_OBJECT
-public:
-    SignalMapperObject() : QObject(), item_(nullptr) {}
-
-public slots:
-    void tiggerAction() { emit(triggered(item_)); }
-
-signals:
-    void triggered(EditorGraphicsItem*);
-
-public:
-    EditorGraphicsItem* item_;
-};
 
 }  // namespace
 

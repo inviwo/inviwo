@@ -38,8 +38,8 @@ void ActivityIndicator::setActive(bool active) {
 
 bool ActivityIndicator::isActive() const { return active_; }
 
-void ActivityIndicator::notifyActivityIndicatorChanged(bool active) const {
-    for (auto o : observers_) o->activityIndicatorChanged(active);
+void ActivityIndicator::notifyActivityIndicatorChanged(bool active) {
+    forEachObserver([&](ActivityIndicatorObserver* o) { o->activityIndicatorChanged(active); });
 }
 
 ActivityIndicator& ActivityIndicatorOwner::getActivityIndicator() {

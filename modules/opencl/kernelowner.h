@@ -43,7 +43,7 @@ class Processor;
 
 class IVW_MODULE_OPENCL_API KernelObserver: public Observer {
 public:
-    KernelObserver(): Observer() {};
+    KernelObserver() = default;
 
     /**
     * This method will be called when observed object changes.
@@ -55,7 +55,7 @@ public:
 
 class IVW_MODULE_OPENCL_API KernelObservable: public Observable<KernelObserver> {
 public:
-    KernelObservable(): Observable<KernelObserver>() {};
+    KernelObservable() = default;
 
     virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
 };

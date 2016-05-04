@@ -42,7 +42,9 @@ namespace inviwo {
 
 BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property) 
     : PropertyWidgetQt(property)
-    , property_(property) {
+    , property_(property)
+    , checkBox_{nullptr}
+    , lineEdit_{nullptr} {
 
     generateWidget();
     updateFromProperty();
@@ -51,53 +53,47 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
 void BoolPropertyWidgetQt::generateWidget() {
     label_ = new EditableLabelQt(this, property_, false);
 
-    lineEdit_ = new QLineEdit();
-    // adjust size policy of line edit
-    QSizePolicy sizePolicy(lineEdit_->sizePolicy());
-    sizePolicy.setHorizontalStretch(3);
-    sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
-    lineEdit_->setSizePolicy(sizePolicy);
-
-    lineEdit_->setEnabled(!property_->getReadOnly());
-    // set up a validator accepting "true"/1 and "false"/0
-    lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
-
-    auto setPropertyValueFromString = [=]() {
-        QString str(lineEdit_->text());
-        property_->set(str == "true" || str == "1");
-        // update checkbox
-        checkBox_->setChecked(property_->get());
-    };
-    connect(lineEdit_, &QLineEdit::editingFinished, setPropertyValueFromString);
-
-    checkBox_ = new QCheckBox();
-    checkBox_->setEnabled(!property_->getReadOnly());
-    checkBox_->setFixedSize(QSize(15, 15));
-
-    auto setPropertyValueFromCheckbox = [=](bool checked) {
-        property_->set(checked);
-        // update text representation in line edit
-        lineEdit_->setText(checked ? "true" : "false");
-    };
-    connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
-
-    // create widget layout 
+    // create widget layout
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
-    hLayout->addWidget(checkBox_);
-    hLayout->addWidget(lineEdit_);
-    setLayout(hLayout);
 
-    // change visibility of checkbox and line edit depending on semantics
-    bool textSemantics = (property_->getSemantics() == PropertySemantics::Text);
-    lineEdit_->setVisible(textSemantics);
-    checkBox_->setVisible(!textSemantics);
+    if (property_->getSemantics() == PropertySemantics::Text) {
+        lineEdit_ = new QLineEdit();
+        // adjust size policy of line edit
+        QSizePolicy sizePolicy(lineEdit_->sizePolicy());
+        sizePolicy.setHorizontalStretch(3);
+        sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
+        lineEdit_->setSizePolicy(sizePolicy);
+
+        lineEdit_->setEnabled(!property_->getReadOnly());
+        // set up a validator accepting "true"/1 and "false"/0
+        lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
+
+        auto setPropertyValueFromString = [=]() {
+            QString str(lineEdit_->text());
+            property_->set(str == "true" || str == "1");
+        };
+        connect(lineEdit_, &QLineEdit::editingFinished, setPropertyValueFromString);
+        hLayout->addWidget(lineEdit_);
+    } else {
+        checkBox_ = new QCheckBox();
+        checkBox_->setEnabled(!property_->getReadOnly());
+        checkBox_->setFixedSize(QSize(15, 15));
+
+        auto setPropertyValueFromCheckbox = [=](bool checked) {
+            property_->set(checked);
+        };
+        connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
+        hLayout->addWidget(checkBox_);
+    }
+
+    setLayout(hLayout);
 }
 
 void BoolPropertyWidgetQt::updateFromProperty() {
-    checkBox_->setChecked(property_->get());
-    lineEdit_->setText(property_->get() ? "true" : "false");
+    if (checkBox_) checkBox_->setChecked(property_->get());
+    if (lineEdit_) lineEdit_->setText(property_->get() ? "true" : "false");
 }
 
 } // namespace inviwo

@@ -24,25 +24,38 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSOR_WIDGET_METADATA_H
 #define IVW_PROCESSOR_WIDGET_METADATA_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/positionmetadata.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorWidgetMetaData : public MetaData {
+class ProcessorWidgetMetaData;
+
+class IVW_CORE_API ProcessorWidgetMetaDataObserver : public Observer {
+    friend ProcessorWidgetMetaData;
+
+protected:
+    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*){};
+    virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*){};
+    virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*){};
+};
+
+class IVW_CORE_API ProcessorWidgetMetaData : public MetaData,
+                                             public Observable<ProcessorWidgetMetaDataObserver> {
 public:
     ProcessorWidgetMetaData();
     ProcessorWidgetMetaData(const ProcessorWidgetMetaData& rhs);
     ProcessorWidgetMetaData& operator=(const ProcessorWidgetMetaData& that);
-    virtual ~ProcessorWidgetMetaData();
+    virtual ~ProcessorWidgetMetaData() = default;
 
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
     virtual ProcessorWidgetMetaData* clone() const;
@@ -57,7 +70,7 @@ public:
     ivec2 getDimensions() const;
     void setVisibile(bool visibility);
     bool isVisible() const;
-    
+
     static const std::string CLASS_IDENTIFIER;
 
 private:

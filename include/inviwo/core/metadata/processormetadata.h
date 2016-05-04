@@ -48,9 +48,9 @@ public:
 class IVW_CORE_API ProcessorMetaData : public MetaData, public Observable<ProcessorMetaDataObserver>{
 public:
     ProcessorMetaData();
-    ProcessorMetaData(const ProcessorMetaData& rhs);
-    ProcessorMetaData& operator=(const ProcessorMetaData& that);
-    virtual ~ProcessorMetaData();
+    ProcessorMetaData(const ProcessorMetaData& rhs) = default;
+    ProcessorMetaData& operator=(const ProcessorMetaData& that) = default;
+    virtual ~ProcessorMetaData() = default;
 
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
     virtual ProcessorMetaData* clone() const;

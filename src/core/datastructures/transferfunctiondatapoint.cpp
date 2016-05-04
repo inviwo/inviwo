@@ -88,9 +88,10 @@ void TransferFunctionDataPoint::setPosA(const vec2& pos, float alpha) {
     notifyTransferFunctionPointObservers();
 }
 
-void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() const {
-    if(notify_) {
-        for (auto o : observers_) o->onTransferFunctionPointChange(this);
+void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() {
+    if (notify_) {
+        forEachObserver(
+            [&](TransferFunctionPointObserver* o) { o->onTransferFunctionPointChange(this); });
     }
 }
 
@@ -100,8 +101,13 @@ void TransferFunctionDataPoint::serialize(Serializer& s) const {
 }
 
 void TransferFunctionDataPoint::deserialize(Deserializer& d) {
+    auto oldPos = pos_;
+    auto oldRgba = rgba_;
     d.deserialize("pos", pos_);
     d.deserialize("rgba", rgba_);
+    if (oldPos != pos_ || oldRgba != rgba_) {
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 bool operator==(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {

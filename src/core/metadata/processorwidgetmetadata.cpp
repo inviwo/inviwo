@@ -57,14 +57,16 @@ ProcessorWidgetMetaData& ProcessorWidgetMetaData::operator=(const ProcessorWidge
     return *this;
 }
 
-ProcessorWidgetMetaData::~ProcessorWidgetMetaData() {}
-
 ProcessorWidgetMetaData* ProcessorWidgetMetaData::clone() const {
     return new ProcessorWidgetMetaData(*this);
 }
 
-void ProcessorWidgetMetaData::setPosition(const ivec2 &pos) {
-    position_ = pos;
+void ProcessorWidgetMetaData::setPosition(const ivec2& pos) {
+    if (pos != position_) {
+        position_ = pos;
+        forEachObserver(
+            [&](ProcessorWidgetMetaDataObserver* o) { o->onProcessorWidgetPositionChange(this); });
+    }
 }
 
 ivec2 ProcessorWidgetMetaData::getPosition() const {
@@ -72,7 +74,12 @@ ivec2 ProcessorWidgetMetaData::getPosition() const {
 }
 
 void ProcessorWidgetMetaData::setDimensions(const ivec2 &dim) {
-    dimensions_ = dim;
+    if (dim != dimensions_) {
+        dimensions_ = dim;
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            o->onProcessorWidgetDimensionChange(this);
+        });
+    }
 }
 
 ivec2 ProcessorWidgetMetaData::getDimensions() const {
@@ -80,7 +87,12 @@ ivec2 ProcessorWidgetMetaData::getDimensions() const {
 }
 
 void ProcessorWidgetMetaData::setVisibile(bool visibility) {
-    visibility_  = visibility;
+    if (visibility != visibility_) {
+        visibility_ = visibility;
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            o->onProcessorWidgetVisibilityChange(this);
+        });
+    }
 }
 
 bool ProcessorWidgetMetaData::isVisible() const {
@@ -95,14 +107,21 @@ void ProcessorWidgetMetaData::serialize(Serializer& s) const {
 }
 
 void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
-    d.deserialize("position", position_);
-    d.deserialize("dimensions", dimensions_);
-    d.deserialize("visibility", visibility_);
+    ivec2 position{0,0};
+    d.deserialize("position", position);
+    setPosition(position);
+
+    ivec2 dimensions{0,0};
+    d.deserialize("dimensions", dimensions);
+    setDimensions(dimensions);
+    
+    bool visibility{true};
+    d.deserialize("visibility", visibility);
+    setVisibile(visibility);
 }
 
 bool ProcessorWidgetMetaData::equal(const MetaData& rhs) const {
-    const ProcessorWidgetMetaData* tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs);
-    if (tmp) {
+    if (auto tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
         return tmp->position_ == position_
             && tmp->visibility_ == visibility_
             && tmp->dimensions_ == dimensions_;

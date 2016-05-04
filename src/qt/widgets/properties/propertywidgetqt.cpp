@@ -343,6 +343,7 @@ void PropertyWidgetQt::generateContextMenu() {
                 std::vector<std::unique_ptr<Property>> properties;
                 deserializer.deserialize("Properties", properties, "Property");
                 if (!properties.empty() && properties.front()) {
+                    NetworkLock lock(property_->getOwner()->getProcessor()->getNetwork());
                     property_->set(properties.front().get());
                 }
             } catch (AbortException&) {

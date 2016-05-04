@@ -76,6 +76,7 @@ private:
 
 enum class IVW_CORE_API SerializationTarget {Node, Attribute};
 
+class NodeSwitch;
 class Serializable;
 
 class IVW_CORE_API SerializeBase {
@@ -147,36 +148,6 @@ public:
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
-    class IVW_CORE_API NodeSwitch {
-    public:
-        /**
-         * \brief NodeSwitch helps track parent node during recursive/nested function calls.
-         *
-         * @param serializer reference to serializer or deserializer
-         * @param node //Parent (Ticpp Node) element.
-         */
-        NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
-        
-        
-        /**
-         * \brief NodeSwitch helps track parent node during recursive/nested function calls.
-         *
-         * @param serializer reference to serializer or deserializer
-         * @param key the child to switch to.
-         */
-        NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild = true);
-        
-        /**
-         * \brief Destructor
-         */
-        ~NodeSwitch();
-
-    private:
-        SerializeBase& serializer_;  //reference to serializer or deserializer
-        TxElement* storedNode_; //Parent (Ticpp Node) element.
-        bool storedRetrieveChild_;
-    };
-
     struct IVW_CORE_API ReferenceData {
         TxElement* node_; //Ticpp Node element.
         bool isPointer_; //Used to differentiate pointer and object.
@@ -216,9 +187,36 @@ protected:
     ReferenceDataContainer refDataContainer_;
 };
 
+class IVW_CORE_API NodeSwitch {
+public:
+    /**
+     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+     *
+     * @param serializer reference to serializer or deserializer
+     * @param node //Parent (Ticpp Node) element.
+     */
+    NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
 
+    /**
+     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+     *
+     * @param serializer reference to serializer or deserializer
+     * @param key the child to switch to.
+     */
+    NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild = true);
 
+    /**
+     * \brief Destructor
+     */
+    ~NodeSwitch();
 
+    operator bool() const;
+
+private:
+    SerializeBase& serializer_;  // reference to serializer or deserializer
+    TxElement* storedNode_;  // Parent (Ticpp Node) element.
+    bool storedRetrieveChild_;
+};
 
 } //namespace
 #endif

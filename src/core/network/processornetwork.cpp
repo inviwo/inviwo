@@ -28,11 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -253,123 +252,6 @@ std::vector<PropertyLink> ProcessorNetwork::getLinksBetweenProcessors(Processor*
     return linkEvaluator_.getLinksBetweenProcessors(p1, p2);
 }
 
-struct LinkCheck {
-    LinkCheck(const LinkSettings& settings) : linkSettings_(settings) {}
-    bool operator()(const Property* p) const { return !linkSettings_.isLinkable(p); }
-
-private:
-    const LinkSettings& linkSettings_;
-};
-
-struct AutoLinkCheck {
-    AutoLinkCheck(const Property* p, LinkingConditions linkCondition)
-        : property_(p), linkCondition_(linkCondition) {}
-    bool operator()(const Property* p) const {
-        return !AutoLinker::canLink(p, property_, linkCondition_);
-    }
-
-private:
-    const Property* property_;
-    LinkingConditions linkCondition_;
-};
-
-struct AutoLinkSort {
-    AutoLinkSort(const Property* p) { pos_ = getPosition(p); }
-
-    bool operator()(const Property* a, const Property* b) {
-        // TODO Figure out which candidate is best.
-        // using distance now
-        float da = glm::distance(pos_, getPosition(a));
-        float db = glm::distance(pos_, getPosition(b));
-        return da < db;
-    }
-
-private:
-    vec2 pos_;
-    std::map<const Property*, vec2> cache_;
-
-    vec2 getPosition(const Property* p) {
-        std::map<const Property*, vec2>::const_iterator it = cache_.find(p);
-        if (it != cache_.end()) return it->second;
-        return cache_[p] = getPosition(p->getOwner()->getProcessor());
-    }
-
-    vec2 getPosition(const Processor* processor) {
-        if (auto meta =
-                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
-            return static_cast<vec2>(meta->getPosition());
-        } else {
-            LogWarnCustom("getProcessorPosition",
-                          "No ProcessorMetaData for added processor found while auto linking");
-            return vec2(0, 0);
-        }
-        return vec2(0, 0);
-    }
-};
-
-void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
-    LinkCheck linkChecker(*(application_->getSettingsByType<LinkSettings>()));
-
-    std::vector<Property*> allNewPropertes = processor->getPropertiesRecursive();
-
-    std::vector<Property*> properties;
-    for (auto& elem : processors_) {
-        if (elem.second != processor) {
-            std::vector<Property*> p = elem.second->getPropertiesRecursive();
-            properties.insert(properties.end(), p.begin(), p.end());
-        }
-    }
-
-    auto destprops = allNewPropertes;
-    // remove properties for which auto linking is disabled
-    util::erase_remove_if(properties, linkChecker);
-    util::erase_remove_if(destprops, linkChecker);
-
-    // auto link based on global settings
-    for (auto& destprop : destprops) {
-        std::vector<Property*> candidates = properties;
-        AutoLinkCheck autoLinkChecker(destprop, LinkMatchingTypeAndId);
-
-        util::erase_remove_if(candidates, autoLinkChecker);
-
-        if (candidates.size() > 0) {
-            AutoLinkSort sorter(destprop);
-            std::sort(candidates.begin(), candidates.end(), sorter);
-
-            addLink(candidates.front(), destprop);
-            // Propagate the link to the new Processor.
-            linkEvaluator_.evaluateLinksFromProperty(candidates.front());
-            addLink(destprop, candidates.front());
-        }
-    }
-
-    // Auto link based property
-    for (auto& destprop : allNewPropertes) {
-        std::vector<Property*> candidates;
-        for (auto& srcPropertyIdentifier : destprop->getAutoLinkToProperty()) {
-            for (auto& srcProcessor : processors_) {
-                if (srcProcessor.second != processor &&
-                    srcProcessor.second->getClassIdentifier() == srcPropertyIdentifier.first) {
-                    auto srcProperty = srcProcessor.second->getPropertyByPath(
-                        splitString(srcPropertyIdentifier.second, '.'));
-                    if (srcProperty) {
-                        candidates.push_back(srcProperty);
-                    }
-                }
-            }
-        }
-
-        if (candidates.size() > 0) {
-            AutoLinkSort sorter(destprop);
-            std::sort(candidates.begin(), candidates.end(), sorter);
-
-            addLink(candidates.front(), destprop);
-            // Propagate the link to the new Processor.
-            linkEvaluator_.evaluateLinksFromProperty(candidates.front());
-            addLink(destprop, candidates.front());
-        }
-    }
-}
 
 void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {
     linkEvaluator_.evaluateLinksFromProperty(source);
@@ -448,7 +330,7 @@ void ProcessorNetwork::serialize(Serializer& s) const {
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
     po->addObserver(this);
-    for(auto child : po->getCompositeProperties()){
+    for (auto child : po->getCompositeProperties()) {
         addPropertyOwnerObservation(child);
     }
 }
