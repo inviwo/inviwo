@@ -51,8 +51,10 @@ bool GlobalEventFilter::eventFilter(QObject *obj, QEvent *event) {
             ++pressCount_;
             break;
         case QEvent::MouseButtonRelease:
-            --pressCount_;
-            if (pressCount_ == 0) manager_.endInteraction();
+            if (pressCount_ > 0) {
+                --pressCount_;
+                if (pressCount_ == 0) manager_.endInteraction();
+            }
             break;
 
         case QEvent::TouchBegin:
@@ -60,8 +62,10 @@ bool GlobalEventFilter::eventFilter(QObject *obj, QEvent *event) {
             ++pressCount_;
             break;
         case QEvent::TouchEnd:
-            --pressCount_;
-            if (pressCount_ == 0) manager_.endInteraction();
+            if (pressCount_ > 0) {
+                --pressCount_;
+                if (pressCount_ == 0) manager_.endInteraction();
+            }
             break;
         default:
             break;
