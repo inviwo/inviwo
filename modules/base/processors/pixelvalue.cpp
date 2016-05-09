@@ -161,11 +161,11 @@ PixelValue::PixelValue()
     addProperty(mouseMove_);
 
     inport_.onChange([&]() {
-        int numCh = 1;
+        size_t numCh = 1;
         if (inport_.hasData()) {
             numCh = inport_.getData()->getNumberOfColorLayers();
         }
-        for (int i = 0; i < 8; i++) {
+        for (size_t i = 0; i < 8; i++) {
             pixelValues_[i].setVisible(i < numCh);
             pixelStrValues_[i].setVisible(i < numCh);
             pixelValuesNormalized_[i].setVisible(i < numCh);
