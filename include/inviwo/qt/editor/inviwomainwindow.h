@@ -197,6 +197,11 @@ private:
     
     GlobalEventFilter eventFilter_;
     UndoManager undoManager_;
+
+    // A list of processor that was automatically selected when switching to application mode.
+    // Needed since only selected processor show up in the processor list. These processors will be
+    // deselected again when switching back to developer mode. 
+    std::vector<Processor*> applicationModeSelectedProcessors_;
 };
 
 }  // namespace

@@ -933,22 +933,39 @@ void InviwoMainWindow::showAboutBox() {
         "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
         "Hans-Christian Helltegen, Viktor Axelsson</p>");
     QMessageBox::about(this, QString::fromStdString("Inviwo v" + IVW_VERSION),
-                       QString::fromStdString(aboutText));
+        QString::fromStdString(aboutText));
 }
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
     if (appUsageModeProp_) {
         auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
         if (selectedIdx == UsageMode::Development) {
+
+            for (auto &p : applicationModeSelectedProcessors_) {
+                auto md = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                md->setSelected(false);
+            }
+
             if (visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(false);
             }
             networkEditorView_->hideNetwork(false);
-        } else if (selectedIdx == UsageMode::Application) {
+        }
+        else if (selectedIdx == UsageMode::Application) {
             if (!visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(true);
             }
             networkEditorView_->hideNetwork(true);
+
+            applicationModeSelectedProcessors_.clear();
+            for(auto &p : getInviwoApplication()->getProcessorNetwork()->getProcessors()){
+                auto md =  p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                if (!md->isSelected()) {
+                    md->setSelected(true);
+                    applicationModeSelectedProcessors_.push_back(p);
+                }
+            }
+            
         }
         updateWindowTitle();
     }
