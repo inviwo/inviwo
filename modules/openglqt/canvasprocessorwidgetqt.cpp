@@ -113,16 +113,14 @@ void CanvasProcessorWidgetQt::hide() {
 }
 
 void CanvasProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    LogInfo("setPos " << pos);
-
-    if( pos != utilqt::toGLM(QWidget::pos())) {
-        QWidget::move(pos.x, pos.y); // This will trigger a move event.
+    if (pos != utilqt::toGLM(QWidget::pos())) {
+        QWidget::move(pos.x, pos.y);  // This will trigger a move event.
     }
 }
 
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    if( dimensions != utilqt::toGLM(QWidget::size())) {
-        QWidget::resize(dimensions.x, dimensions.y); // This will trigger a resize event.
+    if (dimensions != utilqt::toGLM(QWidget::size())) {
+        QWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
     }
 }
 

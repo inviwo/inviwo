@@ -597,13 +597,17 @@ void BaseTemplateOptionProperty<T>::serialize(Serializer& s) const {
 template <typename T>
 void BaseTemplateOptionProperty<T>::deserialize(Deserializer& d) {
     BaseOptionProperty::deserialize(d);
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
 
     auto oldIndex = selectedIndex_;
     auto oldOptions = options_;
 
     // We need to reset to default since that state was never serialized.
-    options_ = defaultOptions_;
-    selectedIndex_ = defaultSelectedIndex_;
+    if (this->serializationMode_ != PropertySerializationMode::All) {
+        options_ = defaultOptions_;
+        selectedIndex_ = defaultSelectedIndex_;
+    }
+
     d.deserialize("options", options_, "option");
 
     if (!options_.empty()) {
@@ -618,7 +622,6 @@ void BaseTemplateOptionProperty<T>::deserialize(Deserializer& d) {
     }
     
     if (oldIndex != selectedIndex_ || oldOptions != options_) propertyModified();
-    
 }
 
 template <typename T>

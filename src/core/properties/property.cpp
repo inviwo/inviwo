@@ -45,7 +45,7 @@ namespace inviwo {
     , displayName_("displayName", displayName)
     , readOnly_("readonly", false)
     , semantics_("semantics", semantics)
-    , usageMode_("usageMode", UsageMode::Application)
+    , usageMode_("usageMode", UsageMode::Development)
     , visible_("visible", true)
     , propertyModified_(false)
     , invalidationLevel_(invalidationLevel)

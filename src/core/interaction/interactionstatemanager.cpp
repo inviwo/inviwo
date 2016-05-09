@@ -32,13 +32,17 @@
 namespace inviwo {
 
 void InteractionStateManager::beginInteraction() {
-    isInteracting_ = true;
-    onInteractionBegin_.invoke();
+    if (!isInteracting_) {
+        isInteracting_ = true;
+        onInteractionBegin_.invoke();
+    }
 }
 
 void InteractionStateManager::endInteraction() {
-    isInteracting_ = false;
-    onInteractionEnd_.invoke();
+    if (isInteracting_) {
+        isInteracting_ = false;
+        onInteractionEnd_.invoke();
+    }
 }
 
 bool InteractionStateManager::isInteracting() const { return isInteracting_; }
