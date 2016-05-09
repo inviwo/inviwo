@@ -73,17 +73,29 @@ struct ValueWrapper {
                 break;
             case PropertySerializationMode::None:
                 break;
-            default:
-                break;
         }
     }
 
     // return if the value changes while deserializing
-    bool deserialize(Deserializer& d) {
-        auto old = value;
-        reset(); // Need to call reset here since we might not deserialize if default.
-        d.deserialize(name, value);
-        return old != value;
+    bool deserialize(Deserializer& d,
+                     PropertySerializationMode mode = PropertySerializationMode::Default) {
+        switch (mode) {
+            case PropertySerializationMode::Default: {
+                auto old = value;
+                reset();  // Need to call reset here since we might not deserialize if default.
+                d.deserialize(name, value);
+                return old != value;
+            }
+            case PropertySerializationMode::All: {
+                auto old = value;
+                d.deserialize(name, value);
+                return old != value;
+            }
+            case PropertySerializationMode::None:
+                return false;
+            default:
+                return false;
+        }
     }
 
     T value;

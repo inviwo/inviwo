@@ -182,7 +182,7 @@ void TemplateProperty<T>::serialize(Serializer& s) const {
 template <typename T>
 void TemplateProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
-    if (value_.deserialize(d)) {
+    if (value_.deserialize(d, serializationMode_)) {
         propertyModified();
     }
 }
