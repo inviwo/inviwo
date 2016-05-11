@@ -70,8 +70,8 @@ IntegralLineProperties* IntegralLineProperties::clone() const {
 IntegralLineProperties::~IntegralLineProperties() {}
 
 inviwo::mat4 IntegralLineProperties::getSeedPointTransformationMatrix(
-    const StructuredCoordinateTransformer<3>& T) const {
-    return T.getMatrix(seedPointsSpace_.get(), StructuredCoordinateTransformer<3>::Space::Texture);
+    const SpatialCoordinateTransformer<3>& T) const {
+    return T.getMatrix(seedPointsSpace_.get(), SpatialCoordinateTransformer<3>::Space::Data);
 }
 
 int IntegralLineProperties::getNumberOfSteps() const { return numberOfSteps_.get(); }
@@ -86,7 +86,7 @@ IntegralLineProperties::IntegrationScheme IntegralLineProperties::getIntegration
     return integrationScheme_.get();
 }
 
-StructuredCoordinateTransformer<3>::Space IntegralLineProperties::getSeedPointsSpace() const {
+SpatialCoordinateTransformer<3>::Space IntegralLineProperties::getSeedPointsSpace() const {
     return seedPointsSpace_.get();
 }
 
@@ -101,12 +101,9 @@ void IntegralLineProperties::setUpProperties() {
                                  IntegralLineProperties::IntegrationScheme::RK4);
     integrationScheme_.setSelectedValue(IntegralLineProperties::IntegrationScheme::RK4);
 
-    seedPointsSpace_.addOption("texture", "Texture",
-                               StructuredCoordinateTransformer<3>::Space::Texture);
-    seedPointsSpace_.addOption("model", "Model", StructuredCoordinateTransformer<3>::Space::Model);
-    seedPointsSpace_.addOption("world", "World", StructuredCoordinateTransformer<3>::Space::World);
-    seedPointsSpace_.addOption("data", "Data", StructuredCoordinateTransformer<3>::Space::Data);
-    seedPointsSpace_.addOption("index", "Index", StructuredCoordinateTransformer<3>::Space::Index);
+    seedPointsSpace_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
+    seedPointsSpace_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
+    seedPointsSpace_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
 
     addProperty(numberOfSteps_);
     addProperty(stepSize_);

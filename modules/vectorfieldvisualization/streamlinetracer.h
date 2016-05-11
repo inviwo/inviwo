@@ -49,12 +49,11 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
 public:
 
-    StreamLineTracer(const Volume *vol , const StreamLineProperties &properties);
+    StreamLineTracer(std::shared_ptr<const Volume> vol, const StreamLineProperties &properties);
 
     virtual ~StreamLineTracer();
 
-    void addMetaVolume(const std::string &name, const VolumeRAM *vol);
-
+    void addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol);
     IntegralLine traceFrom(const dvec3 &p);
     IntegralLine traceFrom(const vec3 &p);
 

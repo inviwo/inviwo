@@ -31,14 +31,12 @@ def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilen
     else:
         raise TypeError("snapshotWithWorkspace expect parameter 2 to be either string or a list of strings of canvas ids")
 
-
     import inviwo
     import inviwoqt
 
     if not workspaceName.endswith('.inv'):
         workspaceName = workspaceName + '.inv'
 
-    inviwoqt.saveWorkspace(basePath + "/" + workspaceName );
 
     workspacePath = basePath + "/" + workspaceName;
     workspaceDir = os.path.dirname(workspacePath);

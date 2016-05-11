@@ -27,46 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/volumesequencesampler.h>
+#ifndef IVW_VOLUMESEQUENCEUTILS_H
+#define IVW_VOLUMESEQUENCEUTILS_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-VolumeSequenceSampler::VolumeSequenceSampler(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence) {
-    for (const auto &vol : (*volumeSequence.get())) {
-        samplers_.emplace_back(vol);
+    class Volume;
+    using SharedVolume = std::shared_ptr<Volume>;
+    using VoumeSequence = std::vector<SharedVolume>;
+
+    namespace util {
+
+        bool IVW_CORE_API hasTimestamps(const VoumeSequence &seq,bool checkfirstonly = true);
+
+
+        std::pair<double, double> IVW_CORE_API getTimestampRange(const VoumeSequence &seq, bool sorted = true);
+
+        bool IVW_CORE_API isSorted(const VoumeSequence &seq);
+        VoumeSequence IVW_CORE_API sortSequence(const VoumeSequence &seq);
+
+        std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VoumeSequence &seq, double t, bool sorted = true);
+
+
+        double IVW_CORE_API getTimestamp(SharedVolume vol);
     }
-}
 
-VolumeSequenceSampler::~VolumeSequenceSampler() {}
+} // namespace
 
-dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
-    dvec3 spatialPos = pos.xyz();
-    double t = pos.w;
-    while (t < 0) t += 1;
-    while (t > 1) t -= 1;
+#endif // IVW_VOLUMESEQUENCEUTILS_H
 
-    t *= (samplers_.size() - 1);
-
-    int tIndex = static_cast<int>(t);
-    double tInterpolant = t - static_cast<float>(tIndex);
-
-    dvec4 v0, v1;
-    v0 = getVoxel(spatialPos, tIndex);
-    v1 = getVoxel(spatialPos, tIndex + 1);
-
-    return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
-}
-
-dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) const {
-    return sample(dvec4(x, y, z, t));
-}
-
-dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
-
-dvec4 VolumeSequenceSampler::getVoxel(const dvec3 &pos, int T) const {
-    T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
-    return samplers_[T].sample(pos);
-}
-
-}  // namespace

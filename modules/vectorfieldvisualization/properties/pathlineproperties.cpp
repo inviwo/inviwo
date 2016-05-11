@@ -37,13 +37,14 @@ PathLineProperties::PathLineProperties(std::string identifier, std::string displ
     : IntegralLineProperties(identifier, displayName)
 
     , startT_("startT", "Start at timestep", 0, 0, 1)
+    , allowLooping_("allowLooping","Allow Looping")
 
 {
     setUpProperties();
 }
 
 PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
-    : IntegralLineProperties(rhs), startT_(rhs.startT_) {
+    : IntegralLineProperties(rhs), startT_(rhs.startT_), allowLooping_(rhs.allowLooping_){
     setUpProperties();
 }
 
@@ -51,6 +52,7 @@ PathLineProperties& PathLineProperties::operator=(const PathLineProperties& that
     if (this != &that) {
         PathLineProperties::operator=(that);
         startT_ = that.startT_;
+        allowLooping_ = that.allowLooping_;
     }
     return *this;
 }
@@ -65,6 +67,7 @@ void PathLineProperties::deserialize(Deserializer& d) {
 
 void PathLineProperties::setUpProperties() {
     addProperty(startT_);
+    addProperty(allowLooping_);
 }
 
 }  // namespace

@@ -47,6 +47,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetospatialsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
@@ -96,6 +97,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetospatialsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp

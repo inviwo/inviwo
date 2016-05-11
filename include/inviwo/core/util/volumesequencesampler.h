@@ -46,8 +46,6 @@ public:
     VolumeSequenceSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence);
     virtual ~VolumeSequenceSampler();
 
-    void setVectorInterpolation(bool enable);
-
     dvec4 sample(const dvec4 &pos) const;
     dvec4 sample(double x, double y, double z, double t) const;
     dvec4 sample(const vec4 &pos) const;
@@ -56,7 +54,7 @@ private:
     dvec4 getVoxel(const dvec3 &pos, int T) const;
 
     size3_t dims_;
-    std::vector<VolumeSampler> samplers_;
+    std::vector<VolumeDoubleSampler<4>> samplers_;
 };
 
 } // namespace

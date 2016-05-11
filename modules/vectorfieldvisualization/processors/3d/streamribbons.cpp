@@ -91,9 +91,9 @@ void StreamRibbons::process() {
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(vectorVolume_.getData()->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
-    StreamLineTracer tracer(vectorVolume_.getData().get(), streamLineProperties_);
+    StreamLineTracer tracer(vectorVolume_.getData(), streamLineProperties_);
     ImageSampler tf(tf_.get().getData());
-    tracer.addMetaVolume("vorticity", vorticityVolume_.getData()->getRepresentation<VolumeRAM>());
+    tracer.addMetaVolume("vorticity", vorticityVolume_.getData());
     mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
