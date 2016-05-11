@@ -43,6 +43,7 @@
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 #include <inviwomodulespaths.h>
 
