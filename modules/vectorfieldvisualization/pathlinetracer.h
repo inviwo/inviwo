@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/integralline.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 #include <inviwo/core/util/volumesequencesampler.h>
 
 namespace inviwo {
@@ -46,7 +47,7 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineTracer : public IntegralLineTracer {
 public:
     PathLineTracer(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence,
-        const IntegralLineProperties &properties);
+        const PathLineProperties &properties);
     virtual ~PathLineTracer();
 
     IntegralLine traceFrom(const vec4 &p);
@@ -55,12 +56,23 @@ public:
 private:
     void step(int steps, dvec4 curPos, IntegralLine &line, bool fwd);
 
+    dvec3 sample(const dvec4 &pos);
+
     dvec3 euler(const dvec4 &curPos);
 
+    bool allowLooping_;
     dvec3 rk4(const dvec4 &curPos, bool fwd);
-    VolumeSequenceSampler sampler_;
+    
+    
     size3_t dimensions_;
     dmat3 invBasis_;
+    double timespan_;
+    std::pair<double,double> timeRange_;
+
+
+    std::vector<std::shared_ptr<Volume>> volumeSequence_;
+    std::map<Volume*, VolumeDoubleSampler<3>> samplers_;
+    bool hasTimestamps_;
 
 
 };
