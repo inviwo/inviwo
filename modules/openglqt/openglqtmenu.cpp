@@ -45,50 +45,45 @@
 
 namespace inviwo {
 
-OpenGLQtMenu::OpenGLQtMenu() : menu_(nullptr) {
-    if (auto qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto win = qtApp->getMainWindow()) {
-            menu_ = win->menuBar()->addMenu(tr("&Shaders"));
-            QAction* reloadShaders = menu_->addAction("Reload All");
-            connect(reloadShaders, &QAction::triggered, [&]() { shadersReload(); });
+OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
+    QAction* reloadShaders = addAction("Reload All");
+    connect(reloadShaders, &QAction::triggered, [&]() { shadersReload(); });
 
-            onAddShader_ = ShaderManager::getPtr()->onDidAddShader([&](GLuint id) {
-                const auto& shaders = ShaderManager::getPtr()->getShaders();
-                auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
-                if (it != shaders.end()) {
-                    auto shader = *it;
-                    auto menuItem = menu_->addMenu(QString("Id %1").arg(shader->getID(), 2));
-                    shadersItems_[id] = menuItem;
-                    
-                    addShaderObjects(shader, menuItem);
-                    
-                    shader->onReload([this, shader, menuItem]() {
-                        menuItem->clear();
-                        menuItem->setTitle(QString("Id %1").arg(shader->getID()));
-                        addShaderObjects(shader, menuItem);
-                    });
-                }
-            });
+    onAddShader_ = ShaderManager::getPtr()->onDidAddShader([this](GLuint id) {
+        const auto& shaders = ShaderManager::getPtr()->getShaders();
+        auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
+        if (it != shaders.end()) {
+            auto shader = *it;
+            auto menuItem = addMenu(QString("Id %1").arg(shader->getID(), 2));
+            shadersItems_[id] = menuItem;
 
-            onRemoveShader_ = ShaderManager::getPtr()->onWillRemoveShader([&](GLuint id) {
-                {
-                    // Close any open editors.
-                    const auto& shaders = ShaderManager::getPtr()->getShaders();
-                    auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
-                    for (auto& obj : (*it)->getShaderObjects()) {
-                        auto editor = editors_.find(obj.second->getID());
-                        if (editor != editors_.end()) editor->second->close();
-                    }
-                }
-                
-                auto it = shadersItems_.find(id);
-                if (it != shadersItems_.end()){
-                    menu_->removeAction(it->second->menuAction());
-                    shadersItems_.erase(it);
-                }
+            addShaderObjects(shader, menuItem);
+
+            shader->onReload([this, shader, menuItem]() {
+                menuItem->clear();
+                menuItem->setTitle(QString("Id %1").arg(shader->getID()));
+                addShaderObjects(shader, menuItem);
             });
         }
-    }
+    });
+
+    onRemoveShader_ = ShaderManager::getPtr()->onWillRemoveShader([this](GLuint id) {
+        {
+            // Close any open editors.
+            const auto& shaders = ShaderManager::getPtr()->getShaders();
+            auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
+            for (auto& obj : (*it)->getShaderObjects()) {
+                auto editor = editors_.find(obj.second->getID());
+                if (editor != editors_.end()) editor->second->close();
+            }
+        }
+
+        auto it = shadersItems_.find(id);
+        if (it != shadersItems_.end()) {
+            removeAction(it->second->menuAction());
+            shadersItems_.erase(it);
+        }
+    });
 }
 
 void OpenGLQtMenu::addShaderObjects(Shader* shader, QMenu* menuItem) {
