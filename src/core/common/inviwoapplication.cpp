@@ -75,7 +75,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , dialogFactory_{util::make_unique<DialogFactory>()}
     , meshDrawerFactory_{util::make_unique<MeshDrawerFactory>()}
     , metaDataFactory_{util::make_unique<MetaDataFactory>()}
-    , portFactory_{util::make_unique<PortFactory>()}
+    , outportFactory_{util::make_unique<OutportFactory>()}
+    , inportFactory_{util::make_unique<InportFactory>()}
     , portInspectorFactory_{util::make_unique<PortInspectorFactory>()}
     , processorFactory_{util::make_unique<ProcessorFactory>()}
     , processorWidgetFactory_{util::make_unique<ProcessorWidgetFactory>()}

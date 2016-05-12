@@ -282,10 +282,13 @@ public:
     static const std::string getCodeStateString(CodeState state);
 
 protected:
-    void addPort(Inport* port, const std::string& portGroup = "default");
     void addPort(Inport& port, const std::string& portGroup = "default");
-    void addPort(Outport* port, const std::string& portGroup = "default");
     void addPort(Outport& port, const std::string& portGroup = "default");
+
+    // Assume ownership of port, needed for dynamic ports
+    void addPort(std::unique_ptr<Inport> port, const std::string& portGroup = "default");
+    // Assume ownership of port, needed for dynamic ports
+    void addPort(std::unique_ptr<Outport> port, const std::string& portGroup = "default");
 
     Port* removePort(const std::string& identifier);
     Inport* removePort(Inport* port);
@@ -296,12 +299,16 @@ protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
 
 private:
+    void addPort(Inport* port, const std::string& portGroup);
+    void addPort(Outport* port, const std::string& portGroup);
     void addPortToGroup(Port* port, const std::string& portGroup);
     void removePortFromGroups(Port* port);
 
     std::string identifier_;
     std::vector<Inport*> inports_;
     std::vector<Outport*> outports_;
+    std::vector<std::unique_ptr<Inport>> ownedInports_;
+    std::vector<std::unique_ptr<Outport>> ownedOutports_;
     std::vector<InteractionHandler*> interactionHandlers_;
 
     std::unordered_map<std::string, std::vector<Port*>> groupPorts_;
