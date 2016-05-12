@@ -51,6 +51,8 @@ MeshCreator::MeshCreator()
     , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-50.0f), vec3(50.0f))
     , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , torusRadius1_("torusRadius1_", "Torus Radius 1", 1)
+    , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3)
     , meshScale_("scale", "Size scaling", 1.f, 0.01f, 10.f)
     , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
     , meshType_("meshType", "Mesh Type") {
@@ -68,8 +70,9 @@ MeshCreator::MeshCreator()
     meshType_.addOption("cylinder", "Cylinder", MeshType::Cylinder);
     meshType_.addOption("arrow", "Arrow", MeshType::Arrow);
     meshType_.addOption("coordaxes", "Coordinate Indicator", MeshType::CoordAxes);
+    meshType_.addOption("torus", "Torus", MeshType::Torus);
 
-    hide(position1_, position2_, normal_, basis_, color_);
+    hide(position1_, position2_, normal_, basis_, color_ , torusRadius1_ , torusRadius2_);
     show(meshScale_, meshRes_);
 
     meshType_.set(MeshType::Sphere);
@@ -127,6 +130,10 @@ MeshCreator::MeshCreator()
                 show(position1_, meshScale_);
                 break;
             }
+            case MeshType::Torus: {
+                show(position1_,torusRadius1_, torusRadius2_,meshRes_,color_);
+                break;
+            }
             default: {
                 show(meshScale_, meshRes_);
                 break;
@@ -140,6 +147,8 @@ MeshCreator::MeshCreator()
     addProperty(position2_);
     addProperty(normal_);
     addProperty(basis_);
+    addProperty(torusRadius1_);
+    addProperty(torusRadius2_);
     addProperty(color_);
     addProperty(meshScale_);
     addProperty(meshRes_);
@@ -194,6 +203,8 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
                                     meshScale_.get() * 2, meshRes_.get().x);
         case MeshType::CoordAxes:
             return BasicMesh::coordindicator(position1_, meshScale_.get());
+        case MeshType::Torus:
+            return BasicMesh::torus(position1_, vec3(0, 0, 1), torusRadius1_, torusRadius2_, meshRes_, color_);
         default:
             return SimpleMeshCreator::sphere(0.1f, meshRes_.get().x, meshRes_.get().y);
     }
