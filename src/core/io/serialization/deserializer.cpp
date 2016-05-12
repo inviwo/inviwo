@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
 
