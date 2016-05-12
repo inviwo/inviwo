@@ -60,7 +60,6 @@ protected:
     
 private:
     InteractionStateManager& manager_;
-    int pressCount_ = 0;
 };
 
 } // namespace
