@@ -55,7 +55,7 @@ class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QMenu {
     #include <warn/pop>
 public:
     OpenGLQtMenu(QWidget* parent);
-    virtual ~OpenGLQtMenu() default;
+    virtual ~OpenGLQtMenu() = default;
 
 private:
     void showShader(const ShaderObject* obj);
