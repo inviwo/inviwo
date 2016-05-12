@@ -129,6 +129,8 @@ void Deserializer::registerFactories(InviwoApplication* app) {
         registeredFactories_.push_back(app->getProcessorFactory());
         registeredFactories_.push_back(app->getMetaDataFactory());
         registeredFactories_.push_back(app->getPropertyFactory());
+        registeredFactories_.push_back(app->getInportFactory());
+        registeredFactories_.push_back(app->getOutportFactory());
     }
 }
 
