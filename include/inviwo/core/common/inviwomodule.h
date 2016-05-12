@@ -204,13 +204,6 @@ private:
         }
     }
 
-    template <typename T, typename std::enable_if<!std::is_base_of<Outport, T>::value &&
-        !std::is_base_of<Inport, T>::value,
-        int>::type = 0>
-        void registerPortInternal(std::string classIdentifier) {
-        static_assert(false, "A port has to derive from either Inport of Outport");
-    }
-
     const std::string identifier_;  ///< Module folder name
 
     std::vector<std::unique_ptr<CameraFactoryObject>> cameras_;
@@ -271,6 +264,9 @@ void InviwoModule::registerProcessorWidget() {
 
 template <typename T>
 void InviwoModule::registerPort(std::string classIdentifier) {
+    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
+                  "A port has to derive from either Inport of Outport");
+
     registerPortInternal<T>(classIdentifier);
 }
 
