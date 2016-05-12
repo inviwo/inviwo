@@ -67,10 +67,10 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     canvas_->setMouseTracking(true);
     canvas_->setAttribute(Qt::WA_OpaquePaintEvent);
 
-    QGridLayout* gridLayout = new QGridLayout;
+    QGridLayout* gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(canvas_.get(), 0, 0);
-    setLayout(gridLayout);
+    //setLayout(gridLayout);
 
     setWindowFlags(Qt::Tool);
     setDimensions(dim);
