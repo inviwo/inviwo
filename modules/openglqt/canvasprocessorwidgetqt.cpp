@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -112,7 +113,7 @@ void CanvasProcessorWidgetQt::hide() {
     CanvasProcessorWidgetQt::setVisible(false);
 }
 
-void CanvasProcessorWidgetQt::setPosition(glm::ivec2 pos) {
+void CanvasProcessorWidgetQt::setPosition(ivec2 pos) {
     if (pos != utilqt::toGLM(QWidget::pos())) {
         QWidget::move(pos.x, pos.y);  // This will trigger a move event.
     }
