@@ -82,12 +82,15 @@ class ReportLogTest(ReportTest):
 		self.message = []
 
 	def test(self, report):
-		with open(toPath(report['outputdir'], report['log']), 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				if "Error:" in line:
-					self.message.append(line)
-			
+		try:
+			with open(toPath(report['outputdir'], report['log']), 'r') as f:
+				lines = f.readlines()
+				for line in lines:
+					if "Error:" in line:
+						self.message.append(line)
+		except FileNotFoundError:
+			self.message.append("Missing Log")
+
 		return len(self.message) == 0
 
 	def failures(self):
