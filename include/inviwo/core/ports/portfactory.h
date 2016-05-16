@@ -42,6 +42,7 @@ public:
     InportFactory() = default;
     virtual ~InportFactory() = default;
 
+    using StandardFactory<Inport, InportFactoryObject>::create;
     virtual std::unique_ptr<Inport> create(const std::string& className,
                                            const std::string& identifier) const;
 };
@@ -51,6 +52,7 @@ public:
     OutportFactory() = default;
     virtual ~OutportFactory() = default;
 
+    using StandardFactory<Outport, OutportFactoryObject>::create;
     virtual std::unique_ptr<Outport> create(const std::string& className,
                                             const std::string& identifier) const;
 };

@@ -118,6 +118,7 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     auto p3 = util::getVolumesForTimestep(s1, 0.15);
 
 
+    /* UNUSED
     auto A = s1[0].get();
     auto B = s1[1].get();
     auto C = s1[2].get();
@@ -133,6 +134,7 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
 
     auto W1 = p3.first.get();
     auto W2 = p3.second.get();
+    */
    
     EXPECT_EQ(s1[0].get(), p0.first.get());
     EXPECT_EQ(s1[1].get(), p0.second.get());

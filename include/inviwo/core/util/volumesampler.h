@@ -60,7 +60,7 @@ public:
     VolumeDoubleSampler(std::shared_ptr<const Volume> vol) : SpatialSampler<3, DataDims, double>(vol), volume_(vol), ram_(vol->getRepresentation<VolumeRAM>()), dims_(vol->getDimensions()) {}
     virtual ~VolumeDoubleSampler() {}
 
-    virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const {
+    virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const override {
         if (!withinBoundsDataSpace(pos)) {
             return Vector<DataDims, double>(0.0);
         }

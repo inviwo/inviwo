@@ -71,7 +71,6 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     QGridLayout* gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(canvas_.get(), 0, 0);
-    //setLayout(gridLayout);
 
     setWindowFlags(Qt::Tool);
     setDimensions(dim);
