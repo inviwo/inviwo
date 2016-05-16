@@ -27,6 +27,8 @@
 # 
 #*********************************************************************************
 
+import json
+
 from .. util import *
 from . database import *
 
@@ -34,18 +36,17 @@ def elapsed_time_stats(database):
 	'''
 	database should be a sql regression database
 	'''
-	timedelta = 3600;
 	total = {}
-
 	for module in database.getModules():
 		measurements = {}
 
 		for test in module.tests:
 			series = database.getSeries(module.name, test.name, "elapsed_time")
+			if series == None: continue
 
 			data = {}
 			for m in series.measurements:
-				time = round(m.created.timestamp()/timedelta)
+				time = m.testrun.run.created.timestamp()
 				if time in data.keys():
 					data[time]["count"] += 1
 					data[time]["time"] += m.value
@@ -84,39 +85,39 @@ def elapsed_time_stats(database):
 
 	#print(", ".join(["{:5.2f}".format(y) for k,y in sorted(totdata.items(), key = lambda a: a[0])]))
 
-	return [[datetime.datetime.fromtimestamp(k*timedelta), y] for k,y in sorted(totdata.items(), key = lambda a: a[0])]
+	return [[datetime.datetime.fromtimestamp(k), y] for k,y in sorted(totdata.items(), key = lambda a: a[0])]
 
 
 def result_time_stats(database):
-	timedelta = 3600;
-	result = {} 
-	for module in database.getModules():
-		for test in module.tests:
-			testfail = {}
-			testpass = {}
-			for testrun in test.testruns:
-				time = round(testrun.created.timestamp()/timedelta)
-				if len(testrun.testfailures) == 0:
-					testpass[time] = 1
-					testfail.pop(time, None)
-				else:
-					testfail[time] = 1
-					testpass.pop(time, None)
+	'''
+	database should be a sql regression database
+	'''
+	result = []
+	for run in database.getRuns():
+		testfail = 0
+		testpass = 0
+		testskip = 0
+		for testrun in run.testruns:
+			config = json.loads(testrun.config)
+			enabled = safeget(config, "enabled", failure = True)
 
-			for time, val in testpass.items():
-				res = result.setdefault(time, [0,0])
-				res[0] += val
-				result[time] = res
+			if not enabled:
+				testskip += 1
+			elif len(testrun.failures) == 0:
+				testpass += 1
+			else:
+				testfail += 1
 
-			for time, val in testfail.items():
-				res = result.setdefault(time, [0,0])
-				res[1] += val
-				result[time] = res
+		testskip += len(run.skipruns)
 
-	#print(", ".join(["{:}/{:}".format(y[1],y[0]+y[1]) for k,y in sorted(result.items(), key = lambda a: a[0])]))
-	return [[datetime.datetime.fromtimestamp(k*timedelta), y] for k,y in sorted(result.items(), key = lambda a: a[0])]
+		result.append([datetime.datetime.fromtimestamp(run.created.timestamp()), [testpass, testfail, testskip]])
+
+	return result
 
 def get_plot_data(database):
+	'''
+	database should be a sql regression database
+	'''
 	result = {}
 	for module in database.getModules():
 		for test in module.tests:

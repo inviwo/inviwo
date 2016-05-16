@@ -89,7 +89,7 @@ class App:
 		self.loadJson()
 
 
-	def runTest(self, test):
+	def runTest(self, test, run):
 		report = {}
 		report['date'] = datetime.datetime.now().isoformat()
 		report = test.report(report)
@@ -103,20 +103,29 @@ class App:
 		report['status'] = "new"
 		report['git'] = self.git.info(report['path'])
 
-		self.updateDatabase(report)
+		self.updateDatabase(report, run)
 		return report
 
 
 	def filterTests(self, testrange, testfilter):
-		selected = range(len(self.tests))[testrange]
-		selected = list(filter(lambda i: testfilter(self.tests[i]), selected))
+		selected1 = range(len(self.tests))
+		selected2 = selected1[testrange]
+		selected3 = list(filter(lambda i: testfilter(self.tests[i]), selected2))
 
 		# don't run test from modules that we have not built
-		selected = list(filter(lambda i: self.app.isModuleActive(self.tests[i].module), selected))
-		return selected
+		selected4 = list(filter(lambda i: self.app.isModuleActive(self.tests[i].module), selected3))
+
+		reasons = list(map(lambda x : "", range(len(self.tests))))
+		for i in set(selected1).difference(set(selected2)): reasons[i] = "Test not in testrange"
+		for i in set(selected2).difference(set(selected3)): reasons[i] = "Filtered out"
+		for i in set(selected3).difference(set(selected4)): reasons[i] = "Needed module not available"
+		
+		return selected4, reasons
 
 	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
-		selected = self.filterTests(testrange, testfilter)
+		selected, reasons = self.filterTests(testrange, testfilter)
+
+		run = self.db.addRun()
 
 		for i,test in enumerate(self.tests):
 			print_info("#"*80)
@@ -125,7 +134,7 @@ class App:
 							.format(i, len(selected), len(self.tests)),
 					test.toString())
 
-				report = self.runTest(test)
+				report = self.runTest(test, run)
 
 				self.reports[test.toString()] = report
 				for k,v in report.items():
@@ -140,6 +149,8 @@ class App:
 				print_pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
 							.format(i, len(selected), len(self.tests)),
 					test.toString())
+				dbtest = self.db.getOrAddTest(test.module, test.name)
+				self.db.addSkipRun(run = run, test = dbtest, reason = reasons[i])
 
 	def compareImages(self, test, report):
 		refimgs = test.getImages()
@@ -233,14 +244,14 @@ class App:
 					return False
 		return True
 
-	def updateDatabase(self, report):
+	def updateDatabase(self, report, run):
 		dbtest = self.db.getOrAddTest(report["module"], report["name"])
 		dbtime = self.db.getOrAddQuantity("time", "s")
 		dbcount = self.db.getOrAddQuantity("count", "")
 		dbfrac = self.db.getOrAddQuantity("fraction", "%")
 		
 		db_elapsed_time = self.db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
-		db_test_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
+		db_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_failures")
 
 		git = report["git"]
 		dbcommit = self.db.getOrAddCommit(hash    = git["hash"],
@@ -249,19 +260,21 @@ class App:
 				                     	  message = git['message'], 
 				                          server  = git['server']) 
 
-		dbtestrun = self.db.addTestRun(test = dbtest, commit = dbcommit)
+		dbtestrun = self.db.addTestRun(run = run, 
+									   test = dbtest, commit = dbcommit, 
+									   config = json.dumps(safeget(report, "config", failure = "")))
 
 		self.db.addMeasurement(series  = db_elapsed_time, 
 							   testrun = dbtestrun, 
 							   value   = report["elapsed_time"])
-		self.db.addMeasurement(series = db_test_failures, 
+		self.db.addMeasurement(series = db_failures, 
 			                   testrun = dbtestrun, 
 			                   value = len(report["failures"]))
 
 
 		for key, messages in report['failures'].items():
 			for message in messages:
-				self.db.addTestFailure(testrun = dbtestrun, key = key, message = message)
+				self.db.addFailure(testrun = dbtestrun, key = key, message = message)
 
 		for img in report["image_tests"]:
 			db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])

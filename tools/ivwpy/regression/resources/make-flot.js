@@ -55,18 +55,19 @@ var summery_options = {
         position : "sw",
         backgroundColor : null,
         backgroundOpacity : 0,
-        noColumns : 3
+        noColumns : 4
     },
     selection: {
             mode: "xy"
     }
 };
 
-summery_data = [{
+summery_data = [
+    {
         lines: { 
             show : true, 
             //fill : true, some fire fox problem...
-            steps : true,
+            steps : false,
             fillColor : "#E4FBE4;"
         },
         points: { show : false },
@@ -82,17 +83,34 @@ summery_data = [{
         lines: { 
             show : true, 
             fill  : true,
-            steps  : true,
+            steps  : false,
             fillColor : "#FFE7E7"
         },
         points: { show: false },
-        label : "Failues/Disabled",
+        label : "Failues",
         data  : faildata,
         color : "#FF9898",
         stack : "test",
         yaxis : 2,
         fill  : 1
-    },
+    }
+    ,
+    {
+        lines: { 
+            show : true, 
+            fill  : true,
+            steps  : false,
+            fillColor : "#FFFBE7"
+        },
+        points: { show: false },
+        label : "Disabled",
+        data  : skipdata,
+        color : "#FFED98",
+        stack : "test",
+        yaxis : 2,
+        fill  : 1
+    }
+    ,
     {
         lines: { show: true },
         points: { show: true },

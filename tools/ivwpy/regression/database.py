@@ -40,6 +40,45 @@ from sqlalchemy import desc
 
 # Table declarations
 
+#  ┌──────────────┐                                                               
+#  │   Quantity   │                          ┌──────────────┐                     
+#  │              │                          │    Series    │                     
+#  │ id           │                          │              │                     
+#  │ created      │                          │ id           │     ┌──────────────┐
+#  │ name         │                          │ created      │     │ Measurement  │
+#  │ unit         │                          │ name         │     │              │
+#  │ serieses     │n────────────────────────1│ quantity_id  │     │ id           │
+#  │              │                      ┌──1│ test_id      │     │ created      │
+#  └──────────────┘                      │   │ measurements │n───1│ series_id    │
+#  ┌──────────────┐   ┌──────────────┐   │   │              │  ┌─1│ testrun_id   │
+#  │    Module    │   │     Test     │   │   └──────────────┘  │  │ value        │
+#  │              │   │              │   │                     │  │              │
+#  │ id           │   │ id           │   │   ┌──────────────┐  │  └──────────────┘
+#  │ created      │   │ created      │   │   │   SkipRun    │  │                  
+#  │ name         │   │ name         │   │   │              │  │                  
+#  │ tests        │n─1│ module_id    │   │   │ id           │  │                  
+#  │              │   │ serieses     │n──┘   │ created      │  │                  
+#  └──────────────┘   │ skipruns     │n─────1│ test_id      │  │                  
+#  ┌──────────────┐   │ testruns     │n─┐ ┌─1│ run_id       │  │                  
+#  │     Run      │   │              │  │ │  │ reason       │  │                  
+#  │              │   └──────────────┘  │ │  │              │  │                  
+#  │ id           │                     │ │  └──────────────┘  │                  
+#  │ created      │                     │ │  ┌──────────────┐  │                  
+#  │ skipruns     │n────────────────────┼─┘  │   TestRun    │  │                  
+#  │ testruns     │n───────────┐        │    │              │  │                  
+#  │              │            │        │    │ id           │  │                  
+#  └──────────────┘            │        │    │ created      │  │  ┌──────────────┐
+#  ┌──────────────┐            │        └───1│ test_id      │  │  │   Failure    │
+#  │    Commit    │            └────────────1│ run_id       │  │  │              │
+#  │              │            ┌────────────1│ commit_id    │  │  │ id           │
+#  │ id           │            │             │ measurements │n─┘  │ created      │
+#  │ created      │            │             │ failures     │n───1│ testrun_id   │
+#  │ name         │            │             │ config       │     │ key          │
+#  │ hash         │            │             │              │     │ message      │
+#  │ testruns     │n───────────┘             └──────────────┘     │              │
+#  │              │                                               └──────────────┘
+#  └──────────────┘                                                               
+
 SqlBase = declarative_base()
 
 class Module(SqlBase):
@@ -56,6 +95,12 @@ class Quantity(SqlBase):
 	
 	name 		= Column(String(), nullable=False, unique=True)
 	unit 		= Column(String(), nullable=False)
+
+class Run(SqlBase):
+	__tablename__ = "run"
+	id 			= Column(Integer, primary_key=True)
+	created 	= Column(DateTime(), nullable=False, default=datetime.datetime.now)
+	
 
 class Test(SqlBase):
 	__tablename__ = 'test'
@@ -91,6 +136,19 @@ class Commit(SqlBase):
 	message     = Column(String)
 	server 	    = Column(String)
 
+class SkipRun(SqlBase):
+	__tablename__ = "skiprun"
+	id 		    = Column(Integer, primary_key=True)
+	created     = Column(DateTime, nullable=False, default=datetime.datetime.now)
+
+	test_id     = Column(Integer, ForeignKey('test.id'))
+	test  	    = relationship(Test, backref=backref('skipruns', uselist=True))
+
+	run_id      = Column(Integer, ForeignKey('run.id'))
+	run         = relationship(Run, backref=backref('skipruns', uselist=True))
+
+	reason      = Column(String())
+
 class TestRun(SqlBase):
 	__tablename__ = "testrun"
 	id 		    = Column(Integer, primary_key=True)
@@ -102,13 +160,19 @@ class TestRun(SqlBase):
 	commit_id   = Column(Integer, ForeignKey('commit.id'))
 	commit      = relationship(Commit, backref=backref('testruns', uselist=True))
 
-class TestFailure(SqlBase):
-	__tablename__ = "testfailure"
+	run_id   = Column(Integer, ForeignKey('run.id'))
+	run      = relationship(Run, backref=backref('testruns', uselist=True))
+
+	config      = Column(String())
+
+
+class Failure(SqlBase):
+	__tablename__ = "failure"
 	id          = Column(Integer, primary_key=True)
 	created     = Column(DateTime, nullable=False, default=datetime.datetime.now)
 
 	testrun_id  = Column(Integer, ForeignKey('testrun.id'))
-	testrun     = relationship(TestRun, backref=backref('testfailures', uselist=True))
+	testrun     = relationship(TestRun, backref=backref('failures', uselist=True))
 
 	key         = Column(String, nullable=False)
 	message     = Column(String)
@@ -139,48 +203,35 @@ class Database():
 
 		self.session = sessionmaker(bind=self.engine)()
 
+	def addEntry(self, Type, **kvargs):
+		entry = Type(**kvargs)
+		self.session.add(entry)
+		self.session.commit()
+		return entry;
+
 	def getOrAddModule(self, name):
 		module = self.session.query(Module).filter(Module.name == name).one_or_none()
-		if module == None:
-			module = Module(name = name)
-			self.session.add(module)
-			self.session.commit()
+		if module == None: module = self.addEntry(Module, name = name)
 		return module
 
 	def getOrAddTest(self, module, name):
 		if isinstance(module, str): module = self.getOrAddModule(module)
 		test = self.session.query(Test).filter(Test.name == name, 
 											   Test.module == module).one_or_none()
-		if test == None:
-			test = Test(name = name, module = module)
-			self.session.add(test)
-			self.session.commit()
+		if test == None: test = self.addEntry(Test, name = name, module = module)
 		return test
 
 	def getOrAddQuantity(self, name, unit):
 		quantity = self.session.query(Quantity).filter(Quantity.name == name).one_or_none()
-		if quantity == None:
-			quantity = Quantity(name = name, unit = unit)
-			self.session.add(quantity)
-			self.session.commit()
+		if quantity == None: quantity = self.addEntry(Quantity, name = name, unit = unit)
 		return quantity
 
 	def getOrAddSeries(self, test, quantity, name):
 		series = self.session.query(Series).filter(Series.name == name, 
 			 									   Series.test == test, 
 			 									   Series.quantity == quantity).one_or_none()
-		if series == None:
-			series = Series(name = name, test = test, quantity = quantity)
-			self.session.add(series)
-			self.session.commit()
+		if series == None: series = self.addEntry(Series, name = name, test = test, quantity = quantity)
 		return series
-
-
-	def addEntry(self, Type, **kvargs):
-		entry = Type(**kvargs)
-		self.session.add(entry)
-		self.session.commit()
-		return entry;
 
 	def getCommit(self, hash):
 		commit = self.session.query(Commit).filter(Commit.hash == hash).one_or_none()
@@ -196,16 +247,20 @@ class Database():
 
 	def getOrAddCommit(self, hash, date, author, message, server):
 		commit = self.getCommit(hash)
-		if commit is None:
-			commit = self.addCommit(hash, date, author, message, server)
+		if commit is None: commit = self.addCommit(hash, date, author, message, server)
 		return commit
 
+	def addRun(self):
+		return self.addEntry(Run)
 
-	def addTestRun(self, test, commit):
-		return self.addEntry(TestRun, test = test, commit = commit)
+	def addSkipRun(self, run, test, reason = ""):
+		return self.addEntry(SkipRun, run = run, test = test, reason = reason)
 
-	def addTestFailure(self, testrun, key, message):
-		return self.addEntry(TestFailure, testrun = testrun, key = key, message = message)
+	def addTestRun(self, run, test, commit, config = ""):
+		return self.addEntry(TestRun, run = run, test = test, commit = commit, config = config)
+
+	def addFailure(self, testrun, key, message):
+		return self.addEntry(Failure, testrun = testrun, key = key, message = message)
 
 	def addMeasurement(self, series, testrun, value):
 		return self.addEntry(Measurement, series = series, testrun = testrun, value = value)
@@ -213,10 +268,13 @@ class Database():
 	def getModules(self):
 		return self.session.query(Module).all()
 
+	def getRuns(self):
+		return self.session.query(Run).all()
+
 	def getSeries(self, modulename, testname, seriesname):
 		return self.session.query(Series).join(Test).join(Module).filter(Test.name == testname, 
 																		 Module.name == modulename, 
-																		 Series.name == seriesname).one()
+																		 Series.name == seriesname).one_or_none()
 
 	def getSerieses(self, modulename, testname):
 		return self.session.query(Series).join(Test).join(Module).filter(Test.name == testname, 
@@ -245,7 +303,7 @@ class Database():
 		lastSuccess = None
 		firstFailure = None
 		for testrun in testruns:
-			if len(testrun.testfailures) == 0:
+			if len(testrun.failures) == 0:
 				lastSuccess = testrun
 				break
 			else:
