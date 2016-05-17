@@ -48,6 +48,8 @@
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
 
+#include <type_traits>
+
 namespace inviwo {
 
 class Settings;
@@ -123,7 +125,8 @@ public:
     const std::vector<DialogFactoryObject*> getDialogs() const;
     const std::vector<MeshDrawer*> getDrawers() const;
     const std::vector<MetaData*> getMetaData() const;
-    const std::vector<PortFactoryObject*> getPorts() const;
+    const std::vector<InportFactoryObject*> getInports() const;
+    const std::vector<OutportFactoryObject*> getOutports() const;
     const std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
     const std::vector<ProcessorFactoryObject*> getProcessors() const;
     const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
@@ -184,6 +187,22 @@ private:
         for (auto& elem : v) res.push_back(elem.get());
         return res;
     }
+    template <typename T, typename std::enable_if<std::is_base_of<Inport, T>::value, int>::type = 0>
+    void registerPortInternal(std::string classIdentifier) {
+        auto port = util::make_unique<InportFactoryObjectTemplate<T>>(classIdentifier);
+        if (app_->getInportFactory()->registerObject(port.get())) {
+            inports_.push_back(std::move(port));
+        }
+    }
+
+    template <typename T,
+        typename std::enable_if<std::is_base_of<Outport, T>::value, int>::type = 0>
+        void registerPortInternal(std::string classIdentifier) {
+        auto port = util::make_unique<OutportFactoryObjectTemplate<T>>(classIdentifier);
+        if (app_->getOutportFactory()->registerObject(port.get())) {
+            outports_.push_back(std::move(port));
+        }
+    }
 
     const std::string identifier_;  ///< Module folder name
 
@@ -194,7 +213,8 @@ private:
     std::vector<std::unique_ptr<DialogFactoryObject>> dialogs_;
     std::vector<std::unique_ptr<MeshDrawer>> drawers_;
     std::vector<std::unique_ptr<MetaData>> metadata_;
-    std::vector<std::unique_ptr<PortFactoryObject>> ports_;
+    std::vector<std::unique_ptr<InportFactoryObject>> inports_;
+    std::vector<std::unique_ptr<OutportFactoryObject>> outports_;
     std::vector<std::unique_ptr<PortInspectorFactoryObject>> portInspectors_;
     std::vector<std::unique_ptr<ProcessorFactoryObject>> processors_;
     std::vector<std::unique_ptr<ProcessorWidgetFactoryObject>> processorWidgets_;
@@ -204,7 +224,11 @@ private:
     std::vector<std::unique_ptr<RepresentationConverter>> representationConverters_;
     std::vector<std::unique_ptr<Resource>> resources_;
     std::vector<std::unique_ptr<Settings>> settings_;
+
+
 };
+
+
 
 template <typename T>
 void InviwoModule::registerCamera(std::string classIdentifier) {
@@ -240,10 +264,10 @@ void InviwoModule::registerProcessorWidget() {
 
 template <typename T>
 void InviwoModule::registerPort(std::string classIdentifier) {
-    auto port = util::make_unique<PortFactoryObjectTemplate<T>>(classIdentifier);
-    if (app_->getPortFactory()->registerObject(port.get())) {
-        ports_.push_back(std::move(port));
-    }
+    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
+                  "A port has to derive from either Inport of Outport");
+
+    registerPortInternal<T>(classIdentifier);
 }
 
 template <typename T>

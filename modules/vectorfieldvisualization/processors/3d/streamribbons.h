@@ -69,6 +69,11 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbons : public Processor {
 public:
+    enum class ColoringMethod {
+        Velocity,
+        Vorticity,
+        ColorPort
+    };
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     StreamRibbons();
@@ -78,9 +83,10 @@ protected:
     virtual void process() override;
 
 private:
-    VolumeInport vectorVolume_;
-    VolumeInport vorticityVolume_;
+    DataInport<SpatialSampler<3, 3, double>> sampler_;
+    DataInport<SpatialSampler<3, 3, double>> vorticitySampler_;
     SeedPointsInport seedPoints_;
+    DataInport<std::vector<vec4>> colors_;
 
 
     StreamLineProperties streamLineProperties_;
@@ -88,6 +94,7 @@ private:
     FloatProperty ribbonWidth_;
 
     TransferFunctionProperty tf_;
+    TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
     StringProperty maxVorticity_;

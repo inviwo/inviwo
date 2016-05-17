@@ -32,39 +32,16 @@
 
 namespace inviwo {
 
-bool PortFactory::registerObject(PortFactoryObject *port) {
-    if (!util::insert_unique(map_, port->getClassIdentifier(), port)) {
-        LogWarn("Port with class name: " << port->getClassIdentifier() << " already registered");
-        return false;
-    }
-    return true;
+std::unique_ptr<Inport> InportFactory::create(const std::string &className,
+                                              const std::string &identifier) const {
+    return std::unique_ptr<Inport>(util::map_find_or_null(
+        map_, className, [&identifier](InportFactoryObject *o) { return o->create(identifier); }));
 }
 
-bool PortFactory::unRegisterObject(PortFactoryObject *port) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [port](Map::value_type &elem) { return elem.second == port; });
-
-    return removed > 0;
-}
-
-std::unique_ptr<Port> PortFactory::create(const std::string &className) const {
-    return create(className, "");
-}
-
-std::unique_ptr<Port> PortFactory::create(const std::string &className,
-                                          const std::string &identifier) const {
-    return std::unique_ptr<Port>(util::map_find_or_null(
-        map_, className, [&identifier](PortFactoryObject *o) { return o->create(identifier); }));
-}
-
-bool PortFactory::hasKey(const std::string &className) const {
-    return util::has_key(map_, className);
-}
-
-std::vector<std::string> PortFactory::getKeys() const {
-    auto res = std::vector<std::string>();
-    for (auto &elem : map_) res.push_back(elem.first);
-    return res;
+std::unique_ptr<Outport> OutportFactory::create(const std::string &className,
+                                                const std::string &identifier) const {
+    return std::unique_ptr<Outport>(util::map_find_or_null(
+        map_, className, [&identifier](OutportFactoryObject *o) { return o->create(identifier); }));
 }
 
 }  // namespace

@@ -23,14 +23,16 @@ const ProcessorInfo StreamLines::getProcessorInfo() const { return processorInfo
 
 StreamLines::StreamLines()
     : Processor()
-    , volume_("vectorvolume")
+    , sampler_("sampler")
     , seedPoints_("seedpoints")
     , linesStripsMesh_("linesStripsMesh_")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid) {
-    addPort(volume_);
+    
+
+    addPort(sampler_);
     addPort(seedPoints_);
     addPort(linesStripsMesh_);
 
@@ -54,24 +56,23 @@ StreamLines::~StreamLines() {}
 
 void StreamLines::process() {
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(volume_.getData()->getModelMatrix());
-    mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
+    mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
+    mesh->setWorldMatrix(sampler_.getData()->getWorldMatrix());
 
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(
-        volume_.getData()->getCoordinateTransformer());
+        sampler_.getData()->getCoordinateTransformer());
+
 
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    StreamLineTracer tracer(volume_.getData().get(), streamLineProperties_);
+    StreamLineTracer tracer(sampler_.getData(), streamLineProperties_);
 
     std::vector<BasicMesh::Vertex> vertices;
 
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto indexBuffer =
-                mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
             auto line = tracer.traceFrom(P.xyz());
 
             auto position = line.getPositions().begin();
@@ -79,6 +80,9 @@ void StreamLines::process() {
 
             auto size = line.getPositions().size();
             if (size == 0) continue;
+
+            auto indexBuffer =
+                mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
 
             indexBuffer->add(0);
 

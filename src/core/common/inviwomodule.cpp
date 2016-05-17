@@ -80,8 +80,11 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : metadata_) {
         app_->getMetaDataFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : ports_) {
-        app_->getPortFactory()->unRegisterObject(elem.get());
+    for (auto& elem : inports_) {
+        app_->getInportFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : outports_) {
+        app_->getOutportFactory()->unRegisterObject(elem.get());
     }
     for (auto& elem : portInspectors_) {
         app_->getPortInspectorFactory()->unRegisterObject(elem.get());
@@ -169,7 +172,13 @@ const std::vector<DialogFactoryObject*> InviwoModule::getDialogs() const {
     return uniqueToPtr(dialogs_);
 }
 const std::vector<MetaData*> InviwoModule::getMetaData() const { return uniqueToPtr(metadata_); }
-const std::vector<PortFactoryObject*> InviwoModule::getPorts() const { return uniqueToPtr(ports_); }
+const std::vector<InportFactoryObject*> InviwoModule::getInports() const {
+    return uniqueToPtr(inports_);
+}
+const std::vector<OutportFactoryObject*> InviwoModule::getOutports() const {
+    return uniqueToPtr(outports_);
+}
+
 const std::vector<PortInspectorFactoryObject*> InviwoModule::getPortInspectors() const {
     return uniqueToPtr(portInspectors_);
 }

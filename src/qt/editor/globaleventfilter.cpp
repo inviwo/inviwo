@@ -35,6 +35,8 @@
 #include <QEvent>
 #include <QApplication>
 #include <QGuiApplication>
+#include <QMouseEvent>
+#include <QTouchEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -46,23 +48,30 @@ GlobalEventFilter::GlobalEventFilter(InteractionStateManager &manager) : manager
 
 bool GlobalEventFilter::eventFilter(QObject *obj, QEvent *event) {
     switch (event->type()) {
-        case QEvent::MouseButtonPress:
-            if (pressCount_ == 0) manager_.beginInteraction();
-            ++pressCount_;
+        case QEvent::MouseButtonPress: {
+            manager_.beginInteraction();
             break;
-        case QEvent::MouseButtonRelease:
-            --pressCount_;
-            if (pressCount_ == 0) manager_.endInteraction();
+        }
+        case QEvent::MouseButtonRelease: {
+            auto me = static_cast<QMouseEvent *>(event);
+            if (me->buttons() == Qt::NoButton) {
+                manager_.endInteraction();
+            }
             break;
-
-        case QEvent::TouchBegin:
-            if (pressCount_ == 0) manager_.beginInteraction();
-            ++pressCount_;
+        }
+        case QEvent::TouchBegin: {
+            manager_.beginInteraction();
             break;
-        case QEvent::TouchEnd:
-            --pressCount_;
-            if (pressCount_ == 0) manager_.endInteraction();
+        }
+        case QEvent::TouchEnd: {
+            auto te = static_cast<QTouchEvent *>(event);
+            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint &tp) {
+                    return tp.state() == Qt::TouchPointReleased;
+                })) {
+                manager_.endInteraction();
+            }
             break;
+        }
         default:
             break;
     }

@@ -57,14 +57,14 @@ public:
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 
-    mat4 getSeedPointTransformationMatrix(const StructuredCoordinateTransformer<3>& T) const;
+    mat4 getSeedPointTransformationMatrix(const SpatialCoordinateTransformer<3>& T) const;
 
     int getNumberOfSteps() const;
     float getStepSize() const;
 
     IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
-    StructuredCoordinateTransformer<3>::Space getSeedPointsSpace() const;
+    SpatialCoordinateTransformer<3>::Space getSeedPointsSpace() const;
 
 private:
     void setUpProperties();
@@ -75,7 +75,7 @@ protected:
 
     TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
+    TemplateOptionProperty<SpatialCoordinateTransformer<3>::Space> seedPointsSpace_;
 };
 
 }  // namespace

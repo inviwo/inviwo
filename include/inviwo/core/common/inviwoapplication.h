@@ -69,7 +69,8 @@ class ProcessorWidgetFactory;
 class DialogFactory;
 class PropertyFactory;
 class PropertyWidgetFactory;
-class PortFactory;
+class OutportFactory;
+class InportFactory;
 class PortInspectorFactory;
 
 class Settings;
@@ -163,7 +164,8 @@ public:
     DialogFactory* getDialogFactory() const;
     MeshDrawerFactory* getMeshDrawerFactory() const;
     MetaDataFactory* getMetaDataFactory() const;
-    PortFactory* getPortFactory() const;
+    InportFactory* getInportFactory() const;
+    OutportFactory* getOutportFactory() const;
     PortInspectorFactory* getPortInspectorFactory() const;
     ProcessorFactory* getProcessorFactory() const;
     PropertyConverterManager* getPropertyConverterManager() const;
@@ -220,7 +222,8 @@ private:
     std::unique_ptr<DialogFactory> dialogFactory_;
     std::unique_ptr<MeshDrawerFactory> meshDrawerFactory_;
     std::unique_ptr<MetaDataFactory> metaDataFactory_;
-    std::unique_ptr<PortFactory> portFactory_;
+    std::unique_ptr<OutportFactory> outportFactory_;
+    std::unique_ptr<InportFactory> inportFactory_;
     std::unique_ptr<PortInspectorFactory> portInspectorFactory_;
     std::unique_ptr<ProcessorFactory> processorFactory_;
     std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
@@ -305,7 +308,11 @@ inline MetaDataFactory* InviwoApplication::getMetaDataFactory() const {
     return metaDataFactory_.get();
 }
 
-inline PortFactory* InviwoApplication::getPortFactory() const { return portFactory_.get(); }
+inline OutportFactory* InviwoApplication::getOutportFactory() const {
+    return outportFactory_.get();
+}
+
+inline InportFactory* InviwoApplication::getInportFactory() const { return inportFactory_.get(); }
 
 inline PortInspectorFactory* InviwoApplication::getPortInspectorFactory() const {
     return portInspectorFactory_.get();

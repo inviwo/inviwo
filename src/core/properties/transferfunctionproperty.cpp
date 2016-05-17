@@ -121,10 +121,10 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
-    modified |= zoomH_.deserialize(d);
-    modified |= zoomV_.deserialize(d);
-    modified |= showHistogram_.deserialize(d);
-    modified |= value_.deserialize(d);
+    modified |= zoomH_.deserialize(d, this->serializationMode_);
+    modified |= zoomV_.deserialize(d, this->serializationMode_);
+    modified |= showHistogram_.deserialize(d, this->serializationMode_);
+    modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
 

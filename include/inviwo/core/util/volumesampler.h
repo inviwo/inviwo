@@ -39,41 +39,89 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
+#include <inviwo/core/util/spatialsampler.h>
+
 namespace inviwo {
 
 class Volume;
 class VolumeRAM;
 
 /**
- * \class VolumeSampler
+ * \class VolumeDoubleSampler
  *
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  *
  * DESCRIBE_THE_CLASS
  */
-class IVW_CORE_API VolumeSampler {
+
+template <unsigned int DataDims>
+class VolumeDoubleSampler : public SpatialSampler<3, DataDims, double> {
 public:
-    VolumeSampler(const VolumeRAM *ram);
-    VolumeSampler(const Volume *vol);
-    VolumeSampler(std::shared_ptr<const Volume> sharedVolume);
-    virtual ~VolumeSampler();
+    VolumeDoubleSampler(std::shared_ptr<const Volume> vol) : SpatialSampler<3, DataDims, double>(vol), volume_(vol), ram_(vol->getRepresentation<VolumeRAM>()), dims_(vol->getDimensions()) {}
+    virtual ~VolumeDoubleSampler() {}
 
-    void setVectorInterpolation(bool enable);
-    bool getVectorInterpolation()const;
+    virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const override {
+        if (!withinBoundsDataSpace(pos)) {
+            return Vector<DataDims, double>(0.0);
+        }
+        dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+        size3_t indexPos = size3_t(samplePos);
+        dvec3 interpolants = samplePos - dvec3(indexPos);
 
-    dvec4 sample(const dvec3 &pos) const;
-    dvec4 sample(double x, double y, double z) const { return sample(dvec3(x, y, z)); }
-    dvec4 sample(const vec3 &pos) const { return sample(dvec3(pos)); }
+        Vector<DataDims, double> samples[8];
+        samples[0] = getVoxel(indexPos);
+        samples[1] = getVoxel(indexPos + size3_t(1, 0, 0));
+        samples[2] = getVoxel(indexPos + size3_t(0, 1, 0));
+        samples[3] = getVoxel(indexPos + size3_t(1, 1, 0));
 
-private:
-    dvec4 getVoxel(const size3_t &pos)const;
-    const VolumeRAM *vol_;
+        samples[4] = getVoxel(indexPos + size3_t(0, 0, 1));
+        samples[5] = getVoxel(indexPos + size3_t(1, 0, 1));
+        samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
+        samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
+
+        return Interpolation<Vector<DataDims, double>>::trilinear(
+            samples, interpolants, &Interpolation<Vector<DataDims, double>>::linear);
+    }
+
+protected:
+    Vector<DataDims, double> getVoxel(const size3_t &pos)const;
+
+    virtual bool withinBoundsDataSpace(const dvec3 &pos) const override {
+        if (glm::any(glm::lessThan(pos, dvec3(0.0)))) {
+            return false;
+        }
+        if (glm::any(glm::greaterThan(pos, dvec3(1.0)))) {
+            return false;
+        }
+        return true;
+    }
+
+    std::shared_ptr<const Volume> volume_;
+    const VolumeRAM* ram_;
     size3_t dims_;
-    bool vectorInterpolation_;
-    std::shared_ptr<const Volume> sharedVolume_;
 };
 
-template <typename T,typename P>
+
+
+
+template<> IVW_CORE_API
+Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const;
+
+template<> IVW_CORE_API
+Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const;
+
+template<> IVW_CORE_API
+Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const;
+
+template<> IVW_CORE_API
+Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const;
+
+
+using VolumeSampler = VolumeDoubleSampler<4>;
+
+
+
+template <typename T, typename P>
 class TemplateVolumeSampler {
 public:
     TemplateVolumeSampler(const VolumeRAM *ram)
@@ -87,13 +135,13 @@ public:
         sharedVolume_ = sharedVolume;
     }
 
-    virtual ~TemplateVolumeSampler(){}
+    virtual ~TemplateVolumeSampler() {}
 
     T sample(P x, P y, P z) { return sample(Vector<3, P>(x, y, z)); }
     T sample(const Vector<3, P> &pos) {
         Vector<3, P> samplePos = pos *  Vector<3, P>(dims_ - size3_t(1));
         size3_t indexPos = size3_t(samplePos);
-        Vector<3, P> interpolants = samplePos - Vector<3,P>(indexPos);
+        Vector<3, P> interpolants = samplePos - Vector<3, P>(indexPos);
 
         T samples[8];
         samples[0] = getVoxel(indexPos);
@@ -105,7 +153,7 @@ public:
         samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
         samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-        return Interpolation<T,P>::trilinear(samples, interpolants);
+        return Interpolation<T, P>::trilinear(samples, interpolants);
     }
 
 private:
@@ -113,12 +161,15 @@ private:
         auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
         return  data_[ic_(p)];
     }
-    
+
     const T *data_;
     size3_t dims_;
     util::IndexMapper3D ic_;
     std::shared_ptr<const Volume> sharedVolume_;
 };
+
+
+
 
 }  // namespace
 

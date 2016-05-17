@@ -24,49 +24,58 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/util/volumesequencesampler.h>
+#ifndef IVW_VOLUMETOSPATIALSAMPLER_H
+#define IVW_VOLUMETOSPATIALSAMPLER_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/util/spatialsampler.h>
 
 namespace inviwo {
 
-VolumeSequenceSampler::VolumeSequenceSampler(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence) {
-    for (const auto &vol : (*volumeSequence.get())) {
-        samplers_.emplace_back(vol);
-    }
-}
+/** \docpage{org.inviwo.VolumeToSpatialSampler, Volume To Spatial Sampler}
+ * ![](org.inviwo.VolumeToSpatialSampler.png?classIdentifier=org.inviwo.VolumeToSpatialSampler)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
-VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
-    dvec3 spatialPos = pos.xyz();
-    double t = pos.w;
-    while (t < 0) t += 1;
-    while (t > 1) t -= 1;
+/**
+ * \class VolumeToSpatialSampler
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BASE_API VolumeToSpatialSampler : public Processor { 
+public:
+    VolumeToSpatialSampler();
+    virtual ~VolumeToSpatialSampler() = default;
+     
+    virtual void process() override;
 
-    t *= (samplers_.size() - 1);
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+private:
+    VolumeInport volume_;
+    DataOutport<SpatialSampler<3, 3, double>> sampler_;
+};
 
-    int tIndex = static_cast<int>(t);
-    double tInterpolant = t - static_cast<float>(tIndex);
+} // namespace
 
-    dvec4 v0, v1;
-    v0 = getVoxel(spatialPos, tIndex);
-    v1 = getVoxel(spatialPos, tIndex + 1);
+#endif // IVW_VOLUMETOSPATIALSAMPLER_H
 
-    return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
-}
-
-dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) const {
-    return sample(dvec4(x, y, z, t));
-}
-
-dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
-
-dvec4 VolumeSequenceSampler::getVoxel(const dvec3 &pos, int T) const {
-    T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
-    return samplers_[T].sample(pos);
-}
-
-}  // namespace

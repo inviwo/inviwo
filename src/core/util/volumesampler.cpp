@@ -31,54 +31,29 @@
 
 namespace inviwo {
 
-VolumeSampler::VolumeSampler(const VolumeRAM *ram) 
-    : vol_(ram)
-    , dims_(ram->getDimensions())
-    , vectorInterpolation_(false) 
-    , sharedVolume_(nullptr)
-{}
-
-VolumeSampler::VolumeSampler(const Volume *vol)
-    : VolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
-
-VolumeSampler::VolumeSampler(std::shared_ptr<const Volume> sharedVolume)
-    : VolumeSampler(sharedVolume.get()) {
-    sharedVolume_ = sharedVolume;
-}
-
-VolumeSampler::~VolumeSampler() {}
-
-void VolumeSampler::setVectorInterpolation(bool enable) { vectorInterpolation_ = enable; }
-
-bool VolumeSampler::getVectorInterpolation() const { return vectorInterpolation_; }
-
-dvec4 VolumeSampler::sample(const dvec3 &pos) const {
-    dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
-    size3_t indexPos = size3_t(samplePos);
-    dvec3 interpolants = samplePos - dvec3(indexPos);
-
-    dvec4 samples[8];
-    samples[0] = getVoxel(indexPos);
-    samples[1] = getVoxel(indexPos + size3_t(1, 0, 0));
-    samples[2] = getVoxel(indexPos + size3_t(0, 1, 0));
-    samples[3] = getVoxel(indexPos + size3_t(1, 1, 0));
-
-    samples[4] = getVoxel(indexPos + size3_t(0, 0, 1));
-    samples[5] = getVoxel(indexPos + size3_t(1, 0, 1));
-    samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
-    samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
-
-    if (vectorInterpolation_) {
-        return Interpolation<dvec4>::trilinear(samples, interpolants, &Interpolation<dvec4>::linearVector);
+    template<>
+    Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const {
+        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+        return ram_->getAsDouble(p);
     }
-    else {
-        return Interpolation<dvec4>::trilinear(samples, interpolants, &Interpolation<dvec4>::linear);
-    }
-}
 
-dvec4 VolumeSampler::getVoxel(const size3_t &pos) const {
-    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-    return vol_->getAsNormalizedDVec4(p);
-}
+    template<>
+    Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const {
+        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+        return ram_->getAsDVec2(p);
+    }
+
+    template<>
+    Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const {
+        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+        return ram_->getAsDVec3(p);
+    }
+
+    template<>
+    Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const {
+        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+        return ram_->getAsDVec4(p);
+    }
+
 
 }  // namespace

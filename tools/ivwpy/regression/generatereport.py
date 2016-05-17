@@ -36,6 +36,7 @@ import datetime
 import contextlib
 import lesscpy
 import json
+import itertools
 
 # Beautiful Soup 4 for dom manipulation
 import bs4
@@ -288,7 +289,7 @@ class TestRun:
 			self.doc.asis(listItem(keyval("Diff", 
 				getDiffLink(lastSuccess.commit, firstFailure.commit)), toggle = False))
 
-	def sparkLine(self, series, klass, normalRange = True):
+	def sparkLine(self, series, klass, normalRange = True, valueRange = True):
 		doc, tag, text = yattag.Doc().tagtext()
 		data = self.db.getSeries(self.module, self.name, series)
 		xmax = self.created.timestamp()
@@ -299,10 +300,17 @@ class TestRun:
 
 		mean, std = stats([x.value for x in data.measurements])
 
-		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 
-			for x in data.measurements if x.created.timestamp() > xmin])
+		values = [x for x in data.measurements if x.created.timestamp() > xmin]
+		minval = min((x.value for x in values))
+		maxval = max((x.value for x in values))
+		datastr = ", ".join((str(x.created.timestamp()) + ":" + str(x.value) for x in values))
 
 		opts = { "sparkChartRangeMinX" : str(xmin), "sparkChartRangeMaxX" : str(xmax)}
+		if valueRange:
+			opts.update({
+				"sparkChartRangeMin" : str(min(values[-1].value, max(mean-3*std, minval))), 
+				"sparkChartRangeMax" : str(max(values[-1].value, min(mean+3*std, maxval)))
+			})
 		if normalRange:
 			opts.update({
 				"sparkNormalRangeMin" : str(mean-std), 
@@ -369,8 +377,8 @@ class TestRun:
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('div'):
 			text("{:1d} ".format(len(self.report["failures"])) + " ")
-			doc.asis(self.sparkLine("number_of_test_failures", 
-						            "sparkline-failues", normalRange = False))
+			doc.asis(self.sparkLine("number_of_failures", 
+						            "sparkline-failues", normalRange = False, valueRange= False))
 		return doc.getvalue()
 
 	def head(self):
@@ -418,7 +426,7 @@ class TestRun:
 						status = "ok" if nfail == 0 else "fail")
 
 class HtmlReport:
-	def __init__(self, basedir, reports, database):
+	def __init__(self, basedir, reports, database, header = None, footer = None):
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.db = database
 		self.basedir = basedir
@@ -449,7 +457,9 @@ class HtmlReport:
 					src = self.scriptDirname + "/" + script): text("")
 
 			with tag('body'):
-				with tag('div', id='reportlist'):
+				if header != None: 	self.doc.asis(header)
+
+				with tag('div', id='reportlist', klass='report'):
 					with tag("div"):
 						with tag('div', klass='titleimg'):
 							self.doc.stag('img', src= "_images/inviwo.png")
@@ -499,6 +509,7 @@ class HtmlReport:
 							tr = TestRun(self, report)
 							self.doc.asis(tr.getvalue())
 
+				if footer != None: 	self.doc.asis(footer)
 
 				with tag('script', language="javascript", 
 					src = self.scriptDirname + "/plotdata.js"): text("")	
@@ -520,8 +531,20 @@ class HtmlReport:
 			print("var summarydata = " +dataToJsArray([[x.timestamp()*1000, y] for x,y in runtimedata]), file = f)
 
 			resulttimedata = result_time_stats(self.db)
-			print("var passdata = " +dataToJsArray([[x.timestamp()*1000, y[0]] for x,y in resulttimedata]), file = f)
-			print("var faildata = " +dataToJsArray([[x.timestamp()*1000, y[1]] for x,y in resulttimedata]), file = f)
+
+			def makestep(a,b):
+				x1 = a[0].timestamp()*1000
+				x2 = b[0].timestamp()*1000
+				xm = (x1+x2)/2
+				y1 = a[1]
+				y2 = b[1]
+				return [[x1,y1], [xm, y1], [xm, y2]]
+
+			resulttimedata = list(addMidSteps(makestep, iter(resulttimedata), transform = lambda x: [x[0].timestamp()*1000, x[1]]))
+
+			print("var passdata = " +dataToJsArray([[x, y[0]] for x,y in resulttimedata]), file = f)
+			print("var faildata = " +dataToJsArray([[x, y[1]] for x,y in resulttimedata]), file = f)
+			print("var skipdata = " +dataToJsArray([[x, y[2]] for x,y in resulttimedata]), file = f)
 
 			plotdata = get_plot_data(self.db)
 			print("var plotdata = " + json.dumps(plotdata), file = f)

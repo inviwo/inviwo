@@ -37,23 +37,24 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortFactory : public Factory<Port> {
+class IVW_CORE_API InportFactory : public StandardFactory<Inport, InportFactoryObject> {
 public:
-    using Map = std::unordered_map<std::string, PortFactoryObject*>;
-    PortFactory() = default;
-    virtual ~PortFactory() = default;
+    InportFactory() = default;
+    virtual ~InportFactory() = default;
 
-    virtual bool registerObject(PortFactoryObject* property);
-    virtual bool unRegisterObject(PortFactoryObject* property);
+    using StandardFactory<Inport, InportFactoryObject>::create;
+    virtual std::unique_ptr<Inport> create(const std::string& className,
+                                           const std::string& identifier) const;
+};
 
-    virtual std::unique_ptr<Port> create(const std::string& className) const override;
-    virtual std::unique_ptr<Port> create(const std::string& className,
-                                         const std::string& identifier) const;
-    virtual bool hasKey(const std::string& className) const override;
-    virtual std::vector<std::string> getKeys() const;
+class IVW_CORE_API OutportFactory : public StandardFactory<Outport, OutportFactoryObject> {
+public:
+    OutportFactory() = default;
+    virtual ~OutportFactory() = default;
 
-protected:
-    Map map_;
+    using StandardFactory<Outport, OutportFactoryObject>::create;
+    virtual std::unique_ptr<Outport> create(const std::string& className,
+                                            const std::string& identifier) const;
 };
 
 }  // namespace

@@ -109,6 +109,8 @@ public:
 
     static std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color);
 
+    static std::shared_ptr<BasicMesh> torus(const vec3 &center, const vec3 &up= vec3(0,1,0), float r1=1.f, float r2=.3f, const ivec2 &subdivisions = ivec2(32, 8), vec4 color = vec4(1, 1, 1, 1));
+
 protected:
     static vec3 orthvec(const vec3& vec);
     static vec3 tospherical(const vec2& v);

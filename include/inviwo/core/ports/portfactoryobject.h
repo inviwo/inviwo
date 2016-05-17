@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PORTFACTORYOBJECT_H
@@ -33,39 +33,73 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
 
 namespace inviwo {
 
-class IVW_CORE_API PortFactoryObject {
+class IVW_CORE_API InportFactoryObject {
 public:
-    PortFactoryObject(const std::string& className);
-    virtual ~PortFactoryObject();
+    InportFactoryObject(const std::string& className);
+    virtual ~InportFactoryObject() = default;
 
-    virtual std::unique_ptr<Port> create(std::string identifier) = 0;
+    virtual std::unique_ptr<Inport> create() = 0;
+    virtual std::unique_ptr<Inport> create(const std::string& identifier) = 0;
+    const std::string& getClassIdentifier() const;
 
-    std::string getClassIdentifier() const;
-
-private:
+protected:
     std::string className_;
-
 };
 
-
-template<typename T>
-class PortFactoryObjectTemplate : public PortFactoryObject {
+template <typename T>
+class InportFactoryObjectTemplate : public InportFactoryObject {
 public:
-    PortFactoryObjectTemplate(const std::string& className)
-        : PortFactoryObject(className) {}
+    InportFactoryObjectTemplate(const std::string& className) : InportFactoryObject(className) {
+        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+    }
 
-    virtual ~PortFactoryObjectTemplate() {}
+    virtual ~InportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Port> create(std::string identifier) override{
+    virtual std::unique_ptr<Inport> create() override {
+        return util::make_unique<T>(className_);
+    }
+
+    virtual std::unique_ptr<Inport> create(const std::string& identifier) override {
         return util::make_unique<T>(identifier);
     }
 };
 
+class IVW_CORE_API OutportFactoryObject {
+public:
+    OutportFactoryObject(const std::string& className);
+    virtual ~OutportFactoryObject() = default;
 
-} // namespace
+    virtual std::unique_ptr<Outport> create() = 0;
+    virtual std::unique_ptr<Outport> create(const std::string& identifier) = 0;
+    const std::string& getClassIdentifier() const;
 
-#endif // IVW_PORTFACTORYOBJECT_H
+protected:
+    std::string className_;
+};
 
+template <typename T>
+class OutportFactoryObjectTemplate : public OutportFactoryObject {
+public:
+    OutportFactoryObjectTemplate(const std::string& className) : OutportFactoryObject(className) {
+        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+    }
+
+    virtual ~OutportFactoryObjectTemplate() = default;
+
+    virtual std::unique_ptr<Outport> create() override {
+        return util::make_unique<T>(className_);
+    }
+
+    virtual std::unique_ptr<Outport> create(const std::string& identifier) override {
+        return util::make_unique<T>(identifier);
+    }
+};
+
+}  // namespace
+
+#endif  // IVW_PORTFACTORYOBJECT_H

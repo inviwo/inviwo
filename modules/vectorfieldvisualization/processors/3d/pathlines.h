@@ -69,6 +69,11 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
 public:
+    enum class ColoringMethod{
+        Velocity, 
+        Timestamp,
+        ColorPort
+    };
     PathLines();
     virtual ~PathLines() = default;
 
@@ -91,6 +96,7 @@ private:
 
    
     TransferFunctionProperty tf_;
+    TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
 };

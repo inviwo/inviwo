@@ -34,8 +34,6 @@ namespace inviwo {
 
 Port::Port(std::string identifier) : identifier_(identifier), processor_(nullptr) {}
 
-Port::~Port() {}
-
 Processor* Port::getProcessor() const { return processor_; }
 
 std::string Port::getIdentifier() const { return identifier_; }

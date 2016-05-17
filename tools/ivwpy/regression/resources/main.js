@@ -27,6 +27,38 @@
  *
  *********************************************************************************/
  
+function sparkOptions(formater, extra = {}) {
+	opts = {
+		type : 'line', 
+		width : '75px', 
+		enableTagOptions: true,
+		fillColor : false,
+		lineColor : '#473386',
+		spotColor : '#222222',
+		highlightSpotColor : '#777777',
+		highlightLineColor : '#777777',
+		spotRadius : 2,
+		minSpotColor : false,
+		maxSpotColor : false,
+		normalRangeColor: '#B3EEB3',
+		drawNormalOnTop: false,
+		chartRangeClip: true,
+		tooltipFormatFieldlist : ['x', 'y'],
+		tooltipFormatter :  function(sp, options, fields) {
+			var retval = "";
+			if (!fields.isNull) {
+				retval += '<div class="jqsfield">';
+				retval += formater(new Date(1000*fields.x), fields.y);
+				retval += '</div>';
+			}
+			return retval;
+		}
+	};
+	jQuery.extend(opts, extra);
+	return opts;
+}
+
+
 $(document).ready(function() {
    	$('div.lihead').click(function() {
    			body = $(this).next(".libody") 			
@@ -34,80 +66,22 @@ $(document).ready(function() {
            	$.sparkline_display_visible();
     });
 
-	$('.sparkline_elapsed_time').sparkline('html', {
-		type : 'line', 
-		width : '75px', 
-		enableTagOptions: true,
-		fillColor : false,
-		lineColor : '#473386',
-		spotColor : '#C3AC3B',
-		minSpotColor : '#C3AC3B',
-		maxSpotColor : '#C3AC3B',
-		normalRangeColor: '#B3EEB3',
-		drawNormalOnTop: false,
-		tooltipFormatFieldlist : ['x', 'y'],
-		tooltipFormatter :  function(sp, options, fields) {
-			var retval = "";
-			if (!fields.isNull) {
-				var dateString = new Date(1000*fields.x).toLocaleString();
-				retval += '<div class="jqsfield">';
-				retval += 'Run time ' + dateString + ' : ' + fields.y.toPrecision(6) + 's';
-			    retval += '</div>';
-			}
-			return retval;
-		}
-	});
+	$('.sparkline_elapsed_time').sparkline('html', sparkOptions((date, val) => { 
+		return 'Run time ' + date.toLocaleString() + ' : ' + val.toPrecision(6) + 's'; 
+	}));
 
-	$('.sparkline_img_diff').sparkline('html', {
-		type : 'line', 
-		width : '75px', 
-		enableTagOptions: true,
-		fillColor : false,
-		lineColor : '#473386',
-		spotColor : '#C3AC3B',
-		minSpotColor : '#C3AC3B',
-		maxSpotColor : '#C3AC3B',
-		normalRangeColor: '#B3EEB3',
-		drawNormalOnTop: false,
-		tooltipFormatFieldlist : ['x', 'y'],
-		tooltipFormatter :  function(sp, options, fields) {
-			var retval = "";
-			if (!fields.isNull) {
-				var dateString = new Date(1000*fields.x).toLocaleString();
-				retval += '<div class="jqsfield">';
-				retval += 'Diff ' + dateString + ' : ' + fields.y.toPrecision(8) + '%';
-			    retval += '</div>';
-			}
-			return retval;
-		}
-	});
+	$('.sparkline_img_diff').sparkline('html', sparkOptions((date, val) => { 
+		return 'Diff ' + date.toLocaleString() + ' : ' + val.toPrecision(8) + '%'; 
+	}));
 	
-	$('.sparkline-failues').sparkline('html', {
-		type : 'line', 
-		width : '75px', 
-		enableTagOptions: true,
-		fillColor : false,
-		lineColor : '#473386',
-		spotColor : '#C3AC3B',
-		minSpotColor : '#C3AC3B',
-		maxSpotColor : '#C3AC3B',
+	$('.sparkline-failues').sparkline('html', sparkOptions((date, val) => { 
+		return 'Failures ' + date.toLocaleString() + ' : ' + val; 
+	}, {
 		chartRangeMin : 0, 
 		chartRangeMax : 6,
-		normalRangeColor: '#B3EEB3',
 		normalRangeMin : -0.5,
-		normalRangeMax : 0.5,
-		drawNormalOnTop: true,
-		tooltipFormatter :  function(sp, options, fields) {
-			var retval = "";
-			if (!fields.isNull) {
-				var dateString = new Date(1000*fields.x).toLocaleString();
-				retval += '<div class="jqsfield">';
-				retval += 'Failures ' + dateString + ' : ' + fields.y.toPrecision(8);
-			    retval += '</div>';
-			}
-			return retval;
-		}
-	});
+		normalRangeMax : 0.5
+	}));
 
 	$('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
 	

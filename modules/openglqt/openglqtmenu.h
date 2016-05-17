@@ -48,23 +48,22 @@ namespace inviwo {
 class ShaderObject;
 class ShaderWidget;
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QObject {
+class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QMenu {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT
     #include <warn/pop>
 public:
-    OpenGLQtMenu();
+    OpenGLQtMenu(QWidget* parent);
     virtual ~OpenGLQtMenu() = default;
 
 private:
     void showShader(const ShaderObject* obj);
     void shadersReload();
-    void updateShadersMenu();
-
+   
     void addShaderObjects(Shader* shader, QMenu* menuItem);
 
-    QMenu* menu_;
+    //QMenu* menu_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
     std::unordered_map<unsigned int, ShaderWidget*> editors_;
     

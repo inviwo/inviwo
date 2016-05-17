@@ -44,7 +44,6 @@ public:
 
 private:
     std::unique_ptr<CanvasQt> sharedCanvas_;
-    std::unique_ptr<OpenGLQtMenu> menu_;
 };
 
 }  // namespace

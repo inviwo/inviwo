@@ -34,18 +34,24 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(const Volume *vol, const StreamLineProperties &properties)
+StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> vol, const StreamLineProperties &properties)
     : IntegralLineTracer(properties)
-    , volumeSampler_(vol->getRepresentation<VolumeRAM>())
+    , volumeSampler_(vol)
     , invBasis_(dmat3(glm::inverse(vol->getBasis())))
-    , dimensions_(vol->getDimensions())
     , normalizeSample_(properties.getNormalizeSamples())
-{}
+{
+
+}
 
 StreamLineTracer::~StreamLineTracer() {}
 
-void StreamLineTracer::addMetaVolume(const std::string &name, const VolumeRAM *vol) {
-    metaVolumes_.insert(std::make_pair(name, VolumeSampler(vol)));
+void StreamLineTracer::addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol) {
+    metaSamplers_.insert(std::make_pair(name, std::make_shared<VolumeDoubleSampler<3>>(vol)));
+}
+
+
+void StreamLineTracer::addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler) {
+    metaSamplers_.insert(std::make_pair(name, sampler));
 }
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
@@ -57,7 +63,7 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
 
     line.positions_.reserve(steps_ + 2);
     line.metaData_["velocity"].reserve(steps_ + 2);
-    for (auto m : metaVolumes_) {
+    for (auto &m : metaSamplers_) {
         line.metaData_[m.first].reserve(steps_ + 2);
     }
 
@@ -86,13 +92,9 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) {
 
 void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd) {
     for (int i = 0; i <= steps; i++) {
-        if (curPos.x < 0) break;
-        if (curPos.y < 0) break;
-        if (curPos.z < 0) break;
-
-        if (curPos.x > 1 - 1.0 / dimensions_.x) break;
-        if (curPos.y > 1 - 1.0 / dimensions_.y) break;
-        if (curPos.z > 1 - 1.0 / dimensions_.z) break;
+        if (!volumeSampler_->withinBounds(curPos)) {
+            break;
+        }
 
         dvec3 v;
         switch (integrationScheme_)
@@ -111,15 +113,15 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
         }
 
         
-        dvec3 worldVelocty = volumeSampler_.sample(curPos).xyz();
+        dvec3 worldVelocty = volumeSampler_->sample(curPos).xyz();
 
 
         if (normalizeSample_) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize_ * (fwd ? 1.0 : -1.0));
         line.positions_.push_back(curPos);
         line.metaData_["velocity"].push_back(worldVelocty);
-        for (auto m : metaVolumes_) {
-            line.metaData_[m.first].push_back(m.second.sample(curPos).xyz());
+        for (auto &m : metaSamplers_) {
+            line.metaData_[m.first].push_back(m.second->sample(curPos));
         }
 
         curPos += velocity;
@@ -127,7 +129,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
 }
 
 dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
-    return volumeSampler_.sample(curPos).xyz();
+    return volumeSampler_->sample(curPos).xyz();
 }
 
 dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
@@ -135,16 +137,16 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
     if (!fwd) h = -h;
     auto h2 = h / 2;
 
-    auto k1 = volumeSampler_.sample(curPos).xyz();
+    auto k1 = volumeSampler_->sample(curPos).xyz();
     if (normalizeSample_) k1 = glm::normalize(k1);
     auto K1 = m * k1;
-    auto k2 = volumeSampler_.sample(curPos + K1 * h2).xyz();
+    auto k2 = volumeSampler_->sample(curPos + K1 * h2).xyz();
     if (normalizeSample_) k2 = glm::normalize(k2);
     auto K2 = m * k2;
-    auto k3 = volumeSampler_.sample(curPos + K2 * h2).xyz();
+    auto k3 = volumeSampler_->sample(curPos + K2 * h2).xyz();
     if (normalizeSample_) k3 = glm::normalize(k3);
     auto K3 = m * k3;
-    auto k4 = volumeSampler_.sample(curPos + K3 * h).xyz();
+    auto k4 = volumeSampler_->sample(curPos + K3 * h).xyz();
     if (normalizeSample_) k4 = glm::normalize(k4);
 
     return (k1+2.0*(k2+k3)+k4 )/6.0;

@@ -145,8 +145,8 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
             continue;
         }
 
-        float w = fontface_->glyph->bitmap.width;
-        float h = fontface_->glyph->bitmap.rows;
+        float w = static_cast<float>(fontface_->glyph->bitmap.width);
+        float h = static_cast<float>(fontface_->glyph->bitmap.rows);
 
         if (y == 0.0f) y += h;
 

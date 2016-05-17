@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -67,10 +68,9 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     canvas_->setMouseTracking(true);
     canvas_->setAttribute(Qt::WA_OpaquePaintEvent);
 
-    QGridLayout* gridLayout = new QGridLayout;
+    QGridLayout* gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(canvas_.get(), 0, 0);
-    setLayout(gridLayout);
 
     setWindowFlags(Qt::Tool);
     setDimensions(dim);
@@ -112,17 +112,15 @@ void CanvasProcessorWidgetQt::hide() {
     CanvasProcessorWidgetQt::setVisible(false);
 }
 
-void CanvasProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    LogInfo("setPos " << pos);
-
-    if( pos != utilqt::toGLM(QWidget::pos())) {
-        QWidget::move(pos.x, pos.y); // This will trigger a move event.
+void CanvasProcessorWidgetQt::setPosition(ivec2 pos) {
+    if (pos != utilqt::toGLM(QWidget::pos())) {
+        QWidget::move(pos.x, pos.y);  // This will trigger a move event.
     }
 }
 
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    if( dimensions != utilqt::toGLM(QWidget::size())) {
-        QWidget::resize(dimensions.x, dimensions.y); // This will trigger a resize event.
+    if (dimensions != utilqt::toGLM(QWidget::size())) {
+        QWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
     }
 }
 

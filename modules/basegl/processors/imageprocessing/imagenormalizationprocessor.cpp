@@ -113,11 +113,11 @@ void ImageNormalizationProcessor::invalidateMinMax() {
     auto df = img->getDataFormat();
     if (df->getNumericType() == NumericType::SignedInteger ||
         df->getNumericType() == NumericType::UnsignedInteger) {
-        if (df->getSize() >= 4) {
+        if (df->getSize() > 8) {
             LogWarn(
                 "Image Normalization only works on float data or Integer data  with 8 or 16 bit "
                 "precision, got:  "
-                << df->getSize() * 4);
+                << df->getSize() * 8);
         }
     }
 

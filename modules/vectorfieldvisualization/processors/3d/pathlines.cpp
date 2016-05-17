@@ -59,6 +59,7 @@ PathLines::PathLines()
 
 
 
+    , coloringMethod_("coloringMethod","Color by")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
@@ -77,6 +78,7 @@ PathLines::PathLines()
     maxVelocity_.setReadOnly(true);
 
     addProperty(tf_);
+    addProperty(coloringMethod_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
 
@@ -84,6 +86,10 @@ PathLines::PathLines()
     tf_.get().addPoint(vec2(0, 1), vec4(0, 0, 1, 1));
     tf_.get().addPoint(vec2(0.5, 1), vec4(1, 1, 0, 1));
     tf_.get().addPoint(vec2(1, 1), vec4(1, 0, 0, 1));
+
+    coloringMethod_.addOption("vel", "Velocity", ColoringMethod::Velocity);
+    coloringMethod_.addOption("time", "Timestamp", ColoringMethod::Timestamp);
+    coloringMethod_.addOption("port", "Colors in port", ColoringMethod::ColorPort);
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -110,6 +116,9 @@ void PathLines::process() {
     size_t i = 0;
     bool hasColors = colors_.hasData();
 
+    bool warnOnce = true;
+    bool warnOnce2 = true;
+
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
@@ -118,6 +127,7 @@ void PathLines::process() {
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
+            auto timestamp = line.getMetaData("timestamp").begin();
 
             auto size = line.getPositions().size();
             if (size == 0) continue;
@@ -130,25 +140,45 @@ void PathLines::process() {
             vec4 c;
             if (hasColors) {
                 if (i >= colors_.getData()->size()) {
-                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                    if (warnOnce2) {
+                        warnOnce2 = false;
+                        LogWarn("The vector of colors is smaller then the vector of seed points");
+                    }
                 }
                 else {
                     c = colors_.getData()->at(i);
                 }
-
-
-                i++;
             }
+            i++;
 
             for (size_t ii = 0; ii < size; ii++) {
                 vec3 pos(*position);
                 vec3 v(*velocity);
+                float t =  static_cast<float>((*timestamp).x);
 
                 float l = glm::length(v);
                 float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
                 maxVelocity = std::max(maxVelocity, l);
-                if (!hasColors) {
+
+                switch (coloringMethod_.get())
+                {
+                case ColoringMethod::Timestamp:
+                    c = vec4(tf.sample(dvec2(t, 0.0)));
+                    break;
+                case ColoringMethod::ColorPort:
+                    if (hasColors) {
+                        break;
+                    }
+                    else {
+                        if (warnOnce) {
+                            warnOnce = false;
+                            LogWarn("No colors in the color port, using velocity for coloring instead ");
+                        }
+                    }
+                case ColoringMethod::Velocity:
                     c = vec4(tf.sample(dvec2(d, 0.0)));
+                default:
+                    break;
                 }
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
@@ -157,6 +187,7 @@ void PathLines::process() {
 
                 position++;
                 velocity++;
+                timestamp++;
             }
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()-1));
         }

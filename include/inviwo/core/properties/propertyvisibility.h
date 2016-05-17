@@ -33,8 +33,8 @@
 namespace inviwo {
 
 enum class UsageMode {
-    Application = 0, // Default, always show property
-    Development = 1, // Only show in developer mode
+    Application = 0, // Always show property
+    Development = 1, // Default, Only show in developer mode
 };
 
 } //namespace

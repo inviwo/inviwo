@@ -60,7 +60,7 @@ public:
     virtual void setVisible(bool visible) override;
     virtual void show() override;
     virtual void hide() override;
-    virtual void setPosition(glm::ivec2 pos) override; 
+    virtual void setPosition(ivec2 pos) override; 
     virtual void setDimensions(ivec2 dimensions) override;
 
     virtual Canvas* getCanvas() const override;

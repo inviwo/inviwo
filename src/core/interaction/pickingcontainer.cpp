@@ -243,7 +243,7 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
 }
 
 vec2 PickingContainer::normalizedMovement(const uvec2& previous, const uvec2& current) const {
-    return normalizedCoordinates(current - previous);
+    return normalizedCoordinates(current) - normalizedCoordinates(previous);
 }
 
 vec2 PickingContainer::normalizedCoordinates(const uvec2& coord) const {

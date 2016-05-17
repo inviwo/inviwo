@@ -64,11 +64,16 @@ void Processor::addPort(Inport* port, const std::string& portGroup) {
     port->setProcessor(this);
     inports_.push_back(port);
     addPortToGroup(port, portGroup);
+
     notifyObserversProcessorPortAdded(this, port);
 }
 
 void Processor::addPort(Inport& port, const std::string& portGroup) {
     addPort(&port, portGroup);
+}
+void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
+    addPort(port.get(), portGroup);
+    ownedInports_.push_back(std::move(port));
 }
 
 void Processor::addPort(Outport* port, const std::string& portGroup) {
@@ -80,11 +85,17 @@ void Processor::addPort(Outport* port, const std::string& portGroup) {
     port->setProcessor(this);
     outports_.push_back(port);
     addPortToGroup(port, portGroup);
+
     notifyObserversProcessorPortAdded(this, port);
 }
 
 void Processor::addPort(Outport& port, const std::string& portDependencySet) {
     addPort(&port, portDependencySet);
+}
+
+void Processor::addPort(std::unique_ptr<Outport> port, const std::string& portGroup) {
+    addPort(port.get(), portGroup);
+    ownedOutports_.push_back(std::move(port));
 }
 
 Port* Processor::removePort(const std::string& identifier) {
@@ -100,6 +111,17 @@ Inport* Processor::removePort(Inport* port) {
     port->setProcessor(nullptr);
     util::erase_remove(inports_, port);
     removePortFromGroups(port);
+
+    // This will delete the port if owned
+    util::erase_remove_if(ownedInports_, [&port](const std::unique_ptr<Inport>& p) {
+        if (p.get() == port) {
+            port = nullptr;
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     return port;
 }
 
@@ -108,6 +130,17 @@ Outport* Processor::removePort(Outport* port) {
     port->setProcessor(nullptr);
     util::erase_remove(outports_, port);
     removePortFromGroups(port);
+
+    // This will delete the port if owned
+    util::erase_remove_if(ownedOutports_, [&port](const std::unique_ptr<Outport>& p) {
+        if (p.get() == port) {
+            port = nullptr;
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     return port;
 }
 
@@ -273,6 +306,14 @@ void Processor::serialize(Serializer& s) const {
     for (auto& item : portGroups_) portGroups[item.first->getIdentifier()] = item.second;
     s.serialize("PortGroups", portGroups, "PortGroup");
 
+    auto ownedInportIds = util::transform(
+        ownedInports_, [](const std::unique_ptr<Inport>& p) { return p->getIdentifier(); });
+    s.serialize("OwnedInportIdentifiers", ownedInportIds, "InportIdentifier");
+
+    auto ownedOutportIds = util::transform(
+        ownedOutports_, [](const std::unique_ptr<Outport>& p) { return p->getIdentifier(); });
+    s.serialize("OwnedOutportIdentifiers", ownedOutportIds, "OutportIdentifier");
+
     s.serialize("InPorts", inports_, "InPort");
     s.serialize("OutPorts", outports_, "OutPort");
 
@@ -290,21 +331,45 @@ void Processor::deserialize(Deserializer& d) {
     std::map<std::string, std::string> portGroups;
     d.deserialize("PortGroups", portGroups, "PortGroup");
 
+    std::vector<std::string> ownedInportIds;
+    d.deserialize("OwnedInportIdentifiers", ownedInportIds, "InportIdentifier");
+
     auto desInports =
         util::IdentifiedDeserializer<std::string, Inport*>("InPorts", "InPort")
             .setGetId([](Inport* const& port) { return port->getIdentifier(); })
             .setMakeNew([]() { return nullptr; })
+            .setNewFilter([&](const std::string& id, size_t ind) {
+                return util::contains(ownedInportIds, id);
+            })
             .onNew([&](Inport*& port) { addPort(port, portGroups[port->getIdentifier()]); })
-            .onRemove([&](const std::string& id) { delete removePort(id); });
+            .onRemove([&](const std::string& id) {
+                if (util::contains_if(ownedInports_, [&](std::unique_ptr<Inport>& op) {
+                        return op->getIdentifier() == id;
+                    })) {
+                    delete removePort(id);
+                }
+            });
 
     desInports(d, inports_);
+
+    std::vector<std::string> ownedOutportIds;
+    d.deserialize("OwnedOutportIdentifiers", ownedOutportIds, "OutportIdentifier");
 
     auto desOutports =
         util::IdentifiedDeserializer<std::string, Outport*>("OutPorts", "OutPort")
             .setGetId([](Outport* const& port) { return port->getIdentifier(); })
             .setMakeNew([]() { return nullptr; })
+            .setNewFilter([&](const std::string& id, size_t ind) {
+                return util::contains(ownedInportIds, id);
+            })
             .onNew([&](Outport*& port) { addPort(port, portGroups[port->getIdentifier()]); })
-            .onRemove([&](const std::string& id) { delete removePort(id); });
+            .onRemove([&](const std::string& id) {
+                if (util::contains_if(ownedOutports_, [&](std::unique_ptr<Outport>& op) {
+                        return op->getIdentifier() == id;
+                    })) {
+                    delete removePort(id);
+                }
+            });
 
     desOutports(d, outports_);
 

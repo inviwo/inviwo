@@ -97,7 +97,8 @@ private:
         Cone,
         Cylinder,
         Arrow,
-        CoordAxes
+        CoordAxes, 
+        Torus
     };
 
     MeshOutport outport_;
@@ -106,6 +107,8 @@ private:
     FloatVec3Property position2_;
     FloatVec3Property normal_;
     FloatVec4Property color_;
+    FloatProperty torusRadius1_;
+    FloatProperty torusRadius2_;
     
     BasisProperty basis_;
 

@@ -50,28 +50,33 @@ const ProcessorInfo StreamRibbons::getProcessorInfo() const {
 
 StreamRibbons::StreamRibbons()
     : Processor()
-    , vectorVolume_("vectorVolume")
-    , vorticityVolume_("vorticityVolume")
+    , sampler_("vectorVolume")
+    , vorticitySampler_("vorticityVolume")
     , seedPoints_("seedpoints")
+    , colors_("colors")
     , mesh_("mesh")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
     , tf_("transferFunction", "Transfer Function")
+    , coloringMethod_("coloringMethod", "Color by")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Max Velocity", "0", InvalidationLevel::Valid)
     , maxVorticity_("maxVorticity", "Max Vorticity", "0", InvalidationLevel::Valid)
 
 {
-    addPort(vectorVolume_);
-    addPort(vorticityVolume_);
+    addPort(sampler_);
+    addPort(vorticitySampler_);
     addPort(seedPoints_);
+    addPort(colors_);
     addPort(mesh_);
 
+    colors_.setOptional(true);
     
     addProperty(streamLineProperties_);
     addProperty(ribbonWidth_);
 
     addProperty(tf_);
+    addProperty(coloringMethod_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
     addProperty(maxVorticity_);
@@ -79,23 +84,34 @@ StreamRibbons::StreamRibbons()
     maxVelocity_.setReadOnly(true);
     maxVorticity_.setReadOnly(true);
 
+    coloringMethod_.addOption("vel", "Velocity", ColoringMethod::Velocity);
+    coloringMethod_.addOption("vorticity", "Vorticity", ColoringMethod::Vorticity);
+    coloringMethod_.addOption("port", "Colors in port", ColoringMethod::ColorPort);
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
 void StreamRibbons::process() {
     //*
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(vectorVolume_.getData()->getModelMatrix());
-    mesh->setWorldMatrix(vectorVolume_.getData()->getWorldMatrix());
+    mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
+    mesh->setWorldMatrix(sampler_.getData()->getWorldMatrix());
 
-    auto m = streamLineProperties_.getSeedPointTransformationMatrix(vectorVolume_.getData()->getCoordinateTransformer());
+    auto m = streamLineProperties_.getSeedPointTransformationMatrix(
+        sampler_.getData()->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
-    StreamLineTracer tracer(vectorVolume_.getData().get(), streamLineProperties_);
+    StreamLineTracer tracer(sampler_.getData(), streamLineProperties_);
     ImageSampler tf(tf_.get().getData());
-    tracer.addMetaVolume("vorticity", vorticityVolume_.getData()->getRepresentation<VolumeRAM>());
-    mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
+    tracer.addMetaSampler("vorticity", vorticitySampler_.getData());
+  //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
+    mat3 invBasis;
     std::vector<BasicMesh::Vertex> vertices;
+
+
+    bool hasColors = colors_.hasData();
+    size_t lineId = 0;
+
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
@@ -108,22 +124,56 @@ void StreamRibbons::process() {
 
             auto size = line.getPositions().size();
 
+
+
+            vec4 c;
+            if (hasColors) {
+                if (lineId >= colors_.getData()->size()) {
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                }
+                else {
+                    c = colors_.getData()->at(lineId);
+                }
+            }
+            lineId++;
+
+
             for (size_t i = 0; i < size; i++) {
                 auto vort = invBasis * glm::normalize(vec3(*vorticity));
                 auto velo = invBasis * glm::normalize(vec3(*velocity));
                 auto N = glm::normalize(glm::cross(vort, velo));
                 vort *= (0.5f * ribbonWidth_.get());
-                auto l = glm::length(*velocity);
-                float d = glm::clamp(static_cast<float>(l) / velocityScale_.get(), 0.0f, 1.0f);
+                auto velocityMagnitude = glm::length(*velocity);
                 auto vortictyMagnitude = glm::length(*vorticity);
 
-                maxVelocity = std::max(maxVelocity, l);
+                maxVelocity = std::max(maxVelocity, velocityMagnitude);
                 maxVorticity = std::max(maxVorticity, vortictyMagnitude);
 
                 vec3 p0 = vec3(*position) - vort;
                 vec3 p1 = vec3(*position) + vort;
 
-                auto c = vec4(tf.sample(dvec2(d, 0.0)));
+                
+                float d;
+                switch (coloringMethod_.get())
+                {
+                case ColoringMethod::Vorticity:
+                    d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
+                    c = vec4(tf.sample(dvec2(d, 0.0)));
+                    break;
+                case ColoringMethod::ColorPort:
+                    if (hasColors) { 
+                        break;
+                    }
+                    else {
+                        LogWarn("No colors in the color port, using velocity for coloring instead ");
+                    }
+                case ColoringMethod::Velocity:
+                    d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
+                    c = vec4(tf.sample(dvec2(d, 0.0)));
+                default:
+                    break;
+                }
+               
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()+1));

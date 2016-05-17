@@ -52,7 +52,7 @@ public:
     virtual void process() override;
 
 protected:
-    VolumeInport volume_;
+    DataInport<SpatialSampler<3, 3, double>> sampler_;
     SeedPointsInport seedPoints_;
 
     MeshOutport linesStripsMesh_;

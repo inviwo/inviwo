@@ -49,11 +49,12 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
 public:
 
-    StreamLineTracer(const Volume *vol , const StreamLineProperties &properties);
+    StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> vol, const StreamLineProperties &properties);
 
     virtual ~StreamLineTracer();
 
-    void addMetaVolume(const std::string &name, const VolumeRAM *vol);
+    void addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol);
+    void addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler);
 
     IntegralLine traceFrom(const dvec3 &p);
     IntegralLine traceFrom(const vec3 &p);
@@ -65,9 +66,8 @@ private:
     dvec3 rk4(const dvec3 &curPos , const dmat3 &m , bool fwd);
 
     dmat3 invBasis_;
-    std::map<std::string, VolumeSampler> metaVolumes_;
-    VolumeSampler volumeSampler_;
-    size3_t dimensions_;
+    std::map<std::string, std::shared_ptr<const SpatialSampler<3,3,double>>> metaSamplers_;
+    std::shared_ptr<const SpatialSampler<3, 3, double>> volumeSampler_;
 
 
     bool normalizeSample_;

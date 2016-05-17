@@ -34,6 +34,7 @@
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
@@ -57,11 +58,14 @@ public:
 
     void deserialize(Deserializer& d) override;
 
+    bool isLoopingAllowed()const { return allowLooping_.get(); }
+
 private:
     void setUpProperties();
 
 protected:
     DoubleProperty startT_;
+    BoolProperty allowLooping_;
 };
 
 }  // namespace

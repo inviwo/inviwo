@@ -31,12 +31,17 @@
 
 namespace inviwo {
 
-PortFactoryObject::PortFactoryObject(const std::string& className)
+InportFactoryObject::InportFactoryObject(const std::string& className)
     : className_(className) {}
 
-PortFactoryObject::~PortFactoryObject() {}
+const std::string& InportFactoryObject::getClassIdentifier() const {
+    return className_;
+}
 
-std::string PortFactoryObject::getClassIdentifier() const {
+OutportFactoryObject::OutportFactoryObject(const std::string& className)
+    : className_(className) {}
+
+const std::string& OutportFactoryObject::getClassIdentifier() const {
     return className_;
 }
 

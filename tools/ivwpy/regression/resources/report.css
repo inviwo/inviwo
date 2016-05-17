@@ -26,6 +26,13 @@
 @color-complement-3: #55C055;
 @color-complement-4: #2F9C2F;
 
+body {
+    margin: 0px 0px 0px 0px; 
+}
+
+div.report {
+    margin: 8px 8px 8px 8px; 
+}
 
 ul,ol {
     margin : 0px;
@@ -108,10 +115,11 @@ div.slider div.zoom  img {
 
 div.slider div.imgtestlabel {
     display : inline;
-    flex : 1;
+    flex    : 1;
     padding : 5px;
-    margin : 0px;
-    border : 1px transparent #000000;
+    margin  : 0px;
+    border  : 1px #000000;
+    border-color : transparent;
 }
 
 img.zoomImg {

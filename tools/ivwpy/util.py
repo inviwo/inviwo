@@ -80,6 +80,20 @@ def pad_infinite(iterable, padding=None):
 def pad(iterable, size, padding=None):
    return itertools.islice(pad_infinite(iterable, padding), size)
 
+def addMidSteps(func, iterable, transform = lambda x: x):
+	''' s -> s1, func(s1,s2), s2, func(s2,s3), s3'''
+	tmp = next(iterable)
+	yield transform(tmp)
+	for n in iterable:
+		res = func(tmp, n)
+		try:
+			for r in res: yield r
+		except TypeError:
+			yield res
+		tmp = n
+		yield transform(n)
+
+
 def makeSlice(string):
 	def toInt(s):
 		try:

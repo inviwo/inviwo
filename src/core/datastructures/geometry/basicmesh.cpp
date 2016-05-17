@@ -745,6 +745,62 @@ std::shared_ptr<BasicMesh> BasicMesh::boundingBoxAdjacency(const mat4& basisando
     return mesh;
 }
 
+std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, float r1, float r2, const ivec2 &subdivisions, vec4 color) {
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(mat4(1.f));
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+
+    vec3 side;
+    auto up = glm::normalize(up_);
+    if (std::abs(std::abs(glm::dot(up, vec3(0, 1, 0)))-1) < std::numeric_limits<float>::epsilon()) {
+        side = vec3(1, 0, 0);
+    }
+    else {
+        side = glm::normalize(glm::cross(up, vec3(0, 1, 0)));
+    }
+
+    LogInfoCustom("BasicMesh::torus",up << side);
+
+    auto numVertex = subdivisions.x*subdivisions.y;
+
+    for (int i = 0; i < subdivisions.x; i++) {
+        auto axis = glm::rotate(side, static_cast<float>(i * 2 * M_PI / subdivisions.x), up);
+        auto centerP = center + axis*r1;
+        
+        auto N = glm::normalize(glm::cross(axis, up));
+
+        int startI = i * subdivisions.y;
+        int startJ = ((i+1)% subdivisions.x) * subdivisions.y;
+
+        for (int j = 0; j < subdivisions.y; j++) {
+            auto axis2 = glm::rotate(axis, static_cast<float>(j * 2 * M_PI / subdivisions.y), N);
+            auto VP = centerP + axis2*r2;
+            
+            mesh->addVertex(VP, axis2, VP, color);
+
+            int i0 = startI + j;
+            int i1 = startI + j + 1;
+            int j0 = startJ + j;
+            int j1 = startJ + j + 1;
+            
+            inds->add(i0%numVertex);
+            inds->add(i1%numVertex);
+            inds->add(j0%numVertex);
+
+            inds->add(j0%numVertex);
+            inds->add(j1%numVertex);
+            inds->add(i1%numVertex);
+
+
+
+        }
+    }
+
+
+    return mesh;
+
+}
+
 std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal,
                                              const glm::vec2& extent,
                                              const vec4& color /*= vec4(1,1,1,1)*/,

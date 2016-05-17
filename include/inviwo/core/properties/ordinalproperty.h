@@ -260,11 +260,11 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
-    modified |= minValue_.deserialize(d);
-    modified |= maxValue_.deserialize(d);
-    modified |= increment_.deserialize(d);
-    modified |= value_.deserialize(d);
-    if(modified) this->propertyModified();
+    modified |= minValue_.deserialize(d, this->serializationMode_);
+    modified |= maxValue_.deserialize(d, this->serializationMode_);
+    modified |= increment_.deserialize(d, this->serializationMode_);
+    modified |= value_.deserialize(d, this->serializationMode_);
+    if (modified) this->propertyModified();
 }
 
 }  // namespace
