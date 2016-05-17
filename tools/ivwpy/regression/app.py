@@ -231,8 +231,12 @@ class App:
 			for name, report in self.reports.items():
 				report['status'] = "old"
 
-	def saveHtml(self):
-		html = HtmlReport(basedir = self.output, reports = self.reports, database = self.db)
+	def saveHtml(self, header = None, footer = None):
+		html = HtmlReport(basedir = self.output, 
+						  reports = self.reports, 
+						  database = self.db, 
+						  header = header, 
+						  footer = footer)
 		filepath = html.saveHtml(self.htmlFile)
 		shutil.copyfile(filepath, toPath(self.output, 
 	    	self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))

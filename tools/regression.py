@@ -110,6 +110,8 @@ def makeCmdParser():
 						help="List all tests")
 	parser.add_argument("--imagetolerance", type=float, action="store", dest="imagetolerance", default=0.0,
 						help="Tolerance when comparing images")
+	parser.add_argument('--header', type=str, action="store", dest="header", help='A optional report header', default=None)
+	parser.add_argument('--footer', type=str, action="store", dest="footer", help='A optional report footer', default=None)
 
 	return parser.parse_args()
 
@@ -206,8 +208,18 @@ if __name__ == '__main__':
 
 	try:
 		app.runTests(testrange = testrange, testfilter = testfilter)
-		app.saveJson()	
-		app.saveHtml()
+		app.saveJson()
+
+		header = None
+		if args.header and os.path.exists(args.header):
+			with open(args.header) as f:
+				header = f.read()
+		footer = None
+		if args.footer and args.os.path.exists(args.footer):
+			with open(args.footer) as f:
+				footer = f.read()
+		
+		app.saveHtml(header = header, footer = footer)
 
 		if app.success():
 			print_info("Regression was successful")

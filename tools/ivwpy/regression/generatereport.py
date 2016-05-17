@@ -419,7 +419,7 @@ class TestRun:
 						status = "ok" if nfail == 0 else "fail")
 
 class HtmlReport:
-	def __init__(self, basedir, reports, database):
+	def __init__(self, basedir, reports, database, header = None, footer = None):
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.db = database
 		self.basedir = basedir
@@ -450,7 +450,9 @@ class HtmlReport:
 					src = self.scriptDirname + "/" + script): text("")
 
 			with tag('body'):
-				with tag('div', id='reportlist'):
+				if header != None: 	self.doc.asis(header)
+
+				with tag('div', id='reportlist', klass='report'):
 					with tag("div"):
 						with tag('div', klass='titleimg'):
 							self.doc.stag('img', src= "_images/inviwo.png")
@@ -500,6 +502,7 @@ class HtmlReport:
 							tr = TestRun(self, report)
 							self.doc.asis(tr.getvalue())
 
+				if footer != None: 	self.doc.asis(footer)
 
 				with tag('script', language="javascript", 
 					src = self.scriptDirname + "/plotdata.js"): text("")	
