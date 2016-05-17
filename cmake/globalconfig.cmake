@@ -349,6 +349,7 @@ endif()
 
 if(UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed") # Only link to libs as needed.
 endif()
 
 #--------------------------------------------------------------------
