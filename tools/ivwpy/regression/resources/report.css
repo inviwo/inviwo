@@ -115,10 +115,11 @@ div.slider div.zoom  img {
 
 div.slider div.imgtestlabel {
     display : inline;
-    flex : 1;
+    flex    : 1;
     padding : 5px;
-    margin : 0px;
-    border : 1px transparent #000000;
+    margin  : 0px;
+    border  : 1px #000000;
+    border-color : transparent;
 }
 
 img.zoomImg {

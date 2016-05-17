@@ -27,10 +27,50 @@
  *
  *********************************************************************************/
 
-var summery_options = {
+function average(data) {
+    var sum = data.reduce(function(sum, value) {
+        return sum + value;
+    }, 0);
+
+    var avg = sum / data.length;
+    return avg;
+}
+
+function standardDeviation(values){
+    var avg = average(values);
+
+    var squareDiffs = values.map(function(value){
+        var diff = value - avg;
+        var sqrDiff = diff * diff;
+        return sqrDiff;
+    });
+  
+    var avgSquareDiff = average(squareDiffs);
+
+    var stdDev = Math.sqrt(avgSquareDiff);
+    return stdDev;
+}
+
+function stdRange(data) {
+    values = data.map(([x,y])=>{return y;});
+    var avg = average(values);
+    var std = standardDeviation(values);
+    var minval = Math.min(...values);
+    var maxval = Math.max(...values);
+    var ymin = Math.min(values[values.length - 1], Math.max(minval, avg - 3*std));
+    var ymax = Math.max(values[values.length - 1], Math.min(maxval, avg + 3*std));
+
+    return [ymin, ymax]
+}
+
+var summary_range = stdRange(summarydata);
+
+var summary_options = {
     yaxes: [ { 
         show : true,
         position : "right",
+        min : summary_range[0],
+        max : summary_range[1]
     }, {
         show : true,
         position : "left",
@@ -121,8 +161,8 @@ summery_data = [
     }
 ];
 
-$("#flot-summary").plot(summery_data, summery_options);
-$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summery_data, summery_options);});
+$("#flot-summary").plot(summery_data, summary_options);
+$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summery_data, summary_options);});
 
 $("#flot-summary").bind("plotselected", function (event, ranges) {
     // clamp the zooming to prevent eternal zoom
@@ -135,7 +175,7 @@ $("#flot-summary").bind("plotselected", function (event, ranges) {
     }
     // do the zooming
     $("#flot-summary").plot(summery_data,
-        $.extend(true, {}, summery_options, {
+        $.extend(true, {}, summary_options, {
             xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
             yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
         })

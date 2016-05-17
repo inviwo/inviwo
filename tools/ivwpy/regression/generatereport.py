@@ -289,7 +289,7 @@ class TestRun:
 			self.doc.asis(listItem(keyval("Diff", 
 				getDiffLink(lastSuccess.commit, firstFailure.commit)), toggle = False))
 
-	def sparkLine(self, series, klass, normalRange = True):
+	def sparkLine(self, series, klass, normalRange = True, valueRange = True):
 		doc, tag, text = yattag.Doc().tagtext()
 		data = self.db.getSeries(self.module, self.name, series)
 		xmax = self.created.timestamp()
@@ -300,10 +300,17 @@ class TestRun:
 
 		mean, std = stats([x.value for x in data.measurements])
 
-		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 
-			for x in data.measurements if x.created.timestamp() > xmin])
+		values = [x for x in data.measurements if x.created.timestamp() > xmin]
+		minval = min((x.value for x in values))
+		maxval = max((x.value for x in values))
+		datastr = ", ".join((str(x.created.timestamp()) + ":" + str(x.value) for x in values))
 
 		opts = { "sparkChartRangeMinX" : str(xmin), "sparkChartRangeMaxX" : str(xmax)}
+		if valueRange:
+			opts.update({
+				"sparkChartRangeMin" : str(min(values[-1].value, max(mean-3*std, minval))), 
+				"sparkChartRangeMax" : str(max(values[-1].value, min(mean+3*std, maxval)))
+			})
 		if normalRange:
 			opts.update({
 				"sparkNormalRangeMin" : str(mean-std), 
@@ -371,7 +378,7 @@ class TestRun:
 		with tag('div'):
 			text("{:1d} ".format(len(self.report["failures"])) + " ")
 			doc.asis(self.sparkLine("number_of_failures", 
-						            "sparkline-failues", normalRange = False))
+						            "sparkline-failues", normalRange = False, valueRange= False))
 		return doc.getvalue()
 
 	def head(self):
