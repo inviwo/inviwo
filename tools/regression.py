@@ -215,7 +215,7 @@ if __name__ == '__main__':
 			with open(args.header) as f:
 				header = f.read()
 		footer = None
-		if args.footer and args.os.path.exists(args.footer):
+		if args.footer and os.path.exists(args.footer):
 			with open(args.footer) as f:
 				footer = f.read()
 		
