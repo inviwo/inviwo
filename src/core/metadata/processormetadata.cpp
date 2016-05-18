@@ -79,7 +79,7 @@ void ProcessorMetaData::deserialize(Deserializer& d) {
     
     bool visibility{true};
     d.deserialize("visibility", visibility);
-    setVisibile(visibility);
+    setVisible(visibility);
     
     bool selection{false};
     d.deserialize("selection", selection);

@@ -70,7 +70,7 @@ PyObject* py_addProcessor(PyObject* self, PyObject* args) {
             identifier = p->setIdentifier(identifier);
 
             network->addProcessor(p.get());
-            network->autoLinkProcessor(p.get());
+            util::autoLinkProcessor(network, p.get());
             p.release();
 
             return PyValueParser::toPyObject(identifier);
@@ -107,11 +107,11 @@ PyObject* py_getConnections(PyObject* self, PyObject* args) {
 
     if (tester.parse(args) == 0) {
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        return utilpy::makePyList(util::transform(network->getConnections(), [](PortConnection* p) {
-            return std::make_pair(std::make_pair(p->getOutport()->getProcessor()->getIdentifier(),
-                                                 p->getOutport()->getIdentifier()),
-                                  std::make_pair(p->getInport()->getProcessor()->getIdentifier(),
-                                                 p->getInport()->getIdentifier()));
+        return utilpy::makePyList(util::transform(network->getConnections(), [](const PortConnection& p) {
+            return std::make_pair(std::make_pair(p.getOutport()->getProcessor()->getIdentifier(),
+                                                 p.getOutport()->getIdentifier()),
+                                  std::make_pair(p.getInport()->getProcessor()->getIdentifier(),
+                                                 p.getInport()->getIdentifier()));
 
         }));
     }
@@ -208,9 +208,9 @@ PyObject* py_getLinks(PyObject* self, PyObject* args) {
 
     if (tester.parse(args) == 0) {
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        return utilpy::makePyList(util::transform(network->getLinks(), [](PropertyLink* l) {
-            return std::make_pair(joinString(l->getSourceProperty()->getPath(), "."),
-                                  joinString(l->getDestinationProperty()->getPath(), "."));
+        return utilpy::makePyList(util::transform(network->getLinks(), [](const PropertyLink& l) {
+            return std::make_pair(joinString(l.getSource()->getPath(), "."),
+                                  joinString(l.getDestination()->getPath(), "."));
 
         }));
     }
