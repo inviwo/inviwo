@@ -107,7 +107,7 @@ class App:
 		return report
 
 
-	def filterTests(self, testrange, testfilter):
+	def filterTests(self, testrange, testfilter, onlyRunFailed = False):
 		selected1 = range(len(self.tests))
 		selected2 = selected1[testrange]
 		selected3 = list(filter(lambda i: testfilter(self.tests[i]), selected2))
@@ -115,15 +115,28 @@ class App:
 		# don't run test from modules that we have not built
 		selected4 = list(filter(lambda i: self.app.isModuleActive(self.tests[i].module), selected3))
 
+		# Only Run Failed test
+		if onlyRunFailed:
+			def testfailed(test):
+				last = self.db.getLastTestRun(test.module, test.name)
+				if last and len(last.failures) > 0: return True
+				return False
+
+			selected5 = list(filter(lambda i: testfailed(self.tests[i]), selected4))
+		else:
+			selected5 = selected4
+
+
 		reasons = list(map(lambda x : "", range(len(self.tests))))
 		for i in set(selected1).difference(set(selected2)): reasons[i] = "Test not in testrange"
 		for i in set(selected2).difference(set(selected3)): reasons[i] = "Filtered out"
 		for i in set(selected3).difference(set(selected4)): reasons[i] = "Needed module not available"
-		
-		return selected4, reasons
+		for i in set(selected4).difference(set(selected5)): reasons[i] = "Only running failed tests"
 
-	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
-		selected, reasons = self.filterTests(testrange, testfilter)
+		return selected5, reasons
+
+	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True, onlyRunFailed = False):
+		selected, reasons = self.filterTests(testrange, testfilter, onlyRunFailed)
 
 		run = self.db.addRun()
 

@@ -106,8 +106,8 @@ def makeCmdParser():
 						help="Include filter")
 	parser.add_argument("--exclude", type=str, nargs='?', action="store", dest="exclude", default = "", 
 						help="Exclude filter")
-	parser.add_argument("-l", "--list", action="store_true", dest="list", 
-						help="List all tests")
+	parser.add_argument("-f", "--failed", action="store_true", dest="failed", help="Only run tests that have faild") 
+	parser.add_argument("-l", "--list", action="store_true", dest="list", help="List all tests")
 	parser.add_argument("--imagetolerance", type=float, action="store", dest="imagetolerance", default=0.0,
 						help="Tolerance when comparing images")
 	parser.add_argument('--header', type=str, action="store", dest="header", help='A optional report header', default=None)
@@ -208,7 +208,7 @@ if __name__ == '__main__':
 		exit(0)
 
 	try:
-		app.runTests(testrange = testrange, testfilter = testfilter)
+		app.runTests(testrange = testrange, testfilter = testfilter, onlyRunFailed = args.failed)
 		app.saveJson()
 
 		header = None
