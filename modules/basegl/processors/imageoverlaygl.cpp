@@ -51,36 +51,95 @@ const ProcessorInfo ImageOverlayGL::getProcessorInfo() const {
 OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048))
+    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048))
     , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , blendMode_("blendMode", "Blending Mode") {
+    , blendMode_("blendMode", "Blending Mode") 
+    , positioningMode_("positioningMode", "Positioning Mode")
+    , sizeMode_("sizeMode", "Size Mode")
+{
     blendMode_.addOption("replace", "Replace", BlendMode::Replace);
     blendMode_.addOption("over", "Blend", BlendMode::Over);
     blendMode_.setSelectedValue(BlendMode::Over);
     blendMode_.setCurrentStateAsDefault();
 
+    positioningMode_.addOption("absolute", "Absolute", Positioning::Absolute);
+    positioningMode_.addOption("relative", "Relative", Positioning::Relative);
+    positioningMode_.setSelectedValue(Positioning::Relative);
+    positioningMode_.setCurrentStateAsDefault();
+
+    sizeMode_.addOption("absolute", "Absolute", Positioning::Absolute);
+    sizeMode_.addOption("relative", "Relative", Positioning::Relative);
+    sizeMode_.setSelectedValue(Positioning::Relative);
+    sizeMode_.setCurrentStateAsDefault();
+
+    sizeMode_.onChange([&]() {
+        size_.setVisible(sizeMode_.get() == Positioning::Relative);
+        absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute); 
+    });
+    positioningMode_.onChange([&]() {
+        pos_.setVisible(positioningMode_.get() == Positioning::Relative);
+        absolutePos_.setVisible(positioningMode_.get() == Positioning::Absolute);
+    });
+
+    addProperty(sizeMode_);
     addProperty(size_);
+    addProperty(absoluteSize_);
+
+    addProperty(positioningMode_);
     addProperty(pos_);
+    addProperty(absolutePos_);
+
     addProperty(anchorPos_);
     addProperty(blendMode_);
+
+    updateState();
+}
+
+void OverlayProperty::deserialize(Deserializer& d) {
+    CompositeProperty::deserialize(d);
+    updateState();
 }
 
 void OverlayProperty::updateViewport(vec2 destDim) {
-    vec2 pos(pos_.get());
-    vec2 size(size_.get());
-    vec2 anchor(anchorPos_.get());
+    // determine size and center position first (absolute coords)
+    vec2 pos(destDim * 0.25f);
+    vec2 size(destDim * 0.5f);
+
+    if (positioningMode_.get() == Positioning::Absolute) {
+        pos = vec2(absolutePos_.get());
+    }
+    else {
+        pos = pos_.get() * destDim;
+    }
+    if (sizeMode_.get() == Positioning::Absolute) {
+        size = vec2(absoluteSize_.get());
+    }
+    else {
+        size = size_.get() * destDim;
+    }
 
     // consider anchor position
+    vec2 anchor(anchorPos_.get());
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     pos.x -= shift.x;
     // negate y axis
-    pos.y = 1.f - (pos.y + shift.y);
-
-    pos *= destDim;
-    size *= destDim;
+    pos.y = destDim.y - (pos.y + shift.y);
+    
+    // use pixel aligned positions for best results
     viewport_ = ivec4(pos.x, pos.y, size.x, size.y);
 }
+
+void OverlayProperty::updateState() {
+    size_.setVisible(sizeMode_.get() == Positioning::Relative);
+    absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute);
+
+    pos_.setVisible(positioningMode_.get() == Positioning::Relative);
+    absolutePos_.setVisible(positioningMode_.get() == Positioning::Absolute);
+}
+
 
 ImageOverlayGL::ImageOverlayGL()
     : Processor()
@@ -89,10 +148,13 @@ ImageOverlayGL::ImageOverlayGL()
     , outport_("outport")
     , overlayInteraction_("overlayInteraction", "Overlay Interaction", false)
     , overlayProperty_("overlay", "Overlay")
-    , shader_("img_texturequad.vert", "img_copy.frag")
+    , border_("border", "Border", true)
+    , borderColor_("borderColor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , borderWidth_("borderWidth", "Width", 2, 0, 100)
+    , shader_("img_identity.vert", "img_overlay.frag")
     , viewManager_()
-    , currentDim_(0u, 0u) {
-
+    , currentDim_(0u, 0u) 
+{
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(inport_);
@@ -112,6 +174,12 @@ ImageOverlayGL::ImageOverlayGL()
 
     addProperty(overlayInteraction_);
     addProperty(overlayProperty_);
+
+    borderColor_.setSemantics(PropertySemantics::Color);
+
+    border_.addProperty(borderColor_);
+    border_.addProperty(borderWidth_);
+    addProperty(border_);
 
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
 }
@@ -169,24 +237,32 @@ void ImageOverlayGL::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ImageType::ColorDepthPicking);
 
     if (overlayPort_.hasData()) {  // draw overlay
+        utilgl::DepthFuncState(GL_ALWAYS);
+
+        ivec4 viewport = overlayProperty_.viewport_;
+        int borderWidth = 0;
+        if (border_.isChecked()) {
+            // adjust viewport by border width
+            borderWidth = borderWidth_.get();
+            viewport += ivec4(-borderWidth, -borderWidth, 2 * borderWidth, 2 * borderWidth);
+        }
+
         utilgl::BlendModeState blendMode(static_cast<GLint>(overlayProperty_.blendMode_.get()),
                                          GL_ONE_MINUS_SRC_ALPHA);
-        utilgl::DepthFuncState(GL_ALWAYS);
 
         TextureUnit colorUnit, depthUnit, pickingUnit;
         shader_.activate();
         shader_.setUniform("color_", colorUnit.getUnitNumber());
         shader_.setUniform("depth_", depthUnit.getUnitNumber());
         shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+        shader_.setUniform("borderWidth_", borderWidth);
+        shader_.setUniform("borderColor_", borderColor_.get());
+        shader_.setUniform("viewport_", vec4(viewport));
+
         utilgl::bindTextures(overlayPort_, colorUnit, depthUnit, pickingUnit);
 
-        ivec4 viewport = overlayProperty_.viewport_;
-        glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+        utilgl::ViewportState viewportState(viewport);
         utilgl::singleDrawImagePlaneRect();
-
-        // restore viewport
-        ivec2 dim = outport_.getData()->getDimensions();
-        glViewport(0, 0, dim.x, dim.y);
     }
 
     shader_.deactivate();
