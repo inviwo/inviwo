@@ -28,9 +28,11 @@
 #*********************************************************************************
 
 import os
+import sys
 import itertools
 import datetime
 import math
+import subprocess
 
 def subDirs(path):
 	if os.path.isdir(path):
@@ -129,3 +131,12 @@ def stats(l):
 	mean = sum(l)/len(l)
 	std = math.sqrt(sum([pow(mean-x,2) for x in l])/len(l))
 	return mean, std
+
+def openWithDefaultApp(file):
+	print(file)
+	if sys.platform.startswith('linux'):
+	    subprocess.call(["xdg-open", file])
+	elif sys.platform == "darwin":
+	    subprocess.call(["open", file])
+	elif sys.platform == "win32":
+	    os.startfile(file)
