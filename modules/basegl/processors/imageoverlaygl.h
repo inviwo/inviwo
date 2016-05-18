@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
