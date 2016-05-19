@@ -103,6 +103,9 @@ public:
         return withinBounds(static_cast<Vector<SpatialDims, double>>(pos), space);
     }
 
+    virtual std::string getDataInfo() const { return "SpatialSampler" + toString(SpatialDims) + toString(DataDims) + inviwo::parseTypeIdName(std::string(typeid(T).name()));}
+    static uvec3 COLOR_CODE;
+
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
@@ -111,6 +114,10 @@ protected:
     std::shared_ptr<const SpatialEntity<SpatialDims>> spatialEntity_;
 
 };
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+uvec3 SpatialSampler<SpatialDims, DataDims,T>::COLOR_CODE = uvec3(153, 0, 76);
+
 
 }  // namespace
 
