@@ -201,6 +201,9 @@ public:
         return includeDirectories_;
     }
 
+
+    bool isOpenGLSharingEnabled() const;
+
     /**
      *  Get the device that has most compute units.
      *  @param bestDevice Set to found device, if found.

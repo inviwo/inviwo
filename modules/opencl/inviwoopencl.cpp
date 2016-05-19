@@ -102,6 +102,18 @@ bool OpenCL::isValidVolumeFormat(const cl::Context& context, const cl::ImageForm
     return false;
 }
 
+bool OpenCL::isOpenGLSharingEnabled() const {
+    auto contextProperties = gpuContext_.getInfo<CL_CONTEXT_PROPERTIES>();
+    return (std::find_if(contextProperties.begin(), contextProperties.end(),
+                         [](const cl_context_properties & p) {
+#if __APPLE__
+                             return p == CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
+#else
+                             return p == CL_GL_CONTEXT_KHR;
+#endif
+                         })) != contextProperties.end();
+}
+
 /*! \brief Get the device that has most compute units.
     *
     *  @param bestDevice Set to found device, if found.
@@ -335,7 +347,12 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
         cl::Platform platform = device.getInfo<CL_DEVICE_PLATFORM>();
         std::vector<cl_context_properties> properties;
 
-        if (glSharing) properties = getGLSharingContextProperties();
+        if (glSharing) {
+            properties = getGLSharingContextProperties();
+            if (properties.empty()) {
+                LogWarn("Unable to find OpenGL context. Will create OpenCL without OpenGL sharing");
+            }
+        }
 
         std::array<cl_context_properties, 3> platformProperties = {
             CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0 };
@@ -349,9 +366,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             }
 
         } catch (cl::Error&) {
-            LogInfo(
-                "ERROR: Unable to create OpenCL context. Trying to create without openGL "
-                "sharing... ");
+            LogWarn("Unable to create OpenCL context. Trying to without OpenGL sharing");
             properties.clear();
             properties.insert(properties.end(), platformProperties.begin(),
                               platformProperties.end());
@@ -360,7 +375,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             if (error != CL_SUCCESS) {
                 throw OpenCLException("Error creating OpenCL context", IvwContext);
             }
-            LogInfo("Succeeded creating OpenCL without OpenGL sharing. ");
+            LogInfo("Succeeded creating OpenCL without OpenGL sharing.");
         }
 
         cl_command_queue_properties queueProperties = 0;
