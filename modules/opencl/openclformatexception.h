@@ -43,8 +43,9 @@ namespace inviwo {
  */
 class IVW_MODULE_OPENCL_API OpenCLFormatException : public Exception {
 public:
-    OpenCLFormatException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~OpenCLFormatException() throw() {};
+    OpenCLFormatException(const std::string& message = "",
+                          ExceptionContext context = ExceptionContext());
+    virtual ~OpenCLFormatException() throw(){};
 };
 
 } // namespace

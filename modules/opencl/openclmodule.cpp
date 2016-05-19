@@ -34,6 +34,7 @@
 #include <modules/opencl/image/layerclconverter.h>
 #include <modules/opencl/image/layerclglconverter.h>
 #include <modules/opencl/openclmodule.h>
+#include <modules/opencl/openclexception.h>
 #include <modules/opencl/openclcapabilities.h>
 #include <modules/opencl/settings/openclsettings.h>
 #include <modules/opencl/volume/volumeclconverter.h>
@@ -73,20 +74,23 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
     registerRepresentationConverter(util::make_unique<VolumeCLGL2CLConverter>());
     registerRepresentationConverter(util::make_unique<VolumeCLGL2GLConverter>());
 
-    OpenCL::init();
-    OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
-    KernelManager::init();
+    try {
+        OpenCL::init();
+        OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
+        KernelManager::init();
 
-    auto cap = util::make_unique<OpenCLCapabilities>();
-    auto setting = util::make_unique<OpenCLSettings>(cap.get());
-    registerCapabilities(std::move(cap));
-    registerSettings(std::move(setting));
+        auto cap = util::make_unique<OpenCLCapabilities>();
+        auto setting = util::make_unique<OpenCLSettings>(cap.get());
+        registerCapabilities(std::move(cap));
+        registerSettings(std::move(setting));
+    } catch (OpenCLException& e) {
+        throw ModuleInitException(e.getMessage(), e.getContext());
+    }
 }
 
-OpenCLModule::~OpenCLModule(){
+OpenCLModule::~OpenCLModule() {
     OpenCL::deleteInstance();
     KernelManager::deleteInstance();
 }
-
 
 } // namespace
