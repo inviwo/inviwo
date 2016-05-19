@@ -88,4 +88,6 @@ $(document).ready(function() {
 	userList.sort('testname');
 	userList.sort('testfailures', { order: "desc" });
 	userList.sort('testmodule');
+
+	new Clipboard('.copylinkbtn');
  });

@@ -127,6 +127,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_normalize.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_overlay.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_resample.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightingraycasting.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.frag

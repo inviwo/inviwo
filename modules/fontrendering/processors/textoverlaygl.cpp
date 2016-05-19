@@ -67,15 +67,13 @@ TextOverlayGL::TextOverlayGL()
     addProperty(fontPos_);
     addProperty(anchorPos_);
     addProperty(fontSize_);
-    fontSize_.addOption("10", "10", 10);
-    fontSize_.addOption("12", "12", 12);
-    fontSize_.addOption("18", "18", 18);
-    fontSize_.addOption("24", "24", 24);
-    fontSize_.addOption("36", "36", 36);
-    fontSize_.addOption("48", "48", 48);
-    fontSize_.addOption("60", "60", 60);
-    fontSize_.addOption("72", "72", 72);
-    fontSize_.setSelectedIndex(3);
+
+    std::vector<int> fontSizes ={ 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96 };
+    for (auto size : fontSizes) {
+        std::string str = std::to_string(size);
+        fontSize_.addOption(str, str, size);
+    }
+    fontSize_.setSelectedIndex(4);
     fontSize_.setCurrentStateAsDefault();
 }
 
@@ -96,13 +94,15 @@ void TextOverlayGL::process() {
 
     int fontSize = fontSize_.getSelectedValue();
     textRenderer_.setFontSize(fontSize);
-    float xpos_ = fontPos_.get().x * outport_.getData()->getDimensions().x;
-    float ypos_ = fontPos_.get().y * outport_.getData()->getDimensions().y + float(fontSize);
 
+    // use integer position for best results
+    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
+    pos.y += fontSize;
+    
     vec2 size = textRenderer_.computeTextSize(text_.get().c_str(), scale);
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_.render(text_.get().c_str(), -1 + xpos_ * scale.x - shift.x,
-                          1 - ypos_ * scale.y + shift.y, scale, color_.get());
+    textRenderer_.render(text_.get().c_str(), -1 + pos.x * scale.x - shift.x,
+                          1 - pos.y * scale.y + shift.y, scale, color_.get());
 
     glDisable(GL_BLEND);
     glDepthFunc(GL_LESS);

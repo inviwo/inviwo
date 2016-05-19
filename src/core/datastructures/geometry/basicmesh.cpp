@@ -759,8 +759,6 @@ std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, 
         side = glm::normalize(glm::cross(up, vec3(0, 1, 0)));
     }
 
-    LogInfoCustom("BasicMesh::torus",up << side);
-
     auto numVertex = subdivisions.x*subdivisions.y;
 
     for (int i = 0; i < subdivisions.x; i++) {

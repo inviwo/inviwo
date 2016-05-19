@@ -315,3 +315,21 @@ div.flot-container {
     width: 400px;
     height: 250px;
 }
+
+button.copylinkbtn {
+    background : transparent;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    transition: border-color .218s;
+    border: solid 1px #dcdcdc;
+    border-radius: 2px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+button.copylinkbtn:hover {
+    border-color: #999;
+}
+button.copylinkbtn:active {
+    border-color: #444;
+}

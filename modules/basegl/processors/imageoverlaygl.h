@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
@@ -73,17 +74,26 @@ public:
 
     void updateViewport(vec2 destDim);
 
+    virtual void deserialize(Deserializer& d) override;
+
     ivec4 viewport_;
 
-    FloatVec2Property size_;
-    FloatVec2Property pos_;
+    FloatVec2Property pos_; //<! relative position [0,1]
+    FloatVec2Property size_; //<! relative size[0,1]
+    
+    IntVec2Property absolutePos_; //<! absolute position [pixel]
+    IntVec2Property absoluteSize_; //<! absolute size [pixel]
+
     FloatVec2Property anchorPos_;
 
     TemplateOptionProperty<BlendMode> blendMode_;
 
-    // TODO: consider absolute positioning
-    // TemplateOptionProperty<Positioning> positioning_;
-    // TemplateOptionProperty<Positioning> anchorPositioning_;
+    // consider absolute positioning
+     TemplateOptionProperty<Positioning> positioningMode_;
+     TemplateOptionProperty<Positioning> sizeMode_;
+
+private:
+    void updateState();
 };
 
 /** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
@@ -117,8 +127,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    const std::vector<ivec4>& getViewCoords() const;
-
     bool isReady() const override;
     virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
     virtual void propagateEvent(Event*, Outport* source) override;
@@ -130,7 +138,6 @@ protected:
     void onStatusChange();
 
 private:
-    static bool inView(const ivec4& view, const ivec2& pos);
     ImageInport inport_;
     ImageInport overlayPort_;
     ImageOutport outport_;
@@ -140,6 +147,11 @@ private:
 
     // TODO: replace this with std::vector to match multi-inport
     OverlayProperty overlayProperty_;
+
+    BoolCompositeProperty border_;
+    FloatVec4Property borderColor_;
+    IntProperty borderWidth_;
+
     Shader shader_;
     ViewManager viewManager_;
     ivec2 currentDim_;

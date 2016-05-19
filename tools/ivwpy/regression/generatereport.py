@@ -177,6 +177,13 @@ def image(path, **opts):
 	doc.stag('img', src = path, **opts)
 	return doc.getvalue()
 
+def imagesShort(report):
+	doc, tag, text = yattag.Doc().tagtext()
+	failedImgs = safeget(report, 'failures', 'image_tests', failure = {})
+	fail = len(failedImgs)
+	text("All OK" if fail == 0 else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"])))
+	return doc.getvalue()
+
 def testImages(testimg, refimg, diffimg, maskimg):
 	doc, tag, text = yattag.Doc().tagtext()
 
@@ -220,10 +227,7 @@ class TestRun:
 		with self.item(self.head(), status = self.totalstatus()):
 			with self.tag('ul'):
 
-				failedImgs = safeget(self.report, 'failures', 'image_tests', failure = {})
-				fail = len(failedImgs)
-				short = "All OK" if fail == 0 else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"]))
-				self.doc.asis(listItem(keyval("Images", short), 
+				self.doc.asis(listItem(keyval("Images", imagesShort(self.report)), 
 					self.images(report["image_tests"], report["outputdir"]),
 					status = self.status('image_tests')))
 
@@ -235,8 +239,9 @@ class TestRun:
 				
 				self.doc.asis(formatLog(toPath(report['outputdir'], report['log'])))
 				self.doc.asis(self.screenshot())
+				self.doc.asis(self.paths())
 
-				for key in ["path", "command", "returncode", "missing_imgs", 
+				for key in ["command", "returncode", "missing_imgs", 
 							"missing_refs", "output", "errors"]:
 					self.simple(key)
 
@@ -275,6 +280,27 @@ class TestRun:
 		self.doc.asis(listItem(keyval(formatKey(key), short), value, 
 			                   status = self.status(key), 
 			             	   toggle = short != value))
+
+	def paths(self):
+		def pathList():
+			doc, tag, text = yattag.Doc().tagtext()
+			with tag('ol'):
+				with tag('li'):
+					text(self.report["path"])
+					opts = {"data-clipboard-text" : self.report["path"]}
+					with tag('button', klass="copylinkbtn", **opts):
+						text("copy")
+				with tag('li'):
+					text(self.report["outputdir"])
+					opts = {"data-clipboard-text" : self.report["outputdir"]}
+					with tag('button', klass="copylinkbtn", **opts):
+						text("copy")
+
+			return doc.getvalue()
+
+		value = toString(self.report["path"])
+		short = abr(value)
+		return listItem(keyval("Paths", short), pathList())
 
 	def testRunInfo(self, key, testrun):
 		if testrun is not None:
@@ -441,6 +467,7 @@ class HtmlReport:
 						"jquery.flot.selection.js",
 						"jquery.flot.stack.js",
 						"jquery.flot.tooltip.min.js",
+						"clipboard.min.js",
 						"main.js"]
 		self.postScripts = [ "make-list.js", "make-flot.js" ]
 		

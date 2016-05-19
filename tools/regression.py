@@ -106,12 +106,13 @@ def makeCmdParser():
 						help="Include filter")
 	parser.add_argument("--exclude", type=str, nargs='?', action="store", dest="exclude", default = "", 
 						help="Exclude filter")
-	parser.add_argument("-l", "--list", action="store_true", dest="list", 
-						help="List all tests")
+	parser.add_argument("-f", "--failed", action="store_true", dest="failed", help="Only run tests that have faild") 
+	parser.add_argument("-l", "--list", action="store_true", dest="list", help="List all tests")
 	parser.add_argument("--imagetolerance", type=float, action="store", dest="imagetolerance", default=0.0,
 						help="Tolerance when comparing images")
 	parser.add_argument('--header', type=str, action="store", dest="header", help='A optional report header', default=None)
 	parser.add_argument('--footer', type=str, action="store", dest="footer", help='A optional report footer', default=None)
+	parser.add_argument("-v", "--view", action="store_true", dest="view", help="Open the report when done")
 
 	return parser.parse_args()
 
@@ -207,7 +208,7 @@ if __name__ == '__main__':
 		exit(0)
 
 	try:
-		app.runTests(testrange = testrange, testfilter = testfilter)
+		app.runTests(testrange = testrange, testfilter = testfilter, onlyRunFailed = args.failed)
 		app.saveJson()
 
 		header = None
@@ -223,10 +224,13 @@ if __name__ == '__main__':
 
 		if app.success():
 			print_info("Regression was successful")
+			print_info("Report: " + output+"/report.html")
+			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(0)
 		else: 
 			print_error("Regression was unsuccessful see report for details")
 			print_info("Report: " + output+"/report.html")
+			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(1)
 		
 	except ivwpy.regression.error.MissingInivioAppError as err:
