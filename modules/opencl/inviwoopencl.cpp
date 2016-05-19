@@ -161,24 +161,40 @@ void OpenCL::printBuildError(const cl::Device& device, const cl::Program& progra
 }
 
 std::vector<cl_context_properties> OpenCL::getGLSharingContextProperties() {
+    std::vector<cl_context_properties> sharingProperties;
 #if WIN32
-    cl_context_properties props[] = {
-        CL_GL_CONTEXT_KHR, (cl_context_properties) wglGetCurrentContext(),
-        CL_WGL_HDC_KHR, (cl_context_properties) wglGetCurrentDC()
-    };
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = (cl_context_properties)wglGetCurrentContext();
+    // Obtains a handle to the device context that is associated with the current OpenGL rendering
+    // context of the calling thread
+    auto deviceContext = wglGetCurrentDC();
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && deviceContext) {
+        sharingProperties = {CL_GL_CONTEXT_KHR, (cl_context_properties)glContext, CL_WGL_HDC_KHR,
+                             (cl_context_properties)deviceContext};
+    }
 #elif __APPLE__
-    CGLContextObj glContext = CGLGetCurrentContext();
-    CGLShareGroupObj shareGroup = CGLGetShareGroup(glContext);
-    cl_context_properties props[] = {
-        CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)shareGroup
-    };
-#else // LINUX
-    cl_context_properties props[] = {
-        CL_GL_CONTEXT_KHR, (cl_context_properties) glXGetCurrentContext(),
-        CL_GLX_DISPLAY_KHR, (cl_context_properties) glXGetCurrentDisplay()
-    };
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = CGLGetCurrentContext();
+    // Get the OpenCL share group for the current context
+    auto shareGroup = CGLGetShareGroup(glContext);
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && shareGroup) {
+        sharingProperties = {CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+                             (cl_context_properties)shareGroup};
+    }
+#else  // LINUX
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = glXGetCurrentContext();
+    // Get the display for the current context
+    auto display = glXGetCurrentDisplay();
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && display) {
+        sharingProperties = {CL_GL_CONTEXT_KHR, (cl_context_properties)glContext,
+                             CL_GLX_DISPLAY_KHR, (cl_context_properties)display};
+    }
 #endif
-    return std::vector<cl_context_properties>(props, props + sizeof(props)/sizeof(cl_context_properties));
+    return sharingProperties;
 }
 
 std::vector<cl::Device> OpenCL::getAllDevices() {
