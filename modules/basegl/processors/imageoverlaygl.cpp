@@ -84,13 +84,13 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
         absolutePos_.setVisible(positioningMode_.get() == Positioning::Absolute);
     });
 
-    addProperty(sizeMode_);
-    addProperty(size_);
-    addProperty(absoluteSize_);
-
     addProperty(positioningMode_);
     addProperty(pos_);
     addProperty(absolutePos_);
+
+    addProperty(sizeMode_);
+    addProperty(size_);
+    addProperty(absoluteSize_);
 
     addProperty(anchorPos_);
     addProperty(blendMode_);
@@ -121,6 +121,15 @@ void OverlayProperty::updateViewport(vec2 destDim) {
         size = size_.get() * destDim;
     }
 
+    // adjust max values of absolute pos and size
+    // need to save and restore current values since setMaxValue() will clip data values
+    auto tmp = absolutePos_.get();
+    absolutePos_.setMaxValue(ivec2(destDim));
+    absolutePos_.set(tmp);
+    tmp = absoluteSize_.get();
+    absoluteSize_.setMaxValue(ivec2(destDim));
+    absoluteSize_.set(tmp);
+
     // consider anchor position
     vec2 anchor(anchorPos_.get());
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
@@ -146,6 +155,7 @@ ImageOverlayGL::ImageOverlayGL()
     , inport_("inport")
     , overlayPort_("overlay")
     , outport_("outport")
+    , enabled_("enabled", "Overlay Enabled", true)
     , overlayInteraction_("overlayInteraction", "Overlay Interaction", false)
     , overlayProperty_("overlay", "Overlay")
     , border_("border", "Border", true)
@@ -172,6 +182,7 @@ ImageOverlayGL::ImageOverlayGL()
 
     addPort(outport_);
 
+    addProperty(enabled_);
     addProperty(overlayInteraction_);
     addProperty(overlayProperty_);
 
@@ -234,6 +245,11 @@ void ImageOverlayGL::onStatusChange() {
 }
 
 void ImageOverlayGL::process() {
+    if (!enabled_.get()) {
+        outport_.setData(inport_.getData());
+        return;
+    }
+
     utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ImageType::ColorDepthPicking);
 
     if (overlayPort_.hasData()) {  // draw overlay
@@ -263,9 +279,8 @@ void ImageOverlayGL::process() {
 
         utilgl::ViewportState viewportState(viewport);
         utilgl::singleDrawImagePlaneRect();
+        shader_.deactivate();
     }
-
-    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
