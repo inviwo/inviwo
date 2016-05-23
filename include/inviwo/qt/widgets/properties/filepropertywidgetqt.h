@@ -42,8 +42,31 @@
 #include <warn/pop>
 
 class QDropEvent;
+class QLabel;
 
 namespace inviwo {
+
+
+/**
+* \class FilePathLineEditQt
+* \brief QLineEdit for file paths. A small warning icon is shown for non-existing files and paths.
+*/
+class IVW_QTWIDGETS_API FilePathLineEditQt : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    FilePathLineEditQt(QWidget *parent);
+    virtual ~FilePathLineEditQt() = default;
+    void setPath(const std::string &path, bool showFullPath);
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+private:
+    QLabel *warningLabel_;
+    std::string path_;
+};
 
 class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
 
@@ -54,6 +77,7 @@ class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public F
 
 public:
     FilePropertyWidgetQt(FileProperty* property);
+    virtual ~FilePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
@@ -73,7 +97,7 @@ private:
     void generateWidget();
 
     FileProperty* property_;
-    QLineEdit* lineEdit_;
+    FilePathLineEditQt* lineEdit_;
     QToolButton* openButton_;
     EditableLabelQt* label_;
 };

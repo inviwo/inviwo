@@ -49,6 +49,43 @@
 
 namespace inviwo {
 
+FilePathLineEditQt::FilePathLineEditQt(QWidget* parent) : QLineEdit(parent) {
+    // warning icon at the right side of the line edit for indication of "file not found"
+    warningLabel_ = new QLabel(this);
+    int width = this->sizeHint().height();
+    QSize labelSize(width, width);
+    warningLabel_->setScaledContents(true);
+    warningLabel_->setPixmap(QPixmap(":/icons/filewarning.png"));
+    warningLabel_->setFixedSize(labelSize);
+    warningLabel_->setToolTip("Invalid File: Could not locate file");
+    //warningLabel_->setStyleSheet("QLabel { border : none; padding: 2px }");
+    warningLabel_->hide();
+
+    QObject::connect(this, &QLineEdit::textChanged, [&]() {
+        // update visibility of warning icon
+        warningLabel_->setVisible(!filesystem::fileExists(path_));
+    });
+}
+
+void FilePathLineEditQt::setPath(const std::string &path, bool showFullPath) {
+    path_ = path;
+    QString str(QString::fromStdString(path));
+    if (showFullPath) {
+        this->setText(str);
+    }
+    else {
+        // abbreviate file path and show only the file name
+        this->setText(QFileInfo(str).fileName());
+    }
+}
+
+void FilePathLineEditQt::resizeEvent(QResizeEvent *event) {
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);
+}
+
+
+
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     : PropertyWidgetQt(property), property_(property) {
     generateWidget();
@@ -69,7 +106,7 @@ void FilePropertyWidgetQt::generateWidget() {
     QWidget* widget = new QWidget();
     widget->setLayout(hWidgetLayout);
 
-    lineEdit_ = new QLineEdit(this);
+    lineEdit_ = new FilePathLineEditQt(this);
     lineEdit_->installEventFilter(this);
 
     connect(lineEdit_, &QLineEdit::returnPressed, [&]() {
@@ -240,12 +277,12 @@ void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
 bool FilePropertyWidgetQt::eventFilter(QObject * obj, QEvent * event) {
     if(obj == lineEdit_ && event->type() == QEvent::FocusIn) {
         auto path = QString::fromStdString(property_->get());
-        lineEdit_->setText(path);
+        lineEdit_->setPath(property_->get(), true);
         lineEdit_->setCursorPosition(path.length());
     } else if(obj == lineEdit_ && event->type() == QEvent::FocusOut) {
         auto path = lineEdit_->text().toStdString();
         property_->set(path);
-        lineEdit_->setText(QFileInfo(QString::fromStdString(path)).fileName());
+        lineEdit_->setPath(property_->get(), false);
     }
     return false; // let the event continue;
 }
@@ -287,7 +324,9 @@ std::string FilePropertyWidgetQt::getToolTipText() {
 }
 
 void FilePropertyWidgetQt::updateFromProperty() {
-    lineEdit_->setText(QFileInfo(QString::fromStdString(property_->get())).fileName());
+    auto path = property_->get();
+    //lineEdit_->setText(QFileInfo(QString::fromStdString(path)).fileName());
+    lineEdit_->setPath(property_->get(), false);
 }
 
 }  // namespace
