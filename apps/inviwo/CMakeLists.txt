@@ -11,15 +11,11 @@ endif()
 
 #--------------------------------------------------------------------
 # Add MOC files
-set(MOC_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
-)
+set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
 
 #--------------------------------------------------------------------
 # Add header files
-set(HEADER_FILES
-    ${MOC_FILES}
-)
+set(HEADER_FILES  ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------

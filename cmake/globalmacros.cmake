@@ -66,7 +66,6 @@ endmacro()
 #    _preModuleDependencies -> ""
 #   PARENT_SCOPE:
 #   IVW_MODULE_CLASS        -> OpenGL
-#   IVW_MODULE_CLASS_PATH   -> opengl/openglmodule
 #   IVW_MODULE_PACKAGE_NAME -> InviwoOpenGLModule
 macro(ivw_module project_name)
     string(TOLOWER ${project_name} l_project_name)
@@ -74,7 +73,6 @@ macro(ivw_module project_name)
     set(_packageName Inviwo${project_name}Module)
     set(_preModuleDependencies "")
     set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
-    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
     set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
 endmacro()
 
@@ -132,45 +130,35 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
-function(ivw_private_generate_module_registration_file module_classes modules_class_paths)
-    list(LENGTH module_classes len1)
-    math(EXPR len0 "${len1} - 1")
-
+function(ivw_private_generate_module_registration_file modules_var)
     set(headers "")
     set(functions "")
-    if(${len1} GREATER 0)
-        foreach(val RANGE ${len0})
-            list(GET module_classes ${val} current_name)
-            string(TOUPPER ${current_name} u_current_name)
-            list(GET modules_class_paths ${val} current_path)
-            ivw_dir_to_mod_dep(mod_dep ${current_name})
-            ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
-            list_to_stringvector(module_depends_vector ${module_dependencies})
-     
-            set(header
-                "#ifdef REG_INVIWO${u_current_name}MODULE\n"
-                "#include <${current_path}.h>\n"
-                "#endif\n"
-            )
-            join(";" "" header ${header})
-    
-            set(factory_object
-                "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
-                "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
-                "        \"${current_name}\",\n"
-                "        \"${${mod_dep}_description}\",\n" 
-                "        ${module_depends_vector}\n" 
-                "        )\n"
-                "    )__SEMICOLON__\n"
-                "    #endif\n"
-                "\n"
-            )
-            join(";" "" factory_object ${factory_object})
-    
-            list(APPEND headers ${header})
-            list(APPEND functions ${factory_object})
-        endforeach()
-    endif()
+    foreach(mod ${${modules_var}})      
+        set(header
+            "#ifdef REG_${mod}\n"
+            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+            "#endif\n"
+        )
+        join(";" "" header ${header})
+
+        ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
+        list_to_stringvector(module_depends_vector ${module_dependencies})
+        set(factory_object
+            "    #ifdef REG_${mod}\n" 
+            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class_name}Module>(\n"
+            "        \"${${mod}_class_name}\",\n"
+            "        \"${${mod}_description}\",\n" 
+            "        ${module_depends_vector}\n" 
+            "        )\n"
+            "    )__SEMICOLON__\n"
+            "    #endif\n"
+            "\n"
+        )
+        join(";" "" factory_object ${factory_object})
+
+        list(APPEND headers ${header})
+        list(APPEND functions ${factory_object})
+    endforeach()
 
     join(";" "" headers ${headers})
     join(";" "" functions ${functions})
@@ -312,9 +300,9 @@ function(ivw_register_modules)
             if(NOT ${found} EQUAL -1)
                 # Find the best substitute
                 set(new_dep "")
-                foreach(name alias_${dependency}_names)
-                    set(new_dep ${${name}_name})
-                    if(${${name}_opt}}) # if substitution is enabled we stick with that one.
+                foreach(alias_mod ${alias_${dependency}_names})
+                    set(new_dep ${${alias_mod}_name})
+                    if(${${alias_mod}_opt}}) # if substitution is enabled we stick with that one.
                         break()
                     endif()
                 endforeach()
@@ -358,37 +346,36 @@ function(ivw_register_modules)
     endforeach()
 
     # Add enabled modules in sorted order
-    set(IVW_MODULE_CLASSES "")
-    set(IVW_MODULE_CLASS_PATHS "")
-    set(IVW_MODULE_PACKAGE_NAMES "")
-    set(IVW_MODULE_PATHS "")
+    set(ivw_module_classes "")
+    set(ivw_module_names "")
 
+    set(IVW_MODULE_PACKAGE_NAMES "")
     set(IVW_MODULE_CLASS "")
-    set(IVW_MODULE_CLASS_PATH "")
     set(IVW_MODULE_PACKAGE_NAME "")
 
     foreach(mod ${sorted_modules})
         if(${${mod}_opt})
             add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
-            list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
-            list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
+            set("${mod}_class_name" "${IVW_MODULE_CLASS}" CACHE INTERNAL "Module class name")
+            ivw_to_mod_name(name ${IVW_MODULE_CLASS})
+            set("${mod}_name" "${name}" CACHE INTERNAL "Module name")
+            list(APPEND ivw_module_names ${name})
+
+            list(APPEND ivw_module_classes ${IVW_MODULE_CLASS})
             list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
-            list(APPEND IVW_MODULE_PATHS ${${mod}_path})
         endif()
     endforeach()
 
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
-    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
+    list(REMOVE_DUPLICATES ivw_module_classes)
 
     # Save list of modules
-    set(ivw_all_registered_modules ${sorted_modules} CACHE INTERNAL "All registered inviwo modules")
+    set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
 
     # Generate module registration file
-    ivw_private_generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+    ivw_private_generate_module_registration_file(sorted_modules)
 
     # Save information for python tools.
-    ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${IVW_MODULE_CLASSES}")
+    ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
 endfunction()
 
 
