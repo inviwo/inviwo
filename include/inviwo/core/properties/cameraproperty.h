@@ -60,7 +60,7 @@ public:
     InviwoPropertyInfo();
 
     CameraProperty(std::string identifier, std::string displayName,
-                   vec3 eye = vec3(0.0f, 0.0f, -2.0f), vec3 center = vec3(0.0f),
+                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
