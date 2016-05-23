@@ -2,6 +2,8 @@
 # Inviwo Qt Application
 ivw_project(inviwo)
 
+find_package(Qt5Widgets QUIET REQUIRED)
+
 if(POLICY CMP0043)
     cmake_policy(SET CMP0043 OLD) # Ignore compile definitions.
 endif()

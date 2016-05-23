@@ -6,5 +6,7 @@ set(dependencies
     Qt5OpenGL
 )
 
+set(aliases OpenGLSupplier)
+
 
 

@@ -4,3 +4,5 @@ set(dependencies
     InviwoOpenGLModule
     GLFW
 )
+
+set(aliases OpenGLSupplier)

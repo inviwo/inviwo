@@ -106,8 +106,10 @@ set(ivw_default_modules
     "Assimp" 
     "Base"
     "BaseGL"
+    "BaseCL"
     "CImg"
     "FontRendering"
+    "OpenCL"
     "OpenGL"
     "OpenGLQt"
     "PVM"
@@ -142,5 +144,4 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-add_subdirectory(tools/doxygen)
-
+#add_subdirectory(tools/doxygen)
