@@ -774,7 +774,7 @@ std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, 
             auto axis2 = glm::rotate(axis, static_cast<float>(j * 2 * M_PI / subdivisions.y), N);
             auto VP = centerP + axis2*r2;
             
-            mesh->addVertex(VP, axis2, VP, color);
+            mesh->addVertex(VP, axis2, N, color);
 
             int i0 = startI + j;
             int i1 = startI + j + 1;
