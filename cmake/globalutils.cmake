@@ -467,4 +467,18 @@ function(ivw_topological_sort node_list_var node_edge_var sorted_var)
     set(${sorted_var} ${sorted} PARENT_SCOPE)
 endfunction()
 
-
+#--------------------------------------------------------------------
+# Get the module name from a CMakeLists.txt
+function(ivw_private_get_ivw_module_name path retval)
+    file(READ ${path} contents)
+     string(REPLACE "\n" ";" lines "${contents}")
+     foreach(line ${lines})
+        #\s*ivw_module\(\s*(\w+)\s*\)\s*
+        string(REGEX MATCH "\\s*ivw_module\\(\\s*([A-Za-z0-9_-]+)\\s*\\)\\s*" found_item ${line})
+        if(CMAKE_MATCH_1)
+            set(${retval} ${CMAKE_MATCH_1} PARENT_SCOPE)
+            return()
+       endif()
+     endforeach()
+     set(${retval} NOTFOUND PARENT_SCOPE)
+endfunction()
