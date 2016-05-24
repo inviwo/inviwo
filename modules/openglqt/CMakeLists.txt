@@ -2,7 +2,7 @@
 # Inviwo OpenGLQt Module
 ivw_module(OpenGLQt)
 
-find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt5Core QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files

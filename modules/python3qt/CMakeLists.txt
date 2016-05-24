@@ -2,6 +2,8 @@
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)
 
+find_package(Qt5Core QUIET REQUIRED)
+
 #--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES

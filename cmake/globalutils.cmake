@@ -452,6 +452,7 @@ function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_l
 endfunction()
 
 # A depth first topologocal sort
+# https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 function(ivw_topological_sort node_list_var node_edge_var sorted_var)
     set(sorted  "")
     set(marked "")
