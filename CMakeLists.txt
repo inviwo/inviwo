@@ -121,7 +121,7 @@ set(ivw_default_modules
 
 #--------------------------------------------------------------------
 # Add modules
-ivw_register_modules()
+ivw_register_modules(all_modules)
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
@@ -144,4 +144,6 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-#add_subdirectory(tools/doxygen)
+include(tools/doxygen/doxygen.cmake)
+make_doxygen_target(all_modules)
+

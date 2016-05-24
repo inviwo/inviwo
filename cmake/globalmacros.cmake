@@ -217,7 +217,7 @@ endfunction()
 # INVIWOOPENGLMODULE_description  -> </readme.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
 # 
-function(ivw_register_modules)
+function(ivw_register_modules retval)
     # Collect all modules and information
     set(modules "")
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
@@ -395,6 +395,8 @@ function(ivw_register_modules)
 
     # Save information for python tools.
     ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
+
+    set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
 
