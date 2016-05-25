@@ -3,4 +3,5 @@
 set(dependencies 
     InviwoOpenGLModule
     OpenCL
+    OpenGLSupplier
 )

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLFORMATEXCEPTION_H
-#define IVW_OPENCLFORMATEXCEPTION_H
-
-#include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/opencl/openclexception.h>
 
 namespace inviwo {
 
-/**
- * \class OpenCLFormatException
- *
- * \brief Exception thrown when a data format is not supported by OpenCL
- *
- */
-class IVW_MODULE_OPENCL_API OpenCLFormatException : public Exception {
-public:
-    OpenCLFormatException(const std::string& message = "",
-                          ExceptionContext context = ExceptionContext());
-    virtual ~OpenCLFormatException() throw(){};
-};
+OpenCLException::OpenCLException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
-} // namespace
-
-#endif // IVW_OPENCLFORMATEXCEPTION_H
-
+}  // namespace

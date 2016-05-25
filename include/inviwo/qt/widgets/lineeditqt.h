@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLFORMATEXCEPTION_H
-#define IVW_OPENCLFORMATEXCEPTION_H
+#ifndef IVW_LINEEDITQT_H
+#define IVW_LINEEDITQT_H
 
-#include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/core/properties/stringproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <warn/pop>
 
 namespace inviwo {
 
 /**
- * \class OpenCLFormatException
- *
- * \brief Exception thrown when a data format is not supported by OpenCL
- *
- */
-class IVW_MODULE_OPENCL_API OpenCLFormatException : public Exception {
+* \class LineEditQt
+* \brief customized line edit class based on QLineEdit. Pressing <escape> will emit a cancel signal.
+*  This signal can be used to revert the changes and loose focus without changing the property. 
+*/
+class IVW_QTWIDGETS_API LineEditQt : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    OpenCLFormatException(const std::string& message = "",
-                          ExceptionContext context = ExceptionContext());
-    virtual ~OpenCLFormatException() throw(){};
+    LineEditQt(QWidget *parent=nullptr);
+    virtual ~LineEditQt() = default;
+
+signals:
+    void editingCanceled();
+protected:
+    virtual void keyPressEvent(QKeyEvent *e) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENCLFORMATEXCEPTION_H
-
+#endif  // IVW_LINEEDITQT_H

@@ -31,6 +31,7 @@
 #include <modules/opencl/cl.hpp>
 #include <modules/opencl/glmcl.h>
 #include <modules/opencl/openclcapabilities.h>
+#include <modules/opencl/openclexception.h>
 #include <modules/opencl/openclformatexception.h>
 #include <modules/opencl/syncclgl.h>
 #include <inviwo/core/io/textfilereader.h>
@@ -54,10 +55,7 @@ namespace cl {
 
 namespace inviwo {
 
-
-OpenCL::OpenCL() {
-    initialize(true);
-}
+OpenCL::OpenCL() { initialize(true); }
 
 void OpenCL::initialize(bool glSharing) {
     try {
@@ -65,8 +63,7 @@ void OpenCL::initialize(bool glSharing) {
         cl::Platform::get(&platforms);
 
         if (platforms.size() == 0) {
-            LogError("No OpenCL platforms found" << std::endl);
-            return;
+            throw OpenCLException("No OpenCL platforms found", IvwContext);
         }
 
         cl::Platform platform;
@@ -74,7 +71,8 @@ void OpenCL::initialize(bool glSharing) {
         getBestGPUDeviceOnSystem(device, platform);
         setDevice(device, glSharing);
     } catch (cl::Error& err) {
-        LogError("ERROR: Failed to initialize OpenCL. " << err.what() << "(" << err.err() << "), " << errorCodeToString(err.err()) << std::endl);
+        throw OpenCLException("Failed to initialize OpenCL. " + std::string(err.what()) + "(" +
+                              toString(err.err()) + "), " + errorCodeToString(err.err()));
     }
 }
 bool OpenCL::isValidImageFormat(const cl::Context& context, const cl::ImageFormat& format) {
@@ -82,7 +80,8 @@ bool OpenCL::isValidImageFormat(const cl::Context& context, const cl::ImageForma
     context.getSupportedImageFormats(CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, &formats);
 
     for (::size_t i = 0; i < formats.size(); ++i) {
-        if (formats[i].image_channel_order == format.image_channel_order && formats[i].image_channel_data_type == format.image_channel_data_type) {
+        if (formats[i].image_channel_order == format.image_channel_order &&
+            formats[i].image_channel_data_type == format.image_channel_data_type) {
             return true;
         }
     }
@@ -94,12 +93,25 @@ bool OpenCL::isValidVolumeFormat(const cl::Context& context, const cl::ImageForm
     context.getSupportedImageFormats(CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE3D, &formats);
 
     for (::size_t i = 0; i < formats.size(); ++i) {
-        if (formats[i].image_channel_order == format.image_channel_order && formats[i].image_channel_data_type == format.image_channel_data_type) {
+        if (formats[i].image_channel_order == format.image_channel_order &&
+            formats[i].image_channel_data_type == format.image_channel_data_type) {
             return true;
         }
     }
 
     return false;
+}
+
+bool OpenCL::isOpenGLSharingEnabled() const {
+    auto contextProperties = gpuContext_.getInfo<CL_CONTEXT_PROPERTIES>();
+    return (std::find_if(contextProperties.begin(), contextProperties.end(),
+                         [](const cl_context_properties & p) {
+#if __APPLE__
+                             return p == CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
+#else
+                             return p == CL_GL_CONTEXT_KHR;
+#endif
+                         })) != contextProperties.end();
 }
 
 /*! \brief Get the device that has most compute units.
@@ -121,23 +133,23 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
         try {
             platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
 
-            //platforms[i].getDevices(CL_DEVICE_TYPE_CPU, &devices);
+            // platforms[i].getDevices(CL_DEVICE_TYPE_CPU, &devices);
             for (::size_t j = 0; j < devices.size(); ++j) {
                 cl_uint tmpMaxComputeUnits;
                 devices[j].getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &tmpMaxComputeUnits);
                 cl_device_type otherDeviceType = devices[j].getInfo<CL_DEVICE_TYPE>();
                 // Select if the current device is not a GPU device
                 // or if the new one has more compute units than the previous GPU device
-                if (deviceType != CL_DEVICE_TYPE_GPU || 
-                    (otherDeviceType == CL_DEVICE_TYPE_GPU && maxComputeUnits < tmpMaxComputeUnits)) {
+                if (deviceType != CL_DEVICE_TYPE_GPU || (otherDeviceType == CL_DEVICE_TYPE_GPU &&
+                                                         maxComputeUnits < tmpMaxComputeUnits)) {
                     bestDevice = devices[j];
                     onPlatform = platforms[i];
                     maxComputeUnits = tmpMaxComputeUnits;
                     deviceType = otherDeviceType;
                     foundDevice = true;
-                } 
+                }
             }
-        }  catch (cl::Error&) {
+        } catch (cl::Error&) {
             // Error getting device, continue with others
         }
     }
@@ -145,7 +157,8 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
     return foundDevice;
 }
 
-void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program, const std::string& filename) {
+void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,
+                             const std::string& filename) {
     for (::size_t i = 0; i < devices.size(); ++i) {
         cl_build_status status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(devices[i]);
 
@@ -161,24 +174,40 @@ void OpenCL::printBuildError(const cl::Device& device, const cl::Program& progra
 }
 
 std::vector<cl_context_properties> OpenCL::getGLSharingContextProperties() {
+    std::vector<cl_context_properties> sharingProperties;
 #if WIN32
-    cl_context_properties props[] = {
-        CL_GL_CONTEXT_KHR, (cl_context_properties) wglGetCurrentContext(),
-        CL_WGL_HDC_KHR, (cl_context_properties) wglGetCurrentDC()
-    };
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = (cl_context_properties)wglGetCurrentContext();
+    // Obtains a handle to the device context that is associated with the current OpenGL rendering
+    // context of the calling thread
+    auto deviceContext = wglGetCurrentDC();
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && deviceContext) {
+        sharingProperties = {CL_GL_CONTEXT_KHR, (cl_context_properties)glContext, CL_WGL_HDC_KHR,
+                             (cl_context_properties)deviceContext};
+    }
 #elif __APPLE__
-    CGLContextObj glContext = CGLGetCurrentContext();
-    CGLShareGroupObj shareGroup = CGLGetShareGroup(glContext);
-    cl_context_properties props[] = {
-        CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)shareGroup
-    };
-#else // LINUX
-    cl_context_properties props[] = {
-        CL_GL_CONTEXT_KHR, (cl_context_properties) glXGetCurrentContext(),
-        CL_GLX_DISPLAY_KHR, (cl_context_properties) glXGetCurrentDisplay()
-    };
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = CGLGetCurrentContext();
+    // Get the OpenCL share group for the current context
+    auto shareGroup = CGLGetShareGroup(glContext);
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && shareGroup) {
+        sharingProperties = {CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+                             (cl_context_properties)shareGroup};
+    }
+#else  // LINUX
+    // Obtain a handle to the current OpenGL rendering context of the calling thread
+    auto glContext = glXGetCurrentContext();
+    // Get the display for the current context
+    auto display = glXGetCurrentDisplay();
+    // Make sure that the calling thread has an OpenGL rendering context
+    if (glContext && display) {
+        sharingProperties = {CL_GL_CONTEXT_KHR, (cl_context_properties)glContext,
+                             CL_GLX_DISPLAY_KHR, (cl_context_properties)display};
+    }
 #endif
-    return std::vector<cl_context_properties>(props, props + sizeof(props)/sizeof(cl_context_properties));
+    return sharingProperties;
 }
 
 std::vector<cl::Device> OpenCL::getAllDevices() {
@@ -301,10 +330,11 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
     try {
         // Check if we are setting the same device
         if (gpuDevice_() == device()) {
-            std::vector<cl_context_properties> sharingProperties = getGLSharingContextProperties();
-            std::vector<cl_context_properties> contextProperties = gpuContext_.getInfo<CL_CONTEXT_PROPERTIES>();
-            bool sharingEnabled = (std::find(contextProperties.begin(), contextProperties.end(),
-                                             *sharingProperties.begin()) != contextProperties.end());
+            auto sharingProperties = getGLSharingContextProperties();
+            auto contextProperties = gpuContext_.getInfo<CL_CONTEXT_PROPERTIES>();
+            bool sharingEnabled =
+                (std::find(contextProperties.begin(), contextProperties.end(),
+                           *sharingProperties.begin()) != contextProperties.end());
 
             if (sharingEnabled == glSharing) {
                 // The device and sharing properties are the same.
@@ -317,22 +347,35 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
         cl::Platform platform = device.getInfo<CL_DEVICE_PLATFORM>();
         std::vector<cl_context_properties> properties;
 
-        if (glSharing)
+        if (glSharing) {
             properties = getGLSharingContextProperties();
+            if (properties.empty()) {
+                LogWarn("Unable to find OpenGL context. Will create OpenCL without OpenGL sharing");
+            }
+        }
 
-        cl_context_properties platformProperties[] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0};
-        properties.insert(properties.end(), platformProperties, platformProperties+ sizeof(platformProperties)/sizeof(cl_context_properties));
+        std::array<cl_context_properties, 3> platformProperties = {
+            CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0 };
+        properties.insert(properties.end(), platformProperties.begin(), platformProperties.end());
 
-        try
-        {
-            gpuContext_ = cl::Context(gpuDevice_, &properties[0]);
-        } catch (cl::Error&)
-        {
-            LogInfo("ERROR: Unable to create OpenCL context. Trying to create without openGL sharing... ");
+        try {
+            cl_int error = CL_SUCCESS;
+            gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
+            if (error != CL_SUCCESS) {
+                throw OpenCLException("Error creating OpenCL context", IvwContext);
+            }
+
+        } catch (cl::Error&) {
+            LogWarn("Unable to create OpenCL context. Trying to without OpenGL sharing");
             properties.clear();
-            properties.insert(properties.end(), platformProperties, platformProperties+ sizeof(platformProperties)/sizeof(cl_context_properties));
-            gpuContext_ = cl::Context(gpuDevice_, &properties[0]);
-            LogInfo("Succeeded creating OpenCL without OpenGL sharing. ");
+            properties.insert(properties.end(), platformProperties.begin(),
+                              platformProperties.end());
+            cl_int error = CL_SUCCESS;
+            gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
+            if (error != CL_SUCCESS) {
+                throw OpenCLException("Error creating OpenCL context", IvwContext);
+            }
+            LogInfo("Succeeded creating OpenCL without OpenGL sharing.");
         }
 
         cl_command_queue_properties queueProperties = 0;
@@ -357,14 +400,17 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             // Efficient cl/gl synchronization possible
         }
     } catch (cl::Error& err) {
-        LogError("Faile to set OpenCL device. " << err.what() << "(" << err.err() << "), " << errorCodeToString(err.err()) << std::endl);
+        LogError("Failed to set OpenCL device. " << err.what() << "(" << err.err() << "), "
+                                                 << errorCodeToString(err.err()) << std::endl);
     }
 }
 
 void LogOpenCLError(cl_int err, const char* message) {
     if (err != CL_SUCCESS) {
         std::ostringstream errorMessage;
-        errorMessage << "OpenCL Error " << err << ": " << errorCodeToString(err) << " " << getCLErrorResolveHint(err) << std::endl << message;
+        errorMessage << "OpenCL Error " << err << ": " << errorCodeToString(err) << " "
+                     << getCLErrorResolveHint(err) << std::endl
+                     << message;
         LogErrorCustom("OpenCL", errorMessage.str());
     }
 }
@@ -805,29 +851,23 @@ std::string getCLErrorResolveHint(cl_int err) {
     return hint;
 }
 
-
-
-std::string getCLErrorString(const cl::Error& err)
-{
+std::string getCLErrorString(const cl::Error& err) {
     std::ostringstream ss;
-    ss << "Error:" << err.what() << "(" << err.err() << "), " << errorCodeToString(err.err()) << " " << getCLErrorResolveHint(
-           err.err()) << std::endl;
+    ss << "Error:" << err.what() << "(" << err.err() << "), " << errorCodeToString(err.err()) << " "
+        << getCLErrorResolveHint(err.err()) << std::endl;
     return ss.str();
 }
 
-size_t getGlobalWorkGroupSize(size_t nItems, size_t localWorkGroupSize)
-{
-    return localWorkGroupSize*static_cast<size_t>(ceil(static_cast<float>(nItems) / static_cast<float>(localWorkGroupSize)));
+size_t getGlobalWorkGroupSize(size_t nItems, size_t localWorkGroupSize) {
+    return localWorkGroupSize * static_cast<size_t>(ceil(static_cast<float>(nItems) /
+                                                         static_cast<float>(localWorkGroupSize)));
 }
 
-size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize)
-{
-    return localWorkGroupSize*size2_t(glm::ceil(vec2(nItems) / vec2(localWorkGroupSize)));
+size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize) {
+    return localWorkGroupSize * size2_t(glm::ceil(vec2(nItems) / vec2(localWorkGroupSize)));
 }
 
-size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize)
-{
-    return localWorkGroupSize*size3_t(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
+size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize) {
+    return localWorkGroupSize * size3_t(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
 }
-
 }

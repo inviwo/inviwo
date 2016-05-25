@@ -72,10 +72,16 @@ FileProperty* FileProperty::clone() const {
     return new FileProperty(*this);
 }
 
-FileProperty::~FileProperty() {}
 
+void FileProperty::set(const std::string& value) {
+    TemplateProperty<std::string>::set(filesystem::cleanupPath(value));
+}
 
-void FileProperty::serialize(Serializer& s) const { 
+void FileProperty::set(const Property *property) {
+    TemplateProperty<std::string>::set(property);
+}
+
+void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
     several version to have a higher success rate when moving stuff around. 

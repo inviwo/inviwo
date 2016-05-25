@@ -51,8 +51,8 @@ MeshCreator::MeshCreator()
     , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-50.0f), vec3(50.0f))
     , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , torusRadius1_("torusRadius1_", "Torus Radius 1", 1)
-    , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3)
+    , torusRadius1_("torusRadius1_", "Torus Radius 1", 1.0f)
+    , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3f)
     , meshScale_("scale", "Size scaling", 1.f, 0.01f, 10.f)
     , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
     , meshType_("meshType", "Mesh Type") {

@@ -34,6 +34,7 @@
 #include <modules/opencl/image/layerclconverter.h>
 #include <modules/opencl/image/layerclglconverter.h>
 #include <modules/opencl/openclmodule.h>
+#include <modules/opencl/openclexception.h>
 #include <modules/opencl/openclcapabilities.h>
 #include <modules/opencl/settings/openclsettings.h>
 #include <modules/opencl/volume/volumeclconverter.h>
@@ -45,48 +46,63 @@
 namespace inviwo {
 
 OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL") {
+    try {
+        OpenCL::init();
+        OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
+        KernelManager::init();
+
+        auto cap = util::make_unique<OpenCLCapabilities>();
+        auto setting = util::make_unique<OpenCLSettings>(cap.get());
+        registerCapabilities(std::move(cap));
+        registerSettings(std::move(setting));
+    } catch (OpenCLException& e) {
+        throw ModuleInitException(e.getMessage(), e.getContext());
+    }
+
+    auto sharing = OpenCL::getPtr()->isOpenGLSharingEnabled();
+
     // Buffer CL
     registerRepresentationConverter(util::make_unique<BufferRAM2CLConverter>());
     registerRepresentationConverter(util::make_unique<BufferCL2RAMConverter>());
-    // Buffer CLGL
-    registerRepresentationConverter(util::make_unique<BufferGL2CLGLConverter>());
-    registerRepresentationConverter(util::make_unique<BufferCLGL2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<BufferCLGL2GLConverter>());
-    registerRepresentationConverter(util::make_unique<BufferCLGL2CLConverter>());
-    // ElementBuffer CLGL
-    registerRepresentationConverter(util::make_unique<ElementBufferCLGL2GLConverter>());
-    registerRepresentationConverter(util::make_unique<ElementBufferGL2CLGLConverter>());
+    
+    if (sharing) {
+        // Buffer CLGL
+        registerRepresentationConverter(util::make_unique<BufferGL2CLGLConverter>());
+        registerRepresentationConverter(util::make_unique<BufferCLGL2RAMConverter>());
+        registerRepresentationConverter(util::make_unique<BufferCLGL2GLConverter>());
+        registerRepresentationConverter(util::make_unique<BufferCLGL2CLConverter>());
+        // ElementBuffer CLGL
+        registerRepresentationConverter(util::make_unique<ElementBufferCLGL2GLConverter>());
+        registerRepresentationConverter(util::make_unique<ElementBufferGL2CLGLConverter>());
+    }
     // LayerCL
     registerRepresentationConverter(util::make_unique<LayerRAM2CLConverter>());
     registerRepresentationConverter(util::make_unique<LayerCL2RAMConverter>());
-    // LayerCLGL
-    registerRepresentationConverter(util::make_unique<LayerGL2CLGLConverter>());
-    registerRepresentationConverter(util::make_unique<LayerCLGL2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<LayerCLGL2CLConverter>());
-    registerRepresentationConverter(util::make_unique<LayerCLGL2GLConverter>());
+    
+    if (sharing) {
+        // LayerCLGL
+        registerRepresentationConverter(util::make_unique<LayerGL2CLGLConverter>());
+        registerRepresentationConverter(util::make_unique<LayerCLGL2RAMConverter>());
+        registerRepresentationConverter(util::make_unique<LayerCLGL2CLConverter>());
+        registerRepresentationConverter(util::make_unique<LayerCLGL2GLConverter>());
+    }
+
     // VolumeCL
     registerRepresentationConverter(util::make_unique<VolumeRAM2CLConverter>());
     registerRepresentationConverter(util::make_unique<VolumeCL2RAMConverter>());
-    // VolumeCLGL
-    registerRepresentationConverter(util::make_unique<VolumeGL2CLGLConverter>());
-    registerRepresentationConverter(util::make_unique<VolumeCLGL2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<VolumeCLGL2CLConverter>());
-    registerRepresentationConverter(util::make_unique<VolumeCLGL2GLConverter>());
-
-    OpenCL::init();
-    OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
-    KernelManager::init();
-
-    auto cap = util::make_unique<OpenCLCapabilities>();
-    auto setting = util::make_unique<OpenCLSettings>(cap.get());
-    registerCapabilities(std::move(cap));
-    registerSettings(std::move(setting));
+    
+    if (sharing) {
+        // VolumeCLGL
+        registerRepresentationConverter(util::make_unique<VolumeGL2CLGLConverter>());
+        registerRepresentationConverter(util::make_unique<VolumeCLGL2RAMConverter>());
+        registerRepresentationConverter(util::make_unique<VolumeCLGL2CLConverter>());
+        registerRepresentationConverter(util::make_unique<VolumeCLGL2GLConverter>());
+    }
 }
 
-OpenCLModule::~OpenCLModule(){
+OpenCLModule::~OpenCLModule() {
     OpenCL::deleteInstance();
     KernelManager::deleteInstance();
 }
-
 
 } // namespace

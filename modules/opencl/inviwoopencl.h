@@ -142,8 +142,10 @@ public:
      */
     void setDevice(cl::Device device, bool glSharing);
 
-    static cl::Program buildProgram(const std::string& fileName, const std::string& header = "", const std::string& defines = "");
-    static cl::Program buildProgram(const std::string& fileName, const std::string& header, const std::string& defines, const cl::CommandQueue& queue);
+    static cl::Program buildProgram(const std::string& fileName, const std::string& header = "",
+                                    const std::string& defines = "");
+    static cl::Program buildProgram(const std::string& fileName, const std::string& header,
+                                    const std::string& defines, const cl::CommandQueue& queue);
 
     /**
      * Check if image format combination is valid.
@@ -165,9 +167,11 @@ public:
      * @param filename (const std::string &)
      * @return (void)
      */
-    static void printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program, const std::string& filename = "");
+    static void printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,
+                                const std::string& filename = "");
 
-    static void printBuildError(const cl::Device& device, const cl::Program& program, const std::string& filename = "");
+    static void printBuildError(const cl::Device& device, const cl::Program& program,
+                                const std::string& filename = "");
 
     /**
      * Get OpenGL sharing properties depending on operating system.
@@ -193,7 +197,12 @@ public:
      */
     void removeCommonIncludeDirectory(const std::string& directoryPath);
 
-    const std::vector<std::string>& getCommonIncludeDirectories() const { return includeDirectories_; }
+    const std::vector<std::string>& getCommonIncludeDirectories() const {
+        return includeDirectories_;
+    }
+
+
+    bool isOpenGLSharingEnabled() const;
 
     /**
      *  Get the device that has most compute units.
@@ -239,9 +248,10 @@ private:
  */
 IVW_MODULE_OPENCL_API size_t getGlobalWorkGroupSize(size_t nItems, size_t localWorkGroupSize);
 
-IVW_MODULE_OPENCL_API size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize);
-IVW_MODULE_OPENCL_API size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize);
-
+IVW_MODULE_OPENCL_API size2_t getGlobalWorkGroupSize(size2_t nItems,
+                                                     glm::size2_t localWorkGroupSize);
+IVW_MODULE_OPENCL_API size3_t getGlobalWorkGroupSize(size3_t nItems,
+                                                     glm::size3_t localWorkGroupSize);
 
 /**
  * Creates a readable hint report from an OpenCL exception.

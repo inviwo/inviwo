@@ -142,6 +142,7 @@ private:
     ImageInport overlayPort_;
     ImageOutport outport_;
 
+    BoolProperty enabled_;
     BoolProperty overlayInteraction_;  //<! allows to interact with overlay images, otherwise only
                                        //the source image will receive interaction events
 

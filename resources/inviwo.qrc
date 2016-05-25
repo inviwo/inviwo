@@ -40,6 +40,7 @@
         <file>icons/info.png</file>
         <file>icons/warning.png</file>
         <file>icons/error.png</file>
+        <file>icons/filewarning.png</file>
         <file>images/splashscreen.png</file>
         <file>stylesheets/inviwo.qss</file>
         <file>stylesheets/images/arrow_down.png</file>

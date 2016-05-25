@@ -77,7 +77,10 @@ public:
     FileProperty& operator=(const FileProperty& that);
     FileProperty& operator=(const std::string& value);
     virtual FileProperty* clone() const override;
-    virtual ~FileProperty();
+    virtual ~FileProperty() = default;
+
+    virtual void set(const std::string& value) override;
+    virtual void set(const Property *property) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

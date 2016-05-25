@@ -287,11 +287,12 @@ if(WIN32 AND MSVC)
 
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx
-
-    set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). IDL=0: Disables checked iterators and disables iterator debugging. IDL=1: Enables checked iterators and disables iterator debugging. IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
+    set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). 
+    IDL=0: Disables checked iterators and disables iterator debugging.
+    IDL=1: Enables checked iterators and disables iterator debugging.
+    IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
     set_property(CACHE IVW_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_ITERATOR_DEBUG_LEVEL=${IVW_ITERATOR_DEBUG_LEVEL}")
-
 
     # MSVC Variable checks and include redist in packs
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -347,7 +348,7 @@ if(WIN32 AND MSVC)
     endif()  
 endif()
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed") # Only link to libs as needed.
 endif()

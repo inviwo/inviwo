@@ -191,6 +191,7 @@ IVW_CORE_API std::string getRelativePath(const std::string& basePath,
 IVW_CORE_API std::string getCanonicalPath(const std::string& url);
 
 IVW_CORE_API bool isAbsolutePath(const std::string& path);
+
 /**
  * \brief Checks whether the second path is on the same drive as the first path
  *
@@ -204,6 +205,15 @@ IVW_CORE_API bool isAbsolutePath(const std::string& path);
  * all other systems
  */
 IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& queryPath);
+
+/**
+* \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
+*
+* @param const std::string& path given path to be cleaned up
+* @return non-quoted path containing no backslashes as directory separators
+*/
+IVW_CORE_API std::string cleanupPath(const std::string& path);
+
 
 }  // namespace
 

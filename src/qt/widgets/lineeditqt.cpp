@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_OPENCLFORMATEXCEPTION_H
-#define IVW_OPENCLFORMATEXCEPTION_H
-
-#include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/qt/widgets/lineeditqt.h>
 
 namespace inviwo {
 
-/**
- * \class OpenCLFormatException
- *
- * \brief Exception thrown when a data format is not supported by OpenCL
- *
- */
-class IVW_MODULE_OPENCL_API OpenCLFormatException : public Exception {
-public:
-    OpenCLFormatException(const std::string& message = "",
-                          ExceptionContext context = ExceptionContext());
-    virtual ~OpenCLFormatException() throw(){};
-};
+LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
+    connect(this, &QLineEdit::returnPressed, [this]() {
+        // loose focus when return is pressed
+        this->clearFocus();
+    });
+    // do nothing when editing is finished (either return pressed or focus lost)
+    //connect(this, &QLineEdit::editingFinished, [this]() {
+    //});
+}
 
-} // namespace
+void LineEditQt::keyPressEvent(QKeyEvent * e) {
+    // check whether pressed key is escape, if yes then trigger undo
+    if (e->key() == Qt::Key_Escape) {
+        emit editingCanceled();
+        // loose focus
+        this->clearFocus();
+        e->accept();
+        return;
+    }
+    QLineEdit::keyPressEvent(e);
+}
 
-#endif // IVW_OPENCLFORMATEXCEPTION_H
-
+} // namespace inviwo
