@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,49 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_FILEPROPERTYWIDGETQT_H
-#define IVW_FILEPROPERTYWIDGETQT_H
+#ifndef IVW_FILEPATHLINEEDITQT_H
+#define IVW_FILEPATHLINEEDITQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/filepathlineeditqt.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/qt/widgets/lineeditqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
-#include <warn/pop>
-
-class QDropEvent;
+class QLabel;
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
-
+/**
+* \class FilePathLineEditQt
+* \brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path is shown.
+*        When not in focus, it shows only the file name with extension.
+*        A small warning icon is shown to indicate non-existing files and paths.
+*/
+class IVW_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
+    FilePathLineEditQt(QWidget *parent=nullptr);
+    virtual ~FilePathLineEditQt() = default;
 
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
+    void setPath(const std::string &path);
+    const std::string& getPath() const;
 
-    virtual std::string getToolTipText() override;
-
-public slots:
-    void setPropertyValue();
+    void setEditing(bool editing);
+    bool isEditingEnabled() const;
 
 protected:
-    virtual void dropEvent(QDropEvent *) override;
-    virtual void dragEnterEvent(QDragEnterEvent *) override;
-    virtual void dragMoveEvent(QDragMoveEvent *) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
+    void updateContents();
+    void updateIcon();
 
 private:
-    void generateWidget();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
+    QLabel *warningLabel_; //!< warning icon which is visible if the path is invalid
+    std::string path_; //!< full path including file name
+    bool editingEnabled_; //!< if this flag is set, the full path is shown. Otherwise only the file name is shown
 };
 
-} // namespace
+} // namespace iniwo
 
-#endif // IVW_FILEPROPERTYWIDGETQT_H
+#endif // IVW_FILEPATHLINEEDITQT_H

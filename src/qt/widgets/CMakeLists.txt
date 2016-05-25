@@ -9,12 +9,14 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/colorwheel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/customdoublespinboxqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/editablelabelqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/filepathlineeditqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/sliderwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoapplicationqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidgettitlebar.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lightpositionwidgetqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lineeditqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/ordinaleditorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertylistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rangesliderqt.h
@@ -76,6 +78,7 @@ set(SOURCE_FILES
     customdoublespinboxqt.cpp
     editablelabelqt.cpp
     eventconverterqt.cpp
+    filepathlineeditqt.cpp
     inviwoapplicationqt.cpp
     inviwodockwidget.cpp
     inviwodockwidgettitlebar.cpp
@@ -84,6 +87,7 @@ set(SOURCE_FILES
     keyboardutils.cpp
     labelgraphicsitem.cpp
     lightpositionwidgetqt.cpp
+    lineeditqt.cpp
     ordinaleditorwidget.cpp
     processors/processordockwidgetqt.cpp
     processors/processorwidgetqt.cpp

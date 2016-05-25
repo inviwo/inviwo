@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,30 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_FILEPROPERTYWIDGETQT_H
-#define IVW_FILEPROPERTYWIDGETQT_H
-
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/filepathlineeditqt.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/fileproperty.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
-#include <warn/pop>
-
-class QDropEvent;
+#include <inviwo/qt/widgets/lineeditqt.h>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
+LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
+    connect(this, &QLineEdit::returnPressed, [this]() {
+        // loose focus when return is pressed
+        this->clearFocus();
+    });
+    // do nothing when editing is finished (either return pressed or focus lost)
+    //connect(this, &QLineEdit::editingFinished, [this]() {
+    //});
+}
 
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+void LineEditQt::keyPressEvent(QKeyEvent * e) {
+    // check whether pressed key is escape, if yes then trigger undo
+    if (e->key() == Qt::Key_Escape) {
+        emit editingCanceled();
+        // loose focus
+        this->clearFocus();
+        e->accept();
+        return;
+    }
+    QLineEdit::keyPressEvent(e);
+}
 
-public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
-
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
-
-    virtual std::string getToolTipText() override;
-
-public slots:
-    void setPropertyValue();
-
-protected:
-    virtual void dropEvent(QDropEvent *) override;
-    virtual void dragEnterEvent(QDragEnterEvent *) override;
-    virtual void dragMoveEvent(QDragMoveEvent *) override;
-
-private:
-    void generateWidget();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
-};
-
-} // namespace
-
-#endif // IVW_FILEPROPERTYWIDGETQT_H
+} // namespace inviwo

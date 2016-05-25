@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,44 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_FILEPROPERTYWIDGETQT_H
-#define IVW_FILEPROPERTYWIDGETQT_H
+#ifndef IVW_LINEEDITQT_H
+#define IVW_LINEEDITQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/filepathlineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLineEdit>
-#include <QToolButton>
 #include <warn/pop>
-
-class QDropEvent;
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
-
+/**
+* \class LineEditQt
+* \brief customized line edit class based on QLineEdit. Pressing <escape> will emit a cancel signal.
+*  This signal can be used to revert the changes and loose focus without changing the property. 
+*/
+class IVW_QTWIDGETS_API LineEditQt : public QLineEdit {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
+    LineEditQt(QWidget *parent=nullptr);
+    virtual ~LineEditQt() = default;
 
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
-
-    virtual std::string getToolTipText() override;
-
-public slots:
-    void setPropertyValue();
-
+signals:
+    void editingCanceled();
 protected:
-    virtual void dropEvent(QDropEvent *) override;
-    virtual void dragEnterEvent(QDragEnterEvent *) override;
-    virtual void dragMoveEvent(QDragMoveEvent *) override;
-
-private:
-    void generateWidget();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
+    virtual void keyPressEvent(QKeyEvent *e) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FILEPROPERTYWIDGETQT_H
+#endif  // IVW_LINEEDITQT_H
