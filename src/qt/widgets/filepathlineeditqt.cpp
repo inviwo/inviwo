@@ -33,7 +33,9 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
-#include <QDir>
+#include <QCursor>
+#include <QFocusEvent>
+#include <QMouseEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -41,6 +43,8 @@ namespace inviwo {
 FilePathLineEditQt::FilePathLineEditQt(QWidget* parent) 
     : LineEditQt(parent) 
     , editingEnabled_(false)
+    , cursorPos_(-1)
+    , cursorPosDirty_(false)
 {
     // warning icon at the right side of the line edit for indication of "file not found"
     warningLabel_ = new QLabel(this);
@@ -55,12 +59,16 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
 
     QObject::connect(this, &QLineEdit::returnPressed, [this]() {
         if (editingEnabled_) {
+            cursorPos_ = -1;
             path_ = this->text().toStdString();
             setEditing(false);
         }
     });
     QObject::connect(this, &QLineEdit::editingFinished, [this]() {
         if (editingEnabled_) {
+            LogInfo("editing finished, cursorpos (old) " << cursorPos_);
+            cursorPos_ = this->cursorPosition();
+            LogInfo(" cursor (new) " << cursorPos_);
             path_ = this->text().toStdString();
             setEditing(false);
         }
@@ -68,6 +76,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     QObject::connect(this, &LineEditQt::editingCanceled, [this]() {
         // revert changes
         if (editingEnabled_) {
+            cursorPos_ = -1;
             updateContents();
             setEditing(false);
         }
@@ -75,8 +84,11 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
 }
 
 void FilePathLineEditQt::setPath(const std::string &path) {
-    path_ = path;
-    updateContents();
+    if (path_ != path) {
+        path_ = path;
+        cursorPos_ = -1;
+        updateContents();
+    }
 }
 
 const std::string& FilePathLineEditQt::getPath() const {
@@ -101,19 +113,40 @@ void FilePathLineEditQt::resizeEvent(QResizeEvent *event) {
 }
 
 void FilePathLineEditQt::focusInEvent(QFocusEvent *event) {
+    if (event->reason() == Qt::MouseFocusReason) {
+        // user has used the mouse to click into this widget
+        auto cursor = QCursor::pos();
+        // get current cursor position in line edit
+        int pos = this->cursorPositionAt(this->mapFromGlobal(cursor));
+        // transform position into position within entire path
+        auto lenFilename = filesystem::getFileNameWithExtension(path_).size();
+        cursorPos_ = static_cast<int>(path_.size() - lenFilename) + pos;
+        cursorPosDirty_ = true;
+    }
     setEditing(true);
     QLineEdit::focusInEvent(event);
+    if (cursorPos_ >= 0) {
+        this->setCursorPosition(cursorPos_);
+    }
+}
+
+void FilePathLineEditQt::mousePressEvent(QMouseEvent *event) {
+    LineEditQt::mousePressEvent(event);
+    if (cursorPosDirty_) {
+        // adjust cursor position since the text has changed
+        this->setCursorPosition(cursorPos_);
+        cursorPosDirty_ = false;
+    }
 }
 
 void FilePathLineEditQt::updateContents() {
-    QString str(QString::fromStdString(path_));
     if (editingEnabled_) {
         // show entire path
-        this->setText(str);
+        this->setText(QString::fromStdString(path_));
     }
     else {
-        // abbreviate file path and show only the file name
-        this->setText(QFileInfo(str).fileName());
+        // abbreviate file path and show only the file name        
+        this->setText(QString::fromStdString(filesystem::getFileNameWithExtension(path_)));
     }
     updateIcon();
 }

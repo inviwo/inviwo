@@ -61,6 +61,8 @@ public:
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
+
     void updateContents();
     void updateIcon();
 
@@ -68,6 +70,8 @@ private:
     QLabel *warningLabel_; //!< warning icon which is visible if the path is invalid
     std::string path_; //!< full path including file name
     bool editingEnabled_; //!< if this flag is set, the full path is shown. Otherwise only the file name is shown
+    int cursorPos_;
+    bool cursorPosDirty_;
 };
 
 } // namespace iniwo
