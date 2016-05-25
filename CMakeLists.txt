@@ -127,7 +127,7 @@ if(PYTHONLIBS_FOUND)
         )
 endif()
 
-find_package(OpenCL 3 QUIET)
+find_package(OpenCL QUIET)
 if(OPENCL_FOUND)
     set(ivw_default_modules
         ${ivw_default_modules}
