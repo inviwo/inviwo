@@ -106,10 +106,8 @@ set(ivw_default_modules
     "Assimp" 
     "Base"
     "BaseGL"
-    "BaseCL"
     "CImg"
     "FontRendering"
-    "OpenCL"
     "OpenGL"
     "OpenGLQt"
     "PVM"
@@ -118,6 +116,26 @@ set(ivw_default_modules
 	"Nifti" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
+
+set(Python_ADDITIONAL_VERSIONS 3.5)
+find_package(PythonLibs 3 QUIET)
+if(PYTHONLIBS_FOUND)
+    set(ivw_default_modules
+        ${ivw_default_modules}
+        "Python3"
+        "Python3Qt"
+        )
+endif()
+
+find_package(OpenCL 3 QUIET)
+if(OPENCL_FOUND)
+    set(ivw_default_modules
+        ${ivw_default_modules}
+        "OpenCL"
+        "BaseCL"
+        )
+endif()
+
 
 #--------------------------------------------------------------------
 # Add modules
