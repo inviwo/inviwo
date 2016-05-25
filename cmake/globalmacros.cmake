@@ -202,8 +202,18 @@ function(ivw_private_is_valid_module_dir path dir retval)
                 if(${dir} STREQUAL ${l_name})
                     set(${retval} TRUE PARENT_SCOPE)
                     return()
+                else()
+                    ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                        "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
+                        "They should be the same except for casing.")
                 endif()
+            else()
+                ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                    "CMakeLists.txt is missing")
             endif()
+        else()
+            ivw_message(WARNING "Found invalid module dir \"${dir}\" at \"${module_path}\". "
+                    "Dir names should be all lowercase and without spaces")
         endif()
     endif()
     set(${retval} FALSE PARENT_SCOPE)
@@ -269,9 +279,6 @@ function(ivw_register_modules retval)
                     encodeLineBreaks(cdescription ${description})
                     set("${mod}_description" ${cdescription} CACHE INTERNAL "Module description")
                 endif()
-            else()
-                ivw_message(WARNING "Found invalid module dir name \"${dir}\" at \"${module_path}\". "
-                    "Dir names should be all lowercase and without spaces")
             endif()
         endforeach()
     endforeach()
