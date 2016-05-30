@@ -131,6 +131,10 @@ InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
     portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
+    for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+        it->reset();
+    }
+    modules_.clear();
 }
 
 void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
