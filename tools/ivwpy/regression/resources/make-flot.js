@@ -52,7 +52,7 @@ function standardDeviation(values){
 }
 
 function stdRange(data) {
-    values = data.map(([x,y])=>{return y;});
+    values = data.map( function([x,y]){return y;} );
     var avg = average(values);
     var std = standardDeviation(values);
     var minval = Math.min(...values);
