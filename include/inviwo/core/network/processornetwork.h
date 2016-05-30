@@ -217,6 +217,7 @@ public:
 
     void evaluateLinksFromProperty(Property*);
 
+    bool isEmpty() const;
     bool isInvalidating() const;
     bool isLinking() const;
 

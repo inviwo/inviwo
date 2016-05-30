@@ -1029,7 +1029,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     bool continueOperation = true;
 
-    if (getNetworkEditor()->isModified()) {
+    if (getNetworkEditor()->isModified() && !app_->getProcessorNetwork()->isEmpty()) {
         QMessageBox msgBox(this);
         msgBox.setText("Workspace Modified");
         msgBox.setInformativeText("Do you want to save your changes?");
