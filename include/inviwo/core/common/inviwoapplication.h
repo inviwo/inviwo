@@ -234,6 +234,7 @@ private:
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
+    util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
