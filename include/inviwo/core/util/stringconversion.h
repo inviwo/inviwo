@@ -109,6 +109,10 @@ IVW_CORE_API std::string rtrim(std::string s);
 // trim from both ends
 IVW_CORE_API std::string trim(std::string s);
 
+
+// trim from both ends
+IVW_CORE_API std::string msToString(double ms, unsigned precision = 2);
+
 }  // namespace
 
 #endif  // IVW_STRINGCONVERSION_H
