@@ -194,26 +194,26 @@ std::string msToString(double ms, unsigned precision) {
     size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
     if (hours > 0 && used < precision) {
         if (used++) ss << " ";
-        ss << hours << " h";
+        ss << hours << "h";
         ms -= 3600 * 1000 * hours;
     }
     size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
     if (minutes > 0 && used < precision) {
         if (used++) ss << " ";
-        ss << minutes << " min";
+        ss << minutes << "min";
         ms -= 60 * 1000 * minutes;
     }
 
     size_t sec = static_cast<size_t>(ms / (1000.0));
     if (sec > 0 && used < precision) {
         if (used++) ss << " ";
-        ss << sec << " s";
+        ss << sec << "s";
         ms -= 1000 * sec;
     }
 
     if (ms > 0 && used < precision) {
         if (used++) ss << " ";
-        ss << ms << " ms";
+        ss << ms << "ms";
     }
 
     return ss.str();
