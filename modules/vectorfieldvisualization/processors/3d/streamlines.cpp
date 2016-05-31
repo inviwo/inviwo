@@ -56,7 +56,7 @@ StreamLines::~StreamLines() {}
 
 void StreamLines::process() {
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
+    //mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
     mesh->setWorldMatrix(sampler_.getData()->getWorldMatrix());
 
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(

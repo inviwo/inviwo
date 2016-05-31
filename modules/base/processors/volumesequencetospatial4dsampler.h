@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,22 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_PATHLINES_H
-#define IVW_PATHLINES_H
+#ifndef IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
+#define IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/vectorfieldvisualization/pathlinetracer.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/spatial4dsampler.h>
+#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PathLines, Path Lines}
- * ![](org.inviwo.PathLines.png?classIdentifier=org.inviwo.PathLines)
+/** \docpage{org.inviwo.VolumeSequenceToSpatial4DSampler, Volume Sequence To Spatial4DSampler}
+ * ![](org.inviwo.VolumeSequenceToSpatial4DSampler.png?classIdentifier=org.inviwo.VolumeSequenceToSpatial4DSampler)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -63,45 +58,27 @@ namespace inviwo {
 
 
 /**
- * \class PathLines
+ * \class VolumeSequenceToSpatial4DSampler
  * \brief <brief description> 
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
+class IVW_MODULE_BASE_API VolumeSequenceToSpatial4DSampler : public Processor { 
 public:
-    enum class ColoringMethod{
-        Velocity, 
-        Timestamp,
-        ColorPort
-    };
-    PathLines();
-    virtual ~PathLines() = default;
+    VolumeSequenceToSpatial4DSampler();
+    virtual ~VolumeSequenceToSpatial4DSampler() = default;
+     
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-     
-    virtual void process() override; 
-
-    virtual void deserialize(Deserializer& d) override;
-
 private:
-    DataInport<Spatial4DSampler<3, double>> sampler_;
-    SeedPointsInport seedPoints_;
-    DataInport<std::vector<vec4>> colors_;
+    VolumeSequenceInport volumeSequence_;
+    DataOutport<Spatial4DSampler<3, double>> sampler_;
 
-    MeshOutport linesStripsMesh_;
-
-
-    PathLineProperties pathLineProperties_;
-
-   
-    TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
-    FloatProperty velocityScale_;
-    StringProperty maxVelocity_;
+    BoolProperty allowLooping_;
 };
 
 } // namespace
 
-#endif // IVW_PATHLINES_H
+#endif // IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
 
