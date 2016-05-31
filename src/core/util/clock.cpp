@@ -56,7 +56,7 @@ void ScopedClockCPU::print() {
     clock_.tick();
     if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
         std::stringstream message;
-        message << logMessage_ << ": " << clock_.getElapsedMiliseconds() << " ms";
+        message << logMessage_ << ": " << msToString(clock_.getElapsedMiliseconds());
         LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }
