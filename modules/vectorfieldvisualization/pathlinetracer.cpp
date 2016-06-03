@@ -91,7 +91,7 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
                 break;
         }
 
-        if (glm::length(v) == 0) {
+        if (glm::length(v) < std::numeric_limits<double>::epsilon()) {
             line.setTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
             return;
         }
