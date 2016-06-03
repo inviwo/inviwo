@@ -30,6 +30,7 @@
 uniform ivec3 volumeSize_;
 
 in vec4 texCoord_;
+in vec4 dataposition_;
 
 uniform float rho;
 uniform float sigma;
@@ -44,9 +45,9 @@ float getPos(float v ,vec2 range){
 }
 
 void main() {
-    float x = getPos(texCoord_.x , xRange);
-    float y = getPos(texCoord_.y , yRange);
-    float z = getPos(texCoord_.z , zRange);
+    float x = getPos(dataposition_.x , xRange);
+    float y = getPos(dataposition_.y , yRange);
+    float z = getPos(dataposition_.z , zRange);
     vec4 value = vec4(0,0,0,1);
     value.x = sigma*(y-x);
     value.y = x*(rho-z)-y ;
