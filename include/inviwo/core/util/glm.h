@@ -690,6 +690,18 @@ inline bool all(const bool& t) {
 }
 
 
+
+template <typename T>
+inline bool any(const T& t) {
+    return glm::any(t);
+}
+
+template <>
+inline bool any(const bool& t) {
+    return t;
+}
+
+
 } // namespace util
 
 } // namespace inviwo
