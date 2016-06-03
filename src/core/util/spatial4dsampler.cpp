@@ -27,24 +27,11 @@
  *
  *********************************************************************************/
 
-#include "integralline.h"
+#include <inviwo/core/util/spatial4dsampler.h>
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps)
-{}
+    uvec3 Spatial4DSamplerBase::COLOR_CODE = uvec3(153, 0, 76);
 
-IntegralLine::~IntegralLine() {}
-
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
-
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
-    auto it = metaData_.find(name);
-    if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
-    }
-    return it->second;
-}
 
 }  // namespace

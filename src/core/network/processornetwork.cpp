@@ -276,6 +276,10 @@ void ProcessorNetwork::clear() {
     }
 }
 
+bool ProcessorNetwork::isEmpty() const {
+    return processors_.empty();
+}
+
 bool ProcessorNetwork::isInvalidating() const { return !processorsInvalidating_.empty(); }
 
 bool ProcessorNetwork::isLinking() const { return linkEvaluator_.isLinking(); }

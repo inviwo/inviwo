@@ -117,9 +117,29 @@ set(ivw_default_modules
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
+set(Python_ADDITIONAL_VERSIONS 3.5)
+find_package(PythonLibs 3 QUIET)
+if(PYTHONLIBS_FOUND)
+    set(ivw_default_modules
+        ${ivw_default_modules}
+        "Python3"
+        "Python3Qt"
+        )
+endif()
+
+find_package(OpenCL QUIET)
+if(OPENCL_FOUND)
+    set(ivw_default_modules
+        ${ivw_default_modules}
+        "OpenCL"
+        "BaseCL"
+        )
+endif()
+
+
 #--------------------------------------------------------------------
 # Add modules
-ivw_register_modules()
+ivw_register_modules(all_modules)
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
@@ -142,5 +162,6 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-add_subdirectory(tools/doxygen)
+include(tools/doxygen/doxygen.cmake)
+make_doxygen_target(all_modules)
 

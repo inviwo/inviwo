@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,39 @@
  *
  *********************************************************************************/
 
-#include "integralline.h"
+#include <modules/base/processors/volumesequencetospatial4dsampler.h>
+#include <inviwo/core/util/volumesequencesampler.h>
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps)
-{}
-
-IntegralLine::~IntegralLine() {}
-
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
-
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
-    auto it = metaData_.find(name);
-    if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
-    }
-    return it->second;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumeSequenceToSpatial4DSampler::processorInfo_{
+    "org.inviwo.VolumeSequenceToSpatial4DSampler",      // Class identifier
+    "Volume Sequence To Spatial 4D Sampler",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
+};
+const ProcessorInfo VolumeSequenceToSpatial4DSampler::getProcessorInfo() const {
+    return processorInfo_;
 }
 
-}  // namespace
+VolumeSequenceToSpatial4DSampler::VolumeSequenceToSpatial4DSampler()
+    : Processor()
+    , volumeSequence_("volumeSequence")
+    , sampler_("sampler") 
+    , allowLooping_("allowLooping","Allow Looping" , true)
+{
+    addPort(volumeSequence_);
+    addPort(sampler_);
+
+    addProperty(allowLooping_);
+}
+    
+void VolumeSequenceToSpatial4DSampler::process() {
+    auto sampler = std::make_shared< VolumeSequenceSampler>(volumeSequence_.getData() , allowLooping_.get());
+    sampler_.setData(sampler);
+}
+
+} // namespace
+

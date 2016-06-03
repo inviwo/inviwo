@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,27 +24,56 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include "integralline.h"
+#ifndef IVW_FILEPATHLINEEDITQT_H
+#define IVW_FILEPATHLINEEDITQT_H
+
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/lineeditqt.h>
+
+class QLabel;
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps)
-{}
+/**
+* \class FilePathLineEditQt
+* \brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path is shown.
+*        When not in focus, it shows only the file name with extension.
+*        A small warning icon is shown to indicate non-existing files and paths.
+*/
+class IVW_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    FilePathLineEditQt(QWidget *parent=nullptr);
+    virtual ~FilePathLineEditQt() = default;
 
-IntegralLine::~IntegralLine() {}
+    void setPath(const std::string &path);
+    const std::string& getPath() const;
 
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
+    void setEditing(bool editing);
+    bool isEditingEnabled() const;
 
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
-    auto it = metaData_.find(name);
-    if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
-    }
-    return it->second;
-}
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
 
-}  // namespace
+    void updateContents();
+    void updateIcon();
+
+private:
+    QLabel *warningLabel_; //!< warning icon which is visible if the path is invalid
+    std::string path_; //!< full path including file name
+    bool editingEnabled_; //!< if this flag is set, the full path is shown. Otherwise only the file name is shown
+    int cursorPos_;
+    bool cursorPosDirty_;
+};
+
+} // namespace iniwo
+
+#endif // IVW_FILEPATHLINEEDITQT_H

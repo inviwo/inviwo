@@ -33,6 +33,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
+#include <modules/opengl/geometry/meshgl.h>
 
 namespace inviwo {
 

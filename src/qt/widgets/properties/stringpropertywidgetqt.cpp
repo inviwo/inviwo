@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ void StringPropertyWidgetQt::generateWidget() {
     label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
-    lineEdit_ = new QLineEdit;
+    lineEdit_ = new LineEditQt;
     if(property_->getSemantics().getString() == "Password"){
         lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
     }
@@ -60,6 +60,13 @@ void StringPropertyWidgetQt::generateWidget() {
     hLayout->addWidget(lineEdit_);
     
     connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
+    connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
+        // undo textual changes by resetting the contents of the line edit
+        LogInfo("StringPropertyWidgetQt: editing canceled");
+        QSignalBlocker blocker(lineEdit_);
+        updateFromProperty();
+        lineEdit_->clearFocus();
+    });
 }
 
 void StringPropertyWidgetQt::setPropertyValue() {
@@ -74,4 +81,4 @@ void StringPropertyWidgetQt::updateFromProperty() {
     lineEdit_->setCursorPosition(0);
 }
 
-} // namespace
+} // namespace inviwo

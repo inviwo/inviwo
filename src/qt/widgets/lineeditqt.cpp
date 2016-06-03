@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,27 +24,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include "integralline.h"
+#include <inviwo/qt/widgets/lineeditqt.h>
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps)
-{}
-
-IntegralLine::~IntegralLine() {}
-
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
-
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
-    auto it = metaData_.find(name);
-    if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
-    }
-    return it->second;
+LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
+    connect(this, &QLineEdit::returnPressed, [this]() {
+        // loose focus when return is pressed
+        this->clearFocus();
+    });
+    // do nothing when editing is finished (either return pressed or focus lost)
+    //connect(this, &QLineEdit::editingFinished, [this]() {
+    //});
 }
 
-}  // namespace
+void LineEditQt::keyPressEvent(QKeyEvent * e) {
+    // check whether pressed key is escape, if yes then trigger undo
+    if (e->key() == Qt::Key_Escape) {
+        emit editingCanceled();
+        // loose focus
+        this->clearFocus();
+        e->accept();
+        return;
+    }
+    QLineEdit::keyPressEvent(e);
+}
+
+} // namespace inviwo

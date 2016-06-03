@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
+#include <inviwo/qt/widgets/filepathlineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -54,6 +55,7 @@ class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public F
 
 public:
     FilePropertyWidgetQt(FileProperty* property);
+    virtual ~FilePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
@@ -67,13 +69,12 @@ protected:
     virtual void dropEvent(QDropEvent *) override;
     virtual void dragEnterEvent(QDragEnterEvent *) override;
     virtual void dragMoveEvent(QDragMoveEvent *) override;
-    virtual bool eventFilter(QObject *, QEvent *) override;
 
 private:
     void generateWidget();
 
     FileProperty* property_;
-    QLineEdit* lineEdit_;
+    FilePathLineEditQt* lineEdit_;
     QToolButton* openButton_;
     EditableLabelQt* label_;
 };

@@ -2,6 +2,9 @@
 # Inviwo Qt Application
 ivw_project(inviwo)
 
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
+
 if(POLICY CMP0043)
     cmake_policy(SET CMP0043 OLD) # Ignore compile definitions.
 endif()
@@ -9,15 +12,11 @@ endif()
 
 #--------------------------------------------------------------------
 # Add MOC files
-set(MOC_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
-)
+set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
 
 #--------------------------------------------------------------------
 # Add header files
-set(HEADER_FILES
-    ${MOC_FILES}
-)
+set(HEADER_FILES  ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------

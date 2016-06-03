@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
+#include <inviwo/qt/widgets/lineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/stringproperty.h>
 
@@ -53,15 +54,15 @@ public:
 
     void updateFromProperty();
 
+public slots:
+    void setPropertyValue();
+
 private:
     StringProperty* property_;
-    QLineEdit* lineEdit_;
+    LineEditQt *lineEdit_;
     EditableLabelQt* label_;
 
     void generateWidget();
-
-public slots:
-    void setPropertyValue();
 };
 
 }  // namespace

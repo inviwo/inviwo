@@ -76,4 +76,21 @@ TEST(filesystemTest, relativePathTest) {
     EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
 }
+
+TEST(filesystemTest, pathCleanupTest) {
+    // cleanupPath should replace all '\' with '/'
+    EXPECT_STREQ("C:/a/directory/for/test/file.txt",
+                 filesystem::cleanupPath("C:\\a\\directory/for/test\\file.txt").c_str());
+    // cleanupPath should remove surrounding double quotes '"'
+    EXPECT_STREQ("C:/a/directory/for/test/file.txt",
+                 filesystem::cleanupPath("\"C:/a/directory/for/test/file.txt\"").c_str());
+    // remove quotes and backslashes
+    EXPECT_STREQ("C:/a/directory/for/test/file.txt",
+                 filesystem::cleanupPath("\"C:\\a\\directory\\for\\test/file.txt\"").c_str());
+
+    // unmatched quote
+    EXPECT_STREQ("\"C:/test/file.txt",
+                 filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
+}
+
 }

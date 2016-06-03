@@ -34,10 +34,10 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> vol, const StreamLineProperties &properties)
+StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler, const StreamLineProperties &properties)
     : IntegralLineTracer(properties)
-    , volumeSampler_(vol)
-    , invBasis_(dmat3(glm::inverse(vol->getBasis())))
+    , volumeSampler_(sampler)
+    , invBasis_(dmat3(glm::inverse(sampler->getBasis())))
     , normalizeSample_(properties.getNormalizeSamples())
 {
 
@@ -93,6 +93,7 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) {
 void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd) {
     for (int i = 0; i <= steps; i++) {
         if (!volumeSampler_->withinBounds(curPos)) {
+            line.setTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
             break;
         }
 
@@ -109,6 +110,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
         }
         
         if (glm::length(v) == 0) {
+            line.setTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
             break;
         }
 

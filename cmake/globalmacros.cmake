@@ -66,7 +66,6 @@ endmacro()
 #    _preModuleDependencies -> ""
 #   PARENT_SCOPE:
 #   IVW_MODULE_CLASS        -> OpenGL
-#   IVW_MODULE_CLASS_PATH   -> opengl/openglmodule
 #   IVW_MODULE_PACKAGE_NAME -> InviwoOpenGLModule
 macro(ivw_module project_name)
     string(TOLOWER ${project_name} l_project_name)
@@ -74,7 +73,6 @@ macro(ivw_module project_name)
     set(_packageName Inviwo${project_name}Module)
     set(_preModuleDependencies "")
     set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
-    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
     set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
 endmacro()
 
@@ -100,13 +98,6 @@ macro(ivw_register_use_of_modules)
         ivw_add_definition(REG_${u_module})
     endforeach()
 endmacro()
-
-#--------------------------------------------------------------------
-# Generate a list of all available module packages
-function(ivw_private_create_module_package_list)
-    ivw_to_mod_name(modules ${ARGN})
-    set(ivw_all_registered_modules ${modules} CACHE INTERNAL "All registered inviwo modules")
-endfunction()
 
 #--------------------------------------------------------------------
 # Retrieve all modules as a list
@@ -139,45 +130,35 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
-function(ivw_private_generate_module_registration_file module_classes modules_class_paths)
-    list(LENGTH module_classes len1)
-    math(EXPR len0 "${len1} - 1")
-
+function(ivw_private_generate_module_registration_file modules_var)
     set(headers "")
     set(functions "")
-    if(${len1} GREATER 0)
-        foreach(val RANGE ${len0})
-            list(GET module_classes ${val} current_name)
-            string(TOUPPER ${current_name} u_current_name)
-            list(GET modules_class_paths ${val} current_path)
-            ivw_dir_to_mod_dep(mod_dep ${current_name})
-            ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
-            list_to_stringvector(module_depdens_vector ${module_dependencies})
-     
-            set(header
-                "#ifdef REG_INVIWO${u_current_name}MODULE\n"
-                "#include <${current_path}.h>\n"
-                "#endif\n"
-            )
-            join(";" "" header ${header})
-    
-            set(factory_object
-                "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
-                "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
-                "        \"${current_name}\",\n"
-                "        \"${${mod_dep}_description}\",\n" 
-                "        ${module_depdens_vector}\n" 
-                "        )\n"
-                "    )__SEMICOLON__\n"
-                "    #endif\n"
-                "\n"
-            )
-            join(";" "" factory_object ${factory_object})
-    
-            list(APPEND headers ${header})
-            list(APPEND functions ${factory_object})
-        endforeach()
-    endif()
+    foreach(mod ${${modules_var}})      
+        set(header
+            "#ifdef REG_${mod}\n"
+            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+            "#endif\n"
+        )
+        join(";" "" header ${header})
+
+        ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
+        list_to_stringvector(module_depends_vector ${module_dependencies})
+        set(factory_object
+            "    #ifdef REG_${mod}\n" 
+            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+            "        \"${${mod}_class}\",\n"
+            "        \"${${mod}_description}\",\n" 
+            "        ${module_depends_vector}\n" 
+            "        )\n"
+            "    )__SEMICOLON__\n"
+            "    #endif\n"
+            "\n"
+        )
+        join(";" "" factory_object ${factory_object})
+
+        list(APPEND headers ${header})
+        list(APPEND functions ${factory_object})
+    endforeach()
 
     join(";" "" headers ${headers})
     join(";" "" functions ${functions})
@@ -194,7 +175,7 @@ function(ivw_private_generate_module_registration_file module_classes modules_cl
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 endfunction()
 
-function(ivw_create_pyconfig modulepaths activemodules)
+function(ivw_private_create_pyconfig modulepaths activemodules)
     # template vars:
     set(MODULEPATHS ${modulepaths})
     set(ACTIVEMODULES ${activemodules})
@@ -210,137 +191,219 @@ function(ivw_create_pyconfig modulepaths activemodules)
                    ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
 endfunction()
 
-#--------------------------------------------------------------------
-# Add all internal modules
-macro(ivw_register_modules)
-    set(IVW_MODULE_CLASSES "")
-    set(IVW_MODULE_CLASS_PATHS "")
-    set(IVW_MODULE_PACKAGE_NAMES "")
-    set(IVW_MODULE_PATHS "")
-    set(IVW_MODULE_CLASS "")
-    set(IVW_MODULE_CLASS_PATH "")
-    set(IVW_MODULE_PACKAGE_NAME "")
-
-    foreach(module_root_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
-        string(STRIP ${module_root_path} module_root_path)
-
-        #Generate module options
-        ivw_generate_unset_mod_options_and_depend_sort(${module_root_path} sorted_modules)
-
-        #Resolve dependencies for selected modules
-        if(DEFINED sorted_modules)
-            ivw_resolve_module_dependencies(${module_root_path} ${sorted_modules})
-
-            if(IVW_MODULE_OPENGLQT OR IVW_MODULE_PYTHONQT OR IVW_MODULE_PYTHON3QT)
-                # Find the QtWidgets library
-                find_package(Qt5Widgets QUIET REQUIRED)
-                find_package(Qt5Help QUIET REQUIRED)     
-            endif()
-            
-            if(IVW_MODULE_OPENGLQT)
-                set(QT_USE_QTOPENGL TRUE)    
-            endif()
-
-            #Add modules based on user config file and dependency resolve
-            foreach(module ${sorted_modules})              
-                ivw_dir_to_mod_prefix(mod_name ${module})
-                if(${mod_name})
-                    add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
-                    list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
-                    list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
-                    list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
-                    list(APPEND IVW_MODULE_PATHS ${module_root_path}/${module})
+function(ivw_private_is_valid_module_dir path dir retval)
+    if(IS_DIRECTORY ${module_path}/${dir})
+        string(TOLOWER ${dir} test)
+        string(REPLACE " " "" ${test} test)
+        if(${dir} STREQUAL ${test})
+            if(EXISTS ${module_path}/${dir}/CMakeLists.txt)
+                ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+                string(TOLOWER ${name} l_name)
+                if(${dir} STREQUAL ${l_name})
+                    set(${retval} TRUE PARENT_SCOPE)
+                    return()
+                else()
+                    ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                        "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
+                        "They should be the same except for casing.")
                 endif()
-            endforeach()
-
+            else()
+                ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                    "CMakeLists.txt is missing")
+            endif()
+        else()
+            ivw_message(WARNING "Found invalid module dir \"${dir}\" at \"${module_path}\". "
+                    "Dir names should be all lowercase and without spaces")
         endif()
-    endforeach()
-
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
-    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
-    #Generate module registration file
-    ivw_private_generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-    ivw_private_create_module_package_list(${IVW_MODULE_CLASSES})
-
-    ivw_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${IVW_MODULE_CLASSES}")
-endmacro()
-
+    endif()
+    set(${retval} FALSE PARENT_SCOPE)
+endfunction()
 
 #--------------------------------------------------------------------
+# Register modules
 # Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
 # defines:  (example project_name = OpenGL)
 # INVIWOOPENGLMODULE_description  -> </readme.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
-function(ivw_generate_unset_mod_options_and_depend_sort module_root_path retval)
-    file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
-    set(sorted_dirs ${sub-dir})
-    foreach(dir ${sub-dir})
-        ivw_debug_message(STATUS "register module: ${dir}")
-        if(IS_DIRECTORY ${module_root_path}/${dir})
-            ivw_dir_to_mod_dep(mod_dep ${dir})
+# 
+function(ivw_register_modules retval)
+    # Collect all modules and information
+    set(modules "")
+    foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
+        string(STRIP ${module_path} module_path)
+        file(GLOB dirs RELATIVE ${module_path} ${module_path}/[^.]*)
+        foreach(dir ${dirs})
+            ivw_dir_to_mod_dep(mod ${dir})
+            list(FIND modules ${mod} found)
+            if(NOT ${found} EQUAL -1)
+                ivw_message(WARNING "Module with name ${dir} already added at ${${mod}_path}")
+                continue()
+            endif()
+            ivw_private_is_valid_module_dir(${module_path} ${dir} valid)
+            if(${valid})
+                ivw_debug_message(STATUS "register module: ${dir}")
+                ivw_dir_to_mod_prefix(opt ${dir})           # OpenGL -> IVW_MODULE_OPENGL
+                ivw_dir_to_module_taget_name(target ${dir}) # OpenGL -> inviwo-module-opengl
+                # Get the classname with the right casing
+                ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+                list(APPEND modules ${mod})
+                set("${mod}_dir"    "${dir}"                CACHE INTERNAL "Module dir")
+                set("${mod}_base"   "${module_path}"        CACHE INTERNAL "Module base")
+                set("${mod}_path"   "${module_path}/${dir}" CACHE INTERNAL "Module path")
+                set("${mod}_opt"    "${opt}"                CACHE INTERNAL "Module cmake option")
+                set("${mod}_target" "${target}"             CACHE INTERNAL "Module target")
+                set("${mod}_class"  "${name}"               CACHE INTERNAL "Module class")
+                set("${mod}_name"   "Inviwo${name}Module"   CACHE INTERNAL "Module name")
 
-            # Check if there is a dependency file
-            if(EXISTS "${module_root_path}/${dir}/depends.cmake")
-                include(${module_root_path}/${dir}/depends.cmake) # Defines dependencies
+                # Check of there is a depends.cmake
+                # Defines dependencies, aliases
                 # Save dependencies to INVIWO<NAME>MODULE_dependencies
-                set("${mod_dep}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
+                # Save aliases to INVIWO<NAME>MODULE_aliases
+                if(EXISTS "${${mod}_path}/depends.cmake")
+                    set(dependencies "")
+                    set(aliases "")
+                    include(${${mod}_path}/depends.cmake) 
+                    set("${mod}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
+                    set("${mod}_aliases" ${aliases} CACHE INTERNAL "Module aliases")
+                    unset(dependencies)
+                    unset(aliases)
+                endif()
 
-                foreach(dependency ${dependencies})
-                    list(FIND IVW_MODULE_PACKAGE_NAMES ${dependency} module_index)
-                    if(NOT module_index EQUAL -1) # dependency in IVW_MODULE_PACKAGE_NAMES 
-                       list(REMOVE_ITEM dependencies ${dependency})
-                    endif()
-                endforeach()
-                ivw_mod_name_to_dir(depend_folders ${dependencies})
-                list(APPEND depend_folders ${dir})
-                list(FIND sorted_dirs ${dir} dir_index)
-                list(INSERT sorted_dirs ${dir_index} ${depend_folders})
-                list(REMOVE_DUPLICATES sorted_dirs)
+                # Check if there is a readme.md of the module. 
+                # In that case set to INVIWO<NAME>MODULE_description
+                if(EXISTS "${${mod}_path}/readme.md")
+                    file(READ "${${mod}_path}/readme.md" description)
+                    # encode linebreaks, i.e. '\n', and semicolon in description for
+                    # proper handling in CMAKE
+                    encodeLineBreaks(cdescription ${description})
+                    set("${mod}_description" ${cdescription} CACHE INTERNAL "Module description")
+                endif()
             endif()
+        endforeach()
+    endforeach()
 
-            # check if there is a readme.md of the module. 
-            # In that case set to INVIWO<NAME>MODULE_description
-            if(EXISTS "${module_root_path}/${dir}/readme.md")
-                file(READ "${module_root_path}/${dir}/readme.md" description)
-                # encode linebreaks, i.e. '\n', and semicolon in description for proper handling in CMAKE
-                encodeLineBreaks(cdescription ${description})
-                set("${mod_dep}_description" ${cdescription} CACHE INTERNAL "Module description")
-            endif()
-
-            lowercase(default_dirs ${ivw_default_modules})          
-            list(FIND default_dirs ${dir} index)
-            if(NOT index EQUAL -1)
-                ivw_add_module_option_to_cache(${dir} ON FALSE)
-            else()
-                ivw_add_module_option_to_cache(${dir} OFF FALSE)
-            endif()
+    # Add modules to cmake cache
+    foreach(mod ${modules})
+        lowercase(default_dirs ${ivw_default_modules})          
+        list(FIND default_dirs ${${mod}_dir} index)
+        if(NOT index EQUAL -1)
+            ivw_add_module_option_to_cache(${${mod}_dir} ON FALSE)
         else()
-            list(REMOVE_ITEM sorted_dirs ${dir})
+            ivw_add_module_option_to_cache(${${mod}_dir} OFF FALSE)
         endif()
     endforeach()
 
-    set(${retval} ${sorted_dirs} PARENT_SCOPE)
-endfunction()
+    # Find aliases
+    set(aliases "")
+    foreach(mod ${modules})
+        foreach(alias ${${mod}_aliases})
+            list(APPEND aliases ${alias})
+            if(DEFINED alias_${alias}_mods)
+                list(APPEND alias_${alias}_mods ${mod})
+            else()
+                set(alias_${alias}_mods ${mod})
+            endif()
+        endforeach()
+    endforeach()
 
-#--------------------------------------------------------------------
-# Turn On Dependent Module Options
-function(ivw_resolve_module_dependencies module_root_path)   
-    # Reverse list (as it is depend sorted) and go over dependencies one more time
-    # If build is ON, then switch dependencies ON
-    set(dir_list ${ARGN})
-    list(REVERSE dir_list)
-    foreach(dir ${dir_list})
-        ivw_dir_to_mod_prefix(mod_name ${dir})
-        if(${mod_name})
-            ivw_dir_to_mod_dep(mod_dep ${dir})
-            ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
-            foreach(dependency ${module_dependencies})
-                ivw_private_build_module_dependency(${dependency} ${mod_name})
+    # Substitute aliases
+    foreach(mod ${modules})
+        set(new_dependencies "")
+        foreach(dependency ${${mod}_dependencies})
+            list(FIND aliases ${dependency} found)
+            if(NOT ${found} EQUAL -1)
+                if(DEFINED ${${mod}_opt}_${dependency})
+                    list(APPEND new_dependencies ${${${mod}_opt}_${dependency}})
+                else()
+                    # Find the best substitute
+                    list(GET ${alias_${dependency}_mods} 0 new_mod)
+                    set(new_dep ${${new_mod}_name})
+                    foreach(alias_mod ${alias_${dependency}_mods})
+                        set(new_dep ${${alias_mod}_name})
+                        if(${${alias_mod}_opt}}) # if substitution is enabled we stick with that one.
+                            break()
+                        endif()
+                    endforeach()
+                    list(APPEND new_dependencies ${new_dep})
+                    set(${${mod}_opt}_${dependency} "${new_dep}" CACHE STRING "Dependency")
+                endif()
+                set(alias_names "")
+                foreach(alias_mod ${alias_${dependency}_mods})
+                    list(APPEND alias_names ${${alias_mod}_name})
+                endforeach()
+                set_property(CACHE ${${mod}_opt}_${dependency} PROPERTY STRINGS ${alias_names})
+            else()
+                list(APPEND new_dependencies ${dependency})
+            endif()
+        endforeach()
+        set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
+    endforeach()
+
+    # Filter out inviwo dependencies
+    foreach(mod ${modules})
+        set(ivw_dependencies "")
+        foreach(dependency ${${mod}_dependencies})
+            ivw_mod_name_to_mod_dep(dep ${dependency})
+            list(FIND modules ${dep} found)
+            if(NOT ${found} EQUAL -1) # This is a dependency to a inviwo module
+                list(APPEND ivw_dependencies ${dep})
+            endif()
+        endforeach()
+        set("${mod}_ivw_dependencies" ${ivw_dependencies} CACHE INTERNAL "Module inviwo module dependencies")
+    endforeach()
+
+    # Sort modules by dependencies
+    ivw_topological_sort(modules _ivw_dependencies sorted_modules)
+    #ivw_print_list(sorted_modules)
+
+    # enable depencenies
+    ivw_reverse_list_copy(sorted_modules rev_sorted_modules)
+    foreach(mod ${rev_sorted_modules})
+        if(${${mod}_opt})
+            foreach(dep ${${mod}_ivw_dependencies})
+                if(NOT ${${dep}_opt})
+                    ivw_add_module_option_to_cache(${${dep}_dir} ON TRUE)
+                    ivw_message(STATUS "${${dep}_opt} was set to build, "
+                        "due to dependency towards ${${mod}_opt}")
+                endif()
             endforeach()
         endif()
     endforeach()
+
+    # Add enabled modules in sorted order
+    set(ivw_module_classes "")
+    set(ivw_module_names "")
+
+    set(IVW_MODULE_PACKAGE_NAMES "")
+    set(IVW_MODULE_CLASS "")
+    set(IVW_MODULE_PACKAGE_NAME "")
+
+    foreach(mod ${sorted_modules})
+        if(${${mod}_opt})
+            add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
+            if(NOT "${${mod}_class}" STREQUAL "${IVW_MODULE_CLASS}")
+                ivw_message(WARNING 
+                    "Missmatched module class names \"${${mod}_class}\" vs \"${IVW_MODULE_CLASS}\"")
+            endif()
+            list(APPEND ivw_module_names ${${mod}_name})
+            list(APPEND ivw_module_classes ${${mod}_class})
+            list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
+        endif()
+    endforeach()
+
+    list(REMOVE_DUPLICATES ivw_module_classes)
+
+    # Save list of modules
+    set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
+
+    # Generate module registration file
+    ivw_private_generate_module_registration_file(sorted_modules)
+
+    # Save information for python tools.
+    ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
+
+    set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
 
@@ -365,6 +428,17 @@ macro(ivw_add_minimal_applications)
 endmacro()
 
 #--------------------------------------------------------------------
+# Set module build option to true if the owner is built
+function(ivw_private_build_module_dependency the_module the_owner)
+    ivw_dir_to_mod_prefix(mod_name ${the_module})
+    first_case_upper(dir_name_cap ${the_module})
+    if(${the_owner} AND NOT ${mod_name})
+        ivw_add_module_option_to_cache(${the_module} ON TRUE)
+        ivw_message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
+    endif()
+endfunction()
+
+#--------------------------------------------------------------------
 # Add all external modules specified in cmake string IVW_EXTERNAL_MODULES
 macro(ivw_add_external_projects)
     foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})
@@ -378,17 +452,6 @@ endmacro()
 # Set module build option to true
 function(ivw_enable_module the_module)
     ivw_add_module_option_to_cache(${the_module} ON FALSE)
-endfunction()
-
-#--------------------------------------------------------------------
-# Set module build option to true if the owner is built
-function(ivw_private_build_module_dependency the_module the_owner)
-    ivw_dir_to_mod_prefix(mod_name ${the_module})
-    first_case_upper(dir_name_cap ${the_module})
-    if(${the_owner} AND NOT ${mod_name})
-        ivw_add_module_option_to_cache(${the_module} ON TRUE)
-        ivw_message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
-    endif()
 endfunction()
 
 #--------------------------------------------------------------------
@@ -543,16 +606,14 @@ endmacro()
 macro(ivw_create_module)
     ivw_debug_message(STATUS "create module: ${_projectName}")
 
-    ivw_dir_to_mod_prefix(${mod_name} ${_projectName})        # opengl -> IVW_MODULE_OPENGL
-    ivw_dir_to_mod_dep(mod_dep ${_projectName})               # opengl -> INVIWOOPENGLMODULE
-    ivw_dir_to_module_taget_name(target_name ${_projectName}) # opengl -> inviwo-module-opengl
+    ivw_dir_to_mod_dep(mod ${_projectName})               # opengl -> INVIWOOPENGLMODULE
 
     set(CMAKE_FILES "")
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
-        list(APPEND CMAKE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
+    if(EXISTS "${${mod}_path}/depends.cmake")
+        list(APPEND CMAKE_FILES "${${mod}_path}/depends.cmake")
     endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/readme.md")
-        list(APPEND CMAKE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/readme.md")
+    if(EXISTS "${${mod}_path}/readme.md")
+        list(APPEND CMAKE_FILES "${${mod}_path}/readme.md")
     endif()
     source_group("CMake Files" FILES ${CMAKE_FILES})
 
@@ -562,19 +623,19 @@ macro(ivw_create_module)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
       
     # Create library
-    add_library(${target_name} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
+    add_library(${${mod}_target} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
     
     # Define standard properties
-    ivw_define_standard_definitions(${mod_name} ${target_name})
-    ivw_define_standard_properties(${target_name})
+    ivw_define_standard_definitions(${${mod}_opt} ${${mod}_target})
+    ivw_define_standard_properties(${${mod}_target})
     
     # Add dependencies
     set(tmpProjectName ${_projectName})
-    set(_projectName ${target_name})
+    set(_projectName ${${mod}_target})
     ivw_add_dependency_libraries(${_preModuleDependencies})
     ivw_add_dependencies(InviwoCore)
     # Add dependencies from depends.cmake
-    ivw_add_dependencies(${${mod_dep}_dependencies})
+    ivw_add_dependencies(${${mod}_dependencies})
 
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core()
@@ -582,12 +643,12 @@ macro(ivw_create_module)
     set(_projectName ${tmpProjectName})
        
     # Make package (for other modules to find)
-    ivw_make_package(${_packageName} ${target_name})
+    ivw_make_package(${_packageName} ${${mod}_target})
 
     # Add stuff to the installer
     ivw_private_install_module_dirs()
 
-    ivw_make_unittest_target("${_projectName}" "${${mod_dep}_dependencies}")
+    ivw_make_unittest_target("${_projectName}" "${${mod}_dependencies}")
 endmacro()
 
 #--------------------------------------------------------------------
@@ -748,7 +809,7 @@ endmacro()
 # INVIWOOPENGLMODULE_LIBRARY_DIR=
 # INVIWOOPENGLMODULE_LINK_FLAGS=
 # INVIWOOPENGLMODULE_USE_FILE=
-#
+# 
 # Appends to globals:
 # _allIncludes
 # _allLibsDir
@@ -756,7 +817,7 @@ endmacro()
 # _allDefinitions
 # _allLinkFlags
 # _allIncludeDirs
-#
+# 
 macro(ivw_add_dependencies)
     foreach (package ${ARGN})
         # Locate libraries

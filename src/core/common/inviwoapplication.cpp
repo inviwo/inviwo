@@ -86,6 +86,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , representationConverterFactory_{util::make_unique<RepresentationConverterFactory>()}
 
     , modules_()
+    , clearModules_([&]() {
+        ResourceManager::getPtr()->clearAllResources();
+        for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+            it->reset();
+        }
+        modules_.clear();
+    })
     , moudleCallbackActions_()
 
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,41 @@
  *
  *********************************************************************************/
 
-#include "integralline.h"
+#ifndef IVW_LINEEDITQT_H
+#define IVW_LINEEDITQT_H
+
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/core/properties/stringproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <warn/pop>
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps)
-{}
+/**
+* \class LineEditQt
+* \brief customized line edit class based on QLineEdit. Pressing <escape> will emit a cancel signal.
+*  This signal can be used to revert the changes and loose focus without changing the property. 
+*/
+class IVW_QTWIDGETS_API LineEditQt : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    LineEditQt(QWidget *parent=nullptr);
+    virtual ~LineEditQt() = default;
 
-IntegralLine::~IntegralLine() {}
+signals:
+    void editingCanceled();
+protected:
+    virtual void keyPressEvent(QKeyEvent *e) override;
+};
 
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
+}  // namespace inviwo
 
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
-    auto it = metaData_.find(name);
-    if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
-    }
-    return it->second;
-}
-
-}  // namespace
+#endif  // IVW_LINEEDITQT_H

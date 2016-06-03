@@ -165,12 +165,12 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 
 
 void ProcessorGraphicsItem::addInport(Inport *port) {
-    auto pos = rect().topLeft() + inportPos_ + inportDelta_*inportItems_.size();
+    auto pos = rect().topLeft() + inportPos_ + inportDelta_ * static_cast<qreal>(inportItems_.size());
     inportItems_[port] = new ProcessorInportGraphicsItem(this, pos, port);
 }
 
 void ProcessorGraphicsItem::addOutport(Outport *port){
-    auto pos = rect().bottomLeft() + outportPos_ + outportDelta_*outportItems_.size();
+    auto pos = rect().bottomLeft() + outportPos_ + outportDelta_* static_cast<qreal>(outportItems_.size());
     outportItems_[port] = new ProcessorOutportGraphicsItem(this, pos, port);
 }
 
@@ -180,7 +180,7 @@ void ProcessorGraphicsItem::removeInport(Inport* port) {
 
     size_t count = 0;
     for (auto& item : inportItems_) {
-        auto pos = rect().topLeft() + inportPos_ + inportDelta_ * count;
+        auto pos = rect().topLeft() + inportPos_ + inportDelta_ * static_cast<qreal>(count);
         item.second->setPos(pos);
         count++;
     }
@@ -191,7 +191,7 @@ void ProcessorGraphicsItem::removeOutport(Outport* port) {
     outportItems_.erase(port);
     size_t count = 0;
     for (auto& item : outportItems_) {
-        auto pos = rect().bottomLeft() + outportPos_ + outportDelta_ * count;
+        auto pos = rect().bottomLeft() + outportPos_ + outportDelta_ * static_cast<qreal>(count);
         item.second->setPos(pos);
         count++;
     }

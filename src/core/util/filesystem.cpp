@@ -584,6 +584,22 @@ bool sameDrive(const std::string& refPath, const std::string& queryPath) {
 #endif
 }
 
+std::string cleanupPath(const std::string &path) {
+    if (path.empty()) {
+        return path;
+    }
+
+    std::string result(path);
+    // replace backslashes '\' with forward slashes '/'
+    std::replace(result.begin(), result.end(), '\\', '/');
+
+    // check for matching quotes at begin and end
+    if ((result.size() > 1) && (result.front() == '\"') && (result.back() == '\"')) {
+        result = result.substr(1, result.size() - 2);
+    }
+    return result;
+}
+
 }  // end namespace filesystem
 
 }  // end namespace inviwo

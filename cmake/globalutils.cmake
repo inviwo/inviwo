@@ -210,6 +210,27 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
 endfunction()
 
 #--------------------------------------------------------------------
+# Name conventions:
+# opengl               : dir                : Name of module folder, should be lowercase with no spaces (opengl)
+# OPENGL               : macro_name         : C Macro name, to uppercase, "-" -> "_"
+# INVIWOOPENGLMODULE   : mod_dep            : Internal name for module all uppercase
+# IVW_MODULE_OPENGL    : mod_prefix         : Name of cmake option for module
+# InviwoOpenGLModule   : mod_name           : The name of a module same as mod_dep, but not uppercase
+# inviwo-module-opengl : module_target_name : The name of the target for a module
+# 
+# Name conversion functions:
+# ivw_to_macro_name            OpenGL-test        -> OPENGL_TEST
+# ivw_dir_to_mod_dep           OpenGL             -> INVIWOOPENGLMODULE
+# ivw_mod_dep_to_dir           INVIWOOPENGLMODULE -> opengl 
+# ivw_dir_to_mod_prefix        OpenGL             -> IVW_MODULE_OPENGL
+# ivw_mod_prefix_to_dir        IVW_MODULE_OPENGL  -> opengl
+# ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
+# ivw_mod_name_to_mod_dep      InviwoOpenGLModule -> INVIWOOPENGLMODULE
+# ivw_to_mod_name              OpenGL             -> InviwoOpenGLModule
+# ivw_dir_to_module_taget_name opengl             -> inviwo-module-opengl
+#--------------------------------------------------------------------
+
+#--------------------------------------------------------------------
 # ivw_to_macro_name(retval item1 item2 ...)
 # Convert a name to a macro name, i.e. OpenGL-test -> OPENGL_TEST
 function(ivw_to_macro_name retval)
@@ -225,7 +246,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # ivw_dir_to_mod_dep(retval item1 item2 ...)
-# Convert module prefix to directory name, i.e. OpenGL -> INVIWOOPENGLMODULE
+# Convert directory name tp module dep, i.e. opengl -> INVIWOOPENGLMODULE
 function(ivw_dir_to_mod_dep retval)
     set(the_list "")
     foreach(item ${ARGN})
@@ -238,12 +259,27 @@ endfunction()
 
 #--------------------------------------------------------------------
 # ivw_dir_to_mod_prefix(retval item1 item2 ...)
-# Convert module prefix to directory name, i.e. OpenGL -> IVW_MODULE_OPENGL
+# Convert dir name to  module prefix, i.e. opengl -> IVW_MODULE_OPENGL
 function(ivw_dir_to_mod_prefix retval)
     set(the_list "")
     foreach(item ${ARGN})
         string(TOUPPER ${item} u_item)
         list(APPEND the_list IVW_MODULE_${u_item})
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_dep_to_dir(relval item1 item2 ...)
+# Convert module dep to directory name, i.e. INVIWOOPENGLMODULE -> opengl
+function(ivw_mod_dep_to_dir retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(REGEX MATCH "^INVIWO(.*)MODULE$" found_item ${item})
+        if(CMAKE_MATCH_1)
+            string(TOLOWER ${CMAKE_MATCH_1} l_new_item)
+            list(APPEND the_list ${l_new_item})
+        endif()
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
@@ -303,6 +339,18 @@ function(ivw_dir_to_module_taget_name retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
+#--------------------------------------------------------------------
+# ivw_mod_name_to_mod_dep(retval item1 item2 ...)
+# Convert module name to module dep, i.e. opengl -> INVIWOOPENGLMODULE
+function(ivw_mod_name_to_mod_dep retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(TOUPPER ${item} uitem)
+        list(APPEND the_list ${uitem})
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
 # Look for <package>_<vars> and <PACKAGE>_<vars> to figure out whether to use
 # incoming casing or upper case name. Upper case is default, but not all use that.
 function(ivw_find_package_name name retval)
@@ -326,4 +374,112 @@ function(ivw_find_package_name name retval)
     else()
         set(${retval} ${u_name} PARENT_SCOPE)
     endif()
+endfunction()
+
+#--------------------------------------------------------------------
+# pritty print a list .
+# ivw_print_list(list) -> "list  = list1, list2, list3"
+function(ivw_print_list list_var)
+    string(REPLACE ";" ", " res "${${list_var}}") 
+    ivw_message("${list_var} = ${res}")
+endfunction()
+
+#--------------------------------------------------------------------
+# repeat a string n times.
+# ivw_repeat_str("-" 10 ret) -> "----------"
+function(ivw_repeat_str str n retval)
+    set(res "")
+    while(${n} GREATER 0)
+        set(res "${res}${str}")
+        MATH(EXPR n "${n}-1")
+    endwhile()
+    set(${retval} ${res} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# create a reverse copy of a list
+# ivw_reverse_copy(retval list) 
+function(ivw_reverse_list_copy list_var revlist)
+    set(alist "")
+    foreach(i ${${list_var}})
+        list(APPEND alist ${i})
+    endforeach()
+    list(REVERSE alist)
+    set(${revlist} ${alist} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# helper function for topological sort
+function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_list_var node_edge_var count)
+    MATH(EXPR count "${count}+1")
+    if(${count} GREATER 30)
+        ivw_message(ERROR "Stoppig to deep recursion")
+        return()
+    endif()
+
+    set(sorted ${${sorted_var}})
+    set(marked ${${marked_var}})
+    set(tempmarked ${${tempmarked_var}})
+    set(node_list ${${node_list_var}})
+
+    list(FIND tempmarked ${node} tempfound)
+    if(NOT ${tempfound} EQUAL -1) # Error not a dag
+        ivw_message(ERROR "Dependency graph not a DAG. Cant resove for node \"${node}\"")
+    endif()
+
+    list(FIND marked ${node} markedfound)
+    if(${markedfound} EQUAL -1)  
+        # mark node temporarily
+        list(APPEND tempmarked ${node})
+
+        # visit all dependencies
+        foreach(dep ${${node}${node_edge_var}}) 
+            ivw_private_visit_node(${dep} sorted marked tempmarked node_list ${node_edge_var} ${count})
+        endforeach()
+
+        # mark node permanently
+        list(APPEND marked ${node})
+        # unmark node temporarily
+        list(REMOVE_ITEM tempmarked ${node})
+
+        # add node to head of sorted
+        list(INSERT sorted 0 ${node})
+     endif()
+
+    SET(${sorted_var} ${sorted} PARENT_SCOPE)
+    SET(${marked_var} ${marked} PARENT_SCOPE)
+    SET(${tempmarked_var} ${tempmarked} PARENT_SCOPE)
+endfunction()
+
+# A depth first topologocal sort
+# https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+function(ivw_topological_sort node_list_var node_edge_var sorted_var)
+    set(sorted  "")
+    set(marked "")
+    set(tempmarked "")
+
+    foreach(node ${${node_list_var}})
+        list(FIND marked ${node} found)
+        if(${found} EQUAL -1)
+            ivw_private_visit_node(${node} sorted marked tempmarked ${node_list_var} ${node_edge_var} 0)
+        endif()
+    endforeach()
+    list(REVERSE sorted)
+    set(${sorted_var} ${sorted} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# Get the module name from a CMakeLists.txt
+function(ivw_private_get_ivw_module_name path retval)
+    file(READ ${path} contents)
+     string(REPLACE "\n" ";" lines "${contents}")
+     foreach(line ${lines})
+        #\s*ivw_module\(\s*(\w+)\s*\)\s*
+        string(REGEX MATCH "\\s*ivw_module\\(\\s*([A-Za-z0-9_-]+)\\s*\\)\\s*" found_item ${line})
+        if(CMAKE_MATCH_1)
+            set(${retval} ${CMAKE_MATCH_1} PARENT_SCOPE)
+            return()
+       endif()
+     endforeach()
+     set(${retval} NOTFOUND PARENT_SCOPE)
 endfunction()
