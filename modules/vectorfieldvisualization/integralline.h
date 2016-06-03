@@ -62,10 +62,16 @@ public:
     const std::vector<dvec3> &getPositions() const;
     const std::vector<dvec3> &getMetaData(const std::string &name) const;
 
+    double getLength()const;
+
+    dvec3 getPointAtDistance(double d)const;
+
 private:
     std::vector<dvec3> positions_;
     std::map<std::string, std::vector<dvec3>> metaData_;
     TerminationReason terminationReason_;
+
+    mutable double length_;
 };
 
 }  // namespace
