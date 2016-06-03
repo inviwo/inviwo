@@ -46,13 +46,13 @@ namespace inviwo {
 /** \docpage{org.inviwo.MeshClipping, Mesh Clipping}
  * ![](org.inviwo.MeshClipping.png?classIdentifier=org.inviwo.MeshClipping)
  *
- * ...
+ * Basic mesh plane clipping 
  * 
  * ### Inports
- *   * __geometry.input__ ...
+ *   * __geometry.input__ Input geometry
  * 
  * ### Outports
- *   * __geometry.output__ ...
+ *   * __geometry.output__ Clipped output geometry
  * 
  * ### Properties
  *   * __Move Camera Along Normal__ ...
