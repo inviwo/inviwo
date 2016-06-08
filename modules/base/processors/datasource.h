@@ -41,7 +41,10 @@
 #include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
-
+/**
+ * A base class for simple source processors. 
+ * Two funtions to constomize the behaviour are avaliable, dataLoaded and dataDeserialized.
+ */ 
 template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:

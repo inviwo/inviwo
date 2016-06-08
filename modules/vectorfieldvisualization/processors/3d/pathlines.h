@@ -85,7 +85,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    VolumeSequenceInport volume_;
+    DataInport<Spatial4DSampler<3, double>> sampler_;
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
 

@@ -55,17 +55,11 @@ public:
 
     double getStartT()const { return startT_.get(); }
 
-
-    void deserialize(Deserializer& d) override;
-
-    bool isLoopingAllowed()const { return allowLooping_.get(); }
-
 private:
     void setUpProperties();
 
 protected:
     DoubleProperty startT_;
-    BoolProperty allowLooping_;
 };
 
 }  // namespace

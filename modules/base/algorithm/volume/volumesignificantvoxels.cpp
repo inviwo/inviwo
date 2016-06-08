@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,16 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEXPORT_H
-#define IVW_IMAGEEXPORT_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/base/algorithm/volume/volumesignificantvoxels.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageExport, Image Export}
- * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
- *
- * A procesor to save images to disk
- * 
- * ### Inports
- *   * __image__ The image to save.
- * 
- * 
- * ### Properties
- *   * __Export Image__ Save the image to disk.
- *   * __Image file name__ Filename to use.
- *   * __Overwrite__ Force overwrite.
- *
- */
-class IVW_MODULE_BASE_API ImageExport : public Processor {
-public:
-    ImageExport();
-    ~ImageExport();
+size_t util::volumeSignificantVoxels(const VolumeRAM* volume) {
+    detail::VolumeSignificantVoxelsDispatcher disp;
+    return volume->getDataFormat()->dispatch(disp, volume);
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-    void exportImage();
-
-protected:
-    virtual void process() override;
-
-    void processExport();
-
-private:
-    ImageInport imagePort_;
-    FileProperty imageFile_;
-    ButtonProperty exportImageButton_;
-    BoolProperty overwrite_;
-
-    bool exportQueued_;
-};
-
-} // namespace
-
-#endif // IVW_IMAGEEXPORT_H
+}  // namespace

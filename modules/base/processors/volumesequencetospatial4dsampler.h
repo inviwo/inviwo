@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,58 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEXPORT_H
-#define IVW_IMAGEEXPORT_H
+#ifndef IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
+#define IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/util/spatial4dsampler.h>
+#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageExport, Image Export}
- * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
+/** \docpage{org.inviwo.VolumeSequenceToSpatial4DSampler, Volume Sequence To Spatial4DSampler}
+ * ![](org.inviwo.VolumeSequenceToSpatial4DSampler.png?classIdentifier=org.inviwo.VolumeSequenceToSpatial4DSampler)
+ * Explanation of how to use the processor.
  *
- * A procesor to save images to disk
- * 
  * ### Inports
- *   * __image__ The image to save.
- * 
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
  * 
  * ### Properties
- *   * __Export Image__ Save the image to disk.
- *   * __Image file name__ Filename to use.
- *   * __Overwrite__ Force overwrite.
- *
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BASE_API ImageExport : public Processor {
+
+
+/**
+ * \class VolumeSequenceToSpatial4DSampler
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BASE_API VolumeSequenceToSpatial4DSampler : public Processor { 
 public:
-    ImageExport();
-    ~ImageExport();
+    VolumeSequenceToSpatial4DSampler();
+    virtual ~VolumeSequenceToSpatial4DSampler() = default;
+     
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-    void exportImage();
-
-protected:
-    virtual void process() override;
-
-    void processExport();
-
 private:
-    ImageInport imagePort_;
-    FileProperty imageFile_;
-    ButtonProperty exportImageButton_;
-    BoolProperty overwrite_;
+    VolumeSequenceInport volumeSequence_;
+    DataOutport<Spatial4DSampler<3, double>> sampler_;
 
-    bool exportQueued_;
+    BoolProperty allowLooping_;
 };
 
 } // namespace
 
-#endif // IVW_IMAGEEXPORT_H
+#endif // IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
+

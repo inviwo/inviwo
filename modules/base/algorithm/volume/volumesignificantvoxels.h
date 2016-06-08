@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,50 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEXPORT_H
-#define IVW_IMAGEEXPORT_H
+#ifndef IVW_VOLUMESIGNIFICANTVOXELS_H
+#define IVW_VOLUMESIGNIFICANTVOXELS_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
+namespace util {
+namespace detail {
 
-/** \docpage{org.inviwo.ImageExport, Image Export}
- * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
- *
- * A procesor to save images to disk
- * 
- * ### Inports
- *   * __image__ The image to save.
- * 
- * 
- * ### Properties
- *   * __Export Image__ Save the image to disk.
- *   * __Image file name__ Filename to use.
- *   * __Overwrite__ Force overwrite.
- *
- */
-class IVW_MODULE_BASE_API ImageExport : public Processor {
-public:
-    ImageExport();
-    ~ImageExport();
+struct VolumeSignificantVoxelsDispatcher {
+    using type = size_t;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    template <typename T>
+    size_t dispatch(const VolumeRAM* volume) {
+        using dataType = typename T::type;
+        using primitive = typename T::primitive;
+        auto data = static_cast<const dataType*>(volume->getData());
 
-    void exportImage();
+        const auto dim = volume->getDimensions();
+        const auto size = dim.x * dim.y * dim.z;
 
-protected:
-    virtual void process() override;
+        size_t count = 0;
+        for (size_t i = 0; i < size; i++) {
+            auto v = data[i];
+            if (util::all(v != v + dataType(1)) && util::any(v != dataType(0)) ) {
+                count++;
+            }
+        }
 
-    void processExport();
-
-private:
-    ImageInport imagePort_;
-    FileProperty imageFile_;
-    ButtonProperty exportImageButton_;
-    BoolProperty overwrite_;
-
-    bool exportQueued_;
+        return count;
+    }
 };
+}  // namespace
 
-} // namespace
+IVW_MODULE_BASE_API size_t volumeSignificantVoxels(const VolumeRAM* volume);
 
-#endif // IVW_IMAGEEXPORT_H
+}  // namespace
+
+}  // namespace
+
+#endif // IVW_VOLUMESIGNIFICANTVOXELS_H
+

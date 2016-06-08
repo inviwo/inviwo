@@ -37,7 +37,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceSource::processorInfo_{
     "org.inviwo.VolumeVectorSource",  // Class identifier
-    "Volume Vector Source",           // Display name
+    "Volume Sequence Source",           // Display name
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags

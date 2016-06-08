@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datasource.h
@@ -43,6 +44,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
@@ -65,6 +67,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
@@ -93,6 +96,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
