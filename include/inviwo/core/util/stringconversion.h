@@ -109,6 +109,8 @@ IVW_CORE_API std::string rtrim(std::string s);
 // trim from both ends
 IVW_CORE_API std::string trim(std::string s);
 
+IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
+
 }  // namespace
 
 #endif  // IVW_STRINGCONVERSION_H

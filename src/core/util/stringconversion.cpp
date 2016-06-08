@@ -168,6 +168,15 @@ std::string ltrim(std::string s) {
     return s;
 }
 
+std::string dotSeperatedToPascalCase(const std::string& s) {
+    std::stringstream ss;
+    for(auto elem : splitString(s, '.')) {
+        elem[0] = std::toupper(elem[0]);
+        ss << elem;
+    }
+    return ss.str();
+}
+
 // trim from end
 std::string rtrim(std::string s) {
     s.erase(
