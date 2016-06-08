@@ -61,6 +61,11 @@ void Processor::addPort(Inport* port, const std::string& portGroup) {
                         port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
+    if (port->getIdentifier().empty()) {
+        throw Exception("Adding port with empty identifier", IvwContext);
+    }
+    util::validateIdentifier(port->getIdentifier(), "Port", IvwContext);
+    
     port->setProcessor(this);
     inports_.push_back(port);
     addPortToGroup(port, portGroup);
@@ -68,9 +73,7 @@ void Processor::addPort(Inport* port, const std::string& portGroup) {
     notifyObserversProcessorPortAdded(this, port);
 }
 
-void Processor::addPort(Inport& port, const std::string& portGroup) {
-    addPort(&port, portGroup);
-}
+void Processor::addPort(Inport& port, const std::string& portGroup) { addPort(&port, portGroup); }
 void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
     addPort(port.get(), portGroup);
     ownedInports_.push_back(std::move(port));
@@ -82,6 +85,11 @@ void Processor::addPort(Outport* port, const std::string& portGroup) {
                         port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
+    if (port->getIdentifier().empty()) {
+        throw Exception("Adding port with empty identifier", IvwContext);
+    }
+    util::validateIdentifier(port->getIdentifier(), "Port", IvwContext);
+
     port->setProcessor(this);
     outports_.push_back(port);
     addPortToGroup(port, portGroup);
@@ -159,6 +167,9 @@ void Processor::removePortFromGroups(Port* port) {
 
 std::string Processor::setIdentifier(const std::string& identifier) {
     if (identifier == identifier_) return identifier_;  // nothing changed
+
+
+    util::validateIdentifier(identifier, "Processor", IvwContext, " ()=&");
 
     usedIdentifiers_.erase(identifier_);  // remove old identifier
 

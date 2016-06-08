@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -57,6 +58,18 @@ void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
         LogInfoCustom("Inviwo", "Saving canvas to: " + ss.str());
         cp->saveImageLayer(ss.str());
         i++;
+    }
+}
+
+void util::validateIdentifier(const std::string& identifier, const std::string& type,
+                              ExceptionContext context, const std::string& extra) {
+    for (const auto& c : identifier) {
+        if (!(c >= -1 && c <= 255) ||
+            !(std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c))) {
+            throw Exception(type + " identifiers are not allowed to contain \"" + c +
+                                "\". Found in \"" + identifier + "\"",
+                            context);
+        }
     }
 }
 

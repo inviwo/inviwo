@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
@@ -50,7 +51,10 @@ namespace inviwo {
     , propertyModified_(false)
     , invalidationLevel_(invalidationLevel)
     , owner_(nullptr)
-    , initiatingWidget_(nullptr) {}
+    , initiatingWidget_(nullptr) {
+ 
+     util::validateIdentifier(identifier, "Property", IvwContext);
+ }
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
@@ -99,6 +103,9 @@ std::string Property::getIdentifier() const {
 void Property::setIdentifier(const std::string& identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
+
+        util::validateIdentifier(identifier, "Property", IvwContext);
+
         notifyObserversOnSetIdentifier(identifier_);
         notifyAboutChange();
     }

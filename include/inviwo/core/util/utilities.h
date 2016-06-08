@@ -41,6 +41,9 @@ namespace util {
 
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
                                   std::string name = "UPN", std::string ext = ".png");
+
+IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
+                                     ExceptionContext context, const std::string& extra = "");
 }
 
 }  // namespace
