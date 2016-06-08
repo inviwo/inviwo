@@ -70,4 +70,45 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<TMIP>();
 }
 
+
+int VectorFieldVisualizationGLModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> VectorFieldVisualizationGLModule::getConverter(int version) const {
+    return util::make_unique<Converter>(version);
+}
+
+VectorFieldVisualizationGLModule::Converter::Converter(int version) : version_(version) {}
+
+bool VectorFieldVisualizationGLModule::Converter::convert(TxElement* root) {
+    std::vector<xml::IdentifierReplacement> repl = {};
+
+    const std::vector<std::pair<std::string, std::string>> volumeGLrepl = {
+    {"Vector3DCurl", "vector3dcurl.frag"},
+    {"Vector3DDivergence", "vector3ddivergence.frag"}};
+    for (const auto& i : volumeGLrepl) {
+        xml::IdentifierReplacement inport = { {xml::Kind::processor("org.inviwo." + i.first),
+                                              xml::Kind::inport("org.inviwo.VolumeInport")},
+                                             i.second + "inport",
+                                             "inputVolume" };
+        xml::IdentifierReplacement outport = { {xml::Kind::processor("org.inviwo." + i.first),
+                                               xml::Kind::outport("org.inviwo.VolumeOutport")},
+                                              i.second + "outport",
+                                              "outputVolume" };
+        repl.push_back(inport);
+        repl.push_back(outport);
+    }
+    
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeIdentifiers(root, repl);
+        }
+                return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
+}
+
 }  // namespace
