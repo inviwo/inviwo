@@ -369,6 +369,19 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     InviwoSetupInfo info;
     d.deserialize("InviwoSetup", info);
 
+    for (const auto& module : application_->getModules()) {
+        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
+            if (minfo->version_ < module->getVersion()) {
+                auto converter = module->getConverter(minfo->version_);
+                d.convertVersion(converter.get());
+                LogNetworkWarn("Loading old workspace ("
+                               << d.getFileName() << ") module: \"" << module->getIdentifier()
+                               << "\" version: " << minfo->version_
+                               << ". Updating to version: " << module->getVersion());
+            }
+        }
+    }
+
     DeserializationErrorHandle<ErrorHandle> errorHandle(d, info, d);
 
     // Processors

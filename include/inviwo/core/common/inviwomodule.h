@@ -118,6 +118,9 @@ public:
     virtual std::string getPath() const;
     std::string getPath(ModulePath type) const;
 
+    virtual int getVersion() const;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const;
+
     const std::vector<CameraFactoryObject*> getCameras() const;
     const std::vector<Capabilities*> getCapabilities() const;
     const std::vector<DataReader*> getDataReaders() const;

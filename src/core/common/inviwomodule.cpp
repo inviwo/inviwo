@@ -154,6 +154,14 @@ std::string InviwoModule::getPath(ModulePath type) const {
     }
 }
 
+int InviwoModule::getVersion() const {
+    return 0;
+}
+
+std::unique_ptr<VersionConverter> InviwoModule::getConverter(int version) const {
+    return nullptr;
+}
+
 const std::vector<Capabilities*> InviwoModule::getCapabilities() const {
     return uniqueToPtr(capabilities_);
 }
