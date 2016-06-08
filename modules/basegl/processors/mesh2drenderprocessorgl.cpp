@@ -59,9 +59,9 @@ const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const {
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()
-    , inport_("geometry.inport")
+    , inport_("inputMesh")
     , imageInport_("imageInport")
-    , outport_("image.outport")
+    , outport_("outputImage")
     , enableDepthTest_("enableDepthTest","Enable Depth Test" ,true)
     , shader_("mesh2drendering.vert", "mesh2drendering.frag") {
     addPort(inport_);

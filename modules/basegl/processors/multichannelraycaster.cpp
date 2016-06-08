@@ -147,13 +147,13 @@ void MultichannelRaycaster::process() {
 void MultichannelRaycaster::deserialize(Deserializer& d) {
     util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
 
-    NodeVersionConverter vc([](TxElement* node) {      
-        if (TxElement* p1 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points")) {
+    NodeVersionConverter vc([](TxElement* node) {
+        if (TxElement* p1 = xml::getElement(
+                node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points")) {
             p1->SetAttribute("identifier", "exit");
-        } 
-        if (TxElement* p2 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points")) {
+        }
+        if (TxElement* p2 = xml::getElement(
+                node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points")) {
             p2->SetAttribute("identifier", "entry");
         }
         return true;

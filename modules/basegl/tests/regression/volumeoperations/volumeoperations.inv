@@ -1008,7 +1008,7 @@
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
-        <Processor type="org.inviwo.CanvasGL" identifier="image.outport">
+        <Processor type="org.inviwo.CanvasGL" identifier="Canvas1">
             <InPorts>
                 <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref9" />
             </InPorts>

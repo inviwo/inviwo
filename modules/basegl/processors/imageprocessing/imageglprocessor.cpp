@@ -37,8 +37,8 @@ namespace inviwo {
 
 ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     : Processor()
-    , inport_(fragmentShader + "inport")
-    , outport_(fragmentShader + "outport")
+    , inport_("inputImage")
+    , outport_("outputImage")
     , dataFormat_(nullptr)
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)

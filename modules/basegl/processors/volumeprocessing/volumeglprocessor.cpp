@@ -39,8 +39,8 @@ namespace inviwo {
 
 VolumeGLProcessor::VolumeGLProcessor(const std::string &fragmentShader, bool buildShader)
     : Processor()
-    , inport_(fragmentShader + "inport")
-    , outport_(fragmentShader + "outport")
+    , inport_("inputVolume")
+    , outport_("outputVolume")
     , dataFormat_(nullptr)
     , internalInvalid_(true)
     , fragmentShader_(fragmentShader)

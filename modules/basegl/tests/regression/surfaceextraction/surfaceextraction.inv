@@ -360,7 +360,7 @@
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
-        <Processor type="org.inviwo.CanvasGL" identifier="image.outport">
+        <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
             <InPorts>
                 <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
             </InPorts>

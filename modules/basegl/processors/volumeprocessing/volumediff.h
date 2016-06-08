@@ -51,7 +51,7 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor { 
 public:
     VolumeDiff();
-    virtual ~VolumeDiff();
+    virtual ~VolumeDiff() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

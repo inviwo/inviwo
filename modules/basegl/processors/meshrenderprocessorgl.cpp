@@ -55,9 +55,9 @@ const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const { return pro
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
-    , inport_("geometry.inport")
+    , inport_("geometry")
     , imageInport_("imageInport")
-    , outport_("image.outport")
+    , outport_("image")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
     , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")

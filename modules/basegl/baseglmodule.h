@@ -39,6 +39,18 @@ class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
 public:
     BaseGLModule(InviwoApplication* app);
 
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class BaseGLConverter : public VersionConverter {
+    public:
+        BaseGLConverter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
 };
 
 } // namespace
