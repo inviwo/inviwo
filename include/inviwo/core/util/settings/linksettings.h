@@ -34,11 +34,15 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 
+#include <unordered_map>
+
 namespace inviwo {
 
 class IVW_CORE_API LinkSettings : public Settings, public FactoryObserver<PropertyFactoryObject> {
 public:
     LinkSettings(const std::string& id, PropertyFactory* factory);
+    LinkSettings(const LinkSettings&) = delete;
+    LinkSettings& operator=(const LinkSettings&) = delete;
     virtual bool isLinkable(const Property* property) const;
 
     virtual void onRegister(PropertyFactoryObject* p) override;
@@ -46,7 +50,7 @@ public:
 
 private:
     CompositeProperty linkProperties_;
-
+    std::unordered_map<std::string, std::unique_ptr<BoolProperty>> propertyMap_;
 };
 
 } // namespace
