@@ -52,8 +52,8 @@ const float MeshClipping::EPSILON = 0.00001f;
 
 MeshClipping::MeshClipping()
     : Processor()
-    , inport_("geometry.input")
-    , outport_("geometry.output")
+    , inport_("inputMesh")
+    , outport_("clippedMesh")
     , clippingEnabled_("clippingEnabled", "Enable clipping", false)
     , movePointAlongNormal_("movePointAlongNormal", "Move Plane Point Along Normal", false, InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true, InvalidationLevel::Valid)

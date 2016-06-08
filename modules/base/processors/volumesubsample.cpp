@@ -46,8 +46,8 @@ const ProcessorInfo VolumeSubsample::getProcessorInfo() const {
 
 VolumeSubsample::VolumeSubsample()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("volume.outport")
+    , inport_("inputVolume")
+    , outport_("outputVolume")
     , enabled_("enabled", "Enable Operation", true)
     , waitForCompletion_("waitForCompletion", "Wait For Subsample Completion", false)
     , subSampleFactors_("subSampleFactors", "Factors", ivec3(1), ivec3(1), ivec3(8))

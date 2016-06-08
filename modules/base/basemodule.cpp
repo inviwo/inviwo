@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/basemodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/base/processors/cubeproxygeometry.h>
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
@@ -128,6 +129,75 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerPort<DataOutport<LightSource>>("LightSourceOutport");
     registerPort<BufferInport>("BufferInport");
     registerPort<BufferOutport>("BufferOutport");
+}
+
+int BaseModule::getVersion() const {
+    return 1;
+}
+
+std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
+    return util::make_unique<BaseConverter>(version);
+}
+
+BaseModule::BaseConverter::BaseConverter(int version) : version_(version) {}
+
+bool BaseModule::BaseConverter::convert(TxElement* root) {
+    const std::vector<xml::IdentifierReplacement> repl = {
+        // CubeProxyGeometry
+        {{xml::Kind::processor("org.inviwo.CubeProxyGeometry"),
+          xml::Kind::inport("org.inviwo.VolumeInport")},
+         "volume.inport",
+         "volume"},
+        {{xml::Kind::processor("org.inviwo.CubeProxyGeometry"),
+          xml::Kind::outport("org.inviwo.MeshOutport")},
+         "geometry.outport",
+         "proxyGeometry"},
+        // ImageSource
+        {{xml::Kind::processor("org.inviwo.ImageSource"),
+          xml::Kind::outport("org.inviwo.ImageOutport")},
+         "image.outport",
+         "image"},
+        // MeshClipping
+        {{xml::Kind::processor("org.inviwo.MeshClipping"),
+          xml::Kind::inport("org.inviwo.MeshInport")},
+         "geometry.input",
+         "inputMesh"},
+        {{xml::Kind::processor("org.inviwo.MeshClipping"),
+          xml::Kind::outport("org.inviwo.MeshOutport")},
+         "geometry.output",
+         "clippedMesh"},
+
+        // VolumeSlice
+        {{xml::Kind::processor("org.inviwo.VolumeSlice"),
+          xml::Kind::inport("org.inviwo.VolumeInport")},
+         "volume.inport",
+         "inputVolume"},
+        {{xml::Kind::processor("org.inviwo.VolumeSlice"),
+          xml::Kind::outport("org.inviwo.ImageOutport")},
+         "image.outport",
+         "outputImage"},
+
+        // VolumeSubsample
+        {{xml::Kind::processor("org.inviwo.VolumeSubsample"),
+          xml::Kind::inport("org.inviwo.VolumeInport")},
+         "volume.inport",
+         "inputVolume"},
+        {{xml::Kind::processor("org.inviwo.VolumeSubsample"),
+          xml::Kind::outport("org.inviwo.VolumeOutport")},
+         "volume.outport",
+         "outputVolume"}};
+
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeIdentifiers(root, repl);
+        }
+            return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
 }
 
 } // namespace

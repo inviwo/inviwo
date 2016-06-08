@@ -49,7 +49,7 @@ const ProcessorInfo ImageSourceSeries::getProcessorInfo() const { return process
 
 ImageSourceSeries::ImageSourceSeries()
     : Processor()
-    , outport_("image.outport", DataVec4UInt8::get(), false)
+    , outport_("outputImage", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
     , imageFileDirectory_("imageFileDirectory", "Image file directory", "",
                           filesystem::getPath(PathType::Images, "/images"))

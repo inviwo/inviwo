@@ -46,8 +46,8 @@ const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const {
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("geometry.outport")
+    , inport_("volume")
+    , outport_("proxyGeometry")
     , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
     , clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1)
     , clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1)
