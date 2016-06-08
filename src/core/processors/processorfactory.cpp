@@ -38,7 +38,7 @@ namespace inviwo {
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     if (!StandardFactory<Processor, ProcessorFactoryObject>::registerObject(processor)) {
         LogWarn("Processor with class name: " << processor->getClassIdentifier()
-                                              << " is already registerd");
+                                              << " is already registered");
         return false;
     }
 
@@ -48,6 +48,13 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
             "(org.inviwo.processor) not like: "
             << processor->getClassIdentifier())
     }
+    if (processor->getCategory().empty()) {
+        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no Category");
+    }
+    if (processor->getDisplayName().empty()) {
+        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no Display Name");
+    }
+
     return true;
 }
 
