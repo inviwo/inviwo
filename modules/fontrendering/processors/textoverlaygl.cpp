@@ -54,7 +54,7 @@ TextOverlayGL::TextOverlayGL()
             PropertySemantics::TextEditor)
     , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , fontSize_("Font size", "Font size")
+    , fontSize_("fontSize", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , textRenderer_() {
