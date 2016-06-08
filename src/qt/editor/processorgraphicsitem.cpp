@@ -318,9 +318,15 @@ void ProcessorGraphicsItem::setIdentifier(QString text) {
         nameLabel_->setText(oldName.c_str());
         return;
     }
-
-    std::string updatedNewName = getProcessor()->setIdentifier(newName);
-
+    std::string updatedNewName;
+    try {
+        updatedNewName = getProcessor()->setIdentifier(newName);
+    } catch (Exception& e) {
+        updatedNewName = getProcessor()->getIdentifier();
+        nameLabel_->setText(updatedNewName.c_str());
+        LogWarn(e.getMessage());
+        return;
+    }
     if (updatedNewName != newName) {
         nameLabel_->setText(updatedNewName.c_str());
     }

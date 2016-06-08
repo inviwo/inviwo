@@ -201,7 +201,14 @@ std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return display
 void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
     if (propertyOwner_) {
-        if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) p->setIdentifier(displayName);
+        if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) {
+            try {
+                p->setIdentifier(displayName);
+            } catch(Exception& e) {
+                label_->setText(p->getIdentifier());
+                LogWarn(e.getMessage());
+            }
+        }
     }
 }
 
