@@ -50,7 +50,7 @@ const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const { return proc
 GrayscaleCLProcessor::GrayscaleCLProcessor()
     : Processor()
     , ProcessorKernelOwner(this)
-    , input_("color image")
+    , input_("colorImage")
     , outport_("outport")
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , kernel_(nullptr) {
