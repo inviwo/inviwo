@@ -119,8 +119,21 @@ public:
     virtual std::string getPath() const;
     std::string getPath(ModulePath type) const;
 
+    /**
+     * Returns the module version. This is used for converting old processor networks in connection
+     * with the getConverter function. By default it will return 0. Overload this function to return
+     * a larger value when you need to update the module version.
+     */
     virtual int getVersion() const;
-    virtual std::unique_ptr<VersionConverter> getConverter(int version) const;
+    /**
+     * Should return a converter that updates a processor network from the oldModuleVersion to the
+     * current module version returned by getVersion. You need to overload this together with
+     * getVersion to implement conversioning for the module. This is needed whenever you modify a
+     * processor in such a was as breaking the deserialization of a old network. For example by
+     * changing the identifier of a property. By the default it will return a nullptr. Since there
+     * is no need to convert to version 0. Look at BaseModule for an example of this in use.
+     */
+    virtual std::unique_ptr<VersionConverter> getConverter(int oldModuleVersion) const;
 
     const std::vector<CameraFactoryObject*> getCameras() const;
     const std::vector<Capabilities*> getCapabilities() const;

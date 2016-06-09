@@ -165,7 +165,7 @@ public:
     Processor();
     virtual ~Processor();
 
-    //  Should be implemented by all inheriting classes;
+    // Should be implemented by all inheriting classes;
     virtual const ProcessorInfo getProcessorInfo() const = 0;
 
     std::string getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
@@ -234,7 +234,7 @@ public:
      *   * The processor
      *   * All properties
      *   * All outports and their connected inports.
-     * It will also set is't inports "changed" to false.
+     * It will also set its inports "changed" to false.
      */
     virtual void setValid() override;
 
@@ -244,7 +244,7 @@ public:
      * Proccessor::invalidate()
      * in your reimplemented invalidation function.
      * The general scheme is that the processor will invalidate is self and it's outports
-     * the outports will in turn invalidate their connected inports, which will invalidate there
+     * the outports will in turn invalidate their connected inports, which will invalidate their
      * processors. Hence all processors that depend on this one in the network will be invalidated.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel,

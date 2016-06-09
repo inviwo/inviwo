@@ -109,6 +109,9 @@ IVW_CORE_API TxElement* getElement(TxElement* node, std::string path);
 IVW_CORE_API bool copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
 
 
+/**
+ *	Helper class for specifying a selector path for visitMatchingNodes
+ */
 struct ElementMatcher {
     struct Attribute {
         std::string name;
@@ -118,6 +121,11 @@ struct ElementMatcher {
     std::vector<Attribute> attributes;
 };
 
+/**
+ * This will traverse the nodes of a xml tree that matches the selectors given.
+ * and apply a visitor. The selector is specified by a vector or ElementMatchers,
+ * matching on the node name and the list if given attribute name and value pairs.
+ */
 template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
                         Visitor visitor) {
@@ -149,7 +157,15 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
     visitNodes(root, selector.begin(), selector.end());
 }
 
-
+/**
+ * Helper class to specify a processor network xml path. For example
+ * {
+ *     xml::Kind::processor("org.inviwo.BackGround"),
+ *     xml::Kind::inport("org.inviwo.ImageInport")
+ * }
+ * Will resolve into:
+ * "Processors/Processor&type=org.inviwo.BackGround/InPorts/InPort&type=org.inviwo.ImageInport"
+ */
 class IVW_CORE_API Kind {
 public:
     static Kind processor(const std::string& type);
@@ -170,14 +186,28 @@ private:
 };
 
 
-
+/**
+ * Utility function to change a attribute processor network element, i.e a processor, port, or 
+ * property.
+ * @param root The xml node to start looking.
+ * @param path A vector of Kind items (@See Kind) that specifies the elements that you want to change.
+ * @param attribute The name of the attribute to change
+ * @param oldValue The old attribute value. This is also used for identifying the elements.
+ * @param newValye The new attribute value
+ */
 IVW_CORE_API bool changeAttribute(TxElement* root, const std::vector<Kind>& path,
                                   const std::string& attribute, const std::string& oldValue,
                                   const std::string& newValue);
 
+/**
+ *	@See changeAttribute. Same a changeAttribute but will specifically change a identifier attribute
+ */
 IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& path,
                                    const std::string& oldId, const std::string& newId);
 
+/**
+ *	Helper class for changeIdentifiers
+ */
 struct IdentifierReplacement {
     const std::vector<Kind> path;
     const std::string oldId;
