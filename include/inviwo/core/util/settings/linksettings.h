@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+class BoolProperty;
+
 class IVW_CORE_API LinkSettings : public Settings, public FactoryObserver<PropertyFactoryObject> {
 public:
     LinkSettings(const std::string& id, PropertyFactory* factory);

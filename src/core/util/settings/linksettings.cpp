@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 

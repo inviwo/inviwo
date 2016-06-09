@@ -31,6 +31,7 @@
 #define IVW_UTILITIES_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/exception.h>
 #include <string>
 
 namespace inviwo {

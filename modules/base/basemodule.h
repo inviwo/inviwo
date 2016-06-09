@@ -44,9 +44,9 @@ public:
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
 private:
-    class BaseConverter : public VersionConverter {
+    class Converter : public VersionConverter {
     public:
-        BaseConverter(int version);
+        Converter(int version);
         virtual bool convert(TxElement* root) override;
 
     private:

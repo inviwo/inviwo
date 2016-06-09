@@ -36,6 +36,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/processornetworkconverter.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <algorithm>
 
 namespace inviwo {
@@ -360,8 +361,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     if (version != processorNetworkVersion_) {
         LogNetworkWarn("Loading old workspace ("
-                       << d.getFileName() << ") version: " << version
-                       << ". Updating to version: " << processorNetworkVersion_);
+                       << d.getFileName() << ") Processor Network version: " << version
+                       << ". Updating to version: " << processorNetworkVersion_ << ".");
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);
     }
@@ -375,9 +376,9 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                 auto converter = module->getConverter(minfo->version_);
                 d.convertVersion(converter.get());
                 LogNetworkWarn("Loading old workspace ("
-                               << d.getFileName() << ") module: \"" << module->getIdentifier()
-                               << "\" version: " << minfo->version_
-                               << ". Updating to version: " << module->getVersion());
+                               << d.getFileName() << ") " << module->getIdentifier()
+                               << "Module version: " << minfo->version_
+                               << ". Updating to version: " << module->getVersion() << ".");
             }
         }
     }

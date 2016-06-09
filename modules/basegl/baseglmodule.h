@@ -32,6 +32,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
@@ -43,9 +44,9 @@ public:
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
 private:
-    class BaseGLConverter : public VersionConverter {
+    class Converter : public VersionConverter {
     public:
-        BaseGLConverter(int version);
+        Converter(int version);
         virtual bool convert(TxElement* root) override;
 
     private:

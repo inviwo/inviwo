@@ -138,12 +138,12 @@ int BaseModule::getVersion() const {
 }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
-    return util::make_unique<BaseConverter>(version);
+    return util::make_unique<Converter>(version);
 }
 
-BaseModule::BaseConverter::BaseConverter(int version) : version_(version) {}
+BaseModule::Converter::Converter(int version) : version_(version) {}
 
-bool BaseModule::BaseConverter::convert(TxElement* root) {
+bool BaseModule::Converter::convert(TxElement* root) {
     const std::vector<xml::IdentifierReplacement> repl = {
         // CubeProxyGeometry
         {{xml::Kind::processor("org.inviwo.CubeProxyGeometry"),

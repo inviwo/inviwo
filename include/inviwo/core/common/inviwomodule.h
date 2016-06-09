@@ -62,6 +62,7 @@ class DataWriter;
 class PortInspectorFactoryObject;
 class MeshDrawer;
 class PropertyConverter;
+class VersionConverter;
 
 
 enum class ModulePath {

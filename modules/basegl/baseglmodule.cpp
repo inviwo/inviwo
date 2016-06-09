@@ -137,12 +137,12 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
 int BaseGLModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
-    return util::make_unique<BaseGLConverter>(version);
+    return util::make_unique<Converter>(version);
 }
 
-BaseGLModule::BaseGLConverter::BaseGLConverter(int version) : version_(version) {}
+BaseGLModule::Converter::Converter(int version) : version_(version) {}
 
-bool BaseGLModule::BaseGLConverter::convert(TxElement* root) {
+bool BaseGLModule::Converter::convert(TxElement* root) {
     auto makerules = []() {
         std::vector<xml::IdentifierReplacement> repl = {
             // MeshRenderProcessorGL

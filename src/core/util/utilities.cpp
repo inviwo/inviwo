@@ -64,7 +64,7 @@ void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
 void util::validateIdentifier(const std::string& identifier, const std::string& type,
                               ExceptionContext context, const std::string& extra) {
     for (const auto& c : identifier) {
-        if (!(c >= -1 && c <= 255) ||
+        if (!(c >= -1) ||
             !(std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c))) {
             throw Exception(type + " identifiers are not allowed to contain \"" + c +
                                 "\". Found in \"" + identifier + "\"",

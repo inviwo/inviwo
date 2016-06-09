@@ -50,6 +50,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 #include <inviwomodulespaths.h>
 
