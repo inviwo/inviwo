@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/abuffergl/abufferglmoduledefine.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
