@@ -73,7 +73,7 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
     auto next = positions_.begin();
     auto prev = next;
     while (distNext < d) {
-        auto prev = next++;
+        prev = next++;
         distPrev = distNext;
         distNext += glm::distance(*prev, *next);
     }

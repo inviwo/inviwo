@@ -77,6 +77,11 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         auto lastData =
             static_cast<const char *>(lastVol->getRepresentation<VolumeRAM>()->getData());
         auto dataSize1 = firstVolRam->getNumberOfBytes();
+        auto dataSize2 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
+                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize();
+        auto dataSize3 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
+                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize() *
+                         firstVolRam->getDataFormat()->getComponents();
 
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
             firstAndLastAreSame &= firstData[i] == lastData[i];
@@ -110,6 +115,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     } else {  // timestamps are set
 
         if (infsDuration == size) {  // we do not have durations
+            double t = 0;
             for (auto &w : wrappers_) {
                 if (w->next_.expired()) {
                     w->duration_ = w->next_.lock()->timestamp_ - w->timestamp_;
@@ -128,14 +134,13 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-
-dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
+dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;
 
     if (t < timeRange_.x || t > timeRange_.y) {
         if (!allowLooping_) {
-            return dvec4(0);
+            return dvec3(0);
         }
         while (t < timeRange_.x) {
             t += totDuration_;
@@ -152,21 +157,26 @@ dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
     --it;
     auto wrapper = *it;
 
-    auto val0 = wrapper->sampler_.sample(spatialPos);
+    auto val0 = wrapper->sampler_.sample(spatialPos).xyz();
     if (wrapper->next_.expired()) {
         return val0;
     }
-    auto val1 = wrapper->next_.lock()->sampler_.sample(spatialPos);
+    auto val1 = wrapper->next_.lock()->sampler_.sample(spatialPos).xyz();
     
     double x = (t - wrapper->timestamp_) / wrapper->duration_;
-    return Interpolation<dvec4>::linear(val0, val1, x);
+    return Interpolation<dvec3>::linear(val0, val1, x);
 }
 
-dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) const {
-    return sample(dvec4(x, y, z, t));
+bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const
+{
+    // TODO check also time
+    if (glm::any(glm::lessThan(pos.xyz(), dvec3(0.0)))) {
+        return false;
+    }
+    if (glm::any(glm::greaterThan(pos.xyz(), dvec3(1.0)))) {
+        return false;
+    }
+    return true;
 }
-
-dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
-
 
 }  // namespace

@@ -38,6 +38,12 @@
 
 namespace inviwo {
 
+/**
+ * \class VolumeSequenceSampler
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+
 class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<3, double> {
     struct Wrapper {
         std::weak_ptr<Wrapper> next_;
@@ -69,24 +75,13 @@ public:
         bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
-    dvec4 sample(const dvec4 &pos) const;
-    dvec4 sample(double x, double y, double z, double t) const;
-    dvec4 sample(const vec4 &pos) const;
-
 protected:
-    virtual dvec3 sampleDataSpace(const dvec4 &pos) const { return sample(pos).xyz(); }
-    virtual bool withinBoundsDataSpace(const dvec4 &pos) const {
-        // TODO check also time
-        if (glm::any(glm::lessThan(pos.xyz(), dvec3(0.0)))) {
-            return false;
-        }
-        if (glm::any(glm::greaterThan(pos.xyz(), dvec3(1.0)))) {
-            return false;
-        }
-        return true;
-    }
+    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;// { return sample(pos).xyz(); }
+    virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
+    // dvec4 getVoxel(const dvec3 &pos, int T) const;
+
     std::vector<VolumeDoubleSampler<4>> samplers_;
     std::vector<std::shared_ptr<Wrapper>> wrappers_;
 

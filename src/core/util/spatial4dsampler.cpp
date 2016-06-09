@@ -31,6 +31,9 @@
 
 namespace inviwo {
 
+
+std::string Spatial4DSamplerBase::getDataInfo() const { return ""; }
+
 uvec3 Spatial4DSamplerBase::COLOR_CODE = uvec3(153, 0, 76);
 
 }  // namespace
