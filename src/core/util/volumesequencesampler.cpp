@@ -77,11 +77,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         auto lastData =
             static_cast<const char *>(lastVol->getRepresentation<VolumeRAM>()->getData());
         auto dataSize1 = firstVolRam->getNumberOfBytes();
-        auto dataSize2 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
-                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize();
-        auto dataSize3 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
-                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize() *
-                         firstVolRam->getDataFormat()->getComponents();
 
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
             firstAndLastAreSame &= firstData[i] == lastData[i];
@@ -115,7 +110,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     } else {  // timestamps are set
 
         if (infsDuration == size) {  // we do not have durations
-            double t = 0;
             for (auto &w : wrappers_) {
                 if (w->next_.expired()) {
                     w->duration_ = w->next_.lock()->timestamp_ - w->timestamp_;
@@ -133,6 +127,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 }
 
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
+
 
 dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
@@ -172,5 +167,6 @@ dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) cons
 }
 
 dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
+
 
 }  // namespace

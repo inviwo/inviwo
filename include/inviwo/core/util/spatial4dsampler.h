@@ -37,21 +37,19 @@
 
 namespace inviwo {
 
-    class IVW_CORE_API Spatial4DSamplerBase {
-    public:
-        static uvec3 COLOR_CODE;
-        virtual std::string getDataInfo() const {
-            return "";
-        }
-    };
-
+class IVW_CORE_API Spatial4DSamplerBase {
+public:
+    static uvec3 COLOR_CODE;
+    virtual ~Spatial4DSamplerBase() = default;
+    virtual std::string getDataInfo() const { return ""; }
+};
 
 template <unsigned DataDims, typename T>
 class Spatial4DSampler : public Spatial4DSamplerBase {
 public:
     using Space = typename SpatialCoordinateTransformer<3>::Space;
 
-    Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity) 
+    Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity)
         : spatialEntity_(spatialEntity) {}
     virtual ~Spatial4DSampler() = default;
 
@@ -60,55 +58,43 @@ public:
                inviwo::parseTypeIdName(std::string(typeid(T).name()));
     }
 
-
-    virtual Vector<DataDims, T> sample(const dvec4 &pos,
-        Space space = Space::Data) const {
+    virtual Vector<DataDims, T> sample(const dvec4 &pos, Space space = Space::Data) const {
         auto dataPos = pos.xyz();
         if (space != Space::Data) {
             auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
-            auto p = m * vec4(
-                static_cast<vec3>(pos), 1.0);
+            auto p = m * vec4(static_cast<vec3>(pos), 1.0);
             dataPos = p.xyz() / p.w;
         }
 
         return sampleDataSpace(dvec4(dataPos, pos.w));
     }
 
-    virtual Vector<DataDims, T> sample(const vec4 &pos,
-        Space space = Space::Data) const {
+    virtual Vector<DataDims, T> sample(const vec4 &pos, Space space = Space::Data) const {
         return sample(static_cast<dvec4>(pos), space);
     }
 
-    virtual bool withinBounds(const dvec4 &pos,
-        Space space = Space::Data) const {
+    virtual bool withinBounds(const dvec4 &pos, Space space = Space::Data) const {
         auto dataPos = pos.xyz();
         if (space != Space::Data) {
             auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
-            auto p = m * vec4(
-                static_cast<vec3>(dataPos), 1.0f);
+            auto p = m * vec4(static_cast<vec3>(dataPos), 1.0f);
             dataPos = p.xyz() / p.w;
         }
 
-        return withinBoundsDataSpace(dvec4(dataPos,pos.w));
+        return withinBoundsDataSpace(dvec4(dataPos, pos.w));
     }
 
-    virtual bool withinBounds(const vec4 &pos,
-        Space space = Space::Data) const {
+    virtual bool withinBounds(const vec4 &pos, Space space = Space::Data) const {
         return withinBounds(static_cast<dvec4>(pos), space);
     }
 
-    const SpatialCoordinateTransformer<3> &getCoordinateTransformer()const {
+    const SpatialCoordinateTransformer<3> &getCoordinateTransformer() const {
         return spatialEntity_->getCoordinateTransformer();
     }
 
-    mat4 getModelMatrix()const {
-        return spatialEntity_->getModelMatrix();
-    }
+    mat4 getModelMatrix() const { return spatialEntity_->getModelMatrix(); }
 
-
-    mat4 getWorldMatrix()const {
-        return spatialEntity_->getWorldMatrix();
-    }
+    mat4 getWorldMatrix() const { return spatialEntity_->getWorldMatrix(); }
 
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const dvec4 &pos) const = 0;
@@ -116,7 +102,6 @@ protected:
 
     std::shared_ptr<const SpatialEntity<3>> spatialEntity_;
 };
-
 
 }  // namespace
 
