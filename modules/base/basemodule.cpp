@@ -61,7 +61,7 @@
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/base/processors/orientationindicator.h>
 #include <modules/base/processors/singlevoxel.h>
-
+#include <modules/base/processors/worldtransform.h>
 #include <modules/base/processors/volumeboundingbox.h>
 
 #include <modules/base/properties/basisproperty.h>
@@ -79,6 +79,9 @@ namespace inviwo {
 
 using BasisTransformMesh = BasisTransform<Mesh>;
 using BasisTransformVolume = BasisTransform<Volume>;
+
+using WorldTransformMesh = WorldTransform<Mesh>;
+using WorldTransformVolume = WorldTransform<Volume>;
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<CubeProxyGeometry>();
@@ -103,6 +106,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeExport>();
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
+    registerProcessor<WorldTransformMesh>();
+    registerProcessor<WorldTransformVolume>();
     registerProcessor<VolumeSlice>();
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();

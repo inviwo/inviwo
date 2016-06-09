@@ -54,6 +54,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/worldtransform.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
