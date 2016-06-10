@@ -33,12 +33,11 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <unordered_map>
 
 namespace inviwo {
-
-class BoolProperty;
 
 class IVW_CORE_API LinkSettings : public Settings, public FactoryObserver<PropertyFactoryObject> {
 public:
