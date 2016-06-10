@@ -85,6 +85,7 @@ add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
+ivw_define_standard_properties(inviwo-qteditor)
 ivw_define_qt_definitions()
 
 # Add dependencies to this list
