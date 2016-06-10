@@ -312,6 +312,10 @@ xml::Kind xml::Kind::inport(const std::string& type) { return Kind("InPort", "In
 
 xml::Kind xml::Kind::outport(const std::string& type) { return Kind("OutPort", "OutPorts", type); }
 
+xml::Kind xml::Kind::portgroup(const std::string& type) {
+    return Kind("PortGroup", "PortGroups", type);
+}
+
 xml::Kind xml::Kind::property(const std::string& type) {
     return Kind("Property", "Properties", type);
 }

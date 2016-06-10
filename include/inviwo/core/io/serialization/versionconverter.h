@@ -171,6 +171,7 @@ public:
     static Kind processor(const std::string& type);
     static Kind inport(const std::string& type);
     static Kind outport(const std::string& type);
+    static Kind portgroup(const std::string& type);
     static Kind property(const std::string& type);
 
     const std::string& name() const;
