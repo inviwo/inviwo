@@ -112,17 +112,32 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.IntProperty") {
+    }
+    else if (className == "org.inviwo.IntProperty") {
         if (is<int>(args)) {
             static_cast<IntProperty*>(p)->set(parse<int>(args));
-        } else {
+        }
+        else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
             std::stringstream ss;
             ss << "Failed to set property, expected type int got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.StringProperty") {
+    }
+else if (className == "org.inviwo.Size_tProperty") {
+     if (is<size_t>(args)) {
+         static_cast<IntSizeTProperty*>(p)->set(parse<size_t>(args));
+     }
+     else {
+         auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+         std::stringstream ss;
+         ss << "Failed to set property, expected type int got: " << tt->tp_name;
+         PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+         return false;
+     }
+ }
+ else if (className == "org.inviwo.StringProperty") {
         if (is<std::string>(args)) {
             static_cast<StringProperty*>(p)->set(parse<std::string>(args));
         } else {
@@ -152,37 +167,80 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.IntVec2Property") {
-        if (is<ivec2>(args)) {
-            static_cast<IntVec2Property*>(p)->set(parse<ivec2>(args));
-        } else {
+    }
+    else if (className == IntSize2Property::CLASS_IDENTIFIER) {
+        if (is<size2_t>(args)) {
+            static_cast<IntSize2Property*>(p)->set(parse<size2_t>(args));
+        }
+        else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
             std::stringstream ss;
-            ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
+            ss << "Failed to set property, expected type size2_t got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.IntVec3Property") {
-        if (is<ivec3>(args)) {
-            static_cast<IntVec3Property*>(p)->set(parse<ivec3>(args));
-        } else {
+    }
+    else if (className == IntSize3Property::CLASS_IDENTIFIER) {
+        if (is<size3_t>(args)) {
+            static_cast<IntSize3Property*>(p)->set(parse<size3_t>(args));
+        }
+        else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
             std::stringstream ss;
-            ss << "Failed to set property, expected type ivec3 got: " << tt->tp_name;
+            ss << "Failed to set property, expected type size3_t got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.IntVec4Property") {
-        if (is<ivec4>(args)) {
-            static_cast<IntVec4Property*>(p)->set(parse<ivec4>(args));
-        } else {
+    }
+    else if (className == IntSize4Property::CLASS_IDENTIFIER) {
+        if (is<size4_t>(args)) {
+            static_cast<IntSize4Property*>(p)->set(parse<size4_t>(args));
+        }
+        else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
             std::stringstream ss;
-            ss << "Failed to set property, expected type ivec4 got: " << tt->tp_name;
+            ss << "Failed to set property, expected type size4_t got: " << tt->tp_name;
             PyErr_SetString(PyExc_TypeError, ss.str().c_str());
             return false;
         }
-    } else if (className == "org.inviwo.FloatVec2Property") {
+    }
+ else if (className == "org.inviwo.IntVec2Property") {
+     if (is<ivec2>(args)) {
+         static_cast<IntVec2Property*>(p)->set(parse<ivec2>(args));
+     }
+     else {
+         auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+         std::stringstream ss;
+         ss << "Failed to set property, expected type ivec2 got: " << tt->tp_name;
+         PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+         return false;
+     }
+ }
+ else if (className == "org.inviwo.IntVec3Property") {
+     if (is<ivec3>(args)) {
+         static_cast<IntVec3Property*>(p)->set(parse<ivec3>(args));
+     }
+     else {
+         auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+         std::stringstream ss;
+         ss << "Failed to set property, expected type ivec3 got: " << tt->tp_name;
+         PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+         return false;
+     }
+ }
+ else if (className == "org.inviwo.IntVec4Property") {
+     if (is<ivec4>(args)) {
+         static_cast<IntVec4Property*>(p)->set(parse<ivec4>(args));
+     }
+     else {
+         auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
+         std::stringstream ss;
+         ss << "Failed to set property, expected type ivec4 got: " << tt->tp_name;
+         PyErr_SetString(PyExc_TypeError, ss.str().c_str());
+         return false;
+     }
+ }
+ else if (className == "org.inviwo.FloatVec2Property") {
         if (is<vec2>(args)) {
             static_cast<FloatVec2Property*>(p)->set(parse<vec2>(args));
         } else {
