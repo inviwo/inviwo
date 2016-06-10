@@ -34,7 +34,13 @@ namespace inviwo {
 
 VolumeSequenceSampler::VolumeSequenceSampler(
     std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence, bool allowLooping)
-    : Spatial4DSampler<3, double>(volumeSequence->front()), samplers_(), wrappers_(), allowLooping_(allowLooping), timeRange_(0,0), totDuration_(0) {
+    : Spatial4DSampler<3, double>(volumeSequence->front())
+    , samplers_()
+    , wrappers_()
+    , allowLooping_(allowLooping)
+    , timeRange_(0, 0)
+    , totDuration_(0) {
+    
     for (const auto &vol : (*volumeSequence.get())) {
         samplers_.emplace_back(vol);
         wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
@@ -77,11 +83,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         auto lastData =
             static_cast<const char *>(lastVol->getRepresentation<VolumeRAM>()->getData());
         auto dataSize1 = firstVolRam->getNumberOfBytes();
-        auto dataSize2 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
-                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize();
-        auto dataSize3 = firstVolRam->getDimensions().x * firstVolRam->getDimensions().y *
-                         firstVolRam->getDimensions().z * firstVolRam->getDataFormat()->getSize() *
-                         firstVolRam->getDataFormat()->getComponents();
 
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
             firstAndLastAreSame &= firstData[i] == lastData[i];
@@ -115,7 +116,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     } else {  // timestamps are set
 
         if (infsDuration == size) {  // we do not have durations
-            double t = 0;
             for (auto &w : wrappers_) {
                 if (w->next_.expired()) {
                     w->duration_ = w->next_.lock()->timestamp_ - w->timestamp_;
@@ -150,10 +150,9 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
         }
     }
 
-
-    auto it = std::upper_bound(wrappers_.begin(), wrappers_.end(), t, [](double t , const std::shared_ptr<Wrapper> a) {
-        return t < a->timestamp_;
-    });
+    auto it = std::upper_bound(
+        wrappers_.begin(), wrappers_.end(), t,
+        [](double t, const std::shared_ptr<Wrapper> a) { return t < a->timestamp_; });
     --it;
     auto wrapper = *it;
 
@@ -162,13 +161,12 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
         return val0;
     }
     auto val1 = wrapper->next_.lock()->sampler_.sample(spatialPos).xyz();
-    
+
     double x = (t - wrapper->timestamp_) / wrapper->duration_;
     return Interpolation<dvec3>::linear(val0, val1, x);
 }
 
-bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const
-{
+bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const {
     // TODO check also time
     if (glm::any(glm::lessThan(pos.xyz(), dvec3(0.0)))) {
         return false;
