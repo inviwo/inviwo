@@ -59,7 +59,7 @@ TextOverlayGL::TextOverlayGL()
     , fontSize_("fontSize", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , addArgStringBtn_("addArgStringBtn", "Add Argument String")
+    , addArgButton_("addArgBtn", "Add String Argument")
     , textRenderer_()
     , numArgs_(0u)
 {
@@ -71,11 +71,11 @@ TextOverlayGL::TextOverlayGL()
     addProperty(fontPos_);
     addProperty(anchorPos_);
     addProperty(fontSize_);
-    addProperty(addArgStringBtn_);
+    addProperty(addArgButton_);
 
-    addArgStringBtn_.onChange([this]() {
+    addArgButton_.onChange([this]() {
         if (numArgs_ >= maxNumArgs_) {
-            addArgStringBtn_.setReadOnly(numArgs_ >= maxNumArgs_);
+            addArgButton_.setReadOnly(numArgs_ >= maxNumArgs_);
             return;
         }
         ++numArgs_;
@@ -143,7 +143,7 @@ void TextOverlayGL::deserialize(Deserializer & d) {
         arg->setDisplayName("Arg " + str);
     }
     // only maxNumArgs_ are supported, disable button if more exist
-    addArgStringBtn_.setReadOnly(numArgs_ > maxNumArgs_);
+    addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
 }
 
 std::string TextOverlayGL::getString() const {

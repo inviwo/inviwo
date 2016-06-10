@@ -88,7 +88,7 @@ protected:
      *
      * @return std::string output string with replaced place markers
      */
-    std::string TextOverlayGL::getString() const;
+    std::string getString() const;
 
 private:
     ImageInport inport_;
@@ -102,7 +102,7 @@ private:
     FloatVec2Property fontPos_;
     FloatVec2Property anchorPos_;
 
-    ButtonProperty addArgStringBtn_; //!< this button will add string properties to be used with place markers
+    ButtonProperty addArgButton_; //!< this button will add string properties to be used with place markers
 
     TextRenderer textRenderer_;
     std::size_t numArgs_; //!< number of optional place marker properties 
