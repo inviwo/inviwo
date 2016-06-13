@@ -170,8 +170,8 @@ std::string TextOverlayGL::getString() const {
         std::string numStr = str.substr(offset + 1, 3);
         if (std::isdigit(numStr[0])) {
             std::size_t numDigits = 0;
-            int argNum = std::stoi(numStr, &numDigits);
-            if ((argNum > 0) && (argNum <= numArgs_)) {
+            std::size_t argNum = std::stoul(numStr, &numDigits);
+            if (argNum <= numArgs_) {
                 // make textual replacement ("%" and number of digits)
                 str.replace(offset, numDigits + 1, args[argNum - 1]->get());
                 offset += args[argNum - 1]->get().size();
