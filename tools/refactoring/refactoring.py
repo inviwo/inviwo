@@ -53,7 +53,7 @@ def find_matches(files, expr):
 						matched = colorama.Fore.YELLOW + match.group(0) + colorama.Style.RESET_ALL
 						print("{0:5d} {1:s}".format(i,matched))
 			except UnicodeDecodeError:
-				sys.exit("Encoding error: " + file)
+				print_error("Encoding error: " + file)
 
 		if match_in_file:
 			matches.append(file)
@@ -68,7 +68,8 @@ def replace_matches(files, expr, repl, dummy=False):
 			try: 
 				lines = f.readlines()
 			except UnicodeDecodeError:
-				sys.exit("Encoding error: " + file) 
+				print_error("Encoding error: " + file) 
+				continue
 
 		if not dummy:
 			with codecs.open(file, 'w', encoding="UTF-8") as f:
@@ -80,7 +81,7 @@ def replace_matches(files, expr, repl, dummy=False):
 							match_in_file = True
 						matched = colorama.Fore.YELLOW + match.group(0) + colorama.Style.RESET_ALL
 						replaced = r.sub(colorama.Fore.RED + repl + colorama.Style.RESET_ALL, line.rstrip())
-						f.write(r.sub(repl, line))
+						f.write(re.sub(r, repl, line))
 						print("- {0:5d} {1:s}".format(i,matched))
 						print("+ {0:5d} {1:s}".format(i,replaced))
 					else:
