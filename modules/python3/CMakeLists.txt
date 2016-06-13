@@ -18,24 +18,20 @@ if(NOT ${haspython} GREATER 0)
                     ivw_debug_message(STATUS "Found python at: ${pypath}")
                     list(APPEND CMAKE_PREFIX_PATH "${pypath}")
                     set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-                    set(PYTHON_INCLUDE_DIR "${pypath}/Headers")         
                 endif()
              endif()
         endif()
     endif()    
 endif()
 
-if(NOT PYTHONLIBS_FOUND)
-    set(Python_ADDITIONAL_VERSIONS 3.5)
-    find_package(PythonLibs 3)
-endif()
+set(Python_ADDITIONAL_VERSIONS 3.5)
+find_package(PythonLibs 3)
 
 if (PYTHONLIBS_FOUND)
     ivw_add_definition(IVW_PYTHON_AVAILABLE)
 endif()
 
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
-get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY}" PATH)
 
 if(PYTHON_DEBUG_LIBRARY)
     option(IVW_PYTHON_LINK_DEBUG "Link python debug libraries" OFF)
@@ -43,37 +39,37 @@ endif()
 
 if(IVW_PYTHON_LINK_DEBUG)
     ivw_add_definition(IVW_PYTHON_LINK_DEBUG)
-    add_dependency_libs_to_module(${PYTHON_LIBRARIES})
-    ivw_link_directories(${PYTHON_LIBRARY_DIR})
-else()
-    list(LENGTH PYTHON_LIBRARIES NUM_DIRS)
-    if(${NUM_DIRS} EQUAL 4)
-        list(GET PYTHON_LIBRARIES 0 LIB1_TYPE)
-        list(GET PYTHON_LIBRARIES 1 LIB1_PATH)
-        list(GET PYTHON_LIBRARIES 2 LIB2_TYPE)
-        list(GET PYTHON_LIBRARIES 3 LIB2_PATH)
-
-        list(GET PYTHON_LIBRARY_DIR 0 LIB_DIR1_TYPE)
-        list(GET PYTHON_LIBRARY_DIR 1 LIB_DIR1_PATH)
-        list(GET PYTHON_LIBRARY_DIR 2 LIB_DIR2_TYPE)
-        list(GET PYTHON_LIBRARY_DIR 3 LIB_DIR2_PATH)
-
-        if(${LIB1_TYPE} STREQUAL "optimized")
-            add_dependency_libs_to_module(${LIB1_PATH})
-        elseif(${LIB2_TYPE} STREQUAL "optimized")
-            add_dependency_libs_to_module(${LIB2_PATH})
-        endif()
-
-        if(${LIB_DIR1_TYPE} STREQUAL "optimized")
-            ivw_link_directories(${LIB_DIR1_PATH})
-        elseif(${LIB_DIR2_TYPE} STREQUAL "optimized")
-            ivw_link_directories(${LIB_DIR2_PATH})
-        endif()
-    else()
-        add_dependency_libs_to_module(${PYTHON_LIBRARIES})
-        ivw_link_directories(${PYTHON_LIBRARY_DIR})
-    endif()
 endif()
+
+list(LENGTH PYTHON_LIBRARIES NUM_DIRS)
+if(${NUM_DIRS} EQUAL 4)
+    list(GET PYTHON_LIBRARIES 0 LIB1_TYPE)
+    list(GET PYTHON_LIBRARIES 1 LIB1_PATH)
+    list(GET PYTHON_LIBRARIES 2 LIB2_TYPE)
+    list(GET PYTHON_LIBRARIES 3 LIB2_PATH)
+
+    if(${LIB1_TYPE} STREQUAL "optimized")
+        set(TMP_PYTHON_LIB ${LIB1_PATH})
+    elseif(${LIB2_TYPE} STREQUAL "optimized")
+        set(TMP_PYTHON_LIB ${LIB2_PATH})
+    endif()
+else()
+    set(TMP_PYTHON_LIB ${PYTHON_LIBRARIES})
+endif()
+
+ivw_library_bits(${TMP_PYTHON_LIB} lib_bits)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(sys_bits 64)
+else()
+    set(sys_bits 32)
+endif()
+
+if(NOT ${lib_bits} EQUAL ${sys_bits})
+    ivw_message(FATAL_ERROR "Python (${TMP_PYTHON_LIB}) is built for ${lib_bits}bits "
+                            "while target output is ${sys_bits}bits")
+endif()
+add_dependency_libs_to_module(${TMP_PYTHON_LIB})
+
 
 #--------------------------------------------------------------------
 # Add header files
@@ -149,22 +145,3 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 # endif()
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-
-#--------------------------------------------------------------------
-# Check that python is built with the right arch.
-find_package(PythonInterp 3)
-if(PYTHON_EXECUTABLE AND (${PYTHON_VERSION_MAJOR} EQUAL 3))
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import struct;print(8*struct.calcsize('P'), end='')"
-        OUTPUT_VARIABLE PYTHON_EXECUTABLE_BITS )
-    
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(SYS_BITS 64)
-    else()
-        set(SYS_BITS 32)
-    endif()
-
-    if(NOT SYS_BITS EQUAL PYTHON_EXECUTABLE_BITS)
-        ivw_message(FATAL_ERROR "Python is built for ${PYTHON_EXECUTABLE_BITS}bits"
-                    " while target output is ${SYS_BITS}bits")
-    endif()
-endif()
