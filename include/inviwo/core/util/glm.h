@@ -613,36 +613,55 @@ To glm_convert_normalized(From x) {
 
 #pragma warning(pop)
 
-// GLM element access wrapper functions. 
+// GLM element access wrapper functions.
 
 // vector like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
+                                  int>::type = 0>
 auto glmcomp(T& elem, size_t i) -> T& {
     return elem;
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
-auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
-auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
 }
 
 // matrix like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
+                                  int>::type = 0>
 auto glmcomp(T& elem, size_t i, size_t j) -> T& {
     return elem;
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
-auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i, size_t j) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
-auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i, size_t j) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i][j];
 }
-
 
 } // namespace util
 
