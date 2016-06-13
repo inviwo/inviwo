@@ -80,7 +80,9 @@ TextOverlayGL::TextOverlayGL()
         }
         ++numArgs_;
         std::string num = std::to_string(numArgs_);
-        addProperty(new StringProperty(std::string("arg") + num, "Arg " + num), true);
+        auto property = new StringProperty(std::string("arg") + num, "Arg " + num);
+        property->setSerializationMode(PropertySerializationMode::All);
+        addProperty(property, true);
     });
 
     std::vector<int> fontSizes ={ 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96 };
@@ -133,15 +135,6 @@ void TextOverlayGL::deserialize(Deserializer & d) {
     auto args = this->getPropertiesByType<StringProperty>(false);
     numArgs_ = args.size() - 1;
     
-    // restore display names
-    for (auto arg : args) {
-        if (arg->getIdentifier() == "Text") {
-            continue;
-        }
-        // extract number part of identifier and add it to the display name
-        std::string str = arg->getIdentifier().substr(3, std::string::npos);
-        arg->setDisplayName("Arg " + str);
-    }
     // only maxNumArgs_ are supported, disable button if more exist
     addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
 }
