@@ -490,7 +490,7 @@ endfunction()
 function(ivw_library_bits lib retval)
     if(WIN32)
         get_filename_component(vcpath ${CMAKE_CXX_COMPILER} DIRECTORY)
-        execute_process(COMMAND CMD /c dumpbin.exe "C:/Python/Python34-64bit/libs/python3.lib" /headers | findstr machine 
+        execute_process(COMMAND CMD /c dumpbin.exe ${lib} /headers | findstr machine 
                         WORKING_DIRECTORY ${vcpath} 
                         OUTPUT_VARIABLE result)
  
