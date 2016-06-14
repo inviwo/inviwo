@@ -470,13 +470,18 @@ else if (className == "org.inviwo.Size_tProperty") {
 PyObject* PyValueParser::getProperty(Property* p) {
     CAST_DO_STUFF(BoolProperty, p);
     CAST_DO_STUFF(FloatProperty, p);
+    CAST_DO_STUFF(DoubleProperty, p);
     CAST_DO_STUFF(IntProperty, p);
+    CAST_DO_STUFF(IntSizeTProperty, p);
     CAST_DO_STUFF(StringProperty, p);
     CAST_DO_STUFF(FileProperty, p);
     CAST_DO_STUFF(DirectoryProperty, p);
     CAST_DO_STUFF(IntVec2Property, p);
     CAST_DO_STUFF(IntVec3Property, p);
     CAST_DO_STUFF(IntVec4Property, p);
+    CAST_DO_STUFF(IntSize2Property, p);
+    CAST_DO_STUFF(IntSize3Property, p);
+    CAST_DO_STUFF(IntSize4Property, p);
     CAST_DO_STUFF(FloatVec2Property, p);
     CAST_DO_STUFF(FloatVec3Property, p);
     CAST_DO_STUFF(FloatVec4Property, p);
