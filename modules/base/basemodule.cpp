@@ -177,7 +177,7 @@ bool BaseModule::Converter::convert(TxElement* root) {
         // VolumeSequenceElementSelectorProcessor
         { { xml::Kind::processor("org.inviwo.TimeStepSelector") },
         "Volume Sequence/Time Selector",
-        "Volume Sequence Time Selector" },
+        "Volume Sequence Element Selector" },
 
         // VolumeSlice
         {{xml::Kind::processor("org.inviwo.VolumeSlice"),
