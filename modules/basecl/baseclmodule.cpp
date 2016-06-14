@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,34 @@ BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL")
     OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
 }
 
-BaseCLModule::~BaseCLModule() {}
+
+int BaseCLModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> BaseCLModule::getConverter(int version) const {
+    return util::make_unique<Converter>(version);
+}
+
+BaseCLModule::Converter::Converter(int version) : version_(version) {}
+
+bool BaseCLModule::Converter::convert(TxElement* root) {
+    const std::vector<xml::IdentifierReplacement> repl = {
+        // GrayscaleCL
+        {{xml::Kind::processor("org.inviwo.GrayscaleCL"),
+          xml::Kind::inport("org.inviwo.ImageInport")},
+         "color image",
+         "colorImage"}};
+
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeIdentifiers(root, repl);
+        }
+                return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
+}
 
 } // namespace

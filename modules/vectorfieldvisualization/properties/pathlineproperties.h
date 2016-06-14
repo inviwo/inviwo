@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,17 +55,11 @@ public:
 
     double getStartT()const { return startT_.get(); }
 
-
-    void deserialize(Deserializer& d) override;
-
-    bool isLoopingAllowed()const { return allowLooping_.get(); }
-
 private:
     void setUpProperties();
 
 protected:
     DoubleProperty startT_;
-    BoolProperty allowLooping_;
 };
 
 }  // namespace

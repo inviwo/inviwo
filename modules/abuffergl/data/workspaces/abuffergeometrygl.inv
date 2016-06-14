@@ -559,7 +559,7 @@
                     <Processor content="org.inviwo.VolumeBinary" />
                 </Processors>
             </Module>
-            <Module name="ABufferGLModule">
+            <Module name="ABufferGL">
                 <Processors>
                     <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
                 </Processors>

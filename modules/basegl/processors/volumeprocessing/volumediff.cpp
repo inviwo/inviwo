@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,8 +51,6 @@ const ProcessorInfo VolumeDiff::getProcessorInfo() const {
 VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("vol2") {
     addPort(vol2_);
 }
-
-VolumeDiff::~VolumeDiff() {}
 
 void VolumeDiff::preProcess(TextureUnitContainer &cont) {
     utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");

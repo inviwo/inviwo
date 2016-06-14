@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,25 +80,143 @@ TraversingVersionConverter::TraversingVersionConverter(T* obj, bool (T::*fPtr)(T
     : VersionConverter(), fun_(std::bind(fPtr, obj, std::placeholders::_1)) {}
 
 namespace util {
-IVW_CORE_API bool xmlCopyMatchingSubPropsIntoComposite(TxElement* node,
-                                                       const CompositeProperty& prop);
-IVW_CORE_API bool xmlHasProp(TxElement* node, const Property& prop);
-IVW_CORE_API std::vector<TxElement*> xmlGetMatchingElements(TxElement* processornode,
-                                                            std::string key);
-IVW_CORE_API bool xmlFindMatchingSubPropertiesForComposites(
-    TxElement* node, const std::vector<const CompositeProperty*>& props);
-IVW_CORE_API TxElement* xmlGetElement(TxElement* node, std::string path);
-
-IVW_CORE_API bool xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
 
 IVW_CORE_API void renamePort(Deserializer& d,
-    std::initializer_list<std::pair<const Port*, std::string>> rules);
+                             std::vector<std::pair<const Port*, std::string>> rules);
 
 IVW_CORE_API void renameProperty(Deserializer& d,
-    std::initializer_list<std::pair<const Property*, std::string>> rules);
+                                 std::vector<std::pair<const Property*, std::string>> rules,
+                                 std::string path = "Properties");
 
-IVW_CORE_API void changePropertyType(
-    Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules);
+IVW_CORE_API void changePropertyType(Deserializer& d,
+                                     std::vector<std::pair<const Property*, std::string>> rules);
+
+}  // namespace
+
+namespace xml {
+
+IVW_CORE_API bool copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop);
+
+IVW_CORE_API bool hasProp(TxElement* node, const Property& prop);
+
+IVW_CORE_API std::vector<TxElement*> getMatchingElements(TxElement* processornode, std::string key);
+
+IVW_CORE_API bool findMatchingSubPropertiesForComposites(
+    TxElement* node, const std::vector<const CompositeProperty*>& props);
+
+IVW_CORE_API TxElement* getElement(TxElement* node, std::string path);
+
+IVW_CORE_API bool copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
+
+
+/**
+ *	Helper class for specifying a selector path for visitMatchingNodes
+ */
+struct ElementMatcher {
+    struct Attribute {
+        std::string name;
+        std::string value;
+    };
+    std::string name;
+    std::vector<Attribute> attributes;
+};
+
+/**
+ * This will traverse the nodes of a xml tree that matches the selectors given.
+ * and apply a visitor. The selector is specified by a vector or ElementMatchers,
+ * matching on the node name and the list if given attribute name and value pairs.
+ */
+template <typename Visitor>
+void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
+                        Visitor visitor) {
+    std::function<void(TxElement * node, std::vector<ElementMatcher>::const_iterator begin,
+                       std::vector<ElementMatcher>::const_iterator end)> visitNodes =
+        [&](TxElement* node, std::vector<ElementMatcher>::const_iterator begin,
+            std::vector<ElementMatcher>::const_iterator end) {
+
+            ticpp::Iterator<ticpp::Element> child;
+            for (child = child.begin(node); child != child.end(); child++) {
+                std::string childname;
+                child->GetValue(&childname);
+                if (childname == begin->name) {
+                    bool match = true;
+                    for (const auto& attribute : begin->attributes) {
+                        auto val = child->GetAttributeOrDefault(attribute.name, "");
+                        match = match && val == attribute.value;
+                    }
+                    if (match) {
+                        if (begin + 1 == end) {
+                            visitor(child.Get());
+                        } else {
+                            visitNodes(child.Get(), begin + 1, end);
+                        }
+                    }
+                }
+            }
+        };
+    visitNodes(root, selector.begin(), selector.end());
+}
+
+/**
+ * Helper class to specify a processor network xml path. For example
+ * {
+ *     xml::Kind::processor("org.inviwo.BackGround"),
+ *     xml::Kind::inport("org.inviwo.ImageInport")
+ * }
+ * Will resolve into:
+ * "Processors/Processor&type=org.inviwo.BackGround/InPorts/InPort&type=org.inviwo.ImageInport"
+ */
+class IVW_CORE_API Kind {
+public:
+    static Kind processor(const std::string& type);
+    static Kind inport(const std::string& type);
+    static Kind outport(const std::string& type);
+    static Kind portgroup(const std::string& type);
+    static Kind property(const std::string& type);
+
+    const std::string& name() const;
+    const std::string& list() const;
+    const std::string& type() const;
+
+private:
+    Kind(const std::string& name, const std::string& list, const std::string& type);
+
+    const std::string name_;
+    const std::string list_;
+    const std::string type_;
+};
+
+
+/**
+ * Utility function to change a attribute processor network element, i.e a processor, port, or 
+ * property.
+ * @param root The xml node to start looking.
+ * @param path A vector of Kind items (@See Kind) that specifies the elements that you want to change.
+ * @param attribute The name of the attribute to change
+ * @param oldValue The old attribute value. This is also used for identifying the elements.
+ * @param newValye The new attribute value
+ */
+IVW_CORE_API bool changeAttribute(TxElement* root, const std::vector<Kind>& path,
+                                  const std::string& attribute, const std::string& oldValue,
+                                  const std::string& newValue);
+
+/**
+ *	@See changeAttribute. Same a changeAttribute but will specifically change a identifier attribute
+ */
+IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& path,
+                                   const std::string& oldId, const std::string& newId);
+
+/**
+ *	Helper class for changeIdentifiers
+ */
+struct IdentifierReplacement {
+    const std::vector<Kind> path;
+    const std::string oldId;
+    const std::string newId;
+};
+
+IVW_CORE_API bool changeIdentifiers(TxElement* root,
+                                    const std::vector<IdentifierReplacement>& replacements);
 
 }  // namespace
 

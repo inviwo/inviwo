@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
  
-function sparkOptions(formater, extra = {}) {
+function sparkOptions(formater, extra) {
 	opts = {
 		type : 'line', 
 		width : '75px', 
@@ -66,15 +66,15 @@ $(document).ready(function() {
            	$.sparkline_display_visible();
     });
 
-	$('.sparkline_elapsed_time').sparkline('html', sparkOptions((date, val) => { 
+	$('.sparkline_elapsed_time').sparkline('html', sparkOptions(function(date, val) { 
 		return 'Run time ' + date.toLocaleString() + ' : ' + val.toPrecision(6) + 's'; 
-	}));
+	}, {}));
 
-	$('.sparkline_img_diff').sparkline('html', sparkOptions((date, val) => { 
+	$('.sparkline_img_diff').sparkline('html', sparkOptions(function(date, val) { 
 		return 'Diff ' + date.toLocaleString() + ' : ' + val.toPrecision(8) + '%'; 
-	}));
+	}, {}));
 	
-	$('.sparkline-failues').sparkline('html', sparkOptions((date, val) => { 
+	$('.sparkline-failues').sparkline('html', sparkOptions(function(date, val) { 
 		return 'Failures ' + date.toLocaleString() + ' : ' + val; 
 	}, {
 		chartRangeMin : 0, 

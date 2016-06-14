@@ -121,11 +121,13 @@ void FilePathLineEditQt::focusInEvent(QFocusEvent *event) {
         // transform position into position within entire path
         auto lenFilename = filesystem::getFileNameWithExtension(path_).size();
         cursorPos_ = static_cast<int>(path_.size() - lenFilename) + pos;
+        // the cursor position has to be set again after the mouse click has been processed in mousePressEvent()
         cursorPosDirty_ = true;
     }
     setEditing(true);
     QLineEdit::focusInEvent(event);
     if (cursorPos_ >= 0) {
+        // update cursor position
         this->setCursorPosition(cursorPos_);
     }
 }

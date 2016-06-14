@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -168,6 +168,15 @@ std::string ltrim(std::string s) {
     return s;
 }
 
+std::string dotSeperatedToPascalCase(const std::string& s) {
+    std::stringstream ss;
+    for(auto elem : splitString(s, '.')) {
+        elem[0] = std::toupper(elem[0]);
+        ss << elem;
+    }
+    return ss.str();
+}
+
 // trim from end
 std::string rtrim(std::string s) {
     s.erase(
@@ -179,13 +188,44 @@ std::string rtrim(std::string s) {
 // trim from both ends
 std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
-IVW_CORE_API std::string removeSubString(const std::string& str, const std::string& strToRemove) {
+std::string removeSubString(const std::string& str, const std::string& strToRemove) {
     std::string newString(str);
     size_t pos;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
         newString.erase(pos, strToRemove.length());
     }
     return newString;
+}
+
+std::string msToString(double ms, unsigned precision) {
+    std::stringstream ss;
+    unsigned used = 0;
+    size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
+    if (hours > 0 && used < precision) {
+        if (used++) ss << " ";
+        ss << hours << "h";
+        ms -= 3600 * 1000 * hours;
+    }
+    size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
+    if (minutes > 0 && used < precision) {
+        if (used++) ss << " ";
+        ss << minutes << "min";
+        ms -= 60 * 1000 * minutes;
+    }
+
+    size_t sec = static_cast<size_t>(ms / (1000.0));
+    if (sec > 0 && used < precision) {
+        if (used++) ss << " ";
+        ss << sec << "s";
+        ms -= 1000 * sec;
+    }
+
+    if (ms > 0 && used < precision) {
+        if (used++) ss << " ";
+        ss << ms << "ms";
+    }
+
+    return ss.str();
 }
 
 }  // namespace

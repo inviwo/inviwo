@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2013-2015 Inviwo Foundation
+ # Copyright (c) 2013-2016 Inviwo Foundation
  # All rights reserved.
  # 
  # Redistribution and use in source and binary forms, with or without
@@ -483,3 +483,56 @@ function(ivw_private_get_ivw_module_name path retval)
      endforeach()
      set(${retval} NOTFOUND PARENT_SCOPE)
 endfunction()
+
+
+#--------------------------------------------------------------------
+# Get the module name from a CMakeLists.txt
+function(ivw_library_bits lib retval)
+    if(WIN32)
+        get_filename_component(vcpath ${CMAKE_CXX_COMPILER} DIRECTORY)
+        execute_process(COMMAND CMD /c dumpbin.exe "C:/Python/Python34-64bit/libs/python3.lib" /headers | findstr machine 
+                        WORKING_DIRECTORY ${vcpath} 
+                        OUTPUT_VARIABLE result)
+ 
+        string(REGEX MATCH "(x64)" found_64bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 64 PARENT_SCOPE)
+            return()
+        endif()
+        string(REGEX MATCH "(x86)" found_32bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 32 PARENT_SCOPE)
+            return()
+        endif()
+    elif(APPLE)
+        execute_process(COMMAND file -L -b ${lib} OUTPUT_VARIABLE result)
+        string(REGEX MATCH "(x86_64)" found_64bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 64 PARENT_SCOPE)
+            return()
+        endif()
+        string(REGEX MATCH "(i386)" found_32bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 32 PARENT_SCOPE)
+            return()
+        endif()
+    else()
+        execute_process(COMMAND file -L -b ${lib} OUTPUT_VARIABLE result)
+        string(REGEX MATCH "(x86-64)" found_64bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 64 PARENT_SCOPE)
+            return()
+        endif()
+        string(REGEX MATCH "(80386)" found_32bit ${result})
+        if(CMAKE_MATCH_1)
+            set(${retval} 32 PARENT_SCOPE)
+            return()
+        endif()
+    endif()
+
+    set(${retval} 0 PARENT_SCOPE)
+endfunction()
+
+
+
+

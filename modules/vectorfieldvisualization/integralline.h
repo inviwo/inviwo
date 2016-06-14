@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,17 +45,33 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
     friend class StreamLineTracer;
     friend class PathLineTracer;
-
 public:
+    enum class TerminationReason {
+        OutOfBounds, 
+        ZeroVelocity, 
+        Steps
+    };
+
     IntegralLine();
     virtual ~IntegralLine();
+
+    void setTerminationReason(TerminationReason terminationReason) {
+        terminationReason_ = terminationReason;
+    }
 
     const std::vector<dvec3> &getPositions() const;
     const std::vector<dvec3> &getMetaData(const std::string &name) const;
 
+    double getLength()const;
+
+    dvec3 getPointAtDistance(double d)const;
+
 private:
     std::vector<dvec3> positions_;
     std::map<std::string, std::vector<dvec3>> metaData_;
+    TerminationReason terminationReason_;
+
+    mutable double length_;
 };
 
 }  // namespace

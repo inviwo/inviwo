@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,38 @@ namespace inviwo {
 FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(app, "FontRendering") {
     fontrendering::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
     registerProcessor<TextOverlayGL>();
+}
+
+int FontRenderingModule::getVersion() const {
+    return 1;
+}
+
+std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
+        return util::make_unique<Converter>(version);
+}
+
+FontRenderingModule::Converter::Converter(int version) : version_(version) {}
+
+bool FontRenderingModule::Converter::convert(TxElement* root) {
+    const std::vector<xml::IdentifierReplacement> repl = {
+           // TextOverlayGL
+            {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+              xml::Kind::property("org.inviwo.OptionPropertyInt")},
+             "Font size",
+             "fontSize"}
+    };
+
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeIdentifiers(root, repl);
+        }
+                return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
 }
 
 } // namespace

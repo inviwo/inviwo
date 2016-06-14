@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    VolumeSequenceInport volume_;
+    DataInport<Spatial4DSampler<3, double>> sampler_;
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
 

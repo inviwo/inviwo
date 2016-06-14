@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,10 @@
 #include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
-
+/**
+ * A base class for simple source processors. 
+ * Two funtions to constomize the behaviour are avaliable, dataLoaded and dataDeserialized.
+ */ 
 template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:

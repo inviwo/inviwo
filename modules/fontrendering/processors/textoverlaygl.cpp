@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,8 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
 
+#include <cctype>
+
 namespace inviwo {
 
 const ProcessorInfo TextOverlayGL::processorInfo_{
@@ -54,11 +56,13 @@ TextOverlayGL::TextOverlayGL()
             PropertySemantics::TextEditor)
     , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , fontSize_("Font size", "Font size")
+    , fontSize_("fontSize", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , textRenderer_() {
-
+    , addArgButton_("addArgBtn", "Add String Argument")
+    , textRenderer_()
+    , numArgs_(0u)
+{
     addPort(inport_);
     addPort(outport_);
     addProperty(enable_);
@@ -67,6 +71,19 @@ TextOverlayGL::TextOverlayGL()
     addProperty(fontPos_);
     addProperty(anchorPos_);
     addProperty(fontSize_);
+    addProperty(addArgButton_);
+
+    addArgButton_.onChange([this]() {
+        if (numArgs_ >= maxNumArgs_) {
+            addArgButton_.setReadOnly(numArgs_ >= maxNumArgs_);
+            return;
+        }
+        ++numArgs_;
+        std::string num = std::to_string(numArgs_);
+        auto property = new StringProperty(std::string("arg") + num, "Arg " + num);
+        property->setSerializationMode(PropertySerializationMode::All);
+        addProperty(property, true);
+    });
 
     std::vector<int> fontSizes ={ 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96 };
     for (auto size : fontSizes) {
@@ -99,14 +116,77 @@ void TextOverlayGL::process() {
     ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
     pos.y += fontSize;
     
-    vec2 size = textRenderer_.computeTextSize(text_.get().c_str(), scale);
+    std::string str(getString());
+
+    vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_.render(text_.get().c_str(), -1 + pos.x * scale.x - shift.x,
+    textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
                           1 - pos.y * scale.y + shift.y, scale, color_.get());
 
     glDisable(GL_BLEND);
     glDepthFunc(GL_LESS);
     utilgl::deactivateCurrentTarget();
+}
+
+void TextOverlayGL::deserialize(Deserializer & d) {
+    Processor::deserialize(d);
+    // update the number of place markers properties using the total number of string properties in
+    // this processor. Note that this number is one element larger.
+    auto args = this->getPropertiesByType<StringProperty>(false);
+    numArgs_ = args.size() - 1;
+    
+    // only maxNumArgs_ are supported, disable button if more exist
+    addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
+}
+
+std::string TextOverlayGL::getString() const {
+    std::string str = text_.get();
+    // replace all occurrences of place markers with the corresponding args
+    auto args = this->getPropertiesByType<StringProperty>(false);
+    // remove default text string property
+    for (auto it=args.begin(); it != args.end(); ++it) {
+        if ((*it)->getIdentifier() == "Text") {
+            args.erase(it);
+            break;
+        }
+    }
+    ivwAssert(numArgs_ == args.size(), "TextOverlayGL: number arguments not matching internal count");
+
+    // parse string for all "%" and try to extract the number following the percent sign
+    bool printWarning = false;
+
+    std::string matchStr("%");
+    std::size_t offset = str.find(matchStr, 0u);
+    while (offset != std::string::npos) {
+        // extract number substring, 
+        // read 3 characters to ensure that the number only has at most 2 digits
+        std::string numStr = str.substr(offset + 1, 3);
+        if (std::isdigit(numStr[0])) {
+            std::size_t numDigits = 0;
+            // extract number and reduce it by one since the %args start with 1
+            // std::stoul will not throw an invalid argument exception since we made sure, it is a
+            // number (std::isdigit above)
+            std::size_t argNum = std::stoul(numStr, &numDigits) - 1;
+            if (argNum <= numArgs_) {
+                // make textual replacement ("%" and number of digits)
+                str.replace(offset, numDigits + 1, args[argNum]->get());
+                offset += args[argNum]->get().size();
+            }
+            else {
+                if (numDigits > 2) {
+                    printWarning = true;
+                }
+                offset += 1 + numDigits;
+            }
+        }
+        // find next occurrence
+        offset = str.find(matchStr, offset);
+    }
+        
+    if (printWarning) {
+        LogWarn("Input text contains more than the allowed " << maxNumArgs_ << " place markers.");
+    }
+    return str;
 }
 
 }  // namespace

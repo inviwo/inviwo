@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -613,29 +613,29 @@ To glm_convert_normalized(From x) {
 
 #pragma warning(pop)
 
-// GLM element access wrapper functions. 
+// GLM element access wrapper functions.
 
 // vector like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
+                                  int>::type = 0>
 auto glmcomp(T& elem, size_t i) -> T& {
     return elem;
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-auto glmcomp(const T& elem, size_t i) -> const T& {
-    return elem;
-}
-
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
-auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
-    return elem[i];
-}
-
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
-auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
@@ -644,33 +644,32 @@ auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
 }
 
 // matrix like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
+                                  int>::type = 0>
 auto glmcomp(T& elem, size_t i, size_t j) -> T& {
     return elem;
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-auto glmcomp(const T& elem, size_t i, size_t j) -> const T& {
-    return elem;
-}
-
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
-auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type& {
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i, size_t j) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
-    return elem[i];
-}
-
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
-auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
+template <typename T,
+          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
+                                  int>::type = 0>
+auto glmcomp(T& elem, size_t i, size_t j) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
     return elem[i][j];
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
 auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
     return elem[i][j];
 }
-
 
 } // namespace util
 
@@ -714,6 +713,18 @@ inline bool all(const T& t) {
 
 template <>
 inline bool all(const bool& t) {
+    return t;
+}
+
+
+
+template <typename T>
+inline bool any(const T& t) {
+    return glm::any(t);
+}
+
+template <>
+inline bool any(const bool& t) {
     return t;
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor { 
 public:
     VolumeDiff();
-    virtual ~VolumeDiff();
+    virtual ~VolumeDiff() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

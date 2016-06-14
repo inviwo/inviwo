@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ public:
     Tag& operator=(const Tag& that);
     Tag& operator=(const std::string& that);
 
-    virtual ~Tag() {}
+    virtual ~Tag() = default;
 
     const std::string& getString() const;
 
@@ -75,7 +75,7 @@ public:
     Tags& operator=(const Tags& that);
     Tags& operator=(const std::string& that);
 
-    virtual ~Tags(){}
+    virtual ~Tags() = default;
 
     void addTag(Tag);
 

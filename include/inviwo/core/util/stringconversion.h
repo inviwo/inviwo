@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,6 +108,10 @@ IVW_CORE_API std::string ltrim(std::string s);
 IVW_CORE_API std::string rtrim(std::string s);
 // trim from both ends
 IVW_CORE_API std::string trim(std::string s);
+
+IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
+
+IVW_CORE_API std::string msToString(double ms, unsigned precision = 2);
 
 }  // namespace
 

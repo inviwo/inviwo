@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,14 +37,13 @@ PathLineProperties::PathLineProperties(std::string identifier, std::string displ
     : IntegralLineProperties(identifier, displayName)
 
     , startT_("startT", "Start at timestep", 0, 0, 1)
-    , allowLooping_("allowLooping","Allow Looping")
 
 {
     setUpProperties();
 }
 
 PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
-    : IntegralLineProperties(rhs), startT_(rhs.startT_), allowLooping_(rhs.allowLooping_){
+    : IntegralLineProperties(rhs), startT_(rhs.startT_){
     setUpProperties();
 }
 
@@ -52,7 +51,6 @@ PathLineProperties& PathLineProperties::operator=(const PathLineProperties& that
     if (this != &that) {
         PathLineProperties::operator=(that);
         startT_ = that.startT_;
-        allowLooping_ = that.allowLooping_;
     }
     return *this;
 }
@@ -61,13 +59,9 @@ PathLineProperties* PathLineProperties::clone() const { return new PathLinePrope
 
 PathLineProperties::~PathLineProperties() {}
 
-void PathLineProperties::deserialize(Deserializer& d) {
-    IntegralLineProperties::deserialize(d);
-}
 
 void PathLineProperties::setUpProperties() {
     addProperty(startT_);
-    addProperty(allowLooping_);
 }
 
 }  // namespace

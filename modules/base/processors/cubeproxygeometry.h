@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,13 +42,15 @@ namespace inviwo {
 /** \docpage{org.inviwo.CubeProxyGeometry, Cube Proxy Geometry}
  * ![](org.inviwo.CubeProxyGeometry.png?classIdentifier=org.inviwo.CubeProxyGeometry)
  *
- * Constructs a cube proxy geometry.
+ * Constructs a proxy geometry based on the model and world matrix of the input volume. 
+ * The gemetry will be shaped as a parallelepiped. If clipping is enabled the geometry
+ * will be cut along the corresponding axes. 
  * 
  * ### Inports
- *   * __Inport__ Inpout Volume
+ *   * __Inport__ Input Volume
  *
  * ### Outports
- *   * __Outport__ Output cubeproxy geometry.
+ *   * __Outport__ Output proxy geometry.
  * 
  * ### Properties
  *   * __Enable Clipping__ Enable axis aligned clipping of the mesh

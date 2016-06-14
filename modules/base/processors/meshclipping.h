@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,13 +46,13 @@ namespace inviwo {
 /** \docpage{org.inviwo.MeshClipping, Mesh Clipping}
  * ![](org.inviwo.MeshClipping.png?classIdentifier=org.inviwo.MeshClipping)
  *
- * ...
+ * Basic mesh plane clipping 
  * 
  * ### Inports
- *   * __geometry.input__ ...
+ *   * __geometry.input__ Input geometry
  * 
  * ### Outports
- *   * __geometry.output__ ...
+ *   * __geometry.output__ Clipped output geometry
  * 
  * ### Properties
  *   * __Move Camera Along Normal__ ...

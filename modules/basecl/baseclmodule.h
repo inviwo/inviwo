@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,28 @@
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASECL_API BaseCLModule: public InviwoModule {
+class IVW_MODULE_BASECL_API BaseCLModule : public InviwoModule {
 public:
     BaseCLModule(InviwoApplication* app);
-    virtual ~BaseCLModule();
+    virtual ~BaseCLModule() = default;
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
+
 };
 
 } // namespace

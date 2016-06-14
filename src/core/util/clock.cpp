@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ void ScopedClockCPU::print() {
     clock_.tick();
     if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
         std::stringstream message;
-        message << logMessage_ << ": " << clock_.getElapsedMiliseconds() << " ms";
+        message << logMessage_ << ": " << msToString(clock_.getElapsedMiliseconds());
         LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }

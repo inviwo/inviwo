@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,154 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/volumesequencesampler.h>
 
 namespace inviwo {
 
 VolumeSequenceSampler::VolumeSequenceSampler(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence) {
+    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence, bool allowLooping)
+    : Spatial4DSampler<3, double>(volumeSequence->front())
+    , samplers_()
+    , wrappers_()
+    , allowLooping_(allowLooping)
+    , timeRange_(0, 0)
+    , totDuration_(0) {
+    
     for (const auto &vol : (*volumeSequence.get())) {
         samplers_.emplace_back(vol);
+        wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
     }
+
+    auto lastWrapper = wrappers_.back();
+
+    auto size = wrappers_.size();
+    auto infsTime = std::count_if(
+        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
+            return w->timestamp_ == std::numeric_limits<double>::infinity();
+        });
+
+    auto infsDuration = std::count_if(
+        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
+            return w->duration_ == std::numeric_limits<double>::infinity();
+        });
+
+    if (infsTime == 0) {  // all volumes has timestamps, make sure the volumes are in sorted order,
+        std::sort(wrappers_.begin(), wrappers_.end());
+    }
+
+    if (!(infsTime == 0 || infsTime == size)) {
+        LogWarn("Failed to create VolumeSequenceSampler due to missing data");
+        LogInfo(infsTime << " volumes of " << size << " is missing a timestamp");
+        return;
+    }
+    if (!(infsDuration == 0 || infsDuration == size)) {
+        LogWarn("Failed to create VolumeSequenceSampler due to missing data");
+        LogInfo(infsDuration << " volumes of " << size << " has unknown duration ");
+        return;
+    }
+
+    bool firstAndLastAreSame = true;
+    if (volumeSequence->size() >= 2) {
+        auto firstVol = volumeSequence->front();
+        auto lastVol = volumeSequence->back();
+        auto firstVolRam = firstVol->getRepresentation<VolumeRAM>();
+        auto firstData = static_cast<const char *>(firstVolRam->getData());
+        auto lastData =
+            static_cast<const char *>(lastVol->getRepresentation<VolumeRAM>()->getData());
+        auto dataSize1 = firstVolRam->getNumberOfBytes();
+
+        for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
+            firstAndLastAreSame &= firstData[i] == lastData[i];
+        }
+        if (firstAndLastAreSame) {
+            //   prob not pop yet
+            wrappers_.pop_back();
+        }
+    }
+
+    auto prev = wrappers_.begin();
+    for (auto it = prev + 1; it != wrappers_.end(); ++it) {
+        prev->get()->next_ = *it;
+        prev = it;
+    }
+
+    if (infsTime == size && infsDuration == size) {
+        double dur = 1.0 / (size - 1.0);
+        double t = 0;
+        for (auto &w : wrappers_) {
+            w->duration_ = dur;
+            w->timestamp_ = t;
+            t += dur;
+        }
+    } else if (infsTime == size && infsDuration == 0) {
+        double t = 0;
+        for (auto &w : wrappers_) {
+            w->timestamp_ = t;
+            t += w->duration_;
+        }
+    } else {  // timestamps are set
+
+        if (infsDuration == size) {  // we do not have durations
+            for (auto &w : wrappers_) {
+                if (w->next_.expired()) {
+                    w->duration_ = w->next_.lock()->timestamp_ - w->timestamp_;
+                }
+            }
+        }
+    }
+    totDuration_ = 0;
+    for (auto &w : wrappers_) {
+        totDuration_ += w->duration_;
+    }
+
+    timeRange_.x = wrappers_.front()->timestamp_;
+    timeRange_.y = wrappers_.back()->timestamp_ + wrappers_.back()->duration_;
 }
 
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-dvec4 VolumeSequenceSampler::sample(const dvec4 &pos) const {
+dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;
-    while (t < 0) t += 1;
-    while (t > 1) t -= 1;
 
-    t *= (samplers_.size() - 1);
+    if (t < timeRange_.x || t > timeRange_.y) {
+        if (!allowLooping_) {
+            return dvec3(0);
+        }
+        while (t < timeRange_.x) {
+            t += totDuration_;
+        }
+        while (t > timeRange_.y) {
+            t -= totDuration_;
+        }
+    }
 
-    int tIndex = static_cast<int>(t);
-    double tInterpolant = t - static_cast<float>(tIndex);
+    auto it = std::upper_bound(
+        wrappers_.begin(), wrappers_.end(), t,
+        [](double t, const std::shared_ptr<Wrapper> a) { return t < a->timestamp_; });
+    --it;
+    auto wrapper = *it;
 
-    dvec4 v0, v1;
-    v0 = getVoxel(spatialPos, tIndex);
-    v1 = getVoxel(spatialPos, tIndex + 1);
+    auto val0 = wrapper->sampler_.sample(spatialPos).xyz();
+    if (wrapper->next_.expired()) {
+        return val0;
+    }
+    auto val1 = wrapper->next_.lock()->sampler_.sample(spatialPos).xyz();
 
-    return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
+    double x = (t - wrapper->timestamp_) / wrapper->duration_;
+    return Interpolation<dvec3>::linear(val0, val1, x);
 }
 
-dvec4 VolumeSequenceSampler::sample(double x, double y, double z, double t) const {
-    return sample(dvec4(x, y, z, t));
-}
-
-dvec4 VolumeSequenceSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
-
-dvec4 VolumeSequenceSampler::getVoxel(const dvec3 &pos, int T) const {
-    T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
-    return samplers_[T].sample(pos);
+bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const {
+    // TODO check also time
+    if (glm::any(glm::lessThan(pos.xyz(), dvec3(0.0)))) {
+        return false;
+    }
+    if (glm::any(glm::greaterThan(pos.xyz(), dvec3(1.0)))) {
+        return false;
+    }
+    return true;
 }
 
 }  // namespace

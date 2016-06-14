@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
@@ -39,6 +40,19 @@ class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldVisualizationGLModule
     : public InviwoModule {
 public:
     VectorFieldVisualizationGLModule(InviwoApplication* app);
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
 };
 
 }  // namespace

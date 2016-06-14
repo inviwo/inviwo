@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,17 +46,17 @@ class FileExtension;
 /** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}
  * ![](org.inviwo.ImageSourceSeries.png?classIdentifier=org.inviwo.ImageSourceSeries)
  *
- * ...
+ * Loads a series of images from a directory
  * 
  * 
  * ### Outports
- *   * __image.outport__ ...
+ *   * __image.outport__ Selected image
  * 
  * ### Properties
- *   * __Image file name__ ...
- *   * __Image file directory", "image__ ...
- *   * __Image index__ ...
- *   * __Update File List__ ...
+ *   * __Image file name__ Name of the selected file, (readonly).
+ *   * __Image file directory__ Directory with images.
+ *   * __Image index__ Selected image index.
+ *   * __Update File List__ Reload the list of images.
  *
  */
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {

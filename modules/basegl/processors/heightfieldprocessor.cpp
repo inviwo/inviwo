@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,18 +42,15 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::GL,                          // Tags
 };
-const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldProcessor::HeightFieldProcessor()
     : MeshRenderProcessorGL()
-    , inportHeightfield_("heightfield.inport", true)
-    , inportTexture_("texture.inport", true)
-    , inportNormalMap_("normalmap.inport", true)
+    , inportHeightfield_("heightfield", true)
+    , inportTexture_("texture", true)
+    , inportNormalMap_("normalmap", true)
     , heightScale_("heightScale", "Height Scale", 1.0f, 0.0f, 10.0f)
-    , terrainShadingMode_("terrainShadingMode", "Terrain Shading")
-{
+    , terrainShadingMode_("terrainShadingMode", "Terrain Shading") {
     shader_ = Shader("heightfield.vert", "heightfield.frag", false);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -61,19 +58,21 @@ HeightFieldProcessor::HeightFieldProcessor()
     addPort(inportHeightfield_);
     addPort(inportTexture_);
     addPort(inportNormalMap_);
-    
+
     addProperty(heightScale_);
 
-    terrainShadingMode_.addOption("shadingConstant", "Constant Color", HeightFieldShading::ConstantColor);
-    terrainShadingMode_.addOption("shadingColorTex", "Color Texture", HeightFieldShading::ColorTexture);
-    terrainShadingMode_.addOption("shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField);
+    terrainShadingMode_.addOption("shadingConstant", "Constant Color",
+                                  HeightFieldShading::ConstantColor);
+    terrainShadingMode_.addOption("shadingColorTex", "Color Texture",
+                                  HeightFieldShading::ColorTexture);
+    terrainShadingMode_.addOption("shadingHeightField", "Heightfield Texture",
+                                  HeightFieldShading::HeightField);
     terrainShadingMode_.set(HeightFieldShading::ConstantColor);
     terrainShadingMode_.setCurrentStateAsDefault();
     addProperty(terrainShadingMode_);
 }
 
-HeightFieldProcessor::~HeightFieldProcessor() {
-}
+HeightFieldProcessor::~HeightFieldProcessor() {}
 
 void HeightFieldProcessor::process() {
     int terrainShadingMode = terrainShadingMode_.get();
@@ -115,14 +114,13 @@ void HeightFieldProcessor::process() {
 }
 
 void HeightFieldProcessor::heightfieldChanged() {
-    if (!inportHeightfield_.isConnected())
-        return;
+    if (!inportHeightfield_.isConnected()) return;
 
-    //std::ostringstream str;
-    //const Image *img = inportHeightfield_.getData();
-    //const DataFormatBase* format = img->getDataFormat();
+    // std::ostringstream str;
+    // const Image *img = inportHeightfield_.getData();
+    // const DataFormatBase* format = img->getDataFormat();
 
-    //str << "Heightfield Port Properties:"
+    // str << "Heightfield Port Properties:"
     //    << "\ndim: " << glm::to_string(img->getDimensions())
     //    << "\nType: " << img->getImageType()
     //    << "\nNum Color Layers: " << img->getNumberOfColorLayers()
@@ -132,7 +130,7 @@ void HeightFieldProcessor::heightfieldChanged() {
     //    << "\nComponents: " << format->getComponents()
     //    ;
 
-    //LogInfo(str.str());
+    // LogInfo(str.str());
 }
 
 } // namespace

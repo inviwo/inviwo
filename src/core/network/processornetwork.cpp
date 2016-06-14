@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/processornetworkconverter.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <algorithm>
 
 namespace inviwo {
@@ -276,6 +277,10 @@ void ProcessorNetwork::clear() {
     }
 }
 
+bool ProcessorNetwork::isEmpty() const {
+    return processors_.empty();
+}
+
 bool ProcessorNetwork::isInvalidating() const { return !processorsInvalidating_.empty(); }
 
 bool ProcessorNetwork::isLinking() const { return linkEvaluator_.isLinking(); }
@@ -356,14 +361,27 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     if (version != processorNetworkVersion_) {
         LogNetworkWarn("Loading old workspace ("
-                       << d.getFileName() << ") version: " << version
-                       << ". Updating to version: " << processorNetworkVersion_);
+                       << d.getFileName() << ") Processor Network version: " << version
+                       << ". Updating to version: " << processorNetworkVersion_ << ".");
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);
     }
 
     InviwoSetupInfo info;
     d.deserialize("InviwoSetup", info);
+
+    for (const auto& module : application_->getModules()) {
+        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
+            if (minfo->version_ < module->getVersion()) {
+                auto converter = module->getConverter(minfo->version_);
+                d.convertVersion(converter.get());
+                LogNetworkWarn("Loading old workspace ("
+                               << d.getFileName() << ") " << module->getIdentifier()
+                               << "Module version: " << minfo->version_
+                               << ". Updating to version: " << module->getVersion() << ".");
+            }
+        }
+    }
 
     DeserializationErrorHandle<ErrorHandle> errorHandle(d, info, d);
 

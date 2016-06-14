@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const {
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("geometry.outport")
+    , inport_("volume")
+    , outport_("proxyGeometry")
     , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
     , clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1)
     , clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1)

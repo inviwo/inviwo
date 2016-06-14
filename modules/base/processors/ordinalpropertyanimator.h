@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,13 @@ namespace inviwo {
 /** \docpage{org.inviwo.OrdinalPropertyAnimator, Property Animator}
  * ![](org.inviwo.OrdinalPropertyAnimator.png?classIdentifier=org.inviwo.OrdinalPropertyAnimator)
  *
- * ...
- *
- *
+ * Generate a periodically uppdating property. Usefull for animations
  *
  * ### Properties
- *   * __Property__ ...
- *   * __Active__ ...
- *   * __Delay (ms)__ ...
- *   * __Periodic__ ...
+ *   * __Property__ The type of property
+ *   * __Active__ Enable/Disable the updates
+ *   * __Delay (ms)__ Delay between updates
+ *   * __Periodic__ Start over when the end is reached. 
  *
  */
 class IVW_MODULE_BASE_API OrdinalPropertyAnimator : public Processor {

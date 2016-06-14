@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
 #define IVW_SPATIALSAMPLER_H
 
 #include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
 #include <inviwo/core/datastructures/spatialdata.h>
 
@@ -51,7 +50,7 @@ public:
         : spatialEntity_(spatialEntity) {}
     virtual ~SpatialSampler() {}
 
-    Vector<DataDims, T> sample(const Vector<SpatialDims, double> &pos,
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, double> &pos,
                                        Space space = Space::Data) const {
         auto dataPos = pos;
         if (space != Space::Data) {
@@ -64,9 +63,27 @@ public:
         return sampleDataSpace(dataPos);
     }
 
-    Vector<DataDims, T> sample(const Vector<SpatialDims, float> &pos,
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, float> &pos,
         Space space = Space::Data) const {
         return sample(static_cast<Vector<SpatialDims, double>>(pos), space);
+    }
+
+    virtual bool withinBounds(const Vector<SpatialDims, double> &pos,
+        Space space = Space::Data) const {
+        auto dataPos = pos;
+        if (space != Space::Data) {
+            auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
+            auto p = m * Vector<SpatialDims + 1, float>(
+                static_cast<Vector<SpatialDims, float>>(pos), 1.0);
+            dataPos = p.xyz() / p.w;
+        }
+
+        return withinBoundsDataSpace(dataPos);
+    }
+
+    virtual bool withinBounds(const Vector<SpatialDims, float> &pos,
+        Space space = Space::Data) const {
+        return withinBounds(static_cast<Vector<SpatialDims, double>>(pos), space);
     }
 
     Matrix<SpatialDims, float> getBasis() const {
@@ -83,24 +100,6 @@ public:
 
     const SpatialCoordinateTransformer<SpatialDims> &getCoordinateTransformer() const {
         return spatialEntity_->getCoordinateTransformer();
-    }
-
-    bool withinBounds(const Vector<SpatialDims, double> &pos,
-        Space space = Space::Data) const {
-        auto dataPos = pos;
-        if (space != Space::Data) {
-            auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
-            auto p = m * Vector<SpatialDims + 1, float>(
-                static_cast<Vector<SpatialDims, float>>(pos), 1.0);
-            dataPos = p.xyz() / p.w;
-        }
-
-        return withinBoundsDataSpace(dataPos);
-    }
-
-    bool withinBounds(const Vector<SpatialDims, float> &pos,
-        Space space = Space::Data) const {
-        return withinBounds(static_cast<Vector<SpatialDims, double>>(pos), space);
     }
 
     virtual std::string getDataInfo() const { return "SpatialSampler" + toString(SpatialDims) + toString(DataDims) + inviwo::parseTypeIdName(std::string(typeid(T).name()));}

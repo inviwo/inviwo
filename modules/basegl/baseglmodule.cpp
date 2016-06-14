@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/basegl/baseglmodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/basegl/processors/axisalignedcutplane.h>
 #include <modules/basegl/processors/background.h>
@@ -131,6 +132,143 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeBinary>();
     registerProcessor<VolumeMerger>();
 
+}
+
+int BaseGLModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
+    return util::make_unique<Converter>(version);
+}
+
+BaseGLModule::Converter::Converter(int version) : version_(version) {}
+
+bool BaseGLModule::Converter::convert(TxElement* root) {
+    auto makerules = []() {
+        std::vector<xml::IdentifierReplacement> repl = {
+            // MeshRenderProcessorGL
+            {{xml::Kind::processor("org.inviwo.GeometryRenderGL"),
+              xml::Kind::inport("org.inviwo.MeshFlatMultiInport")},
+             "geometry.inport",
+             "geometry"},
+            {{xml::Kind::processor("org.inviwo.GeometryRenderGL"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "image"},
+
+            // HeightFieldRenderGL
+            {{xml::Kind::processor("org.inviwo.HeightFieldRenderGL"),
+              xml::Kind::inport("org.inviwo.MeshFlatMultiInport")},
+             "geometry.inport",
+             "geometry"},
+            {{xml::Kind::processor("org.inviwo.HeightFieldRenderGL"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "image"},
+            {{xml::Kind::processor("org.inviwo.HeightFieldRenderGL"),
+              xml::Kind::inport("org.inviwo.ImageInport")},
+             "heightfield.inport",
+             "heightfield"},
+            {{xml::Kind::processor("org.inviwo.HeightFieldRenderGL"),
+              xml::Kind::inport("org.inviwo.ImageInport")},
+             "texture.inport",
+             "texture"},
+            {{xml::Kind::processor("org.inviwo.HeightFieldRenderGL"),
+              xml::Kind::inport("org.inviwo.ImageInport")},
+             "normalmap.inport",
+             "normalmap"},
+
+            // HeightFieldMapper
+            {{xml::Kind::processor("org.inviwo.HeightFieldMapper"),
+              xml::Kind::inport("org.inviwo.ImageInport")},
+             "image.inport",
+             "image"},
+            {{xml::Kind::processor("org.inviwo.HeightFieldMapper"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "heightfield"},
+
+            // Background
+            {{xml::Kind::processor("org.inviwo.Background"),
+              xml::Kind::property("org.inviwo.ButtonProperty")},
+             "Switch colors",
+             "switchColors"},
+
+            // ImageSourceSeries
+            {{xml::Kind::processor("org.inviwo.ImageSourceSeries"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "outputImage"},
+
+            // Mesh2DRenderProcessorGL
+            {{xml::Kind::processor("org.inviwo.Mesh2DRenderProcessorGL"),
+              xml::Kind::inport("org.inviwo.MeshFlatMultiInport")},
+             "geometry.inport",
+             "inputMesh"},
+            {{xml::Kind::processor("org.inviwo.Mesh2DRenderProcessorGL"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "outputImage"}};
+
+        const std::vector<std::pair<std::string, std::string>> imageGLrepl = {
+            {"FindEdges", "img_findedges.frag"},    {"ImageBinary", "img_binary.frag"},
+            {"ImageGamma", "img_gamma.frag"},       {"ImageGradient", "imagegradient.frag"},
+            {"ImageGrayscale", "img_graysc.frag"},  {"ImageLowPass", "img_lowpass.frag"},
+            {"ImageHighPass", "img_highpass.frag"}, {"ImageMapping", "img_mapping.frag"},
+            {"ImageInvert", "img_invert.frag"},     {"ImageNormalization", "img_normalize.frag"},
+            {"ImageResample", "img_resample.frag"} };
+
+        for (const auto& i : imageGLrepl) {
+            xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),
+                                                  xml::Kind::inport("org.inviwo.ImageInport")},
+                                                 i.second + "inport",
+                                                 "inputImage"};
+            xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + i.first),
+                                                   xml::Kind::outport("org.inviwo.ImageOutport")},
+                                                  i.second + "outport",
+                                                  "outputImage"};
+            repl.push_back(inport);
+            repl.push_back(outport);
+        }
+
+        const std::vector<std::pair<std::string, std::string>> volumeGLrepl = {
+            {"VolumeGradient", "volume_gradient.frag"},
+            {"VolumeBinary", "volume_binary.frag"},
+            {"VolumeDiff", "volume_difference.frag"},
+            {"VectorMagnitude", "vectormagnitudeprocessor.frag"},
+            {"VolumeGradientMagnitude", "volumegradientmagnitude.frag"},
+            {"VolumeLowPass", "volume_lowpass.frag"},
+            {"VolumeMapping", "volume_mapping.frag"},
+            {"VolumeMerger", "volumemerger.frag"}
+        };
+
+        for (const auto& i : volumeGLrepl) {
+            xml::IdentifierReplacement inport = { {xml::Kind::processor("org.inviwo." + i.first),
+                                                  xml::Kind::inport("org.inviwo.VolumeInport")},
+                                                 i.second + "inport",
+                                                 "inputVolume" };
+            xml::IdentifierReplacement outport = { {xml::Kind::processor("org.inviwo." + i.first),
+                                                   xml::Kind::outport("org.inviwo.VolumeOutport")},
+                                                  i.second + "outport",
+                                                  "outputVolume" };
+            repl.push_back(inport);
+            repl.push_back(outport);
+        }
+
+        return repl;
+    };
+
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            auto repl = makerules();
+            res |= xml::changeIdentifiers(root, repl);
+        }
+            return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
 }
 
 } // namespace

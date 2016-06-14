@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1029,7 +1029,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     bool continueOperation = true;
 
-    if (getNetworkEditor()->isModified()) {
+    if (getNetworkEditor()->isModified() && !app_->getProcessorNetwork()->isEmpty()) {
         QMessageBox msgBox(this);
         msgBox.setText("Workspace Modified");
         msgBox.setInformativeText("Do you want to save your changes?");

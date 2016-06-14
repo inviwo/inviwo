@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ Background::Background()
     , color2_("color2", "Color 2", vec4(1.0f))
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
-    , switchColors_("Switch colors", "switch colors", InvalidationLevel::Valid)
+    , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
     , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);

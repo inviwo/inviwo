@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,21 +44,22 @@ class InviwoApplication;
 
 struct IVW_CORE_API InviwoSetupInfo : public Serializable {
     struct ModuleSetupInfo : public Serializable {
-        ModuleSetupInfo() : name_("") {}
+        ModuleSetupInfo() = default; 
         ModuleSetupInfo(const InviwoModule* module);
         virtual void serialize(Serializer& s) const;
         virtual void deserialize(Deserializer& d);
         std::string name_;
+        int version_ = 0;
         std::vector<std::string> processors_;
     };
 
-    InviwoSetupInfo(){};
+    InviwoSetupInfo() = default;
     InviwoSetupInfo(const InviwoApplication* app);
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
     std::vector<ModuleSetupInfo> modules_;
     
-    
+    const InviwoSetupInfo::ModuleSetupInfo* getModuleInfo(const std::string& module) const;
     std::string getModuleForProcessor(const std::string& processor) const;
 };
 

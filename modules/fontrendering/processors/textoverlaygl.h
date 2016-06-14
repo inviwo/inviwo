@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 
 namespace inviwo {
@@ -47,16 +48,21 @@ namespace inviwo {
 /** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
  * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
  *
- * Overlay text onto an image. 
- * 
+ * Overlay text onto an image. The text can contain up to 99 place markers indicated by %1 to %99.
+ * These markers will be replaced with the contents of the corresponding arg properties. A place
+ * marker can occur multiple times and all occurences will be replaced with the same text.
+ *
  * ### Inports
  *   * __Inport__ Input image
  *
  * ### Outports
  *   * __Outport__ Output image with overlayed text
- * 
+ *
  * ### Properties
- *   * __Text__ Text to overlay
+ *   * __Text__ Text to overlay. This text can contain place markers %1 to %99, which will be
+ *              replaced with the optional argument properties
+ *   * __Argument Properties__ texts used instead of place markers (optional, created with the "Add
+ * Argument String" button)
  *   * __Font size__ Text size
  *   * __Position__ Where to put the text, relative position from 0 to 1
  *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 meas the image
@@ -71,8 +77,18 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void deserialize(Deserializer& d) override;
+
 protected:
     virtual void process() override;
+
+    /**
+     * \brief returns the output string with place markers replaced by the corresponding strings of
+     * the optional properties
+     *
+     * @return std::string output string with replaced place markers
+     */
+    std::string getString() const;
 
 private:
     ImageInport inport_;
@@ -86,8 +102,12 @@ private:
     FloatVec2Property fontPos_;
     FloatVec2Property anchorPos_;
 
-    TextRenderer textRenderer_;
+    ButtonProperty addArgButton_; //!< this button will add string properties to be used with place markers
 
+    TextRenderer textRenderer_;
+    std::size_t numArgs_; //!< number of optional place marker properties 
+
+    const std::size_t maxNumArgs_ = 99;
 };
 
 } // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 #include <inviwomodulespaths.h>
 
@@ -152,6 +153,14 @@ std::string InviwoModule::getPath(ModulePath type) const {
         case ModulePath::CL:                 return path + "/cl";
         default:                             return path;
     }
+}
+
+int InviwoModule::getVersion() const {
+    return 0;
+}
+
+std::unique_ptr<VersionConverter> InviwoModule::getConverter(int version) const {
+    return nullptr;
 }
 
 const std::vector<Capabilities*> InviwoModule::getCapabilities() const {

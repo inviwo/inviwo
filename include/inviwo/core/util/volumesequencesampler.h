@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,10 @@
 #ifndef IVW_VOLUMESEQUENCESAMPLER_H
 #define IVW_VOLUMESEQUENCESAMPLER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/spatial4dsampler.h>
 #include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
@@ -41,23 +43,53 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_CORE_API VolumeSequenceSampler { 
+
+class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<3, double> {
+    struct Wrapper {
+        std::weak_ptr<Wrapper> next_;
+        double duration_;
+        double timestamp_;
+        std::shared_ptr<Volume> volume_;
+        VolumeDoubleSampler<4> sampler_;
+
+        Wrapper(std::shared_ptr<Volume> volume)
+            : next_()
+            , duration_(std::numeric_limits<double>::infinity())
+            , timestamp_(std::numeric_limits<double>::infinity())
+            , volume_(volume)
+            , sampler_(volume) {
+            if (volume_->hasMetaData<DoubleMetaData>("timestamp")) {
+                timestamp_ = volume_->getMetaData<DoubleMetaData>("timestamp")->get();
+            }
+            if (volume_->hasMetaData<DoubleMetaData>("duration")) {
+                duration_ = volume_->getMetaData<DoubleMetaData>("duration")->get();
+            }
+        }
+
+        bool operator<(const Wrapper &w) const { return timestamp_ < w.timestamp_; }
+    };
+
 public:
-    VolumeSequenceSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence);
+    VolumeSequenceSampler(
+        std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence,
+        bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
-    dvec4 sample(const dvec4 &pos) const;
-    dvec4 sample(double x, double y, double z, double t) const;
-    dvec4 sample(const vec4 &pos) const;
+protected:
+    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;// { return sample(pos).xyz(); }
+    virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
-    dvec4 getVoxel(const dvec3 &pos, int T) const;
+    // dvec4 getVoxel(const dvec3 &pos, int T) const;
 
-    size3_t dims_;
     std::vector<VolumeDoubleSampler<4>> samplers_;
+    std::vector<std::shared_ptr<Wrapper>> wrappers_;
+
+    bool allowLooping_;
+    dvec2 timeRange_;
+    double totDuration_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMESEQUENCESAMPLER_H
-
+#endif  // IVW_VOLUMESEQUENCESAMPLER_H

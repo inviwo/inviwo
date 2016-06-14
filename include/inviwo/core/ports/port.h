@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,8 @@ protected:
      * Constructor for creating port instances. As this class is abstract, the constructor is not
      * called directly. Instead, constructors of the derived classes call this constructor.
      * @param identifier Port identifier used for serialization. Has to be unique within the scope
-     *                   of a processor.
+     *                   of a processor. Port identifiers should only contain alpha numeric 
+     *                   characters, "-" and "_".
      * @see Processor::addPort()
      */
     Port(std::string identifier = "");

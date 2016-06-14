@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,7 +108,7 @@ protected:
     // pointers to members of derived classes.
     std::vector<Property*> properties_;
     
-    // An addtional list of properties for which PropertyOwner assumes ownership.
+    // An additional list of properties for which PropertyOwner assumes ownership.
     // I.e. PropertyOwner will take care of deleting them. Usually used for dynamic properties
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;

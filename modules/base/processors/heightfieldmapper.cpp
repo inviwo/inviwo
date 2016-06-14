@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ const ProcessorInfo HeightFieldMapper::getProcessorInfo() const {
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
-    , inport_("image.inport", true)
-    , outport_("image.outport", DataFloat32::get())
+    , inport_("image", true)
+    , outport_("heightfield", DataFloat32::get())
     , scalingModeProp_("scalingmode", "Scaling Mode")
     , heightRange_("heightrange", "Height Range", 0.0f, 1.0f, -1.0e1f, 1.0e1f)
     , maxHeight_("maxheight", "Maximum Height", 1.0f, 0.0f, 1.0e1f)

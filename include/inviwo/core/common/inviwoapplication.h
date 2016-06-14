@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -234,6 +234,7 @@ private:
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
+    util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
     std::unique_ptr<ProcessorNetwork> processorNetwork_;

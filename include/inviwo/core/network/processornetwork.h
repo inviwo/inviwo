@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -217,6 +217,7 @@ public:
 
     void evaluateLinksFromProperty(Property*);
 
+    bool isEmpty() const;
     bool isInvalidating() const;
     bool isLinking() const;
 

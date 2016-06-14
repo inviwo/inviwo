@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
 
 IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs)
     : CompositeProperty(rhs)
-    , numberOfSteps_(numberOfSteps_)
-    , stepSize_(stepSize_)
-    , stepDirection_(stepDirection_)
-    , integrationScheme_(integrationScheme_)
-    , seedPointsSpace_(seedPointsSpace_) {
+    , numberOfSteps_(rhs.numberOfSteps_)
+    , stepSize_(rhs.stepSize_)
+    , stepDirection_(rhs.stepDirection_)
+    , integrationScheme_(rhs.integrationScheme_)
+    , seedPointsSpace_(rhs.seedPointsSpace_) {
     setUpProperties();
 }
 

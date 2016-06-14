@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -201,7 +201,14 @@ std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return display
 void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
     if (propertyOwner_) {
-        if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) p->setIdentifier(displayName);
+        if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) {
+            try {
+                p->setIdentifier(displayName);
+            } catch(Exception& e) {
+                label_->setText(p->getIdentifier());
+                LogWarn(e.getMessage());
+            }
+        }
     }
 }
 

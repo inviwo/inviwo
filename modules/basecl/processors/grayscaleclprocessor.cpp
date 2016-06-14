@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const { return proc
 GrayscaleCLProcessor::GrayscaleCLProcessor()
     : Processor()
     , ProcessorKernelOwner(this)
-    , input_("color image")
+    , input_("colorImage")
     , outport_("outport")
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , kernel_(nullptr) {

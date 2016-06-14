@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 
-
 namespace inviwo {
 VersionConverter::VersionConverter() {}
 
@@ -41,7 +40,7 @@ NodeVersionConverter::NodeVersionConverter(std::function<bool(TxElement*)> fun)
 
 bool NodeVersionConverter::convert(TxElement* root) { return fun_(root); }
 
-TraversingVersionConverter::TraversingVersionConverter(std::function<bool(TxElement*)> fun)  
+TraversingVersionConverter::TraversingVersionConverter(std::function<bool(TxElement*)> fun)
     : VersionConverter(), fun_(fun) {}
 
 bool TraversingVersionConverter::convert(TxElement* root) { return traverseNodes(root); }
@@ -56,7 +55,7 @@ bool TraversingVersionConverter::traverseNodes(TxElement* node) {
     return res;
 }
 
-bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
+bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
     TxElement propitem("Property");
     propitem.SetAttribute("type", prop.getClassIdentifier());
     propitem.SetAttribute("identifier", prop.getIdentifier());
@@ -64,11 +63,9 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
     propitem.SetAttribute("key", prop.getIdentifier());
     TxElement list("Properties");
 
-
     std::vector<Property*> props = prop.getProperties();
 
     bool res = false;
-
 
     // temp list
     std::vector<TxElement*> toBeDeleted;
@@ -109,45 +106,44 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
     return res;
 }
 
-bool util::xmlHasProp(TxElement* node, const Property& prop) {
+bool xml::hasProp(TxElement* node, const Property& prop) {
     bool result = false;
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
-        if (prop.getClassIdentifier() == child->GetAttributeOrDefault("type", "")
-            && prop.getIdentifier() == child->GetAttributeOrDefault("identifier", "")) {
+        if (prop.getClassIdentifier() == child->GetAttributeOrDefault("type", "") &&
+            prop.getIdentifier() == child->GetAttributeOrDefault("identifier", "")) {
             result = true;
         }
     }
     return result;
 }
 
-std::vector<TxElement*> util::xmlGetMatchingElements(TxElement* node, std::string key) {
+std::vector<TxElement*> xml::getMatchingElements(TxElement* node, std::string key) {
     std::vector<TxElement*> res;
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
         std::string childkey;
         child->GetValue(&childkey);
 
-        if(childkey == key){
+        if (childkey == key) {
             res.push_back(child.Get());
         }
     }
     return res;
 }
 
-bool util::xmlFindMatchingSubPropertiesForComposites(
+bool xml::findMatchingSubPropertiesForComposites(
     TxElement* processornode, const std::vector<const CompositeProperty*>& props) {
-    std::vector<TxElement*> pelm = util::xmlGetMatchingElements(processornode, "Properties");
+    std::vector<TxElement*> pelm = xml::getMatchingElements(processornode, "Properties");
 
     bool res = false;
 
     for (auto& prop : props) {
-        if (!util::xmlHasProp(pelm[0], *prop)) {
-
-            bool foundMatchingComposite = util::xmlCopyMatchingCompositeProperty(pelm[0], *prop);
+        if (!xml::hasProp(pelm[0], *prop)) {
+            bool foundMatchingComposite = xml::copyMatchingCompositeProperty(pelm[0], *prop);
             bool foundSubProp = false;
             if (!foundMatchingComposite) {
-                foundSubProp = util::xmlCopyMatchingSubPropsIntoComposite(pelm[0], *prop);
+                foundSubProp = xml::copyMatchingSubPropsIntoComposite(pelm[0], *prop);
             }
             res = res || foundSubProp || foundMatchingComposite;
         }
@@ -155,7 +151,7 @@ bool util::xmlFindMatchingSubPropertiesForComposites(
     return res;
 }
 
-TxElement* util::xmlGetElement(TxElement* node, std::string path) {
+TxElement* xml::getElement(TxElement* node, std::string path) {
     std::vector<std::string> parts = splitString(path, '/');
     if (parts.size() > 0) {
         std::vector<std::string> components = splitString(parts[0], '&');
@@ -169,15 +165,15 @@ TxElement* util::xmlGetElement(TxElement* node, std::string path) {
             if (childname == name) {
                 for (size_t i = 1; i < components.size(); ++i) {
                     std::vector<std::string> pair = splitString(components[i], '=');
-                    match = match && child->GetAttributeOrDefault(pair[0], "") == pair[1];
+                    auto val = child->GetAttributeOrDefault(pair[0], "");
+                    match = match && val == pair[1];
                 }
             } else {
                 match = false;
             }
             if (match) {
                 if (parts.size() > 1) {
-                    return xmlGetElement(child.Get(),
-                                         joinString(parts.begin() + 1, parts.end(), "/"));
+                    return getElement(child.Get(), joinString(parts.begin() + 1, parts.end(), "/"));
                 } else {
                     return child.Get();
                 }
@@ -188,7 +184,7 @@ TxElement* util::xmlGetElement(TxElement* node, std::string path) {
     return nullptr;
 }
 
-bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {
+bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
         std::string name;
@@ -196,7 +192,8 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
         std::string type = child->GetAttributeOrDefault("type", "");
         std::string id = child->GetAttributeOrDefault("identifier", "");
 
-        if ((type == "CompositeProperty" || type == "org.inviwo.CompositeProperty") && prop.getIdentifier() == id) {
+        if ((type == "CompositeProperty" || type == "org.inviwo.CompositeProperty") &&
+            prop.getIdentifier() == id) {
             LogInfoCustom("VersionConverter", "    Found Composite with same identifier");
 
             TxElement* newChild = node->InsertEndChild(*(child.Get()))->ToElement();
@@ -208,17 +205,17 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
     return false;
 }
 
-void util::renamePort(Deserializer& d, std::initializer_list<std::pair<const Port*, std::string>> rules) {
+void util::renamePort(Deserializer& d, std::vector<std::pair<const Port*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         bool didChanges = false;
         for (auto rule : rules) {
             TxElement* elem = nullptr;
             if (auto p = dynamic_cast<const Outport*>(rule.first)) {
-                elem = util::xmlGetElement(node, "OutPorts/OutPort&type=" + p->getClassIdentifier() +
-                                           "&identifier=" + rule.second);
+                elem = xml::getElement(node, "OutPorts/OutPort&type=" + p->getClassIdentifier() +
+                                                 "&identifier=" + rule.second);
             } else if (auto p = dynamic_cast<const Inport*>(rule.first)) {
-                elem = util::xmlGetElement(node, "InPorts/InPort&type=" + p->getClassIdentifier() +
-                                           "&identifier=" + rule.second);
+                elem = xml::getElement(node, "InPorts/InPort&type=" + p->getClassIdentifier() +
+                                                 "&identifier=" + rule.second);
             }
             if (elem) {
                 elem->SetAttribute("identifier", rule.first->getIdentifier());
@@ -230,13 +227,15 @@ void util::renamePort(Deserializer& d, std::initializer_list<std::pair<const Por
     d.convertVersion(&vc);
 }
 
-void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
-    NodeVersionConverter vc([&rules](TxElement* node) {
+void util::renameProperty(Deserializer& d,
+                          std::vector<std::pair<const Property*, std::string>> rules,
+                          std::string path) {
+    NodeVersionConverter vc([&rules, &path](TxElement* node) {
         bool didChanges = false;
         for (auto rule : rules) {
-            TxElement* p = util::xmlGetElement(node, "Properties/Property&type=" +
-                                               rule.first->getClassIdentifier() +
-                                               "&identifier=" + rule.second);
+            TxElement* p =
+                xml::getElement(node, path + "/Property&type=" + rule.first->getClassIdentifier() +
+                                          "&identifier=" + rule.second);
             if (p) {
                 p->SetAttribute("identifier", rule.first->getIdentifier());
                 didChanges = true;
@@ -247,14 +246,14 @@ void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const
     d.convertVersion(&vc);
 }
 
-void util::changePropertyType(
-    Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
+void util::changePropertyType(Deserializer& d,
+                              std::vector<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         bool didChanges = false;
         for (auto rule : rules) {
-            TxElement* p = util::xmlGetElement(
-                node, "Properties/Property&type=" + rule.first->getClassIdentifier() +
-                "&identifier=" + rule.first->getIdentifier());
+            TxElement* p = xml::getElement(node, "Properties/Property&type=" +
+                                                     rule.first->getClassIdentifier() +
+                                                     "&identifier=" + rule.first->getIdentifier());
             if (p) {
                 p->SetAttribute("type", rule.second);
                 didChanges = true;
@@ -264,5 +263,70 @@ void util::changePropertyType(
     });
     d.convertVersion(&vc);
 }
+
+bool xml::changeIdentifier(TxElement* root, const std::vector<Kind>& path, const std::string& oldId,
+                           const std::string& newId) {
+    return changeAttribute(root, path, "identifier", oldId, newId);
+}
+
+IVW_CORE_API bool xml::changeIdentifiers(TxElement* root,
+                                         const std::vector<IdentifierReplacement>& replacements) {
+    bool res = false;
+    for (const auto& repl : replacements) {
+        res |= changeIdentifier(root, repl.path, repl.oldId, repl.newId);
+    }
+    return res;
+}
+
+bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
+                          const std::string& attribute, const std::string& oldValue,
+                          const std::string& newValue) {
+
+    if (path.empty()) return false;
+
+    std::vector<xml::ElementMatcher> selector;
+    for (const auto& kind : path) {
+        ElementMatcher m1 = {kind.list(), {}};
+        ElementMatcher m2 = {kind.name(), {{"type", kind.type()}}};
+
+        selector.push_back(m1);
+        selector.push_back(m2);
+    }
+    selector.back().attributes.push_back({attribute, oldValue});
+
+    bool res = false;
+    xml::visitMatchingNodes(node, selector, [&res, &attribute, &newValue](TxElement* node) {
+        node->SetAttribute(attribute, newValue);
+        res |= true;
+    });
+    return res;
+}
+
+
+
+xml::Kind xml::Kind::processor(const std::string& type) {
+    return Kind("Processor", "Processors", type);
+}
+
+xml::Kind xml::Kind::inport(const std::string& type) { return Kind("InPort", "InPorts", type); }
+
+xml::Kind xml::Kind::outport(const std::string& type) { return Kind("OutPort", "OutPorts", type); }
+
+xml::Kind xml::Kind::portgroup(const std::string& type) {
+    return Kind("PortGroup", "PortGroups", type);
+}
+
+xml::Kind xml::Kind::property(const std::string& type) {
+    return Kind("Property", "Properties", type);
+}
+
+const std::string& xml::Kind::name() const { return name_; }
+
+const std::string& xml::Kind::list() const { return list_; }
+
+const std::string& xml::Kind::type() const { return type_; }
+
+xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
+    : name_(name), list_(list), type_(type) {}
 
 }  // namespace

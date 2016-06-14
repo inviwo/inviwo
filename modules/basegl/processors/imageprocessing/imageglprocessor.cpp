@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,8 @@ namespace inviwo {
 
 ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     : Processor()
-    , inport_(fragmentShader + "inport")
-    , outport_(fragmentShader + "outport")
+    , inport_("inputImage")
+    , outport_("outputImage")
     , dataFormat_(nullptr)
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)

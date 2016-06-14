@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ namespace inviwo {
 
 PathLines::PathLines()
     : Processor()
-    , volume_("vectorvolume")
+    , sampler_("sampler")
     , seedPoints_("seedpoints")
     , colors_("colors")
     , linesStripsMesh_("linesStripsMesh_")
@@ -68,7 +68,7 @@ PathLines::PathLines()
 
     colors_.setOptional(true);
 
-    addPort(volume_);
+    addPort(sampler_);
     addPort(seedPoints_);
     addPort(colors_);
     addPort(linesStripsMesh_);
@@ -95,23 +95,20 @@ PathLines::PathLines()
 }
     
 void PathLines::process() {
-    auto data = volume_.getData();
-    if (data->size() == 0) {
-        return;
-    }
+    auto sampler = sampler_.getData();
+    if (!sampler) return;
     
-    auto firstVol = data->at(0);
 
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(firstVol->getModelMatrix());
-    mesh->setWorldMatrix(firstVol->getWorldMatrix());
+    mesh->setModelMatrix(sampler->getModelMatrix());
+    mesh->setWorldMatrix(sampler->getWorldMatrix());
 
-    auto m = pathLineProperties_.getSeedPointTransformationMatrix(firstVol->getCoordinateTransformer());
+    auto m = pathLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    PathLineTracer tracer(data, pathLineProperties_);
+    PathLineTracer tracer(sampler, pathLineProperties_);
    
     size_t i = 0;
     bool hasColors = colors_.hasData();

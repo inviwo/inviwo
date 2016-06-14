@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2014-2015 Inviwo Foundation
+ # Copyright (c) 2014-2016 Inviwo Foundation
  # All rights reserved.
  # 
  # Redistribution and use in source and binary forms, with or without
@@ -260,7 +260,7 @@ function(make_doxygen_target modules_var)
     find_package(PythonInterp QUIET)    # sets, PYTHONINTERP_FOUND PYTHON_EXECUTABLE
 
     if(NOT ${DOXYGEN_FOUND})
-        ivw_message(WARN "Tried to create doxygen project, but doxygen was not found")
+        ivw_message(WARNING "Tried to create doxygen project, but doxygen was not found")
         return()
     endif()
 

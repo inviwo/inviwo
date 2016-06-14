@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ const ProcessorInfo VolumeSubsample::getProcessorInfo() const {
 
 VolumeSubsample::VolumeSubsample()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("volume.outport")
+    , inport_("inputVolume")
+    , outport_("outputVolume")
     , enabled_("enabled", "Enable Operation", true)
     , waitForCompletion_("waitForCompletion", "Wait For Subsample Completion", false)
     , subSampleFactors_("subSampleFactors", "Factors", ivec3(1), ivec3(1), ivec3(8))

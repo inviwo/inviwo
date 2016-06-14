@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,47 @@ class CompositePropertyWidgetQt;
 
 ABufferGLModule::ABufferGLModule(InviwoApplication* app) : InviwoModule(app, "ABufferGL") {
     
-	abuffergl::addShaderResources(ShaderManager::getPtr(),
-		{getPath(ModulePath::GLSL), getPath(ModulePath::GLSL) + "/abuffer"}
-	);
+    abuffergl::addShaderResources(ShaderManager::getPtr(),
+        {getPath(ModulePath::GLSL), getPath(ModulePath::GLSL) + "/abuffer"}
+    );
 
     registerProcessor<ABufferGeometryGLProcessor>();
+}
+
+int ABufferGLModule::getVersion() const {
+    return 1;
+}
+
+std::unique_ptr<VersionConverter> ABufferGLModule::getConverter(int version) const {
+    return util::make_unique<Converter>(version);
+}
+
+ABufferGLModule::Converter::Converter(int version) : version_(version) {}
+
+bool ABufferGLModule::Converter::convert(TxElement* root) {
+    const std::vector<xml::IdentifierReplacement> repl = {
+        // ABufferGeometryGLProcessor
+        {{xml::Kind::processor("org.inviwo.ABufferGeometryGLProcessor"),
+          xml::Kind::inport("org.inviwo.MeshFlatMultiInport")},
+         "geometry.inport",
+         "geometry"},
+        {{xml::Kind::processor("org.inviwo.ABufferGeometryGLProcessor"),
+          xml::Kind::outport("org.inviwo.ImageOutport")},
+         "image.outport",
+         "image"}};
+
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeIdentifiers(root, repl);
+        }
+                return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
+
 }
 
 }  // namespace

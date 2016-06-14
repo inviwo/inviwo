@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 #define IVW_UTILITIES_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/exception.h>
 #include <string>
 
 namespace inviwo {
@@ -41,6 +42,9 @@ namespace util {
 
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
                                   std::string name = "UPN", std::string ext = ".png");
+
+IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
+                                     ExceptionContext context, const std::string& extra = "");
 }
 
 }  // namespace

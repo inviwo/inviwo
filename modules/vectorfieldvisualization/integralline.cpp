@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,13 @@
  *********************************************************************************/
 
 #include "integralline.h"
+#include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
 
-IntegralLine::IntegralLine() {}
+IntegralLine::IntegralLine()
+    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps) , length_(-1)
+{}
 
 IntegralLine::~IntegralLine() {}
 
@@ -43,6 +46,44 @@ const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) con
         throw Exception("No meta data with name: " + name, IvwContext);
     }
     return it->second;
+}
+
+double IntegralLine::getLength() const {
+    if (length_ == -1) {
+        
+        length_ = 0;
+        if (positions_.size() > 1) {
+            auto next = positions_.begin();
+            auto prev = next++;
+            while (next != positions_.end()) {
+                length_ += glm::distance(*prev, *next);
+                prev = next++;
+            }
+        }
+    }
+    return length_;
+}
+
+dvec3 IntegralLine::getPointAtDistance(double d) const {
+    if (d<0 || d > getLength()) {
+        return dvec3(0);
+    }
+
+    double distPrev = 0,distNext = 0;
+    auto next = positions_.begin();
+    auto prev = next;
+    while (distNext < d) {
+        prev = next++;
+        distPrev = distNext;
+        distNext += glm::distance(*prev, *next);
+    }
+    
+    double x = (d - distPrev) / (distNext - distPrev);
+    return Interpolation<dvec3, double>::linear(*prev, *next, x);
+
+
+
+
 }
 
 }  // namespace

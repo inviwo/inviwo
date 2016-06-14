@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,35 +33,13 @@
 
 namespace inviwo {
 
-PathLineTracer::PathLineTracer(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence,
-    const PathLineProperties &properties)
-    : IntegralLineTracer(properties)
-    , volumeSequence_(*volumeSequence)
-    , dimensions_(0)
-    , allowLooping_(properties.isLoopingAllowed())
-    , timespan_(1.)
-    , timeRange_(0., 1.)
-    , hasTimestamps_(false) {
-    
-    if (volumeSequence_.empty()) {
-        LogWarn("Initializing PathLineTracer with an empty vector");
-    } else {
-        invBasis_ = dmat3(glm::inverse(volumeSequence_.at(0)->getBasis()));
-        dimensions_ = volumeSequence_.at(0)->getDimensions();
-        if ((hasTimestamps_ = util::hasTimestamps(volumeSequence_, false))) {
-            if (util::isSorted(volumeSequence_)) {
-                volumeSequence_ = util::sortSequence(volumeSequence_);
-            }
-            timeRange_ = util::getTimestampRange(volumeSequence_);
-            timespan_ = timeRange_.second - timeRange_.first;
-        }
-    }
+    PathLineTracer::PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler, const PathLineProperties &properties)
+        : IntegralLineTracer(properties)
+        , sampler_(sampler)
+        , invBasis_(glm::inverse(mat3(sampler->getModelMatrix())))
+    {
 
-    for (auto &vol : volumeSequence_) {
-        samplers_.emplace(vol.get(), VolumeDoubleSampler<3>(vol));
     }
-}
 
 PathLineTracer::~PathLineTracer() {}
 
@@ -98,14 +76,10 @@ inviwo::IntegralLine PathLineTracer::traceFrom(const dvec4 &p) {
 
 void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd) {
     for (int i = 0; i <= steps; i++) {
-        if (curPos.x < 0) break;
-        if (curPos.y < 0) break;
-        if (curPos.z < 0) break;
-
-        if (curPos.x > 1) break;
-        if (curPos.y > 1) break;
-        if (curPos.z > 1) break;
-
+        if (!sampler_->withinBounds(curPos)) {
+            line.setTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
+            return;
+        }
         dvec3 v;
         switch (integrationScheme_) {
             case IntegralLineProperties::IntegrationScheme::RK4:
@@ -117,8 +91,9 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
                 break;
         }
 
-        if (glm::length(v) == 0) {
-            break;
+        if (glm::length(v) < std::numeric_limits<double>::epsilon()) {
+            line.setTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
+            return;
         }
 
         dvec3 worldVelocty = sample(curPos);
@@ -130,19 +105,12 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
         line.metaData_["timestamp"].push_back(dvec3(curPos.a));
 
         curPos += dvec4(velocity, stepSize_);
-        if (allowLooping_ && std::abs(timespan_) > 0.0) {
-            while (curPos.a > timeRange_.second) curPos.a -= timespan_;
-            while (curPos.a < timeRange_.first) curPos.a += timespan_;
-        } else {
-            if (curPos.a > timeRange_.second || curPos.a < timeRange_.first) {
-                break;
-            }
-        }
     }
 }
 
 dvec3 PathLineTracer::sample(const dvec4 &pos) {
-    double t = pos.w;
+    return sampler_->sample(pos);
+    /*double t = pos.w;
     dvec3 pos3 = pos.xyz();
     auto vols = util::getVolumesForTimestep(volumeSequence_, t);
     auto vol0 = vols.first.get();
@@ -172,7 +140,7 @@ dvec3 PathLineTracer::sample(const dvec4 &pos) {
     }
 
     auto x = (t - t0) / (t1 - t0);
-    return Interpolation<dvec3>::linear(v0, v1, x);
+    return Interpolation<dvec3>::linear(v0, v1, x);*/
 }
 
 inviwo::dvec3 PathLineTracer::euler(const dvec4 &curPos) { return sample(curPos); }

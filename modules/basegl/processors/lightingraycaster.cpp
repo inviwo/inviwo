@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,7 @@ void LightingRaycaster::process() {
 
 void LightingRaycaster::deserialize(Deserializer& d) {
     NodeVersionConverter tvc([](TxElement* node) {
-        TxElement* p = util::xmlGetElement(
+        TxElement* p = xml::getElement(
             node, "Properties/Property&type=OptionPropertyString&identifier=shadingMode");
         if (p) p->SetAttribute("type", "OptionPropertyInt");
         return true;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2013-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,16 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
 LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
     : Settings(id)
     , FactoryObserver<PropertyFactoryObject>()
-    , linkProperties_("auto-link-properties", "Auto Link Properties") {
+    , linkProperties_("autoLinkProperties", "Auto Link Properties") {
 
     addProperty(linkProperties_);
 
@@ -48,8 +51,10 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
     for (auto& property : properties) {
         //enable camera prop linking by default.
         bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
-        auto linkPropery = new BoolProperty("link-" + property, property, enabled);
-        linkProperties_.addProperty(linkPropery);
+        auto id = dotSeperatedToPascalCase(property);
+        auto linkPropery = util::make_unique<BoolProperty>("link" + id, property, enabled);
+        linkProperties_.addProperty(linkPropery.get(), false);
+        propertyMap_[id] = std::move(linkPropery);
     }
     
     factory->addObserver(this);
@@ -59,22 +64,27 @@ void LinkSettings::onRegister(PropertyFactoryObject* p) {
     auto property = p->getClassIdentifier();
     bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
     // Have to check we we already have a property from deserialization.
-    if (linkProperties_.getPropertyByIdentifier("link-" + property) == nullptr) {
-        auto linkPropery = new BoolProperty("link-" + property, property, enabled);
-        linkProperties_.addProperty(linkPropery);
+    auto id = dotSeperatedToPascalCase(property);
+    if (linkProperties_.getPropertyByIdentifier("link" + id) == nullptr) {
+        auto linkPropery = util::make_unique<BoolProperty>("link" + id, property, enabled);
+        linkProperties_.addProperty(linkPropery.get(), false);
+        propertyMap_[id] = std::move(linkPropery);
     }
 }
 
 void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
-    linkProperties_.removeProperty("link-" + p->getClassIdentifier());
+    auto id = dotSeperatedToPascalCase(p->getClassIdentifier());
+    linkProperties_.removeProperty("link" + id);
+    propertyMap_.erase(id);
 }
 
 bool LinkSettings::isLinkable(const Property* property) const {
-    if (auto prop = getPropertyByIdentifier("link-" + property->getClassIdentifier(), true)) {
-        if (auto linkOption = dynamic_cast<BoolProperty*>(prop)) return linkOption->get();
+    auto id = dotSeperatedToPascalCase(property->getClassIdentifier());
+    auto it  = propertyMap_.find(id);
+    if (it != propertyMap_.end()) {
+        return it->second->get();
     }
     return false;
 }
-
 
 } // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2012-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,6 +86,11 @@ public:
     virtual Property* clone() const override;
     virtual ~Property() = default;
 
+    /**
+     * Property identifier has to be unique within the scope
+     * of a PropertyOwner. Property identifiers should only contain alpha numeric 
+     * characters, "-" and "_".
+     */
     virtual void setIdentifier(const std::string& identifier);
     virtual std::string getIdentifier() const;
     virtual std::vector<std::string> getPath() const;

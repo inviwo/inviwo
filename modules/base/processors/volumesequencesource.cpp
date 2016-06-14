@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceSource::processorInfo_{
     "org.inviwo.VolumeVectorSource",  // Class identifier
-    "Volume Vector Source",           // Display name
+    "Volume Sequence Source",           // Display name
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,16 +43,16 @@ namespace inviwo {
 /** \docpage{org.inviwo.ImageExport, Image Export}
  * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
  *
- * ...
+ * A procesor to save images to disk
  * 
  * ### Inports
- *   * __image__ ...
+ *   * __image__ The image to save.
  * 
  * 
  * ### Properties
- *   * __Export Image__ ...
- *   * __Image file name__ ...
- *   * __Overwrite__ ...
+ *   * __Export Image__ Save the image to disk.
+ *   * __Image file name__ Filename to use.
+ *   * __Overwrite__ Force overwrite.
  *
  */
 class IVW_MODULE_BASE_API ImageExport : public Processor {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2015-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,9 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineTracer : public IntegralLineTracer {
 public:
-    PathLineTracer(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence,
+    PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler,
         const PathLineProperties &properties);
+    //PathLineTracer(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence, const PathLineProperties &properties);
     virtual ~PathLineTracer();
 
     IntegralLine traceFrom(const vec4 &p);
@@ -59,20 +60,12 @@ private:
     dvec3 sample(const dvec4 &pos);
 
     dvec3 euler(const dvec4 &curPos);
-
-    bool allowLooping_;
     dvec3 rk4(const dvec4 &curPos, bool fwd);
     
     
-    size3_t dimensions_;
     dmat3 invBasis_;
-    double timespan_;
-    std::pair<double,double> timeRange_;
-
-
-    std::vector<std::shared_ptr<Volume>> volumeSequence_;
-    std::map<Volume*, VolumeDoubleSampler<3>> samplers_;
-    bool hasTimestamps_;
+    
+    std::shared_ptr<const Spatial4DSampler<3, double>> sampler_;
 
 
 };

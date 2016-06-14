@@ -17,7 +17,7 @@ set(MOC_FILES
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqglwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/hiddencanvasqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.h
@@ -30,17 +30,17 @@ set(HEADER_FILES
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqglwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/canvasqwindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.cpp
 )
 
-if(NOT ${Qt5Core_VERSION} VERSION_LESS "5.4.0")
-    list(APPEND HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.h)
-    list(APPEND SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.cpp)
-endif()
+#if(NOT ${Qt5Core_VERSION} VERSION_LESS "5.4.0")
+#    list(APPEND HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.h)
+#    list(APPEND SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.cpp)
+#endif()
 
 
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
