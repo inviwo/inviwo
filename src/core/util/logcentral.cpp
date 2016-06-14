@@ -69,6 +69,20 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
     } else {
         fileStream_ = new std::ofstream(logPath.append("/inviwo-log.html").c_str());
     }
+
+    (*fileStream_) << "<style>" << std::endl
+        << ".warn{" << std::endl
+        << "    color: orange;" << std::endl
+        << "}" << std::endl
+        << ".error{" << std::endl
+        << "    color: red;" << std::endl
+        << "}" << std::endl
+        << ".level{" << std::endl
+        << "    font-weight: bold;" << std::endl
+        << "}" << std::endl
+        << "</style>" << std::endl;
+
+
     (*fileStream_) << "<div class ='info'>Inviwo (V " << IVW_VERSION << ") Log File</div>"
                    << std::endl;
 }
