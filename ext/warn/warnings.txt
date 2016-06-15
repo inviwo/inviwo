@@ -73,7 +73,7 @@
  unused-label                          | **same**     | **same**         | *no* |
  unused-parameter                      | **same**     | **same**         | 4100 |
  unused-value                          | **same**     | **same**         | 4555 |
- unused-variable                       | **same**     | **same**         | *no* |
+ unused-variable                       | **same**     | **same**         | 4189 |
  used-but-marked-unused                | **same**     | *no*             | *no* |
  weak-vtables                          | **same**     | *no*             | *no* |
  dll-interface                         | *no*         | *no*             | 4251 |
@@ -95,6 +95,13 @@
  strict-selector-match                 | **same**     | **same**         | *no* |
  undeclared-selector                   | **same**     | **same**         | *no* |
 
+### Table for group: `compatibility-c++98`
+
+ Name                  | Clang    | GCC  | MSVC |
+-----------------------|----------|------|------|
+ c++98-compat          | **same** | *no* | *no* |
+ c++98-compat-pedantic | **same** | *no* | *no* |
+
 ### Table for group: `inline`
 
  Name                | Clang | GCC  | MSVC |
@@ -103,13 +110,6 @@
  force-not-inlined   | *no*  | *no* | 4714 |
  not-inlined         | *no*  | *no* | 4710 |
  unreferenced-inline | *no*  | *no* | 4514 |
-
-### Table for group: `compatibility-c++98`
-
- Name                  | Clang    | GCC  | MSVC |
------------------------|----------|------|------|
- c++98-compat          | **same** | *no* | *no* |
- c++98-compat-pedantic | **same** | *no* | *no* |
 
 ### Table for group: `special-members`
 
