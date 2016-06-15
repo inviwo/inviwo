@@ -53,6 +53,7 @@ PathLines::PathLines()
     , sampler_("sampler")
     , seedPoints_("seedpoints")
     , colors_("colors")
+    , volume_("vectorvolume")
     , linesStripsMesh_("linesStripsMesh_")
 
     , pathLineProperties_("pathLineProperties", "Path Line Properties")
@@ -64,6 +65,8 @@ PathLines::PathLines()
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
 
+    , allowLooping_("allowLooping","Allow looping",true)
+
 {
 
     colors_.setOptional(true);
@@ -71,6 +74,7 @@ PathLines::PathLines()
     addPort(sampler_);
     addPort(seedPoints_);
     addPort(colors_);
+    addPort(volume_);
     addPort(linesStripsMesh_);
 
     addProperty(pathLineProperties_);
@@ -81,6 +85,9 @@ PathLines::PathLines()
     addProperty(coloringMethod_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
+
+    addProperty(allowLooping_);
+    allowLooping_.setVisible(false);
 
     tf_.get().clearPoints();
     tf_.get().addPoint(vec2(0, 1), vec4(0, 0, 1, 1));
@@ -95,7 +102,23 @@ PathLines::PathLines()
 }
     
 void PathLines::process() {
-    auto sampler = sampler_.getData();
+    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double> > {
+        if (sampler_.isConnected()) {
+            if (allowLooping_.getVisible()) {
+                allowLooping_.setVisible(false);
+            }
+            return sampler_.getData();
+        }
+        else {
+            if (!allowLooping_.getVisible()) {
+                allowLooping_.setVisible(true);
+            }
+            auto sampler = std::make_shared<VolumeSequenceSampler>(volume_.getData());
+            sampler->setAllowedLooping(allowLooping_.get());
+            return sampler;
+        }
+    }();
+
     if (!sampler) return;
     
 

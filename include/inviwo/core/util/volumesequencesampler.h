@@ -75,13 +75,15 @@ public:
         bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
+    void setAllowedLooping(bool allowed = true) {
+        allowLooping_ = allowed;
+    }
+
 protected:
     virtual dvec3 sampleDataSpace(const dvec4 &pos) const;// { return sample(pos).xyz(); }
     virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
-    // dvec4 getVoxel(const dvec3 &pos, int T) const;
-
     std::vector<VolumeDoubleSampler<4>> samplers_;
     std::vector<std::shared_ptr<Wrapper>> wrappers_;
 

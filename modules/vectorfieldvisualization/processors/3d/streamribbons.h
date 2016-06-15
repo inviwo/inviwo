@@ -82,11 +82,35 @@ public:
 protected:
     virtual void process() override;
 
+
+    virtual bool isReady() const override {
+        if (Processor::isReady()) {
+            return true;
+        }
+
+        if (!seedPoints_.isReady()) return false;
+        if (colors_.isConnected() && !colors_.isReady()) return false;
+
+        bool velocitiesReady = false;
+        bool vorticitiesReady = false;
+
+        velocitiesReady |= sampler_.isConnected() && sampler_.isReady();
+        velocitiesReady |= volume_.isConnected() && volume_.isReady();
+
+        vorticitiesReady |= vorticitySampler_.isConnected() && vorticitySampler_.isReady();
+        vorticitiesReady |= vorticityVolume_.isConnected() && vorticityVolume_.isReady();
+
+        return velocitiesReady && vorticitiesReady;
+    }
+
 private:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
     DataInport<SpatialSampler<3, 3, double>> vorticitySampler_;
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
+
+    VolumeInport volume_;
+    VolumeInport vorticityVolume_;
 
 
     StreamLineProperties streamLineProperties_;

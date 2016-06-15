@@ -25,6 +25,7 @@ StreamLines::StreamLines()
     : Processor()
     , sampler_("sampler")
     , seedPoints_("seedpoints")
+    , volume_("vectorvolume")
     , linesStripsMesh_("linesStripsMesh_")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , tf_("transferFunction", "Transfer Function")
@@ -35,6 +36,7 @@ StreamLines::StreamLines()
     addPort(sampler_);
     addPort(seedPoints_);
     addPort(linesStripsMesh_);
+    addPort(volume_);
 
     maxVelocity_.setReadOnly(true);
 
@@ -55,18 +57,30 @@ StreamLines::StreamLines()
 StreamLines::~StreamLines() {}
 
 void StreamLines::process() {
+
+    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double> > {
+        if (sampler_.isConnected()) return sampler_.getData();
+        else return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+    }();
+
+    
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
-    mesh->setWorldMatrix(sampler_.getData()->getWorldMatrix());
+
+
+
+    mesh->setModelMatrix(sampler->getModelMatrix());
+    mesh->setWorldMatrix(sampler->getWorldMatrix());
 
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(
-        sampler_.getData()->getCoordinateTransformer());
+        sampler->getCoordinateTransformer());
 
 
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    StreamLineTracer tracer(sampler_.getData(), streamLineProperties_);
+
+
+    StreamLineTracer tracer(  sampler, streamLineProperties_);
 
     std::vector<BasicMesh::Vertex> vertices;
 
