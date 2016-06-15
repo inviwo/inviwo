@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/glfw/canvasglfw.h>
 #include <modules/glfw/canvasprocessorwidgetglfw.h>
 

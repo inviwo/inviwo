@@ -479,6 +479,7 @@ set(SOURCE_FILES
     util/timer.cpp
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
+    util/threadpool.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequenceutils.cpp

@@ -70,7 +70,7 @@ class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public Inviwo
 
 public:
     InviwoApplicationQt(std::string displayName, int& argc, char** argv, bool movePointsOn = true);
-    virtual ~InviwoApplicationQt();
+    virtual ~InviwoApplicationQt() =  default;
 
     virtual void registerModules(RegisterModuleFunc) override;
     
@@ -98,6 +98,7 @@ public slots:
 
 protected:
     virtual void printApplicationInfo() override;
+    virtual void resizePool(size_t newSize) override;
     void wait(int);
 
 private:

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <thread>
 
@@ -41,6 +42,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFile>
+#include <QCursor>
 #include <warn/pop>
 
 namespace inviwo {
@@ -65,8 +67,6 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
 }
 
-InviwoApplicationQt::~InviwoApplicationQt() {}
-
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { mainWindow_ = mainWindow; }
 
 void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
@@ -82,13 +82,11 @@ void InviwoApplicationQt::unRegisterFileObserver(FileObserver* fileObserver) {
 
 void InviwoApplicationQt::startFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
-
     if (!fileWatcher_->files().contains(qFileName)) fileWatcher_->addPath(qFileName);
 }
 
 void InviwoApplicationQt::stopFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
-
     if (fileWatcher_->files().contains(qFileName)) fileWatcher_->removePath(qFileName);
 }
 
@@ -121,6 +119,45 @@ std::locale InviwoApplicationQt::getUILocale() const { return utilqt::getCurrent
 void InviwoApplicationQt::printApplicationInfo() {
     InviwoApplication::printApplicationInfo();
     LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
+}
+
+void InviwoApplicationQt::resizePool(size_t newSize) {
+    auto start = std::chrono::system_clock::now();
+    std::chrono::milliseconds timelimit(250);
+    auto timeout = [&timelimit, &start]() {
+        return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() -
+                                                                start) > timelimit;
+    };
+
+    // try resizing for timelimit time, run processFront to avoid potential deadlocks.
+    size_t size = pool_.trySetSize(newSize);
+    while (size != newSize && !timeout()) {
+        processFront();
+        size = pool_.trySetSize(newSize);
+    }
+    if (size == newSize) return;
+
+    // if not done yet, continue trying, but block interaction and keep the GUI running by also
+    // calling processEvents
+    auto enabled = mainWindow_->isEnabled();
+    util::OnScopeExit cleanup{[this, enabled]() {
+        mainWindow_->setEnabled(enabled);
+        QApplication::restoreOverrideCursor();
+    }};
+    mainWindow_->setEnabled(false);
+    QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
+    while (size != newSize) {
+        if (timeout()) {
+            auto left = size - newSize;
+            LogInfo("Waiting for " << left << " background thread" << (left > 1 ? "s" : "")
+                                   << " to finish");
+            timelimit += std::chrono::milliseconds(1000);
+        }
+
+        size = pool_.trySetSize(newSize);
+        processFront();
+        processEvents();
+    }
 }
 
 void InviwoApplicationQt::registerModules(RegisterModuleFunc regModuleFunc) {

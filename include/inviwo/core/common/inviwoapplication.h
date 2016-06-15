@@ -189,8 +189,8 @@ protected:
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();
+    virtual void resizePool(size_t newSize);
 
-private:
     std::vector<std::string> findDependentModules(std::string module) const;
 
     struct Queue {
