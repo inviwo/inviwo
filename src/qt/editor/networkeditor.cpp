@@ -241,57 +241,63 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
     if (portInspectors_.find(port) != portInspectors_.end()) return false;
 
-    auto factory = mainwindow_->getInviwoApplication()->getPortInspectorFactory();
-    auto portInspector = factory->createAndCache(port->getClassIdentifier());
+    try {
+        auto factory = mainwindow_->getInviwoApplication()->getPortInspectorFactory();
+        auto portInspector = factory->createAndCache(port->getClassIdentifier());
 
-    portInspectors_[port] = portInspector;
+        portInspectors_[port] = portInspector;
 
-    if (portInspector && !portInspector->isActive()) {
-        portInspector->setActive(true);
-        NetworkLock lock(network_);
-        // Add processors to the network
-        CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
-        for (auto& processor : portInspector->getProcessors()) {
-            network_->addProcessor(processor);
-        }
-
-        // Connect the port to inspect to the inports of the inspector network
-        Outport* outport = dynamic_cast<Outport*>(port);
-        for (auto& inport : portInspector->getInports()) {
-            network_->addConnection(outport, inport);
-        }
-
-        // Add connections to the network
-        for (auto& connection : portInspector->getConnections()) {
-            network_->addConnection(connection);
-        }
-
-        // Add links to the network
-        for (auto& link : portInspector->getPropertyLinks()) {
-            network_->addLink(link);
-        }
-
-        // Do auto linking.
-        for (auto& processor : portInspector->getProcessors()) {
-            util::autoLinkProcessor(network_, processor);
-        }
-
-        // Setup the widget
-        if (auto processorWidget = canvasProcessor->getProcessorWidget()) {
-            int size = mainwindow_->getInviwoApplication()
-                           ->getSettingsByType<SystemSettings>()
-                           ->portInspectorSize_.get();
-            processorWidget->setDimensions(ivec2(size, size));
-            if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
-                widget->setMinimumSize(size, size);
-                widget->setMaximumSize(size, size);
-                widget->setWindowFlags(Qt::CustomizeWindowHint | Qt::Tool);
+        if (portInspector && !portInspector->isActive()) {
+            portInspector->setActive(true);
+            NetworkLock lock(network_);
+            // Add processors to the network
+            CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
+            for (auto& processor : portInspector->getProcessors()) {
+                network_->addProcessor(processor);
             }
-            processorWidget->setPosition(ivec2(pos.x(), pos.y()));
-            processorWidget->show();
-            processorWidget->addObserver(new PortInspectorObserver(this, outport));
+
+            // Connect the port to inspect to the inports of the inspector network
+            Outport* outport = dynamic_cast<Outport*>(port);
+            for (auto& inport : portInspector->getInports()) {
+                network_->addConnection(outport, inport);
+            }
+
+            // Add connections to the network
+            for (auto& connection : portInspector->getConnections()) {
+                network_->addConnection(connection);
+            }
+
+            // Add links to the network
+            for (auto& link : portInspector->getPropertyLinks()) {
+                network_->addLink(link);
+            }
+
+            // Do auto linking.
+            for (auto& processor : portInspector->getProcessors()) {
+                util::autoLinkProcessor(network_, processor);
+            }
+
+            // Setup the widget
+            if (auto processorWidget = canvasProcessor->getProcessorWidget()) {
+                int size = mainwindow_->getInviwoApplication()
+                               ->getSettingsByType<SystemSettings>()
+                               ->portInspectorSize_.get();
+                processorWidget->setDimensions(ivec2(size, size));
+                if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
+                    widget->setMinimumSize(size, size);
+                    widget->setMaximumSize(size, size);
+                    widget->setWindowFlags(Qt::CustomizeWindowHint | Qt::Tool);
+                }
+                processorWidget->setPosition(ivec2(pos.x(), pos.y()));
+                processorWidget->show();
+                processorWidget->addObserver(new PortInspectorObserver(this, outport));
+            }
+            return true;
         }
-        return true;
+    } catch (Exception& exception) {
+        util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
+    } catch (...) {
+        util::log(IvwContext, "Problem using port inspector", LogLevel::Error);
     }
     return false;
 }
