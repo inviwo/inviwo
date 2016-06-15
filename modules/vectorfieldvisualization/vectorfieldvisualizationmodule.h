@@ -40,6 +40,23 @@ class IVW_MODULE_VECTORFIELDVISUALIZATION_API VectorFieldVisualizationModule : p
 public:
     VectorFieldVisualizationModule(InviwoApplication* app);
 
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+private:
+    class Converter : public VersionConverter {
+        typedef bool (Converter::*updateType)(TxElement*);
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+        bool traverseNodes(TxElement* node, updateType update);
+        bool updateAllowLooping(TxElement* node);
+
+    private:
+        int version_;
+    };
+
 };
 
 } // namespace
