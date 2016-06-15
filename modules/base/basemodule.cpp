@@ -174,11 +174,6 @@ bool BaseModule::Converter::convert(TxElement* root) {
          "geometry.output",
          "clippedMesh"},
 
-        // VolumeSequenceElementSelectorProcessor
-        { { xml::Kind::processor("org.inviwo.TimeStepSelector") },
-        "Volume Sequence/Time Selector",
-        "Volume Sequence Element Selector" },
-
         // VolumeSlice
         {{xml::Kind::processor("org.inviwo.VolumeSlice"),
           xml::Kind::inport("org.inviwo.VolumeInport")},
