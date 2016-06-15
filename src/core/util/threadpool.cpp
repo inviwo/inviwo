@@ -79,7 +79,8 @@ ThreadPool::~ThreadPool() {
 ThreadPool::Worker::~Worker() { thread.join(); }
 
 ThreadPool::Worker::Worker(ThreadPool& pool)
-    : thread{[this, &pool]() {
+    : state{ State::Free }
+    , thread{ [this, &pool]() {
         pool.onThreadStart_();
         util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 
@@ -95,11 +96,11 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
                 task = std::move(pool.tasks.front());
                 pool.tasks.pop();
             }
-            this->state = State::Working;
+            state = State::Working;
             task();
         }
         state = State::Done;
 
-    }} {}
+    } } {}
 
 }  // namespace

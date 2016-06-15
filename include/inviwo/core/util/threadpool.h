@@ -103,8 +103,8 @@ private:
         Worker& operator=(Worker&& rhs) = delete;
         ~Worker();
 
+        std::atomic<State> state; //< State of the worker
         std::thread thread;
-        std::atomic<State> state = State::Free; //< State of the worker
     };
     // need to keep track of threads so we can join them
     std::vector<std::unique_ptr<Worker>> workers;
