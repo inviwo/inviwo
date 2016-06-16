@@ -406,7 +406,6 @@ function(ivw_register_modules retval)
     set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
-
 #--------------------------------------------------------------------
 # Add all minimal applications in folder
 macro(ivw_add_minimal_applications)
@@ -615,10 +614,7 @@ endmacro()
 # that is included from ivw_register_modules. 
 macro(ivw_create_module)
     ivw_debug_message(STATUS "create module: ${_projectName}")
-
-    ivw_dir_to_mod_dep(mod ${_projectName})               # opengl -> INVIWOOPENGLMODULE
-
-    
+    ivw_dir_to_mod_dep(mod ${_projectName})  # opengl -> INVIWOOPENGLMODULE
 
     set(CMAKE_FILES "")
     if(EXISTS "${${mod}_path}/depends.cmake")
@@ -633,7 +629,6 @@ macro(ivw_create_module)
     set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
-    
 
     # Create library
     add_library(${${mod}_target} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
@@ -653,7 +648,6 @@ macro(ivw_create_module)
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core()
     
-
     set(_projectName ${tmpProjectName})
        
     # Make package (for other modules to find)

@@ -486,7 +486,8 @@ endfunction()
 
 
 #--------------------------------------------------------------------
-# Get the module name from a CMakeLists.txt
+# Query if a lib is compiled with 32 or 64 bits, will return 0 if it 
+# could not find out. 
 function(ivw_library_bits lib retval)
     if(WIN32)
         get_filename_component(vcpath ${CMAKE_CXX_COMPILER} DIRECTORY)
@@ -533,6 +534,116 @@ function(ivw_library_bits lib retval)
     set(${retval} 0 PARENT_SCOPE)
 endfunction()
 
+#--------------------------------------------------------------------
+# From a 
+function(ivw_find_unique_path_segements retval paths)
+    list(LENGTH paths npaths)
+
+    # Remove non-unique start of path
+    set(ind 0)
+    set(names ${paths})
+    set(ret ${paths})
+    list(LENGTH names n_names)
+    while(n_names EQUAL npaths)
+        set(ret ${names})
+        set(names "")
+        foreach(module ${paths})
+            set(path "")
+            set(i 0)
+            string(REPLACE "/" ";" module_list ${module})
+            foreach(dir ${module_list})
+                if( i GREATER ind OR i EQUAL ind)
+                    list(APPEND path ${dir})
+                endif()
+                MATH(EXPR i "${i}+1")
+            endforeach()
+            string(REPLACE ";" "/" path_joined "${path}")
+            list(APPEND names ${path_joined})
+        endforeach()
+        list(REMOVE_DUPLICATES names)
+        list(LENGTH names n_names)
+        MATH(EXPR ind "${ind}+1")
+    endwhile()
+    
+    # Remove non-unique end of path
+    set(ind 0)
+    set(new_module_bases ${ret})
+    set(names ${ret})
+    list(LENGTH names n_names)
+    while(n_names EQUAL npaths)
+        set(ret ${names})
+        set(names "")
+        foreach(module ${new_module_bases})
+            set(path "")
+            set(i 0)
+            string(REPLACE "/" ";" module_list ${module})
+            list(REVERSE module_list)
+            foreach(dir ${module_list})
+                if( i GREATER ind OR i EQUAL ind)
+                    list(APPEND path ${dir})
+                endif()
+                MATH(EXPR i "${i}+1")
+            endforeach()
+            list(REVERSE path)
+            string(REPLACE ";" "/" path_joined "${path}")
+            list(APPEND names ${path_joined})
+        endforeach()
+        list(REMOVE_DUPLICATES names)
+        list(LENGTH names n_names)
+        MATH(EXPR ind "${ind}+1")
+    endwhile()
+    set(${retval} ${ret} PARENT_SCOPE)
+endfunction()
 
 
+#--------------------------------------------------------------------
+# A function to try to retrive the git hash of the last commit in a 
+# directory
+function(ivw_git_get_hash dir retval)
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+        execute_process(COMMAND "${GIT_EXECUTABLE}" describe --match=NeVeRmAtCh --always --abbrev=20 --dirty
+            WORKING_DIRECTORY ${dir}
+            RESULT_VARIABLE result
+            OUTPUT_VARIABLE version
+            ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(${result} EQUAL 0)
+            set(${retval} ${version} PARENT_SCOPE)
+            return()
+        endif()
+    endif()
+    set(${retval} "????????" PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# A helper funtion to generate a header file with inviwo build 
+# information, like the build date and the commit hash
+# ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
+function(ivw_generate_build_info template buildinfofile)
+    ivw_find_unique_path_segements(unique_names "${ARGN}")
+    set(index 0)
+    set(hashes_list "")
+    foreach(dir ${ARGN})
+        list(GET unique_names ${index} name)
+        ivw_git_get_hash(${dir} hash)
+        list(APPEND hashes_list "{\"${name}\", \"${hash}\"}")
+        MATH(EXPR index "${index}+1")
+    endforeach()
+    string(REPLACE ";" ",\n    " hashes "${hashes_list}")
+    set(HASHES "{\n    ${hashes}\n}")
+
+    string(TIMESTAMP TMPYEAR "%Y")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" YEAR ${TMPYEAR})
+    string(TIMESTAMP TMPMONTH "%m")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" MONTH ${TMPMONTH})
+    string(TIMESTAMP TMPDAY "%d")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" DAY ${TMPDAY})
+    string(TIMESTAMP TMPHOUR "%H")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" HOUR ${TMPHOUR})
+    string(TIMESTAMP TMPMINUTE "%M")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
+    string(TIMESTAMP TMPSECOND "%S")
+    string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
+    configure_file("${template}" "${buildinfofile}" @ONLY IMMEDIATE)
+endfunction()
 
