@@ -57,7 +57,7 @@ namespace inviwo {
 class IVW_MODULE_BASE_API OrdinalPropertyAnimator : public Processor {
 public:
     OrdinalPropertyAnimator();
-    virtual ~OrdinalPropertyAnimator();
+    virtual ~OrdinalPropertyAnimator() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -95,8 +95,8 @@ private:
         virtual Property* getDelta() override;
         virtual void update(bool pbc) override;
 
-        OrdinalProperty<T>* prop_;
-        OrdinalProperty<T>* delta_;
+        std::unique_ptr<OrdinalProperty<T>> prop_;
+        std::unique_ptr<OrdinalProperty<T>> delta_;
         typedef T valueType;
     };
 
@@ -111,8 +111,8 @@ private:
         virtual Property* getDelta() override;
         virtual void update(bool pbc) override;
 
-        OrdinalProperty<T>* prop_;
-        OrdinalProperty<T>* delta_;
+        std::unique_ptr<OrdinalProperty<T>> prop_;
+        std::unique_ptr<OrdinalProperty<T>> delta_;
         typedef T valueType;
     };
 
@@ -122,7 +122,7 @@ private:
     BoolProperty active_;
     Timer timer_;
 
-    std::vector<BaseProp*> properties_;
+    std::vector<std::unique_ptr<BaseProp>> properties_;
 };
 
 template <typename T>
@@ -152,12 +152,12 @@ void OrdinalPropertyAnimator::VecProp<T>::update(bool pbc) {
 
 template <typename T>
 Property* OrdinalPropertyAnimator::VecProp<T>::getDelta() {
-    return delta_;
+    return delta_.get();
 }
 
 template <typename T>
 Property* OrdinalPropertyAnimator::VecProp<T>::getProp() {
-    return prop_;
+    return prop_.get();
 }
 
 template <typename T>
@@ -184,19 +184,18 @@ void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
-    
     auto factory = InviwoApplication::getPtr()->getPropertyFactory();
 
-    prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        factory->create(classname, classname, displayName).release());
+    prop_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
+        factory->create(classname, dotSeperatedToPascalCase(classname), displayName));
 
     std::stringstream ss1;
-    ss1 << classname << "-"
+    ss1 << dotSeperatedToPascalCase(classname) << "-"
         << "Delta";
     std::string identifier = ss1.str();
 
-    delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        factory->create(classname, identifier, "Delta").release());
+    delta_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
+        factory->create(classname, identifier, "Delta"));
 
     prop_->onChange(this, &VecProp<T>::setLimits);
 }
@@ -228,12 +227,12 @@ void OrdinalPropertyAnimator::PrimProp<T>::update(bool pbc) {
 
 template <typename T>
 Property* OrdinalPropertyAnimator::PrimProp<T>::getDelta() {
-    return delta_;
+    return delta_.get();
 }
 
 template <typename T>
 Property* OrdinalPropertyAnimator::PrimProp<T>::getProp() {
-    return prop_;
+    return prop_.get();
 }
 
 template <typename T>
@@ -257,19 +256,18 @@ void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
-    
     auto factory = InviwoApplication::getPtr()->getPropertyFactory();
 
-    prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        factory->create(classname, classname, displayName).release());
+    prop_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
+        factory->create(classname, dotSeperatedToPascalCase(classname), displayName));
 
     std::stringstream ss1;
-    ss1 << classname << "-"
+    ss1 << dotSeperatedToPascalCase(classname) << "-"
         << "Delta";
     std::string identifier = ss1.str();
 
-    delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        factory->create(classname, identifier, "Delta").release());
+    delta_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
+        factory->create(classname, identifier, "Delta"));
 
     prop_->onChange(this, &PrimProp<T>::setLimits);
 }

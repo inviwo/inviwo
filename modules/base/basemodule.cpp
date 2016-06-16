@@ -149,7 +149,7 @@ std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
 BaseModule::Converter::Converter(int version) : version_(version) {}
 
 bool BaseModule::Converter::convert(TxElement* root) {
-    const std::vector<xml::IdentifierReplacement> repl = {
+    std::vector<xml::IdentifierReplacement> repl = {
         // CubeProxyGeometry
         {{xml::Kind::processor("org.inviwo.CubeProxyGeometry"),
           xml::Kind::inport("org.inviwo.VolumeInport")},
@@ -193,6 +193,24 @@ bool BaseModule::Converter::convert(TxElement* root) {
           xml::Kind::outport("org.inviwo.VolumeOutport")},
          "volume.outport",
          "outputVolume"}};
+
+    for (const auto& id : { "org.inviwo.FloatProperty", "org.inviwo.FloatVec2Property",
+                           "org.inviwo.FloatVec3Property", "org.inviwo.FloatVec4Property",
+                           "org.inviwo.DoubleProperty", "org.inviwo.DoubleVec2Property",
+                           "org.inviwo.DoubleVec3Property", "org.inviwo.DoubleVec4Property",
+                           "org.inviwo.IntProperty", "org.inviwo.IntVec2Property",
+                           "org.inviwo.IntVec3Property", "org.inviwo.IntVec4Property" }) {
+        xml::IdentifierReplacement ir1 = {
+            {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
+            id,
+            dotSeperatedToPascalCase(id) };
+        repl.push_back(ir1);
+        xml::IdentifierReplacement ir2 = {
+            {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
+            std::string(id) + "-Delta",
+            dotSeperatedToPascalCase(id) + "-Delta" };
+        repl.push_back(ir2);
+    }
 
     bool res = false;
     switch (version_) {

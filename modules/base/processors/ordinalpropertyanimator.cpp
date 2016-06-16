@@ -44,29 +44,39 @@ const ProcessorInfo OrdinalPropertyAnimator::getProcessorInfo() const {
     return processorInfo_;
 }
 
-
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     : Processor()
     , type_("property", "Property")
     , delay_("delay", "Delay (ms)", 50, 1, 10000, 1)
     , pbc_("pbc", "Periodic", true)
-    , active_("active", "Active", false) 
-    , timer_(delay_, [this](){timerEvent();})
-{
+    , active_("active", "Active", false)
+    , timer_(delay_, [this]() { timerEvent(); }) {
     delay_.onChange(this, &OrdinalPropertyAnimator::updateTimerInterval);
 
-    properties_.push_back(new PrimProp<float>("org.inviwo.FloatProperty", "org.inviwo.FloatProperty"));
-    properties_.push_back(new VecProp<vec2>("org.inviwo.FloatVec2Property", "org.inviwo.FloatVec2Property"));
-    properties_.push_back(new VecProp<vec3>("org.inviwo.FloatVec3Property", "org.inviwo.FloatVec3Property"));
-    properties_.push_back(new VecProp<vec4>("org.inviwo.FloatVec4Property", "org.inviwo.FloatVec4Property"));
-    properties_.push_back(new PrimProp<double>("org.inviwo.DoubleProperty","org.inviwo.DoubleProperty"));
-    properties_.push_back(new VecProp<dvec2>("org.inviwo.DoubleVec2Property", "org.inviwo.DoubleVec2Property"));
-    properties_.push_back(new VecProp<dvec3>("org.inviwo.DoubleVec3Property", "org.inviwo.DoubleVec3Property"));
-    properties_.push_back(new VecProp<dvec4>("org.inviwo.DoubleVec4Property", "org.inviwo.DoubleVec4Property"));
-    properties_.push_back(new PrimProp<int>("org.inviwo.IntProperty", "org.inviwo.IntProperty"));
-    properties_.push_back(new VecProp<ivec2>("org.inviwo.IntVec2Property", "org.inviwo.IntVec2Property"));
-    properties_.push_back(new VecProp<ivec3>("org.inviwo.IntVec3Property", "org.inviwo.IntVec3Property"));
-    properties_.push_back(new VecProp<ivec4>("org.inviwo.IntVec4Property", "org.inviwo.IntVec4Property"));
+    properties_.push_back(
+        std::make_unique<PrimProp<float>>("org.inviwo.FloatProperty", "org.inviwo.FloatProperty"));
+    properties_.push_back(std::make_unique<VecProp<vec2>>("org.inviwo.FloatVec2Property",
+                                                          "org.inviwo.FloatVec2Property"));
+    properties_.push_back(std::make_unique<VecProp<vec3>>("org.inviwo.FloatVec3Property",
+                                                          "org.inviwo.FloatVec3Property"));
+    properties_.push_back(std::make_unique<VecProp<vec4>>("org.inviwo.FloatVec4Property",
+                                                          "org.inviwo.FloatVec4Property"));
+    properties_.push_back(std::make_unique<PrimProp<double>>("org.inviwo.DoubleProperty",
+                                                             "org.inviwo.DoubleProperty"));
+    properties_.push_back(std::make_unique<VecProp<dvec2>>("org.inviwo.DoubleVec2Property",
+                                                           "org.inviwo.DoubleVec2Property"));
+    properties_.push_back(std::make_unique<VecProp<dvec3>>("org.inviwo.DoubleVec3Property",
+                                                           "org.inviwo.DoubleVec3Property"));
+    properties_.push_back(std::make_unique<VecProp<dvec4>>("org.inviwo.DoubleVec4Property",
+                                                           "org.inviwo.DoubleVec4Property"));
+    properties_.push_back(
+        std::make_unique<PrimProp<int>>("org.inviwo.IntProperty", "org.inviwo.IntProperty"));
+    properties_.push_back(std::make_unique<VecProp<ivec2>>("org.inviwo.IntVec2Property",
+                                                           "org.inviwo.IntVec2Property"));
+    properties_.push_back(std::make_unique<VecProp<ivec3>>("org.inviwo.IntVec3Property",
+                                                           "org.inviwo.IntVec3Property"));
+    properties_.push_back(std::make_unique<VecProp<ivec4>>("org.inviwo.IntVec4Property",
+                                                           "org.inviwo.IntVec4Property"));
 
     addProperty(type_);
     addProperty(active_);
@@ -74,30 +84,26 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     addProperty(pbc_);
 
     int count = 0;
-    for (auto p : properties_) {
+    for (auto& p : properties_) {
         type_.addOption(p->classname_, p->displayName_, count);
         Property* prop = p->getProp();
         Property* delta = p->getDelta();
 
-        addProperty(prop);
-        addProperty(delta);
+        addProperty(prop, false);
+        addProperty(delta, false);
         prop->setVisible(false);
         delta->setVisible(false);
         count++;
     }
     type_.setSelectedIndex(0);
     type_.setCurrentStateAsDefault();
-    
+
     type_.onChange(this, &OrdinalPropertyAnimator::changeProperty);
     active_.onChange(this, &OrdinalPropertyAnimator::changeActive);
 
     changeProperty();
 
     setAllPropertiesCurrentStateAsDefault();
-}
-
-OrdinalPropertyAnimator::~OrdinalPropertyAnimator() {
-    for (auto p : properties_) delete p;
 }
 
 void OrdinalPropertyAnimator::initializeResources() {
@@ -118,7 +124,7 @@ void OrdinalPropertyAnimator::timerEvent() {
 void OrdinalPropertyAnimator::changeProperty() {
     int ind = type_.get();
     
-    for (auto p : properties_) {
+    for (auto& p : properties_) {
         Property* prop = p->getProp();
         Property* delta = p->getDelta();
         prop->setVisible(false);
