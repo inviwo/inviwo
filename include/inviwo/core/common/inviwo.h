@@ -30,23 +30,6 @@
 #ifndef IVW_INVIWO_H
 #define IVW_INVIWO_H
 
-//#pragma warning(3: 4290) // ignore that throw(*) is ignored
-
-//#pragma warning(3: 4640) // non thread safe construction of object
-//#pragma warning(3: 4514) // The optimizer removed an inline function that is not called.
-#pragma warning(3: 4296) // expression is always false
-#pragma warning(3: 4061) // enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
-#pragma warning(3: 4062) // enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-#pragma warning(3: 4263) // warn for virtual functions that do not overide something in baseclass
-// removed warning since <functional> has to many...
-// #pragma warning(3: 4265) // warn if non-virtual destructor
-#pragma warning(3: 4266) // warn if no overide of function in baseclass
-#pragma warning(3: 4289) // loop control variable declared in the for-loop is used outside the for-loop scope
-#pragma warning(3: 4296) // expression is always false
-
-
-#pragma warning(disable: 4251) // 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
-
 
 // Visual studio https://msdn.microsoft.com/en-us/library/23k5d385.aspx
 // List of all warnings messages and id for clang http://fuckingclangwarnings.com

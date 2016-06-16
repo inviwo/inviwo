@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/processornetworkconverter.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
@@ -60,6 +61,8 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
                           &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
         case 11:
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
+        case 12:
+            traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
             return true; // Changes has been made.
         default:
             return false; // No changes
@@ -413,6 +416,25 @@ void ProcessorNetworkConverter::updateDisplayName(TxElement* node) {
             newNode.SetValue("displayName");
             newNode.SetAttribute("content", displayName);
             node->InsertEndChild(newNode);
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Processor") {
+        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        if (identifier != "") {
+            std::transform(identifier.begin(), identifier.end(), identifier.begin(), [](char c) {
+                if (!util::isValidIdentifierCharacter(c, " ()=&")) {
+                    return ' ';
+                }
+                return c;
+            });
+
+            node->SetAttribute("identifier", identifier);
         }
     }
 }

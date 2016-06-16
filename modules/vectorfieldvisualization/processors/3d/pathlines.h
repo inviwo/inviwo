@@ -82,12 +82,31 @@ public:
      
     virtual void process() override; 
 
+    virtual bool isReady() const override {
+        if (Processor::isReady()) {
+            return true;
+        }
+
+        if (seedPoints_.isConnected() && !seedPoints_.isReady()) return false;
+        if (colors_.isConnected() && !colors_.isReady()) return false;
+
+        if (sampler_.isConnected()) {
+            return sampler_.isReady();
+        }
+        if (volume_.isConnected()) {
+            return volume_.isReady();
+        }
+        return false;
+    }
+
     virtual void deserialize(Deserializer& d) override;
 
 private:
     DataInport<Spatial4DSampler<3, double>> sampler_;
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
+    VolumeSequenceInport volume_;
+
 
     MeshOutport linesStripsMesh_;
 
@@ -99,6 +118,8 @@ private:
     TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
+
+    BoolProperty allowLooping_;
 };
 
 } // namespace

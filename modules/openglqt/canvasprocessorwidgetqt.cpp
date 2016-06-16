@@ -32,6 +32,7 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 

@@ -63,9 +63,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     : displayName_(displayName)
     , progressCallback_()
     , commandLineParser_(argc, argv)
-    , pool_(0)
+    , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
-
     , clearDataFormats_{[]() { DataFormatBase::cleanDataFormatBases(); }}
     , clearAllSingeltons_{[this]() { cleanupSingletons(); }}
 
@@ -123,9 +122,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     for (auto setting : coreSettings) setting->loadFromDisk();
     auto sys = getSettingsByType<SystemSettings>();
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
-        pool_.setSize(static_cast<size_t>(sys->poolSize_.get()));
-        sys->poolSize_.onChange(
-            [this, sys]() { pool_.setSize(static_cast<size_t>(sys->poolSize_.get())); });
+        size_t newSize = static_cast<size_t>(sys->poolSize_.get());
+        resizePool(newSize);
+
+        sys->poolSize_.onChange([this, sys]() { 
+            size_t newSize = static_cast<size_t>(sys->poolSize_.get());
+            resizePool(newSize);
+        });
     }
 }
 
@@ -135,7 +138,7 @@ InviwoApplication::InviwoApplication(std::string displayName)
     : InviwoApplication(0, nullptr, displayName) {}
 
 InviwoApplication::~InviwoApplication() {
-    pool_.setSize(0);
+    resizePool(0);
     portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
 }
@@ -296,6 +299,14 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
 
 void InviwoApplication::cleanupSingletons() { SingletonBase::deleteAllSingeltons(); }
 
+void InviwoApplication::resizePool(size_t newSize) {
+    size_t size = pool_.trySetSize(newSize);
+    while (size != newSize) {
+        size = pool_.trySetSize(newSize);
+        processFront();
+    }
+}
+
 std::vector<std::string> InviwoApplication::findDependentModules(std::string module) const {
     std::vector<std::string> dependencies;
     for (const auto& item : modulesFactoryObjects_) {
@@ -335,10 +346,9 @@ void InviwoApplication::setProgressCallback(std::function<void(std::string)> pro
 
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
+    resizePool(0);  // This will wait until all tasks are done;
     processFront();
-    pool_.setSize(0);  // This will wait until all tasks are done;
-    processFront();
-    pool_.setSize(old_size);
+    resizePool(old_size);
 }
 
 void InviwoApplication::closeInviwoApplication() {

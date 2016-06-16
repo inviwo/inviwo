@@ -143,6 +143,7 @@ add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(IVW_QTWIDGETS inviwo-qtwidgets)
+ivw_define_standard_properties(inviwo-qtwidgets)
 ivw_define_qt_definitions()
 
 # Add qt dependencies to this list

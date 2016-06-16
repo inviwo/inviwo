@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/openglqt/openglqtcapabilities.h>
 
 namespace inviwo {

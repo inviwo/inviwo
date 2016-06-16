@@ -406,7 +406,6 @@ function(ivw_register_modules retval)
     set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
-
 #--------------------------------------------------------------------
 # Add all minimal applications in folder
 macro(ivw_add_minimal_applications)
@@ -514,6 +513,17 @@ function(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
+    elseif(MSVC)
+        set_property(TARGET ${project_name}  PROPERTY COMPILE_FLAGS "/w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
+        # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
+        # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
+        # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled
+        # /w34189 # warn for declared but unused variable 
+        # /w34263 # warn for virtual functions that do not override something in base class
+        # /w34266 # warn if no override of function in base class
+        # /w34289 # loop control variable declared in the for-loop is used outside the for-loop scope
+        # /w34296 # expression is always false
+        # /wd4251 # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2
     endif()
 endfunction()
 
@@ -535,7 +545,6 @@ endfunction()
 #--------------------------------------------------------------------
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name target_name)
-
     # Set the compiler flags
     ivw_to_macro_name(u_project_name ${project_name})
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
@@ -605,8 +614,7 @@ endmacro()
 # that is included from ivw_register_modules. 
 macro(ivw_create_module)
     ivw_debug_message(STATUS "create module: ${_projectName}")
-
-    ivw_dir_to_mod_dep(mod ${_projectName})               # opengl -> INVIWOOPENGLMODULE
+    ivw_dir_to_mod_dep(mod ${_projectName})  # opengl -> INVIWOOPENGLMODULE
 
     set(CMAKE_FILES "")
     if(EXISTS "${${mod}_path}/depends.cmake")
@@ -621,7 +629,7 @@ macro(ivw_create_module)
     set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
-      
+
     # Create library
     add_library(${${mod}_target} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
     

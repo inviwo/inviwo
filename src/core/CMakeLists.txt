@@ -479,6 +479,7 @@ set(SOURCE_FILES
     util/timer.cpp
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
+    util/threadpool.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequenceutils.cpp
@@ -526,6 +527,7 @@ add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Define standard defintions
 ivw_define_standard_definitions(IVW_CORE inviwo-core)
+ivw_define_standard_properties(inviwo-core)
 
 #--------------------------------------------------------------------
 # Add core folders to includes
@@ -535,11 +537,11 @@ ivw_include_directories(${IVW_ROOT_DIR})
 ivw_include_directories(${IVW_MODULE_DIR})
 # Add path for external modules
 if (NOT "${IVW_EXTERNAL_MODULES}" STREQUAL "")
-foreach(dir ${IVW_EXTERNAL_MODULES})
-ivw_include_directories(${dir})
-get_filename_component(dir_parent ${dir} PATH)
-ivw_include_directories(${dir_parent})
-endforeach()
+    foreach(dir ${IVW_EXTERNAL_MODULES})
+        ivw_include_directories(${dir})
+        get_filename_component(dir_parent ${dir} PATH)
+        ivw_include_directories(${dir_parent})
+    endforeach()
 endif()
 ivw_include_directories(${CMAKE_BINARY_DIR}/modules/_generated)
 

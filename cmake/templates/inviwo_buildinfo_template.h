@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTORFIELDVISUALIZATIONMODULE_H
-#define IVW_VECTORFIELDVISUALIZATIONMODULE_H
-
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-
 namespace inviwo {
+namespace buildinfo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API VectorFieldVisualizationModule : public InviwoModule {
+const std::vector<std::pair<std::string,std::string>> githashes = @HASHES@;
+const int year = @YEAR@;
+const int month = @MONTH@; 
+const int day = @DAY@;
+const int hour = @HOUR@;
+const int minute = @MINUTE@;
+const int second  = @SECOND@;
 
-public:
-    VectorFieldVisualizationModule(InviwoApplication* app);
-
-
-    virtual int getVersion() const override;
-    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
-private:
-    class Converter : public VersionConverter {
-        typedef bool (Converter::*updateType)(TxElement*);
-    public:
-        Converter(int version);
-        virtual bool convert(TxElement* root) override;
-
-        bool traverseNodes(TxElement* node, updateType update);
-        bool updateAllowLooping(TxElement* node);
-
-    private:
-        int version_;
-    };
-
-};
-
-} // namespace
-
-#endif // IVW_VECTORFIELDVISUALIZATIONMODULE_H
+}  // namespace
+}  // namespace

@@ -58,8 +58,6 @@
 #define IVW_THREADPOOL_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -72,94 +70,56 @@
 #include <future>
 #include <functional>
 #include <stdexcept>
+#include <atomic>
 #include <warn/pop>
 
 namespace inviwo {
 
 class IVW_CORE_API ThreadPool {
 public:
-    ThreadPool(size_t);
-    template <class F, class... Args>
-    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
-    void setSize(size_t size);
-    size_t getSize() const;
+    ThreadPool(size_t threads, std::function<void()> onThreadStart = []() {},
+               std::function<void()> onThreadStop = []() {});
     ~ThreadPool();
 
+    template <class F, class... Args>
+    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    size_t trySetSize(size_t size);
+    size_t getSize() const;
+
 private:
-    struct Worker {
-        Worker(const Worker&) = delete;
-        Worker(Worker&& rhs) : thread(std::move(rhs.thread)), stop(rhs.stop), abort(rhs.abort){};
-        Worker& operator=(const Worker&) = delete;
-        Worker& operator=(Worker&&) = delete;
-
-        template <typename... T>
-        Worker(T&&... args)
-            : thread(std::forward<T>(args)...), stop(false), abort(false) {}
-
-        std::thread thread;
-        bool stop;   //< stop after all tasks are done
-        bool abort;  //< stop as soon as possible, no matter if there are more tasks
+    enum class State {
+        Free,     //< Worker is waiting for tasks.
+        Working,  //< Worker is running a task.
+        Stop,     //< Stop after all tasks are done.
+        Abort,    //< Stop as soon as possible, no matter if there are more tasks.
+        Done      //< Worker is waiting to be joined.
     };
-    void addWorker();
-    void removeWorker();
 
+    struct Worker {
+        Worker(ThreadPool& pool);
+        Worker(const Worker&) = delete;
+        Worker(Worker&& rhs) = delete;
+        Worker& operator=(const Worker&) = delete;
+        Worker& operator=(Worker&& rhs) = delete;
+        ~Worker();
+
+        std::atomic<State> state; //< State of the worker
+        std::thread thread;
+    };
     // need to keep track of threads so we can join them
-    std::vector<Worker> workers;
-    // garbage collection list of threads whose render contexts need to be cleaned up due to termination
-    std::queue<std::thread::id> cleanupThreads;
+    std::vector<std::unique_ptr<Worker>> workers;
+
     // the task queue
     std::queue<std::function<void()>> tasks;
 
     // synchronization
     std::mutex queue_mutex;
-    std::mutex cleanup_mutex;
     std::condition_variable condition;
+
+    // Thread start end exit actions
+    std::function<void()> onThreadStart_;
+    std::function<void()> onThreadStop_;
 };
-
-// the constructor just launches some amount of workers
-inline ThreadPool::ThreadPool(size_t threads) {
-    for (size_t i = 0; i < threads; ++i) addWorker();
-}
-
-inline void ThreadPool::addWorker() {
-    size_t i = workers.size();
-    std::unique_lock<std::mutex> lock1(this->queue_mutex);
-    workers.emplace_back([this, i] {
-        util::OnScopeExit cleanup{[this](){
-            RenderContext::getPtr()->clearContext();
-        }};
-    
-        for (;;) {
-            std::function<void()> task;
-
-            {
-                std::unique_lock<std::mutex> lock(this->queue_mutex);
-                this->condition.wait(lock, [this, i] {
-                    return this->workers[i].abort || this->workers[i].stop || !this->tasks.empty();
-                });
-                if (this->workers[i].abort || (this->workers[i].stop && this->tasks.empty()))
-                    break;
-                task = std::move(this->tasks.front());
-                this->tasks.pop();
-            }
-
-            task();
-        }
-        
-    });
-}
-
-inline void ThreadPool::removeWorker() {
-    if (workers.size() > 0) {
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex);
-            workers.back().stop = true;
-        }
-        condition.notify_all();
-        workers.back().thread.join();
-        workers.pop_back();
-    }
-}
 
 // add new work item to the pool
 template <class F, class... Args>
@@ -172,7 +132,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 
     std::future<return_type> res = task->get_future();
 
-    if (workers.size() == 0) {
+    if (workers.empty()) {
         (*task)();  // No worker threads, just run the task.
     } else {
         std::unique_lock<std::mutex> lock(queue_mutex);
@@ -180,25 +140,6 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
     }
     condition.notify_one();
     return res;
-}
-
-inline void ThreadPool::setSize(size_t size) {
-    while (workers.size() < size) addWorker();
-    while (workers.size() > size) removeWorker();
-}
-
-inline size_t ThreadPool::getSize() const {
-    return workers.size();
-}
-
-// the destructor joins all threads
-inline ThreadPool::~ThreadPool() {
-    {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        for (auto& worker : workers) worker.abort = true;
-    }
-    condition.notify_all();
-    for (auto& worker : workers) worker.thread.join();
 }
 
 }  // namespace

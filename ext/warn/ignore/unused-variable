@@ -46,3 +46,7 @@
 #if (__GNUC__)
 # pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
+
+#if (_MSC_VER)
+# pragma warning(disable: 4189)
+#endif

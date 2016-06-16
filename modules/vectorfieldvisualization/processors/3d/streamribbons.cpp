@@ -50,10 +50,12 @@ const ProcessorInfo StreamRibbons::getProcessorInfo() const {
 
 StreamRibbons::StreamRibbons()
     : Processor()
-    , sampler_("vectorVolume")
-    , vorticitySampler_("vorticityVolume")
+    , sampler_("sampler")
+    , vorticitySampler_("vorticitySampler")
     , seedPoints_("seedpoints")
     , colors_("colors")
+    , volume_("vectorVolume")
+    , vorticityVolume_("vorticityVolume")
     , mesh_("mesh")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
@@ -68,6 +70,8 @@ StreamRibbons::StreamRibbons()
     addPort(vorticitySampler_);
     addPort(seedPoints_);
     addPort(colors_);
+    addPort(volume_);
+    addPort(vorticityVolume_);
     addPort(mesh_);
 
     colors_.setOptional(true);
@@ -93,17 +97,29 @@ StreamRibbons::StreamRibbons()
 
 void StreamRibbons::process() {
     //*
+    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double> > {
+        if (sampler_.isConnected()) return sampler_.getData();
+        else return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+    }();
+
+
+    auto vorticitySampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double> > {
+        if (vorticitySampler_.isConnected()) return vorticitySampler_.getData();
+        else return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
+    }();
+
+
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(sampler_.getData()->getModelMatrix());
-    mesh->setWorldMatrix(sampler_.getData()->getWorldMatrix());
+    mesh->setModelMatrix(sampler->getModelMatrix());
+    mesh->setWorldMatrix(sampler->getWorldMatrix());
 
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(
-        sampler_.getData()->getCoordinateTransformer());
+        sampler->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
-    StreamLineTracer tracer(sampler_.getData(), streamLineProperties_);
+    StreamLineTracer tracer(sampler, streamLineProperties_);
     ImageSampler tf(tf_.get().getData());
-    tracer.addMetaSampler("vorticity", vorticitySampler_.getData());
+    tracer.addMetaSampler("vorticity", vorticitySampler);
   //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
     mat3 invBasis;
     std::vector<BasicMesh::Vertex> vertices;
