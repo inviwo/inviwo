@@ -239,4 +239,105 @@ IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr) {
     return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
 
+IVW_CORE_API vec3 chromaticity2rgb(vec3 &LuvChroma, bool clamp, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    vec3 rgb(xyz2rgb(chromaticity2XYZ(LuvChroma, whitePointXYZ)));
+    if (clamp) {
+        // determine largest component
+        int index = 0;
+        for (int i=1; i < 3; ++i) {
+            if (rgb[i] > rgb[index]) {
+                index = i;
+            }
+        }
+        if (rgb[index] > 1.0f) {
+            // renormalize rgb values
+            rgb /= rgb[index];
+        }
+        // get rid of negative values
+        rgb = glm::max(rgb, vec3(0.0f));
+    }
+    return rgb;
+}
+
+IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    // compute u and v for reference white point
+    // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
+    // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
+    double u0_prime = 4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+    double v0_prime = 9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+
+    double L = LuvChroma.x;
+    double u_prime = LuvChroma.y;
+    double v_prime = LuvChroma.z;
+
+    // convert chromaticity to CIE Luv
+    double u = 13.0 * L * (u_prime - u0_prime);
+    double v = 13.0 * L * (v_prime - v0_prime);
+
+    return Luv2XYZ(vec3(L, u, v));
+}
+
+IVW_CORE_API vec3 XYZ2Luv(vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
+
+    const double epsilon = 216.0 / 24389.0;
+    const double kappa = 24389.0 / 27.0;
+
+    // compute u' and v' for reference white point
+    // u' <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
+    // v' <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
+    double u0_prime = 4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+    double v0_prime = 9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+
+    // compute u' and v' for XYZ color value
+    double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+
+    double yr = XYZ.y / whitePointXYZ.y;
+    // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
+    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0/3.0) - 16.0 : kappa * yr);
+    // u <- 13 * L * (u_prime - u0_prime);
+    double u = 13.0 * L * (u_prime - u0_prime);
+    // v <- 13 * L * (v_prime - v0_prime);
+    double v = 13.0 * L * (v_prime - v0_prime);
+
+    return vec3(L, u, v);
+}
+
+IVW_CORE_API vec3 Luv2XYZ(vec3 &Luv, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    // see http://www.brucelindbloom.com/index.html?Eqn_Luv_to_XYZ.html
+
+    const double epsilon = 216.0 / 24389.0;
+    const double kappa = 24389.0 / 27.0;
+
+    // compute u and v for reference white point
+    // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
+    // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
+    double u0 = 4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+    double v0 = 9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
+
+    double L = Luv.x;
+    double u = Luv.y;
+    double v = Luv.z;
+
+    // Y <- ifelse(L > kappa * epsilon, ((L + 16) / 116) ^ 3, L / kappa);
+    double Y = ((L > kappa * epsilon) ? std::pow((L + 16) / 116, 3) : L / kappa);
+
+    // a <- 1 / 3 * (52 * L / (u + 13 * L * u0) - 1);
+    // b <- -5*Y;
+    // c <- -1/3;
+    // d <- Y * (39 * L / (v + 13 * L * v0) - 5);
+    double a = 1.0 / 3.0 * (52.0 * L / (u + 13 * L * u0) - 1.0);
+    double b = -5.0 * Y;
+    double c = -1.0 / 3.0;
+    double d = Y * (39.0 * L / (v + 13 * L * v0) - 5.0);
+    // X <- (d - b) / (a - c);
+    double X = (d - b) / (a - c);
+
+    // Z <- X * a + b;
+    double Z = X * a + b;
+
+    return vec3(X, Y, Z);
+}
+
 } // namespace
