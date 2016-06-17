@@ -227,6 +227,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h
@@ -268,8 +269,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -449,6 +450,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
+    util/document.cpp
     util/exception.cpp
     util/fileextension.cpp
     util/fileobserver.cpp
@@ -476,14 +478,14 @@ set(SOURCE_FILES
     util/stdextensions.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
+    util/threadpool.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
-    util/threadpool.cpp
     util/utilities.cpp
     util/volumesampler.cpp
-    util/volumesequenceutils.cpp
     util/volumesequencesampler.cpp
+    util/volumesequenceutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -509,6 +511,7 @@ set(TEST_FILES
     tests/unittests/filesystem-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
+    tests/unittests/document-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
