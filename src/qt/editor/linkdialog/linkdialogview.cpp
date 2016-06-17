@@ -60,6 +60,4 @@ void LinkDialogGraphicsView::wheelEvent(QWheelEvent* e) {
     e->accept();
 }
 
-LinkDialogGraphicsView::~LinkDialogGraphicsView() {}
-
 } //namespace

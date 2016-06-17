@@ -68,7 +68,7 @@ class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
     #include <warn/pop>
 public:
     LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
-    virtual ~LinkDialogProcessorGraphicsItem();
+    virtual ~LinkDialogProcessorGraphicsItem() = default;
 
     const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
         return properties_;
@@ -85,14 +85,8 @@ public:
 protected:
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
 
-private slots:
-    void animationStart();
-    void animate(qreal incr);
-    void animationEnd();
-
 private:
     std::vector<LinkDialogPropertyGraphicsItem*> properties_;
-    float animateExpansion_;
 };
 
 }  // namespace

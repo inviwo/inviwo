@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -44,18 +45,15 @@
 
 namespace inviwo {
 
-LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent* parent,
+LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeItem* parent,
                                                                Property* prop)
-    : GraphicsItemData<Property>(parent->getSide(), prop)
-
-    , isExpanded_(false)
-    , animateEnabled_(false)
-    , parent_(parent) {
+    : GraphicsItemData<Property>(parent, parent->getSide(), prop) {
+    
     setZValue(linkdialog::propertyDepth);
     setFlags(ItemSendsScenePositionChanges);
 
-    int propWidth = linkdialog::propertyWidth -
-                    ((parent->getLevel() + 1) * linkdialog::propertyExpandCollapseOffset);
+    int propWidth =
+        linkdialog::propertyWidth - (getLevel() * linkdialog::propertyExpandCollapseOffset);
     setRect(-propWidth / 2, -linkdialog::propertyHeight / 2, propWidth, linkdialog::propertyHeight);
 
     auto displayName = new LabelGraphicsItem(this);
@@ -66,7 +64,6 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
     displayName->setFont(dispFont);
     displayName->setCrop(15, 14);
     displayName->setText(QString::fromStdString(item_->getDisplayName()));
-
 
     auto classIdentifier = new LabelGraphicsItem(this);
     classIdentifier->setDefaultTextColor(Qt::black);
@@ -85,45 +82,36 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
         QPointF newPos(0.0f, rect().height());
         for (auto& subProperty : compProp->getProperties()) {
             auto item = new LinkDialogPropertyGraphicsItem(this, subProperty);
+            subProperties_.push_back(item);
             item->hide();
             item->setParentItem(this);
-            item->setPos(isExpanded_ ? newPos : QPointF(0.0, 0.0));
-            size_t count = 1 + item->getTotalVisibleChildCount();
-            newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
-            subProperties_.push_back(item);
         }
     }
 }
 
-LinkDialogPropertyGraphicsItem::~LinkDialogPropertyGraphicsItem() {}
-
-void LinkDialogPropertyGraphicsItem::setAnimate(bool animate) { animateEnabled_ = animate; }
-const bool LinkDialogPropertyGraphicsItem::getAnimate() const { return animateEnabled_; }
-
-void LinkDialogPropertyGraphicsItem::setExpanded(bool expand) {
-    isExpanded_ = expand;
-    for (auto& elem : subProperties_) {
-        elem->setVisible(expand);
-    }
-    updatePositions();
+void LinkDialogPropertyGraphicsItem::updatePositions() {
+    auto visible = propertyVisible();
+    setVisible(visible);
+    auto pos =  prev()->treeItemScenePos();
+    if (visible) pos += QPointF(0.0f, prev()->treeItemRect().height());
+    setPos(mapToParent(mapFromScene(pos)));
 }
 
-bool LinkDialogPropertyGraphicsItem::isExpanded() const { return isExpanded_; }
+bool LinkDialogPropertyGraphicsItem::propertyVisible() const {
+    if (auto p = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(parentItem())) {
+        if (!p->isExpanded()) return false;
+        if (!p->propertyVisible()) return false;
+    }
+    bool show = false;
+    if (auto s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
+        show = s->isShowingHidden();
+    }
+    return item_->getVisible() || show;
+}
 
 bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return subProperties_.size() > 0; }
 
-int LinkDialogPropertyGraphicsItem::getLevel() const { return parent_->getLevel() + 1; }
-
-size_t LinkDialogPropertyGraphicsItem::getTotalVisibleChildCount() const {
-    if (isExpanded_) {
-        return std::accumulate(subProperties_.begin(), subProperties_.end(), size_t(0),
-                               [](size_t val, LinkDialogPropertyGraphicsItem* p) {
-                                   return val + size_t(1) + p->getTotalVisibleChildCount();
-                               });
-    } else {
-        return 0;
-    }
-}
+int LinkDialogPropertyGraphicsItem::getLevel() const { return parent()->getLevel() + 1; }
 
 QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
                                                 const QSizeF& constraint) const {
@@ -167,10 +155,10 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
     QSizeF arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
     switch (getSide()) {
-        case LinkDialogParent::Side::Left:
+        case LinkDialogTreeItem::Side::Left:
             return QRectF(centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2),
                           arrowDim);
-        case LinkDialogParent::Side::Right:
+        case LinkDialogTreeItem::Side::Right:
             return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
         default:
             return QRectF();
@@ -180,6 +168,69 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
 QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(
     DialogConnectionGraphicsItem* cItem) const {
     return calculateArrowRect(getConnectionIndex(cItem));
+}
+
+QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
+                                                    const QVariant& value) {
+    if (change == QGraphicsItem::ItemScenePositionHasChanged) {
+        for (auto connection : connections_) {
+            connection->updateStartEndPoint();
+        }
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
+void LinkDialogPropertyGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
+    setExpanded(!isExpanded());
+    auto item = next();
+    while (item) {
+        item->updatePositions();
+        item = item->next();
+    }
+}
+
+QPointF LinkDialogPropertyGraphicsItem::getConnectionPoint() {
+    qreal dir = getSide() == Side::Left ? 1.0f : -1.0;
+    QPointF offset{dir * rect().width() / 2, 0.0f};
+    return scenePos() + offset;
+}
+
+QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenterLocal(size_t curPort) const {
+    QPointF bottom = getSide() == Side::Left ? rect().bottomRight() : rect().bottomLeft();
+    QPointF top = getSide() == Side::Left ? rect().topRight() : rect().topLeft();
+
+    size_t arrowCount = getConnectionGraphicsItemCount();
+    if (arrowCount == 0) arrowCount++;
+
+    return top + (bottom - top) * (curPort + 1.0) / (arrowCount + 1.0);
+}
+
+QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenter(size_t curPort) const {
+    return scenePos() + calculateArrowCenterLocal(curPort);
+}
+
+const std::vector<DialogConnectionGraphicsItem*>&
+LinkDialogPropertyGraphicsItem::getConnectionGraphicsItems() const {
+    return connections_;
+}
+
+std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::getSubPropertyItemList(
+    bool recursive) const {
+    if (!recursive) return subProperties_;
+
+    std::vector<LinkDialogPropertyGraphicsItem*> subProps;
+
+    for (auto& elem : subProperties_) {
+        subProps.push_back(elem);
+        auto props = elem->getSubPropertyItemList(recursive);
+        for (auto& prop : props) subProps.push_back(prop);
+    }
+
+    return subProps;
+}
+
+void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    //showToolTipHelper(e, utilqt::toLocalQString("todo"));
 }
 
 void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
@@ -272,7 +323,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
         p->setBrush(Qt::green);
 
         QPainterPath rectPath;
-        if (getSide() == LinkDialogParent::Side::Right) {
+        if (getSide() == Side::Right) {
             rectPath.moveTo(arrowRect.left(), arrowRect.top());
             rectPath.lineTo(arrowRect.left(), arrowRect.bottom());
             rectPath.lineTo(arrowRect.right(), arrowRect.bottom() - arrowRect.height() / 2);
@@ -290,76 +341,6 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
     p->restore();
 }
 
-QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
-                                                    const QVariant& value) {
-    if (change == QGraphicsItem::ItemScenePositionHasChanged) {
-        for (auto connection : connections_) {
-            connection->updateStartEndPoint();
-        }
-    }
 
-    return QGraphicsItem::itemChange(change, value);
-}
-
-void LinkDialogPropertyGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    setExpanded(!isExpanded_);
-}
-
-QPointF LinkDialogPropertyGraphicsItem::getConnectionPoint() {
-    qreal dir = getSide() == LinkDialogParent::Side::Left ? 1.0f : -1.0;
-    QPointF offset{dir * rect().width() / 2, 0.0f};
-    return scenePos() + offset;
-}
-
-QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenterLocal(size_t curPort) const {
-    QPointF bottom =
-        getSide() == LinkDialogParent::Side::Left ? rect().bottomRight() : rect().bottomLeft();
-    QPointF top = getSide() == LinkDialogParent::Side::Left ? rect().topRight() : rect().topLeft();
-
-    size_t arrowCount = getConnectionGraphicsItemCount();
-    if (arrowCount == 0) arrowCount++;
-
-    return top + (bottom - top) * (curPort + 1.0) / (arrowCount + 1.0);
-}
-
-QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenter(size_t curPort) const {
-    return scenePos() + calculateArrowCenterLocal(curPort);
-}
-
-const std::vector<DialogConnectionGraphicsItem*>&
-LinkDialogPropertyGraphicsItem::getConnectionGraphicsItems() const {
-    return connections_;
-}
-
-std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::getSubPropertyItemList(
-    bool recursive) const {
-    if (!recursive) return subProperties_;
-
-    std::vector<LinkDialogPropertyGraphicsItem*> subProps;
-
-    for (auto& elem : subProperties_) {
-        subProps.push_back(elem);
-        std::vector<LinkDialogPropertyGraphicsItem*> props =
-            elem->getSubPropertyItemList(recursive);
-        for (auto& prop : props) subProps.push_back(prop);
-    }
-
-    return subProps;
-}
-
-void LinkDialogPropertyGraphicsItem::updatePositions() {
-    QPointF newPos(0.0f, rect().height());
-    for (auto property : subProperties_) {
-        property->setPos(isExpanded_? newPos : QPointF(0.0,0.0));
-        size_t count = 1 + property->getTotalVisibleChildCount();
-        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
-    }
-
-    dynamic_cast<LinkDialogParent*>(parentItem())->updatePositions();
-}
-
-void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    showToolTipHelper(e, utilqt::toLocalQString("todo"));
-}
 
 }  // namespace
