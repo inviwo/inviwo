@@ -165,7 +165,11 @@ IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr);
 */
 IVW_CORE_API vec3 chromaticity2rgb(vec3 &LuvChroma, bool clamp=false, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
+IVW_CORE_API vec3 rgb2chromaticity(vec3 &rgb, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
 IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+IVW_CORE_API vec3 XYZ2chromaticity(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
 /**
 * \brief Convert from CIE XYZ to CIE Luv

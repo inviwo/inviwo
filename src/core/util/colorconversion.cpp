@@ -259,6 +259,10 @@ IVW_CORE_API vec3 chromaticity2rgb(vec3 &LuvChroma, bool clamp, vec3 whitePointX
     return rgb;
 }
 
+IVW_CORE_API vec3 rgb2chromaticity(vec3 &rgb, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    return XYZ2chromaticity(rgb2xyz(rgb), whitePointXYZ);
+}
+
 IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
@@ -275,6 +279,23 @@ IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ /*= vec3(
     double v = 13.0 * L * (v_prime - v0_prime);
 
     return Luv2XYZ(vec3(L, u, v));
+}
+
+IVW_CORE_API vec3 XYZ2chromaticity(vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+    // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
+
+    const double epsilon = 216.0 / 24389.0;
+    const double kappa = 24389.0 / 27.0;
+
+    // compute u' and v' for XYZ color value
+    double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+
+    double yr = XYZ.y / whitePointXYZ.y;
+    // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
+    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
+
+    return vec3(L, u_prime, v_prime);
 }
 
 IVW_CORE_API vec3 XYZ2Luv(vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
