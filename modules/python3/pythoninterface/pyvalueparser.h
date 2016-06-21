@@ -150,7 +150,10 @@ static bool test(PyObject* arg) {
 }
 
 template <typename T, typename std::enable_if<
-                          util::rank<T>::value == 0 && std::is_integral<T>::value, int>::type = 0>
+                          util::rank<T>::value == 0 &&
+                          !(std::is_same<bool, typename std::remove_cv<T>::type>::value) &&
+                          std::is_integral<T>::value,
+                          int>::type = 0>
 static bool test(PyObject* arg) {
     return PyLong_Check(arg);
 }
