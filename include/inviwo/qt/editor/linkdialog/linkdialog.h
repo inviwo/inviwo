@@ -38,11 +38,12 @@
 #include <QComboBox>
 #include <QEventLoop>
 #include <QCheckBox>
-#include <QStandardItemModel>
+#include <memory>
 #include <warn/pop>
 
 class QStandardItem;
 class QPushButton;
+class QStandardItemModel;
 
 namespace inviwo {
 
@@ -59,7 +60,7 @@ class IVW_QTEDITOR_API CheckableQComboBox : public QComboBox {
 #include <warn/pop>
 public:
     CheckableQComboBox(QWidget* parent, std::string widgetName, std::vector<std::string> options);
-    virtual ~CheckableQComboBox() = default;
+    virtual ~CheckableQComboBox();
     bool isItemChecked(int i);
     std::vector<std::string> getCheckedItems();
 public slots:
