@@ -44,7 +44,7 @@ const ProcessorInfo ExampleProgressBar::getProcessorInfo() const {
 }
 
 ExampleProgressBar::ExampleProgressBar()
-    : Processor(), inport_("image.inport"), outport_("image.outport") {
+    : Processor(), inport_("inputImage"), outport_("outputImage") {
     addPort(inport_);
     addPort(outport_);
 
@@ -52,7 +52,7 @@ ExampleProgressBar::ExampleProgressBar()
     // progressBar_.hide();
 }
 
-ExampleProgressBar::~ExampleProgressBar() {}
+ExampleProgressBar::~ExampleProgressBar() = default;
 
 void ExampleProgressBar::process() {
     // progressBar_.show();

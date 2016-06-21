@@ -44,8 +44,8 @@ const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const {
 
 DistanceTransformRAM::DistanceTransformRAM()
     : Processor()
-    , volumePort_("volume.inport")
-    , outport_("volume.outport")
+    , volumePort_("inputVolume")
+    , outport_("outputVolume")
     , transformEnabled_("transformActive", "Enabled", true)
     , resultSquaredDist_("distSquared", "Squared Distance", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
