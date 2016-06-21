@@ -43,8 +43,8 @@ const PickingObject* PickingManager::registerPickingCallback(
 
     // Find the smallest object with capacity >= size
     auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
-                               [](PickingObject* p, size_t size) {
-                                   return p->getCapacity() < size;
+                               [](PickingObject* p, size_t s) {
+                                   return p->getCapacity() < s;
                                });
 
     if (it != unusedObjects_.end()) {
@@ -63,21 +63,21 @@ const PickingObject* PickingManager::registerPickingCallback(
 }
 
 bool PickingManager::unregisterPickingObject(const PickingObject* p) {
-    auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
-    if (it == unusedObjects_.end()) {
-        auto it = util::find_if(
+    auto it1 = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
+    if (it1 == unusedObjects_.end()) {
+        auto it2 = util::find_if(
             pickingObjects_, [p](const std::unique_ptr<PickingObject>& o) { return p == o.get(); });
 
-        if (it != pickingObjects_.end()) {
-            (*it)->setCallback(nullptr);
+        if (it2 != pickingObjects_.end()) {
+            (*it2)->setCallback(nullptr);
 
             auto insit =
-                std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(), (*it)->getCapacity(),
-                                 [](const size_t& capacity, PickingObject* p) {
-                return capacity < p->getCapacity();
+                std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(), (*it2)->getCapacity(),
+                                 [](const size_t& capacity, PickingObject* po) {
+                return capacity < po->getCapacity();
             });
 
-            unusedObjects_.insert(insit, (*it).get());
+            unusedObjects_.insert(insit, (*it2).get());
             return true;
         }
     }
@@ -119,8 +119,8 @@ PickingObject* PickingManager::getPickingObjectFromColor(const uvec3& c) {
 
     // This will find the first picking object with an start greater then index.
     auto pit = std::upper_bound(pickingObjects_.begin(), pickingObjects_.end(), index,
-                                [](const size_t& index, const std::unique_ptr<PickingObject>& p) {
-                                    return index < p->getPickingId(0);
+                                [](const size_t& i, const std::unique_ptr<PickingObject>& p) {
+                                    return i < p->getPickingId(0);
                                 });
 
     if (std::distance(pickingObjects_.begin(), pit) > 0) {

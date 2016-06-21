@@ -371,21 +371,20 @@ void PropertyWidgetQt::generateContextMenu() {
 
 void PropertyWidgetQt::generateModuleMenuActions() {
     moduleSubMenus_.clear();
-    auto& moduleActions = InviwoApplication::getPtr()->getCallbackActions();
-    std::map<std::string, std::vector<const ModuleCallbackAction*> > callbackMapPerModule;
 
-    for (auto& moduleAction : moduleActions)
+    std::map<std::string, std::vector<const ModuleCallbackAction*> > callbackMapPerModule;
+    for (auto& moduleAction : InviwoApplication::getPtr()->getCallbackActions())
         callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(
             moduleAction.get());
 
     for (auto& elem : callbackMapPerModule) {
-        auto moduleActions = elem.second;
+        auto actions = elem.second;
 
-        if (moduleActions.size()) {
+        if (actions.size()) {
             QMenu* submenu = new QMenu(tr(elem.first.c_str()));
             moduleSubMenus_[elem.first.c_str()] = submenu;
 
-            for (auto& moduleAction : moduleActions) {
+            for (auto& moduleAction : actions) {
                 QAction* action = new QAction(tr(moduleAction->getActionName().c_str()), this);
                 action->setCheckable(true);
                 submenu->addAction(action);

@@ -172,8 +172,8 @@ void FilePropertyWidgetQt::setPropertyValue() {
     }
 
     if (importFileDialog.exec()) {
-        QString path = importFileDialog.selectedFiles().at(0);
-        property_->set(path.toStdString());
+        QString p = importFileDialog.selectedFiles().at(0);
+        property_->set(p.toStdString());
     }
 
     updateFromProperty();

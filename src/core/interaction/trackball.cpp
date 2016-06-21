@@ -267,9 +267,8 @@ void Trackball::invokeEvent(Event* event) {
 
 const vec3& Trackball::getLookTo() const { return object_->getLookTo(); }
 
-vec3 Trackball::mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius /*= 1.f*/) {
+vec3 Trackball::mapNormalizedMousePosToTrackball(const vec2& mousePos, float r) {
     // set x and y to lie in interval [-r, r]
-    float r = radius;
     vec3 result = vec3(2.f * mousePos.x - 1.f, 2.f * (1.f - mousePos.y) - 1.f, 0.0f);
 
     // Mapping according to Holroyds trackball
