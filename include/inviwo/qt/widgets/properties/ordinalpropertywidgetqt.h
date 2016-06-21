@@ -83,7 +83,7 @@ protected:
     virtual SliderVector makeSliders(QWidget* widget) = 0;
     void generateWidget();
     SliderVector sliderWidgets_;
-    int sliderId_;
+    size_t sliderId_;
     PropertySettingsWidgetQt* settingsWidget_;
 
 private:
@@ -139,20 +139,20 @@ protected:
                 sliders.push_back(controlWidget);
                 
                 // Optionally add element descriptions
-                QWidget* widget;
+                QWidget* edwidget;
                 if(ordinalproperty_->getSemantics() == PropertySemantics("Spherical")) {
                     
-                    widget = new QWidget(this);
+                    edwidget = new QWidget(this);
                     QHBoxLayout* hLayout = new QHBoxLayout();
                     hLayout->setContentsMargins(0, 0, 0, 0);
                     hLayout->setSpacing(7);
-                    widget->setLayout(hLayout);
+                    edwidget->setLayout(hLayout);
                     hLayout->addWidget(new QLabel(sphericalChars[i], this));
                     hLayout->addWidget(controlWidget);
                 }else{
-                    widget = controlWidget;
+                    edwidget = controlWidget;
                 }
-                vLayout->addWidget(widget, static_cast<int>(i), static_cast<int>(j));
+                vLayout->addWidget(edwidget, static_cast<int>(i), static_cast<int>(j));
             }
         }
         return sliders;
@@ -359,7 +359,7 @@ void OrdinalPropertyWidgetQt<BT, T>::setPropertyValue(int sliderId) {
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMin() {
-    if (this->sliderId_ >= 0 && this->sliderId_ < this->sliderWidgets_.size()) {
+    if (this->sliderId_ < this->sliderWidgets_.size()) {
 
         T propValue = transformer_->min(this->ordinalproperty_->getMinValue());        
         util::glmcomp(propValue, this->sliderId_) =  sliders_[this->sliderId_]->getValue();
@@ -374,7 +374,7 @@ void OrdinalPropertyWidgetQt<BT, T>::setAsMin() {
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMax() {
-    if (this->sliderId_ >= 0 && this->sliderId_ < this->sliderWidgets_.size()) {
+    if (this->sliderId_ < this->sliderWidgets_.size()) {
 
         T propValue = transformer_->max(this->ordinalproperty_->getMaxValue());
         util::glmcomp(propValue, this->sliderId_) =  sliders_[this->sliderId_]->getValue();

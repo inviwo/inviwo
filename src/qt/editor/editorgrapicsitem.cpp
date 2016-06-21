@@ -109,7 +109,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     if (!inspector && !portinfo) return;
 
     std::unique_ptr<std::vector<unsigned char>> data;
-    int size = settings->portInspectorSize_.get();
+    size_t size = static_cast<size_t>(settings->portInspectorSize_.get());
 
     ToolTipHelper t;
     t.tableTop();

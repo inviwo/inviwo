@@ -48,7 +48,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 
     auto lastWrapper = wrappers_.back();
 
-    auto size = wrappers_.size();
+    
     auto infsTime = std::count_if(
         wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
             return w->timestamp_ == std::numeric_limits<double>::infinity();
@@ -57,7 +57,8 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     auto infsDuration = std::count_if(
         wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
             return w->duration_ == std::numeric_limits<double>::infinity();
-        });
+    });
+    auto size = static_cast<decltype(infsTime)>(wrappers_.size());
 
     if (infsTime == 0) {  // all volumes has timestamps, make sure the volumes are in sorted order,
         std::sort(wrappers_.begin(), wrappers_.end());
@@ -152,7 +153,7 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
 
     auto it = std::upper_bound(
         wrappers_.begin(), wrappers_.end(), t,
-        [](double t, const std::shared_ptr<Wrapper> a) { return t < a->timestamp_; });
+        [](double t2, const std::shared_ptr<Wrapper> a) { return t2 < a->timestamp_; });
     --it;
     auto wrapper = *it;
 

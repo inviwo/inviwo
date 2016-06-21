@@ -51,10 +51,10 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
     for (auto& property : properties) {
         //enable camera prop linking by default.
         bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
-        auto id = dotSeperatedToPascalCase(property);
-        auto linkPropery = util::make_unique<BoolProperty>("link" + id, property, enabled);
+        auto ids = dotSeperatedToPascalCase(property);
+        auto linkPropery = util::make_unique<BoolProperty>("link" + ids, property, enabled);
         linkProperties_.addProperty(linkPropery.get(), false);
-        propertyMap_[id] = std::move(linkPropery);
+        propertyMap_[ids] = std::move(linkPropery);
     }
     
     factory->addObserver(this);

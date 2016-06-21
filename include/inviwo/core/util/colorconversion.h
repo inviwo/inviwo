@@ -163,13 +163,13 @@ IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr);
 * @param whitePointXYZ  Normalized white point. Default white point is D65.
 * @return rgb RGB color, [0, 1]^3 if clamping is enabled
 */
-IVW_CORE_API vec3 chromaticity2rgb(vec3 &LuvChroma, bool clamp=false, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 chromaticity2rgb(const vec3 &LuvChroma, bool clamp=false, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
-IVW_CORE_API vec3 rgb2chromaticity(vec3 &rgb, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 rgb2chromaticity(const vec3 &rgb, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
-IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 chromaticity2XYZ(const vec3 &LuvChroma, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
-IVW_CORE_API vec3 XYZ2chromaticity(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 XYZ2chromaticity(const vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
 /**
 * \brief Convert from CIE XYZ to CIE Luv
@@ -183,7 +183,7 @@ IVW_CORE_API vec3 XYZ2chromaticity(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f
 * @param whitePointXYZ  Normalized white point. Default white point is D65.
 * @return CIE Luv color value, L in [0, 100], u and v in [-100, +100] (for typical images)
 */
-IVW_CORE_API vec3 XYZ2Luv(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 XYZ2Luv(const vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
 /**
 * \brief Convert from CIE Luv to CIE XYZ
@@ -198,7 +198,7 @@ IVW_CORE_API vec3 XYZ2Luv(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.
 * @param whitePointXYZ  Normalized white point. Default white point is D65.
 * @return CIE XYZ color value
 */
-IVW_CORE_API vec3 Luv2XYZ(vec3 &Luv, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+IVW_CORE_API vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
 
 }
 

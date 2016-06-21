@@ -157,8 +157,8 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     // bx' = dot(x, b) = b.x
     // cx' = dot(x, c) = c.x
     // and so on.
-    auto signedMax = [](const float &a, const float &b) {
-        return (std::abs(a) >= std::abs(b)) ? a : b;
+    auto signedMax = [](const float &x1, const float &x2) {
+        return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
     vec3 ds{ 
