@@ -32,7 +32,13 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <type_traits>
+#include <iostream>
+#include <warn/pop>
+
 
 namespace inviwo {
 
@@ -108,6 +114,18 @@ std::string data_info(const T*) {
     return "";
 }
 
+template <class T>
+class is_stream_insertable {
+    template <typename U, class = typename std::enable_if<std::is_convertible<
+                              decltype(std::declval<std::ostream&>() << std::declval<U>()),
+                              std::ostream&>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
 
 } // namespace
 

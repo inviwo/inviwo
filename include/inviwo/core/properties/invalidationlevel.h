@@ -44,6 +44,8 @@ enum class InvalidationLevel {
     InvalidResources    // Trigger a call to initializeResources and then process.
 };
 
+IVW_CORE_API std::ostream& operator<<(std::ostream &out, const InvalidationLevel& mode);
+
 } // namespace
 
 #endif // IVW_INVALIDATIONLEVEL_H

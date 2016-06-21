@@ -37,28 +37,61 @@ Document::Document() : root_{util::make_unique<Element>("root", "root")} {
     elements_[root_.get()] = std::vector<std::unique_ptr<Element>>();
 }
 
+Document::Document(const Document& rhs) : root_{util::make_unique<Element>(*rhs.root_)} {
+    elements_[root_.get()] = std::vector<std::unique_ptr<Element>>();
+    std::vector<Element*> parent = {root_.get()};
+    rhs.visitElements(
+        [&](Element* elem, std::vector<Element*>& stack) {
+            auto clone = util::make_unique<Element>(*elem);
+            auto c = clone.get();
+            elements_[parent.back()].push_back(std::move(clone));
+            parent.push_back(c);
+        },
+        [&](Element* elem, std::vector<Element*>& stack) { parent.pop_back(); });
+}
+Document::Document(Document&& rhs)
+    : root_{std::move(rhs.root_)}, elements_{std::move(rhs.elements_)} {}
+
+Document& Document::operator=(Document that) {
+    std::swap(root_, that.root_);
+    std::swap(elements_, that.elements_);
+    return *this;
+}
+
 Document::operator std::string() const {
     std::stringstream ss;
 
     visitElements(
         [&](Element* elem, std::vector<Element*>& stack) {
-            ss << std::string(stack.size() * 4, ' ') << "<" << elem->type << " id='" << elem->name
-               << "'>\n";
+            ss << std::string(stack.size() * 4, ' ') << "<" << elem->type() << " id='"
+               << elem->name() << "'";
+            for (const auto& item : elem->attributes()) {
+                ss << " " << item.first << "='" << item.second << "'";
+            }
+            ss << ">\n";
+            if (!elem->contents().empty())
+                ss << std::string((1+stack.size()) * 4, ' ') << elem->contents() << "\n";
         },
         [&](Element* elem, std::vector<Element*>& stack) {
-            ss << std::string(stack.size() * 4, ' ') << "</" << elem->type << ">\n";
+            ss << std::string(stack.size() * 4, ' ') << "</" << elem->type() << ">\n";
         });
 
     return ss.str();
 }
 
-Document::Element* Document::findElement(const std::vector<Path>& paths) const {
+Document::ElementWrapper Document::getElement(const std::vector<Path>& paths) {
+    return ElementWrapper(this, getElement(paths.begin(), paths.end()), paths);
+}
+
+Document::Element* Document::getElement(std::vector<Path>::const_iterator b,
+                                        std::vector<Path>::const_iterator e) const {
     Element* elem = root_.get();
-    for (const auto& path : paths) {
+    for (auto path = b; path != e; ++path) {
         auto it = elements_.find(elem);
         if (it != elements_.end()) {
-            elem = path(it->second);
-            if (!elem) return nullptr;
+            auto eit = (*path)(it->second);
+            if (eit != it->second.end()) elem = eit->get();
+            else return nullptr;
         } else {
             return nullptr;
         }
@@ -66,56 +99,195 @@ Document::Element* Document::findElement(const std::vector<Path>& paths) const {
     return elem;
 }
 
-void Document::insert(const std::vector<Path>& path, const std::string& type,
-                      const std::string& name) {
-    if (auto elem = findElement(path)) {
-        elements_[elem].push_back(util::make_unique<Element>(type, name));
+size_t Document::numberOfChildren(const std::vector<Path>& path) const {
+    if(auto elem = getElement(path.begin(), path.end())) {
+        auto it = elements_.find(elem);
+        if (it != elements_.end()) return it->second.size();
     }
+    return 0;
 }
 
-Document::Path::Path(std::function<Element*(const std::vector<std::unique_ptr<Element>>&)> func)
-    : func_(func) {}
+Document::ElementWrapper Document::addElementIn(const std::vector<Path>& path,
+                                                const std::string& type, const std::string& name) {
+    if (auto elem = getElement(path.begin(), path.end())) {
+        auto e = util::make_unique<Element>(type, name);
+        auto res = e.get();
+        elements_[elem].push_back(std::move(e));
+        auto newpath = path;
+        newpath.push_back(Path(name));
+        return ElementWrapper(this, res, newpath);
+    }
+    throw Exception("Invalid Path: " + joinString(path, "/"));
+}
+
+Document::ElementWrapper Document::addElementAfter(const std::vector<Path>& path, const std::string& type,
+                      const std::string& name) {
+    
+    if (path.empty()) throw Exception("Empty path");
+    
+    if (auto elem = path.size() > 1 ? getElement(path.begin(), --path.end()) : root_.get()) {
+        auto& vec = elements_[elem];
+        auto it = (path.back())(vec);
+        if (it != vec.end()) {
+            auto e = util::make_unique<Element>(type, name);
+            auto res = e.get();
+            vec.insert(++it, std::move(e));
+            auto newpath = path;
+            newpath.pop_back();
+            newpath.push_back(Path(name));
+            return ElementWrapper(this, res, newpath);
+        }
+    }
+    throw Exception("Invalid Path: " + joinString(path, "/"));
+}
+
+Document::ElementWrapper Document::addElementBefore(const std::vector<Path>& path, const std::string& type,
+                      const std::string& name) {
+    if (path.empty()) throw Exception("Empty path");
+    
+    if (auto elem = path.size() > 1 ? getElement(path.begin(), --path.end()) : root_.get()) {
+        auto& vec = elements_[elem];
+        auto it = (path.back())(vec);
+        if (it != vec.end()) {
+            auto e = util::make_unique<Element>(type, name);
+            auto res = e.get();
+            vec.insert(it, std::move(e));
+            auto newpath = path;
+            newpath.pop_back();
+            newpath.push_back(Path(name));
+            return ElementWrapper(this, res, newpath);
+        }
+    }
+    throw Exception("Invalid Path: " + joinString(path, "/"));
+}
+
+Document::Element::Element(const std::string& type, const std::string& name)
+    : type_(type), name_(name) {}
+
+Document::Element& Document::Element::setName(const std::string& name) {
+    name_ = name;
+    return *this;
+}
+Document::Element& Document::Element::setType(const std::string& type) {
+    type_ = type;
+    return *this;
+}
+Document::Element& Document::Element::setContent(const std::string& contents) {
+    contents_ = contents;
+    return *this;
+}
+Document::Element& Document::Element::addAttribute(const std::string& key,
+                                                   const std::string& value) {
+    attributes_[key] = value;
+    return *this;
+}
+
+const std::string& Document::Element::name() const { return name_; }
+const std::string& Document::Element::type() const { return type_; }
+const std::string& Document::Element::contents() const { return contents_; }
+std::unordered_map<std::string, std::string>& Document::Element::attributes() {
+    return attributes_;
+}
+
+Document::Path::Path(const std::string strrep, std::function<C::const_iterator(const C&)> func)
+    : strrep_(strrep), func_(func) {}
 
 Document::Path::Path(const std::string& name)
-    : func_{[name](const std::vector<std::unique_ptr<Element>>& elements) -> Element* {
-        auto it = util::find_if(elements,
-                                [&](const std::unique_ptr<Element>& e) { return e->name == name; });
-        if (it != elements.end()) {
-            return it->get();
-        } else {
-            return nullptr;
-        }
+    : strrep_(name), func_{[name](const C& elements) -> C::const_iterator {
+        return util::find_if(elements,
+                             [&](const std::unique_ptr<Element>& e) { return e->name() == name; });
     }} {}
 
 Document::Path::Path(int index)
-    : func_{[index](const std::vector<std::unique_ptr<Element>>& elements) -> Element* {
+    : strrep_(toString(index)), func_{[index](const C& elements) -> C::const_iterator {
         size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
         if (i < elements.size())
-            return elements[i].get();
+            return elements.begin() + i;
         else
-            return nullptr;
+            return elements.end();
     }} {}
 
 Document::Path Document::Path::first() {
-    return Path([](const std::vector<std::unique_ptr<Element>>& elements) -> Element* {
+    return Path("<first>", [](const C& elements) -> C::const_iterator {
         if (!elements.empty())
-            return elements.front().get();
+            return elements.begin();
         else
-            return nullptr;
+            return elements.end();
     });
 }
 Document::Path Document::Path::last() {
-    return Path([](const std::vector<std::unique_ptr<Element>>& elements) -> Element* {
+    return Path("<last>", [](const C& elements) -> C::const_iterator {
         if (!elements.empty())
-            return elements.back().get();
+            return --elements.end();
         else
-            return nullptr;
+            return elements.end();
     });
 }
 
-Document::Element* Document::Path::operator() (
-    const std::vector<std::unique_ptr<Element>>& elements) const {
+Document::Path::C::const_iterator Document::Path::operator() (const C& elements) const {
     return func_(elements);
+}
+Document::Path::operator const std::string&() const {
+    return strrep_;
+}
+
+
+Document::ElementWrapper::ElementWrapper(Document* doc, Element* element,
+                                         const std::vector<Path>& path)
+    : doc_{doc}, element_(element), path_(path) {}
+
+Document::Element& Document::ElementWrapper::element() { return *element_; }
+const std::vector<Document::Path>& Document::ElementWrapper::path() { return path_; }
+
+
+Document::ElementWrapper Document::ElementWrapper::getElement(const std::vector<Path>& path){
+    auto p = path_;
+    std::copy(path.begin(),path.end(), std::back_inserter(p));
+    return doc_->getElement(p);
+}
+
+Document::ElementWrapper Document::ElementWrapper::addElementIn(const std::string& type,
+                                                                const std::string& name) {
+    return doc_->addElementIn(path_, type, name);
+}
+Document::ElementWrapper Document::ElementWrapper::addElementAfter(const std::string& type,
+                                                                   const std::string& name) {
+    return doc_->addElementAfter(path_, type, name);
+}
+Document::ElementWrapper Document::ElementWrapper::addElementBefore(const std::string& type,
+                                                                    const std::string& name) {
+    return doc_->addElementBefore(path_, type, name);
+}
+
+Document::ElementWrapper& Document::ElementWrapper::setName(const std::string& name) {
+    element_->setName(name);
+    return *this;
+}
+Document::ElementWrapper& Document::ElementWrapper::setType(const std::string& type) {
+    element_->setType(type);
+    return *this;
+}
+Document::ElementWrapper& Document::ElementWrapper::setContent(const std::string& contents) {
+    element_->setContent(contents);
+    return *this;
+}
+Document::ElementWrapper& Document::ElementWrapper::addAttribute(const std::string& key,
+                                                                 const std::string& value) {
+    element_->addAttribute(key, value);
+    return *this;
+}
+
+size_t Document::ElementWrapper::numberOfChildren() const {
+    return doc_->numberOfChildren(path_);
+}
+
+std::ostream& operator<<(std::ostream &out, const Document::Path& path) {
+    out << path.strrep_;
+    return out;
+}
+std::ostream& operator<<(std::ostream &out, const Document& doc) {
+    out << doc.operator std::string();
+    return out;
 }
 
 }  // namespace

@@ -60,8 +60,6 @@ public:
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
 
-    virtual std::string getToolTipText() override;
-
 public slots:
     void setPropertyValue();
 

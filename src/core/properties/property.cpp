@@ -282,6 +282,28 @@ void Property::setVisible(bool visible) {
     }
 }
 
+Document Property::getDescription() const {
+    Document doc;
+    using P = Document::Path;
+    auto b = doc.addElementIn({}, "html", "html").addElementIn("body", "body");
+
+    b.addElementIn("b", "name")
+        .setContent(displayName_.value)
+        .addAttribute("style", "color:white;");
+
+    using h = utildoc::TableBuilder::Header;
+    using t = utildoc::TableBuilder::Text;
+
+    utildoc::TableBuilder tb(b, "property");
+    tb(h{}, "Identifier", t{}, identifier_);
+    tb(h{}, "Class Identifier", t{}, getClassIdentifier());
+    tb(h{}, "Path", t{}, joinString(getPath(), "."));
+    util::for_each_argument(tb, readOnly_, semantics_, usageMode_, visible_);
+    tb(h{}, "Validation Level", t{}, invalidationLevel_);
+
+    return doc;
+}
+
 const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToProperty() const {
     return autoLinkTo_;
 }

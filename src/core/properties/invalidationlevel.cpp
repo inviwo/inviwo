@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,28 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/document.h>
-
-#include <iostream>
+#include <inviwo/core/properties/invalidationlevel.h>
 
 namespace inviwo {
 
-TEST(DocumentTest, Minimal) {
-    Document doc;
-    
-    using P = Document::Path;
-    
-    auto w = doc.addElementIn({}, "body", "body").addElementIn("table", "t1").addElementIn("tr", "r1");
-    Document d2(doc);
-    d2.addElementAfter({P("body"),P("t1")}, "table", "d2");
-    Document d3 = doc;
-    d3.addElementAfter({P("body"),P("t1")}, "table", "d3");
-    
-    doc.addElementIn({P("body"), P("t1")}, "tr", "r1");
-    doc.addElementIn({P("body"), P("t1")}, "tr", "r1");
-    
-    doc.addElementIn({P("body"), P("t1"), P::first()}, "td", "nil");
-    doc.addElementIn({P("body"), P("t1"), P(-2)}, "td", "-2").setContent("bla bla").addAttribute("key", "balue");
-    doc.addElementIn({P("body"), P("t1"), P::last()}, "td", "end");
-    
-    doc.addElementAfter({P("body"),P("t1")}, "table", "t2");
-    
-    std::string test = doc;
-    
-    std::cout << test << std::endl;
-    
-    std::cout << d2 << std::endl;
-    std::cout << d3 << std::endl;
-    
-    EXPECT_STREQ("test", "test");
+std::ostream& operator<<(std::ostream& out, const InvalidationLevel& level) {
+    switch (level) {
+        case InvalidationLevel::Valid:
+            out << "Valid";
+            break;
+        case InvalidationLevel::InvalidOutput:
+            out << "Invalid output";
+            break;
+        case InvalidationLevel::InvalidResources:
+            out << "Invalid resources";
+            break;
+        default:
+            out << "Unknown";
+            break;
+    }
+
+    return out;
 }
-
-
 
 } // namespace
 

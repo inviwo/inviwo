@@ -43,6 +43,7 @@
 #include <vector>
 #include <type_traits>
 #include <future>
+#include <array>
 #include <warn/pop>
 
 namespace inviwo {
@@ -122,10 +123,14 @@ struct is_string<T, typename void_helper<typename T::value_type, typename T::tra
 template <typename T>
 struct is_string : detail::is_string<T> {};
 
+
+#include <warn/push>
+#include <warn/ignore/unused-value>
 template <class F, class... Args>
-void for_each_argument(F f, Args&&... args) {
-    [](...){}((f(std::forward<Args>(args)), 0)...);
+void for_each_argument(F&& f, Args&&... args) {
+    std::array<int, sizeof...(Args)>{(f(std::forward<Args>(args)), 0)...};
 }
+#include <warn/pop>
 
 template <typename T, typename V>
 auto erase_remove(T& cont, const V& elem)

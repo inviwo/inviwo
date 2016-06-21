@@ -30,12 +30,17 @@
 #ifndef IVW_PROPERTYVISIBILITYMODE_H
 #define IVW_PROPERTYVISIBILITYMODE_H
 
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+
 namespace inviwo {
 
 enum class UsageMode {
     Application = 0, // Always show property
     Development = 1, // Default, Only show in developer mode
 };
+
+IVW_CORE_API std::ostream& operator<<(std::ostream &out, const UsageMode& mode);
 
 } //namespace
 

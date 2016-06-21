@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <functional>
@@ -181,6 +182,8 @@ public:
 
     virtual void setVisible(bool val);
     virtual bool getVisible();
+
+    virtual Document getDescription() const;
 
     template <typename T, typename U>
     static void setStateAsDefault(T& property, const U& state);

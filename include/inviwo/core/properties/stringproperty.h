@@ -66,7 +66,9 @@ public:
     StringProperty& operator=(const StringProperty& that);
     StringProperty& operator=(const std::string& value);
     virtual StringProperty* clone() const override;
-    virtual ~StringProperty();
+    virtual ~StringProperty() = default;
+    
+    virtual Document getDescription() const override;
 };
 
 }  // namespace

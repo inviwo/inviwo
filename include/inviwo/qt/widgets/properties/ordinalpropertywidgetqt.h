@@ -288,8 +288,6 @@ public:
     virtual ~OrdinalPropertyWidgetQt() { delete transformer_; }
     virtual void updateFromProperty() override;
 
-    virtual std::string getToolTipText() override;
-
 protected:
     // Connected to sliderwidget valueChanged()
     virtual void setPropertyValue(int) override;
@@ -299,37 +297,6 @@ protected:
     PropertyTransformer<T>* transformer_;
     SliderVectorTyped sliders_;
 };
-
-template <typename BT, typename T>
-std::string OrdinalPropertyWidgetQt<BT, T>::getToolTipText() {
-     ToolTipHelper t(this->ordinalproperty_->getDisplayName());
-     t.tableTop();
-
-     t.row("Identifier", this->ordinalproperty_->getIdentifier());
-     t.row("Path", joinString(this->ordinalproperty_->getPath(), "."));
-     t.row("Semantics", this->ordinalproperty_->getSemantics().getString());
-     t.row("Validation Level",
-           PropertyOwner::invalidationLevelToString(this->ordinalproperty_->getInvalidationLevel()));
-     t.tableBottom();
-
-     T min = transformer_->min(this->ordinalproperty_->getMinValue());
-     T max = transformer_->max(this->ordinalproperty_->getMaxValue());
-     T inc = transformer_->inc(this->ordinalproperty_->getIncrement());
-     T val = transformer_->value(this->ordinalproperty_->get());
-
-     t.tableTop();
-     auto header = {"Value ", " Min ", " Max ", " Inc "};
-     t.row("#", header, true);
-     size_t size = this->ordinalproperty_->getDim().x * this->ordinalproperty_->getDim().y;
-     for (size_t i = 0; i < size; i++) {
-         auto row = {util::glmcomp(val, i), util::glmcomp(min, i), util::glmcomp(max, i),
-                     util::glmcomp(inc, i)};
-         t.row(i, row);
-     }
-     t.tableBottom();
-
-     return t;
-}
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::updateFromProperty() {

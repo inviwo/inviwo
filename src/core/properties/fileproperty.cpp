@@ -231,4 +231,71 @@ void FileProperty::requestFile() {
     }
 }
 
+Document FileProperty::getDescription() const {
+    using P = Document::Path;
+
+    using h = utildoc::TableBuilder::Header;
+    using t = utildoc::TableBuilder::Text;
+    using Append = utildoc::TableBuilder::Append;
+
+    Document doc = TemplateProperty<std::string>::getDescription();
+
+    auto b = doc.getElement({P("html"), P("body"), P("property")});
+
+    utildoc::TableBuilder tb(Append{}, b, "value");
+    switch (fileMode_) {
+        case FileProperty::FileMode::AnyFile:
+        case FileProperty::FileMode::ExistingFile:
+        case FileProperty::FileMode::ExistingFiles: {
+            tb(h{}, "File", t{}, value_.value);
+            break;
+        }
+
+        case FileProperty::FileMode::Directory:
+        case FileProperty::FileMode::DirectoryOnly: {
+            tb(h{}, "Directory", t{}, value_.value);
+            break;
+        }
+    }
+
+    tb(h{}, "Accept Mode", t{}, acceptMode_);
+    tb(h{}, "File Mode", t{}, fileMode_);
+    tb(h{}, "Content Type", t{}, contentType_);
+
+    return doc;
+}
+
+std::ostream& operator<<(std::ostream &out, const FileProperty::AcceptMode& mode) {
+    switch(mode) {
+        case FileProperty::AcceptMode::Open:
+            out << "Open";
+            break;
+        case FileProperty::AcceptMode::Save:
+            out << "Save";
+            break;
+    }
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FileProperty::FileMode& mode) {
+    switch (mode) {
+        case FileProperty::FileMode::AnyFile:
+            out << "Any File";
+            break;
+        case FileProperty::FileMode::ExistingFile:
+            out << "Existing File";
+            break;
+        case FileProperty::FileMode::Directory:
+            out << "Directory";
+            break;
+        case FileProperty::FileMode::ExistingFiles:
+            out << "Existing Files";
+            break;
+        case FileProperty::FileMode::DirectoryOnly:
+            out << "Directory Only";
+            break;
+    }
+    return out;
+}
+
 }  // namespace

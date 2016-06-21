@@ -204,6 +204,8 @@ public:
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
+    virtual Document getDescription() const override;
+
 protected:
     size_t selectedIndex_;
     std::vector<OptionPropertyOption<T>> options_;
@@ -651,6 +653,26 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
     }
     return *this;
 }
+
+template <typename T>
+Document BaseTemplateOptionProperty<T>::getDescription() const {
+    using P = Document::Path;
+    using Append = utildoc::TableBuilder::Append;
+
+    using h = utildoc::TableBuilder::Header;
+    using t = utildoc::TableBuilder::Text;
+
+    Document doc = BaseOptionProperty::getDescription();
+
+    auto b = doc.getElement({P("html"), P("body"), P("property")});
+    utildoc::TableBuilder tb(Append{}, b, "value");
+    tb(h{}, "Selected Index", t{}, selectedIndex_);
+    tb(h{}, "Selected Name", t{}, options_[selectedIndex_].name_);
+    tb(h{}, "Selected Value", t{}, options_[selectedIndex_].value_);
+
+    return doc;
+}
+
 
 // template <typename T>
 // TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
