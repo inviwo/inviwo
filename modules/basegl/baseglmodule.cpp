@@ -207,7 +207,19 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             {{xml::Kind::processor("org.inviwo.Mesh2DRenderProcessorGL"),
               xml::Kind::outport("org.inviwo.ImageOutport")},
              "image.outport",
-             "outputImage"}};
+             "outputImage"},
+
+            // DrawPoints
+            {{xml::Kind::processor("org.inviwo.DrawPoints"),
+              xml::Kind::inport("org.inviwo.ImageInport")},
+             "image.inport",
+             "inputImage"},
+            {{xml::Kind::processor("org.inviwo.DrawPoints"),
+              xml::Kind::outport("org.inviwo.ImageOutport")},
+             "image.outport",
+             "outputImage"},
+
+        };
 
         const std::vector<std::pair<std::string, std::string>> imageGLrepl = {
             {"FindEdges", "img_findedges.frag"},    {"ImageBinary", "img_binary.frag"},

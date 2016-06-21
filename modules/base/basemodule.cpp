@@ -192,6 +192,26 @@ bool BaseModule::Converter::convert(TxElement* root) {
         {{xml::Kind::processor("org.inviwo.VolumeSubsample"),
           xml::Kind::outport("org.inviwo.VolumeOutport")},
          "volume.outport",
+         "outputVolume"},
+
+        // DistanceTransformRAM
+        {{xml::Kind::processor("org.inviwo.DistanceTransformRAM"),
+          xml::Kind::inport("org.inviwo.VolumeInport")},
+         "volume.inport",
+         "inputVolume"},
+        {{xml::Kind::processor("org.inviwo.DistanceTransformRAM"),
+          xml::Kind::outport("org.inviwo.VolumeOutport")},
+         "volume.outport",
+         "outputVolume"},
+
+        // VolumeSubset
+        {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+          xml::Kind::inport("org.inviwo.VolumeInport")},
+         "volume.inport",
+         "inputVolume"},
+        {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+          xml::Kind::outport("org.inviwo.VolumeOutport")},
+         "volume.outport",
          "outputVolume"}};
 
     for (const auto& id : { "org.inviwo.FloatProperty", "org.inviwo.FloatVec2Property",
