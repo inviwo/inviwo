@@ -43,6 +43,7 @@
 #include <QSettings>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QStandardItemModel>
 #include <warn/pop>
 
 namespace inviwo {
@@ -118,6 +119,8 @@ LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
 
     connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(closeLinkDialog()));
 }
+
+CheckableQComboBox::~CheckableQComboBox() = default;
 
 void LinkDialog::closeLinkDialog() {
     hide();
