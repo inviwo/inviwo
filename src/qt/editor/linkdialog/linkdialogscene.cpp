@@ -69,9 +69,9 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwo
     network_->addObserver(this);
 
     srcProcessor_ =
-        new LinkDialogProcessorGraphicsItem(LinkDialogParent::Side::Left, srcProcessor);
+        new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Left, srcProcessor);
     dstProcessor_ =
-        new LinkDialogProcessorGraphicsItem(LinkDialogParent::Side::Right, dstProcessor);
+        new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Right, dstProcessor);
 
     float xPos1 = linkdialog::dialogWidth / 10.0 + linkdialog::processorWidth/2;
     addItem(srcProcessor_);
@@ -115,7 +115,8 @@ LinkDialogGraphicsScene::~LinkDialogGraphicsScene() {
     connections_.clear();
 }
 
-LinkDialogPropertyGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* property) const {
+LinkDialogPropertyGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(
+    Property* property) const {
     return util::map_find_or_null(propertyMap_, property);
 }
 
@@ -264,27 +265,19 @@ void LinkDialogGraphicsScene::wheelAction(float offset) {
 void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
     auto proc = scrollLeft ? srcProcessor_ : dstProcessor_;
 
-    auto items = proc->getPropertyItemList();
-    while (!items.empty() && items.back()->hasSubProperties() && items.back()->isExpanded()) {
-        items = items.back()->getSubPropertyItemList();
-    }
-    qreal miny = std::numeric_limits<double>::lowest();
-    if (!items.empty()) {
-        miny = items.back()->scenePos().y();
-    }
-
+    auto rect = proc->rect() | proc->childrenBoundingRect();
+    auto procTop = proc->scenePos().y();
+    auto procBottom = proc->scenePos().y() + rect.height();
+    
     auto view = views().front();
-    auto top = view->mapToScene(QPoint(0, 0)).y();
+    auto top = static_cast<qreal>(2*linkdialog::processorHeight);
+    auto bottom = view->mapToScene(QPoint(0, view->rect().height())).y();
 
-    QPointF pos = proc->scenePos();
-    qreal newy = std::min(pos.y() + yIncrement,
-                          top + static_cast<qreal>(linkdialog::processorHeight));
-
-    qreal listHeight = miny - pos.y();
-    newy = std::max(newy, top - (listHeight - linkdialog::processorHeight));
-    proc->setPos(pos.x(), newy);
-
-    update();
+    if ((yIncrement > 0 && procTop + yIncrement < top) ||
+        (yIncrement < 0 && procBottom + yIncrement > bottom)) {
+        proc->setPos(proc->scenePos().x(), proc->scenePos().y() + yIncrement);
+    }
+    return;
 }
 
 void LinkDialogGraphicsScene::executeTimeLine(qreal x) {
@@ -302,19 +295,40 @@ void LinkDialogGraphicsScene::addPropertyLink(Property* sProp, Property* eProp,
     if (bidirectional) network_->addLink(eProp, sProp);
 }
 
+void LinkDialogGraphicsScene::showHidden(bool val) {
+    showHidden_ = val;
+
+    LinkDialogTreeItem* item = srcProcessor_;
+    while (item) {
+        item->updatePositions();
+        item = item->next();
+    }
+    
+    item = dstProcessor_;
+    while (item) {
+        item->updatePositions();
+        item = item->next();
+    }
+}
+
+bool LinkDialogGraphicsScene::isShowingHidden() const {return showHidden_;}
+
 void LinkDialogGraphicsScene::toggleExpand() {
     expandProperties_ = !expandProperties_;
 
-    std::function<void(LinkDialogPropertyGraphicsItem*)> expand = [this, &expand](
-        LinkDialogPropertyGraphicsItem* item) {
+    LinkDialogTreeItem* item = srcProcessor_;
+    while (item) {
         item->setExpanded(expandProperties_);
-        for (auto i : item->getSubPropertyItemList()) {
-            expand(i);
-        }
-    };
-
-    for (auto item : srcProcessor_->getPropertyItemList()) expand(item);
-    for (auto item : dstProcessor_->getPropertyItemList()) expand(item);
+        item->updatePositions();
+        item = item->next();
+    }
+    
+    item = dstProcessor_;
+    while (item) {
+        item->setExpanded(expandProperties_);
+        item->updatePositions();
+        item = item->next();
+    }
 }
 
 bool LinkDialogGraphicsScene::isPropertyExpanded(Property* property) const {

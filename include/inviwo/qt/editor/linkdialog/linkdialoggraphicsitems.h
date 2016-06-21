@@ -93,21 +93,42 @@ enum IVW_QTEDITOR_API InviwoLinkUserGraphicsItemType {
 };
 
 
-class IVW_QTEDITOR_API LinkDialogParent {
+class IVW_QTEDITOR_API LinkDialogTreeItem {
 public:
+    LinkDialogTreeItem(LinkDialogTreeItem* parent);
     enum class Side { Left, Right };
     virtual int getLevel() const = 0;
     virtual Side getSide() const = 0;
     virtual void updatePositions() = 0;
+    virtual QPointF treeItemScenePos() const = 0;
+    virtual QRectF treeItemRect() const = 0;
+    
+    void setPrev(LinkDialogTreeItem* prev);
+    void setNext(LinkDialogTreeItem* next);
+    LinkDialogTreeItem* parent() const;
+    LinkDialogTreeItem* next() const;
+    LinkDialogTreeItem* prev() const;
+    
+    void setExpanded(bool expand);
+    bool isExpanded() const;
+    
+private:
+    LinkDialogTreeItem* parent_ = nullptr;
+    LinkDialogTreeItem* prev_ = nullptr;
+    LinkDialogTreeItem* next_ = nullptr;
+    bool isExpanded_ = false;
 };
 
 template <typename T>
-class GraphicsItemData : public QGraphicsRectItem, public LinkDialogParent {
+class GraphicsItemData : public QGraphicsRectItem, public LinkDialogTreeItem {
 public:
-    GraphicsItemData(Side side, T* item) : QGraphicsRectItem(), item_(item), side_(side) {}
+    GraphicsItemData(LinkDialogTreeItem* parent, Side side, T* item)
+        : QGraphicsRectItem(), LinkDialogTreeItem(parent), item_(item), side_(side) {}
     T* getItem() { return item_; }
     void setItem(T* item) { item_ = item; }
-    LinkDialogParent::Side getSide() const { return side_; }
+    virtual LinkDialogTreeItem::Side getSide() const override { return side_; }
+    virtual QPointF treeItemScenePos() const override { return scenePos(); }
+    virtual QRectF treeItemRect() const override { return rect(); }
 
     void showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
         QGraphicsView* v = scene()->views().first();
@@ -120,6 +141,17 @@ protected:
     T* item_;
     const Side side_;
 };
+
+inline LinkDialogTreeItem::LinkDialogTreeItem(LinkDialogTreeItem* parent)
+    : parent_(parent) {}
+inline void LinkDialogTreeItem::setNext(LinkDialogTreeItem* next) { next_ = next; }
+inline void LinkDialogTreeItem::setPrev(LinkDialogTreeItem* prev) { prev_ = prev; }
+inline LinkDialogTreeItem* LinkDialogTreeItem::parent() const { return parent_; }
+inline LinkDialogTreeItem* LinkDialogTreeItem::next() const { return next_; }
+inline LinkDialogTreeItem* LinkDialogTreeItem::prev() const { return prev_; }
+
+inline void LinkDialogTreeItem::setExpanded(bool expand) { isExpanded_ = expand; }
+inline bool LinkDialogTreeItem::isExpanded() const { return isExpanded_; }
 
 }  // namespace
 

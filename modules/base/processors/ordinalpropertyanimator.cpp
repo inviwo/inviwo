@@ -54,28 +54,28 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     delay_.onChange(this, &OrdinalPropertyAnimator::updateTimerInterval);
 
     properties_.push_back(
-        std::make_unique<PrimProp<float>>("org.inviwo.FloatProperty", "org.inviwo.FloatProperty"));
-    properties_.push_back(std::make_unique<VecProp<vec2>>("org.inviwo.FloatVec2Property",
+        util::make_unique<PrimProp<float>>("org.inviwo.FloatProperty", "org.inviwo.FloatProperty"));
+    properties_.push_back(util::make_unique<VecProp<vec2>>("org.inviwo.FloatVec2Property",
                                                           "org.inviwo.FloatVec2Property"));
-    properties_.push_back(std::make_unique<VecProp<vec3>>("org.inviwo.FloatVec3Property",
+    properties_.push_back(util::make_unique<VecProp<vec3>>("org.inviwo.FloatVec3Property",
                                                           "org.inviwo.FloatVec3Property"));
-    properties_.push_back(std::make_unique<VecProp<vec4>>("org.inviwo.FloatVec4Property",
+    properties_.push_back(util::make_unique<VecProp<vec4>>("org.inviwo.FloatVec4Property",
                                                           "org.inviwo.FloatVec4Property"));
-    properties_.push_back(std::make_unique<PrimProp<double>>("org.inviwo.DoubleProperty",
+    properties_.push_back(util::make_unique<PrimProp<double>>("org.inviwo.DoubleProperty",
                                                              "org.inviwo.DoubleProperty"));
-    properties_.push_back(std::make_unique<VecProp<dvec2>>("org.inviwo.DoubleVec2Property",
+    properties_.push_back(util::make_unique<VecProp<dvec2>>("org.inviwo.DoubleVec2Property",
                                                            "org.inviwo.DoubleVec2Property"));
-    properties_.push_back(std::make_unique<VecProp<dvec3>>("org.inviwo.DoubleVec3Property",
+    properties_.push_back(util::make_unique<VecProp<dvec3>>("org.inviwo.DoubleVec3Property",
                                                            "org.inviwo.DoubleVec3Property"));
-    properties_.push_back(std::make_unique<VecProp<dvec4>>("org.inviwo.DoubleVec4Property",
+    properties_.push_back(util::make_unique<VecProp<dvec4>>("org.inviwo.DoubleVec4Property",
                                                            "org.inviwo.DoubleVec4Property"));
     properties_.push_back(
-        std::make_unique<PrimProp<int>>("org.inviwo.IntProperty", "org.inviwo.IntProperty"));
-    properties_.push_back(std::make_unique<VecProp<ivec2>>("org.inviwo.IntVec2Property",
+        util::make_unique<PrimProp<int>>("org.inviwo.IntProperty", "org.inviwo.IntProperty"));
+    properties_.push_back(util::make_unique<VecProp<ivec2>>("org.inviwo.IntVec2Property",
                                                            "org.inviwo.IntVec2Property"));
-    properties_.push_back(std::make_unique<VecProp<ivec3>>("org.inviwo.IntVec3Property",
+    properties_.push_back(util::make_unique<VecProp<ivec3>>("org.inviwo.IntVec3Property",
                                                            "org.inviwo.IntVec3Property"));
-    properties_.push_back(std::make_unique<VecProp<ivec4>>("org.inviwo.IntVec4Property",
+    properties_.push_back(util::make_unique<VecProp<ivec4>>("org.inviwo.IntVec4Property",
                                                            "org.inviwo.IntVec4Property"));
 
     addProperty(type_);

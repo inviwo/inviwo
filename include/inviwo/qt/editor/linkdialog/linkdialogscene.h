@@ -77,6 +77,7 @@ public:
     void addPropertyLink(Property* srcProperty, Property* dstProperty, bool bidirectional);
 
     void toggleExpand();
+    void showHidden(bool val);
     bool isPropertyExpanded(Property* property) const;
 
     void wheelAction(float offset);
@@ -89,6 +90,7 @@ public:
                                        bool isBidirectional);
     void switchPropertyLinkDirection(DialogConnectionGraphicsItem* propertyLink);
 
+    bool isShowingHidden() const;
 signals:
     void closeDialog();
 
@@ -136,6 +138,7 @@ private:
 
     bool expandProperties_;
     bool mouseOnLeftSide_;
+    bool showHidden_ = false;
 
     std::map<Property*, LinkDialogPropertyGraphicsItem*> propertyMap_;
 };

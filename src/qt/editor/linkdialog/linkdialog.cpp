@@ -41,7 +41,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSettings>
-#include <QStandardItemModel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <warn/pop>
@@ -83,6 +82,12 @@ LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
     connect(smartLinkPushButton_, SIGNAL(clicked()), this, SLOT(clickedSmartLinkPushButton()));
     smartLinkPushButtonLayout->addWidget(smartLinkPushButton_, 10);
 
+    showHidden_ = new QCheckBox("Show Hidden", this);
+    connect(showHidden_, &QCheckBox::stateChanged, [&](int state) {
+        linkDialogScene_->showHidden(state == Qt::Checked);
+    });
+    smartLinkPushButtonLayout->addWidget(showHidden_, 10);
+
     // delete button
     deleteAllLinkPushButton_ = new QPushButton("Delete All", this);
     connect(deleteAllLinkPushButton_, SIGNAL(clicked()), this,
@@ -93,7 +98,9 @@ LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
     expandCompositeButton_ = new QPushButton("Expand/Collapse", this);
     expandCompositeButton_->setChecked(false);
     smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 10);
-    connect(expandCompositeButton_, SIGNAL(clicked()), this, SLOT(expandCompositeProperties()));
+    connect(expandCompositeButton_, &QPushButton::clicked, [&](){
+        linkDialogScene_->toggleExpand();}
+    );
     mainLayout->addLayout(smartLinkPushButtonLayout);
     
 
@@ -111,9 +118,6 @@ LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
 
     connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(closeLinkDialog()));
 }
-
-LinkDialog::~LinkDialog() {}
-
 
 void LinkDialog::closeLinkDialog() {
     hide();
@@ -196,7 +200,7 @@ CheckableQComboBox::CheckableQComboBox(QWidget* parent, std::string widgetName,
     : QComboBox(parent), widgetName_(widgetName) {
     setEditable(true);
     lineEdit()->setReadOnly(true);
-    stdandardModel_ = new QStandardItemModel(static_cast<int>(options.size()), 1);
+    stdandardModel_ = util::make_unique<QStandardItemModel>(static_cast<int>(options.size()), 1);
 
     for (size_t i = 0; i < options.size(); i++) {
         QStandardItem* item = new QStandardItem(QString(options[i].c_str()));
@@ -206,19 +210,15 @@ CheckableQComboBox::CheckableQComboBox(QWidget* parent, std::string widgetName,
         standardItems_.push_back(item);
     }
 
-    setModel(stdandardModel_);
+    setModel(stdandardModel_.get());
     lineEdit()->setText(QString(widgetName_.c_str()));
-    connect(stdandardModel_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this,
-            SLOT(onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&)));
+    connect(stdandardModel_.get(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+            this, SLOT(onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&)));
 }
-
-CheckableQComboBox::~CheckableQComboBox() { delete stdandardModel_; }
 
 bool CheckableQComboBox::isItemChecked(int i) {
     if (i > (int)standardItems_.size()) return false;
-
     QStandardItem* item = standardItems_[i];
-
     if (item->checkState() == Qt::Checked) return true;
 
     return false;
@@ -227,18 +227,16 @@ bool CheckableQComboBox::isItemChecked(int i) {
 std::vector<std::string> CheckableQComboBox::getCheckedItems() {
     std::vector<std::string> checkedItemString;
 
-    for (size_t i = 0; i < standardItems_.size(); i++)
-        if (isItemChecked(static_cast<int>(i)))
+    for (size_t i = 0; i < standardItems_.size(); i++) {
+        if (isItemChecked(static_cast<int>(i))) {
             checkedItemString.push_back(standardItems_[i]->text().toLocal8Bit().constData());
+        }
+    }
 
     return checkedItemString;
 }
 
 void CheckableQComboBox::onSmartLinkOptionChecked(const QModelIndex& tl, const QModelIndex& br) {
-    if (isItemChecked(tl.row())) {
-        // do some maintenance stuff here if required
-    }
-
     lineEdit()->setText(QString(widgetName_.c_str()));
 }
 

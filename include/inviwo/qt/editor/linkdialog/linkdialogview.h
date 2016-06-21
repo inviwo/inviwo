@@ -44,7 +44,7 @@ class LinkDialogGraphicsScene;
 class IVW_QTEDITOR_API LinkDialogGraphicsView : public QGraphicsView {
 public:
     LinkDialogGraphicsView(QWidget* parent);
-    virtual ~LinkDialogGraphicsView();
+    virtual ~LinkDialogGraphicsView() = default;
     void setDialogScene(LinkDialogGraphicsScene* scene);
 
     void wheelEvent(QWheelEvent* e);

@@ -151,6 +151,56 @@ IVW_CORE_API vec3 rgb2ycbcr(const vec3 &rgb);
 */
 IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr);
 
+/**
+* \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to sRGB
+*
+* The chromaticity of CIE Luv (luminance, u', v') is converted to sRGB via the XYZ color space.
+*
+* See http://en.wikipedia.org/wiki/CIELUV, http://www.brucelindbloom.com/
+*
+* @param LuvChroma chromaticity, L in [0, 1], u' in [0.0, 1.0], v' in [0.0, 1.0]
+* @param clamp   clamp resulting rgb values to [0,1]^3
+* @param whitePointXYZ  Normalized white point. Default white point is D65.
+* @return rgb RGB color, [0, 1]^3 if clamping is enabled
+*/
+IVW_CORE_API vec3 chromaticity2rgb(vec3 &LuvChroma, bool clamp=false, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+IVW_CORE_API vec3 rgb2chromaticity(vec3 &rgb, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+IVW_CORE_API vec3 chromaticity2XYZ(vec3 &LuvChroma, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+IVW_CORE_API vec3 XYZ2chromaticity(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+/**
+* \brief Convert from CIE XYZ to CIE Luv
+*
+* The CIE Luv color value is converted to XYZ color space using the reference white point.
+*
+* See http://en.wikipedia.org/wiki/CIELUV, http://en.wikipedia.org/wiki/CIE_1931_color_space, and
+* http://www.brucelindbloom.com/
+*
+* @param XYZ   CIE XYZ color [0,1]^3
+* @param whitePointXYZ  Normalized white point. Default white point is D65.
+* @return CIE Luv color value, L in [0, 100], u and v in [-100, +100] (for typical images)
+*/
+IVW_CORE_API vec3 XYZ2Luv(vec3 &XYZ, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
+/**
+* \brief Convert from CIE Luv to CIE XYZ
+*
+* The CIE Luv color value is converted to XYZ color space using the reference white point.
+*
+* See http://en.wikipedia.org/wiki/CIELUV, http://en.wikipedia.org/wiki/CIE_1931_color_space, and
+* http://www.brucelindbloom.com/
+*
+* @param Luv   CIE Luv color, L in [0, 100], u and v in [-100, +100] but values might exceed this
+* range
+* @param whitePointXYZ  Normalized white point. Default white point is D65.
+* @return CIE XYZ color value
+*/
+IVW_CORE_API vec3 Luv2XYZ(vec3 &Luv, vec3 whitePointXYZ = vec3(0.95047f, 1.f, 1.08883f));
+
 }
 
 #endif // IVW_COLORCONVERSION_H
+ 

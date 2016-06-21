@@ -44,7 +44,7 @@
 namespace inviwo {
 
 LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Processor* processor)
-    : GraphicsItemData<Processor>(side, processor), animateExpansion_(1.0) {
+    : GraphicsItemData<Processor>(nullptr, side, processor) {
     setZValue(linkdialog::processorDepth);
     setFlags(ItemSendsGeometryChanges);
 
@@ -72,19 +72,32 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
     identifier->setText(QString::fromStdString(processor->getIdentifier()));
     classIdentifier->setText(QString::fromStdString(processor->getClassIdentifier()));
 
-    QPointF newPos(0.0f, rect().height());
     for (auto& property : processor->getProperties()) {
         auto item = new LinkDialogPropertyGraphicsItem(this, property);
         properties_.push_back(item);
+        item->hide();
         item->setParentItem(this);
-        item->setPos(newPos);
-        size_t count = 1 + item->getTotalVisibleChildCount();
-        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
-        item->show();
+    }
+    
+    
+    LinkDialogTreeItem* prev = this;
+    std::function<void(LinkDialogPropertyGraphicsItem*)> connect = [this, &connect, &prev](
+        LinkDialogPropertyGraphicsItem* item) {
+        prev->setNext(item);
+        item->setPrev(prev);
+        prev = item;
+        for (auto i : item->getSubPropertyItemList()) {
+            connect(i);
+        }
+    };
+    for (auto item : properties_) connect(item);
+
+    LinkDialogTreeItem* item = this;
+    while (item) {
+        item->updatePositions();
+        item = item->next();
     }
 }
-
-LinkDialogProcessorGraphicsItem::~LinkDialogProcessorGraphicsItem() {}
 
 QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which,
                                                  const QSizeF& constraint) const {
@@ -105,14 +118,7 @@ QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which,
 
 int LinkDialogProcessorGraphicsItem::getLevel() const { return -1; }
 
-void LinkDialogProcessorGraphicsItem::updatePositions() {
-    QPointF newPos(0.0f, rect().height());
-    for (auto property : properties_) {
-        property->setPos(newPos);
-        size_t count = 1 + property->getTotalVisibleChildCount();
-        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
-    }
-}
+void LinkDialogProcessorGraphicsItem::updatePositions() {}
 
 void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                                             QWidget* widget) {
@@ -159,28 +165,5 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     p->restore();
 }
 
-void LinkDialogProcessorGraphicsItem::animationStart() {
-    animateExpansion_ = 0.1f;
-
-    QTimeLine* anim = new QTimeLine(50, this);
-    anim->setUpdateInterval(20);
-    connect(anim, SIGNAL(valueChanged(qreal)), SLOT(animate(qreal)));
-    connect(anim, SIGNAL(finished()), SLOT(animationEnd()));
-    anim->start();
-}
-
-void LinkDialogProcessorGraphicsItem::animate(qreal incr) {
-    if (animateExpansion_ > 1.0 || animateExpansion_ < 0.0f) {
-        animationEnd();
-    } else {
-        animateExpansion_ += static_cast<float>(incr);
-    }
-}
-
-void LinkDialogProcessorGraphicsItem::animationEnd() {
-    animateExpansion_ = 1.0f;
-    delete sender();
-    for (auto& elem : properties_) elem->setAnimate(false);
-}
 
 }  // namespace

@@ -64,8 +64,8 @@ class LinkDialogGraphicsScene;
 
 class IVW_QTEDITOR_API LinkDialogPropertyGraphicsItem : public GraphicsItemData<Property> {
 public:
-    LinkDialogPropertyGraphicsItem(LinkDialogParent* parent, Property* prop);
-    ~LinkDialogPropertyGraphicsItem();
+    LinkDialogPropertyGraphicsItem(LinkDialogTreeItem* parent, Property* prop);
+    ~LinkDialogPropertyGraphicsItem() = default;
 
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
 
@@ -75,15 +75,10 @@ public:
 
     QPointF getConnectionPoint();
 
-    void setExpanded(bool expand);
-    bool isExpanded() const;
+    bool propertyVisible() const;
     bool hasSubProperties() const;
 
-    void setAnimate(bool animate);
-    const bool getAnimate() const;
-
     virtual int getLevel() const override;
-    size_t getTotalVisibleChildCount() const;
 
     QPointF calculateArrowCenter(size_t curPort) const;
 
@@ -99,7 +94,7 @@ public:
 
     virtual void updatePositions() override;
     void showToolTip(QGraphicsSceneHelpEvent* event);
-
+    
 protected:
     QPointF calculateArrowCenterLocal(size_t curPort) const;
     QRectF calculateArrowRect(size_t curPort) const;
@@ -111,11 +106,6 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
 private:
-    bool isExpanded_;
-    bool animateEnabled_;
-
-    LinkDialogParent* parent_;
-
     std::vector<DialogConnectionGraphicsItem*> connections_;
     std::vector<LinkDialogPropertyGraphicsItem*> subProperties_;
 };
