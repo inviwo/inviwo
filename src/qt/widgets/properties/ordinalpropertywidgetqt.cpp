@@ -151,7 +151,7 @@ void BaseOrdinalPropertyWidgetQt::showContextMenu(const QPoint& pos) {
 
 // connected to sliderWidget_ customContextMenuRequested
 void BaseOrdinalPropertyWidgetQt::showContextMenuSlider(int sliderId) {
-    sliderId_ = sliderId;
+    sliderId_ = static_cast<size_t>(sliderId);
 
     if (!contextMenu_) {
         generatesSettingsWidget();
@@ -166,7 +166,7 @@ void BaseOrdinalPropertyWidgetQt::showContextMenuSlider(int sliderId) {
         settingsAction_->setVisible(false);
     }
 
-    if (appVisibilityMode == UsageMode::Development && sliderId_ >= 0) {
+    if (appVisibilityMode == UsageMode::Development) {
         minAction_->setVisible(true);
         maxAction_->setVisible(true);
     } else {

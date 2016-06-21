@@ -164,7 +164,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         if (!img.isNull()) {
             return img;
         } else {
-            QImage img = utilqt::generatePreview(cid);
+            img = utilqt::generatePreview(cid);
             if (img.isNull()) return QVariant();
             QByteArray data;
             QBuffer buffer(&data);

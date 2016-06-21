@@ -228,7 +228,7 @@ template <unsigned int N>
 Vector<N, float> SpatialEntity<N>::getOffset() const {
     Vector<N, float> offset(0.0f);
 
-    for (int i = 0; i < N; i++) {
+    for (unsigned int i = 0; i < N; i++) {
         offset[i] = modelMatrix_[N][i];
     }
 
@@ -236,7 +236,7 @@ Vector<N, float> SpatialEntity<N>::getOffset() const {
 }
 template <unsigned int N>
 void SpatialEntity<N>::setOffset(const Vector<N, float>& offset) {
-    for (int i = 0; i < N; i++) {
+    for (unsigned int i = 0; i < N; i++) {
         modelMatrix_[N][i] = offset[i];
     }
 }
@@ -245,8 +245,8 @@ template <unsigned int N>
 Matrix<N, float> SpatialEntity<N>::getBasis() const {
     Matrix<N, float> basis(1.0f);
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (unsigned int i = 0; i < N; i++) {
+        for (unsigned int j = 0; j < N; j++) {
             basis[i][j] = modelMatrix_[i][j];
         }
     }
@@ -255,8 +255,8 @@ Matrix<N, float> SpatialEntity<N>::getBasis() const {
 
 template <unsigned int N>
 void SpatialEntity<N>::setBasis(const Matrix<N, float>& basis) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (unsigned int i = 0; i < N; i++) {
+        for (unsigned int j = 0; j < N; j++) {
             modelMatrix_[i][j] = basis[i][j];
         }
     }

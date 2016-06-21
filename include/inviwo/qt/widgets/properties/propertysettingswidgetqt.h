@@ -71,7 +71,7 @@ struct SinglePropertySetting {
     }
 
     double getFieldAsDouble(int i) {
-        if (i >= 0 && i < additionalFields_.size()) {
+        if (i >= 0 && static_cast<size_t>(i) < additionalFields_.size()) {
             QLocale locale = additionalFields_[i]->locale();
             return locale.toDouble(
                 additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));

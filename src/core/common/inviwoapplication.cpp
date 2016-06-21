@@ -122,12 +122,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     for (auto setting : coreSettings) setting->loadFromDisk();
     auto sys = getSettingsByType<SystemSettings>();
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
-        size_t newSize = static_cast<size_t>(sys->poolSize_.get());
-        resizePool(newSize);
+        resizePool(static_cast<size_t>(sys->poolSize_.get()));
 
         sys->poolSize_.onChange([this, sys]() { 
-            size_t newSize = static_cast<size_t>(sys->poolSize_.get());
-            resizePool(newSize);
+            resizePool(static_cast<size_t>(sys->poolSize_.get()));
         });
     }
 }

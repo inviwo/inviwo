@@ -113,9 +113,9 @@ void PathLines::process() {
             if (!allowLooping_.getVisible()) {
                 allowLooping_.setVisible(true);
             }
-            auto sampler = std::make_shared<VolumeSequenceSampler>(volume_.getData());
-            sampler->setAllowedLooping(allowLooping_.get());
-            return sampler;
+            auto s = std::make_shared<VolumeSequenceSampler>(volume_.getData());
+            s->setAllowedLooping(allowLooping_.get());
+            return s;
         }
     }();
 

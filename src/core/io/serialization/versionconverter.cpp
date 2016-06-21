@@ -210,11 +210,11 @@ void util::renamePort(Deserializer& d, std::vector<std::pair<const Port*, std::s
         bool didChanges = false;
         for (auto rule : rules) {
             TxElement* elem = nullptr;
-            if (auto p = dynamic_cast<const Outport*>(rule.first)) {
-                elem = xml::getElement(node, "OutPorts/OutPort&type=" + p->getClassIdentifier() +
+            if (auto p1 = dynamic_cast<const Outport*>(rule.first)) {
+                elem = xml::getElement(node, "OutPorts/OutPort&type=" + p1->getClassIdentifier() +
                                                  "&identifier=" + rule.second);
-            } else if (auto p = dynamic_cast<const Inport*>(rule.first)) {
-                elem = xml::getElement(node, "InPorts/InPort&type=" + p->getClassIdentifier() +
+            } else if (auto p2 = dynamic_cast<const Inport*>(rule.first)) {
+                elem = xml::getElement(node, "InPorts/InPort&type=" + p2->getClassIdentifier() +
                                                  "&identifier=" + rule.second);
             }
             if (elem) {
@@ -295,8 +295,8 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
     selector.back().attributes.push_back({attribute, oldValue});
 
     bool res = false;
-    xml::visitMatchingNodes(node, selector, [&res, &attribute, &newValue](TxElement* node) {
-        node->SetAttribute(attribute, newValue);
+    xml::visitMatchingNodes(node, selector, [&res, &attribute, &newValue](TxElement* n) {
+        n->SetAttribute(attribute, newValue);
         res |= true;
     });
     return res;

@@ -164,45 +164,45 @@ public:
      */
     virtual void addOption(std::string identifier, std::string displayName, T value);
     virtual void removeOption(size_t index);
-    virtual void clearOptions();
+    virtual void clearOptions() override;
 
-    virtual size_t size() const;
-    virtual size_t getSelectedIndex() const;
-    virtual std::string getSelectedIdentifier() const;
-    virtual std::string getSelectedDisplayName() const;
+    virtual size_t size() const override;
+    virtual size_t getSelectedIndex() const override;
+    virtual std::string getSelectedIdentifier() const override;
+    virtual std::string getSelectedDisplayName() const override;
     virtual T getSelectedValue() const;
-    virtual std::vector<std::string> getIdentifiers() const;
-    virtual std::vector<std::string> getDisplayNames() const;
+    virtual std::vector<std::string> getIdentifiers() const override;
+    virtual std::vector<std::string> getDisplayNames() const override;
     virtual std::vector<T> getValues() const;
 
-    virtual bool setSelectedIndex(size_t index);
-    virtual bool setSelectedIdentifier(std::string identifier);
-    virtual bool setSelectedDisplayName(std::string name);
+    virtual bool setSelectedIndex(size_t index) override;
+    virtual bool setSelectedIdentifier(std::string identifier) override;
+    virtual bool setSelectedDisplayName(std::string name) override;
     virtual bool setSelectedValue(T val);
     virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames,
                                 std::vector<T> values);
     virtual void replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
-    virtual bool isSelectedIndex(size_t index) const;
-    virtual bool isSelectedIdentifier(std::string identifier) const;
-    virtual bool isSelectedDisplayName(std::string name) const;
+    virtual bool isSelectedIndex(size_t index) const override;
+    virtual bool isSelectedIdentifier(std::string identifier) const override;
+    virtual bool isSelectedDisplayName(std::string name) const override;
     virtual bool isSelectedValue(T val) const;
 
     virtual T get() const;
     virtual void set(const T& value);
-    virtual void set(const Property* srcProperty);
+    virtual void set(const Property* srcProperty) override;
 
     /**
      * Sets the default state, since the constructor can't add any default state, you must call this
      * function after adding all the default options, usually in the processor constructor.
      * @see Property::setCurrentStateAsDefault()
      */
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual std::string getClassIdentifierForWidget() const;
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual std::string getClassIdentifierForWidget() const override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     size_t selectedIndex_;
