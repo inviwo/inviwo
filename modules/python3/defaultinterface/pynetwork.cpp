@@ -45,6 +45,17 @@
 
 namespace inviwo {
 
+PyObject* py_getFactoryProcessors(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+
+    if (tester.parse(args) == 0) {
+        auto keys = InviwoApplication::getPtr()->getProcessorFactory()->getKeys();
+        return utilpy::makePyList(keys);
+    }
+    return nullptr;
+
+}
+
 PyObject* py_getProcessors(PyObject* self, PyObject* args) {
     static PythonParameterParser tester;
 

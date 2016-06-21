@@ -34,6 +34,8 @@
 
 namespace inviwo {
 
+PyObject* py_getFactoryProcessors(PyObject* /*self*/, PyObject* /*args*/);
+
 PyObject* py_getProcessors(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_addProcessor(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_removeProcessor(PyObject* /*self*/, PyObject* /*args*/);

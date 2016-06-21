@@ -190,6 +190,7 @@ static PyMethodDef Inviwo_METHODS[] =
     {"getProcessorWidgetDimensions", py_getProcessorWidgetDimensions, METH_VARARGS, "Get processor widget dimensions"},
 
     // Defined in pynetwork
+    {"getFactoryProcessors", py_getFactoryProcessors, METH_VARARGS, "Get a list of all factory processors"},
     {"getProcessors",    py_getProcessors,    METH_VARARGS, "Get a list of all processors"},
     {"addProcessor",     py_addProcessor,     METH_VARARGS, "Add a processor using classIdentifier and identifier"},
     {"removeProcessor",  py_removeProcessor,  METH_VARARGS, "Remove a processor using a identifier"},
