@@ -107,6 +107,9 @@ struct is_floating_point<half_float::half> : std::true_type {};
 template <typename T>
 struct rank : public std::rank<T> {};
 
+template <typename T>
+struct rank<const T> : public rank<T> {};
+
 template <typename T, glm::precision P>
 struct rank<glm::detail::tvec2<T, P>> : public std::integral_constant<std::size_t, 1> {};
 template <typename T, glm::precision P>
@@ -137,6 +140,9 @@ struct rank<glm::detail::tmat4x3<T, P>> : public std::integral_constant<std::siz
 
 template <typename T, unsigned N = 0>
 struct extent : public std::extent<T,N> {};
+
+template <typename T, unsigned N>
+struct extent<const T, N> : public extent<T,N> {};
 
 template <typename T, glm::precision P>
 struct extent<glm::detail::tvec2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
@@ -616,23 +622,17 @@ To glm_convert_normalized(From x) {
 // GLM element access wrapper functions.
 
 // vector like access
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
 auto glmcomp(T& elem, size_t i) -> T& {
     return elem;
 }
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glmcomp(T& elem, size_t i) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
 auto glmcomp(T& elem, size_t i) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
@@ -640,23 +640,17 @@ auto glmcomp(T& elem, size_t i) ->
 }
 
 // matrix like access
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 0,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
 auto glmcomp(T& elem, size_t i, size_t j) -> T& {
     return elem;
 }
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 1,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glmcomp(T& elem, size_t i, size_t j) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
     return elem[i];
 }
-template <typename T,
-          typename std::enable_if<util::rank<typename std::remove_const<T>::type>::value == 2,
-                                  int>::type = 0>
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
 auto glmcomp(T& elem, size_t i, size_t j) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
