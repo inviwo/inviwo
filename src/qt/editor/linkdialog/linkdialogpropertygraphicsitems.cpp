@@ -39,7 +39,6 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <numeric>
 
@@ -106,7 +105,7 @@ bool LinkDialogPropertyGraphicsItem::propertyVisible() const {
     if (auto s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
         show = s->isShowingHidden();
     }
-    return item_->getVisible() || show;
+    return item_->getVisible() || !connections_.empty() || show;
 }
 
 bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return subProperties_.size() > 0; }
@@ -133,6 +132,14 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
 void LinkDialogPropertyGraphicsItem::addConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
     connections_.push_back(cItem);
+
+    if(connections_.size() == 1){
+        LinkDialogTreeItem* item = this;
+        while (item) {
+            item->updatePositions();
+            item = item->next();
+        }
+    }
 }
 
 size_t LinkDialogPropertyGraphicsItem::getConnectionGraphicsItemCount() const {
@@ -148,6 +155,14 @@ void LinkDialogPropertyGraphicsItem::removeConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
     connections_.erase(std::remove(connections_.begin(), connections_.end(), cItem),
                        connections_.end());
+
+    if (connections_.empty()) {
+        LinkDialogTreeItem* item = this;
+        while (item) {
+            item->updatePositions();
+            item = item->next();
+        }
+    }
 }
 
 QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const {
@@ -255,57 +270,11 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
 
     p->setBrush(grad);
 
-    QPen blackPen(QColor(0, 0, 0), 1);
-    QRectF bRect = rect();
-
-    QPainterPath roundRectPath;
-    roundRectPath.moveTo(bRect.left(), bRect.top() + linkdialog::propertyRoundedCorners);
-    roundRectPath.lineTo(bRect.left(), bRect.bottom() - linkdialog::propertyRoundedCorners);
-    roundRectPath.arcTo(bRect.left(), bRect.bottom() - (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners), 180.0, 90.0);
-    roundRectPath.lineTo(bRect.right() - linkdialog::propertyRoundedCorners, bRect.bottom());
-    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::propertyRoundedCorners),
-                        bRect.bottom() - (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners), 270.0, 90.0);
-    roundRectPath.lineTo(bRect.right(), bRect.top() + linkdialog::propertyRoundedCorners);
-    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::propertyRoundedCorners), bRect.top(),
-                        (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners), 0.0, 90.0);
-    roundRectPath.lineTo(bRect.left() + linkdialog::propertyRoundedCorners, bRect.top());
-    roundRectPath.arcTo(bRect.left(), bRect.top(), (2 * linkdialog::propertyRoundedCorners),
-                        (2 * linkdialog::propertyRoundedCorners), 90.0, 90.0);
-    p->drawPath(roundRectPath);
-
-    QPainterPath roundRectPath_Top;
-    QPainterPath roundRectPath_Left;
-    QPainterPath roundRectPath_Bottom;
-    QPainterPath roundRectPath_Right;
-
-    // Left
+    QPen blackPen(QColor(0, 0, 0), 1, item_->getVisible() ? Qt::SolidLine : Qt::DashLine);
     p->setPen(blackPen);
-    roundRectPath_Left.moveTo(bRect.left(), bRect.top());
-    roundRectPath_Left.lineTo(bRect.left(), bRect.bottom());
-    p->drawPath(roundRectPath_Left);
 
-    // Bottom
-    p->setPen(blackPen);
-    roundRectPath_Bottom.moveTo(bRect.left(), bRect.bottom());
-    roundRectPath_Bottom.lineTo(bRect.right(), bRect.bottom());
-    p->drawPath(roundRectPath_Bottom);
-
-    // Right
-    p->setPen(blackPen);
-    roundRectPath_Right.moveTo(bRect.right(), bRect.bottom());
-    roundRectPath_Right.lineTo(bRect.right(), bRect.top());
-    p->drawPath(roundRectPath_Right);
-
-    // Top
-    p->setPen(blackPen);
-    roundRectPath_Top.moveTo(bRect.left(), bRect.top());
-    roundRectPath_Top.lineTo(bRect.right(), bRect.top());
-    p->drawPath(roundRectPath_Top);
+    p->drawRoundedRect(rect(), linkdialog::propertyRoundedCorners,
+                       linkdialog::propertyRoundedCorners);
 
     p->restore();
     p->save();
