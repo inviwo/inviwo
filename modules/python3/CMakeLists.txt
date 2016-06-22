@@ -23,9 +23,11 @@ if(NOT ${haspython} GREATER 0)
         endif()
     endif()    
 endif()
-
-set(Python_ADDITIONAL_VERSIONS 3.5)
-find_package(PythonLibs 3)
+ 
+if(NOT PYTHONLIBS_FOUND)
+    set(Python_ADDITIONAL_VERSIONS 3.5)
+    find_package(PythonLibs 3)
+endif()
 
 if (PYTHONLIBS_FOUND)
     ivw_add_definition(IVW_PYTHON_AVAILABLE)
