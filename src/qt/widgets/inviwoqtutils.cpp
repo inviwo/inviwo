@@ -69,39 +69,39 @@ QString toLocalQString(const std::string& input) {
    return QString::fromLocal8Bit(input.c_str());
 }
 
-IVW_QTWIDGETS_API QString toQString(const std::string& input) {
+QString toQString(const std::string& input) {
    return QString::fromUtf8(input.c_str());
 }
 
-IVW_QTWIDGETS_API QPointF toQPoint(dvec2 v) {
+QPointF toQPoint(dvec2 v) {
     return QPointF(v.x, v.y);
 }
 
-IVW_QTWIDGETS_API QPoint toQPoint(ivec2 v) {
+QPoint toQPoint(ivec2 v) {
     return QPoint(v.x, v.y);
 }
 
-IVW_QTWIDGETS_API dvec2 toGLM(QPointF v) {
+dvec2 toGLM(QPointF v) {
     return dvec2(v.x(), v.y());
 }
 
-IVW_QTWIDGETS_API ivec2 toGLM(QPoint v) {
+ivec2 toGLM(QPoint v) {
     return ivec2(v.x(), v.y());
 }
 
-IVW_QTWIDGETS_API dvec2 toGLM(QSizeF v) {
+dvec2 toGLM(QSizeF v) {
     return dvec2(v.width(), v.height());
 }
 
-IVW_QTWIDGETS_API ivec2 toGLM(QSize v) {
+ivec2 toGLM(QSize v) {
     return ivec2(v.width(), v.height());
 }
 
-IVW_QTWIDGETS_API QSizeF toQSize(dvec2 v) {
+QSizeF toQSize(dvec2 v) {
     return QSizeF(v.x, v.y);
 }
 
-IVW_QTWIDGETS_API QSize toQSize(ivec2 v) {
+QSize toQSize(ivec2 v) {
     return QSize(v.x, v.y);
 }
 
