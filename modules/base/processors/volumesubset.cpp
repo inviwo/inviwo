@@ -46,8 +46,8 @@ const ProcessorInfo VolumeSubset::getProcessorInfo() const {
 }
 
 VolumeSubset::VolumeSubset() : Processor()
-      , inport_("volume.inport")
-      , outport_("volume.outport")
+      , inport_("inputVolume")
+      , outport_("outputVolume")
       , enabled_("enabled", "Enable Operation", true)
       , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
       , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)

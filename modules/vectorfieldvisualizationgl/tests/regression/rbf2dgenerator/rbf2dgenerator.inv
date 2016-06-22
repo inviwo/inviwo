@@ -1,11 +1,14 @@
 <?xml version="1.0" ?>
 <InviwoTreeData version="1.0">
     <!-- Don't edit the following code -->
-    <ProcessorNetworkVersion content="11" />
+    <ProcessorNetworkVersion content="13" />
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
+            <PortGroups>
+                <PortGroup content="default" key="inport" />
+            </PortGroups>
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref1" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -26,18 +29,21 @@
                     <collapsed content="0" />
                 </Property>
                 <Property type="org.inviwo.OptionPropertyEnumInt" identifier="visibleLayer" />
-                <Property type="org.inviwo.IntProperty" identifier="colorLayer_" displayName="Color Layer ID">
-                    <minvalue content="0" />
-                    <maxvalue content="0" />
-                    <increment content="1" />
+                <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                    <displayName content="Color Layer ID" />
                     <semantics semantics="Default" />
                     <usageMode content="0" />
                     <visible content="0" />
                     <readonly content="0" />
+                    <minvalue content="0" />
+                    <maxvalue content="0" />
+                    <increment content="1" />
                     <value content="0" />
                 </Property>
                 <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
-                    <url content="" />
+                    <absolutePath content="" />
+                    <workspaceRelativePath content="" />
+                    <ivwdataRelativePath content="" />
                     <nameFilter>
                         <filter>
                             <extension content="*" />
@@ -56,7 +62,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="334" y="66" />
+                    <position x="326" y="40" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -64,13 +70,13 @@
         </Processor>
         <Processor type="org.inviwo.RBFVectorFieldGenerator2D" identifier="RBF Based 2D Vector Field Generator">
             <samplesx>
-                <samplex x="0.2651147227363309433201266074320301413536" y="0.1943696164605311249573560417047701776028" />
-                <samplex x="0.8068385476747813811471132794395089149475" y="0.15278220474036615650348380768264178186655" />
+                <samplex x="0.2651147227363309655245870999351609498262" y="0.1943696164605311360595862879563355818391" />
+                <samplex x="0.8068385476747813589426527869363781064749" y="0.1527822047403661620545989308084244839847" />
                 <samplex x="0.6926218366896812472788269587908871471882" y="0.8710781454093603493049613462062552571297" />
                 <samplex x="-0.5408455595010344119089040759718045592308" y="0.1130942123921344633075136698607821017504" />
-                <samplex x="-0.2386028595461091805773889973352197557688" y="-0.08559038144661823555026103349518962204456" />
-                <samplex x="0.055150069148567126831039786338806152344" y="-0.1941023340909643184204469434916973" />
-                <samplex x="0.2938217998512975270841707242652773857" y="0.00404910353892606877934667863883078098" />
+                <samplex x="-0.2386028595461091861285041204610024578869" y="-0.08559038144661823555026103349518962204456" />
+                <samplex x="0.05515006914856712683103978633880615234375" y="-0.1941023340909643069007728399810730479658" />
+                <samplex x="0.2938217998512975270841707242652773857117" y="0.004049103538926068779346678638830780982971" />
                 <samplex x="0.3410560828066162564198293694062158465385" y="0.8815136057465196017801645211875438690186" />
                 <samplex x="-0.6048982126949515869540618950850330293179" y="-0.1764242416443817518256764742545783519745" />
             </samplesx>
@@ -85,8 +91,11 @@
                 <sampley x="0.26131534576416015625" y="0.17298437654972076416015625" />
                 <sampley x="0.59921228885650634765625" y="-2.356529712677001953125" />
             </samplesy>
+            <PortGroups>
+                <PortGroup content="default" key="vectorField" />
+            </PortGroups>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="vectorField" id="ref1" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="vectorField" id="ref0" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.IntVec2Property" identifier="size">
@@ -123,19 +132,61 @@
     </Processors>
     <Connections>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="vectorField" reference="ref1" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref0" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="vectorField" reference="ref0" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref1" />
         </Connection>
     </Connections>
     <InviwoSetup>
         <Modules>
-            <Module name="Core" />
-            <Module name="OpenGL">
+            <Module name="Core" version="0" />
+            <Module name="OpenGL" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CanvasGL" />
                 </Processors>
             </Module>
-            <Module name="BaseGL">
+            <Module name="Base" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.CubeProxyGeometry" />
+                    <Processor content="org.inviwo.Diffuselightsource" />
+                    <Processor content="org.inviwo.Directionallightsource" />
+                    <Processor content="org.inviwo.DistanceTransformRAM" />
+                    <Processor content="org.inviwo.GeometrySource" />
+                    <Processor content="org.inviwo.HeightFieldMapper" />
+                    <Processor content="org.inviwo.ImageExport" />
+                    <Processor content="org.inviwo.ImageSnapshot" />
+                    <Processor content="org.inviwo.ImageSource" />
+                    <Processor content="org.inviwo.ImageSourceSeries" />
+                    <Processor content="org.inviwo.MeshClipping" />
+                    <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.NoiseProcessor" />
+                    <Processor content="org.inviwo.PixelToBufferProcessor" />
+                    <Processor content="org.inviwo.Pointlightsource" />
+                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
+                    <Processor content="org.inviwo.Spotlightsource" />
+                    <Processor content="org.inviwo.SurfaceExtraction" />
+                    <Processor content="org.inviwo.VolumeSource" />
+                    <Processor content="org.inviwo.VolumeExport" />
+                    <Processor content="org.inviwo.BasisTransformGeometry" />
+                    <Processor content="org.inviwo.BasisTransformVolume" />
+                    <Processor content="org.inviwo.WorldTransformGeometry" />
+                    <Processor content="org.inviwo.WorldTransformVolume" />
+                    <Processor content="org.inviwo.VolumeSlice" />
+                    <Processor content="org.inviwo.VolumeSubsample" />
+                    <Processor content="org.inviwo.VolumeSubset" />
+                    <Processor content="org.inviwo.ImageContourProcessor" />
+                    <Processor content="org.inviwo.VolumeVectorSource" />
+                    <Processor content="org.inviwo.TimeStepSelector" />
+                    <Processor content="org.inviwo.ImageTimeStepSelector" />
+                    <Processor content="org.inviwo.StereoCameraSyncer" />
+                    <Processor content="org.inviwo.VolumeBoundingBox" />
+                    <Processor content="org.inviwo.SingleVoxel" />
+                    <Processor content="org.inviwo.VolumeToSpatialSampler" />
+                    <Processor content="org.inviwo.OrientationIndicator" />
+                    <Processor content="org.inviwo.PixelValue" />
+                    <Processor content="org.inviwo.VolumeSequenceToSpatial4DSampler" />
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="1">
                 <Processors>
                     <Processor content="org.inviwo.Background" />
                     <Processor content="org.inviwo.DrawLines" />
@@ -179,57 +230,45 @@
                     <Processor content="org.inviwo.VolumeLowPass" />
                     <Processor content="org.inviwo.VolumeMapping" />
                     <Processor content="org.inviwo.VolumeBinary" />
+                    <Processor content="org.inviwo.VolumeMerger" />
                 </Processors>
             </Module>
-            <Module name="zlib" />
-            <Module name="assimp" />
-            <Module name="Base">
+            <Module name="ABufferGL" version="1">
                 <Processors>
-                    <Processor content="org.inviwo.CubeProxyGeometry" />
-                    <Processor content="org.inviwo.Diffuselightsource" />
-                    <Processor content="org.inviwo.Directionallightsource" />
-                    <Processor content="org.inviwo.DistanceTransformRAM" />
-                    <Processor content="org.inviwo.GeometrySource" />
-                    <Processor content="org.inviwo.HeightFieldMapper" />
-                    <Processor content="org.inviwo.ImageExport" />
-                    <Processor content="org.inviwo.ImageSnapshot" />
-                    <Processor content="org.inviwo.ImageSource" />
-                    <Processor content="org.inviwo.ImageSourceSeries" />
-                    <Processor content="org.inviwo.MeshClipping" />
-                    <Processor content="org.inviwo.MeshCreator" />
-                    <Processor content="org.inviwo.NoiseProcessor" />
-                    <Processor content="org.inviwo.PixelToBufferProcessor" />
-                    <Processor content="org.inviwo.Pointlightsource" />
-                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
-                    <Processor content="org.inviwo.Spotlightsource" />
-                    <Processor content="org.inviwo.SurfaceExtraction" />
-                    <Processor content="org.inviwo.VolumeSource" />
-                    <Processor content="org.inviwo.VolumeExport" />
-                    <Processor content="org.inviwo.BasisTransformGeometry" />
-                    <Processor content="org.inviwo.BasisTransformVolume" />
-                    <Processor content="org.inviwo.VolumeSlice" />
-                    <Processor content="org.inviwo.VolumeSubsample" />
-                    <Processor content="org.inviwo.VolumeSubset" />
-                    <Processor content="org.inviwo.ImageContourProcessor" />
-                    <Processor content="org.inviwo.VolumeVectorSource" />
-                    <Processor content="org.inviwo.TimeStepSelector" />
-                    <Processor content="org.inviwo.StereoCameraSyncer" />
-                    <Processor content="org.inviwo.VolumeBoundingBox" />
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
                 </Processors>
             </Module>
-            <Module name="CImg" />
-            <Module name="FontRendering">
+            <Module name="zlib" version="0" />
+            <Module name="assimp" version="0" />
+            <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
+            <Module name="BaseCL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
+                </Processors>
+            </Module>
+            <Module name="CImg" version="0" />
+            <Module name="EigenUtils" version="0" />
+            <Module name="Example" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.ExampleProcessor" />
+                    <Processor content="org.inviwo.ExampleProgressBar" />
+                </Processors>
+            </Module>
+            <Module name="FontRendering" version="1">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
-            <Module name="Nifti" />
-            <Module name="OpenGLQt" />
-            <Module name="PVM" />
-            <Module name="Python3" />
-            <Module name="Python3Qt" />
-            <Module name="pythonInterface" />
-            <Module name="VectorFieldVisualization">
+            <Module name="Nifti" version="0" />
+            <Module name="PVM" version="0" />
+            <Module name="Python3" version="0" />
+            <Module name="Python3Qt" version="0" />
+            <Module name="VectorFieldVisualization" version="1">
                 <Processors>
                     <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
                     <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
@@ -239,7 +278,7 @@
                     <Processor content="org.inviwo.StreamRibbons" />
                 </Processors>
             </Module>
-            <Module name="VectorFieldVisualizationGL">
+            <Module name="VectorFieldVisualizationGL" version="1">
                 <Processors>
                     <Processor content="org.inviwo.LorenzSystem" />
                     <Processor content="org.inviwo.VectorFieldGenerator2D" />
@@ -254,25 +293,30 @@
                     <Processor content="org.inviwo.TMIP" />
                 </Processors>
             </Module>
-            <Module name="EigenUtils" />
-            <Module name="Experimental">
+            <Module name="Experimental" version="3">
                 <Processors>
                     <Processor content="org.inviwo.FloatPropertyToString" />
                     <Processor content="org.inviwo.FloatVec2PropertyToString" />
                     <Processor content="org.inviwo.FloatVec3PropertyToString" />
                     <Processor content="org.inviwo.FloatVec4PropertyToString" />
+                    <Processor content="org.inviwo.DoublePropertyToString" />
+                    <Processor content="org.inviwo.DoubleVec2PropertyToString" />
+                    <Processor content="org.inviwo.DoubleVec3PropertyToString" />
+                    <Processor content="org.inviwo.DoubleVec4PropertyToString" />
                     <Processor content="org.inviwo.IntPropertyToString" />
+                    <Processor content="org.inviwo.Int64PropertyToString" />
+                    <Processor content="org.inviwo.Size_tPropertyToString" />
                     <Processor content="org.inviwo.IntVec2PropertyToString" />
                     <Processor content="org.inviwo.IntVec3PropertyToString" />
                     <Processor content="org.inviwo.IntVec4PropertyToString" />
                     <Processor content="org.inviwo.BoolPropertyToString" />
-                    <Processor content="org.inviwo.WorldTransformGeometry" />
-                    <Processor content="org.inviwo.WorldTransformVolume" />
                     <Processor content="org.inviwo.ImageStackVolumeSource" />
+                    <Processor content="org.inviwo.AmbientOcclusion" />
                     <Processor content="org.inviwo.VolumeIllustration" />
                     <Processor content="org.inviwo.VolumeInformation" />
                     <Processor content="org.inviwo.Test2by2by2Volume" />
                     <Processor content="org.inviwo.GaussianImage" />
+                    <Processor content="org.inviwo.VolumeGLCreate" />
                     <Processor content="org.inviwo.EggMaker" />
                     <Processor content="org.inviwo.TestVolume" />
                     <Processor content="org.inviwo.CandidateVolume" />
@@ -295,9 +339,15 @@
                     <Processor content="org.inviwo.Vec3ToMesh" />
                     <Processor content="org.inviwo.GradientHistProcessor" />
                     <Processor content="org.inviwo.GeometeryGenerator" />
+                    <Processor content="org.inviwo.SingleVolumeToSequence" />
+                    <Processor content="org.inviwo.VolumeSubtractProcessor" />
+                    <Processor content="org.inviwo.TexturedMeshRenderer" />
+                    <Processor content="org.inviwo.MousePosition" />
+                    <Processor content="org.inviwo.WavefrontExporter" />
+                    <Processor content="org.inviwo.VolumeSelectorProcessor" />
                 </Processors>
             </Module>
-            <Module name="testing">
+            <Module name="testing" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CameraTest" />
                     <Processor content="org.inviwo.CaseImages" />
@@ -320,37 +370,10 @@
                     <Processor content="org.inviwo.TestBackgroundTask" />
                     <Processor content="org.inviwo.ColorPropertyTest" />
                     <Processor content="org.inviwo.MeshTest" />
+                    <Processor content="org.inviwo.ImageSequenceCreator" />
                 </Processors>
             </Module>
-            <Module name="VectorFieldVisualizationExperimental">
-                <Processors>
-                    <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.ToComputationalSpace2D" />
-                    <Processor content="org.inviwo.VectorGradientProcessor" />
-                    <Processor content="org.inviwo.FTLESeedPlane" />
-                    <Processor content="org.inviwo.FTLE" />
-                    <Processor content="org.inviwo.ImageLocalMinimum" />
-                    <Processor content="org.inviwo.TwoDPointsToSeedPoints" />
-                    <Processor content="org.inviwo.Glyph2D" />
-                    <Processor content="org.inviwo.SeedPointSelector" />
-                    <Processor content="org.inviwo.DBSCAN" />
-                    <Processor content="org.inviwo.DBSCANClusterExtractor" />
-                    <Processor content="org.inviwo.FussyFloodFill" />
-                    <Processor content="org.inviwo.ClusterRepresentatives" />
-                </Processors>
-            </Module>
-            <Module name="MRIVisualization">
-                <Processors>
-                    <Processor content="org.inviwo.LinePredicates" />
-                    <Processor content="org.inviwo.MRIPathLines" />
-                    <Processor content="org.inviwo.SeedpointsFromMaskMRI" />
-                    <Processor content="org.inviwo.Contour" />
-                    <Processor content="org.inviwo.IntegralLinePostProcessing" />
-                    <Processor content="org.inviwo.SimulateVolumeSequence" />
-                    <Processor content="org.inviwo.MaskCombiner" />
-                </Processors>
-            </Module>
-            <Module name="QtWidget" />
+            <Module name="QtWidget" version="0" />
         </Modules>
     </InviwoSetup>
 </InviwoTreeData>

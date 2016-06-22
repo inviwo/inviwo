@@ -44,13 +44,14 @@ const ProcessorInfo ExampleProcessor::getProcessorInfo() const {
 
 ExampleProcessor::ExampleProcessor()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("geometry.outport") {
+    , inport_("inputVolume")
+    , outport_("outputMesh") {
+
     addPort(inport_);
     addPort(outport_);
 }
 
-ExampleProcessor::~ExampleProcessor() {}
+ExampleProcessor::~ExampleProcessor() = default;
 
 void ExampleProcessor::process() {
 }

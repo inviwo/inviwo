@@ -50,8 +50,8 @@ const ProcessorInfo DrawPoints::getProcessorInfo() const {
 
 DrawPoints::DrawPoints()
     : CompositeProcessorGL()
-    , inport_("image.inport")
-    , outport_("image.outport")
+    , inport_("inputImage")
+    , outport_("outputImage")
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
