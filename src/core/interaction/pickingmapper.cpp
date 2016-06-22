@@ -71,6 +71,10 @@ PickingMapper::~PickingMapper() {
 }
 
 void PickingMapper::resize(size_t newSize) {
+    if (newSize == getPickingObject()->getSize()) {
+        //Same size or size zero, do nothing
+        return;
+    }
     if (pickingObject_ && manager_) {
         manager_->unregisterPickingObject(pickingObject_);
         pickingObject_ = nullptr;
