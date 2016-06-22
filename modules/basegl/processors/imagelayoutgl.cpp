@@ -79,7 +79,7 @@ ImageLayoutGL::ImageLayoutGL()
     });
     
     addPort(outport_);
-    layout_.addOption("single", "Single Only", Layout::Single);
+    layout_.addOption("single", "Single", Layout::Single);
     layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
     layout_.addOption("verticalSplit", "Vertical Split", Layout::VerticalSplit);
     layout_.addOption("crossSplit", "Cross Split", Layout::CrossSplit);
