@@ -84,7 +84,11 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
 
 
     (*fileStream_) << "<div class ='info'>Inviwo (V " << IVW_VERSION << ") Log File</div>"
-                   << std::endl;
+        << std::endl;
+
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    (*fileStream_) << "<div class ='info'>Created at: " << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << "</div>" << std::endl;
 }
 
 FileLogger::~FileLogger() {
