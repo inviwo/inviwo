@@ -66,9 +66,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     });
     QObject::connect(this, &QLineEdit::editingFinished, [this]() {
         if (editingEnabled_) {
-            LogInfo("editing finished, cursorpos (old) " << cursorPos_);
             cursorPos_ = this->cursorPosition();
-            LogInfo(" cursor (new) " << cursorPos_);
             path_ = this->text().toStdString();
             setEditing(false);
         }

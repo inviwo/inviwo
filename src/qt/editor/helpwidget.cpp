@@ -102,7 +102,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     connect(helpEngine_, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
 
     if (!helpEngine_->setupData()) {
-        LogWarn("Faild to setup the help engine:" << helpEngine_->error().toUtf8().constData());
+        LogWarn("Failed to setup the help engine:" << helpEngine_->error().toUtf8().constData());
         delete helpEngine_;
         helpEngine_ = nullptr;
     }
@@ -118,16 +118,22 @@ void HelpWidget::showDocForClassName(std::string classIdentifier) {
     
     if (!helpEngine_) return;
     
-    //replaceInString(classIdentifier, ".", "_8");
+    QString path("qthelp://org.inviwo/doc/docpage-%1.html");
 
-    QUrl url(QString::fromStdString("qthelp://org.inviwo/doc/docpage-" + classIdentifier + ".html"));
-    QUrl foundUrl = helpEngine_->findFile(url);
-
+    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
     if (foundUrl.isValid()) {
         helpBrowser_->setSource(foundUrl);
-    } else {
-        helpBrowser_->setText(QString("No documentation available"));
+        return;
+    } 
+
+    replaceInString(classIdentifier, ".", "_8");
+    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
+    if (foundUrl.isValid()) {
+        helpBrowser_->setSource(foundUrl);
+        return;
     }
+
+    helpBrowser_->setText(QString("No documentation available"));
 }
 
 void HelpWidget::resizeEvent(QResizeEvent * event) {

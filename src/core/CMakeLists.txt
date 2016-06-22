@@ -509,6 +509,7 @@ set(TEST_FILES
     tests/unittests/filesystem-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
+    tests/unittests/glm-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
