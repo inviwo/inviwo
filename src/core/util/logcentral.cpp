@@ -88,7 +88,9 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
 
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
-    (*fileStream_) << "<div class ='info'>Created at: " << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << "</div>" << std::endl;
+    char formatedString[21];
+    strftime(formatedString, sizeof(formatedString), "%Y-%m-%d %H:%M:%S ", &tm);
+    (*fileStream_) << "<div class ='info'>Created at: " << formatedString << "</div>" << std::endl;
 }
 
 FileLogger::~FileLogger() {
