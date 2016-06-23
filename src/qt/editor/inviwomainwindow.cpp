@@ -963,6 +963,9 @@ void InviwoMainWindow::showAboutBox() {
     aboutText << "<p><b>Modules:</b><br>\n" <<  joinString(names, ", ") <<  "</p>\n";
     aboutText << "</body></html>";
 
+    aboutText << "<p><b>Qt:</b> Version " << QT_VERSION_STR << ".<br/>"
+       << "Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies)</p>";
+
     auto str = aboutText.str();
 
     // Use custom dialog since in QMessageBox::about you can not select text 
