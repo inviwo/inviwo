@@ -2,6 +2,8 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
+include(CMakeParseArguments)
+
 # Try and find python 3 installation
 string(FIND "${CMAKE_PREFIX_PATH}" python3 haspython) #Skip if python3 is already in CMAKE_PREFIX_PATH
 if(NOT ${haspython} GREATER 0) 
@@ -51,23 +53,22 @@ if(IVW_PYTHON_LINK_DEBUG)
     ivw_add_definition(IVW_PYTHON_LINK_DEBUG)
 endif()
 
-list(LENGTH PYTHON_LIBRARIES NUM_DIRS)
-if(${NUM_DIRS} EQUAL 4)
-    list(GET PYTHON_LIBRARIES 0 LIB1_TYPE)
-    list(GET PYTHON_LIBRARIES 1 LIB1_PATH)
-    list(GET PYTHON_LIBRARIES 2 LIB2_TYPE)
-    list(GET PYTHON_LIBRARIES 3 LIB2_PATH)
-
-    if(${LIB1_TYPE} STREQUAL "optimized")
-        set(TMP_PYTHON_LIB ${LIB1_PATH})
-    elseif(${LIB2_TYPE} STREQUAL "optimized")
-        set(TMP_PYTHON_LIB ${LIB2_PATH})
-    endif()
+# Parse PYTHON_LIBRARY
+set(options "")
+set(oneValueArgs optimized debug)
+set(multiValueArgs "")
+cmake_parse_arguments(PYTHON_LIBS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${PYTHON_LIBRARY})
+if(PYTHON_LIBS_optimized)
+    set(PYTHON_LIB ${PYTHON_LIBS_optimized})
+elseif(PYTHON_LIBS_UNPARSED_ARGUMENTS)
+    set(PYTHON_LIB ${PYTHON_LIBS_UNPARSED_ARGUMENTS})
+elseif(PYTHON_LIBS_debug)
+     set(PYTHON_LIB ${PYTHON_LIBS_debug})
 else()
-    set(TMP_PYTHON_LIB ${PYTHON_LIBRARIES})
+     ivw_message(FATAL_ERROR "Python could not determain the python lib file")
 endif()
 
-ivw_library_bits(${TMP_PYTHON_LIB} lib_bits)
+ivw_library_bits(${PYTHON_LIB} lib_bits)
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(sys_bits 64)
 else()
@@ -75,10 +76,10 @@ else()
 endif()
 
 if(NOT ${lib_bits} EQUAL ${sys_bits})
-    ivw_message(FATAL_ERROR "Python (${TMP_PYTHON_LIB}) is built for ${lib_bits}bits "
+    ivw_message(FATAL_ERROR "Python (${PYTHON_LIB}) is built for ${lib_bits}bits "
                             "while target output is ${sys_bits}bits")
 endif()
-add_dependency_libs_to_module(${TMP_PYTHON_LIB})
+add_dependency_libs_to_module(${PYTHON_LIB})
 
 
 #--------------------------------------------------------------------
@@ -141,17 +142,15 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
 #--------------------------------------------------------------------
 # Add Python to package
-# if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-   # get_filename_component(FILENAME "${PYTHON3_LIBRARIES}" NAME_WE)
-   # if(WIN32)
-        # find_file(PYTHON3_DLL ${FILENAME}.dll)
-        # mark_as_advanced(PYTHON3_DLL)
-        # install(FILES ${PYTHON3_DLL} DESTINATION bin COMPONENT modules)
-        # find_file(PYTHON3_MSVCR_DLL msvcr100.dll)
-        # install(FILES ${PYTHON3_MSVCR_DLL} DESTINATION bin COMPONENT modules)
-        # find_file(PYTHON3_MSVCP_DLL msvcp100.dll)
-        # install(FILES ${PYTHON3_MSVCP_DLL} DESTINATION bin COMPONENT modules)
-   # endif()
-# endif()
+if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
+    get_filename_component(python_lib_name "${PYTHON_LIB}" NAME_WE)
+    get_filename_component(python_lib_dir "${PYTHON_LIB}" DIRECTORY)
+    get_filename_component(python_dir "${python_lib_dir}" DIRECTORY)
+    if(WIN32)
+        find_file(PYTHON_DLL NAMES ${python_lib_name}.dll PATHS ${python_dir})
+        install(FILES ${PYTHON_DLL} DESTINATION bin COMPONENT modules)
+    endif()
+endif()
+
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
