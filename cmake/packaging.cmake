@@ -179,7 +179,7 @@ if(IVW_PACKAGE_PROJECT)
         if(IVW_PACKAGE_INSTALLER)
             configure_file(${IVW_CMAKE_TEMPLATES}/info_plist_template.txt
                ${CMAKE_BINARY_DIR}/Info.plist
-               @ONLY IMMEDIATE)
+               @ONLY)
             
             unset(CPACK_COMPONENTS_ALL)
             set(CPACK_MONOLITHIC_INSTALL ON) #Can't get components to work with DragNDrop
