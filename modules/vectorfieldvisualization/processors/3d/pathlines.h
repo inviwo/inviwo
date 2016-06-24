@@ -106,6 +106,7 @@ private:
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
     VolumeSequenceInport volume_;
+    DataOutport<std::vector<IntegralLine>> lines_;
 
 
     MeshOutport linesStripsMesh_;
