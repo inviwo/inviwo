@@ -214,6 +214,7 @@ public:
     bool isPropertyInNetwork(Property* prop) const;
 
     InviwoApplication* getApplication() const;
+    int getVersion() const;
 
     void evaluateLinksFromProperty(Property*);
 

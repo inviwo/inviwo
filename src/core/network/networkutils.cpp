@@ -260,6 +260,7 @@ void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
     });
 
     Serializer xmlSerializer(refPath);
+    xmlSerializer.serialize("ProcessorNetworkVersion", network->getVersion());
     xmlSerializer.serialize("Processors", selected, "Processor");
     xmlSerializer.serialize("Connections", connections, "Connection");
     xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
