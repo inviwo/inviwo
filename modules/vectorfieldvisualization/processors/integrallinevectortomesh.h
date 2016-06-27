@@ -43,6 +43,7 @@
 #include <inviwo/core/ports/meshport.h>
 
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 
 namespace inviwo {
