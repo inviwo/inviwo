@@ -34,10 +34,11 @@ set(Python_ADDITIONAL_VERSIONS 3.5)
 # OR if it has been found before, only call find_package if previous version was 2.x.x 
 # https://gitlab.kitware.com/cmake/cmake/issues/14920
 # https://gitlab.kitware.com/cmake/cmake/issues/16142 
-
-if ((NOT PYTHONLIBS_FOUND ) OR ${PYTHONLIBS_VERSION_STRING} VERSION_LESS 3)
+if(NOT PYTHONLIBS_FOUND)
     find_package(PythonLibs 3)
-endif() 
+elseif(${PYTHONLIBS_VERSION_STRING} VERSION_LESS 3)
+    find_package(PythonLibs 3)
+endif()
 
 if (PYTHONLIBS_FOUND)
     ivw_add_definition(IVW_PYTHON_AVAILABLE)
