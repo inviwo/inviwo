@@ -55,19 +55,22 @@ namespace inviwo {
 /** \docpage{org.inviwo.DistanceTransformRAM, Distance Transform}
  * ![](org.inviwo.DistanceTransformRAM.png?classIdentifier=org.inviwo.DistanceTransformRAM)
  *
- * ...
+ * Computes the distance transform of a binary volume dataset using the data range as low 
+ * and high value. The result is the distance from each voxel to the closest feature 
+ * (high value). It uses the Saito's algorithm to compute the Euclidean distance.
  * 
  * ### Inports
- *   * __volume.inport__ ...
+ *   * __inputVolume__ Binary input volume
  * 
  * ### Outports
- *   * __volume.outport__ ...
+ *   * __outputVolume__ Scalar volume representing the distance transform (Uint16)
  * 
  * ### Properties
- *   * __Enabled__ ...
- *   * __Squared Distance__ ...
- *   * __Update Distance Map__ ...
- *   * __Scaling Factor__ ...
+ *   * __Enabled__              Enables the computation. If disabled, the output is identical 
+ *                              to the input volume.
+ *   * __Squared Distance__     Use squared distances instead of Euclidean distance.
+ *   * __Scaling Factor__       Scales the resulting distances.
+ *   * __Update Distance Map__  Triggers a recomputation of the distance transform
  *
  */
 class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
@@ -121,9 +124,9 @@ void DistanceTransformRAM::computeDistanceTransform() {
     if (dataDim != srcVol->getDimensions())
         return;
 
-    T lowVal = static_cast<T>(0);
-    //T highVal = (vol->getDataFormat()->getNumericType() == FLOAT_TYPE ? static_cast<T>(1.0e10) : std::numeric_limits<T>::max());
-    T highVal = std::numeric_limits<T>::max();
+    auto dataRange = volumePort_.getData()->dataMap_.dataRange;
+    T lowVal = static_cast<T>(dataRange.x);
+    T highVal = static_cast<T>(dataRange.y);
     T *data = static_cast<T *>(vol->getData());
     // alternative data access
     //VolumeRAMPrecision<T>* volume = dynamic_cast<VolumeRAMPrecision<T> *>(vol);

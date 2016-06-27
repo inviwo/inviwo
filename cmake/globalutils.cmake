@@ -644,6 +644,6 @@ function(ivw_generate_build_info template buildinfofile)
     string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
     string(TIMESTAMP TMPSECOND "%S")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
-    configure_file("${template}" "${buildinfofile}" @ONLY IMMEDIATE)
+    configure_file("${template}" "${buildinfofile}" @ONLY)
 endfunction()
 

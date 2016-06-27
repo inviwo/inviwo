@@ -33,6 +33,12 @@
 
 namespace inviwo {
 
+namespace color {
+
+vec3 getD65WhitePoint() {
+    // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);
+    return vec3(0.95047f, 1.0f, 1.08883f);
+}
 
 vec3 hsv2rgb(vec3 hsv) {
     double hue = hsv.x;
@@ -105,11 +111,11 @@ vec3 rgb2hsv(vec3 rgb) {
     // blue hue
     if (notGray) {
         if (b == val)
-            hue = 2.0/3.0 + 1.0/6.0 * (r - g) / range;
+            hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
         else if (g == val)
-            hue = 1.0/3.0 + 1.0/6.0 * (b - r) / range;
+            hue = 1.0 / 3.0 + 1.0 / 6.0 * (b - r) / range;
         else if (r == val)
-            hue = 1.0/6.0 * (g - b) / range;
+            hue = 1.0 / 6.0 * (g - b) / range;
     }
 
     if (hue < 0.0) {
@@ -125,17 +131,18 @@ vec3 rgb2hsv(vec3 rgb) {
 }
 
 
-vec3 xyz2lab(vec3 xyz, vec3 whitePoint /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
-    static const float epsilon = 0.008856f; 
+vec3 XYZ2lab(vec3 xyz, vec3 whitePoint) {
+    static const float epsilon = 0.008856f;
     static const float kappa = 903.3f;
     vec3 lab;
-    vec3 t = xyz/whitePoint;
+    vec3 t = xyz / whitePoint;
     vec3 f;
     for (int i = 0; i < 3; ++i) {
         if (t[i] > epsilon) {
-            f[i] = std::pow(t[i], 1.f/3.f);
-        } else {
-            f[i] = (kappa*t[i] + 16.f)/116.f; 
+            f[i] = std::pow(t[i], 1.f / 3.f);
+        }
+        else {
+            f[i] = (kappa*t[i] + 16.f) / 116.f;
         }
 
     }
@@ -145,19 +152,20 @@ vec3 xyz2lab(vec3 xyz, vec3 whitePoint /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
     return lab;
 }
 
-vec3 lab2xyz(const vec3 lab, const vec3 whitePoint /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+vec3 lab2XYZ(const vec3 lab, const vec3 whitePoint) {
 
-    vec3 t( (1.f/116.f) * (lab.x + 16.f) );
-    t.y += (1.f/500.f)*lab.y;
-    t.z -= (1.f/200.f)*lab.z;
+    vec3 t((1.f / 116.f) * (lab.x + 16.f));
+    t.y += (1.f / 500.f)*lab.y;
+    t.z -= (1.f / 200.f)*lab.z;
     vec3 f;
     for (int i = 0; i < 3; ++i) {
-        const float sixDivTwentyNine = 6.f/29.f;
+        const float sixDivTwentyNine = 6.f / 29.f;
         if (t[i] > sixDivTwentyNine) {
             f[i] = std::pow(t[i], 3.f);
-        } else {
+        }
+        else {
             // f(t) = 3*(6/29)^2 * (t - 4/29)            
-            f[i] = 3.f*sixDivTwentyNine*sixDivTwentyNine*(t[i] - 4.f/29.f); 
+            f[i] = 3.f*sixDivTwentyNine*sixDivTwentyNine*(t[i] - 4.f / 29.f);
         }
     }
     vec3 xyz;
@@ -167,35 +175,37 @@ vec3 lab2xyz(const vec3 lab, const vec3 whitePoint /*= vec3(0.95047f, 1.f, 1.088
     return xyz;
 }
 
-vec3 rgb2xyz(const vec3 rgb) {
+vec3 rgb2XYZ(const vec3 rgb) {
     // Conversion matrix for sRGB, D65 white point
-    static const mat3 rgb2xyzD65Mat( 0.4124564f, 0.2126729f, 0.0193339f,
-                                  0.3575761f, 0.7151522f, 0.1191920f,
-                                  0.1804375f, 0.0721750f, 0.9503041f);
+    static const mat3 rgb2XYZD65Mat(0.4124564f, 0.2126729f, 0.0193339f,
+                                    0.3575761f, 0.7151522f, 0.1191920f,
+                                    0.1804375f, 0.0721750f, 0.9503041f);
     // Inverse sRGB companding
     vec3 v;
     for (int i = 0; i < 3; ++i) {
         if (rgb[i] > 0.04045f) {
-            v[i] = std::pow( (rgb[i] + 0.055f) / 1.055f, 2.4f);
-        } else {
+            v[i] = std::pow((rgb[i] + 0.055f) / 1.055f, 2.4f);
+        }
+        else {
             v[i] = rgb[i] / 12.92f;
         }
     }
-    return rgb2xyzD65Mat*v;
+    return rgb2XYZD65Mat*v;
 }
 
-vec3 xyz2rgb(const vec3 xyz) {
+vec3 XYZ2rgb(const vec3 xyz) {
     // Conversion matrix for sRGB, D65 white point
-    static const mat3 xyz2rgbD65Mat( 3.2404542f, -0.9692660f,  0.0556434,
-                                    -1.5371385f,  1.8760108f, -0.2040259f,
-                                    -0.4985314f,  0.0415560f,  1.0572252f);
-    vec3 v = xyz2rgbD65Mat*xyz;
+    static const mat3 XYZ2rgbD65Mat(3.2404542f, -0.9692660f, 0.0556434,
+                                    -1.5371385f, 1.8760108f, -0.2040259f,
+                                    -0.4985314f, 0.0415560f, 1.0572252f);
+    vec3 v = XYZ2rgbD65Mat*xyz;
     // sRGB companding
     vec3 rgb;
     for (int i = 0; i < 3; ++i) {
         if (v[i] > 0.0031308f) {
-            rgb[i] = std::pow(v[i], 1.f/2.4f) * 1.055f - 0.055f;
-        } else {
+            rgb[i] = std::pow(v[i], 1.f / 2.4f) * 1.055f - 0.055f;
+        }
+        else {
             rgb[i] = v[i] * 12.92f;
         }
     }
@@ -203,16 +213,46 @@ vec3 xyz2rgb(const vec3 xyz) {
 
 }
 
-vec3 rgb2lab(const vec3 rgb) {
-    vec3 xyz = rgb2xyz(rgb);
+vec3 XYZ2xyY(vec3 xyz) {
+    // if X, Y, and Z are 0, set xy to chromaticity (xy) of ref. white D65.
+    if (glm::all(glm::lessThan(xyz, glm::epsilon<vec3>()))) {
+        // This xy value is obtained by calling XYZ2xyY(getD65WhitePoint())
+        return vec3(0.3127266147f, 0.3290231303f, 0.0f); // brucelindbloom.com D65
+    }
+    else {
+        float &X = xyz.x;
+        float &Y = xyz.y;
+        float &Z = xyz.z;
+        float sum = X + Y + Z;
+        return vec3(X / sum, Y / sum, Y);
+    }
+}
 
-    return xyz2lab(xyz);
+vec3 xyY2XYZ(vec3 xyY) {
+    vec3 XYZ;
+    // if y is 0, set X, Y, Z to 0
+    if (xyY.y < glm::epsilon<float>()) {
+        return vec3(0.0f);
+    }
+    else {
+        auto &x = xyY.x;
+        auto &y = xyY.y;
+        auto &Y = xyY.z;
+
+        return vec3(x * Y / y, Y, (1 - x - y) * Y / y);
+    }
+}
+
+vec3 rgb2lab(const vec3 rgb) {
+    vec3 xyz = rgb2XYZ(rgb);
+
+    return XYZ2lab(xyz);
 }
 
 vec3 lab2rgb(const vec3 lab) {
-    vec3 xyz = lab2xyz(lab);
+    vec3 xyz = lab2XYZ(lab);
 
-    return xyz2rgb(xyz);
+    return XYZ2rgb(xyz);
 }
 
 vec3 rgb2ycbcr(const vec3 &rgb) {
@@ -239,8 +279,8 @@ vec3 ycbcr2rgb(const vec3 &ycbcr) {
     return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
 
-vec3 chromaticity2rgb(const vec3 &LuvChroma, bool clamp, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
-    vec3 rgb(xyz2rgb(chromaticity2XYZ(LuvChroma, whitePointXYZ)));
+vec3 LuvChromaticity2rgb(const vec3 &LuvChroma, bool clamp, vec3 whitePointXYZ) {
+    vec3 rgb(XYZ2rgb(LuvChromaticity2XYZ(LuvChroma, whitePointXYZ)));
     if (clamp) {
         // determine largest component
         int index = 0;
@@ -259,7 +299,7 @@ vec3 chromaticity2rgb(const vec3 &LuvChroma, bool clamp, vec3 whitePointXYZ /*= 
     return rgb;
 }
 
-vec3 XYZ2chromaticity(const vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+vec3 XYZ2LuvChromaticity(const vec3 &XYZ, vec3 whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -276,7 +316,7 @@ vec3 XYZ2chromaticity(const vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f
     return vec3(L, u_prime, v_prime);
 }
 
-vec3 XYZ2Luv(const vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+vec3 XYZ2Luv(const vec3 &XYZ, vec3 whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -294,7 +334,7 @@ vec3 XYZ2Luv(const vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883
 
     double yr = XYZ.y / whitePointXYZ.y;
     // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
-    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0/3.0) - 16.0 : kappa * yr);
+    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
     // u <- 13 * L * (u_prime - u0_prime);
     double u = 13.0 * L * (u_prime - u0_prime);
     // v <- 13 * L * (v_prime - v0_prime);
@@ -303,7 +343,7 @@ vec3 XYZ2Luv(const vec3 &XYZ, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883
     return vec3(L, u, v);
 }
 
-vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_Luv_to_XYZ.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -339,11 +379,11 @@ vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883
     return vec3(X, Y, Z);
 }
 
-vec3 rgb2chromaticity(const vec3 &rgb, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
-    return XYZ2chromaticity(rgb2xyz(rgb), whitePointXYZ);
+vec3 rgb2LuvChromaticity(const vec3 &rgb, vec3 whitePointXYZ) {
+    return XYZ2LuvChromaticity(rgb2XYZ(rgb), whitePointXYZ);
 }
 
-vec3 chromaticity2XYZ(const vec3 &LuvChroma, vec3 whitePointXYZ /*= vec3(0.95047f, 1.f, 1.08883f)*/) {
+vec3 LuvChromaticity2XYZ(const vec3 &LuvChroma, vec3 whitePointXYZ) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
@@ -361,4 +401,6 @@ vec3 chromaticity2XYZ(const vec3 &LuvChroma, vec3 whitePointXYZ /*= vec3(0.95047
     return Luv2XYZ(vec3(L, u, v));
 }
 
-} // namespace
+} // namespace color
+
+} // namespace inviwo

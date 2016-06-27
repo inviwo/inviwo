@@ -126,7 +126,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 processor->notifyObserversAboutToProcess(processor);
 
                 try {
-                    IVW_CPU_PROFILING_IF(500, "Processed " << processor->getDisplayName());
+                    IVW_CPU_PROFILING_IF(500, "Processed " << processor->getIdentifier());
                     // do the actual processing
                     processor->process();
                 } catch (...) {

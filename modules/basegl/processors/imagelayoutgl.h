@@ -49,19 +49,28 @@ namespace inviwo {
 /** \docpage{org.inviwo.ImageLayoutGL, Image Layout}
  * ![](org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL)
  *
- * ...
- * 
+ * Provides layouting for multiple input images. The order of the input images will determine the result.
+ * Available layouts include
+ * <table>
+ *   <tr><td><tt>Single</tt></td><td>The first input image fills the entire output.</td></tr>
+ *   <tr><td><tt>Horizontal Split</tt></td><td>Two images are put on top of each other.</td></tr>
+ *   <tr><td><tt>Vertical Split</tt></td><td>Two images are put next to each other side by side.</td></tr>
+ *   <tr><td><tt>Cross Split</tt></td><td>Two-by-two layout of up to four images filled from left to right and top to bottom.</td></tr>
+ *   <tr><td><tt>Three Left, One Right</tt></td><td>The first 3 images are vertically arranged on the left, the fourth is shown on the right.</td></tr>
+ *   <tr><td><tt>Three Right, One Left</tt></td><td>The first 3 images are vertically arranged on the right, the fourth is shown on the left.</td></tr>
+ * </table>
+ *
+ * Clicking an image with the mouse will activate the area for mouse and key interactions.
+ *
  * ### Inports
- *   * __multiinport__ ...
+ *   * __Image Inport__ Multi-inport for multiple images. Only the first four images will be layouted.
  * 
  * ### Outports
- *   * __outport__ ...
+ *   * __outport__      Resulting layout of input images
  * 
  * ### Properties
- *   * __Vertical Split__ ...
- *   * __Split Position__ ...
- *   * __Split Position__ ...
- *   * __Horizontal Split__ ...
+ *   * __Layout__         Applied layout <tt>Single</tt>, <tt>Horizontal Split</tt>, <tt>Cross Split</tt>, <tt>Three Left, One Right</tt>, <tt>Three Right, One Left</tt>
+ *   * __Split Position__ Position of the layout splitter.
  *
  */
 class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {

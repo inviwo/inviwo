@@ -125,7 +125,7 @@ function(ivw_generate_module_paths_header)
     set(IVW_MODULES_PATHS_ARRAY ${paths})
 
     configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY IMMEDIATE)
+                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY)
 endfunction()
 
 #--------------------------------------------------------------------
@@ -694,7 +694,7 @@ macro(ivw_make_package package_name project_name)
     set(_project_name ${project_name})
   
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
-                   ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
+                   ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY)
 endmacro()
 
 
@@ -972,6 +972,14 @@ macro(ivw_qt_add_to_install qtarget ivw_comp)
                         DESTINATION bin 
                         COMPONENT ${ivw_comp} 
                         CONFIGURATIONS Release)
+                foreach(plugin ${${qtarget}_PLUGINS})
+                    get_target_property(_loc ${plugin} LOCATION)
+                    get_filename_component(_path ${_loc} PATH)
+                    get_filename_component(_dirname ${_path} NAME)
+                    install(FILES ${_loc} 
+                            DESTINATION bin/${_dirname} 
+                            COMPONENT ${ivw_comp})
+                endforeach()
             elseif(APPLE)
                 foreach(plugin ${${qtarget}_PLUGINS})
                     get_target_property(_loc ${plugin} LOCATION)
