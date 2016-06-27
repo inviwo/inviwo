@@ -30,6 +30,7 @@
 #include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 namespace inviwo {
 
