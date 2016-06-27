@@ -6,6 +6,7 @@ ivw_module(VectorFieldVisualization)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/datastructures/integralline.h
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.h
@@ -16,6 +17,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.h
@@ -26,6 +28,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.cpp
@@ -35,6 +38,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.cpp

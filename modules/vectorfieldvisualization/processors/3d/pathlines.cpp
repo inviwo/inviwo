@@ -142,10 +142,9 @@ void PathLines::process() {
     bool warnOnce = true;
     bool warnOnce2 = true;
 
-    auto lines = std::make_shared<std::vector<IntegralLine>>();
+    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
-        int asdf = 1232;
 #pragma omp parallel for
         for (long long j = 0; j < seeds->size();j++){
             auto p = seeds->at(j);
@@ -157,7 +156,6 @@ void PathLines::process() {
             lines->push_back(line);
         }
     }
-
 
     for (auto &line : *lines) {
         auto size = line.getPositions().size();
