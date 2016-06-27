@@ -27,10 +27,10 @@
  # 
  #################################################################################
  
-set(IVW_VERSION 0.9.6)
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
 set(IVW_PATCH_VERSION 7)
+set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION})
 
 #--------------------------------------------------------------------
 # Requirement checks
