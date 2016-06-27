@@ -246,6 +246,30 @@ void TransferFunction::deserialize(Deserializer& d) {
     invalidate();
 }
 
+inviwo::vec4 TransferFunction::sample(float v) const {
+    if (v < 0) {
+        return points_.front()->getRGBA();
+    }
+    else if (v > 1) {
+        return points_.back()->getRGBA();
+    }
+
+
+    auto it = std::upper_bound(points_.begin(), points_.end(), v, [](float v , const TransferFunctionDataPoint* p) {
+        return v < p->getPos().x;
+    });
+    if (it == points_.begin()) {
+        return points_.front()->getRGBA();
+    }
+    if (it == points_.end()) {
+        return points_.back()->getRGBA();
+    }
+
+    auto next = it--;
+    float x = (v - (*it)->getPos().x) / ((*next)->getPos().x - (*it)->getPos().x);
+    return Interpolation<vec4, float>::linear((*it)->getRGBA(), (*next)->getRGBA(), x);
+}
+
 const Layer* TransferFunction::getData() const {
     if (invalidData_) {
         const_cast<TransferFunction*>(this)->calcTransferValues();
