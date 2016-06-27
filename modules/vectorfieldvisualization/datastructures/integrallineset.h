@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
