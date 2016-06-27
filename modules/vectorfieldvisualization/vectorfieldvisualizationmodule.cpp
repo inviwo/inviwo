@@ -75,10 +75,6 @@ bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, u
         res |= traverseNodes(child.Get(), update);
     }
 
-    if (res) {
-        node->GetDocument()->SaveFile("D:/temp/temp.ivw");
-    }
-
     return res;
 }
 
