@@ -66,12 +66,20 @@ public:
 
     dvec3 getPointAtDistance(double d)const;
 
+    size_t getIndex()const { return idx_; }
+    void setIndex(size_t idx ) { idx_  = idx; }
+
 private:
     std::vector<dvec3> positions_;
     std::map<std::string, std::vector<dvec3>> metaData_;
     TerminationReason terminationReason_;
 
     mutable double length_;
+
+    size_t idx_;
+
+
+
 };
 
 }  // namespace

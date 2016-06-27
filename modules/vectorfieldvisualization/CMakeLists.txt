@@ -6,7 +6,7 @@ ivw_module(VectorFieldVisualization)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/integralline.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/datastructures/integralline.h
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/seedpointsport.h
@@ -26,7 +26,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/integralline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.cpp

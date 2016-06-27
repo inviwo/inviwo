@@ -43,6 +43,7 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
