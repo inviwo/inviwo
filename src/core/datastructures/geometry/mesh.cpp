@@ -73,13 +73,17 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
-void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
-    buffers_.emplace_back(type, att);
+void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att) {
+    buffers_.emplace_back(info, att);
 }
 
-void Mesh::setBuffer(size_t idx, BufferType type, std::shared_ptr<BufferBase> att) {
+void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
+    buffers_.emplace_back(BufferInfo(type), att);
+}
+
+void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
     if (idx < buffers_.size()) {
-        buffers_[idx] = std::make_pair(type, att);
+        buffers_[idx] = std::make_pair(info, att);
     }
 }
 

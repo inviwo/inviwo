@@ -31,11 +31,14 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/openglutils.h>
 
+#include <inviwo/core/util/exception.h>
+
 namespace inviwo {
 
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
+    ivwAssert(mesh != nullptr, "MeshDrawerGL(): mesh is null");
     initialize(mesh->getDefaultMeshInfo());
 }
 
