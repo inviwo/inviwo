@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageContourProcessor::processorInfo_{
     "org.inviwo.ImageContourProcessor",  // Class identifier
     "Image Contour",                     // Display name
-    "Undefined",                         // Category
+    "Image Processing",                         // Category
     CodeState::Experimental,             // Code state
     Tags::None,                          // Tags
 };
