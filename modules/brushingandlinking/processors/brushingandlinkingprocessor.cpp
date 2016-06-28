@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
+#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
+#include <modules/brushingandlinking/events/filteringevent.h>
 
 namespace inviwo {
 
@@ -43,16 +46,36 @@ const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 
+void BrushingAndLinkingProcessor::invokeEvent(Event* event)
+{
+    if (auto brushingEvent = dynamic_cast<BrushingAndLinkingEvent*>(event)) {
+        if (auto filtering = dynamic_cast<FilteringEvent*>(event)) {
+            manager_->setFiltered(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        }
+        else if (auto selection = dynamic_cast<SelectionEvent*>(event)) {
+            manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        }
+        else if (auto remove = dynamic_cast<RemoveEvent*>(event)) {
+            manager_->remove(brushingEvent->getSource());
+            event->markAsUsed();
+        }
+    }
+    Processor::invokeEvent(event);
+}
+
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
     , outport_("outport")
+    , manager_(std::make_shared<BrushingAndLinkingManager>(this))
 {
     
     addPort(outport_);
 }
     
-void BrushingAndLinkingProcessor::process() {
-    //outport_.setData(myImage);
+void BrushingAndLinkingProcessor::process() {  
+    outport_.setData(manager_);
 }
 
 } // namespace

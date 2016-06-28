@@ -32,9 +32,11 @@
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
-
+    class BrushingAndLinkingInport;
+    class BrushingAndLinkingManager;
 /**
  * \class BrushingList
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
@@ -45,8 +47,25 @@ public:
     IndexList();
     virtual ~IndexList();
 
-    size_t getSize() const { return 0; }
-    bool has(size_t idx)const { return true; }
+    size_t getSize() const;
+    bool has(size_t idx)const;
+
+    void set(const BrushingAndLinkingInport * src, const std::unordered_set<size_t> &incices);
+    void remove(const BrushingAndLinkingInport * src);
+
+    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V) {
+        return onUpdate_.add(V);
+    }
+
+    void update();
+
+private:
+
+    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>> indicesBySource_;
+
+    std::unordered_set<size_t> indices_;
+    
+    Dispatcher<void()> onUpdate_;
 };
 
 } // namespace

@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 
 
 namespace inviwo {
@@ -69,9 +70,18 @@ public:
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
+
+    virtual void invokeEvent(Event* event) override;
+
     static const ProcessorInfo processorInfo_;
+
+    BrushingAndLinkingOutport &getOutport() {
+        return outport_;
+    }
+
 private:
     BrushingAndLinkingOutport outport_;
+    std::shared_ptr<BrushingAndLinkingManager> manager_;
 };
 
 } // namespace

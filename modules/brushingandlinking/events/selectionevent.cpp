@@ -27,37 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
 
 namespace inviwo {
 
-IndexList::IndexList() {}
 
-IndexList::~IndexList() {}
+} // namespace
 
-size_t IndexList::getSize() const { return indices_.size(); }
-
-bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
-
-void IndexList::set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices) {
-    indicesBySource_[src] = indices;
-    update();
-}
-
-void IndexList::remove(const BrushingAndLinkingInport *src) {
-    indicesBySource_.erase(src);
-    update();
-}
-
-void IndexList::update() {
-    indices_.clear();
-    for (auto p : indicesBySource_) {
-        if (p.first->isConnected()) {
-            indices_.insert(p.second.begin(), p.second.end());
-        }
-    }
-    onUpdate_.invoke();
-}
-
-}  // namespace

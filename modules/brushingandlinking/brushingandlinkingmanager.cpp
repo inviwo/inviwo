@@ -28,14 +28,24 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager()  {
-    
+BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingProcessor *p){
+    p->getOutport().onDisconnect([&]() {
+        selected_.update();
+        filtered_.update();
+    });
+    callback1_ = selected_.onChange([p]() {
+        p->invalidate(InvalidationLevel::InvalidOutput);
+    });
+    callback2_ = filtered_.onChange([p]() {
+        p->invalidate(InvalidationLevel::InvalidOutput);
+    });
 }
 
-BrushingAndLinkingManager::~BrushingAndLinkingManager()  {
+BrushingAndLinkingManager::~BrushingAndLinkingManager(){
     
 }
 

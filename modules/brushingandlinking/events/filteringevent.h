@@ -27,37 +27,28 @@
  *
  *********************************************************************************/
 
-#include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#ifndef IVW_FILTERINGEVENT_H
+#define IVW_FILTERINGEVENT_H
+
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
 namespace inviwo {
 
-IndexList::IndexList() {}
+/**
+ * \class FilteringEvent
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_BRUSHINGANDLINKING_API FilteringEvent : public BrushingAndLinkingEvent {
+public:
+    FilteringEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t> &indices):BrushingAndLinkingEvent(src,indices){}
+    virtual ~FilteringEvent() = default;
+};
 
-IndexList::~IndexList() {}
+} // namespace
 
-size_t IndexList::getSize() const { return indices_.size(); }
+#endif // IVW_FILTERINGEVENT_H
 
-bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
-
-void IndexList::set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices) {
-    indicesBySource_[src] = indices;
-    update();
-}
-
-void IndexList::remove(const BrushingAndLinkingInport *src) {
-    indicesBySource_.erase(src);
-    update();
-}
-
-void IndexList::update() {
-    indices_.clear();
-    for (auto p : indicesBySource_) {
-        if (p.first->isConnected()) {
-            indices_.insert(p.second.begin(), p.second.end());
-        }
-    }
-    onUpdate_.invoke();
-}
-
-}  // namespace

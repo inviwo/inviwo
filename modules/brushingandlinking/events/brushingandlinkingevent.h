@@ -27,37 +27,45 @@
  *
  *********************************************************************************/
 
-#include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#ifndef IVW_BRUSHINGANDLINKINGEVENT_H
+#define IVW_BRUSHINGANDLINKINGEVENT_H
+
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/events/event.h>
 
 namespace inviwo {
+    class BrushingAndLinkingInport;
+/**
+ * \class BrushingAndLinkingEvent
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingEvent : public Event { 
+public:
+    BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,const std::unordered_set<size_t> &indices) : source_(src), indices_(indices){}
+    virtual ~BrushingAndLinkingEvent() = default;
 
-IndexList::IndexList() {}
-
-IndexList::~IndexList() {}
-
-size_t IndexList::getSize() const { return indices_.size(); }
-
-bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
-
-void IndexList::set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices) {
-    indicesBySource_[src] = indices;
-    update();
-}
-
-void IndexList::remove(const BrushingAndLinkingInport *src) {
-    indicesBySource_.erase(src);
-    update();
-}
-
-void IndexList::update() {
-    indices_.clear();
-    for (auto p : indicesBySource_) {
-        if (p.first->isConnected()) {
-            indices_.insert(p.second.begin(), p.second.end());
-        }
+    const BrushingAndLinkingInport* getSource() const {
+        return source_;
     }
-    onUpdate_.invoke();
-}
 
-}  // namespace
+    const std::unordered_set<size_t> &getIndices()const {
+        return indices_;
+    };
+
+private:
+    const BrushingAndLinkingInport* source_;
+    const std::unordered_set<size_t> &indices_;
+};
+
+class IVW_MODULE_BRUSHINGANDLINKING_API RemoveEvent : public BrushingAndLinkingEvent {
+public:
+    RemoveEvent(const BrushingAndLinkingInport* src) :BrushingAndLinkingEvent(src, std::unordered_set<size_t>()) {}
+    virtual ~RemoveEvent() = default;
+};
+
+} // namespace
+
+#endif // IVW_BRUSHINGANDLINKINGEVENT_H
+

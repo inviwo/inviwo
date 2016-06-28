@@ -30,41 +30,53 @@
 #ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
 #define IVW_BRUSHINGANDLINKINGMANAGER_H
 
+#include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
-
+class BrushingAndLinkingInport;
+class BrushingAndLinkingProcessor;
 /**
  * \class BrushingAndLinkingManager
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager { 
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
 public:
-    BrushingAndLinkingManager();
+    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
     virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected()const { return selected_.getSize(); }
-    size_t getNumberOfFiltered()const { return filtered_.getSize(); }
+    size_t getNumberOfSelected() const { return selected_.getSize(); }
+    size_t getNumberOfFiltered() const { return filtered_.getSize(); }
 
-    bool isSelected(size_t idx)const {
-        return selected_.has(idx);
+    bool isSelected(size_t idx) const { return selected_.has(idx); }
+
+    void remove(const BrushingAndLinkingInport* src) {
+        selected_.remove(src);
+        filtered_.remove(src);
     }
 
-    bool isFiltered(size_t idx)const {
-        return selected_.has(idx);
+    bool isFiltered(size_t idx) const { return filtered_.has(idx); }
+
+    void setSelected(const BrushingAndLinkingInport* src,
+                     const std::unordered_set<size_t>& indices) {
+        selected_.set(src, indices);
+    }
+
+    void setFiltered(const BrushingAndLinkingInport* src,
+                     const std::unordered_set<size_t>& indices) {
+        filtered_.set(src, indices);
     }
 
 private:
     IndexList selected_;
     IndexList filtered_;
+
+    std::shared_ptr<std::function<void()>> callback1_;
+    std::shared_ptr<std::function<void()>> callback2_;
 };
 
+}  // namespace
 
-
-} // namespace
-
-#endif // IVW_BRUSHINGANDLINKINGMANAGER_H
-
+#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

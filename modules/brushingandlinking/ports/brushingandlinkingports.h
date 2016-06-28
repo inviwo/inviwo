@@ -36,17 +36,70 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/port.h>
+#include <modules/brushingandlinking/events/filteringevent.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
 
 namespace inviwo {
 
+    class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport : public DataInport<BrushingAndLinkingManager> {
+    public:
+        BrushingAndLinkingInport(std::string identifier) : DataInport<BrushingAndLinkingManager>(identifier) {
+            setOptional(true);
 
-using BrushingAndLinkingInport = DataInport<BrushingAndLinkingManager>;
+            onConnect([&]() {
+                sendFilterEvent(filterCache_);
+                sendSelectionEvent(selctionCache_);
+            });
 
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public DataOutport<BrushingAndLinkingManager> {
-public:
-    BrushingAndLinkingOutport(std::string identifier) : DataOutport<BrushingAndLinkingManager>(identifier){}
-    virtual ~BrushingAndLinkingOutport() = default;
-};
+        }
+        virtual ~BrushingAndLinkingInport() {
+            RemoveEvent event(this);
+            getProcessor()->propagateEvent(&event, nullptr);
+        }
+
+        void sendFilterEvent(const std::unordered_set<size_t> &indices) {
+            filterCache_ = indices;
+            FilteringEvent event(this, filterCache_);
+            getProcessor()->propagateEvent(&event, nullptr);
+        }
+
+        void sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+            selctionCache_ = indices;
+            SelectionEvent event(this, selctionCache_);
+            getProcessor()->propagateEvent(&event, nullptr);
+        }
+
+        bool isFiltered(size_t idx)const {
+            if (isConnected()) {
+                return getData()->isFiltered(idx);
+            }
+            else {
+                return filterCache_.find(idx) != filterCache_.end();
+            }
+        }
+
+
+        bool isSelected(size_t idx)const {
+            if (isConnected()) {
+                return getData()->isSelected(idx);
+            }
+            else {
+                return selctionCache_.find(idx) != selctionCache_.end();
+            }
+        }
+
+        std::unordered_set<size_t> filterCache_;
+        std::unordered_set<size_t> selctionCache_;
+
+    };
+
+
+
+    class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public DataOutport<BrushingAndLinkingManager> {
+    public:
+        BrushingAndLinkingOutport(std::string identifier) : DataOutport<BrushingAndLinkingManager>(identifier) {}
+        virtual ~BrushingAndLinkingOutport() = default;
+    };
 
 template <>
 struct port_traits<BrushingAndLinkingManager> {
