@@ -37,7 +37,7 @@
 #include <inviwo/core/ports/imageport.h>
 
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
-#include <modules/dataplotting/properties/brushinglistproperty.h>
+#include <modules/brushingandlinking/properties/brushinglistproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/meshport.h>
