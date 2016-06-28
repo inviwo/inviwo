@@ -49,7 +49,8 @@ using namespace inviwo;
 
 int main(int argc, char** argv) {
     LogCentral::init();
-    LogCentral::getPtr()->registerLogger(new ConsoleLogger());
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    LogCentral::getPtr()->registerLogger(logger);
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });

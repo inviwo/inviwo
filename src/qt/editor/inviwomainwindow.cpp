@@ -90,10 +90,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                      "file name")
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
-    networkEditor_ = new NetworkEditor(this);
+
+    networkEditor_ = std::make_shared<NetworkEditor>(this);
     // initialize console widget first to receive log messages
-    consoleWidget_ = new ConsoleWidget(this);
-    // LogCentral takes ownership of logger
+    consoleWidget_ = std::make_shared<ConsoleWidget>(this);
     LogCentral::getPtr()->registerLogger(consoleWidget_);
     currentWorkspaceFileName_ = "";
 
@@ -128,14 +128,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                     1000);
 }
 
-InviwoMainWindow::~InviwoMainWindow() {
-    LogCentral::getPtr()->unregisterLogger(consoleWidget_);
-    delete networkEditor_;
-}
+InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::initialize() {
-    networkEditorView_ = new NetworkEditorView(networkEditor_, this);
-    NetworkEditorObserver::addObservation(networkEditor_);
+    networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
+    NetworkEditorObserver::addObservation(networkEditor_.get());
     setCentralWidget(networkEditorView_);
 
     resourceManagerWidget_ = new ResourceManagerWidget(this);
@@ -155,7 +152,7 @@ void InviwoMainWindow::initialize() {
     propertyListWidget_ = new PropertyListWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
 
-    addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_);
+    addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     // load settings and restore window state
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
@@ -1019,7 +1016,7 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
     }
 }
 
-NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_; }
+NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }
 
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
@@ -1123,7 +1120,7 @@ ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
 
 PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
-ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_; }
+ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
 
 ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
     return resourceManagerWidget_;

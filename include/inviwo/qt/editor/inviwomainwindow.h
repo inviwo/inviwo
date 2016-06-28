@@ -159,7 +159,7 @@ private:
     void fillTestWorkspaceMenu(QMenu* menu);
 
     InviwoApplicationQt* app_;
-    NetworkEditor* networkEditor_;
+    std::shared_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
     OptionPropertyInt* appUsageModeProp_;
 
@@ -170,7 +170,7 @@ private:
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
     PropertyListWidget* propertyListWidget_;
-    ConsoleWidget* consoleWidget_;
+    std::shared_ptr<ConsoleWidget> consoleWidget_;
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
 

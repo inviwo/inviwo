@@ -42,7 +42,8 @@ using namespace inviwo;
 
 int main(int argc, char** argv) {
     LogCentral::init();
-    LogCentral::getPtr()->registerLogger(new ConsoleLogger());
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    LogCentral::getPtr()->registerLogger(logger);
 
     std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
     InviwoApplicationQt inviwoApp(appName, argc, argv, false);

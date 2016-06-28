@@ -204,7 +204,7 @@ protected:
     };
 
     std::string displayName_;
-
+    std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;
     ThreadPool pool_;

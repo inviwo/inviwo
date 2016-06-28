@@ -46,8 +46,8 @@ void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, c
     log("ProcessorNetwork", level, audience, file, function, line, msg);
 }
 
-ConsoleLogger::ConsoleLogger() : Logger() {}
-ConsoleLogger::~ConsoleLogger() {}
+ConsoleLogger::ConsoleLogger() = default;
+ConsoleLogger::~ConsoleLogger() = default;
 
 void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
                         const char* fileName, const char* functionName, int lineNumber,
@@ -121,32 +121,17 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audie
     }
     
     logMsg = htmlEncode(logMsg);
-
     replaceInString(logMsg, " ", "&nbsp;");
     replaceInString(logMsg, "\n", "<br/>");
     replaceInString(logMsg, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
-    (*fileStream_) << "(" << logSource << ":" << lineNumber << ") " << logMsg;
+    (*fileStream_) << "(" << htmlEncode(logSource) << ":" << lineNumber << ") " << logMsg;
     (*fileStream_) << "</div>" << std::endl;
 }
 
-LogCentral::LogCentral() : 
-    logLevel_(LogLevel::Info),  
-    logStacktrace_(false) {}
+LogCentral::LogCentral() : logLevel_(LogLevel::Info), logStacktrace_(false) {}
 
-LogCentral::~LogCentral() {
-    for (auto& logger : loggers_) delete logger;
-}
-
-void LogCentral::registerLogger(Logger* logger) { loggers_.push_back(logger); }
-
-void LogCentral::unregisterLogger(Logger* logger) {
-    auto it = std::find(loggers_.begin(), loggers_.end(), logger);
-    if (it != loggers_.end()) {
-        delete logger;
-        loggers_.erase(it);
-    }
-}
+void LogCentral::registerLogger(std::weak_ptr<Logger> logger) { loggers_.push_back(logger); }
 
 void LogCentral::log(std::string source, LogLevel level, LogAudience audience, const char* file,
                      const char* function, int line, std::string msg) {
@@ -159,34 +144,52 @@ void LogCentral::log(std::string source, LogLevel level, LogAudience audience, c
         for (size_t i = 3; i < stacktrace.size(); ++i) {
             ss << std::endl << stacktrace[i];
         }
-        // append an extra line break to easier seperate several stacktraces in a row
+        // append an extra line break to easier separate several stacktraces in a row
         ss << std::endl;
 
         msg = ss.str();
     }
 
     if (level >= logLevel_) {
-        for (const auto& logger : loggers_) {
-            logger->log(source, level, audience, file, function, line, msg);
-        }
+        // use remove if here to remove expired weak pointers while calling the loggers.
+        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+            if (auto l = logger.lock()) {
+                l->log(source, level, audience, file, function, line, msg);
+                return false;
+            } else {
+                return true;
+            }
+        });
     }
 }
 
 void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function, int line) {
     if (level >= logLevel_) {
-        for (const auto& logger : loggers_) {
-            logger->logProcessor(processor, level, audience, msg, file, function, line);
-        }
+        // use remove if here to remove expired weak pointers while calling the loggers.
+        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+            if (auto l = logger.lock()) {
+                l->logProcessor(processor, level, audience, msg, file, function, line);
+                return false;
+            } else {
+                return true;
+            }
+        });
     }
 }
 
 void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line) {
     if (level >= logLevel_) {
-        for (const auto& logger : loggers_) {
-            logger->logNetwork(level, audience, msg, file, function, line);
-        }
+        // use remove if here to remove expired weak pointers while calling the loggers.
+        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+            if (auto l = logger.lock()) {
+                l->logNetwork(level, audience, msg, file, function, line);
+                return false;
+            } else {
+                return true;
+            }
+        });
     }
 }
 
