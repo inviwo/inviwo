@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,33 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
-};
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
+IntegralLineSet::IntegralLineSet(mat4 modelMatrix) : lines_(), modelMatrix_(modelMatrix) {}
 
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
-}
+IntegralLineSet::~IntegralLineSet() {}
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
+inviwo::mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
+
+std::vector<IntegralLine>::const_iterator IntegralLineSet::begin() const { return lines_.begin(); }
+
+std::vector<IntegralLine>::iterator IntegralLineSet::begin() { return lines_.begin(); }
+
+std::vector<IntegralLine>::const_iterator IntegralLineSet::end() const { return lines_.end(); }
+
+std::vector<IntegralLine>::iterator IntegralLineSet::end() { return lines_.end(); }
+
+size_t IntegralLineSet::size() const { return lines_.size(); }
+
+inviwo::IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
+
+const inviwo::IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }
+
+void IntegralLineSet::push_back(IntegralLine &line) {
+    line.setIndex(lines_.size());
+    lines_.push_back(line);
 }
 
 }  // namespace

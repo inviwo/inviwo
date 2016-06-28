@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,29 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_PATHLINES_H
-#define IVW_PATHLINES_H
+#ifndef IVW_INTEGRALLINEVECTORTOMESH_H
+#define IVW_INTEGRALLINEVECTORTOMESH_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/vectorfieldvisualization/pathlinetracer.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
+#include <modules/brushingandlinking/properties/brushinglistproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/meshport.h>
+
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PathLines, Path Lines}
- * ![](org.inviwo.PathLines.png?classIdentifier=org.inviwo.PathLines)
+/** \docpage{org.inviwo.IntegralLineVectorToMesh, Integral Line Vector To Mesh}
+ * ![](org.inviwo.IntegralLineVectorToMesh.png?classIdentifier=org.inviwo.IntegralLineVectorToMesh)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -64,67 +65,35 @@ namespace inviwo {
 
 
 /**
- * \class PathLines
+ * \class IntegralLineVectorToMesh
  * \brief <brief description> 
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor { 
 public:
-    enum class ColoringMethod{
-        Velocity, 
-        Timestamp,
-        ColorPort
-    };
-    PathLines();
-    virtual ~PathLines() = default;
+    IntegralLineVectorToMesh();
+    virtual ~IntegralLineVectorToMesh() = default;
+     
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-     
-    virtual void process() override; 
-
-    virtual bool isReady() const override {
-        if (Processor::isReady()) {
-            return true;
-        }
-
-        if (seedPoints_.isConnected() && !seedPoints_.isReady()) return false;
-        if (colors_.isConnected() && !colors_.isReady()) return false;
-
-        if (sampler_.isConnected()) {
-            return sampler_.isReady();
-        }
-        if (volume_.isConnected()) {
-            return volume_.isReady();
-        }
-        return false;
-    }
-
-    virtual void deserialize(Deserializer& d) override;
-
 private:
-    DataInport<Spatial4DSampler<3, double>> sampler_;
-    SeedPointsInport seedPoints_;
-    DataInport<std::vector<vec4>> colors_;
-    VolumeSequenceInport volume_;
-    IntegralLineSetOutport lines_;
+    IntegralLineSetInport lines_;
+    MeshOutport mesh_;
 
+    BoolProperty ignoreBrushingList_;
+    BrushingListProperty brushingList_;
 
-    MeshOutport linesStripsMesh_;
+    IntSizeTProperty stride_;
 
-
-    PathLineProperties pathLineProperties_;
-
-   
     TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
+    //TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
-
-    BoolProperty allowLooping_;
 };
 
 } // namespace
 
-#endif // IVW_PATHLINES_H
+#endif // IVW_INTEGRALLINEVECTORTOMESH_H
 

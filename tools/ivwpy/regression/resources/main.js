@@ -86,8 +86,8 @@ $(document).ready(function() {
 	$('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
 	
 	userList.sort('testname');
-	userList.sort('testfailures', { order: "desc" });
 	userList.sort('testmodule');
+	userList.sort('testfailures', { order: "desc" });
 
 	new Clipboard('.copylinkbtn');
  });

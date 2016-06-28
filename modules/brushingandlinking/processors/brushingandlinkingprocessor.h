@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +24,57 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#ifndef IVW_BRUSHINGANDLINKINGPROCESSOR_H
+#define IVW_BRUSHINGANDLINKINGPROCESSOR_H
+
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
+ * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+
+
+/**
+ * \class BrushingAndLinkingProcessor
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor { 
+public:
+    BrushingAndLinkingProcessor();
+    virtual ~BrushingAndLinkingProcessor() = default;
+     
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+private:
+    BrushingAndLinkingOutport outport_;
 };
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
-}
+} // namespace
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
-}
+#endif // IVW_BRUSHINGANDLINKINGPROCESSOR_H
 
-}  // namespace

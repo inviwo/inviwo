@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,43 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#include <modules/brushingandlinking/properties/brushinglistproperty.h>
 
 namespace inviwo {
+PropertyClassIdentifier(BrushingListProperty, "org.inviwo.BrushingListProperty");
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
-};
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
+BrushingListProperty::BrushingListProperty(
+    std::string identifier, std::string displayName,
+    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
+    : Property(identifier, displayName, invalidationLevel) {}
 
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
+BrushingListProperty::~BrushingListProperty() { clear(); }
+
+void BrushingListProperty::clear() { setBrushed(std::unordered_set<size_t>()); }
+
+void BrushingListProperty::set(const Property* src) {
+    if (auto bList = dynamic_cast<const BrushingListProperty*>(src)) {
+        setBrushed(bList->brushedIndices_);
+    }
+    Property::set(src);
 }
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
+bool BrushingListProperty::isBrushed(size_t i) const {
+    if (brushedIndices_.find(i) != brushedIndices_.end()) {
+        return true;
+    }
+    return false;
 }
+
+void BrushingListProperty::setBrushed(const std::unordered_set<size_t>& indices) {
+    brushedIndices_ = indices;
+    propertyModified();
+}
+
+void BrushingListProperty::setBrushed(size_t i) { brushedIndices_.insert(i); propertyModified(); }
+
+void BrushingListProperty::setUnbrushed(size_t i) { brushedIndices_.erase(i);  propertyModified(); }
+
+size_t BrushingListProperty::numberOfBrushedIndices() const { return brushedIndices_.size(); }
 
 }  // namespace

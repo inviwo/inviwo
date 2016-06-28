@@ -90,10 +90,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                      "file name")
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
-    networkEditor_ = new NetworkEditor(this);
+
+    networkEditor_ = std::make_shared<NetworkEditor>(this);
     // initialize console widget first to receive log messages
-    consoleWidget_ = new ConsoleWidget(this);
-    // LogCentral takes ownership of logger
+    consoleWidget_ = std::make_shared<ConsoleWidget>(this);
     LogCentral::getPtr()->registerLogger(consoleWidget_);
     currentWorkspaceFileName_ = "";
 
@@ -128,14 +128,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                     1000);
 }
 
-InviwoMainWindow::~InviwoMainWindow() {
-    LogCentral::getPtr()->unregisterLogger(consoleWidget_);
-    delete networkEditor_;
-}
+InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::initialize() {
-    networkEditorView_ = new NetworkEditorView(networkEditor_, this);
-    NetworkEditorObserver::addObservation(networkEditor_);
+    networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
+    NetworkEditorObserver::addObservation(networkEditor_.get());
     setCentralWidget(networkEditorView_);
 
     resourceManagerWidget_ = new ResourceManagerWidget(this);
@@ -155,7 +152,7 @@ void InviwoMainWindow::initialize() {
     propertyListWidget_ = new PropertyListWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
 
-    addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_);
+    addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     // load settings and restore window state
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
@@ -923,54 +920,61 @@ void InviwoMainWindow::showAboutBox() {
     aboutText << "<html><head>\n"
               << "<style>\n"
               << "table { margin-top:0px;margin-bottom:0px; }\n"
-              << "table > tr > td { padding-left:0px; padding-right:0px;padding-top:0px; padding-bottom:0px; }\n"
-              << "</style><head/><body>\n";
-    aboutText << "<b>Inviwo v" << IVW_VERSION << "</b><br>\n";
-    aboutText << "Interactive Visualization Workshop<br>\n";
-    aboutText << "&copy; 2012-" << buildinfo::year << " The Inviwo Foundation<br>\n";
-    aboutText << "<a href='http://www.inviwo.org/' style='color: #AAAAAA;'>http://www.inviwo.org/</a>\n";
-    aboutText << "<p>Inviwo is a rapid prototyping environment for interactive \
-                     visualizations.<br>It is licensed under the Simplified BSD license.</p>\n";
-    aboutText << "<p><b>Core Team:</b><br>\n";
-    aboutText << "Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, Peter Steneteg,<br>"
-                     "Rickard Englund, Sathish Kottravel, Timo Ropinski</p>\n";
-    aboutText << "<p><b>Former Developers:</b><br>\n";
-    aboutText << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
-                 "Hans-Christian Helltegen, Viktor Axelsson</p>\n";
-     
-    aboutText << "<p><b>Build Date: </b>\n";
-    aboutText << buildinfo::year << "-" 
-              << std::setfill('0') << std::setw(2) << buildinfo::month << "-"
-              << std::setfill('0') << std::setw(2) << buildinfo::day << " "
-              << std::setfill('0') << std::setw(2) << buildinfo::hour << ":" 
-              << std::setfill('0') << std::setw(2) << buildinfo::minute << ":"
-              << std::setfill('0') << std::setw(2) << buildinfo::second;
-    aboutText << "</p>\n";
+              << "table > tr > td { "
+              << "padding-left:0px; padding-right:0px;padding-top:0px; \n"
+              << "padding-bottom:0px;"
+              << "}\n"
+              << "</style>\n"
+              << "<head/>\n"
+              << "<body>\n"
 
-    aboutText << "<p><b>Repos:</b>\n";
-    aboutText << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
+              << "<b>Inviwo v" << IVW_VERSION << "</b><br>\n"
+              << "Interactive Visualization Workshop<br>\n"
+              << "&copy; 2012-" << buildinfo::year << " The Inviwo Foundation<br>\n"
+              << "<a href='http://www.inviwo.org/' style='color: #AAAAAA;'>"
+              << "http://www.inviwo.org/</a>\n"
+              << "<p>Inviwo is a rapid prototyping environment for interactive "
+              << "visualizations.<br>It is licensed under the Simplified BSD license.</p>\n"
+    
+              << "<p><b>Core Team:</b><br>\n"
+              << "Peter Steneteg, Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, "
+              << "Rickard Englund, Sathish Kottravel, Timo Ropinski</p>\n"
+    
+              << "<p><b>Former Developers:</b><br>\n"
+              << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
+              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n"
+
+              << "<p><b>Build Date: </b>\n"
+              << buildinfo::year << "-" << std::setfill('0') << std::setw(2) << buildinfo::month
+              << "-" << std::setfill('0') << std::setw(2) << buildinfo::day << " "
+              << std::setfill('0') << std::setw(2) << buildinfo::hour << ":" << std::setfill('0')
+              << std::setw(2) << buildinfo::minute << ":" << std::setfill('0') << std::setw(2)
+              << buildinfo::second
+              << "</p>\n";
+
+    aboutText << "<p><b>Repos:</b>\n"
+              << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
     for (const auto& item : buildinfo::githashes) {
-        aboutText << "<tr><td style='padding-right:8px;'>" <<  item.first 
-                  <<  "</td><td style='padding-right:8px;'>" <<  item.second <<  "</td></tr>\n";
+        aboutText << "<tr><td style='padding-right:8px;'>" << item.first
+                  << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
     }
     aboutText << "</table></p>\n";
 
     const auto& mfos = InviwoApplication::getPtr()->getModuleFactoryObjects();
-    auto names = util::transform(mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) {
-        return mfo->name_;
-    });
+    auto names = util::transform(
+        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name_; });
     std::sort(names.begin(), names.end());
-    aboutText << "<p><b>Modules:</b><br>\n" <<  joinString(names, ", ") <<  "</p>\n";
+    aboutText << "<p><b>Modules:</b><br>\n" << joinString(names, ", ") << "</p>\n";
     aboutText << "</body></html>";
 
-    aboutText << "<p><b>Qt:</b> Version " << QT_VERSION_STR << ".<br/>"
-       << "Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies)</p>";
+    aboutText << "<p><b>Qt:</b> Version " << QT_VERSION_STR << ".<br/>";
 
     auto str = aboutText.str();
 
-    // Use custom dialog since in QMessageBox::about you can not select text 
-    auto about = new QMessageBox(QMessageBox::NoIcon, QString::fromStdString("Inviwo v" + IVW_VERSION),
-                                 QString::fromStdString(aboutText.str()), QMessageBox::Ok, this);
+    // Use custom dialog since in QMessageBox::about you can not select text
+    auto about =
+        new QMessageBox(QMessageBox::NoIcon, QString::fromStdString("Inviwo v" + IVW_VERSION),
+                        QString::fromStdString(aboutText.str()), QMessageBox::Ok, this);
     auto icon = windowIcon();
     about->setIconPixmap(icon.pixmap(256));
     about->setTextInteractionFlags(Qt::TextBrowserInteraction);
@@ -1012,7 +1016,7 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
     }
 }
 
-NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_; }
+NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }
 
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
@@ -1116,7 +1120,7 @@ ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
 
 PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
-ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_; }
+ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
 
 ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
     return resourceManagerWidget_;

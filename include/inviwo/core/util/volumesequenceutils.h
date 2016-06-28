@@ -52,6 +52,7 @@ namespace inviwo {
         std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VoumeSequence &seq, double t, bool sorted = true);
 
 
+        bool IVW_CORE_API hasTimestamp(SharedVolume vol);
         double IVW_CORE_API getTimestamp(SharedVolume vol);
     }
 

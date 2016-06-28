@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +27,61 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMTRACER_H
-#define IVW_STREAMTRACER_H
+#ifndef IVW_INTEGRALLINESET_H
+#define IVW_INTEGRALLINESET_H
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <inviwo/core/util/volumesampler.h>
-#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
 /**
- * \class StreamLineTracer
- *
+ * \class IntegralLineSet
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet {
 public:
+    IntegralLineSet(mat4 modelMatrix);
+    virtual ~IntegralLineSet();
 
-    StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> vol, const StreamLineProperties &properties);
+    mat4 getModelMatrix() const;
 
-    virtual ~StreamLineTracer();
+    std::vector<IntegralLine>::const_iterator begin() const;
+    std::vector<IntegralLine>::const_iterator end() const;
 
-    void addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol);
-    void addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler);
+    std::vector<IntegralLine>::iterator begin();
+    std::vector<IntegralLine>::iterator end();
 
-    IntegralLine traceFrom(const dvec3 &p);
-    IntegralLine traceFrom(const vec3 &p);
+    size_t size() const;
 
+    IntegralLine& at(size_t idx);
+    const IntegralLine& at(size_t idx) const;
+    void push_back(IntegralLine &line);
 
 private:
-    void step(int steps, dvec3 curPos, IntegralLine &line,bool fwd);
-    dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , const dmat3 &m , bool fwd);
+    std::vector<IntegralLine> lines_;
+    mat4 modelMatrix_;
+};
 
-    dmat3 invBasis_;
-    std::map<std::string, std::shared_ptr<const SpatialSampler<3,3,double>>> metaSamplers_;
-    std::shared_ptr<const SpatialSampler<3, 3, double>> volumeSampler_;
+using IntegralLineSetInport = DataInport<IntegralLineSet>;
+using IntegralLineSetOutport = DataOutport<IntegralLineSet>;
 
-
-    bool normalizeSample_;
-    
+template <>
+struct port_traits<IntegralLineSet> {
+    static std::string class_identifier() { return "IntegralLineSet"; }
+    static uvec3 color_code() { return uvec3(255, 150, 0); }
+    static std::string data_info(const IntegralLineSet* data) {
+        std::ostringstream oss;
+        oss << "Integral Line Set with " << data->size() << " lines";
+        return oss.str();
+    }
 };
 
 }  // namespace
 
-#endif  // IVW_INTEGRALLINETRACER_H
+#endif  // IVW_INTEGRALLINESET_H

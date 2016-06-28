@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,40 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#ifndef IVW_BRUSHINGANDLINKINGOUTPORT_H
+#define IVW_BRUSHINGANDLINKINGOUTPORT_H
+
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+
+using BrushingAndLinkingInport = DataInport<BrushingAndLinkingManager>;
+
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public DataOutport<BrushingAndLinkingManager> {
+public:
+    BrushingAndLinkingOutport(std::string identifier) : DataOutport<BrushingAndLinkingManager>(identifier){}
+    virtual ~BrushingAndLinkingOutport() = default;
 };
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
-}
+template <>
+struct port_traits<BrushingAndLinkingManager> {
+    static std::string class_identifier() { return "BrushingAndLinkingManager"; }
+    static uvec3 color_code() { return uvec3(160, 182, 240); }
+    static std::string data_info(const BrushingAndLinkingManager* data) {
+        std::ostringstream oss;
+        oss << "Number of selected indices: " << data->getNumberOfSelected() << std::endl;
+        oss << "Number of filtered indices: " << data->getNumberOfFiltered();
+        return oss.str();
+    }
+};
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
-}
+} // namespace
 
-}  // namespace
+#endif // IVW_BRUSHINGANDLINKINGOUTPORT_H
+

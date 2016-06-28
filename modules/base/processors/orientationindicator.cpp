@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo OrientationIndicator::processorInfo_{
     "org.inviwo.OrientationIndicator",      // Class identifier
     "Orientation Indicator",                // Display name
-    "Undefined",              // Category
+    "Information",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };

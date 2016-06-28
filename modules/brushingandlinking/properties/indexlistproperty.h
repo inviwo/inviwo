@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,47 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#ifndef IVW_INDEXLISTPROPERTY_H
+#define IVW_INDEXLISTPROPERTY_H
+
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+/**
+ * \class IndexListProperty
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_BRUSHINGANDLINKING_API IndexListProperty : public Property{ 
+public:
+    InviwoPropertyInfo();
+
+    IndexListProperty(std::string identifier, std::string displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
+    virtual ~IndexListProperty();
+
+    void clear();
+
+
+    virtual void set(const Property* src) override;
+
+    bool has(size_t i) const;
+    void insert(size_t i);
+    void remove(size_t i);
+    void set(const std::unordered_set<size_t> &indices);
+    size_t numberOfBrushedIndices()const;
+
+private:
+    std::unordered_set<size_t> brushedIndices_;
+
 };
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
-}
+} // namespace
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
-}
+#endif // IVW_INDEXLISTPROPERTY_H
 
-}  // namespace

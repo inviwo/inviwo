@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo SingleVoxel::processorInfo_{
     "org.inviwo.SingleVoxel",      // Class identifier
     "Single Voxel",                // Display name
-    "Undefined",              // Category
+    "Information",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };

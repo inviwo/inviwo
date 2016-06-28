@@ -27,37 +27,61 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#ifndef IVW_INTEGRALLINE_H
+#define IVW_INTEGRALLINE_H
+
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+/**
+ * \class IntegralLine
+ *
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ *
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
+    friend class StreamLineTracer;
+    friend class PathLineTracer;
+public:
+    enum class TerminationReason {
+        OutOfBounds, 
+        ZeroVelocity, 
+        Steps
+    };
+
+    IntegralLine();
+    virtual ~IntegralLine();
+
+    void setTerminationReason(TerminationReason terminationReason) {
+        terminationReason_ = terminationReason;
+    }
+
+    const std::vector<dvec3> &getPositions() const;
+    const std::vector<dvec3> &getMetaData(const std::string &name) const;
+
+    double getLength()const;
+
+    dvec3 getPointAtDistance(double d)const;
+
+    size_t getIndex()const { return idx_; }
+    void setIndex(size_t idx ) { idx_  = idx; }
+
+private:
+    std::vector<dvec3> positions_;
+    std::map<std::string, std::vector<dvec3>> metaData_;
+    TerminationReason terminationReason_;
+
+    mutable double length_;
+
+    size_t idx_;
+
+
+
 };
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
-
-ImageContourProcessor::ImageContourProcessor()
-    : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
-}
-
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
-}
 
 }  // namespace
+
+#endif  // IVW_INTEGRALLINE_H

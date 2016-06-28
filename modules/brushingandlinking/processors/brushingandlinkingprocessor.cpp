@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,33 @@
  *
  *********************************************************************************/
 
-#include "imagecontourprocessor.h"
+#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageContourProcessor::processorInfo_{
-    "org.inviwo.ImageContourProcessor",  // Class identifier
-    "Image Contour",                     // Display name
-    "Image Processing",                         // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
+    "org.inviwo.BrushingAndLinkingProcessor",      // Class identifier
+    "Brushing And Linking Processor",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
-ImageContourProcessor::ImageContourProcessor()
+BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
+    , outport_("outport")
+{
+    
+    addPort(outport_);
+}
+    
+void BrushingAndLinkingProcessor::process() {
+    //outport_.setData(myImage);
 }
 
-void ImageContourProcessor::process() {
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), isoValue_, color_));
-}
+} // namespace
 
-}  // namespace
