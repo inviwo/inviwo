@@ -125,7 +125,7 @@ private:
     void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
-    void rebildShader(ShaderObject* obj);
+    void rebuildShader(ShaderObject* obj);
     void linkShader(bool notifyRebuild = false);
 
     void createAndAddShader(ShaderType type, std::string fileName);

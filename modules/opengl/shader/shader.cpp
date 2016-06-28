@@ -138,7 +138,7 @@ void Shader::createAndAddHelper(ShaderObject *object) {
         delete shaderObject;
     });
 
-    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebildShader(o); }));
+    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebuildShader(o); }));
     attachShaderObject(ptr.get());
 
     shaderObjects_[object->getShaderType()] = std::move(ptr);
@@ -195,7 +195,7 @@ void Shader::linkShader(bool notifyRebuild /*= false*/) {
     if (notifyRebuild) onReloadCallback_.invokeAll();
 }
 
-void Shader::rebildShader(ShaderObject *obj) {
+void Shader::rebuildShader(ShaderObject *obj) {
     try {
         ready_ = false;
         obj->build();
