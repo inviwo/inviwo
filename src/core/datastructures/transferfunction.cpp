@@ -257,7 +257,7 @@ vec4 TransferFunction::sample(float v) const {
 
     auto it = std::upper_bound(
         points_.begin(), points_.end(), v,
-        [](float v, const TransferFunctionDataPoint* p) { return v < p->getPos().x; });
+        [](float val, const TransferFunctionDataPoint* p) { return val < p->getPos().x; });
     if (it == points_.begin()) {
         return points_.front()->getRGBA();
     }
