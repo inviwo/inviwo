@@ -33,6 +33,9 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
@@ -53,7 +56,7 @@ struct port_traits<BrushingAndLinkingManager> {
         std::ostringstream oss;
         oss << "Number of selected indices: " << data->getNumberOfSelected() << std::endl;
         oss << "Number of filtered indices: " << data->getNumberOfFiltered();
-        return oss.str(); //write how many selected and how many filtered
+        return oss.str();
     }
 };
 

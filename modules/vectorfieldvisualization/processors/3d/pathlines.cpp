@@ -146,7 +146,7 @@ void PathLines::process() {
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
-        for (long long j = 0; j < seeds->size();j++){
+        for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
             auto p = seeds->at(j);
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
