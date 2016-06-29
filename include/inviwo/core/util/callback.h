@@ -75,9 +75,10 @@ public:
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        return util::erase_remove_if(
-                   callBackList_,
-                   [&](const std::shared_ptr<F>& ptr) { return ptr.get() == callback; }) > 0;
+        return util::erase_remove_if(callBackList_,
+                                     [&](const std::shared_ptr<std::function<void()>>& ptr) {
+                                         return ptr.get() == callback;
+                                     }) > 0;
     }
     /** 
      * \brief Removes all added callbacks.
