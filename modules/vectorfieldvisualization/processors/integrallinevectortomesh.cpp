@@ -49,9 +49,9 @@ const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const {
 IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     : Processor()
     , lines_("lines")
+    , brushingList_("brushingList")
     , mesh_("mesh")
     , ignoreBrushingList_("ignoreBrushingList", "Ignore Brushing List", false)
-    , brushingList_("brushingList", "BrushingList")
 
     //    , coloringMethod_("coloringMethod", "Color by")
     , tf_("transferFunction", "Transfer Function")
@@ -62,10 +62,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 {
     
     addPort(lines_);
+    addPort(brushingList_);
     addPort(mesh_);
 
     addProperty(ignoreBrushingList_);
-    addProperty(brushingList_);
 
     addProperty(tf_);
     addProperty(velocityScale_);
@@ -103,7 +103,7 @@ void IntegralLineVectorToMesh::process() {
         auto size = line.getPositions().size();
         if (size == 0) continue;
 
-        if (!ignoreBrushingList_.get() && brushingList_.isBrushed(line.getIndex())) {
+        if (!ignoreBrushingList_.get() && brushingList_.isFiltered(line.getIndex())) {
             continue;
         }
 
