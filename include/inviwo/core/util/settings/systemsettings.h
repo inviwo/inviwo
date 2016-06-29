@@ -46,11 +46,11 @@ public:
 
     UsageMode getApplicationUsageMode() const;
 
-    OptionPropertyInt applicationUsageModeProperty_;
+    TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntProperty poolSize_;
-    BoolProperty txtEditorProperty_;
-    BoolProperty enablePortInformationProperty_;
-    BoolProperty enablePortInspectorsProperty_;
+    BoolProperty txtEditor_;
+    BoolProperty enablePortInformation_;
+    BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
     BoolProperty enableTouchProperty_;
     BoolProperty enablePickingProperty_;

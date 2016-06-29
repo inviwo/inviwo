@@ -114,7 +114,6 @@ public slots:
     void saveWorkspaceAsCopy();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
-    void setVisibilityMode(bool value);  // True = Application, False = Developer
 
     void reloadStyleSheet();
 
@@ -161,7 +160,7 @@ private:
     InviwoApplicationQt* app_;
     std::shared_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
-    OptionPropertyInt* appUsageModeProp_;
+    TemplateOptionProperty<UsageMode>* appUsageModeProp_;
 
     // toolbar
     QToolBar* basicToolbar_;
@@ -197,11 +196,6 @@ private:
     
     GlobalEventFilter eventFilter_;
     UndoManager undoManager_;
-
-    // A list of processor that was automatically selected when switching to application mode.
-    // Needed since only selected processor show up in the processor list. These processors will be
-    // deselected again when switching back to developer mode. 
-    std::vector<Processor*> applicationModeSelectedProcessors_;
 };
 
 }  // namespace

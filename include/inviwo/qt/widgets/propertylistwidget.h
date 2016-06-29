@@ -101,7 +101,7 @@ public:
     virtual bool event(QEvent* e);
 
 protected:
-    mutable WidgetMap widgetMap_;
+    WidgetMap widgetMap_;
 
 private:
     CollapsibleGroupBoxWidgetQt* getPropertiesForProcessor(Processor* processor);

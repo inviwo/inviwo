@@ -453,11 +453,20 @@ void InviwoMainWindow::addActions() {
 
         appUsageModeProp_ = &InviwoApplication::getPtr()
                                  ->getSettingsByType<SystemSettings>()
-                                 ->applicationUsageModeProperty_;
-        appUsageModeProp_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
+                                 ->applicationUsageMode_;
 
-        connect(visibilityModeAction_, SIGNAL(triggered(bool)), this,
-                SLOT(setVisibilityMode(bool)));
+        appUsageModeProp_->onChange([&](){visibilityModeChangedInSettings();});
+
+        connect(visibilityModeAction_, &QAction::triggered, [&](bool appView) {
+            auto selectedIdx = appUsageModeProp_->getSelectedValue();
+            if (appView) {
+                if (selectedIdx != UsageMode::Application)
+                    appUsageModeProp_->setSelectedValue(UsageMode::Application);
+            } else {
+                if (selectedIdx != UsageMode::Development)
+                    appUsageModeProp_->setSelectedValue(UsageMode::Development);
+            }
+        });
 
         visibilityModeChangedInSettings();
     }
@@ -983,52 +992,44 @@ void InviwoMainWindow::showAboutBox() {
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
     if (appUsageModeProp_) {
-        auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
-        if (selectedIdx == UsageMode::Development) {
-
-            for (auto &p : applicationModeSelectedProcessors_) {
-                auto md = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-                md->setSelected(false);
-            }
-
-            if (visibilityModeAction_->isChecked()) {
-                visibilityModeAction_->setChecked(false);
-            }
-            networkEditorView_->hideNetwork(false);
-        }
-        else if (selectedIdx == UsageMode::Application) {
-            if (!visibilityModeAction_->isChecked()) {
-                visibilityModeAction_->setChecked(true);
-            }
-            networkEditorView_->hideNetwork(true);
-
-            applicationModeSelectedProcessors_.clear();
-            for(auto &p : getInviwoApplication()->getProcessorNetwork()->getProcessors()){
-                auto md =  p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-                if (!md->isSelected()) {
-                    md->setSelected(true);
-                    applicationModeSelectedProcessors_.push_back(p);
+        auto network = getInviwoApplication()->getProcessorNetwork();
+        switch (appUsageModeProp_->getSelectedValue()) {
+            case UsageMode::Development: {
+                for (auto& p : network->getProcessors()) {
+                    auto md =
+                        p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                    if (md->isSelected()) {
+                        propertyListWidget_->addProcessorProperties(p);
+                    } else {
+                        propertyListWidget_->removeProcessorProperties(p);
+                    }
                 }
+
+
+                if (visibilityModeAction_->isChecked()) {
+                    visibilityModeAction_->setChecked(false);
+                }
+                networkEditorView_->hideNetwork(false);
+                break;
             }
-            
+            case UsageMode::Application: {
+                if (!visibilityModeAction_->isChecked()) {
+                    visibilityModeAction_->setChecked(true);
+                }
+                networkEditorView_->hideNetwork(true);
+
+                for (auto& p : network->getProcessors()) {
+                    propertyListWidget_->addProcessorProperties(p);
+                }
+                break;
+            }
         }
+
         updateWindowTitle();
     }
 }
 
 NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }
-
-// False == Development, True = Application
-void InviwoMainWindow::setVisibilityMode(bool applicationView) {
-    auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
-    if (applicationView) {
-        if (selectedIdx != UsageMode::Application)
-            appUsageModeProp_->setSelectedIndex(static_cast<int>(UsageMode::Application));
-    } else {
-        if (selectedIdx != UsageMode::Development)
-            appUsageModeProp_->setSelectedIndex(static_cast<int>(UsageMode::Development));
-    }
-}
 
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
     if(!saveIfModified) getNetworkEditor()->setModified(false);

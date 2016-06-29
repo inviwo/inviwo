@@ -103,8 +103,8 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
 
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
     SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    bool portinfo = settings->enablePortInformationProperty_.get();
-    bool inspector = settings->enablePortInspectorsProperty_.get();
+    bool portinfo = settings->enablePortInformation_.get();
+    bool inspector = settings->enablePortInspectors_.get();
 
     if (!inspector && !portinfo) return;
 
