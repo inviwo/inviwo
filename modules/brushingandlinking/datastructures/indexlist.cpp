@@ -58,7 +58,8 @@ std::shared_ptr<std::function<void()>> IndexList::onChange(std::function<void()>
 void IndexList::update() {
     indices_.clear();
 
-    util::map_erase_remove_if(indicesBySource_, [](auto p) {
+    using T = std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>::value_type;
+    util::map_erase_remove_if(indicesBySource_, [](const T & p) {
         return !p.first->isConnected();
     });
 
