@@ -547,21 +547,14 @@ endif()
 ivw_include_directories(${CMAKE_BINARY_DIR}/modules/_generated)
 
 # Add core dependencies to this list
-ivw_add_dependencies(
-    TiCPP
-)
+ivw_add_dependencies(TiCPP)
+
 if(IVW_SIGAR)
-ivw_add_dependencies(
-    Sigar
-)
+    ivw_add_dependencies(Sigar)
 endif()
-
 if(WIN32)
-ivw_add_dependencies(
-    stackwalker
-)
+    ivw_add_dependencies(stackwalker)
 endif()
-
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)

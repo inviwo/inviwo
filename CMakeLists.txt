@@ -78,8 +78,13 @@ option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 
 #--------------------------------------------------------------------
 # Add externals
+add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
 add_subdirectory(ext/gtest)
+add_subdirectory(ext/warn)
+add_subdirectory(ext/tclap)
+add_subdirectory(ext/tinydir)
+add_subdirectory(ext/half)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)

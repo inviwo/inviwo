@@ -17,26 +17,42 @@ file(GLOB_RECURSE GTX_SOURCE ./gtx/*.cpp)
 file(GLOB_RECURSE GTX_INLINE ./gtx/*.inl)
 file(GLOB_RECURSE GTX_HEADER ./gtx/*.hpp)
 
-source_group("Text Files" FILES ${ROOT_TEXT})
-source_group("Core Files" FILES ${CORE_SOURCE})
-source_group("Core Files" FILES ${CORE_INLINE})
-source_group("Core Files" FILES ${CORE_HEADER})
-source_group("GTC Files" FILES ${GTC_SOURCE})
-source_group("GTC Files" FILES ${GTC_INLINE})
-source_group("GTC Files" FILES ${GTC_HEADER})
-source_group("GTX Files" FILES ${GTX_SOURCE})
-source_group("GTX Files" FILES ${GTX_INLINE})
-source_group("GTX Files" FILES ${GTX_HEADER})
+#source_group("Text Files" FILES ${ROOT_TEXT})
+#source_group("Core Files" FILES ${CORE_SOURCE})
+#source_group("Core Files" FILES ${CORE_INLINE})
+#source_group("Core Files" FILES ${CORE_HEADER})
+#source_group("GTC Files" FILES ${GTC_SOURCE})
+#source_group("GTC Files" FILES ${GTC_INLINE})
+#source_group("GTC Files" FILES ${GTC_HEADER})
+#source_group("GTX Files" FILES ${GTX_SOURCE})
+#source_group("GTX Files" FILES ${GTX_INLINE})
+#source_group("GTX Files" FILES ${GTX_HEADER})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-if(GLM_TEST_ENABLE)
-    add_executable(${NAME} ${ROOT_TEXT}
-        ${ROOT_SOURCE}    ${ROOT_INLINE}    ${ROOT_HEADER}
-        ${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
-        ${GTC_SOURCE}     ${GTC_INLINE}     ${GTC_HEADER}
-        ${GTX_SOURCE}     ${GTX_INLINE}     ${GTX_HEADER})
-endif(GLM_TEST_ENABLE)
+#if(GLM_TEST_ENABLE)
+#    add_executable(${NAME} ${ROOT_TEXT}
+#        ${ROOT_SOURCE}    ${ROOT_INLINE}    ${ROOT_HEADER}
+#        ${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
+#        ${GTC_SOURCE}     ${GTC_INLINE}     ${GTC_HEADER}
+#        ${GTX_SOURCE}     ${GTX_INLINE}     ${GTX_HEADER})
+#endif(GLM_TEST_ENABLE)
 
 #add_library(glm STATIC glm.cpp)
 #add_library(glm_shared SHARED glm.cpp)
+
+set(HEADER_FILES
+    ${ROOT_SOURCE}    ${ROOT_INLINE}    ${ROOT_HEADER}
+    ${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
+    ${GTC_SOURCE}     ${GTC_INLINE}     ${GTC_HEADER}
+    ${GTX_SOURCE}     ${GTX_INLINE}     ${GTX_HEADER}
+)
+
+ivw_group("Header Files" ${HEADER_FILES})
+source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+
+#  HACK: have the files showing in the IDE, under the name 'glm'
+add_custom_target(glm SOURCES ${HEADER_FILES})
+
+# Creates VS folder structure
+ivw_folder(glm ext)
