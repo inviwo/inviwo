@@ -2,9 +2,9 @@
 # Inviwo Qt Application
 ivw_project(inviwo_qtminimum)
 
-if(POLICY CMP0043)
-    cmake_policy(SET CMP0043 OLD) # Ignore compile definitions.
-endif()
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add source files

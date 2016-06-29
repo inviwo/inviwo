@@ -1,8 +1,3 @@
-### Notice!
-The next release (0.9.7) will be the last one that will support Visual Studio 2013. After 0.9.7 we will require Visual Studio 2015. The switch will happen
-in the beginning of May. The latest Visual Studio version is available at
-https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx 
-
 ## Inviwo - Interactive Visualization Workshop
 
 Inviwo is a software framework for rapid visualization prototyping.
@@ -28,6 +23,6 @@ Below follow some general information about the framework:
  - A minimal application is available, utilizing GLFW 3 for multiple window and context management.
 
 #### Build system
- - The project and module configuration/generation is performed through CMake (>= 2.8.11).
- - Inviwo has been compiled in Visual Studio (>= 2013), XCode (>= 5), KDevelop (>= 4), Make.
+ - The project and module configuration/generation is performed through CMake (>= 3.2.0).
+ - Inviwo has been compiled in Visual Studio (>= 2015), XCode (>= 5), KDevelop (>= 4), Make.
  - C++11 Required
