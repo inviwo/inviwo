@@ -37,6 +37,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/stdextensions.h>
