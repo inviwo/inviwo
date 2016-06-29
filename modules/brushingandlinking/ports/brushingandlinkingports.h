@@ -30,82 +30,47 @@
 #ifndef IVW_BRUSHINGANDLINKINGOUTPORT_H
 #define IVW_BRUSHINGANDLINKINGOUTPORT_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/port.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
 
 namespace inviwo {
 
-    class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport : public DataInport<BrushingAndLinkingManager> {
-    public:
-        BrushingAndLinkingInport(std::string identifier) : DataInport<BrushingAndLinkingManager>(identifier) {
-            setOptional(true);
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport
+    : public DataInport<BrushingAndLinkingManager> {
+public:
+    BrushingAndLinkingInport(std::string identifier);
+    virtual ~BrushingAndLinkingInport();
 
-            onConnect([&]() {
-                sendFilterEvent(filterCache_);
-                sendSelectionEvent(selctionCache_);
-            });
+    void sendFilterEvent(const std::unordered_set<size_t> &indices);
 
-        }
-        virtual ~BrushingAndLinkingInport() {
-            RemoveEvent event(this);
-            getProcessor()->propagateEvent(&event, nullptr);
-        }
+    void sendSelectionEvent(const std::unordered_set<size_t> &indices);
 
-        void sendFilterEvent(const std::unordered_set<size_t> &indices) {
-            filterCache_ = indices;
-            FilteringEvent event(this, filterCache_);
-            getProcessor()->propagateEvent(&event, nullptr);
-        }
+    bool isFiltered(size_t idx) const;
 
-        void sendSelectionEvent(const std::unordered_set<size_t> &indices) {
-            selctionCache_ = indices;
-            SelectionEvent event(this, selctionCache_);
-            getProcessor()->propagateEvent(&event, nullptr);
-        }
+    bool isSelected(size_t idx) const;
 
-        bool isFiltered(size_t idx)const {
-            if (isConnected()) {
-                return getData()->isFiltered(idx);
-            }
-            else {
-                return filterCache_.find(idx) != filterCache_.end();
-            }
-        }
+    std::unordered_set<size_t> filterCache_;
+    std::unordered_set<size_t> selctionCache_;
+};
 
-
-        bool isSelected(size_t idx)const {
-            if (isConnected()) {
-                return getData()->isSelected(idx);
-            }
-            else {
-                return selctionCache_.find(idx) != selctionCache_.end();
-            }
-        }
-
-        std::unordered_set<size_t> filterCache_;
-        std::unordered_set<size_t> selctionCache_;
-
-    };
-
-
-
-    class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public DataOutport<BrushingAndLinkingManager> {
-    public:
-        BrushingAndLinkingOutport(std::string identifier) : DataOutport<BrushingAndLinkingManager>(identifier) {}
-        virtual ~BrushingAndLinkingOutport() = default;
-    };
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
+    : public DataOutport<BrushingAndLinkingManager> {
+public:
+    BrushingAndLinkingOutport(std::string identifier);
+    virtual ~BrushingAndLinkingOutport() = default;
+};
 
 template <>
 struct port_traits<BrushingAndLinkingManager> {
     static std::string class_identifier() { return "BrushingAndLinkingManager"; }
     static uvec3 color_code() { return uvec3(160, 182, 240); }
-    static std::string data_info(const BrushingAndLinkingManager* data) {
+    static std::string data_info(const BrushingAndLinkingManager *data) {
         std::ostringstream oss;
         oss << "Number of selected indices: " << data->getNumberOfSelected() << std::endl;
         oss << "Number of filtered indices: " << data->getNumberOfFiltered();
@@ -113,7 +78,6 @@ struct port_traits<BrushingAndLinkingManager> {
     }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BRUSHINGANDLINKINGOUTPORT_H
-
+#endif  // IVW_BRUSHINGANDLINKINGOUTPORT_H

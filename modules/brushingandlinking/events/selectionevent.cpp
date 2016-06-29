@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+SelectionEvent::SelectionEvent(const BrushingAndLinkingInport* src,
+                               const std::unordered_set<size_t>& indices)
+    : BrushingAndLinkingEvent(src, indices) {}
 
-} // namespace
-
+}  // namespace

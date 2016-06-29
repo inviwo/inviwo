@@ -43,16 +43,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingEvent : public Event { 
 public:
-    BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,const std::unordered_set<size_t> &indices) : source_(src), indices_(indices){}
+    BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,const std::unordered_set<size_t> &indices);
     virtual ~BrushingAndLinkingEvent() = default;
 
-    const BrushingAndLinkingInport* getSource() const {
-        return source_;
-    }
+    const BrushingAndLinkingInport* getSource() const;
 
-    const std::unordered_set<size_t> &getIndices()const {
-        return indices_;
-    };
+    const std::unordered_set<size_t> &getIndices()const;;
 
 private:
     const BrushingAndLinkingInport* source_;

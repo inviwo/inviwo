@@ -47,27 +47,19 @@ public:
     BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
     virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected() const { return selected_.getSize(); }
-    size_t getNumberOfFiltered() const { return filtered_.getSize(); }
+    size_t getNumberOfSelected() const;
+    size_t getNumberOfFiltered() const;
 
-    bool isSelected(size_t idx) const { return selected_.has(idx); }
+    void remove(const BrushingAndLinkingInport* src);
 
-    void remove(const BrushingAndLinkingInport* src) {
-        selected_.remove(src);
-        filtered_.remove(src);
-    }
-
-    bool isFiltered(size_t idx) const { return filtered_.has(idx); }
+    bool isFiltered(size_t idx) const;
+    bool isSelected(size_t idx) const;
 
     void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices) {
-        selected_.set(src, indices);
-    }
+                     const std::unordered_set<size_t>& indices);
 
     void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices) {
-        filtered_.set(src, indices);
-    }
+                     const std::unordered_set<size_t>& indices);
 
 private:
     IndexList selected_;

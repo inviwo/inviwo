@@ -28,10 +28,16 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
-
 namespace inviwo {
 
+BrushingAndLinkingEvent::BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
+                                                 const std::unordered_set<size_t>& indices)
+    : source_(src), indices_(indices) {}
 
+const inviwo::BrushingAndLinkingInport* BrushingAndLinkingEvent::getSource() const {
+    return source_;
+}
 
-} // namespace
+const std::unordered_set<size_t>& BrushingAndLinkingEvent::getIndices() const { return indices_; }
 
+}  // namespace

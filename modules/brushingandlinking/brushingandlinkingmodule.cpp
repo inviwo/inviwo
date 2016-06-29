@@ -36,26 +36,26 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-
 namespace inviwo {
 
-BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app) : InviwoModule(app, "BrushingAndLinking") {   
+BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
+    : InviwoModule(app, "BrushingAndLinking") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     registerProcessor<BrushingAndLinkingProcessor>();
 
     // Properties
     registerProperty<BrushingListProperty>();
     registerProperty<IndexListProperty>();
-    
+
     // Readers and writes
     // registerDataReader(util::make_unique<BrushingAndLinkingReader>());
     // registerDataWriter(util::make_unique<BrushingAndLinkingWriter>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<BrushingAndLinkingDisk2RAMConverter>());
 
@@ -64,18 +64,20 @@ BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app) : Inv
     registerPort<BrushingAndLinkingInport>("BrushingAndLinkingInport");
 
     // PropertyWidgets
-    // registerPropertyWidget<BrushingAndLinkingPropertyWidget, BrushingAndLinkingProperty>("Default");
-    
+    // registerPropertyWidget<BrushingAndLinkingPropertyWidget,
+    // BrushingAndLinkingProperty>("Default");
+
     // Dialogs
     // registerDialog<BrushingAndLinkingDialog>(BrushingAndLinkingOutport);
-    
+
     // Other varius things
     // registerCapabilities(util::make_unique<BrushingAndLinkingCapabilities>());
     // registerSettings(util::make_unique<BrushingAndLinkingSettings>());
-    // registerMetaData(util::make_unique<BrushingAndLinkingMetaData>());   
+    // registerMetaData(util::make_unique<BrushingAndLinkingMetaData>());
     // registerPortInspector("BrushingAndLinkingOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<BrushingAndLinkingDrawer>());  
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget);
+    // registerDrawer(util::make_unique_ptr<BrushingAndLinkingDrawer>());
 }
 
-} // namespace
+}  // namespace

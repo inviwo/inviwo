@@ -30,8 +30,8 @@
 #ifndef IVW_FILTERINGEVENT_H
 #define IVW_FILTERINGEVENT_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
@@ -44,11 +44,10 @@ namespace inviwo {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API FilteringEvent : public BrushingAndLinkingEvent {
 public:
-    FilteringEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t> &indices):BrushingAndLinkingEvent(src,indices){}
+    FilteringEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& indices);
     virtual ~FilteringEvent() = default;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_FILTERINGEVENT_H
-
+#endif  // IVW_FILTERINGEVENT_H

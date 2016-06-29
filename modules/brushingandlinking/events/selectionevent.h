@@ -30,10 +30,9 @@
 #ifndef IVW_SELECTIONEVENT_H
 #define IVW_SELECTIONEVENT_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
-
 
 namespace inviwo {
 
@@ -44,11 +43,10 @@ namespace inviwo {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API SelectionEvent : public BrushingAndLinkingEvent {
 public:
-    SelectionEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t> &indices) :BrushingAndLinkingEvent(src, indices) {}
+    SelectionEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& indices);
     virtual ~SelectionEvent() = default;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_SELECTIONEVENT_H
-
+#endif  // IVW_SELECTIONEVENT_H

@@ -60,9 +60,15 @@ void BrushingListProperty::setBrushed(const std::unordered_set<size_t>& indices)
     propertyModified();
 }
 
-void BrushingListProperty::setBrushed(size_t i) { brushedIndices_.insert(i); propertyModified(); }
+void BrushingListProperty::setBrushed(size_t i) {
+    brushedIndices_.insert(i);
+    propertyModified();
+}
 
-void BrushingListProperty::setUnbrushed(size_t i) { brushedIndices_.erase(i);  propertyModified(); }
+void BrushingListProperty::setUnbrushed(size_t i) {
+    brushedIndices_.erase(i);
+    propertyModified();
+}
 
 size_t BrushingListProperty::numberOfBrushedIndices() const { return brushedIndices_.size(); }
 
