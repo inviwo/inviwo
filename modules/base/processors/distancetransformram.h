@@ -124,7 +124,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     if (dataDim != srcVol->getDimensions())
         return;
 
-    auto dataRange = volumePort_.getData()->dataMap_.dataRange;
+    auto dataRange = volDist_->dataMap_.dataRange;
     T lowVal = static_cast<T>(dataRange.x);
     T highVal = static_cast<T>(dataRange.y);
     T *data = static_cast<T *>(vol->getData());
