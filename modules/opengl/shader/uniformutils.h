@@ -44,10 +44,13 @@ namespace inviwo {
 
 namespace utilgl {
 
+template<typename T>
+struct dependent_false : std::false_type {};
+
 template <typename T>
 struct UniformSetter {
     static void set(...) {
-        static_assert(false, "Unsupported type T. Missing specialization for setUniform (UniformSetter)");
+        static_assert(dependent_false<T>::value, "Unsupported type T. Missing specialization for setUniform (UniformSetter)");
     }
 };
 
@@ -207,7 +210,7 @@ struct UniformSetter<std::array<bool, N> > {
         for (std::size_t i = 0; i < N; ++i) {
             values[i] = static_cast<int>(data[i]);
         };
-        glUniform1iv(loc, count, values.data());
+        glUniform1iv(loc, N, values.data());
     }
 };
 
