@@ -38,7 +38,7 @@ IndexListProperty::IndexListProperty(
     InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
     : Property(identifier, displayName, invalidationLevel) {}
 
-IndexListProperty::~IndexListProperty() {  }
+IndexListProperty::~IndexListProperty() {}
 
 void IndexListProperty::clear() { set(std::unordered_set<size_t>()); }
 
@@ -73,5 +73,4 @@ void IndexListProperty::set(const std::unordered_set<size_t>& indices) {
 
 size_t IndexListProperty::numberOfBrushedIndices() const { return brushedIndices_.size(); }
 
-} // namespace
-
+}  // namespace

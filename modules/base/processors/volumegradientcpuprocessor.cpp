@@ -27,48 +27,35 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/algorithm/volume/volumegradient.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
-/**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
-public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
-    virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
-
-    void remove(const BrushingAndLinkingInport* src);
-
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-private:
-    IndexList selected_;
-    IndexList filtered_;
-
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumeGradientCPUProcessor::processorInfo_{
+    "org.inviwo.VolumeGradientCPUProcessor",      // Class identifier
+    "Volume Gradient CPUProcessor",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
+const ProcessorInfo VolumeGradientCPUProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
-}  // namespace
+VolumeGradientCPUProcessor::VolumeGradientCPUProcessor()
+    : Processor()
+    , inport_("inport")
+    , outport_("outport") {
 
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H
+    addPort(inport_);
+    addPort(outport_);
+}
+    
+void VolumeGradientCPUProcessor::process() {
+    outport_.setData(util::gradientVolume(inport_.getData(),0));
+}
+
+} // namespace
+

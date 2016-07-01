@@ -30,8 +30,8 @@
 #ifndef IVW_BRUSHINGLISTPROPERTY_H
 #define IVW_BRUSHINGLISTPROPERTY_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
 #include <inviwo/core/properties/property.h>
 
@@ -53,14 +53,13 @@ public:
 
     void clear();
 
-
     virtual void set(const Property* src) override;
-    
+
     void setBrushed(size_t i);
     void setUnbrushed(size_t i);
     bool isBrushed(size_t i) const;
-    void setBrushed(const std::unordered_set<size_t> &indices);
-    size_t numberOfBrushedIndices()const;
+    void setBrushed(const std::unordered_set<size_t>& indices);
+    size_t numberOfBrushedIndices() const;
 
 private:
     std::unordered_set<size_t> brushedIndices_;

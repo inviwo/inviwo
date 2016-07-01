@@ -291,18 +291,23 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     }
 
     // add the data to the mesh
-    mesh->addBuffer(BufferType::PositionAttrib, pbuff);
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib), pbuff);
 
     if (use_normals) {
-        mesh->addBuffer(BufferType::NormalAttrib, nbuff);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::NormalAttrib), nbuff);
     }
 
+    // use additional unused attribute locations for extra color channels and texture coords
+    int auxLocation = static_cast<int>(BufferType::NumberOfBufferTypes);
     for (size_t i = 0; i < color_channels; ++i) {
-        mesh->addBuffer(BufferType::ColorAttrib, cbuff[i]);
+        int location = (i == 0 ? static_cast<int>(BufferType::ColorAttrib) : auxLocation++);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib, location), cbuff[i]);
     }
 
+    // texture coords
     for (size_t i = 0; i < texture_channels; ++i) {
-        mesh->addBuffer(BufferType::TexcoordAttrib, tbuff[i]);
+        int location = (i == 0 ? static_cast<int>(BufferType::TexcoordAttrib) : auxLocation++);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::TexcoordAttrib, location), tbuff[i]);
     }
 
     mesh->addIndicies(Mesh::MeshInfo(dt, ConnectivityType::None), inds);

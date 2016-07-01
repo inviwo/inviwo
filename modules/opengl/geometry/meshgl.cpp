@@ -64,14 +64,14 @@ void MeshGL::update(bool editable) {
             auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
             bufferGLs_.push_back(bufGL);
             bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                            static_cast<GLuint>(buf.first));
+                                            static_cast<GLuint>(buf.first.location));
         }
     } else {
         for (auto buf : owner->getBuffers()) {
             auto bufGL = buf.second->getRepresentation<BufferGL>();
             bufferGLs_.push_back(bufGL);
             bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                            static_cast<GLuint>(buf.first));
+                                            static_cast<GLuint>(buf.first.location));
         }
     }
 }

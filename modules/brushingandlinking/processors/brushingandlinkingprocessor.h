@@ -24,19 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BRUSHINGANDLINKINGPROCESSOR_H
 #define IVW_BRUSHINGANDLINKINGPROCESSOR_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-
 
 namespace inviwo {
 
@@ -49,32 +49,37 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
 
-
 /**
  * \class BrushingAndLinkingProcessor
- * \brief <brief description> 
+ * \brief <brief description>
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor { 
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
 public:
     BrushingAndLinkingProcessor();
     virtual ~BrushingAndLinkingProcessor() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
+
+    virtual void invokeEvent(Event* event) override;
+
     static const ProcessorInfo processorInfo_;
+
+    BrushingAndLinkingOutport& getOutport() { return outport_; }
+
 private:
     BrushingAndLinkingOutport outport_;
+    std::shared_ptr<BrushingAndLinkingManager> manager_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BRUSHINGANDLINKINGPROCESSOR_H
-
+#endif  // IVW_BRUSHINGANDLINKINGPROCESSOR_H

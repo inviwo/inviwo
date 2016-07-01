@@ -27,48 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#ifndef IVW_VOLUMEGRADIENT_H
+#define IVW_VOLUMEGRADIENT_H
 
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
-/**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
-public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
-    virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
+namespace util {
+//namespace detail {
+//
+//struct VolumeGradientDispatcher {
+//    using type = std::shared_ptr<Volume>;
+//
+//    template <typename T>
+//    std::shared_ptr<Volume> dispatch(const Volume* volume) {
+//        using dataType = typename T::type;
+//        using primitive = typename T::primitive;
+//
+//        auto newVolume = std::make_shared<Volume>(volume->getDimensions());
+//        newVolume->setModelMatrix(volume->getModelMatrix());
+//        newVolume->setWorldMatrix(volume->getWorldMatrix());
+//
+//        util::forEachVoxel(volume->getRepresentation<VolumeRAM>(), [](const size3_t &pos) {
+//            
+//        });
+//            
+//        return newVolume;
+//    }
+//};
+//}
 
-    void remove(const BrushingAndLinkingInport* src);
-
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-private:
-    IndexList selected_;
-    IndexList filtered_;
-
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
-};
-
+IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel);
+}
 }  // namespace
 
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H
+#endif  // IVW_VOLUMEGRADIENT_H

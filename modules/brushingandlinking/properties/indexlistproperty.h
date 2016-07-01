@@ -30,8 +30,8 @@
 #ifndef IVW_INDEXLISTPROPERTY_H
 #define IVW_INDEXLISTPROPERTY_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
 #include <inviwo/core/properties/property.h>
 
@@ -42,32 +42,29 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexListProperty : public Property{ 
+class IVW_MODULE_BRUSHINGANDLINKING_API IndexListProperty : public Property {
 public:
     InviwoPropertyInfo();
 
     IndexListProperty(std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
     virtual ~IndexListProperty();
 
     void clear();
-
 
     virtual void set(const Property* src) override;
 
     bool has(size_t i) const;
     void insert(size_t i);
     void remove(size_t i);
-    void set(const std::unordered_set<size_t> &indices);
-    size_t numberOfBrushedIndices()const;
+    void set(const std::unordered_set<size_t>& indices);
+    size_t numberOfBrushedIndices() const;
 
 private:
     std::unordered_set<size_t> brushedIndices_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INDEXLISTPROPERTY_H
-
+#endif  // IVW_INDEXLISTPROPERTY_H

@@ -27,48 +27,33 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#ifndef IVW_VOLUMERAMUTILS_H
+#define IVW_VOLUMERAMUTILS_H
 
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
-/**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
-public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
-    virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
+    namespace util {
 
-    void remove(const BrushingAndLinkingInport* src);
+        template <typename C>
+        void forEachVoxel(const VolumeRAM &v, C callback){
+            const auto &dims = v.getDimensions();
+            size3_t pos;
+            for (pos.z = 0; pos.z < dims.z; pos.z++) {
+                for (pos.y = 0; pos.y < dims.y; pos.y++) {
+                    for (pos.x = 0; pos.x < dims.x; pos.x++) {
+                        callback(pos);
+                    }
+                }
+            }
+        }
 
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
+    }
 
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+} // namespace
 
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+#endif // IVW_VOLUMERAMUTILS_H
 
-private:
-    IndexList selected_;
-    IndexList filtered_;
-
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
-};
-
-}  // namespace
-
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

@@ -24,51 +24,56 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#ifndef IVW_VOLUMECURLCPUPROCESSOR_H
+#define IVW_VOLUMECURLCPUPROCESSOR_H
 
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
-/**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+
+/** \docpage{org.inviwo.VolumeCurlCPUProcessor, Volume Curl CPUProcessor}
+ * ![](org.inviwo.VolumeCurlCPUProcessor.png?classIdentifier=org.inviwo.VolumeCurlCPUProcessor)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
+
+
+/**
+ * \class VolumeCurlCPUProcessor
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public Processor { 
 public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
-    virtual ~BrushingAndLinkingManager();
+    VolumeCurlCPUProcessor();
+    virtual ~VolumeCurlCPUProcessor() = default;
+     
+    virtual void process() override;
 
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
-
-    void remove(const BrushingAndLinkingInport* src);
-
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 private:
-    IndexList selected_;
-    IndexList filtered_;
-
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
+    VolumeInport inport_;
+    VolumeOutport outport_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H
+#endif // IVW_VOLUMECURLCPUPROCESSOR_H
+

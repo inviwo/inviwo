@@ -27,48 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#ifndef IVW_VOLUMECURL_H
+#define IVW_VOLUMECURL_H
 
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
-/**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
-public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
-    virtual ~BrushingAndLinkingManager();
 
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
+    namespace util {
 
-    void remove(const BrushingAndLinkingInport* src);
+        IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
 
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
 
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+    }
 
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+} // namespace
 
-private:
-    IndexList selected_;
-    IndexList filtered_;
+#endif // IVW_VOLUMECURL_H
 
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
-};
-
-}  // namespace
-
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

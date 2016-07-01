@@ -36,6 +36,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/uniformutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sharedopenglresources.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.h
     ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h

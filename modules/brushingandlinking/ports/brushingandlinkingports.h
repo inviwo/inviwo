@@ -30,21 +30,39 @@
 #ifndef IVW_BRUSHINGANDLINKINGOUTPORT_H
 #define IVW_BRUSHINGANDLINKINGOUTPORT_H
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/port.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <modules/brushingandlinking/events/filteringevent.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
 
 namespace inviwo {
 
-
-using BrushingAndLinkingInport = DataInport<BrushingAndLinkingManager>;
-
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public DataOutport<BrushingAndLinkingManager> {
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport
+    : public DataInport<BrushingAndLinkingManager> {
 public:
-    BrushingAndLinkingOutport(std::string identifier) : DataOutport<BrushingAndLinkingManager>(identifier){}
+    BrushingAndLinkingInport(std::string identifier);
+    virtual ~BrushingAndLinkingInport();
+
+    void sendFilterEvent(const std::unordered_set<size_t> &indices);
+
+    void sendSelectionEvent(const std::unordered_set<size_t> &indices);
+
+    bool isFiltered(size_t idx) const;
+
+    bool isSelected(size_t idx) const;
+
+    std::unordered_set<size_t> filterCache_;
+    std::unordered_set<size_t> selctionCache_;
+};
+
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
+    : public DataOutport<BrushingAndLinkingManager> {
+public:
+    BrushingAndLinkingOutport(std::string identifier);
     virtual ~BrushingAndLinkingOutport() = default;
 };
 
@@ -52,7 +70,7 @@ template <>
 struct port_traits<BrushingAndLinkingManager> {
     static std::string class_identifier() { return "BrushingAndLinkingManager"; }
     static uvec3 color_code() { return uvec3(160, 182, 240); }
-    static std::string data_info(const BrushingAndLinkingManager* data) {
+    static std::string data_info(const BrushingAndLinkingManager *data) {
         std::ostringstream oss;
         oss << "Number of selected indices: " << data->getNumberOfSelected() << std::endl;
         oss << "Number of filtered indices: " << data->getNumberOfFiltered();
@@ -60,7 +78,6 @@ struct port_traits<BrushingAndLinkingManager> {
     }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BRUSHINGANDLINKINGOUTPORT_H
-
+#endif  // IVW_BRUSHINGANDLINKINGOUTPORT_H

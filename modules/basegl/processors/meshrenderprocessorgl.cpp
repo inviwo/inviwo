@@ -258,7 +258,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
         vec3 minPos(std::numeric_limits<float>::max());
         vec3 maxPos(std::numeric_limits<float>::lowest());
         for (auto buff : mesh->getBuffers()) {
-            if (buff.first == BufferType::PositionAttrib) {
+            if (buff.first.type == BufferType::PositionAttrib) {
                 const Vec3BufferRAM* posbuff =
                     dynamic_cast<const Vec3BufferRAM*>(buff.second->getRepresentation<BufferRAM>());
 

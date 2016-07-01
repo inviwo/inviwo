@@ -28,16 +28,45 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
-IndexList::IndexList()  {
-    
+IndexList::IndexList() {}
+
+IndexList::~IndexList() {}
+
+size_t IndexList::getSize() const { return indices_.size(); }
+
+bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
+
+void IndexList::set(const BrushingAndLinkingInport *src,
+                    const std::unordered_set<size_t> &indices) {
+    indicesBySource_[src] = indices;
+    update();
 }
 
-IndexList::~IndexList()  {
-    
+void IndexList::remove(const BrushingAndLinkingInport *src) {
+    indicesBySource_.erase(src);
+    update();
 }
 
-} // namespace
+std::shared_ptr<std::function<void()>> IndexList::onChange(std::function<void()> V) {
+    return onUpdate_.add(V);
+}
 
+void IndexList::update() {
+    indices_.clear();
+
+    using T = std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>::value_type;
+    util::map_erase_remove_if(indicesBySource_, [](const T & p) {
+        return !p.first->isConnected();
+    });
+
+    for (auto p : indicesBySource_) {
+        indices_.insert(p.second.begin(), p.second.end());
+    }
+    onUpdate_.invoke();
+}
+
+}  // namespace

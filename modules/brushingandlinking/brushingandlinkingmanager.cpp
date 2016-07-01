@@ -28,16 +28,42 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager()  {
-    
+BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingProcessor* p) {
+    p->getOutport().onDisconnect([=]() {
+        selected_.update();
+        filtered_.update();
+    });
+    callback1_ = selected_.onChange([p]() { p->invalidate(InvalidationLevel::InvalidOutput); });
+    callback2_ = filtered_.onChange([p]() { p->invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-BrushingAndLinkingManager::~BrushingAndLinkingManager()  {
-    
+BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
+
+size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_.getSize(); }
+
+size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
+
+void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
+    selected_.remove(src);
+    filtered_.remove(src);
 }
 
-} // namespace
+bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
 
+bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
+
+void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
+                                            const std::unordered_set<size_t>& indices) {
+    selected_.set(src, indices);
+}
+
+void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
+                                            const std::unordered_set<size_t>& indices) {
+    filtered_.set(src, indices);
+}
+
+}  // namespace

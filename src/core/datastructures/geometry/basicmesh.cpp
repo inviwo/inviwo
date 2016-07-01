@@ -64,10 +64,10 @@ void BasicMesh::addVertices(const std::vector<Vertex> &data) {
     auto c = getEditableColorsRAM();
     auto n = getEditableNormalsRAM();
 
-    v->getDataContainer()->reserve(data.size());
-    t->getDataContainer()->reserve(data.size());
-    c->getDataContainer()->reserve(data.size());
-    n->getDataContainer()->reserve(data.size());
+    v->getDataContainer()->reserve(data.size() + v->getDataContainer()->size());
+    t->getDataContainer()->reserve(data.size() + t->getDataContainer()->size());
+    c->getDataContainer()->reserve(data.size() + c->getDataContainer()->size());
+    n->getDataContainer()->reserve(data.size() + n->getDataContainer()->size());
 
     for (const auto& elem : data) {
         v->add(elem.pos);

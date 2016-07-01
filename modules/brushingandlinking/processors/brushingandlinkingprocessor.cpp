@@ -27,33 +27,46 @@
  *
  *********************************************************************************/
 
+#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <modules/brushingandlinking/events/filteringevent.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
-    "org.inviwo.BrushingAndLinkingProcessor",      // Class identifier
-    "Brushing And Linking Processor",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.BrushingAndLinkingProcessor",  // Class identifier
+    "Brushing And Linking Processor",          // Display name
+    "Undefined",                               // Category
+    CodeState::Experimental,                   // Code state
+    Tags::None,                                // Tags
 };
-const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const {
-    return processorInfo_;
+const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { return processorInfo_; }
+
+void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
+    if (auto brushingEvent = dynamic_cast<BrushingAndLinkingEvent*>(event)) {
+        if (auto filtering = dynamic_cast<FilteringEvent*>(event)) {
+            manager_->setFiltered(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        } else if (auto selection = dynamic_cast<SelectionEvent*>(event)) {
+            manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        } else if (auto remove = dynamic_cast<RemoveEvent*>(event)) {
+            manager_->remove(brushingEvent->getSource());
+            event->markAsUsed();
+        }
+    }
+    Processor::invokeEvent(event);
 }
 
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
     , outport_("outport")
-{
-    
+    , manager_(std::make_shared<BrushingAndLinkingManager>(this)) {
     addPort(outport_);
 }
-    
-void BrushingAndLinkingProcessor::process() {
-    //outport_.setData(myImage);
-}
 
-} // namespace
+void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
 
+}  // namespace

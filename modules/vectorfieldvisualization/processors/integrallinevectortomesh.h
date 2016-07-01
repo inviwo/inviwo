@@ -44,6 +44,7 @@
 
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <brushingandlinking/ports/brushingandlinkingports.h>
 
 
 namespace inviwo {
@@ -80,10 +81,10 @@ public:
     static const ProcessorInfo processorInfo_;
 private:
     IntegralLineSetInport lines_;
+    BrushingAndLinkingInport brushingList_;
     MeshOutport mesh_;
 
     BoolProperty ignoreBrushingList_;
-    BrushingListProperty brushingList_;
 
     IntSizeTProperty stride_;
 

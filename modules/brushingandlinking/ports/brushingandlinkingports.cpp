@@ -29,7 +29,53 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-namespace inviwo {
+namespace inviwo{
 
-} // namespace
+BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
+    : DataInport<BrushingAndLinkingManager>(identifier) {
+    setOptional(true);
 
+    onConnect([&]() {
+        sendFilterEvent(filterCache_);
+        sendSelectionEvent(selctionCache_);
+    });
+}
+
+BrushingAndLinkingInport::~BrushingAndLinkingInport() {
+    RemoveEvent event(this);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
+    filterCache_ = indices;
+    FilteringEvent event(this, filterCache_);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+    selctionCache_ = indices;
+    SelectionEvent event(this, selctionCache_);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isFiltered(idx);
+    } else {
+        return filterCache_.find(idx) != filterCache_.end();
+    }
+}
+
+bool BrushingAndLinkingInport::isSelected(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isSelected(idx);
+    } else {
+        return selctionCache_.find(idx) != selctionCache_.end();
+    }
+}
+
+BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
+    : DataOutport<BrushingAndLinkingManager>(identifier) {
+}
+
+}  // namespace

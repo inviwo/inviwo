@@ -74,6 +74,8 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/processors/pixelvalue.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
+#include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/processors/volumecurlcpuprocessor.h>
 
 namespace inviwo {
 
@@ -124,6 +126,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<OrientationIndicator>();
     registerProcessor<PixelValue>();
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
+    registerProcessor<VolumeGradientCPUProcessor>();
+    registerProcessor<VolumeCurlCPUProcessor>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
