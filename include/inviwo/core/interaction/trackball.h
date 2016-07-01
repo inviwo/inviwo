@@ -37,7 +37,6 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/interaction/action.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>

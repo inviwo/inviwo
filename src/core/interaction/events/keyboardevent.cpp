@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyModifiers modifiers, KeyState state)
+KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers)
     : InteractionEvent(modifiers), state_(state), key_(key) {}
 
 KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }

@@ -33,26 +33,40 @@ namespace inviwo {
 
 PropertyClassIdentifier(EventProperty, "org.inviwo.EventProperty");
 
-EventProperty::EventProperty(std::string identifier, std::string displayName,
-                             std::unique_ptr<EventMatcher> matcher, Action action,
+EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+                             Action action, std::unique_ptr<EventMatcher> matcher,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
-    , event_{std::move(matcher)}
+    , matcher_{std::move(matcher)}
     , action_{std::move(action)} {}
+
+EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+                             Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(identifier, displayName, std::move(action),
+                    util::make_unique<KeyboardEventMatcher>(key, states, modifiers),
+                    invalidationLevel, semantics) {}
+
+EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+                             Action action, MouseButtons buttons, MouseStates states,
+                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
+                             PropertySemantics semantics)
+    : EventProperty(identifier, displayName, std::move(action),
+                    util::make_unique<MouseEventMatcher>(buttons, states, modifiers),
+                    invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)
-    , event_{rhs.event_ ? rhs.event_->clone() : nullptr}
+    , matcher_{rhs.matcher_ ? rhs.matcher_->clone() : nullptr}
     , action_{rhs.action_} {}
 
 EventProperty& EventProperty::operator=(const EventProperty& that) {
     if (this != &that) {
         Property::operator=(that);
-
-        std::unique_ptr<EventMatcher> e{that.event_ ? that.event_->clone() : nullptr};
+        std::unique_ptr<EventMatcher> e{that.matcher_ ? that.matcher_->clone() : nullptr};
         Action a{that.action_};
 
-        std::swap(event_, e);
+        std::swap(matcher_, e);
         std::swap(action_, a);
     }
     return *this;
@@ -60,30 +74,20 @@ EventProperty& EventProperty::operator=(const EventProperty& that) {
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
-void EventProperty::serialize(Serializer& s) const {
-    Property::serialize(s);
-    if (this->serializationMode_ == PropertySerializationMode::None) return;
-    
-    s.serialize("Event", event_.get());
+void EventProperty::invokeEvent(Event* e) {
+    if ((*matcher_)(e)) action_(e);
 }
 
-void EventProperty::deserialize(Deserializer& d) {
-    Property::deserialize(d);
-    EventMatcher* e = event_.get();
-    d.deserialize("Event", e); // e has to be a lvalue.
-    if(e != event_.get()) event_.reset(e);
-}
-
-EventMatcher* EventProperty::getEvent() const {
-    return event_.get();
+EventMatcher* EventProperty::getEventMatcher() const {
+    return matcher_.get();
 }
 
 EventProperty::Action EventProperty::getAction() const {
     return action_;
 }
 
-void EventProperty::setEvent(std::unique_ptr<EventMatcher> matcher) {
-    event_ = std::move(matcher);
+void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
+    matcher_ = std::move(matcher);
 }
 
 void EventProperty::setAction(Action action) {
@@ -91,11 +95,26 @@ void EventProperty::setAction(Action action) {
 }
 
 void EventProperty::setCurrentStateAsDefault() {
-    if (event_) event_->setCurrentStateAsDefault();
+    if (matcher_) matcher_->setCurrentStateAsDefault();
 }
 
 void EventProperty::resetToDefaultState() {
-    if (event_) event_->resetToDefaultState();
+    if (matcher_) matcher_->resetToDefaultState();
 }
+
+void EventProperty::serialize(Serializer& s) const {
+    Property::serialize(s);
+    if (this->serializationMode_ == PropertySerializationMode::None) return;
+    
+    s.serialize("Event", matcher_.get());
+}
+
+void EventProperty::deserialize(Deserializer& d) {
+    Property::deserialize(d);
+    EventMatcher* e = matcher_.get();
+    d.deserialize("Event", e); // e has to be a lvalue.
+    if(e != matcher_.get()) matcher_.reset(e);
+}
+
 
 }  // namespace

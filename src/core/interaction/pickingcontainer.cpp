@@ -44,20 +44,20 @@ PickingContainer::PickingContainer()
     , touchPickingOn_(false)
 {}
 
-PickingContainer::~PickingContainer() {}
+PickingContainer::~PickingContainer() = default;
 
 bool PickingContainer::pickingEnabled() {
     return PickingManager::getPtr()->pickingEnabled();
 }
 
 bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled() || e->button() == MouseEvent::MOUSE_BUTTON_NONE)
+    if (!pickingEnabled() || e->button() == MouseButton::None)
         return false;
 
     if (touchPickingOn_)
         return true;
 
-    if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
+    if (e->state() == MouseState::Release){
         mouseIsDown_ = false;
         if (mousePickingOngoing_) {
             uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
@@ -73,7 +73,7 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
             return false;
         }
     }
-    else if (!mouseIsDown_ || e->state() == MouseEvent::MOUSE_STATE_PRESS){
+    else if (!mouseIsDown_ || e->state() == MouseState::Press){
         mouseIsDown_ = true;
 
         uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
@@ -96,7 +96,7 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
             return false;
         }
     }
-    else if (e->state() == MouseEvent::MOUSE_STATE_MOVE){
+    else if (e->state() == MouseState::Move){
         if (mousePickingOngoing_){
             uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
             mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
@@ -121,7 +121,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     // Clear the picked touch point map
     pickedTouchPoints_.clear();
 
-    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchPoint::TOUCH_STATE_ENDED)
+    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchState::Finished)
         touchPickingOn_ = true;
     else
         touchPickingOn_ = false;
@@ -132,7 +132,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     auto touchPoint = touchPoints.begin();
     while (touchPoint != touchPoints.end()) {
         bool isAssociated = false;
-        if (touchPoint->state() == TouchPoint::TOUCH_STATE_STARTED) {
+        if (touchPoint->state() == TouchState::Started) {
             // Find out if new touch point is touching inside a picking object
             uvec2 coord = clampToScreenCoords(touchPoint->getPos(), e->canvasSize());
             PickingObject* pickObj = findPickingObject(coord);
@@ -154,7 +154,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
                 isAssociated = true;
             }
         }
-        else if (touchPoint->state() == TouchPoint::TOUCH_STATE_ENDED) {
+        else if (touchPoint->state() == TouchState::Finished) {
             // Erase touch point from TouchIDPickingMap
             size_t numberOfErasedElements = touchPickObjs_.erase(touchPoint->getId());
             isAssociated = (numberOfErasedElements > 0);
@@ -189,7 +189,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         // Treat one touch point the same as mouse event, for now
         if (pickedTouchPoints_it->second.size() == 1){
             uvec2 coord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
-            if (pickedTouchPoints_it->second[0].state() & TouchPoint::TOUCH_STATE_STARTED){
+            if (pickedTouchPoints_it->second[0].state() & TouchState::Started){
                 pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
                 pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
                 pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));

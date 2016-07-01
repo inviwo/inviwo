@@ -64,8 +64,7 @@ public:
     MouseState state() const;
     void setState(MouseState state);
 
-
-    virtual std::string getClassIdentifier() const;
+    virtual std::string getClassIdentifier() const override;
 
 private:
     MouseButton button_;

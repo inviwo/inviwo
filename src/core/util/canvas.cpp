@@ -35,6 +35,7 @@
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -84,7 +85,7 @@ void Canvas::mouseButtonEvent(MouseEvent* e) {
     if (!pickingContainer_.performMousePick(e)) interactionEvent(e);
 }
 
-void Canvas::mouseWheelEvent(MouseEvent* e) { interactionEvent(e); }
+void Canvas::mouseWheelEvent(WheelEvent* e) { interactionEvent(e); }
 
 void Canvas::keyPressEvent(KeyboardEvent* e) { interactionEvent(e); }
 
@@ -107,10 +108,10 @@ void Canvas::touchEvent(TouchEvent* e) {
         // Send out a mouse event if only one touch point remains
         const std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
         if (touchPoints.size() == 1) {
-            MouseEvent mouseEvent(touchPoints[0].getPos(), MouseEvent::MOUSE_BUTTON_LEFT,
-                                  MouseEvent::MOUSE_STATE_MOVE, InteractionEvent::MODIFIER_NONE,
-                                  e->canvasSize(), touchPoints[0].getDepth());
-            interactionEvent(&mouseEvent);
+            MouseEvent mouseEvent(MouseButton::Left, MouseState::Move, MouseButton::Left,
+                                  KeyModifier::None, touchPoints[0].getPos(), e->canvasSize(),
+                                  touchPoints[0].getDepth());
+                interactionEvent(&mouseEvent);
         } else {
             interactionEvent(e);
         }

@@ -55,14 +55,10 @@ DrawPoints::DrawPoints()
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
-    , mouseDraw_("mouseDraw", "Draw Point",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-                                MouseEvent::MOUSE_STATE_ANY),
-                 new Action(this, &DrawPoints::eventDraw))
-    , keyEnableDraw_(
-          "keyEnableDraw", "Enable Draw",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-          new Action(this, &DrawPoints::eventEnableDraw))
+    , mouseDraw_("mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+                 MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
+                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
     , points_(DrawType::Points, ConnectivityType::None)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")
@@ -126,7 +122,7 @@ void DrawPoints::eventDraw(Event* event){
 
 void DrawPoints::eventEnableDraw(Event* event){
     KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
-    drawModeEnabled_ = (keyEvent->state() != KeyboardEvent::KEY_STATE_RELEASE);
+    drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
 } // inviwo namespace

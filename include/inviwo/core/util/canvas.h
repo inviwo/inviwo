@@ -44,6 +44,7 @@ class Image;
 class EventPropagator;
 class ProcessorWidget;
 class MouseEvent;
+class WheelEvent;
 class KeyboardEvent;
 class TouchEvent;
 class GestureEvent;
@@ -82,7 +83,7 @@ protected:
     void mouseMoveEvent(MouseEvent* e);
 
     void mouseButtonEvent(MouseEvent* e);
-    void mouseWheelEvent(MouseEvent* e);
+    void mouseWheelEvent(WheelEvent* e);
 
     void keyPressEvent(KeyboardEvent* e);
     void keyReleaseEvent(KeyboardEvent* e);

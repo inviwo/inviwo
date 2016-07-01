@@ -135,10 +135,8 @@ PixelValue::PixelValue()
     , pickingStrValue_("pickingStrValue", "Picking Value (as string)", "", InvalidationLevel::Valid)
     , depthStrValue_("depthStrValue", "Depth Value (as string)", "", InvalidationLevel::Valid)
 
-    , mouseMove_("mouseMove", "Mouse Move",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY_AND_NONE,
-                                InteractionEvent::MODIFIER_NONE, MouseEvent::MOUSE_STATE_MOVE),
-                 new Action(this, &PixelValue::mouseMoveEvent))
+    , mouseMove_("mouseMove", "Mouse Move", [this](Event* e) { mouseMoveEvent(e); },
+                 MouseButtons(flags::any), MouseState::Move)
 
 {
     addPort(inport_);

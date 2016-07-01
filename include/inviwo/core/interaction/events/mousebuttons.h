@@ -40,20 +40,19 @@
 namespace inviwo {
 
 enum class MouseButton {
-    None   = 1 << 0,
-    Left   = 1 << 1,
-    Middle = 1 << 2,
-    Right  = 1 << 3
+    None   = 0,
+    Left   = 1 << 0,
+    Middle = 1 << 1,
+    Right  = 1 << 2
 };
 ALLOW_FLAGS_FOR_ENUM(MouseButton);
 using MouseButtons = flags::flags<MouseButton>;
 
 enum class MouseState {
+    Press       = 1 << 0,
     Move        = 1 << 1,
-    Press       = 1 << 2,
-    Release     = 1 << 3,
-    Wheel       = 1 << 4,
-    DoubleClick = 1 << 5 
+    Release     = 1 << 2,
+    DoubleClick = 1 << 3
 };
 ALLOW_FLAGS_FOR_ENUM(MouseState);
 using MouseStates = flags::flags<MouseState>;
@@ -88,9 +87,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
         case MouseState::Release:
             ss << "Release";
             break;
-        case MouseState::Wheel:
-            ss << "Wheel";
-            break;
         case MouseState::DoubleClick:
             ss << "DoubleClick";
             break;
@@ -102,10 +98,12 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              MouseButtons bs) {
     std::copy(bs.begin(), bs.end(), std::ostream_iterator<MouseButton>(ss, "+"));
+    return ss;
 }
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseStates ss) {
-    std::copy(ss.begin(), ss.end(), std::ostream_iterator<MouseState>(ss, "+"));
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseStates s) {
+    std::copy(s.begin(), s.end(), std::ostream_iterator<MouseState>(ss, "+"));
+    return ss;
 }
 
 } // namespace

@@ -54,18 +54,14 @@ DrawLines::DrawLines()
     , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
     , lineColor_("lineColor", "Line Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Lines")
-    , mouseDraw_("mouseDraw", "Draw Line",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-                                MouseEvent::MOUSE_STATE_ANY),
-                 new Action(this, &DrawLines::eventDraw))
-    , keyEnableDraw_(
-          "keyEnableDraw", "Enable Draw",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-          new Action(this, &DrawLines::eventEnableDraw))
+    , mouseDraw_("mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+                 MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
+                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
+
     , lines_(DrawType::Lines, ConnectivityType::Strip)
     , lineDrawer_(&lines_)
     , lineShader_("img_color.frag") {
-
     addPort(inport_);
     addPort(outport_);
 
@@ -137,7 +133,7 @@ void DrawLines::eventDraw(Event* event){
 
 void DrawLines::eventEnableDraw(Event* event){
     KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
-    drawModeEnabled_ = (keyEvent->state() != KeyboardEvent::KEY_STATE_RELEASE);
+    drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
 }  // namespace

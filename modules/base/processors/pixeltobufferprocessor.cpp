@@ -105,18 +105,12 @@ void PixelToBufferProcessor::handleInteractionEventsChanged() {
 }
 
 void PixelToBufferProcessor::invokeEvent(Event* event) {
-    MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-    if (mouseEvent) {
-        int button = mouseEvent->button();
-        int state = mouseEvent->state();
-
-        if (button == MouseEvent::MOUSE_BUTTON_LEFT && state == MouseEvent::MOUSE_STATE_PRESS) {
+    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+        if (mouseEvent->button() == MouseButton::Left && mouseEvent->state() == MouseState::Press) {
             fromPixel_.set(mouseEvent->pos());
             clearOutput();
+            mouseEvent->markAsUsed();
         }
-        mouseEvent->markAsUsed();
-
-        return;
     }
 }
 

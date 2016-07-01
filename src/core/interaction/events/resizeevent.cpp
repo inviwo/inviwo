@@ -39,4 +39,8 @@ ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
 
 ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 
+std::string ResizeEvent::getClassIdentifier() const {
+    return "org.inviwo.ResizeEvent";
+}
+
 }  // namespace

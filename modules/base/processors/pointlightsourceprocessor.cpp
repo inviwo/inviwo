@@ -196,12 +196,12 @@ float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->g
 
 float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
-inviwo::vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
+vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
     const vec3& ndcCoords) const {
     return camera_->getWorldPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-inviwo::vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
     const vec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
@@ -213,24 +213,17 @@ std::string PointLightInteractionHandler::getClassIdentifier() const {
 const Camera& PointLightInteractionHandler::getCamera() { return camera_->get(); }
 
 void PointLightInteractionHandler::invokeEvent(Event* event) {
-    // if(event->hasBeenUsed())
-    //    return;
-
     if (screenPosEnabled_->get()) setLightPosFromScreenCoords(screenPos_->get());
 
     if (interactionEventOption_ == 1 || interactionEventOption_ == 3) {
-        GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
-        if (gestureEvent) {
-            if (gestureEvent->type() == GestureEvent::PAN) {
+        if (auto gestureEvent = dynamic_cast<GestureEvent*>(event)) {
+            if (gestureEvent->type() == GestureType::Pan) {
                 setLightPosFromScreenCoords(gestureEvent->screenPosNormalized());
                 gestureEvent->markAsUsed();
                 return;
             }
-        }
-        MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-        if (mouseEvent) {
-            int button = mouseEvent->button();
-            if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
+        } else if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+            if (mouseEvent->button() == MouseButton::Middle) {
                 // setLightPosFromScreenCoords(mouseEvent->posNormalized());
                 mouseEvent->markAsUsed();
                 screenPos_->set(mouseEvent->posNormalized());

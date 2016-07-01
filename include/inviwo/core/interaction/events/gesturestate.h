@@ -40,17 +40,17 @@
 
 namespace inviwo {
 
-enum class GestureType { Pan = 1 << 1, Pinch = 1 << 2, Swipe = 1 << 3 };
+enum class GestureType { Pan = 1 << 0, Pinch = 1 << 1, Swipe = 1 << 2 };
 
 ALLOW_FLAGS_FOR_ENUM(GestureType);
 using GestureTypes = flags::flags<GestureType>;
 
 enum class GestureState {
-    None = 1 << 0,
-    Started = 1 << 1,
-    Updated = 1 << 2,
-    Ended = 1 << 3,
-    Canceled = 1 << 4
+    NoGesture  = 1 << 0,
+    Started    = 1 << 2,
+    Updated    = 1 << 3,
+    Finished   = 1 << 4,
+    Canceled   = 1 << 5
 };
 
 ALLOW_FLAGS_FOR_ENUM(GestureState);
@@ -75,8 +75,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, GestureState s) {
     switch (s) {
-        case GestureState::None:
-            ss << "None";
+        case GestureState::NoGesture:
+            ss << "NoGesture";
             break;
         case GestureState::Started:
             ss << "Started";
@@ -84,8 +84,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
         case GestureState::Updated:
             ss << "Updated";
             break;
-        case GestureState::Ended:
-            ss << "Ended";
+        case GestureState::Finished:
+            ss << "Finished";
             break;
         case GestureState::Canceled:
             ss << "Canceled";
@@ -96,14 +96,14 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             GestureTypes ss) {
-    std::copy(ss.begin(), ss.end(), std::ostream_iterator<GestureType>(ss, "+"));
+                                             GestureTypes s) {
+    std::copy(s.begin(), s.end(), std::ostream_iterator<GestureType>(ss, "+"));
 }
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             GestureStates ss) {
-    std::copy(ss.begin(), ss.end(), std::ostream_iterator<GestureState>(ss, "+"));
+                                             GestureStates s) {
+    std::copy(s.begin(), s.end(), std::ostream_iterator<GestureState>(ss, "+"));
 }
 
 } // namespace

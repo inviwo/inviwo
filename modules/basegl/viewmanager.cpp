@@ -39,18 +39,18 @@ ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), 
 Event* ViewManager::registerEvent(const Event* event) {
     if (const MouseEvent* mouseEvent = dynamic_cast<const MouseEvent*>(event)) {
         activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
-        if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
+        if (!viewportActive_ && mouseEvent->state() == MouseState::Press) {
             viewportActive_ = true;
             activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
+        } else if (viewportActive_ && mouseEvent->state() == MouseState::Release) {
             viewportActive_ = false;
         }
 
         if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
-            MouseEvent* newEvent = mouseEvent->clone();
+            auto newEvent = mouseEvent->clone();
             const ivec4& view = views_[activeView_];
-            newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
-                             uvec2(view.z, view.w));
+            newEvent->setPos(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)));
+            newEvent->setCanvasSize(uvec2(view.z, view.w));
             return newEvent;
         } else {
             return nullptr;
@@ -59,10 +59,10 @@ Event* ViewManager::registerEvent(const Event* event) {
     } else if (const GestureEvent* gestureEvent = dynamic_cast<const GestureEvent*>(event)) {
         activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
                                 gestureEvent->canvasSize());
-        if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
+        if (!viewportActive_ && gestureEvent->state() == GestureState::Started) {
             viewportActive_ = true;
             activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_ENDED) {
+        } else if (viewportActive_ && gestureEvent->state() == GestureState::Finished) {
             viewportActive_ = false;
         }
 
@@ -79,11 +79,11 @@ Event* ViewManager::registerEvent(const Event* event) {
 
     } else if (const TouchEvent* touchEvent = dynamic_cast<const TouchEvent*>(event)) {
         activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
-        if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchPoint::TOUCH_STATE_STARTED) {
+        if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchState::Started) {
             viewportActive_ = true;
             activeView_ = findView(activePosition_);
         } else if (viewportActive_ && touchEvent->getTouchPoints().front().state() ==
-            TouchPoint::TOUCH_STATE_ENDED) {
+            TouchState::Finished) {
             viewportActive_ = false;
         }
 

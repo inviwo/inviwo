@@ -64,8 +64,9 @@ VolumeRaycaster::VolumeRaycaster()
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
-    , toggleShading_("toggleShading", "Toggle Shading", new KeyboardEvent('L'),
-                     new Action(this, &VolumeRaycaster::toggleShading)) {
+    , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
+                     IvwKey::L) {
+                     
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");

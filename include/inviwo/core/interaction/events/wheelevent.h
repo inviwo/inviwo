@@ -55,10 +55,9 @@ public:
     ivec2 delta() const;
     void setDelta(ivec2 delta);
 
-    virtual std::string getClassIdentifier() const;
-private:
-    MouseButtons buttonState_;
+    virtual std::string getClassIdentifier() const override;
 
+private:
     ivec2 delta_;
     ivec2 position_;
     uvec2 canvasSize_;

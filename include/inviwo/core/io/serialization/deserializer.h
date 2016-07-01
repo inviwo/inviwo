@@ -581,7 +581,7 @@ void Deserializer::deserialize(const std::string& key, flags::flags<T>& data,
 
     auto tmp = data.underlying_value();
     deserialize(key, tmp, target);
-    data = tmp;
+    data.set_underlying_value(tmp);
 }
 
 // glm vector types

@@ -49,78 +49,56 @@ Trackball::Trackball(TrackballObject* object)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
     , animate_("animate", "Animate rotations", false)
-    , mouseRotate_("trackballRotate", "Rotate",
-                   new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-                                  MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-                   new Action(this, &Trackball::rotate))
 
-    , mouseZoom_("trackballZoom", "Zoom",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_RIGHT, InteractionEvent::MODIFIER_NONE,
-                                MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-                 new Action(this, &Trackball::zoom))
+    , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left,
+                   MouseState::Press | MouseState::Move)
 
-    , mousePan_("trackballPan", "Pan",
-                new MouseEvent(MouseEvent::MOUSE_BUTTON_MIDDLE, InteractionEvent::MODIFIER_NONE,
-                               MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-                new Action(this, &Trackball::pan))
+    , mouseZoom_("trackballZoom", "Zoom", [this](Event* e) { zoom(e); }, MouseButton::Right,
+                 MouseState::Press | MouseState::Move)
 
-    , mouseReset_("mouseReset", "Reset",
-                  new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY, InteractionEvent::MODIFIER_ANY,
-                                 MouseEvent::MOUSE_STATE_RELEASE),
-                  new Action(this, &Trackball::reset))
+    , mousePan_("trackballPan", "Pan", [this](Event* e) { pan(e); }, MouseButton::Middle,
+                MouseState::Press | MouseState::Move)
 
-    , stepRotateUp_(
-          "stepRotateUp", "Rotate up",
-          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::rotateUp))
+    , mouseReset_("mouseReset", "Reset", [this](Event* e) { reset(e); }, MouseButtons(flags::any),
+                  MouseState::Release)
 
-    , stepRotateLeft_(
-          "stepRotateLeft", "Rotate left",
-          new KeyboardEvent('A', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::rotateLeft))
+    , stepRotateUp_("stepRotateUp", "Rotate up", [this](Event* e) { rotateUp(e); }, IvwKey::W,
+                    KeyState::Press)
 
-    , stepRotateDown_(
-          "stepRotateDown", "Rotate down",
-          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::rotateDown))
+    , stepRotateLeft_("stepRotateLeft", "Rotate left", [this](Event* e) { rotateLeft(e); },
+                      IvwKey::A, KeyState::Press)
 
-    , stepRotateRight_(
-          "stepRotateRight", "Rotate right",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::rotateRight))
+    , stepRotateDown_("stepRotateDown", "Rotate down", [this](Event* e) { rotateDown(e); },
+                      IvwKey::S, KeyState::Press)
 
-    , stepZoomIn_("stepZoomIn", "Zoom in", new KeyboardEvent('R', InteractionEvent::MODIFIER_NONE,
-                                                             KeyboardEvent::KEY_STATE_PRESS),
-                  new Action(this, &Trackball::zoomIn))
+    , stepRotateRight_("stepRotateRight", "Rotate right", [this](Event* e) { rotateRight(e); },
+                       IvwKey::D, KeyState::Press)
 
-    , stepZoomOut_(
-          "stepZoomOut", "Zoom out",
-          new KeyboardEvent('F', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::zoomOut))
+    , stepZoomIn_("stepZoomIn", "Zoom in", [this](Event* e) { zoomIn(e); }, IvwKey::R,
+                  KeyState::Press)
 
-    , stepPanUp_("stepPanUp", "Pan up", new KeyboardEvent('W', InteractionEvent::MODIFIER_SHIFT,
-                                                          KeyboardEvent::KEY_STATE_PRESS),
-                 new Action(this, &Trackball::panUp))
+    , stepZoomOut_("stepZoomOut", "Zoom out", [this](Event* e) { zoomOut(e); }, IvwKey::F,
+                   KeyState::Press)
 
-    , stepPanLeft_(
-          "stepPanLeft", "Pan left",
-          new KeyboardEvent('A', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::panLeft))
+    , stepPanUp_("stepPanUp", "Pan up", [this](Event* e) { panUp(e); }, IvwKey::W, KeyState::Press,
+                 KeyModifier::Shift)
 
-    , stepPanDown_(
-          "stepPanDown", "Pan down",
-          new KeyboardEvent('S', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::panDown))
+    , stepPanLeft_("stepPanLeft", "Pan left", [this](Event* e) { panLeft(e); }, IvwKey::A,
+                   KeyState::Press, KeyModifier::Shift)
 
-    , stepPanRight_(
-          "stepPanRight", "Pan right",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &Trackball::panRight))
+    , stepPanDown_("stepPanDown", "Pan down", [this](Event* e) { panDown(e); }, IvwKey::S,
+                   KeyState::Press, KeyModifier::Shift)
 
-    , touchGesture_("touchGesture", "Touch", new TouchEvent(),
-                    new Action(this, &Trackball::touchGesture))
+    , stepPanRight_("stepPanRight", "Pan right", [this](Event* e) { panRight(e); }, IvwKey::D,
+                    KeyState::Press, KeyModifier::Shift)
+
+    , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); },
+                    util::make_unique<GeneralEventMatcher>(
+                        [](Event* e) { return dynamic_cast<TouchEvent*>(e) != nullptr; }))
+    
     , evaluated_(true)
     , timer_(30, [this]() { animate(); }) {
+    
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
 
@@ -340,8 +318,8 @@ void Trackball::touchGesture(Event* event) {
         auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
         auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
-        if (touchPoint1.state() == TouchPoint::TOUCH_STATE_STATIONARY ||
-            touchPoint2.state() == TouchPoint::TOUCH_STATE_STATIONARY) {
+        if (touchPoint1.state() == TouchState::Stationary ||
+            touchPoint2.state() == TouchState::Stationary) {
             gestureStartNDCDepth_ = std::min(touchPoint1.getDepth(), touchPoint2.getDepth());
             if (gestureStartNDCDepth_ >= 1.) {
                 gestureStartNDCDepth_ =

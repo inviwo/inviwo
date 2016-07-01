@@ -43,12 +43,14 @@ public:
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
     virtual ResizeEvent* clone() const override;
-    virtual ~ResizeEvent();
+    virtual ~ResizeEvent() = default;
 
     inline uvec2 size() const { return size_; }
     inline uvec2 previousSize() const { return previousSize_; }
     inline void setSize(uvec2 csize) { size_ = csize; }
     inline void setPreviousSize(uvec2 previousSize) { previousSize_ = previousSize; }
+
+    virtual std::string getClassIdentifier() const override;
 
 private:
     uvec2 size_;

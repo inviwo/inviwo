@@ -39,8 +39,8 @@ namespace inviwo {
 class IVW_CORE_API KeyboardEvent : public InteractionEvent {
 public:
     KeyboardEvent(IvwKey key = IvwKey::Unknown,
-                  KeyModifiers modifiers = KeyModifiers(flags::empty),
-                  KeyState state = KeyState::Press);
+                  KeyState state = KeyState::Press,
+                  KeyModifiers modifiers = KeyModifiers(flags::empty));
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;

@@ -42,6 +42,8 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/network/networklock.h>
@@ -95,26 +97,22 @@ VolumeSliceGL::VolumeSliceGL()
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_(
-          "mouseShiftSlice", "Mouse Slice Shift",
-          new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
-                         MouseEvent::MOUSE_STATE_WHEEL, MouseEvent::MOUSE_WHEEL_ANY),
-          new Action(this, &VolumeSliceGL::eventShiftSlice))
-    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker",
-                      new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-                                     MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-                      new Action(this, &VolumeSliceGL::eventSetMarker))
-    , stepSliceUp_(
-          "stepSliceUp", "Key Slice Up",
-          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSliceGL::eventStepSliceUp))
+    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
+                      [this](Event* e) { eventShiftSlice(e); },
+                      util::make_unique<WheelEventMatcher>())
+    
+    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
+                      MouseButton::Left, MouseState::Press | MouseState::Move)
+    
+    , stepSliceUp_( "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+          IvwKey::W, KeyState::Press)
     , stepSliceDown_(
-          "stepSliceDown", "Key Slice Down",
-          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSliceGL::eventStepSliceDown))
-    , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
-                         new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-                         new Action(this, &VolumeSliceGL::eventGestureShiftSlice))
+          "stepSliceDown", "Key Slice Down",  [this](Event* e) { eventStepSliceDown(e); },
+          IvwKey::S, KeyState::Press)
+    , gestureShiftSlice_(
+          "gestureShiftSlice", "Gesture Slice Shift",
+          [this](Event* e) { eventGestureShiftSlice(e); },
+          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -582,8 +580,8 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 }
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    int steps = mouseEvent->wheelSteps();
+    auto wheelEvent = static_cast<WheelEvent*>(event);
+    int steps = wheelEvent->delta().y;
     shiftSlice(steps);
     event->markAsUsed();
 }

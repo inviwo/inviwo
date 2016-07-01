@@ -39,12 +39,13 @@
 namespace inviwo {
 
 enum class KeyModifier {
-    Control = 1 << 1,
-    Shift   = 1 << 2,
-    Alt     = 1 << 3,
-    Super   = 1 << 4, 
-    Menu    = 1 << 5,
-    Meta    = 1 << 6
+    None    = 0,
+    Control = 1 << 0,
+    Shift   = 1 << 1,
+    Alt     = 1 << 2,
+    Super   = 1 << 3,
+    Menu    = 1 << 4,
+    Meta    = 1 << 5
 };
 ALLOW_FLAGS_FOR_ENUM(KeyModifier);
 using KeyModifiers = flags::flags<KeyModifier>;
@@ -78,11 +79,12 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyModifiers ms) {
     std::copy(ms.begin(), ms.end(), std::ostream_iterator<KeyModifier>(ss, "+"));
+    return ss;
 }
 
 enum class KeyState {
-    Press = 1 << 1,
-    Release = 1 << 2,
+    Press = 1 << 0,
+    Release = 1 << 1,
 };
 ALLOW_FLAGS_FOR_ENUM(KeyState);
 using KeyStates = flags::flags<KeyState>;
@@ -100,8 +102,9 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyStates ss) {
-    std::copy(ss.begin(), ss.end(), std::ostream_iterator<KeyState>(ss, "+"));
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyStates s) {
+    std::copy(s.begin(), s.end(), std::ostream_iterator<KeyState>(ss, "+"));
+    return ss;
 }
 
 
@@ -174,7 +177,6 @@ enum class IvwKey {
     GraveAccent      = 96,  /* ` */
     AsciiCircum      = 94,  /* ° */
     Underscore       = 95,  /* _ */
-    QuoteLeft        = 96,
     BraceLeft        = 123, /* { */ // 0x7b
     Bar              = 124, /* | */ // 0x7c
     BraceRight       = 125, /* } */ // 0x7d
@@ -457,9 +459,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         case IvwKey::Underscore:
             ss << "Underscore";
-            break;
-        case IvwKey::QuoteLeft:
-            ss << "QuoteLeft";
             break;
         case IvwKey::BraceLeft:
             ss << "BraceLeft";

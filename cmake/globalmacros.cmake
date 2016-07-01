@@ -493,10 +493,10 @@ endfunction()
 #--------------------------------------------------------------------
 # Specify console as target
 function(ivw_define_standard_properties project_name)
-    if(NOT MSVC)
-        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
-        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
-    endif()
+    #if(NOT MSVC)
+    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 14)
+    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
+    #endif()
 
     # Specify warnings
     if(APPLE)

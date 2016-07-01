@@ -18,7 +18,12 @@ namespace flags {
 struct empty_t {
     constexpr empty_t() noexcept {}
 };
+struct any_t {
+    constexpr any_t() noexcept {}
+};
 constexpr empty_t empty;
+constexpr empty_t none;
+constexpr any_t any;
 
 template <class E>
 struct flags {
@@ -54,7 +59,8 @@ public:
     flags(flags &&fl) noexcept = default;
     flags &operator=(flags &&fl) noexcept = default;
 
-    explicit constexpr flags(empty_t) noexcept : val_(0) {}
+    explicit constexpr flags(empty_t) noexcept : val_{0} {}
+    explicit constexpr flags(any_t) noexcept : val_{~impl_type{0}} {}
 
 #ifdef ENUM_CLASS_FLAGS_FORBID_IMPLICT_CONVERSION
     explicit

@@ -30,8 +30,13 @@
 #ifndef IVW_EVENTPROPERTY_H
 #define IVW_EVENTPROPERTY_H
 
-#include <inviwo/core/interaction/events/eventmatcher.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
 namespace inviwo {
 
@@ -43,7 +48,7 @@ namespace inviwo {
  */
 class IVW_CORE_API EventProperty : public Property {
 public:
-    using Action = std::function<void()>;
+    using Action = std::function<void(Event*)>;
 
     InviwoPropertyInfo();
     /**
@@ -57,8 +62,20 @@ public:
      * @param action The action to executed upon the event.
      * @param semantics
      */
-    EventProperty(std::string identifier, std::string displayName,
-                  std::unique_ptr<EventMatcher> matcher, Action action,
+    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+                  std::unique_ptr<EventMatcher> matcher,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
+    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+                  IvwKey key, KeyStates states = KeyState::Press,
+                  KeyModifiers modifier = KeyModifiers(flags::none),
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
+    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+                  MouseButtons buttons, MouseStates states = MouseState::Press,
+                  KeyModifiers modifiers = KeyModifiers(flags::none),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
@@ -67,8 +84,10 @@ public:
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 
-    void setEvent(std::unique_ptr<EventMatcher> matcher);
-    EventMatcher* getEvent() const;
+    void invokeEvent(Event*);
+    
+    void setEventMatcher(std::unique_ptr<EventMatcher> matcher);
+    EventMatcher* getEventMatcher() const;
     
     void setAction(Action action);
     Action getAction() const;
@@ -80,7 +99,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::unique_ptr<EventMatcher> event_;    
+    std::unique_ptr<EventMatcher> matcher_;
     Action action_;                   
 };
 

@@ -66,9 +66,8 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
 
     , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
-        new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-            MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
-        new Action(this, &CameraProperty::changeFocusPoint))
+                             [this](Event* e) { changeFocusPoint(e); }, MouseButton::Left,
+                             MouseState::DoubleClick)
 
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
 

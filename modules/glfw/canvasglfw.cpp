@@ -30,6 +30,8 @@
 #include "canvasglfw.h"
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/openglqt/openglqtcapabilities.h>
@@ -44,9 +46,9 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     : CanvasGL(dimensions)
     , windowTitle_(windowTitle)
     , glWindow_(nullptr)
-    , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
-    , mouseState_(MouseEvent::MOUSE_STATE_NONE)
-    , mouseModifiers_(InteractionEvent::MODIFIER_NONE) {
+    , mouseButton_(MouseButton::None)
+    , mouseState_(MouseState::Release)
+    , mouseModifiers_(flags::none) {
     
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
@@ -161,8 +163,7 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
 
     CanvasGLFW* thisCanvas = getCanvasGLFW(window);
 
-    KeyboardEvent keyEvent(toupper(key), KeyboardEvent::MODIFIER_NONE,
-                           KeyboardEvent::KEY_STATE_PRESS);
+    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)));
 
     thisCanvas->keyPressEvent(&keyEvent);
 }
@@ -178,13 +179,18 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
     ivec2 screenPos(floor(x), floor(y));
     ivec2 screenPosInvY(screenPos.x,
                         static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
-    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_, thisCanvas->mouseState_,
-                          thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions(),
+    
+    MouseEvent mouseEvent(thisCanvas->mouseButton_,
+                          thisCanvas->mouseState_,
+                          thisCanvas->mouseButton_,
+                          thisCanvas->mouseModifiers_,
+                          screenPos,
+                          thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS)
+    if (thisCanvas->mouseState_ == MouseState::Press)
         thisCanvas->mousePressEvent(&mouseEvent);
-    else if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_RELEASE)
+    else if (thisCanvas->mouseState_ == MouseState::Release)
         thisCanvas->mouseReleaseEvent(&mouseEvent);
 }
 
@@ -194,70 +200,70 @@ void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
     ivec2 screenPosInvY(screenPos.x,
                         static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
 
-    MouseEvent::MouseState state =
-        (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS ? MouseEvent::MOUSE_STATE_MOVE
-                                                                  : thisCanvas->mouseState_);
-    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_, state, thisCanvas->mouseModifiers_,
+    MouseState state =
+        (thisCanvas->mouseState_ == MouseState::Press ? MouseState::Move : thisCanvas->mouseState_);
+    MouseEvent mouseEvent(thisCanvas->mouseButton_,
+                          state,
+                          thisCanvas->mouseButton_,
+                          thisCanvas->mouseModifiers_,
+                          screenPos,
                           thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (state == MouseEvent::MOUSE_STATE_MOVE)
+    if (state == MouseState::Move)
         thisCanvas->mouseMoveEvent(&mouseEvent);
-    else if (state == MouseEvent::MOUSE_STATE_RELEASE)
+    else if (state == MouseState::Release)
         thisCanvas->mouseReleaseEvent(&mouseEvent);
 }
 
 void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     CanvasGLFW* thisCanvas = getCanvasGLFW(window);
-    thisCanvas->mouseButton_ = MouseEvent::MOUSE_BUTTON_MIDDLE;
-    thisCanvas->mouseState_ = MouseEvent::MOUSE_STATE_WHEEL;
-    thisCanvas->mouseModifiers_ = KeyboardEvent::MODIFIER_NONE;
+
     double x;
     double y;
     glfwGetCursorPos(window, &x, &y);
     ivec2 screenPos(floor(x), floor(y));
     ivec2 screenPosInvY(screenPos.x,
                         static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
-    int delta = static_cast<int>(yoffset < 0.0 ? floor(yoffset) : ceil(yoffset));
-
-    MouseEvent mouseEvent(screenPos, delta, thisCanvas->mouseButton_, thisCanvas->mouseState_,
-                          MouseEvent::MOUSE_WHEEL_VERTICAL, thisCanvas->mouseModifiers_,
+    
+    WheelEvent wheelEvent(thisCanvas->mouseButton_,
+                          thisCanvas->mouseModifiers_,
+                          ivec2(round(xoffset), round(yoffset)),
+                          screenPos,
                           thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    thisCanvas->mouseWheelEvent(&mouseEvent);
+    thisCanvas->mouseWheelEvent(&wheelEvent);
 }
 
-MouseEvent::MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {
+MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {
     if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT)
-        return MouseEvent::MOUSE_BUTTON_LEFT;
+        return MouseButton::Left;
     else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE)
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
+        return MouseButton::Middle;
     else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT)
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
+        return MouseButton::Right;
     else
-        return MouseEvent::MOUSE_BUTTON_NONE;
+        return MouseButton::None;
 }
 
-MouseEvent::MouseState CanvasGLFW::mapMouseState(int mouseStateGLFW) {
+MouseState CanvasGLFW::mapMouseState(int mouseStateGLFW) {
     if (mouseStateGLFW == GLFW_PRESS)
-        return MouseEvent::MOUSE_STATE_PRESS;
-    else if (mouseStateGLFW == GLFW_RELEASE)
-        return MouseEvent::MOUSE_STATE_RELEASE;
-    else
-        return MouseEvent::MOUSE_STATE_NONE;
+        return MouseState::Press;
+    else // (mouseStateGLFW == GLFW_RELEASE)
+        return MouseState::Release;
 }
 
-InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
-    int result = KeyboardEvent::MODIFIER_NONE;
+KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
+    KeyModifiers result(flags::none);
 
-    if (modifiersGLFW & GLFW_MOD_ALT) result |= InteractionEvent::MODIFIER_ALT;
+    if (modifiersGLFW & GLFW_MOD_ALT) result |= KeyModifier::Alt;
 
-    if (modifiersGLFW & GLFW_MOD_CONTROL) result |= InteractionEvent::MODIFIER_CTRL;
+    if (modifiersGLFW & GLFW_MOD_CONTROL) result |= KeyModifier::Control;
 
-    if (modifiersGLFW & GLFW_MOD_SHIFT) result |= InteractionEvent::MODIFIER_SHIFT;
+    if (modifiersGLFW & GLFW_MOD_SHIFT) result |= KeyModifier::Shift;
 
-    return static_cast<InteractionEvent::Modifier>(result);
+    return result;
 }
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {

@@ -524,9 +524,8 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent pressKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                    EventConverterQt::getModifier(keyEvent),
-                                    KeyboardEvent::KEY_STATE_PRESS);
+        KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
+                                    utilqt::getModifiers(keyEvent));
 
         progagateEventToSelecedProcessors(pressKeyEvent);
     }
@@ -536,9 +535,8 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent releaseKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                      EventConverterQt::getModifier(keyEvent),
-                                      KeyboardEvent::KEY_STATE_RELEASE);
+        KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
+                                      utilqt::getModifiers(keyEvent));
 
         progagateEventToSelecedProcessors(releaseKeyEvent);
     }

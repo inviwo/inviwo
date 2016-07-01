@@ -36,18 +36,18 @@ set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION})
 # Requirement checks
 if(MSVC) 
     if(MSVC_VERSION LESS 1900)
-        message(FATAL_ERROR "Inviwo requires C++11 features. " 
+        message(FATAL_ERROR "Inviwo requires C++14 features. " 
                 "You need at least Visual Studio 14 (Microsoft Visual Studio 2015) "
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
 else()
     include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-    if(COMPILER_SUPPORTS_CXX11)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+    if(COMPILER_SUPPORTS_CXX14)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
     else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. "
                 "Please use a different C++ compiler.")
     endif()
 endif()
