@@ -485,7 +485,6 @@ set(SOURCE_FILES
     util/volumesampler.cpp
     util/volumesequenceutils.cpp
     util/volumesequencesampler.cpp
-    util/volumeramutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

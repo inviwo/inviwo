@@ -37,8 +37,18 @@ namespace inviwo {
 
     namespace util {
 
-        IVW_CORE_API void forEachVoxel(const VolumeRAM &v, std::function<void(const size3_t &)> &func);
-
+        template <typename C>
+        void forEachVoxel(const VolumeRAM &v, C callback){
+            const auto &dims = v.getDimensions();
+            size3_t pos;
+            for (pos.z = 0; pos.z < dims.z; pos.z++) {
+                for (pos.y = 0; pos.y < dims.y; pos.y++) {
+                    for (pos.x = 0; pos.x < dims.x; pos.x++) {
+                        callback(pos);
+                    }
+                }
+            }
+        }
 
     }
 
