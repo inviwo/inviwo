@@ -168,6 +168,12 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
  */
 class IVW_CORE_API Kind {
 public:
+    Kind(const Kind&) = default;
+    Kind& operator=(const Kind&) = default;
+
+    Kind(Kind&&);
+    Kind& operator=(Kind&&);
+
     static Kind processor(const std::string& type);
     static Kind inport(const std::string& type);
     static Kind outport(const std::string& type);
@@ -181,9 +187,9 @@ public:
 private:
     Kind(const std::string& name, const std::string& list, const std::string& type);
 
-    const std::string name_;
-    const std::string list_;
-    const std::string type_;
+    std::string name_;
+    std::string list_;
+    std::string type_;
 };
 
 
@@ -209,10 +215,18 @@ IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& pat
 /**
  *	Helper class for changeIdentifiers
  */
-struct IdentifierReplacement {
-    const std::vector<Kind> path;
-    const std::string oldId;
-    const std::string newId;
+struct IVW_CORE_API IdentifierReplacement {
+    IdentifierReplacement(const std::vector<Kind>& p, const std::string& oi, const std::string& ni);
+
+    IdentifierReplacement(const IdentifierReplacement&) = default;
+    IdentifierReplacement& operator=(const IdentifierReplacement&) = default;
+
+    IdentifierReplacement(IdentifierReplacement&&);
+    IdentifierReplacement& operator=(IdentifierReplacement&&);
+
+    std::vector<Kind> path;
+    std::string oldId;
+    std::string newId;
 };
 
 IVW_CORE_API bool changeIdentifiers(TxElement* root,

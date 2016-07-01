@@ -34,7 +34,7 @@
 
 namespace inviwo {
 InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) :
-    name_{module->getIdentifier()}, version_{module->getVersion()} {
+    name_(module->getIdentifier()), version_(module->getVersion()) {
     for (const auto& processor : module->getProcessors()) {
         processors_.push_back((processor)->getClassIdentifier());
     }

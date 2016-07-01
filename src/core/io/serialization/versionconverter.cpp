@@ -308,6 +308,16 @@ xml::Kind xml::Kind::processor(const std::string& type) {
     return Kind("Processor", "Processors", type);
 }
 
+xml::Kind::Kind(Kind&& rhs) : name_(std::move(rhs.name_)), list_(std::move(rhs.list_)), type_(std::move(rhs.type_)) {} 
+xml::Kind& xml::Kind::operator=(Kind&& that) {
+    if (this != &that) {
+        name_ = std::move(that.name_);
+        list_ = std::move(that.list_);
+        type_ = std::move(that.type_);
+    }
+    return *this;
+}
+
 xml::Kind xml::Kind::inport(const std::string& type) { return Kind("InPort", "InPorts", type); }
 
 xml::Kind xml::Kind::outport(const std::string& type) { return Kind("OutPort", "OutPorts", type); }
@@ -328,5 +338,20 @@ const std::string& xml::Kind::type() const { return type_; }
 
 xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
     : name_(name), list_(list), type_(type) {}
+
+xml::IdentifierReplacement::IdentifierReplacement(const std::vector<xml::Kind>& p,
+                                                  const std::string& oi, const std::string& ni)
+    : path(p), oldId(oi), newId(ni) {}
+
+xml::IdentifierReplacement::IdentifierReplacement(IdentifierReplacement&& rhs)
+    : path(std::move(rhs.path)), oldId(std::move(rhs.oldId)), newId(std::move(rhs.newId)) {}
+xml::IdentifierReplacement& xml::IdentifierReplacement::operator=(IdentifierReplacement&& that) {
+    if (this != &that) {
+        path = std::move(that.path);
+        oldId = std::move(that.oldId);
+        newId = std::move(that.newId);
+    }
+    return *this;
+}
 
 }  // namespace
