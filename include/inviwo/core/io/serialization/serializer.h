@@ -35,8 +35,12 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
+
+#include <flags/flags.h>
+
 #include <type_traits>
 #include <list>
+
 namespace inviwo {
 
 class Serializable;
@@ -107,6 +111,11 @@ public:
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
     void serialize(const std::string& key, const T& data,
+                   const SerializationTarget& target = SerializationTarget::Node);
+
+    // Flag types
+    template <typename T>
+    void serialize(const std::string& key, const flags::flags<T>& data,
                    const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
@@ -235,6 +244,14 @@ void Serializer::serialize(const std::string& key, const T& data,
     const ET tmpdata{static_cast<const ET>(data)};
     serialize(key, tmpdata, target);
 }
+
+// Flag types
+template <typename T>
+void Serializer::serialize(const std::string& key, const flags::flags<T>& data,
+               const SerializationTarget& target) {
+    serialize(key, data.underlying_value(), target);
+}
+
 
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>

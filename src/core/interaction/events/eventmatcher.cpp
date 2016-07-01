@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,19 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize)
-    : Event(), size_(canvasSize), previousSize_(canvasSize) {}
+KeyboardEventMatcher* KeyboardEventMatcher::clone() const {
+    return new KeyboardEventMatcher(*this);
+}
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
-    : Event(), size_(canvasSize), previousSize_(previousSize) {}
+bool KeyboardEventMatcher::operator()(Event*) { return false; }
 
-ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
+MouseEventMatcher* MouseEventMatcher::clone() const { return new MouseEventMatcher(*this); }
 
-}  // namespace
+bool MouseEventMatcher::operator()(Event*) { return false; }
+
+} // namespace
+

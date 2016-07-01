@@ -71,19 +71,24 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramhistogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumerepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/action.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/cameratrackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/event.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventlistener.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventmatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventpropagator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gestureevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gesturestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/interactionevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardkeys.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mousebuttons.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseinteractionevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
@@ -268,8 +273,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -326,18 +331,20 @@ set(SOURCE_FILES
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumeramprecision.cpp
     datastructures/volume/volumerepresentation.cpp
-    interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp
     interaction/events/eventhandler.cpp
     interaction/events/eventlistener.cpp
+    interaction/events/eventmatcher.cpp
     interaction/events/eventpropagator.cpp
     interaction/events/gestureevent.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
     interaction/events/mouseevent.cpp
+    interaction/events/mouseinteractionevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
+    interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
     interaction/interactionstatemanager.cpp
     interaction/pickingcontainer.cpp
@@ -476,14 +483,14 @@ set(SOURCE_FILES
     util/stdextensions.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
+    util/threadpool.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
-    util/threadpool.cpp
     util/utilities.cpp
     util/volumesampler.cpp
-    util/volumesequenceutils.cpp
     util/volumesequencesampler.cpp
+    util/volumesequenceutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

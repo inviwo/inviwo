@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,63 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MOUSEEVENT_H
-#define IVW_MOUSEEVENT_H
+#ifndef IVW_EVENTMATCHER_H
+#define IVW_EVENTMATCHER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/mouseinteractionevent.h>
-#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 namespace inviwo {
 
-class IVW_CORE_API MouseEvent : public MouseInteractionEvent {
+/**
+ * \class EventMatcher
+ * \brief A class to represent a event matcher for use in event properties.
+ */
+class IVW_CORE_API EventMatcher : public Serializable { 
 public:
-    MouseEvent(MouseButton button = MouseButton::Left,
-               MouseState state = MouseState::Press,
-               MouseButtons buttonState = MouseButtons(flags::empty),
-               KeyModifiers modifiers = KeyModifiers(flags::empty), 
-               ivec2 position = ivec2(0),
-               uvec2 canvasSize = uvec2(0),
-               double depth = 1.0);
+    EventMatcher() = default;
+    virtual ~EventMatcher() = default;
 
-    MouseEvent(const MouseEvent& rhs) = default;
-    MouseEvent& operator=(const MouseEvent& that) = default;
-    virtual MouseEvent* clone() const override;
-    virtual ~MouseEvent() = default;
+    virtual EventMatcher* clone() const = 0;
 
-    /**
-     *	The button responsible for the current event.
-     */
-    MouseButton button() const;
-    void setButton(MouseButton button);
+    virtual void setCurrentStateAsDefault() = 0;
+    virtual void resetToDefaultState() = 0;
+    virtual bool operator()(Event*) = 0;
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
 
-    /**
-     *	The state of the button that generated the event.
-     */
-    MouseState state() const;
-    void setState(MouseState state);
+protected:
+    EventMatcher(const EventMatcher&) = default;
+    EventMatcher& operator=(const EventMatcher&) = default;
 
 
-    virtual std::string getClassIdentifier() const;
-
-private:
-    MouseButton button_;
-    MouseState state_;
 };
 
-}  // namespace
+class IVW_CORE_API KeyboardEventMatcher : public EventMatcher {
+public:
+    KeyboardEventMatcher() = default;
+    virtual ~KeyboardEventMatcher() = default;
+    virtual KeyboardEventMatcher* clone() const override;
 
-#endif  // IVW_MOUSEEVENT_H
+    virtual bool operator()(Event*) override;
+};
+
+class IVW_CORE_API MouseEventMatcher : public EventMatcher {
+public:
+    MouseEventMatcher() = default;
+    virtual ~MouseEventMatcher() = default;
+    virtual MouseEventMatcher* clone() const override;
+
+    virtual bool operator()(Event*) override;
+
+private:
+    MouseButtons buttons_;
+    MouseStates states_;
+};
+
+} // namespace
+
+#endif // IVW_EVENTMATCHER_H
+

@@ -31,10 +31,6 @@
 
 namespace inviwo {
 
-EventListener::EventListener() {}
-
-EventListener::~EventListener() {}
-
 void EventListener::invokeEvent(Event*) {}
 
 } // namespace

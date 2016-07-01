@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,46 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/mouseinteractionevent.h>
 
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize)
-    : Event(), size_(canvasSize), previousSize_(canvasSize) {}
+MouseInteractionEvent::MouseInteractionEvent(MouseButtons buttonState, KeyModifiers modifiers,
+                                             ivec2 position, uvec2 canvasSize, double depth)
+    : InteractionEvent(modifiers)
+    , buttonState_(buttonState)
+    , position_(position)
+    , canvasSize_(canvasSize)
+    , depth_(depth) {}
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
-    : Event(), size_(canvasSize), previousSize_(previousSize) {}
+inviwo::MouseButtons MouseInteractionEvent::buttonState() const { return buttonState_; }
 
-ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
+void MouseInteractionEvent::setButtonState(MouseButtons buttonState) { buttonState_ = buttonState; }
+
+inviwo::ivec2 MouseInteractionEvent::pos() const { return position_; }
+
+void MouseInteractionEvent::setPos(ivec2 pos) { position_ = pos; }
+
+inviwo::uvec2 MouseInteractionEvent::canvasSize() const { return canvasSize_; }
+
+void MouseInteractionEvent::setCanvasSize(uvec2 size) { canvasSize_ = size; }
+
+inviwo::vec2 MouseInteractionEvent::posNormalized() const {
+    return vec2(vec2(position_) / vec2(canvasSize_));
+}
+
+unsigned int MouseInteractionEvent::x() const { return position_.x; }
+
+unsigned int MouseInteractionEvent::y() const { return position_.y; }
+
+double MouseInteractionEvent::depth() const { return depth_; }
+
+void MouseInteractionEvent::setDepth(double depth) { depth_ = depth; }
+
+std::string MouseInteractionEvent::buttonName() const {
+    std::stringstream ss;
+    ss << buttonState_;
+    return ss.str();
+}
 
 }  // namespace

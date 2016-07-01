@@ -37,7 +37,11 @@ Event* Event::clone() const {
     return new Event(*this);
 }
 
-void Event::markAsUsed(){
+std::string Event::getClassIdentifier() const {
+    return "org.inviwo.Event";
+}
+
+void Event::markAsUsed() {
     used_ = true;
 }
 
@@ -56,8 +60,5 @@ bool Event::hasVisitedProcessor(Processor* p) const {
 const std::vector<Processor*>& Event::getVisitedProcessors() const {
     return visitedProcessors_;
 }
-
-void Event::serialize(Serializer& s) const {}
-void Event::deserialize(Deserializer& d) {}
 
 } // namespace

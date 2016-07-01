@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,58 @@
  *
  *********************************************************************************/
 
-#ifndef IWE_ACTION_H
-#define IWE_ACTION_H
+#ifndef IVW_TOUCHSTATE_H
+#define IVW_TOUCHSTATE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
+
+#include <flags/flags.h>
+
+#include <iterator>
+#include <ostream>
 
 namespace inviwo {
 
-class Event;
-
-class IVW_CORE_API Action {
-public:
-    Action();
-    Action(std::function<void(Event*)>);
-    template <typename T>
-    Action(T* obj, void (T::*m)(Event*));
-    Action(const Action& rhs) = default;
-    Action& operator=(const Action& that) = default;
-    virtual Action* clone() const;
-    virtual ~Action() = default;
-
-    virtual void invoke(Event* event);
-
-    template <typename T>
-    void setAction(T* o, void (T::*m)(Event*)) {
-        callback_ = std::bind(m, o, std::placeholders::_1);
-    }
-
-protected:
-    std::function<void(Event*)> callback_;
+enum class TouchState {
+    None = 1 << 0,
+    Started = 1 << 1,     // Pressed
+    Updated = 1 << 2,     // Moved
+    Stationary = 1 << 3,  // No movement
+    Ended = 1 << 4,       // Released
 };
 
-template <typename T>
-Action::Action(T* o, void (T::*m)(Event*))
-    : callback_(std::bind(m, o, std::placeholders::_1)) {}
+ALLOW_FLAGS_FOR_ENUM(TouchState);
+using TouchStates = flags::flags<TouchState>;
 
-}  // namespace
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TouchState s) {
+    switch (s) {
+        case TouchState::None:
+            ss << "None";
+            break;
+        case TouchState::Started:
+            ss << "Started";
+            break;
+        case TouchState::Updated:
+            ss << "Updated";
+            break;
+        case TouchState::Stationary:
+            ss << "Stationary";
+            break;
+        case TouchState::Ended:
+            ss << "Ended";
+            break;
+    }
+    return ss;
+}
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             TouchStates ss) {
+    std::copy(ss.begin(), ss.end(), std::ostream_iterator<TouchState>(ss, "+"));
+}
 
-#endif  // IWE_ACTION_H
+
+} // namespace
+
+#endif // IVW_TOUCHSTATE_H
+

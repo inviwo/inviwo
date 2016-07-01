@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,45 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/resizeevent.h>
+#ifndef IVW_WHEELEVENT_H
+#define IVW_WHEELEVENT_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/events/mouseinteractionevent.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
 
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize)
-    : Event(), size_(canvasSize), previousSize_(canvasSize) {}
+class IVW_CORE_API WheelEvent : public MouseInteractionEvent { 
+public:
+    WheelEvent(MouseButtons buttonState = MouseButtons(flags::empty),
+               KeyModifiers modifiers = KeyModifiers(flags::empty), 
+               ivec2 delta = ivec2(0),
+               ivec2 position = ivec2(0),
+               uvec2 canvasSize = uvec2(0),
+               double depth = 1.0);
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
-    : Event(), size_(canvasSize), previousSize_(previousSize) {}
+    WheelEvent(const WheelEvent& rhs) = default;
+    WheelEvent& operator=(const WheelEvent& that) = default;
+    virtual WheelEvent* clone() const override;
 
-ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
+    virtual ~WheelEvent() = default;
 
-}  // namespace
+    ivec2 delta() const;
+    void setDelta(ivec2 delta);
+
+    virtual std::string getClassIdentifier() const;
+private:
+    MouseButtons buttonState_;
+
+    ivec2 delta_;
+    ivec2 position_;
+    uvec2 canvasSize_;
+    double depth_;  ///< Depth in normalized device coordinates [-1 1].
+};
+
+} // namespace
+
+#endif // IVW_WHEELEVENT_H
+

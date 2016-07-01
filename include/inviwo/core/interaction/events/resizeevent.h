@@ -40,9 +40,9 @@ class IVW_CORE_API ResizeEvent : public Event {
 public:
     ResizeEvent(uvec2 newSize);
     ResizeEvent(uvec2 newSize, uvec2 previousSize);
-    ResizeEvent(const ResizeEvent& rhs);
-    ResizeEvent& operator=(const ResizeEvent& that);
-    virtual ResizeEvent* clone() const;
+    ResizeEvent(const ResizeEvent& rhs) = default;
+    ResizeEvent& operator=(const ResizeEvent& that) = default;
+    virtual ResizeEvent* clone() const override;
     virtual ~ResizeEvent();
 
     inline uvec2 size() const { return size_; }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/action.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 
-Action::Action() : callback_() {}
+WheelEvent::WheelEvent(MouseButtons buttonState, KeyModifiers modifiers, ivec2 delta,
+                       ivec2 position, uvec2 canvasSize, double depth) :
+MouseInteractionEvent(buttonState, modifiers, position, canvasSize, depth), delta_(delta) {}
 
-Action::Action(std::function<void(Event*)> cb) : callback_(cb) {}
-
-Action* Action::clone() const {
-    return new Action(*this);
+WheelEvent* WheelEvent::clone() const {
+    return new WheelEvent(*this);
 }
 
-void Action::invoke(Event* event) {
-    callback_(event);
-}
+ivec2 WheelEvent::delta() const { return delta_;}
 
-} // namespace
+void WheelEvent::setDelta(ivec2 delta) {delta_ = delta;}
+
+std::string WheelEvent::getClassIdentifier() const {return "org.inviwo.WheelEvent";}
+
+}  // namespace

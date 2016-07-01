@@ -30,20 +30,21 @@
 #ifndef IVW_EVENTPROPERTY_H
 #define IVW_EVENTPROPERTY_H
 
-#include <inviwo/core/interaction/action.h>
-#include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
 /** class EventProperty
  *
- * Property which contains one event and one action to represent the current key binding for the
- *contained action.
+ * Property which contains one event matcher and one action to represent the current
+ * key binding for the contained action.
  * @see EventPropertyWidgetQt
  */
 class IVW_CORE_API EventProperty : public Property {
 public:
+    using Action = std::function<void()>;
+
     InviwoPropertyInfo();
     /**
      * \brief Constructor used to create a new action-key binding.
@@ -52,29 +53,25 @@ public:
      *
      * @param identifier
      * @param displayName
-     * @param event The key or mouse event to bind to an action
-     * @param action The action to be bound to an event
+     * @param eventMatcher The selection of events to bind to an action
+     * @param action The action to executed upon the event.
      * @param semantics
      */
-    EventProperty(
-        std::string identifier, std::string displayName, InteractionEvent* event, Action* action,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    EventProperty(std::string identifier, std::string displayName,
+                  std::unique_ptr<EventMatcher> matcher, Action action,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(const EventProperty& rhs);
     EventProperty& operator=(const EventProperty& that);
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 
-    /**
-     * \brief Maps action to new event.
-     * Changes the current action-to-key binding by replacing the old event with a new
-     */
-    void setEvent(InteractionEvent* e);
-    InteractionEvent* getEvent() const;
+    void setEvent(std::unique_ptr<EventMatcher> matcher);
+    EventMatcher* getEvent() const;
     
-    void setAction(Action* action);
-    Action* getAction() const;
+    void setAction(Action action);
+    Action getAction() const;
     
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
@@ -83,9 +80,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::unique_ptr<InteractionEvent> event_;           //< owning reference
-    std::unique_ptr<InteractionEvent> defaultEvent_;    //< owning reference
-    std::unique_ptr<Action> action_;                    //< owning reference
+    std::unique_ptr<EventMatcher> event_;    
+    Action action_;                   
 };
 
 }  // namespace
