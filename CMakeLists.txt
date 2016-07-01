@@ -78,6 +78,7 @@ option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 
 #--------------------------------------------------------------------
 # Add externals
+add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
 add_subdirectory(ext/gtest)
