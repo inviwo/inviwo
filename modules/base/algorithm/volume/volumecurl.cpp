@@ -29,6 +29,7 @@
 
 
 #include <inviwo/core/util/volumeramutils.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
     namespace util {
