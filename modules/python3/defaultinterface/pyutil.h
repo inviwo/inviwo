@@ -34,25 +34,20 @@
 
 namespace inviwo {
 
-PyObject* py_quit(PyObject* self, PyObject* args);
-PyObject* py_wait(PyObject* self, PyObject* args);
 PyObject* py_snapshot(PyObject* self, PyObject* args);
 PyObject* py_snapshotCanvas(PyObject* self, PyObject* args);
 PyObject* py_snapshotAllCanvases(PyObject* self, PyObject* args);
+
 PyObject* py_getBasePath(PyObject* self, PyObject* args);
 PyObject* py_getOutputPath(PyObject* self, PyObject* args);
-PyObject* py_getDataPath(PyObject* self, PyObject* args);
 PyObject* py_getWorkspaceSavePath(PyObject* self, PyObject* args);
-PyObject* py_getVolumePath(PyObject* self, PyObject* args);
-PyObject* py_getImagePath(PyObject* self, PyObject* args);
 PyObject* py_getModulePath(PyObject* self, PyObject* args);
+
 PyObject* py_getTransferFunctionPath(PyObject* self, PyObject* args);
 
 PyObject* py_getMemoryUsage(PyObject* self, PyObject* args);
 PyObject* py_clearResourceManager(PyObject* self, PyObject* args);
 
-PyObject* py_disableEvaluation(PyObject* self, PyObject* args);
-PyObject* py_enableEvaluation(PyObject* self, PyObject* args);
 
 }  // namespace
 

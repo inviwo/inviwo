@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHTYPE_H
-#define IVW_PATHTYPE_H
+#ifndef IVW_PROCESSORNETWORKRESOURCE_H
+#define IVW_PROCESSORNETWORKRESOURCE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 namespace inviwo {
 
-enum class PathType {
-    Data,               // /data
-    Volumes,            // /data/volumes
-    Workspaces,         // /data/workspaces
-    Scripts,            // /data/scripts
-    PortInspectors,     // /data/workspaces/portinspectors
-    Images,             // /data/images
-    Databases,          // /data/databases
-    Resources,          // /resources
-    TransferFunctions,  // /data/transferfunctions
-    Settings,           // path to the current users settings
-    Help,               // /data/help
-    Tests               // /tests
+/**
+ * \class ProcessorNetworkResource
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_CORE_API ProcessorNetworkResource : public Serializable { 
+public:
+    ProcessorNetworkResource();
+    virtual ~ProcessorNetworkResource() = default;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_PATHTYPE_H
+#endif // IVW_PROCESSORNETWORKRESOURCE_H
+

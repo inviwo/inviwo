@@ -44,21 +44,6 @@
 
 namespace inviwo {
 
-PyObject* py_quit(PyObject* self, PyObject* args) {
-    static PythonParameterParser tester;
-    if (tester.parse(args) == -1) {
-        return nullptr;
-    }
-
-    InviwoApplication::getPtr()->closeInviwoApplication();
-    Py_RETURN_NONE;
-}
-
-PyObject* py_wait(PyObject* self, PyObject* args) {
-    InviwoApplication::getPtr()->waitForPool();
-    Py_RETURN_NONE;
-}
-
 PyObject* py_snapshot(PyObject* self, PyObject* args) {
     static PythonParameterParser tester(1);
     std::string filename, canvasName = "";
@@ -218,40 +203,6 @@ PyObject* py_clearResourceManager(PyObject* self, PyObject* args) {
     }
     std::string msg =
         std::string("clearResourceManager() failed . ResourceManager::getPtr() return nullptr");
-    PyErr_SetString(PyExc_TypeError, msg.c_str());
-    return nullptr;
-}
-
-PyObject* py_disableEvaluation(PyObject* self, PyObject* args) {
-    if (auto app = InviwoApplication::getPtr()) {
-        if (auto network = app->getProcessorNetwork()) {
-            network->lock();
-            Py_RETURN_NONE;
-        }
-
-        std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
-        PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return nullptr;
-    }
-
-    std::string msg = std::string("disableEvaluation() could not find InviwoApplication");
-    PyErr_SetString(PyExc_TypeError, msg.c_str());
-    return nullptr;
-}
-
-PyObject* py_enableEvaluation(PyObject* self, PyObject* args) {
-    if (auto app = InviwoApplication::getPtr()) {
-        if (auto network = app->getProcessorNetwork()) {
-            network->unlock();
-            Py_RETURN_NONE;
-        }
-
-        std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
-        PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return nullptr;
-    }
-
-    std::string msg = std::string("disableEvaluation() could not find InviwoApplication");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
     return nullptr;
 }

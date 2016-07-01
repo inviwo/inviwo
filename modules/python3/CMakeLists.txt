@@ -45,6 +45,7 @@ if (PYTHONLIBS_FOUND)
 endif()
 
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
+ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
 
 if(PYTHON_DEBUG_LIBRARY)
     option(IVW_PYTHON_LINK_DEBUG "Link python debug libraries" OFF)
@@ -88,7 +89,6 @@ add_dependency_libs_to_module(${PYTHON_LIB})
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycamera.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pylist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pynetwork.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessorwidget.h
@@ -96,6 +96,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyutil.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyvolume.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/utilities.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pyinviwo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
@@ -111,7 +112,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycamera.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pylist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pynetwork.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessorwidget.cpp
@@ -119,6 +119,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyutil.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyvolume.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pyinviwo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pythonparameterparser.cpp
@@ -144,9 +145,43 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 #)
 #ivw_add_unittest(${TEST_FILES})
 
+
+
+
+ivw_get_pybind_output_path(pybind_output_path)
+
+ivw_add_definition(PYBIND_OUTPUT_PATH="${pybind_output_path}")
+
+
+
+
+
+
+
+
+
+set(INTERFACE_HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.h
+)
+#ivw_group("Header Files" ${INTERFACE_HEADER_FILES})
+
+set(INTERFACE_SRC_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.cpp
+)
+#ivw_group("Source Files" ${INTERFACE_SRC_FILES})
+
+
+
+
+
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
+
+
+
+ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
 
 
 #--------------------------------------------------------------------

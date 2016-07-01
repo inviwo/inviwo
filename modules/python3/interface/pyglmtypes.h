@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHTYPE_H
-#define IVW_PATHTYPE_H
+#ifndef IVW_PYGLMTYPES_H
+#define IVW_PYGLMTYPES_H
+#include <pybind11/pybind11.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-enum class PathType {
-    Data,               // /data
-    Volumes,            // /data/volumes
-    Workspaces,         // /data/workspaces
-    Scripts,            // /data/scripts
-    PortInspectors,     // /data/workspaces/portinspectors
-    Images,             // /data/images
-    Databases,          // /data/databases
-    Resources,          // /resources
-    TransferFunctions,  // /data/transferfunctions
-    Settings,           // path to the current users settings
-    Help,               // /data/help
-    Tests               // /tests
-};
+    void addGLMTypes(pybind11::module &m);
 
-}  // namespace
+}
 
-#endif  // IVW_PATHTYPE_H
+#endif

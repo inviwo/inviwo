@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHTYPE_H
-#define IVW_PATHTYPE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/python3/pybindutils.h>
 
 namespace inviwo {
 
-enum class PathType {
-    Data,               // /data
-    Volumes,            // /data/volumes
-    Workspaces,         // /data/workspaces
-    Scripts,            // /data/scripts
-    PortInspectors,     // /data/workspaces/portinspectors
-    Images,             // /data/images
-    Databases,          // /data/databases
-    Resources,          // /resources
-    TransferFunctions,  // /data/transferfunctions
-    Settings,           // path to the current users settings
-    Help,               // /data/help
-    Tests               // /tests
-};
 
-}  // namespace
+InviwoApplication* pyutil::getApplication()
+{
+    auto app = InviwoApplication::getPtr();
+    if (!app) {
+        throw std::exception("Could not get a Inviwo Application");
+    }
+    return app;
+}
 
-#endif  // IVW_PATHTYPE_H
+ProcessorNetwork* pyutil::getNetwork()
+{
+    auto app = getApplication();
+    auto network = app->getProcessorNetwork();
+    if (!network) {
+        throw std::exception("No network available");
+    }
+    return network;
+}
+
+Processor* pyutil::getProcessor(std::string id)
+{
+    auto network = getNetwork();
+    auto p = network->getProcessorByIdentifier(id);
+    if (!p) {
+        std::stringstream ss;
+        ss << "No processor with identifier " << id;
+        throw std::exception(ss.str().c_str());
+    }
+    return p;
+}
+
+} // namespace
+

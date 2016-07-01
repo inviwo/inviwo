@@ -38,6 +38,7 @@
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
 
+#include <modules/python3/pybindutils.h>
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
@@ -46,27 +47,38 @@ Python3Module::Python3Module(InviwoApplication* app)
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
         "Path to the file containing the script") {
 
+
+    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR));
     pyInviwo_->addObserver(&pythonLogger_);
 
 
+
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        PythonScript s;
         auto filename = pythonScriptArg_.getValue();
         if (!filesystem::fileExists(filename)) {
             LogWarn("Could not run script, file does not exist: " << filename);
             return;
         }
-        std::ifstream file(filename.c_str());
-        std::string src((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        file.close();
-
-        s.setSource(src);
-        s.setFilename(filename);
-
+        PythonScriptDisk s(filename);
         s.run();
-
-
     }, 100);
+
+
+    PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+
+
+    auto t = [](bool b) {return b ? "YES" : "NO"; };
+
+    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<int>(11))));
+    LogInfo( t(pyutil::is<int>(pyutil::toPyBindObject<float>(11))) );
+    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<double>(11))));
+    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<short>(11))));
+    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<long>(11))));
+
+
+    auto pyObj = pyutil::toPyBindObject<int>(42);
+    auto asdf = pyutil::parse<int>(pyObj);
+
 }
 
 Python3Module::~Python3Module() {
