@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 namespace util {
