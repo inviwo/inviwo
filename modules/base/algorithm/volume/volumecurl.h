@@ -32,6 +32,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
 
 namespace inviwo {
 
