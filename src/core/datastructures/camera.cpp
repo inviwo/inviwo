@@ -136,9 +136,10 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
     if (fov) {
         setFovy(fov->get());
     } else {
-        fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
-        comp->addProperty(fov, true);
+        fov = new FloatProperty("fov", "FOV", 38.0f, 10.0f, 180.0f, 0.1f);
         fov->setSerializationMode(PropertySerializationMode::All);
+        fov->setCurrentStateAsDefault();
+        comp->addProperty(fov, true);
     }
 
     fov->onChange([this, fov]() { setFovy(fov->get()); });
