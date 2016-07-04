@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -52,6 +53,7 @@ public:
     virtual void setDimensions(size2_t dimensions) override;
 
     void bindTexture(GLenum texUnit) const;
+    void bindTexture(const TextureUnit &texUnit) const;
     void unbindTexture() const;
 
     virtual bool copyRepresentationsTo(DataRepresentation*) const override;

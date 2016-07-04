@@ -70,6 +70,11 @@ void LayerGL::bindTexture(GLenum texUnit) const {
     utilgl::bindTexture(*texture_, texUnit);
 }
 
+void LayerGL::bindTexture(const TextureUnit &texUnit) const {
+    texUnit_ = texUnit.getEnum();
+    utilgl::bindTexture(*texture_, texUnit_);
+}
+
 void LayerGL::unbindTexture() const {
     glActiveTexture(texUnit_);
     texture_->unbind();

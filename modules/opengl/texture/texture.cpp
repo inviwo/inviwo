@@ -262,6 +262,7 @@ void Texture::downloadToPBO() const {
 
     bind();
     bindToPBO();
+    // copy texture contents into PBO
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glGetTexImage(target_, 0, format_, dataType_, nullptr);
     unbindToPBO();
