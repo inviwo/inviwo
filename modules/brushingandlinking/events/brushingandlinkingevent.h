@@ -35,33 +35,48 @@
 #include <inviwo/core/interaction/events/event.h>
 
 namespace inviwo {
-    class BrushingAndLinkingInport;
+
+class BrushingAndLinkingInport;
 /**
  * \class BrushingAndLinkingEvent
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingEvent : public Event { 
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingEvent : public Event {
 public:
-    BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,const std::unordered_set<size_t> &indices);
+    BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
+                            const std::unordered_set<size_t>& indices);
     virtual ~BrushingAndLinkingEvent() = default;
+
+    virtual BrushingAndLinkingEvent* clone() const override;
 
     const BrushingAndLinkingInport* getSource() const;
 
-    const std::unordered_set<size_t> &getIndices()const;;
+    const std::unordered_set<size_t>& getIndices() const;
+
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.BrushingAndLinkingEvent");
+    }
 
 private:
     const BrushingAndLinkingInport* source_;
-    const std::unordered_set<size_t> &indices_;
+    const std::unordered_set<size_t>& indices_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API RemoveEvent : public BrushingAndLinkingEvent {
 public:
-    RemoveEvent(const BrushingAndLinkingInport* src) :BrushingAndLinkingEvent(src, std::unordered_set<size_t>()) {}
+    RemoveEvent(const BrushingAndLinkingInport* src)
+        : BrushingAndLinkingEvent(src, std::unordered_set<size_t>()) {}
     virtual ~RemoveEvent() = default;
+
+    virtual BrushingAndLinkingEvent* clone() const override;
+
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.RemoveEvent");
+    }
 };
 
-} // namespace
+}  // namespace
 
 #endif // IVW_BRUSHINGANDLINKINGEVENT_H
 

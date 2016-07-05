@@ -43,14 +43,13 @@ public:
     InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
     InteractionEvent(const InteractionEvent& rhs) = default;
     InteractionEvent& operator=(const InteractionEvent& that) = default;
-    virtual InteractionEvent* clone() const override;
+    virtual InteractionEvent* clone() const override = 0;
     virtual ~InteractionEvent() = default;
 
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
     std::string modifierNames() const;
- 
-    virtual std::string getClassIdentifier() const override;
+
 protected:
     KeyModifiers modifiers_;
 };

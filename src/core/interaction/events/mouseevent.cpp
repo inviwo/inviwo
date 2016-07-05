@@ -39,8 +39,6 @@ MouseEvent::MouseEvent(MouseButton button, MouseState state, MouseButtons button
 
 MouseEvent* MouseEvent::clone() const { return new MouseEvent(*this); }
 
-std::string MouseEvent::getClassIdentifier() const { return "org.inviwo.MouseEvent"; }
-
 inviwo::MouseButton MouseEvent::button() const {
     return button_;
 }
@@ -55,6 +53,10 @@ inviwo::MouseState MouseEvent::state() const {
 
 void MouseEvent::setState(MouseState state) {
     state_ = state;
+}
+
+uint64_t MouseEvent::hash() const {
+    return chash();
 }
 
 }  // namespace

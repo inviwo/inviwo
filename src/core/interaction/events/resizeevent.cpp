@@ -29,6 +29,11 @@
 
 #include <inviwo/core/interaction/events/resizeevent.h>
 
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/imageport.h>
+
 namespace inviwo {
 
 ResizeEvent::ResizeEvent(uvec2 canvasSize)
@@ -39,8 +44,17 @@ ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
 
 ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 
-std::string ResizeEvent::getClassIdentifier() const {
-    return "org.inviwo.ResizeEvent";
+bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
+    // Only propagate to image ports in the same port group.
+    if (processor->getPortGroup(inport) == processor->getPortGroup(source)) {
+        if (dynamic_cast<ImagePortBase*>(inport)) return true;
+    }
+    return false;
+}
+
+
+uint64_t ResizeEvent::hash() const {
+    return chash();
 }
 
 }  // namespace

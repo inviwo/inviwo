@@ -173,8 +173,9 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
     return returnVec;
 }
 
-std::string TouchEvent::getClassIdentifier() const {
-    return "org.inviwo.TouchEvent";
+uint64_t TouchEvent::hash() const {
+    return chash();
 }
+
 
 }  // namespace

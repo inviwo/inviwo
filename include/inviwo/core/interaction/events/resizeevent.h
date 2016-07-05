@@ -36,21 +36,31 @@
 
 namespace inviwo {
 
+class Inport;
+class Processor;
+class Outport;
+
 class IVW_CORE_API ResizeEvent : public Event {
 public:
     ResizeEvent(uvec2 newSize);
     ResizeEvent(uvec2 newSize, uvec2 previousSize);
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
+
     virtual ResizeEvent* clone() const override;
     virtual ~ResizeEvent() = default;
+
+    virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) override;
 
     inline uvec2 size() const { return size_; }
     inline uvec2 previousSize() const { return previousSize_; }
     inline void setSize(uvec2 csize) { size_ = csize; }
     inline void setPreviousSize(uvec2 previousSize) { previousSize_ = previousSize; }
 
-    virtual std::string getClassIdentifier() const override;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.ResizeEvent");
+    }
 
 private:
     uvec2 size_;

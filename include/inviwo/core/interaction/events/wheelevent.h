@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
@@ -55,13 +56,13 @@ public:
     ivec2 delta() const;
     void setDelta(ivec2 delta);
 
-    virtual std::string getClassIdentifier() const override;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.WheelEvent");
+    }
 
 private:
     ivec2 delta_;
-    ivec2 position_;
-    uvec2 canvasSize_;
-    double depth_;  ///< Depth in normalized device coordinates [-1 1].
 };
 
 } // namespace

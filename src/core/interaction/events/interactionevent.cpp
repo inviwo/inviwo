@@ -34,8 +34,6 @@ namespace inviwo {
 
 InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
 
-InteractionEvent* InteractionEvent::clone() const { return new InteractionEvent(*this); }
-
 KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
 void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
@@ -44,7 +42,4 @@ std::string InteractionEvent::modifierNames() const {
     ss << modifiers_;
     return ss.str();
 }
-
-std::string InteractionEvent::getClassIdentifier() const { return "org.inviwo.InteractionEvent"; }
-
 } // namespace

@@ -79,7 +79,6 @@ public:
     unsigned int x() const;
     unsigned int y() const;
     std::string buttonName() const;
-    virtual std::string getClassIdentifier() const override = 0;
 
 private:
     MouseButtons buttonState_;

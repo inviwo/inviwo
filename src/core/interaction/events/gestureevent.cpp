@@ -60,6 +60,8 @@ inviwo::vec2 GestureEvent::canvasSize() const { return canvasSize_; }
 
 void GestureEvent::modify(vec2 posNorm) { screenPosNorm_ = posNorm; }
 
-std::string GestureEvent::getClassIdentifier() const { return "org.inviwo.GestureEvent"; }
+uint64_t GestureEvent::hash() const {
+    return chash();
+}
 
 }  // namespace

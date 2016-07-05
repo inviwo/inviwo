@@ -43,6 +43,8 @@ ivec2 WheelEvent::delta() const { return delta_;}
 
 void WheelEvent::setDelta(ivec2 delta) {delta_ = delta;}
 
-std::string WheelEvent::getClassIdentifier() const {return "org.inviwo.WheelEvent";}
+uint64_t WheelEvent::hash() const {
+    return chash();
+}
 
 }  // namespace

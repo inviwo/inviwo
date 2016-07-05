@@ -34,10 +34,27 @@ BrushingAndLinkingEvent::BrushingAndLinkingEvent(const BrushingAndLinkingInport*
                                                  const std::unordered_set<size_t>& indices)
     : source_(src), indices_(indices) {}
 
+BrushingAndLinkingEvent* BrushingAndLinkingEvent::clone() const {
+    return new BrushingAndLinkingEvent(*this);
+}
+
 const inviwo::BrushingAndLinkingInport* BrushingAndLinkingEvent::getSource() const {
     return source_;
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingEvent::getIndices() const { return indices_; }
+
+
+uint64_t BrushingAndLinkingEvent::hash() const {
+    return chash();
+}
+
+BrushingAndLinkingEvent* RemoveEvent::clone() const {
+    return new RemoveEvent(*this);
+}
+
+uint64_t RemoveEvent::hash() const {
+    return chash();
+}
 
 }  // namespace

@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
@@ -169,7 +170,10 @@ public:
     */
     std::vector<const TouchPoint*> findClosestTwoTouchPoints() const;
 
-    virtual std::string getClassIdentifier() const;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.TouchEvent");
+    }
 
 private:
     std::vector<TouchPoint> touchPoints_;

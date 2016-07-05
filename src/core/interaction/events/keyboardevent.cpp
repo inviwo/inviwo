@@ -29,14 +29,13 @@
 
 #include <inviwo/core/interaction/events/keyboardevent.h>
 
+
 namespace inviwo {
 
 KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers)
     : InteractionEvent(modifiers), state_(state), key_(key) {}
 
 KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
-
-std::string KeyboardEvent::getClassIdentifier() const { return "org.inviwo.KeyboardEvent"; }
 
 KeyState KeyboardEvent::state() const { return state_; }
 
@@ -45,5 +44,7 @@ IvwKey KeyboardEvent::key() const { return key_; }
 void KeyboardEvent::setState(KeyState state) { state_ = state; }
 
 void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
+
+uint64_t KeyboardEvent::hash() const { return chash(); }
 
 }  // namespace

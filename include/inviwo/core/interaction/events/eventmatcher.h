@@ -75,7 +75,6 @@ public:
 
     virtual bool operator()(Event*) override;
 
-
     IvwKey key() const;
     void setKey(IvwKey key);
 

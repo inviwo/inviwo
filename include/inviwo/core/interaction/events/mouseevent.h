@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
@@ -64,7 +65,10 @@ public:
     MouseState state() const;
     void setState(MouseState state);
 
-    virtual std::string getClassIdentifier() const override;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.MouseEvent");
+    }
 
 private:
     MouseButton button_;

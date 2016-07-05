@@ -33,32 +33,22 @@
 
 namespace inviwo {
 
-Event* Event::clone() const {
-    return new Event(*this);
+bool Event::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
+    return true;
 }
 
-std::string Event::getClassIdentifier() const {
-    return "org.inviwo.Event";
-}
+void Event::markAsUsed() { used_ = true; }
 
-void Event::markAsUsed() {
-    used_ = true;
-}
+bool Event::hasBeenUsed() const { return used_; }
 
-bool Event::hasBeenUsed() const {
-    return used_;
-}
+void Event::markAsUnused() { used_ = false; }
 
-void Event::markAsVisited(Processor* p) {
-    util::push_back_unique(visitedProcessors_, p);
-}
+void Event::markAsVisited(Processor* p) { util::push_back_unique(visitedProcessors_, p); }
 
 bool Event::hasVisitedProcessor(Processor* p) const {
     return util::contains(visitedProcessors_, p);
 }
 
-const std::vector<Processor*>& Event::getVisitedProcessors() const {
-    return visitedProcessors_;
-}
+const std::vector<Processor*>& Event::getVisitedProcessors() const { return visitedProcessors_; }
 
 } // namespace

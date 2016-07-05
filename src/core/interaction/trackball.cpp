@@ -94,7 +94,7 @@ Trackball::Trackball(TrackballObject* object)
 
     , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); },
                     util::make_unique<GeneralEventMatcher>(
-                        [](Event* e) { return dynamic_cast<TouchEvent*>(e) != nullptr; }))
+                        [](Event* e) { return e->hash() == TouchEvent::chash(); }))
     
     , evaluated_(true)
     , timer_(30, [this]() { animate(); }) {

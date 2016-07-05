@@ -52,15 +52,17 @@ KeyboardEventMatcher* KeyboardEventMatcher::clone() const {
 }
 
 bool KeyboardEventMatcher::operator()(Event* e) {
-    if (auto ke = dynamic_cast<KeyboardEvent*>(e)) {
-        if (ke->key() == key_) {
-            if (util::contains(states_.value, ke->state())) {
-                if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ke->modifiers()) {
-                    return true;
-                }
+    if (e->hash() != KeyboardEvent::chash()) return false;
+
+    auto ke = static_cast<KeyboardEvent*>(e);
+    if (ke->key() == key_) {
+        if (states_.value & ke->state()) {
+            if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ke->modifiers()) {
+                return true;
             }
         }
     }
+
     return false;
 }
 
@@ -100,20 +102,12 @@ MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states, K
 MouseEventMatcher* MouseEventMatcher::clone() const { return new MouseEventMatcher(*this); }
 
 bool MouseEventMatcher::operator()(Event* e) {
-    if (auto me = dynamic_cast<MouseEvent*>(e)) {
-        if (me->state() == MouseState::Move) {
-            for (auto s : me->buttonState()) {
-                if (util::contains(buttons_.value, s)) {
-                    if (util::contains(states_.value, me->state())) {
-                        if (modifiers_ == KeyModifiers(flags::any) ||
-                            modifiers_ == me->modifiers()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        } else {
-            if (util::contains(buttons_.value, me->button())) {
+    if (e->hash() != MouseEvent::chash()) return false;
+    auto me = static_cast<MouseEvent*>(e);
+
+    if (me->state() == MouseState::Move) {
+        for (auto s : me->buttonState()) {
+            if (util::contains(buttons_.value, s)) {
                 if (util::contains(states_.value, me->state())) {
                     if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
                         return true;
@@ -121,10 +115,18 @@ bool MouseEventMatcher::operator()(Event* e) {
                 }
             }
         }
+    } else {
+        if (util::contains(buttons_.value, me->button())) {
+            if (util::contains(states_.value, me->state())) {
+                if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
+                    return true;
+                }
+            }
+        }
     }
+
     return false;
 }
-
 
 MouseButtons MouseEventMatcher::buttons() const { return buttons_; }
 void MouseEventMatcher::setButtons(MouseButtons buttons) { buttons_ = buttons; }
@@ -159,11 +161,13 @@ WheelEventMatcher::WheelEventMatcher(KeyModifiers modifiers)
 WheelEventMatcher* WheelEventMatcher::clone() const { return new WheelEventMatcher(*this); }
 
 bool WheelEventMatcher::operator()(Event* e) {
-    if (auto we = dynamic_cast<WheelEvent*>(e)) {
-        if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == we->modifiers()) {
-            return true;
-        }
+    if (e->hash() != WheelEvent::chash()) return false;
+    auto we = static_cast<WheelEvent*>(e);
+
+    if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == we->modifiers()) {
+        return true;
     }
+
     return false;
 }
 
@@ -197,17 +201,19 @@ GestureEventMatcher::GestureEventMatcher(GestureTypes types, GestureStates state
 GestureEventMatcher* GestureEventMatcher::clone() const { return new GestureEventMatcher(*this); }
 
 bool GestureEventMatcher::operator()(Event* e) {
-    if (auto ge = dynamic_cast<GestureEvent*>(e)) {
-        if (util::contains(types_.value, ge->type())) {
-            if (util::contains(states_.value, ge->state())) {
-                if (numFingers_ == -1 || numFingers_ == ge->numFingers()) {
-                    if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ge->modifiers()) {
-                        return true;
-                    }
+    if (e->hash() != GestureEvent::chash()) return false;
+    auto ge = static_cast<GestureEvent*>(e);
+
+    if (types_.value & ge->type()) {
+        if (states_.value & ge->state()) {
+            if (numFingers_ == -1 || numFingers_ == ge->numFingers()) {
+                if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ge->modifiers()) {
+                    return true;
                 }
             }
         }
     }
+
     return false;
 }
 
