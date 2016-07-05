@@ -772,18 +772,18 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
 
 Inviwo_ABufferGL4::ABufferGLInteractionHandler::ABufferGLInteractionHandler(
     Inviwo_ABufferGL4* parent)
-    : mousePressEvent_(MouseButton::Left, KeyModifier::None)
-    , upEvent_('W', KeyModifier::Control, KeyState::Press)
-    , downEvent_('S', KeyModifier::Control, KeyState::Press)
+    : mousePressEvent_(MouseButton::Left, MouseState::Press)
+    , upEvent_(IvwKey::W, KeyState::Press, KeyModifier::Control)
+    , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control)
     , parent_(parent) {}
 
 void Inviwo_ABufferGL4::ABufferGLInteractionHandler::invokeEvent(Event* event) {
     MouseEvent* mEvent = dynamic_cast<MouseEvent*>(event);
     if (mEvent) prevMousePos_ = glm::ivec2(mEvent->x(), mEvent->y());
 
-    if (mEvent && (mEvent->button() & (MouseState::Release)) &&
-        (mEvent->button() & (MouseButton::Right)) &&
-        (mEvent->modifiers() & MouseEvent::MODIFIER_CTRL)) {
+    if (mEvent && (mEvent->state() & MouseState::Release) &&
+        (mEvent->button() & MouseButton::Right) &&
+        (mEvent->modifiers() & KeyModifier::Control)) {
         parent_->abuffer_printDebugInfo(glm::ivec2(mEvent->x(), mEvent->y()));
     }
 
