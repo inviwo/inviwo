@@ -409,10 +409,15 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
+    bool used = event->hasBeenUsed();
     for (auto inport : getInports()) {
-        inport->propagateEvent(event);
-        if (event->hasBeenUsed()) return;
+        if (event->shouldPropagateTo(inport, this, source)) {
+            inport->propagateEvent(event);
+            used |= event->hasBeenUsed();
+            event->markAsUnused();
+        }
     }
+    if (used) event->markAsUsed();
 }
 
 void Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
