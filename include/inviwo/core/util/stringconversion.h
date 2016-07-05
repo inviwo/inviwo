@@ -31,6 +31,7 @@
 #define IVW_STRINGCONVERSION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 #include <algorithm>
 #include <string>
 #include <sstream>
@@ -62,11 +63,7 @@ IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char d
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
     std::stringstream ss;
-    for (int i = 0; i < static_cast<int>(str.size()) - 1; ++i) {
-        ss << str[i] << delimeter;
-    }
-    if (!str.empty()) ss << str.back();
-
+    std::copy(str.begin(), str.end(), util::make_ostream_joiner(ss, delimeter));
     return ss.str();
 }
 
@@ -74,11 +71,7 @@ std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
 template <typename Iterator>
 std::string joinString(Iterator begin, Iterator end, std::string delimeter = " ") {
     std::stringstream ss;
-    while (begin != end - 1) {
-        ss << *begin << delimeter;
-        ++begin;
-    }
-    ss << *begin;
+    std::copy(begin, end, util::make_ostream_joiner(ss, delimeter));
     return ss.str();
 }
 
