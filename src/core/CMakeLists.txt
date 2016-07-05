@@ -227,6 +227,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
@@ -273,10 +274,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tooltiphelper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
