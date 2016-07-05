@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -219,6 +220,13 @@ struct UniformSetter<BoolProperty> {
     static void set(GLint loc, const BoolProperty& property) {
         UniformSetter<bool>::set(loc, property.get());
     }
+};
+
+
+// specialization for TextureUnit
+template <>
+struct UniformSetter<TextureUnit> {
+    static void set(GLint loc, const TextureUnit& texUnit) { glUniform1i(loc, texUnit.getUnitNumber()); }
 };
 
 } // namespace utilgl

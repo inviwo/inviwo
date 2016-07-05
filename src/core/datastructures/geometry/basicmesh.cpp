@@ -136,6 +136,14 @@ const Buffer<vec4>* BasicMesh::getColors() const { return colors_.get(); }
 
 const Buffer<vec3>* BasicMesh::getNormals() const { return normals_.get(); }
 
+Buffer<vec3>* BasicMesh::getEditableVertices() { return vertices_.get(); }
+
+Buffer<vec3>* BasicMesh::getEditableTexCoords() { return texCoords_.get(); }
+
+Buffer<vec4>* BasicMesh::getEditableColors() { return colors_.get(); }
+
+Buffer<vec3>* BasicMesh::getEditableNormals() { return normals_.get(); }
+
 const Vec3BufferRAM* BasicMesh::getVerticesRAM() const { return vertices_->getRAMRepresentation(); }
 const Vec3BufferRAM* BasicMesh::getTexCoordsRAM() const {
     return texCoords_->getRAMRepresentation();

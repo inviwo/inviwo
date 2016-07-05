@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+enum class IVW_MODULE_ASSIMP_API AssimpLogLevel : int { None, Error, Warn, Info, Debug }; // increased verbosity
+
 /** @brief Inviwo Module Assimp
 *
 *  A GeometryReader (DataReaderType<Geometry>) using the Assimp Library.*/
@@ -50,7 +52,20 @@ public:
     virtual AssimpReader* clone() const override;
     virtual ~AssimpReader() = default;
 
+    void setLogLevel(AssimpLogLevel level, bool verbose = false);
+    AssimpLogLevel getLogLevel() const;
+
+    void setFixInvalidDataFlag(bool enable);
+    bool getFixInvalidDataFlag() const;
+
     virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
+
+private:
+    AssimpLogLevel logLevel_; //!< determines the verbosity of the logging during data import (default = Warn)
+    bool verboseLog_;
+    bool fixInvalidData_;  //!< if true, the imported data will be checked for invalid data, e.g.
+                           //!< invalid normals or UV coords, which might be fixed or removed by
+                           //!< Assimp
 };
 
 /** @brief Assimp LogStream => Inviwo LogCentral
