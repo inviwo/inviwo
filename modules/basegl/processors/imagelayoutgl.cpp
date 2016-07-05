@@ -109,7 +109,7 @@ ImageLayoutGL::ImageLayoutGL()
     layout_.onChange(this, &ImageLayoutGL::onStatusChange);
 }
 
-ImageLayoutGL::~ImageLayoutGL() {}
+ImageLayoutGL::~ImageLayoutGL() = default;
 
 void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
@@ -117,16 +117,19 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
-    
-    std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
 
+    std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
     int activeView = viewManager_.getActiveView();
     auto data = multiinport_.getConnectedOutports();
-
-    if (newEvent && activeView >= 0 && activeView < static_cast<long>(data.size()) ) {
-
+    if (newEvent && activeView >= 0 && activeView < static_cast<long>(data.size())) {
         multiinport_.propagateEvent(newEvent.get(), data[activeView]);
         if (newEvent->hasBeenUsed()) event->markAsUsed();
+        for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+        return;
+    } 
+        
+    if (event->shouldPropagateTo(&multiinport_, this, source)) {
+        multiinport_.propagateEvent(event);
     }
 }
 

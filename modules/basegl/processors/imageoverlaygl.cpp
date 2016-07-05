@@ -195,7 +195,7 @@ ImageOverlayGL::ImageOverlayGL()
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
 }
 
-ImageOverlayGL::~ImageOverlayGL() {}
+ImageOverlayGL::~ImageOverlayGL() = default;
 
 void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
@@ -211,11 +211,12 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         if (newEvent && activeView >= 0) {
             overlayPort_.propagateEvent(newEvent.get(), overlayPort_.getConnectedOutport());
             if (newEvent->hasBeenUsed()) event->markAsUsed();
-        } else {
-            inport_.propagateEvent(event);
-        }
+            for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+            return;
+        } 
+    }
 
-    } else {
+    if (event->shouldPropagateTo(&inport_, this, source)) {
         inport_.propagateEvent(event);
     }
 }
