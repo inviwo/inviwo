@@ -514,7 +514,8 @@ function(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
     elseif(MSVC)
-        set_property(TARGET ${project_name}  PROPERTY COMPILE_FLAGS "/w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
+        set_property(TARGET ${project_name} APPEND_STRING PROPERTY 
+            COMPILE_FLAGS " /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
         # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
         # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
         # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled

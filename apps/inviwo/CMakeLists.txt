@@ -159,8 +159,8 @@ ivw_memleak_setup(inviwo)
 #--------------------------------------------------------------------
 # add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
-    set_target_properties(inviwo PROPERTIES LINK_FLAGS 
-        "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 
+        " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
     ivw_project(inviwo-cli)
 
@@ -171,13 +171,13 @@ if(WIN32)
         ${QRC_FILE} 
         ${RES_FILES})
 
-    set_target_properties(inviwo-cli PROPERTIES LINK_FLAGS 
-        "/SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
-    
     add_dependencies(inviwo-cli inviwo)
 
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
     ivw_add_dependencies(${package_list})
     ivw_memleak_setup(inviwo-cli)
+
+    set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
+        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
 endif()
