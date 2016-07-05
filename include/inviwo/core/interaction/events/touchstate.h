@@ -31,6 +31,7 @@
 #define IVW_TOUCHSTATE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 #include <flags/flags.h>
 
@@ -74,7 +75,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              TouchStates s) {
-    std::copy(s.begin(), s.end(), std::ostream_iterator<TouchState>(ss, "+"));
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

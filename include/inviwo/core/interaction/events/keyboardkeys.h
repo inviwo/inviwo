@@ -31,6 +31,8 @@
 #define IVW_KEYBOARDKEYS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+
 #include <flags/flags.h>
 
 #include <iterator>
@@ -53,22 +55,25 @@ using KeyModifiers = flags::flags<KeyModifier>;
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyModifier m) {
     switch (m) {
-        case inviwo::KeyModifier::Control:
+        case KeyModifier::None:
+            ss << "None";
+            break;
+        case KeyModifier::Control:
             ss << "Control";
             break;
-        case inviwo::KeyModifier::Shift:
+        case KeyModifier::Shift:
             ss << "Shift";
             break;
-        case inviwo::KeyModifier::Alt:
+        case KeyModifier::Alt:
             ss << "Alt";
             break;
-        case inviwo::KeyModifier::Super:
+        case KeyModifier::Super:
             ss << "Super";
             break;
-        case inviwo::KeyModifier::Menu:
+        case KeyModifier::Menu:
             ss << "Menu";
             break;
-        case inviwo::KeyModifier::Meta:
+        case KeyModifier::Meta:
             ss << "Meta";
             break;
         default:
@@ -78,7 +83,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyModifiers ms) {
-    std::copy(ms.begin(), ms.end(), std::ostream_iterator<KeyModifier>(ss, "+"));
+    std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 
@@ -103,7 +108,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyStates s) {
-    std::copy(s.begin(), s.end(), std::ostream_iterator<KeyState>(ss, "+"));
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

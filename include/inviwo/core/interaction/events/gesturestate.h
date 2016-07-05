@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 #include <flags/flags.h>
 
@@ -97,13 +98,13 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              GestureTypes s) {
-    std::copy(s.begin(), s.end(), std::ostream_iterator<GestureType>(ss, "+"));
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
 }
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              GestureStates s) {
-    std::copy(s.begin(), s.end(), std::ostream_iterator<GestureState>(ss, "+"));
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
 }
 
 } // namespace

@@ -31,6 +31,7 @@
 #define IVW_MOUSEBUTTONS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 #include <flags/flags.h>
 
@@ -97,12 +98,12 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              MouseButtons bs) {
-    std::copy(bs.begin(), bs.end(), std::ostream_iterator<MouseButton>(ss, "+"));
+    std::copy(bs.begin(), bs.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseStates s) {
-    std::copy(s.begin(), s.end(), std::ostream_iterator<MouseState>(ss, "+"));
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

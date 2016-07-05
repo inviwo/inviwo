@@ -114,7 +114,10 @@ void EventPropertyWidgetQt::keyPressEvent(QKeyEvent* event) {
         keyMatcher_->setModifiers(modifers);
 
         std::stringstream ss;
-        ss << keyMatcher_->modifiers() << " " << keyMatcher_->key();
+        if (keyMatcher_->modifiers() != KeyModifier::None) {
+            ss << keyMatcher_->modifiers() << " ";
+        }
+        ss << keyMatcher_->key();
 
         button_->setText(QString::fromStdString(ss.str()));
     }
@@ -141,10 +144,16 @@ void EventPropertyWidgetQt::setButtonText() {
     std::stringstream ss;
 
     if (auto keyMatcher = dynamic_cast<KeyboardEventMatcher*>(eventproperty_->getEventMatcher())) {
-        ss << keyMatcher->modifiers() << " " << keyMatcher->key();
+        if (keyMatcher->modifiers() != KeyModifier::None) {
+            ss << keyMatcher->modifiers() << " ";
+        }
+        ss << keyMatcher->key();
     } else if (auto mouseMatcher =
                    dynamic_cast<MouseEventMatcher*>(eventproperty_->getEventMatcher())) {
-        ss << mouseMatcher->modifiers() << " " << mouseMatcher->buttons();
+        if (mouseMatcher->modifiers() != KeyModifier::None) {
+            ss << mouseMatcher->modifiers() << " ";
+        }
+        ss << mouseMatcher->buttons();
     }
 
     button_->setText(QString::fromStdString(ss.str()));
