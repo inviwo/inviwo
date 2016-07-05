@@ -69,6 +69,11 @@ public:
     const Buffer<vec4>* getColors() const;
     const Buffer<vec3>* getNormals() const;
 
+    Buffer<vec3>* getEditableVertices();
+    Buffer<vec3>* getEditableTexCoords();
+    Buffer<vec4>* getEditableColors();
+    Buffer<vec3>* getEditableNormals();
+
     void append(const BasicMesh* mesh);
 
     static std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal,
