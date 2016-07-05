@@ -34,7 +34,7 @@ public:
         return copy;
     }
 
-    constexpr reference operator*() noexcept { return static_cast<value_type>(mask_); }
+    constexpr reference operator*() const noexcept { return static_cast<value_type>(mask_); }
 
     friend inline constexpr bool operator==(const FlagsIterator &i,
                                             const FlagsIterator &j) noexcept {
