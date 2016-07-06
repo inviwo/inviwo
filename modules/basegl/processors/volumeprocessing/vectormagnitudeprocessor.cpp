@@ -49,7 +49,7 @@ VectorMagnitudeProcessor::VectorMagnitudeProcessor()
 
 VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;
 
-void VectorMagnitudeProcessor::preProcess() {
+void VectorMagnitudeProcessor::preProcess(TextureUnitContainer &cont) {
     int numChannels = 3;
     if (inport_.hasData()) {
         numChannels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
