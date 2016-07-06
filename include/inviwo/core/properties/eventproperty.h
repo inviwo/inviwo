@@ -91,6 +91,9 @@ public:
     
     void setAction(Action action);
     Action getAction() const;
+
+    bool isEnabled() const;
+    void setEnabled(bool enabled); 
     
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
@@ -100,7 +103,8 @@ public:
 
 private:
     std::unique_ptr<EventMatcher> matcher_;
-    Action action_;                   
+    Action action_;
+    bool enabled_ = true;
 };
 
 }  // namespace

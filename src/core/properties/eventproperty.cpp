@@ -58,7 +58,8 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)
     , matcher_{rhs.matcher_ ? rhs.matcher_->clone() : nullptr}
-    , action_{rhs.action_} {}
+    , action_{rhs.action_}
+    , enabled_{rhs.enabled_} {}
 
 EventProperty& EventProperty::operator=(const EventProperty& that) {
     if (this != &that) {
@@ -68,6 +69,8 @@ EventProperty& EventProperty::operator=(const EventProperty& that) {
 
         std::swap(matcher_, e);
         std::swap(action_, a);
+
+        enabled_= that.enabled_;
     }
     return *this;
 }
@@ -75,7 +78,7 @@ EventProperty& EventProperty::operator=(const EventProperty& that) {
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::invokeEvent(Event* e) {
-    if ((*matcher_)(e)) action_(e);
+    if (enabled_ && (*matcher_)(e)) action_(e);
 }
 
 EventMatcher* EventProperty::getEventMatcher() const {
@@ -84,6 +87,14 @@ EventMatcher* EventProperty::getEventMatcher() const {
 
 EventProperty::Action EventProperty::getAction() const {
     return action_;
+}
+
+bool EventProperty::isEnabled() const {
+    return enabled_;
+}
+
+void EventProperty::setEnabled(bool enabled) {
+    enabled_ = enabled;
 }
 
 void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
