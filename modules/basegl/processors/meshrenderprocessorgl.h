@@ -64,14 +64,14 @@ namespace inviwo {
  *   * __Center view on geometry__ Adjusts the camera so that the geometry is rendered in the center
  *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh bounding box
  *   * __Reset Camera__ Reset the camera to its default state
- *   * __Geometry Rendering Properties__
+ *   * __Geometry Rendering Properties__ 
  *       + __Cull Face__ (None, Front, Back, Back and Front)
  *       + __Polygon Mode__  (Points, Lines, Fill)
  *       + __Point Size__ Defines the point size when polygon mode is set to "Points"
  *       + __Line Width__ Defines the line width when polygon mode is set to "Lines" (not supported)
  *       + __Enable Depth Test__ Toggles the depth test during rendering
  *   * __Lighting__ Standard lighting settings
- *   * __Output Layers__
+ *   * __Output Layers__ 
  *       + __Color__ Toggle output of color layer
  *       + __Texture Coordinates__ Toggle output of texture coordinates
  *       + __Normals (World Space)__ Toggle output of normals (world space)

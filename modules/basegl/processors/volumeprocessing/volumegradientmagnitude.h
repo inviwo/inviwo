@@ -48,7 +48,7 @@ namespace inviwo {
  * intermediate gradient volume is never generated and, thus, this processor is more memory 
  * efficient.
  *
- * * ### Inports
+ * ### Inports
  *   * __inputVolume__ Input volume
  *
  * ### Outports

@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageLowPass}
+/** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
  * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
  * Applies a low pass filter on the input image.
  *

@@ -41,7 +41,7 @@ namespace inviwo {
  * ![](org.inviwo.VectorMagnitude.png?classIdentifier=org.inviwo.VectorMagnitude)
  * Calculates the magnitude of the input volume.
  * 
- * * ### Inports
+ * ### Inports
  *   * __inputVolume__ Input volume
  *
  * ### Outports
@@ -62,7 +62,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-	virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
     virtual void postProcess() override;
 };
 

@@ -38,7 +38,8 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageBinary}
+/** \docpage{org.inviwo.ImageBinary, Image Binary}
+ * ![](org.inviwo.ImageBinary.png?classIdentifier=org.inviwo.ImageBinary)
  * Computes a binary image of the input image using a threshold. The output 
  * will contain "0" for all values below the threshold and "1" otherwise.
  *

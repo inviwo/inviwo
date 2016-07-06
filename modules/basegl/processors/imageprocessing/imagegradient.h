@@ -40,6 +40,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.ImageGradient, Image Gradient}
+ * ![](org.inviwo.ImageGradient.png?classIdentifier=org.inviwo.ImageGradient)
  * Computes the gradient of one channel of the input image.
  *
  * ### Inports

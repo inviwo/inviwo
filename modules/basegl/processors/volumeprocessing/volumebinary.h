@@ -38,11 +38,12 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, VolumeBinary}
+/** \docpage{org.inviwo.VolumeBinary, Volume Binary}
+ * ![](org.inviwo.VolumeBinary.png?classIdentifier=org.inviwo.VolumeBinary)
  * Computes a binary volume of the input volume using a threshold. The output 
  * will contain "0" for all values below the threshold and "1" otherwise. 
  * 
- * * ### Inports
+ * ### Inports
  *   * __inputVolume__ Input volume
  *
  * ### Outports

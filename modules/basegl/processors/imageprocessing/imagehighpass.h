@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageHighPass}
+/** \docpage{org.inviwo.ImageHighPass, Image High Pass}
  * ![](org.inviwo.ImageHighPass.png?classIdentifier=org.inviwo.ImageHighPass)
  * Applies a high pass filter on the input image.
  *

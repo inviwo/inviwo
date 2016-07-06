@@ -59,7 +59,7 @@ namespace inviwo {
  *   * __ImageOutport__ The output image.
  *
  * ### Properties
- *   * __Position_ Defines size of all lines.
+ *   * __Position__ Defines size of all lines.
  *   * __Camera__ Camera of the scene.
  *   * __Trackball__ Camera trackball.
  */

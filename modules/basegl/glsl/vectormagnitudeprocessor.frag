@@ -44,7 +44,7 @@ void main() {
     switch (numInputChannels_) {
     case 1:
         magnitude = v.x;
-        break
+        break;
     case 2:
         magnitude = length(v.xy);
         break;
