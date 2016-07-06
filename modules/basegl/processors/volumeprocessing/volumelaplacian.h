@@ -42,11 +42,13 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeLaplacian, Volume Laplacian}
  * ![](org.inviwo.VolumeLaplacian.png?classIdentifier=org.inviwo.VolumeLaplacian)
+ * Computes the Laplacian of the input volume.
  *
- * ...
- * 
- * 
- * 
+ * ### Inports
+ *   * __inputVolume__ Input volume
+ *
+ * ### Outports
+ *   * __outputVolume__ Output volume
  *
  */
 class IVW_MODULE_BASEGL_API VolumeLaplacian : public Processor {

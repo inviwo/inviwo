@@ -38,7 +38,7 @@ const ProcessorInfo VolumeLaplacian::processorInfo_{
     "Volume Laplacian",            // Display name
     "Volume Operation",            // Category
     CodeState::Broken,             // Code state
-    Tags::GL,                      // Tags
+    Tags::CPU,                     // Tags
 };
 const ProcessorInfo VolumeLaplacian::getProcessorInfo() const {
     return processorInfo_;

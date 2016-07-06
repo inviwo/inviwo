@@ -37,7 +37,7 @@ const ProcessorInfo VolumeMerger::processorInfo_{
     "org.inviwo.VolumeMerger",      // Class identifier
     "Volume Merger",                // Display name
     "Volume Operation",              // Category
-    CodeState::Experimental,  // Code state
+    CodeState::Stable,  // Code state
     Tags::None,               // Tags
 };
 const ProcessorInfo VolumeMerger::getProcessorInfo() const {
@@ -91,11 +91,6 @@ VolumeMerger::VolumeMerger()
         dataFormat_ = DataFormatBase::get(inDF->getNumericType(), numVolumes, inDF->getSize() * 8);
 
         internalInvalid_ = true;
-
-
-        
-
-
     };
 
     inport_.onChange(changeFormat);
@@ -120,6 +115,5 @@ void VolumeMerger::preProcess(TextureUnitContainer &cont)
         utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "vol4");
     }
 }
-
 
 } // namespace
