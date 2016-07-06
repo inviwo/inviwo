@@ -63,8 +63,11 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(inviwo-projects)
-
+if(IVW_PROJECT_NAME)
+    project(${IVW_PROJECT_NAME})
+else()
+    project(inviwo-projects)
+endif()
 # Build
 option(SHARED_LIBS "Build shared libs, else static libs" ON)
 
