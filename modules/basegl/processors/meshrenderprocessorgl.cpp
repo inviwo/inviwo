@@ -74,7 +74,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , enableDepthTest_("enableDepthTest_","Enable Depth Test" , true)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , layers_("layers", "Layers")
+    , layers_("layers", "Output Layers")
     , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
     , texCoordLayer_("texCoordLayer", "Texture Coordinates", false,
                      InvalidationLevel::InvalidResources)

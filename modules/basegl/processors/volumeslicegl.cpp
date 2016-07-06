@@ -66,7 +66,7 @@ VolumeSliceGL::VolumeSliceGL()
     , indicatorShader_("standard.vert", "standard.frag", true)
     , trafoGroup_("trafoGroup", "Transformations")
     , pickGroup_("pickGroup", "Position Selection")
-    , tfGroup_("tfGroup", "Transfer Function")
+    , tfGroup_("tfGroup", "Transfer Function Properties")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
@@ -91,9 +91,9 @@ VolumeSliceGL::VolumeSliceGL()
                       PropertySemantics::Color)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
+    , transferFunction_("transferFunction", "Transfer Function", TransferFunction(), &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
+    , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift",
@@ -131,7 +131,7 @@ VolumeSliceGL::VolumeSliceGL()
                               static_cast<int>(CartesianCoordinateAxis::Y));
     sliceAlongAxis_.addOption("z", "x-y plane (Z axis)",
                               static_cast<int>(CartesianCoordinateAxis::Z));
-    sliceAlongAxis_.addOption("p", "plane equation", 3);
+    sliceAlongAxis_.addOption("p", "Plane Equation", 3);
     sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
     sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
@@ -156,14 +156,14 @@ VolumeSliceGL::VolumeSliceGL()
     rotationAroundAxis_.addOption("90", "90 deg", 1);
     rotationAroundAxis_.addOption("180", "180 deg", 2);
     rotationAroundAxis_.addOption("270", "270 deg", 3);
-    rotationAroundAxis_.addOption("free", "Free rotation", 4);
+    rotationAroundAxis_.addOption("free", "Free Rotation", 4);
     rotationAroundAxis_.set(0);
     rotationAroundAxis_.setCurrentStateAsDefault();
 
-    volumeWrapping_.addOption("color", "Fill with color", GL_CLAMP_TO_EDGE);
-    volumeWrapping_.addOption("edge", "Fill with edge", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("color", "Fill with Color", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("edge", "Fill with Edge", GL_CLAMP_TO_EDGE);
     volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
-    volumeWrapping_.addOption("m-repeat", "Mirrored repeat", GL_MIRRORED_REPEAT);
+    volumeWrapping_.addOption("m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT);
     volumeWrapping_.setSelectedIndex(0);
     volumeWrapping_.setCurrentStateAsDefault();
 
