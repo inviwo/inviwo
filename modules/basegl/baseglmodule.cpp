@@ -219,6 +219,11 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
              "image.outport",
              "outputImage"},
 
+            // VolumeDiff
+            {{xml::Kind::processor("org.inviwo.VolumeDiff"),
+              xml::Kind::inport("org.inviwo.VolumeInport")},
+             "vol2",
+             "volume2"},
         };
 
         const std::vector<std::pair<std::string, std::string>> imageGLrepl = {
