@@ -46,32 +46,33 @@ namespace inviwo {
 
     class ImageRAM;
 
-/** \docpage{<classIdentifier>, NoiseProcessor}
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.NoiseProcessor, NoiseProcessor}
+ * ![](org.inviwo.NoiseProcessor.png?classIdentifier=org.inviwo.NoiseProcessor)
+ * Generate random noise images. 
  *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ * ### Outport
+ *   * __noise__ The generated noise
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Size__ The size of the image to generate
+ *   * __Type__ The type of noise to generate, see below
+ *   * __Randomness__ The seed to use for the random engine
+ *
+ * ### Noise types:
+ *   * __Random__
+ *       + __Range__ The range of values to select from.
+ *   * __Perlin__
+ *       + __Levels__ 
+ *       + __Persistence__ 
+ *   * __Poisson Disk__
+ *       + __Dots Along X__
+ *       + __Max Points__
  */
 
-
-/**
- * \class NoiseProcessor
- *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
     enum class NoiseType {
-        Random , 
-        Perlin ,
+        Random, 
+        Perlin,
         PoissonDisk 
     };
 public:
@@ -81,8 +82,6 @@ public:
     virtual ~NoiseProcessor();
      
     virtual void process() override;
-    
-    
 
 protected:
     ImageOutport noise_;
