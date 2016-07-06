@@ -32,19 +32,19 @@
 namespace inviwo {
 
 const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
-    "org.inviwo.TimeStepSelector",  // Class identifier
-    "Volume Sequence Element Selector",// Display name
-    "Volume Operation",             // Category
-    CodeState::Stable,              // Code state
-    Tags::CPU,                      // Tags
+    "org.inviwo.TimeStepSelector",       // Class identifier
+    "Volume Sequence Element Selector",  // Display name
+    "Volume Operation",                  // Category
+    CodeState::Stable,                   // Code state
+    Tags::CPU,                           // Tags
 };
 const ProcessorInfo VolumeSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 VolumeSequenceElementSelectorProcessor::VolumeSequenceElementSelectorProcessor()
     : VectorElementSelectorProcessor<Volume>() {
-    timeStep_.index_.autoLinkToProperty<VolumeSequenceElementSelectorProcessor>("timeStep.selectedSequenceIndex");
-
+    timeStep_.index_.autoLinkToProperty<VolumeSequenceElementSelectorProcessor>(
+        "timeStep.selectedSequenceIndex");
 }
 
 }  // namespace

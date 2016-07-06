@@ -46,15 +46,18 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
  * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)
- * Explanation of how to use the processor.
+ * Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets 
  *
- * Loads a vector of volumes
- *
- * ### Outports
- *   * __Outport__ The loaded volumes
+ * ### Outport
+ *   * __data__ A sequence of volumes
  *
  * ### Properties
- *   * __File name__ File to load.
+ *   * __Input type__ Select the input type, either select a single file to a 4D dataset or 
+ *                    use a folder
+ *   * __Volume file__ If using single file mode, the file to load.
+ *   * __Volume folder__ If using folder mode, the folder to look for data sets in.
+ *   * __Filter__ If using folder mode, apply filter to the folder contents to find wanted 
+ *                data sets
  */
 
 /**
