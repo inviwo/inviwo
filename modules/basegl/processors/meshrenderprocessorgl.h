@@ -50,10 +50,10 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.GeometryRenderGL, Mesh Renderer}
  * ![](org.inviwo.GeometryRenderGL.png?classIdentifier=org.inviwo.GeometryRenderGL)
- * Renders a mesh using OpenGL on top of an image. Different rendering modes can be selected.
+ * Renders a set of meshes using OpenGL on top of an image. Different rendering modes can be selected.
  * 
  * ### Inports
- *   * __geometry__ Input mesh
+ *   * __geometry__ Input meshes
  *   * __imageInport__ Optional background image
  * 
  * ### Outports

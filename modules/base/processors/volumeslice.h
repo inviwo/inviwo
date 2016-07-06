@@ -49,7 +49,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSlice, Volume Slice}
  * ![](org.inviwo.VolumeSlice.png?classIdentifier=org.inviwo.VolumeSlice)
- * This processor extracts an arbitrary 2D slice from an input volume.
+ * This processor extracts an axis aligned 2D slice from an input volume.
  *
  * ### Inports
  *   * __VolumeInport__ The input volume
