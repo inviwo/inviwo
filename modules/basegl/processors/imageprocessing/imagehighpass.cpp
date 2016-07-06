@@ -37,7 +37,7 @@ const ProcessorInfo ImageHighPass::processorInfo_{
     "org.inviwo.ImageHighPass",  // Class identifier
     "Image High Pass",           // Display name
     "Image Operation",           // Category
-    CodeState::Experimental,     // Code state
+    CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
 const ProcessorInfo ImageHighPass::getProcessorInfo() const {
@@ -53,7 +53,7 @@ ImageHighPass::ImageHighPass()
 }
 
 
-void ImageHighPass::preProcess() {
+void ImageHighPass::preProcess(TextureUnitContainer &cont) {
     utilgl::setUniforms(shader_, kernelSize_, sharpen_);
 }
 

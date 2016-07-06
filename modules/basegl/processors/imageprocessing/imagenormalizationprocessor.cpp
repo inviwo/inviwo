@@ -39,18 +39,17 @@ const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     "org.inviwo.ImageNormalization",  // Class identifier
     "Image Normalization",            // Display name
     "Image Operation",                // Category
-    CodeState::Experimental,          // Code state
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
 };
 const ProcessorInfo ImageNormalizationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImageNormalizationProcessor::ImageNormalizationProcessor()
     : ImageGLProcessor("img_normalize.frag")
-    , minMaxInvalid_(true)
-    , eachChannelsIndividually_("eachChannelsIndividually", "Normalize Channels Individually")
-    , zeroAtPoint5_("zeroAtPoint5", "Negative numbers below 0.5", false)
-    , minS_("min", "Min value", "")
-    , maxS_("max", "Max value", "")
+    , normalizeSeparately_("normalizeSeparately", "Normalize Channels Separately")
+    , zeroCentered_("zeroCentered", "Centered at Zero", false)
+    , minS_("min", "Min Value", "")
+    , maxS_("max", "Max Value", "")
     , min_(0.0)
     , max_(1.0) {
     minS_.setInvalidationLevel(InvalidationLevel::Valid);
@@ -58,26 +57,25 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
     minS_.setReadOnly(true);
     maxS_.setReadOnly(true);
 
-    addProperty(eachChannelsIndividually_);
-    addProperty(zeroAtPoint5_);
+    addProperty(normalizeSeparately_);
+    addProperty(zeroCentered_);
     addProperty(minS_);
     addProperty(maxS_);
-
-    inport_.onChange(this, &ImageNormalizationProcessor::invalidateMinMax);
-    eachChannelsIndividually_.onChange(this, &ImageNormalizationProcessor::invalidateMinMax);
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
-ImageNormalizationProcessor::~ImageNormalizationProcessor() {}
+ImageNormalizationProcessor::~ImageNormalizationProcessor() = default;
 
-void ImageNormalizationProcessor::preProcess() {
-    if (minMaxInvalid_) updateMinMax();
+void ImageNormalizationProcessor::preProcess(TextureUnitContainer &cont) {
+    if (inport_.isChanged() || normalizeSeparately_.isModified()) {
+        updateMinMax();
+    }
 
     dvec3 min = min_.rgb();
     dvec3 max = max_.rgb();
 
-    if (zeroAtPoint5_) {
+    if (zeroCentered_) {
         max = glm::max(glm::abs(min), glm::abs(max));
         min = -max;
     }
@@ -92,7 +90,7 @@ void ImageNormalizationProcessor::preProcess() {
     shader_.setUniform("typeMax_", static_cast<float>(typeMax));
     shader_.setUniform("typeMin_", static_cast<float>(typeMin));
 
-    if (eachChannelsIndividually_.get()) {
+    if (normalizeSeparately_.get()) {
         shader_.setUniform("min_", static_cast<vec4>(dvec4(min, 0.0)));
         shader_.setUniform("max_", static_cast<vec4>(dvec4(max, 1.0)));
     } else {
@@ -103,9 +101,7 @@ void ImageNormalizationProcessor::preProcess() {
     }
 }
 
-void ImageNormalizationProcessor::updateMinMax() { minMaxInvalid_ = true; }
-
-void ImageNormalizationProcessor::invalidateMinMax() {
+void ImageNormalizationProcessor::updateMinMax() {
     if (!inport_.hasData()) return;
 
     const LayerRAM* img = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
@@ -115,7 +111,7 @@ void ImageNormalizationProcessor::invalidateMinMax() {
         df->getNumericType() == NumericType::UnsignedInteger) {
         if (df->getSize() > 8) {
             LogWarn(
-                "Image Normalization only works on float data or Integer data  with 8 or 16 bit "
+                "Image Normalization only works on float data or Integer data with 8 or 16 bit "
                 "precision, got:  "
                 << df->getSize() * 8);
         }
@@ -131,7 +127,6 @@ void ImageNormalizationProcessor::invalidateMinMax() {
 
     min_.a = 0.0;  // never normalize alpha
     max_.a = 1.0;
-    minMaxInvalid_ = false;
 }
 
 }  // namespace

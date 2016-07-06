@@ -36,7 +36,7 @@ const ProcessorInfo ImageLowPass::processorInfo_{
     "org.inviwo.ImageLowPass",  // Class identifier
     "Image Low Pass",           // Display name
     "Image Operation",          // Category
-    CodeState::Experimental,    // Code state
+    CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
 const ProcessorInfo ImageLowPass::getProcessorInfo() const {
@@ -49,7 +49,7 @@ ImageLowPass::ImageLowPass()
     addProperty(kernelSize_);
 }
 
-void ImageLowPass::preProcess() { shader_.setUniform("kernelSize", kernelSize_.get()); }
+void ImageLowPass::preProcess(TextureUnitContainer &cont) { shader_.setUniform("kernelSize", kernelSize_.get()); }
 
 }  // namespace
 

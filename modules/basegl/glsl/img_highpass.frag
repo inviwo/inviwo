@@ -37,30 +37,28 @@ uniform int kernelSize;
 uniform bool sharpen;
 
 void main() {
-	vec4 p = texture(inport_,gl_FragCoord.xy* outportParameters_.reciprocalDimensions);
-	vec3 v = vec3(0);
-	int k2 = kernelSize/2;
-	int startX = int(gl_FragCoord.x) - k2;
-	int endX = int(gl_FragCoord.x) + k2;
-	int startY = int(gl_FragCoord.y) - k2;
-	int endY = int(gl_FragCoord.y) + k2;
-	int w = 0;
-	for(int y = startY  ; y < endY ; y++){
-		for(int x = startX  ; x < endX ; x++){
-			if(x == gl_FragCoord.x && y == gl_FragCoord.y) continue;
-			v += texture(inport_,vec2(x,y) * outportParameters_.reciprocalDimensions).xyz;
-			w++;
-		}
-	}
+    vec4 p = texture(inport_,gl_FragCoord.xy* outportParameters_.reciprocalDimensions);
+    vec3 v = vec3(0);
+    int k2 = kernelSize/2;
+    int startX = int(gl_FragCoord.x) - k2;
+    int endX = int(gl_FragCoord.x) + k2;
+    int startY = int(gl_FragCoord.y) - k2;
+    int endY = int(gl_FragCoord.y) + k2;
+    int w = 0;
+    for(int y = startY  ; y < endY ; y++){
+        for(int x = startX  ; x < endX ; x++){
+            if(x == gl_FragCoord.x && y == gl_FragCoord.y) continue;
+            v += texture(inport_,vec2(x,y) * outportParameters_.reciprocalDimensions).xyz;
+            w++;
+        }
+    }
 
-	vec3 outV;
-	if(sharpen){
-		outV = 2*p.xyz - v/w;
-	}else{
-		outV = p.xyz - v/w;
-		outV += 1;
-		outV /= 2;
-	}
+    vec3 outV;
+    if(sharpen){
+        outV = 2.0 * p.xyz - v/w;
+    }else{
+        outV = (p.xyz - v/w + 1.0) * 0.5;
+    }
 
     FragData0 = vec4( outV , p.a) ;
 }

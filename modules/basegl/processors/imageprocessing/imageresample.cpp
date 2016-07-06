@@ -46,8 +46,8 @@ const ProcessorInfo ImageResample::getProcessorInfo() const {
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
     , interpolationType_("interpolationType", "Interpolation Type")
-    , dimensionSource_("dimensionSource", "Dimension Source")
-    , dimensions_("dimensions", "Outport dimensions", ivec2(256, 256), ivec2(128, 128),
+    , outputSizeMode_("outputSizeMode", "Output Size Mode")
+    , targetResolution_("targetResolution", "Target Resolution", ivec2(256, 256), ivec2(32, 32),
                   ivec2(4096, 4096), ivec2(1, 1)) {
         
     interpolationType_.addOption("bilinear", "Bilinear", 0);
@@ -57,19 +57,19 @@ ImageResample::ImageResample()
     interpolationType_.setCurrentStateAsDefault();
     addProperty(interpolationType_);
 
-    dimensionSource_.addOption("inportDimension", "Use Inport for Outport Dimensions", 0);
-    dimensionSource_.addOption("resizeEvents", "Use Resize Events for Outport Dimensions", 1);
-    dimensionSource_.addOption("custom", "Use Custom Dimension for Outport Dimensions", 2);
-    dimensionSource_.set(0);
-    dimensionSource_.setCurrentStateAsDefault();
-    dimensionSource_.onChange(this, &ImageResample::dimensionSourceChanged);
-    addProperty(dimensionSource_);
+    outputSizeMode_.addOption("inportDimension", "Inport Dimensions", 0);
+    outputSizeMode_.addOption("resizeEvents", "Resize Events", 1);
+    outputSizeMode_.addOption("custom", "Custom Dimensions", 2);
+    outputSizeMode_.set(0);
+    outputSizeMode_.setCurrentStateAsDefault();
+    outputSizeMode_.onChange(this, &ImageResample::dimensionSourceChanged);
+    addProperty(outputSizeMode_);
 
-    dimensions_.onChange(this, &ImageResample::dimensionChanged);
-    addProperty(dimensions_);
+    targetResolution_.onChange(this, &ImageResample::dimensionChanged);
+    addProperty(targetResolution_);
 }
 
-ImageResample::~ImageResample() {}
+ImageResample::~ImageResample() = default;
 
 void ImageResample::initializeResources() {
     interpolationTypeChanged();
@@ -89,31 +89,31 @@ void ImageResample::interpolationTypeChanged() {
 }
 
 void ImageResample::dimensionChanged() {
-    if (dimensions_.get() != ivec2(outport_.getDimensions())) {
-        outport_.setDimensions(dimensions_.get());
+    if (targetResolution_.get() != ivec2(outport_.getDimensions())) {
+        outport_.setDimensions(targetResolution_.get());
         internalInvalid_ = true;
     }
 }
 
 void ImageResample::dimensionSourceChanged() {
-    switch (dimensionSource_.get()) {
+    switch (outputSizeMode_.get()) {
         case 0:  // inportDimension
             inport_.setOutportDeterminesSize(true);
             outport_.setHandleResizeEvents(false);
-            dimensions_.setVisible(false);
+            targetResolution_.setVisible(false);
             internalInvalid_ = true;
             break;
         case 1:  // resizeEvents
             inport_.setOutportDeterminesSize(false);
             outport_.setHandleResizeEvents(true);
-            dimensions_.setVisible(false);
+            targetResolution_.setVisible(false);
             break;
         case 2:  // custom
             inport_.setOutportDeterminesSize(false);
             outport_.setHandleResizeEvents(false);
-            dimensions_.setVisible(true);
+            targetResolution_.setVisible(true);
             internalInvalid_ = true;
-            dimensions_.set(outport_.getDimensions());
+            targetResolution_.set(outport_.getDimensions());
             break;
     }
 }
