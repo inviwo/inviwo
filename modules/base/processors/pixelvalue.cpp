@@ -37,9 +37,9 @@ namespace inviwo {
 const ProcessorInfo PixelValue::processorInfo_{
     "org.inviwo.PixelValue",  // Class identifier
     "Pixel Value",            // Display name
-    "Information",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "Information",            // Category
+    CodeState::Stable,        // Code state
+    Tags::CPU,                // Tags
 };
 const ProcessorInfo PixelValue::getProcessorInfo() const { return processorInfo_; }
 
