@@ -33,20 +33,30 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 
-
 namespace inviwo {
 
-void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
-                           std::string name, std::string ext) {
+void util::saveNetwork(ProcessorNetwork* network, std::string filename) {
+    try {
+        Serializer xmlSerializer(filename);
+        network->serialize(xmlSerializer);
+        xmlSerializer.writeFile();
+    } catch (SerializationException& exception) {
+        util::log(exception.getContext(),
+                  "Unable to save network " + filename + " due to " + exception.getMessage(),
+                  LogLevel::Error);
+    }
+}
 
+void util::saveAllCanvases(ProcessorNetwork* network, std::string dir, std::string name,
+                           std::string ext) {
     int i = 0;
-    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {       
+    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {
         std::stringstream ss;
         ss << dir << "/";
 
         if (name == "") {
             ss << cp->getIdentifier();
-        } else if(name.find("UPN") != std::string::npos) {
+        } else if (name.find("UPN") != std::string::npos) {
             std::string tmp = name;
             replaceInString(tmp, "UPN", cp->getIdentifier());
             ss << tmp;
@@ -66,12 +76,12 @@ bool util::isValidIdentifierCharacter(char c, const std::string& extra) {
 }
 
 void util::validateIdentifier(const std::string& identifier, const std::string& type,
-    ExceptionContext context, const std::string& extra) {
+                              ExceptionContext context, const std::string& extra) {
     for (const auto& c : identifier) {
         if (!(c >= -1) || !isValidIdentifierCharacter(c, extra)) {
             throw Exception(type + " identifiers are not allowed to contain \"" + c +
-                "\". Found in \"" + identifier + "\"",
-                context);
+                                "\". Found in \"" + identifier + "\"",
+                            context);
         }
     }
 }
