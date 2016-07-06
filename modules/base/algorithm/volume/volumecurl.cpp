@@ -41,9 +41,11 @@ namespace inviwo {
             newVolume->setModelMatrix(volume->getModelMatrix());
             newVolume->setWorldMatrix(volume->getWorldMatrix());
 
+            newVolume->dataMap_ = volume->dataMap_;
+
             auto indexToWorld = newVolume->getCoordinateTransformer().getIndexToWorldMatrix();
 
-            auto m = newVolume->getCoordinateTransformer().getModelToWorldMatrix();
+            auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
             auto a = m * vec4(0, 0, 0, 1);
             auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
@@ -62,7 +64,6 @@ namespace inviwo {
             auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
             std::function<void(const size3_t &)> func = [&](const size3_t& pos) {
-                //vec3 world = (indexToWorld * vec4(pos, 1)).xyz();
                 vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
                 
                 auto Fx = (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) / (2.0 * spacing.x);
@@ -70,9 +71,9 @@ namespace inviwo {
                 auto Fz = (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) / (2.0 * spacing.z);
 
                 vec3 c;
-                c.x = Fy.z - Fz.y;
-                c.y = Fz.x - Fx.z;
-                c.z = Fx.y - Fy.x;
+                c.x = static_cast<float>(Fy.z - Fz.y);
+                c.y = static_cast<float>(Fz.x - Fx.z);
+                c.z = static_cast<float>(Fx.y - Fy.x);
                 data[index(pos)] = c;
             };
 
