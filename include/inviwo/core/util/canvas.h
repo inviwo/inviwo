@@ -75,23 +75,7 @@ public:
     virtual void releaseContext() = 0;
 
 protected:
-    void interactionEvent(Event* e);
-
-    void mousePressEvent(MouseEvent* e);
-    void mouseDoubleClickEvent(MouseEvent *e);
-    void mouseReleaseEvent(MouseEvent* e);
-    void mouseMoveEvent(MouseEvent* e);
-
-    void mouseButtonEvent(MouseEvent* e);
-    void mouseWheelEvent(WheelEvent* e);
-
-    void keyPressEvent(KeyboardEvent* e);
-    void keyReleaseEvent(KeyboardEvent* e);
-
-    void gestureEvent(GestureEvent* e);
-    void touchEvent(TouchEvent* e);
-    
-    bool touchEnabled();
+    void propagateEvent(Event* e);
 
     uvec2 screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference

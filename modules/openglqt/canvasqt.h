@@ -193,7 +193,7 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
                           this->getDepthValueAtCoord(screenPosInvY));
 
     e->accept();
-    Canvas::mousePressEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -210,7 +210,7 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
                           this->getDepthValueAtCoord(screenPosInvY));
 
     e->accept();
-    Canvas::mouseDoubleClickEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -229,7 +229,7 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           screenPos, this->getScreenDimensions(),
                           this->getDepthValueAtCoord(screenPosInvY));
     e->accept();
-    Canvas::mouseReleaseEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -251,7 +251,7 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, buttons,
                           utilqt::getModifiers(e), screenPos, this->getScreenDimensions(), depth);
     e->accept();
-    Canvas::mouseMoveEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -274,7 +274,7 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
                           screenPos, this->getScreenDimensions(),
                           this->getDepthValueAtCoord(screenPosInvY));
     e->accept();
-    Canvas::mouseWheelEvent(&wheelEvent);
+    Canvas::propagateEvent(&wheelEvent);
     return true;
 }
 
@@ -294,7 +294,7 @@ bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
     }
     pressKeyEvent.setModifiers(modifiers);
 
-    Canvas::keyPressEvent(&pressKeyEvent);
+    Canvas::propagateEvent(&pressKeyEvent);
     if (pressKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -308,7 +308,7 @@ bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                   utilqt::getModifiers(keyEvent));
 
-    Canvas::keyReleaseEvent(&releaseKeyEvent);
+    Canvas::propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -428,7 +428,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
 
-    Canvas::touchEvent(&touchEvent);
+    Canvas::propagateEvent(&touchEvent);
     return true;
 }
 
@@ -490,7 +490,7 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
     GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
                     lastNumFingers_, screenPositionNormalized_,  this->getScreenDimensions());
 
-    Canvas::gestureEvent(&ge);
+    Canvas::propagateEvent(&ge);
     return true;
 }
 
@@ -515,7 +515,7 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
                     utilqt::getGestureState(gesture), lastNumFingers_,
                     screenPositionNormalized_, this->getScreenDimensions());
 
-    Canvas::gestureEvent(&ge);
+    Canvas::propagateEvent(&ge);
     return true;
 }
 
@@ -540,13 +540,13 @@ void CanvasQtBase<T>::touchFallback(QTouchEvent* touch) {
                 mouseEvent = new MouseEvent(
                     pos, MouseButton::Left, MouseState::Press,
                     EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mousePressEvent(mouseEvent);
+                Canvas::propagateEvent(mouseEvent);
                 break;
             case TouchState::Updated:
                 mouseEvent = new MouseEvent(
                     pos, MouseButton::Left, MouseState::Move,
                     EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseMoveEvent(mouseEvent);
+                Canvas::propagateEvent(mouseEvent);
                 break;
             case TouchState::Stationary:
                 break;  // Do not fire event while standing still.
@@ -554,7 +554,7 @@ void CanvasQtBase<T>::touchFallback(QTouchEvent* touch) {
                 mouseEvent = new MouseEvent(
                     pos, MouseButton::Left, MouseState::Release,
                     EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseReleaseEvent(mouseEvent);
+                Canvas::propagateEvent(mouseEvent);
                 break;
             default:
                 break;

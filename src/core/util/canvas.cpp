@@ -65,63 +65,25 @@ void Canvas::resize(uvec2 canvasSize) {
 
 uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
 
-void Canvas::interactionEvent(Event* event) {
+void Canvas::propagateEvent(Event* event) {
+    NetworkLock lock;
+
+    switch (event->hash()) {
+        case MouseEvent::chash(): {
+            auto me = static_cast<MouseEvent*>(event);
+            if (pickingContainer_.performMousePick(me)) return;
+            break;
+        }
+        case TouchEvent::chash(): {
+            auto te = static_cast<TouchEvent*>(event);
+            if (pickingContainer_.performTouchPick(te)) return;
+            break;
+        }
+    }
+
     if (propagator_) {
-        NetworkLock lock;
         propagator_->propagateEvent(event, nullptr);
     }
-}
-
-void Canvas::mousePressEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseDoubleClickEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseReleaseEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseMoveEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseButtonEvent(MouseEvent* e) {
-    NetworkLock lock;
-    if (!pickingContainer_.performMousePick(e)) interactionEvent(e);
-}
-
-void Canvas::mouseWheelEvent(WheelEvent* e) { interactionEvent(e); }
-
-void Canvas::keyPressEvent(KeyboardEvent* e) { interactionEvent(e); }
-
-void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
-
-void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
-
-void Canvas::touchEvent(TouchEvent* e) {
-    if (!touchEnabled()) return;
-
-    NetworkLock lock;
-
-    if (!pickingContainer_.performTouchPick(e)) {
-        // One single touch point is already sent out as mouse event
-        if (e->getTouchPoints().size() > 1) {
-            interactionEvent(e);
-        }
-    } else if (e->hasTouchPoints()) {
-        // As one touch point is handle as mouse event
-        // Send out a mouse event if only one touch point remains
-        const std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
-        if (touchPoints.size() == 1) {
-            MouseEvent mouseEvent(MouseButton::Left, MouseState::Move, MouseButton::Left,
-                                  KeyModifier::None, touchPoints[0].getPos(), e->canvasSize(),
-                                  touchPoints[0].getDepth());
-                interactionEvent(&mouseEvent);
-        } else {
-            interactionEvent(e);
-        }
-    }
-}
-
-bool Canvas::touchEnabled() {
-    auto touchEnabledProperty =
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->enableTouchProperty_;
-    return (touchEnabledProperty.get());
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }
