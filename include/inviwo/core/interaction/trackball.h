@@ -165,7 +165,6 @@ protected:
     EventProperty mousePan_;
     EventProperty mouseReset_;
 
-
     EventProperty stepRotateUp_;
     EventProperty stepRotateLeft_;
     EventProperty stepRotateDown_;
