@@ -90,7 +90,6 @@ public:
     ImageLayoutGL();
     virtual ~ImageLayoutGL();
 
-    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
     virtual void propagateEvent(Event*, Outport* source) override;
 
 protected:

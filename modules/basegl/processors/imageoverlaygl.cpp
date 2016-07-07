@@ -172,12 +172,12 @@ ImageOverlayGL::ImageOverlayGL()
 
     overlayPort_.onConnect([this]() {
         ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        propagateEvent(&e, &outport_);
     });
 
     overlayPort_.onDisconnect([this]() {
         ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        propagateEvent(&e, &outport_);
     });
 
     addPort(outport_);
@@ -204,45 +204,43 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-        std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
-        int activeView = viewManager_.getActiveView();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
 
-        if (newEvent && activeView >= 0) {
-            overlayPort_.propagateEvent(newEvent.get(), overlayPort_.getConnectedOutport());
-            if (newEvent->hasBeenUsed()) event->markAsUsed();
-            for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
-            return;
-        } 
-    }
+        updateViewports(resizeEvent->size(), true);
 
-    if (event->shouldPropagateTo(&inport_, this, source)) {
-        inport_.propagateEvent(event);
+        if (inport_.isConnected()) {
+            inport_.propagateEvent(resizeEvent);
+        }
+
+        if (overlayPort_.isConnected()) {
+            ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+            overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
+        }
+    } else {
+        if (overlayInteraction_.get() && overlayPort_.isConnected()) {
+            std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
+            int activeView = viewManager_.getActiveView();
+
+            if (newEvent && activeView >= 0) {
+                overlayPort_.propagateEvent(newEvent.get(), overlayPort_.getConnectedOutport());
+                if (newEvent->hasBeenUsed()) event->markAsUsed();
+                for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+                return;
+            }
+        }
+
+        if (event->shouldPropagateTo(&inport_, this, source)) {
+            inport_.propagateEvent(event);
+        }
     }
 }
 
 bool ImageOverlayGL::isReady() const { return inport_.isReady(); }
 
-void ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-    
-    updateViewports(resizeEvent->size(), true);
-
-    if (inport_.isConnected()) {
-        inport_.propagateResizeEvent(resizeEvent);
-    }
-
-    if (overlayPort_.isConnected()) {
-        ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
-        overlayPort_.propagateResizeEvent(
-            &e, static_cast<ImageOutport*>(overlayPort_.getConnectedOutport()));
-    }
-}
-
 void ImageOverlayGL::onStatusChange() {
     ResizeEvent e(currentDim_);
-    propagateResizeEvent(&e, &outport_);
+    propagateEvent(&e, &outport_);
 }
 
 void ImageOverlayGL::process() {

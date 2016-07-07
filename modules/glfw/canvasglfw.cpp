@@ -165,7 +165,7 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
 
     KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)));
 
-    thisCanvas->keyPressEvent(&keyEvent);
+    thisCanvas->propagateEvent(&keyEvent);
 }
 
 void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mods) {
@@ -188,10 +188,8 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
                           thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (thisCanvas->mouseState_ == MouseState::Press)
-        thisCanvas->mousePressEvent(&mouseEvent);
-    else if (thisCanvas->mouseState_ == MouseState::Release)
-        thisCanvas->mouseReleaseEvent(&mouseEvent);
+
+    thisCanvas->propagateEvent(&mouseEvent);
 }
 
 void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
@@ -210,10 +208,7 @@ void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
                           thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (state == MouseState::Move)
-        thisCanvas->mouseMoveEvent(&mouseEvent);
-    else if (state == MouseState::Release)
-        thisCanvas->mouseReleaseEvent(&mouseEvent);
+    thisCanvas->propagateEvent(&mouseEvent);
 }
 
 void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
@@ -233,7 +228,7 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
                           thisCanvas->getScreenDimensions(),
                           thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    thisCanvas->mouseWheelEvent(&wheelEvent);
+    thisCanvas->propagateEvent(&wheelEvent);
 }
 
 MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {

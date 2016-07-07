@@ -59,7 +59,7 @@ void Canvas::resize(uvec2 canvasSize) {
         RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent resizeEvent(screenDimensions_);
         resizeEvent.setPreviousSize(previousScreenDimensions_);
-        propagator_->propagateResizeEvent(&resizeEvent, nullptr);
+        propagator_->propagateEvent(&resizeEvent, nullptr);
     }
 }
 

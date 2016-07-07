@@ -420,17 +420,6 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     if (used) event->markAsUsed();
 }
 
-void Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-
-    for (auto port : getPortsInSameGroup(source)) {
-        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
-            imageInport->propagateResizeEvent(resizeEvent);
-        }
-    }
-}
-
 const std::string Processor::getCodeStateString(CodeState state) {
     std::stringstream ss;
     ss << state;

@@ -177,7 +177,7 @@ void CanvasProcessor::sizeChanged() {
     }
 
     inputSize_.invalidate(InvalidationLevel::Valid, &customInputDimensions_);
-    inport_.propagateResizeEvent(&resizeEvent);
+    inport_.propagateEvent(&resizeEvent);
 }
 
 ivec2 CanvasProcessor::calcSize() {
@@ -332,21 +332,36 @@ bool CanvasProcessor::isReady() const {
     return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
-void CanvasProcessor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-    
-    // Avoid continues evaluation when port dimensions changes
-    NetworkLock lock(this);
+void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
 
-    dimensions_.set(resizeEvent->size());
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
 
-    if (enableCustomInputDimensions_) {
-        sizeChanged();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+
+        // Avoid continues evaluation when port dimensions changes
+        NetworkLock lock(this);
+        dimensions_.set(resizeEvent->size());
+        if (enableCustomInputDimensions_) {
+            sizeChanged();
+        } else {
+            inport_.propagateEvent(resizeEvent, nullptr);
+            // Make sure this processor is invalidated.
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
     } else {
-        inport_.propagateResizeEvent(resizeEvent);
-        // Make sure this processor is invalidated.
-        invalidate(InvalidationLevel::InvalidOutput);
+        bool used = event->hasBeenUsed();
+        for (auto inport : getInports()) {
+            if (event->shouldPropagateTo(inport, this, source)) {
+                inport->propagateEvent(event);
+                used |= event->hasBeenUsed();
+                event->markAsUnused();
+            }
+        }
+        if (used) event->markAsUsed();
     }
 }
 
