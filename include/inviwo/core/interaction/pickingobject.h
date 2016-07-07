@@ -57,46 +57,44 @@ public:
     size_t getPickedId() const;
     size_t getSize() const;
 
-    vec3 getPickingColor(size_t id = 0) const;
+    vec3 getColor(size_t id = 0) const;
     /**
-    * \brief returns initial position of picking. The current position (mouse move) 
-    *        is encoded in the MouseEvent.
-    *
+    * \brief Returns initial position of picking
     * @return initial picking position
-    *
-    * \see getPickingMouseEvent
     */
-    const vec2& getPickingPosition() const;
+    vec2 getInitialPosition() const;
+    
+    vec2 getPosition() const;
+    
     /**
-    * \brief returns the delta of the last mouse movement
-    *
+    * \brief Returns the delta of the last mouse movement
     * @return last mouse movement delta (normalized with respect to screen coordinates)
     */
-    const vec2& getPickingMove() const;
-    const double& getPickingDepth() const;
+    vec2 getDelta() const;
 
     /** 
-     * \brief returns delta between current mouse position and initial picking position
-     * 
-     * @return delta of current mouse position and picking start (normalized with respect to screen coordinates)
-     *
-     * \see getPickingPosition
+     * \brief Returns delta between current mouse position and initial picking position
+     * @return delta of current mouse position and picking start (normalized with respect
+     *         to screen coordinates)
+     * \see getInitialPosition
      */
-    vec2 getPickingTotalDelta() const;
+    vec2 getTotalDelta() const;
+
+    double getDepth() const;
 
     void picked() const;
 
-    InteractionEventType getPickingInteractionType() const;
+    InteractionEventType getInteractionType() const;
 
-    void setPickingMouseEvent(MouseEvent);
-    const MouseEvent& getPickingMouseEvent() const;
+    void setMouseEvent(MouseEvent);
+    const MouseEvent& getMouseEvent() const;
 
-    void setPickingTouchEvent(TouchEvent);
-    const TouchEvent& getPickingTouchEvent() const;
+    void setTouchEvent(TouchEvent);
+    const TouchEvent& getTouchEvent() const;
 
-    void setPickingMove(vec2);
-    void setPickingPosition(vec2);
-    void setPickingDepth(double);
+    void setDelta(vec2);
+    void setPosition(vec2);
+    void setDepth(double);
 
 private:
     size_t getCapacity() const;

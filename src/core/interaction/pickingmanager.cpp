@@ -86,10 +86,17 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
 }
 
 bool PickingManager::pickingEnabled() {
-    BoolProperty* pickingEnabledProperty = dynamic_cast<BoolProperty*>(
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getPropertyByIdentifier(
-            "enablePicking"));
-    return (pickingEnabledProperty && pickingEnabledProperty->get());
+    if (!haveCallback_) {
+        auto picking = &(InviwoApplication::getPtr()
+                             ->getSettingsByType<SystemSettings>()
+                             ->enablePickingProperty_);
+
+        picking->onChange([this, picking]() { enabled_ = picking->get(); });
+        enabled_ = picking->get();
+        haveCallback_ = true;
+    }
+
+    return enabled_;
 }
 
 inviwo::uvec3 PickingManager::indexToColor(size_t id) {

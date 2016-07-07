@@ -101,7 +101,7 @@ TEST(PickingMapperTests, Resize) {
         std::unordered_set<vec3> colors;
 
         for (size_t i = 0; i < po->getSize(); ++i) {
-            colors.insert(po->getPickingColor(i));
+            colors.insert(po->getColor(i));
         }
 
         EXPECT_EQ(colors.size(), 100);
@@ -119,7 +119,7 @@ TEST(PickingMapperTests, Resize) {
         std::unordered_set<vec3> colors;
 
         for (size_t i = 0; i < po->getSize(); ++i) {
-            colors.insert(po->getPickingColor(i));
+            colors.insert(po->getColor(i));
         }
 
         EXPECT_EQ(colors.size(), 200);
@@ -136,7 +136,7 @@ TEST(PickingMapperTests, Resize) {
         std::unordered_set<vec3> colors;
 
         for (size_t i = 0; i < po->getSize(); ++i) {
-            colors.insert(po->getPickingColor(i));
+            colors.insert(po->getColor(i));
         }
 
         EXPECT_EQ(colors.size(), 300);

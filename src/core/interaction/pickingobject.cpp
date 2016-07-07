@@ -42,7 +42,7 @@ PickingObject::PickingObject(size_t id, size_t size)
     , move_(vec2(0.f)) {
 }
 
-PickingObject::~PickingObject() {}
+PickingObject::~PickingObject() = default;
 
 size_t PickingObject::getPickingId(size_t id) const {
     if (id < size_)
@@ -59,23 +59,27 @@ size_t PickingObject::getSize() const {
     return size_;
 }
 
-vec3 PickingObject::getPickingColor(size_t id) const {
+vec3 PickingObject::getColor(size_t id) const {
     return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
 }
 
-const vec2& PickingObject::getPickingPosition() const {
+vec2 PickingObject::getInitialPosition() const {
     return pos_;
 }
 
-const vec2& PickingObject::getPickingMove() const {
+vec2 PickingObject::getPosition() const {
+    return mouseEvent_.posNormalized();
+}
+
+vec2 PickingObject::getDelta() const {
     return move_;
 }
 
-const double& PickingObject::getPickingDepth() const {
+double PickingObject::getDepth() const {
     return depth_;
 }
 
-vec2 PickingObject::getPickingTotalDelta() const {
+vec2 PickingObject::getTotalDelta() const {
     return mouseEvent_.posNormalized() - pos_;
 }
 
@@ -83,37 +87,37 @@ void PickingObject::picked() const {
     callback_(this);
 }
 
-PickingObject::InteractionEventType PickingObject::getPickingInteractionType() const {
+PickingObject::InteractionEventType PickingObject::getInteractionType() const {
     return interactionEventType_;
 }
 
-void PickingObject::setPickingMouseEvent(MouseEvent e){
+void PickingObject::setMouseEvent(MouseEvent e){
     mouseEvent_ = e;
     interactionEventType_ = InteractionEventType::MouseInteraction;
 }
 
-const MouseEvent& PickingObject::getPickingMouseEvent() const {
+const MouseEvent& PickingObject::getMouseEvent() const {
     return mouseEvent_;
 }
 
-void PickingObject::setPickingTouchEvent(TouchEvent e){
+void PickingObject::setTouchEvent(TouchEvent e){
     touchEvent_ = e;
     interactionEventType_ = InteractionEventType::TouchInteraction;
 }
 
-const TouchEvent& PickingObject::getPickingTouchEvent() const {
+const TouchEvent& PickingObject::getTouchEvent() const {
     return touchEvent_;
 }
 
-void PickingObject::setPickingPosition(vec2 pos) {
+void PickingObject::setPosition(vec2 pos) {
     pos_ = pos;
 }
 
-void PickingObject::setPickingMove(vec2 move) {
+void PickingObject::setDelta(vec2 move) {
     move_ = move;
 }
 
-void PickingObject::setPickingDepth(double depth) {
+void PickingObject::setDepth(double depth) {
     depth_ = depth;
 }
 

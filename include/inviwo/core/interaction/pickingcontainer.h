@@ -88,8 +88,6 @@ private:
 
     PickingObject* mousePickObj_;
     uvec2 prevMouseCoord_;
-    bool mousePickingOngoing_;
-    bool mouseIsDown_;
 
     bool touchPickingOn_;
 

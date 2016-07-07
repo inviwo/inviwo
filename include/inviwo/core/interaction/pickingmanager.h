@@ -69,6 +69,9 @@ private:
     std::vector<std::unique_ptr<PickingObject>> pickingObjects_;
     // unusedObjects_ should be sorted on capacity.
     std::vector<PickingObject*> unusedObjects_;
+    
+    bool enabled_ = false;
+    bool haveCallback_ = false;
 };
 
 template <typename T>

@@ -83,15 +83,15 @@ MeshPicking::MeshPicking()
 
 }
 
-MeshPicking::~MeshPicking() {}
+MeshPicking::~MeshPicking() = default;
 
 void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
-    vec2 move = p->getPickingMove();
+    vec2 move = p->getDelta();
 
     if (move.x == 0.f && move.y == 0.f) return;
 
-    vec2 pos = p->getPickingPosition();
-    float depth = static_cast<float>(p->getPickingDepth());
+    vec2 pos = p->getPosition();
+    float depth = static_cast<float>(p->getDepth());
     vec3 startNdc = vec3(2.f * pos - 1.f, depth);
     vec3 endNdc = vec3(2.f * (pos + move) - 1.f, depth);
     vec3 startWorld = camera_.getWorldPosFromNormalizedDeviceCoords(startNdc);
@@ -105,7 +105,7 @@ void MeshPicking::process() {
 
     MeshDrawerGL drawer(meshInport_.getData().get());
     shader_.activate();
-    shader_.setUniform("pickingColor_", picking_.getPickingObject()->getPickingColor());
+    shader_.setUniform("pickingColor_", picking_.getPickingObject()->getColor());
 
     const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
 

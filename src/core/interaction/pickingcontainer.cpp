@@ -39,8 +39,6 @@ PickingContainer::PickingContainer()
     : src_(nullptr)
     , mousePickObj_(nullptr)
     , prevMouseCoord_(uvec2(0, 0))
-    , mousePickingOngoing_(false)
-    , mouseIsDown_(false)
     , touchPickingOn_(false)
 {}
 
@@ -51,64 +49,63 @@ bool PickingContainer::pickingEnabled() {
 }
 
 bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled() || e->button() == MouseButton::None)
-        return false;
+    if (!pickingEnabled()) return false;
 
-    if (touchPickingOn_)
-        return true;
+    if (touchPickingOn_) return true;
 
-    if (e->state() == MouseState::Release){
-        mouseIsDown_ = false;
-        if (mousePickingOngoing_) {
-            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
-            mousePickObj_->setPickingMouseEvent(*e);
-            prevMouseCoord_ = coord;
-            mousePickObj_->picked();
-            mousePickingOngoing_ = false;
-            return true;
+    const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
+
+    switch(e->state()) {
+        case MouseState::Press: {
+            LogWarn("Press");
+            if ((mousePickObj_ = findPickingObject(coord))) {
+                
+                // Update picking object;
+                mousePickObj_->setPosition(normalizedCoordinates(coord));
+                mousePickObj_->setDepth(e->depth());
+                mousePickObj_->setDelta(vec2(0.f, 0.f));
+                mousePickObj_->setMouseEvent(*e);
+                
+                // Invoke callback
+                mousePickObj_->picked();
+                prevMouseCoord_ = coord;
+                return true;
+            }
+            break;
         }
-        else {
-            mousePickObj_ = nullptr;
-            return false;
+        case MouseState::Move: {
+            LogWarn("Move");
+            if (mousePickObj_) {
+                // Update picking object;
+                mousePickObj_->setDelta(normalizedMovement(prevMouseCoord_, coord));
+                mousePickObj_->setMouseEvent(*e);
+                
+                // Invoke callback
+                mousePickObj_->picked();
+                prevMouseCoord_ = coord;
+                return true;
+            }
+            break;
+        }
+        case MouseState::Release: {
+            LogWarn("Release");
+            if (mousePickObj_) {
+                // Update picking object;
+                mousePickObj_->setDelta(normalizedMovement(prevMouseCoord_, coord));
+                mousePickObj_->setMouseEvent(*e);
+                
+                // Invoke callback
+                mousePickObj_->picked();
+                mousePickObj_ = nullptr;
+                return true;
+            }
+            break;
+        }
+        case MouseState::DoubleClick: {
+            LogWarn("DoubleClick");
+            break;
         }
     }
-    else if (!mouseIsDown_ || e->state() == MouseState::Press){
-        mouseIsDown_ = true;
-
-        uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-        prevMouseCoord_ = coord;
-
-        mousePickObj_ = findPickingObject(coord);
-
-        if (mousePickObj_) {
-            mousePickingOngoing_ = true;
-            mousePickObj_->setPickingPosition(normalizedCoordinates(coord));
-            mousePickObj_->setPickingDepth(e->depth());
-            mousePickObj_->setPickingMouseEvent(*e);
-
-            mousePickObj_->setPickingMove(vec2(0.f, 0.f));
-            mousePickObj_->picked();
-            return true;
-        }
-        else{
-            mousePickingOngoing_ = false;
-            return false;
-        }
-    }
-    else if (e->state() == MouseState::Move){
-        if (mousePickingOngoing_){
-            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
-            mousePickObj_->setPickingMouseEvent(*e);
-            prevMouseCoord_ = coord;
-            mousePickObj_->picked();
-            return true;
-        }
-        else
-            return false;
-    }
-
     return false;
 }
 
@@ -190,22 +187,22 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         if (pickedTouchPoints_it->second.size() == 1){
             uvec2 coord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
             if (pickedTouchPoints_it->second[0].state() & TouchState::Started){
-                pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
-                pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
-                pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));
+                pickedTouchPoints_it->first->setPosition(normalizedCoordinates(coord));
+                pickedTouchPoints_it->first->setDepth(pickedTouchPoints_it->second[0].getDepth());
+                pickedTouchPoints_it->first->setDelta(vec2(0.f, 0.f));
             }
             else{
                 uvec2 prevCoord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
-                pickedTouchPoints_it->first->setPickingMove(normalizedMovement(prevCoord, coord));
+                pickedTouchPoints_it->first->setDelta(normalizedMovement(prevCoord, coord));
             }
             // One touch point is currently treated as mouse event as well...
             // So prepare for that
             prevMouseCoord_ = coord;
             mousePickObj_ = pickedTouchPoints_it->first;
-            mousePickingOngoing_ = true;
+           // mousePickingOngoing_ = true;
         }
 
-        pickedTouchPoints_it->first->setPickingTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
+        pickedTouchPoints_it->first->setTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
     }
 
     // One touch point is currently treated as mouse event as well...
@@ -228,13 +225,11 @@ void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {
 
 PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
     if (pickingEnabled() && src_) {
-        const Layer* pickingLayer = src_->getPickingLayer();
-
-        if (pickingLayer) {
-            const LayerRAM* pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
-            dvec4 value = pickingLayerRAM->getAsNormalizedDVec4(coord);
-            dvec3 pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
-            uvec3 color(pickedColor*255.0);
+        if (auto pickingLayer = src_->getPickingLayer()) {
+            const auto pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
+            const auto value = pickingLayerRAM->getAsNormalizedDVec4(coord);
+            const auto pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
+            const uvec3 color(pickedColor*255.0);
             return PickingManager::getPtr()->getPickingObjectFromColor(color);
         }
     }
