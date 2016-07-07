@@ -128,7 +128,7 @@ public:
     TouchEvent(uvec2 canvasSize = uvec2(0));
     TouchEvent(std::vector<TouchPoint> touchPoints, uvec2 canvasSize);
 
-    virtual TouchEvent* clone() const;
+    virtual TouchEvent* clone() const override;
     virtual ~TouchEvent() = default;
 
     bool hasTouchPoints() const;

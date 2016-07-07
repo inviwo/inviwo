@@ -93,10 +93,9 @@ public:
         return result;
     }
 
-    PythonKeywordFormater(const QTextCharFormat& format, const std::vector<std::string> &keywords) : format_(format) {
-        int i = -1;
-
-        for (const auto &key : keywords) {
+    PythonKeywordFormater(const QTextCharFormat& format, const std::vector<std::string>& keywords)
+        : format_(format) {
+        for (const auto& key : keywords) {
             regexps_.push_back(QRegExp(key.c_str()));
         }
     }

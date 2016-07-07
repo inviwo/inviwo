@@ -45,7 +45,7 @@ public:
 
     GestureEvent(const GestureEvent& rhs) = default;
     GestureEvent& operator=(const GestureEvent& that) = default;
-    virtual GestureEvent* clone() const;
+    virtual GestureEvent* clone() const override;
     virtual ~GestureEvent() = default;
 
     vec2 deltaPos() const;

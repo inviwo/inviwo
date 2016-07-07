@@ -33,56 +33,55 @@
 #include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
-    namespace util {
+namespace util {
 
-        std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
+std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
+    auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataVec3Float32::get());
+    newVolume->setModelMatrix(volume->getModelMatrix());
+    newVolume->setWorldMatrix(volume->getWorldMatrix());
 
-            auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataVec3Float32::get());
-            newVolume->setModelMatrix(volume->getModelMatrix());
-            newVolume->setWorldMatrix(volume->getWorldMatrix());
+    newVolume->dataMap_ = volume->dataMap_;
 
-            newVolume->dataMap_ = volume->dataMap_;
+    auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
-            auto indexToWorld = newVolume->getCoordinateTransformer().getIndexToWorldMatrix();
+    auto a = m * vec4(0, 0, 0, 1);
+    auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
+    auto spacing = b - a;
 
-            auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    vec3 ox = vec3(spacing.x, 0, 0);
+    vec3 oy = vec3(0, spacing.y, 0);
+    vec3 oz = vec3(0, 0, spacing.z);
 
-            auto a = m * vec4(0, 0, 0, 1);
-            auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
-            auto spacing = b - a;
+    VolumeDoubleSampler<4> sampler(volume);
+    auto worldSpace = VolumeDoubleSampler<3>::Space::World;
 
-            
+    util::IndexMapper3D index(volume->getDimensions());
+    auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
-            vec3 ox = vec3(spacing.x, 0, 0);
-            vec3 oy = vec3(0, spacing.y, 0);
-            vec3 oz = vec3(0, 0, spacing.z);
+    std::function<void(const size3_t&)> func = [&](const size3_t& pos) {
+        vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
-            VolumeDoubleSampler<4> sampler(volume);
-            auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+        auto Fx =
+            (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) /
+            (2.0 * spacing.x);
+        auto Fy =
+            (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace)) /
+            (2.0 * spacing.y);
+        auto Fz =
+            (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) /
+            (2.0 * spacing.z);
 
-            util::IndexMapper3D index(volume->getDimensions());
-            auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+        vec3 c;
+        c.x = static_cast<float>(Fy.z - Fz.y);
+        c.y = static_cast<float>(Fz.x - Fx.z);
+        c.z = static_cast<float>(Fx.y - Fy.x);
+        data[index(pos)] = c;
+    };
 
-            std::function<void(const size3_t &)> func = [&](const size3_t& pos) {
-                vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
-                
-                auto Fx = (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) / (2.0 * spacing.x);
-                auto Fy = (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace)) / (2.0 * spacing.y);
-                auto Fz = (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) / (2.0 * spacing.z);
+    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
 
-                vec3 c;
-                c.x = static_cast<float>(Fy.z - Fz.y);
-                c.y = static_cast<float>(Fz.x - Fx.z);
-                c.z = static_cast<float>(Fx.y - Fy.x);
-                data[index(pos)] = c;
-            };
+    return newVolume;
+}
 
-            util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
-
-            return newVolume;
-        }
-
-    }  // namespace
 }  // namespace
-
-
+}  // namespace

@@ -45,7 +45,7 @@ public:
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
-    virtual KeyboardEvent* clone() const;
+    virtual KeyboardEvent* clone() const override;
     virtual ~KeyboardEvent() = default;
 
     KeyState state() const;

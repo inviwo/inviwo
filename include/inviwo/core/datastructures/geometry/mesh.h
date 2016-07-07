@@ -50,9 +50,9 @@ public:
         ConnectivityType ct;
     };
     struct BufferInfo {
-        BufferInfo(BufferType type) : type(type), location(static_cast<int>(type)) {}
+        BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
         BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
-        BufferInfo(BufferType type, int location) : type(type), location(location) {}
+        BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
         BufferType type;
         int location; //<! attribute location of buffer in GLSL shader 

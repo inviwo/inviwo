@@ -44,8 +44,6 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,int 
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
 
-    auto indexToWorld = newVolume->getCoordinateTransformer().getIndexToWorldMatrix();
-
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
     auto a = m * vec4(0, 0, 0, 1);
