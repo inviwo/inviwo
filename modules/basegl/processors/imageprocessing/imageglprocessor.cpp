@@ -76,16 +76,20 @@ void ImageGLProcessor::process() {
         }
     }
 
-    TextureUnit imgUnit;    
-    utilgl::bindColorTexture(inport_, imgUnit);
-
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     shader_.activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_.setUniform("inport_", imgUnit.getUnitNumber());
 
-    preProcess();
+    // bind input image
+    TextureUnitContainer cont;
+    TextureUnit imgUnit;
+    utilgl::bindColorTexture(inport_, imgUnit);
+    shader_.setUniform("inport_", imgUnit);
+    cont.push_back(std::move(imgUnit));
+    
+    // trigger preprocessing
+    preProcess(cont);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();

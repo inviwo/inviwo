@@ -71,7 +71,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
     FloatProperty gamma_;

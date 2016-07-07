@@ -46,7 +46,7 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,int 
 
     auto indexToWorld = newVolume->getCoordinateTransformer().getIndexToWorldMatrix();
 
-    auto m = newVolume->getCoordinateTransformer().getModelToWorldMatrix();
+    auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
     auto a = m * vec4(0, 0, 0, 1);
     auto b = m * vec4(1.0f / vec3(volume->getDimensions()-size3_t(1)), 1);
@@ -65,13 +65,12 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,int 
 
 
     std::function<void(const size3_t &)> func = [&](const size3_t& pos) {
-        //vec3 world = (indexToWorld * vec4(pos, 1)).xyz();
         vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
         
         vec3 g;
-        g.x = (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace))[channel] / (2.0 * spacing.x);
-        g.y = (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace))[channel] / (2.0 * spacing.y);
-        g.z = (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace))[channel] / (2.0 * spacing.z);
+        g.x = static_cast<float>((sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace))[channel] / (2.0 * spacing.x));
+        g.y = static_cast<float>((sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace))[channel] / (2.0 * spacing.y));
+        g.z = static_cast<float>((sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace))[channel] / (2.0 * spacing.z));
         data[index(pos)] = g;
     };
 

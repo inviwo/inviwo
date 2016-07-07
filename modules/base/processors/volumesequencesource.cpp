@@ -37,30 +37,27 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceSource::processorInfo_{
     "org.inviwo.VolumeVectorSource",  // Class identifier
-    "Volume Sequence Source",           // Display name
+    "Volume Sequence Source",         // Display name
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSequenceSource::VolumeSequenceSource()
     : Processor()
     , outport_("data")
-    , inputType_("inputType","Input type")
-    , file_("filename", "File")
-    , folder_("folder", "Folder")
-    , filter_("filter_","Filter","*.*")
+    , inputType_("inputType", "Input type", {{"singlefile", "Single File", InputType::SingleFile},
+                                             {"folder", "Folder", InputType::Folder}},
+                 0)
+    , file_("filename", "Volume file")
+    , folder_("folder", "Volume folder")
+    , filter_("filter_", "Filter", "*.*")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information") {
-
     file_.setContentType("volume");
-    file_.setDisplayName("Volume file");
     folder_.setContentType("volume");
-    folder_.setDisplayName("Volume folder");
 
     addFileNameFilters();
 
@@ -73,11 +70,7 @@ VolumeSequenceSource::VolumeSequenceSource()
     addProperty(reload_);
     addProperty(information_);
     addProperty(basis_);
-
-    inputType_.addOption("singlefile", "SingleFile", InputType::SingleFile);
-    inputType_.addOption("folder", "Folder", InputType::Folder);
-    inputType_.setCurrentStateAsDefault();
-    
+   
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
         folder_.setVisible(inputType_.get() == InputType::Folder);

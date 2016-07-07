@@ -34,15 +34,13 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo OrientationIndicator::processorInfo_{
-    "org.inviwo.OrientationIndicator",      // Class identifier
-    "Orientation Indicator",                // Display name
-    "Information",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.OrientationIndicator",  // Class identifier
+    "Orientation Indicator",            // Display name
+    "Information",                      // Category
+    CodeState::Experimental,            // Code state
+    Tags::None,                         // Tags
 };
-const ProcessorInfo OrientationIndicator::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
 
 OrientationIndicator::OrientationIndicator()
     : Processor()
@@ -60,13 +58,7 @@ OrientationIndicator::OrientationIndicator()
 
     , viewCoords_("viewCoords","View Coords", vec2(0.05f), vec2(0.f), vec2(1.f))
     , cam_("cam","Camera") 
-
-
-    , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) 
-
-
-
-{
+    , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
     
     addPort(mesh_);
     addProperty(baseColor_);
@@ -82,7 +74,6 @@ OrientationIndicator::OrientationIndicator()
     location_.addProperty(cam_);
     location_.addProperty(offset_);
 
-   // cam_.setReadOnly(true);
     cam_.setCurrentStateAsDefault();
 
     locationType_.addOption("2d", "2D", Location::TwoD);
@@ -109,9 +100,7 @@ OrientationIndicator::OrientationIndicator()
     
 void OrientationIndicator::process() {
     auto start = offset_.get();
-
     float scale = scale_.get();
-
 
     if (locationType_.get() == Location::TwoD) {
         auto p = viewCoords_.get();

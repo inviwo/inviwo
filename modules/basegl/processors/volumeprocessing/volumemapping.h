@@ -40,11 +40,16 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeMapping, Volume Mapping}
  * ![](org.inviwo.VolumeMapping.png?classIdentifier=org.inviwo.VolumeMapping)
- *
- * ...
+ * Maps the voxel values of an input volume to an alpha-only volume by applying a transfer function.
  * 
+ * ### Inports
+ *   * __inputVolume__ Input volume
+ *
+ * ### Outports
+ *   * __outputVolume__ Output volume containing the alpha channel after applying the transfer function to the input
+ *
  * ### Properties
- *   * __Transfer function__ ...
+ *   * __Transfer function__ Defines the transfer function for mapping voxel values to opacity
  *
  */
 class IVW_MODULE_BASEGL_API VolumeMapping  : public VolumeGLProcessor { 

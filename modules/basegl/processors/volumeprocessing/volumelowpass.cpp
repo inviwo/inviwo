@@ -41,7 +41,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     "org.inviwo.VolumeLowPass",  // Class identifier
     "Volume Low Pass",           // Display name
     "Volume Operation",          // Category
-    CodeState::Experimental,     // Code state
+    CodeState::Stable,     // Code state
     "GL",                        // Tags
 };
 const ProcessorInfo VolumeLowPass::getProcessorInfo() const {

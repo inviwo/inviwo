@@ -43,24 +43,20 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageContourProcessor, Image Contour Processor}
  * ![](org.inviwo.ImageContourProcessor.png?classIdentifier=org.inviwo.ImageContourProcessor)
- * Explanation of how to use the processor.
+ * Does marching squares on the image to extract a contour mesh.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __Image__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __Mesh__ Contour mesh
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Channel__ The image channel to use compare the iso value to
+ *   * __IsoValue__ The contour iso value
+ *   * __Color__ The color of the resulting mesh
  */
 
-/**
- * \class ImageContourProcessor
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASE_API ImageContourProcessor : public Processor {
 public:
     ImageContourProcessor();
@@ -74,6 +70,7 @@ public:
 private:
     ImageInport image_;
     MeshOutport mesh_;
+    IntSizeTProperty channel_;
     DoubleProperty isoValue_;
     FloatVec4Property color_;
 };

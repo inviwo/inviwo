@@ -93,7 +93,7 @@ VolumeSlice::VolumeSlice()
     addProperty(gestureShiftSlice_);
 }
 
-VolumeSlice::~VolumeSlice() {}
+VolumeSlice::~VolumeSlice() = default;
 
 void VolumeSlice::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;

@@ -31,16 +31,14 @@
 
 namespace inviwo {
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, double isoValue,
-                                          vec4 color) {
+std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, size_t channel,
+                                          double isoValue, vec4 color) {
     detail::ImageContourDispatcher disp;
     auto df = in->getDataFormat();
     if (df->getNumericType() != NumericType::Float) {
-        isoValue =
-            static_cast<double>(df->getMin()) +
-            isoValue * (static_cast<double>(df->getMax()) - static_cast<double>(df->getMin()));
+        isoValue = df->getMin() + isoValue * (df->getMax() - df->getMin());
     }
-    return df->dispatch(disp, in, isoValue, color);
+    return df->dispatch(disp, in, channel, isoValue, color);
 }
 
 }  // namespace

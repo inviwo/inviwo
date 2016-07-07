@@ -33,7 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
@@ -41,24 +41,22 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageGradient, Image Gradient}
  * ![](org.inviwo.ImageGradient.png?classIdentifier=org.inviwo.ImageGradient)
- * Explanation of how to use the processor.
+ * Computes the gradient of one channel of the input image.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __outputImage__ Binary output image
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Channel__ Selects the channel used for the gradient computation 
  */
 
 
 /**
  * \class ImageGradient
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \brief Computes the gradient of one channel of the input image.
  */
 class IVW_MODULE_BASEGL_API ImageGradient : public ImageGLProcessor {
 public:
@@ -69,7 +67,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
+private:
+    OptionPropertyInt channel_;
 };
 
 } // namespace

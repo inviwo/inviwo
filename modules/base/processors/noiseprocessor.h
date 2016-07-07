@@ -44,66 +44,79 @@
 
 namespace inviwo {
 
-    class ImageRAM;
+class ImageRAM;
 
-/** \docpage{<classIdentifier>, NoiseProcessor}
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
+/** \docpage{org.inviwo.NoiseProcessor, Noise Processor}
+* ![](org.inviwo.NoiseProcessor.png?classIdentifier=org.inviwo.NoiseProcessor)
+*
+* A processor to generate noise images. Using the Mersenne Twister 19937 generator to generate
+* random numbers. Supported methods are:
+* ### Available Methods
+* ![](noise_types.png)
+* #### Random
+* Generates a uniform, random value in the range [min,max] for each pixel
+* #### Perlin Noise
+* Generates a perlin noise image
+* #### PoissonDisk
+* Create a binary image of points uniformly distributed over the image. Read more at
+* [http://devmag.org.za/2009/05/03/poisson-disk-sampling/](http://devmag.org.za/2009/05/03/poisson-disk-sampling/)
+* 
+*
+* ### Outports
+*   * __noise__ The noise image, a single channel 32-bit float image.
+*
+* ### Properties
+*   * __size__ Size of the output image.
+*   * __type__ Witch type of noise to generate.
+*   * __range__ The min/max values of the output values (default: [0 1]).
+*   * __Perlin Noise:__
+*     + __persistence__ Controls the sharpnes in Perlin noise
+*     + __levels__ Numbers of levels used in the generation.
+*   * __Poisson Disk Sampling:__
+*     + __poissonDotsAlongX__ Average number of points along the x-axis.
+*     + __poissonMaxPoints__ Maximum number of output points (total).
+*   * __Random__
+*     * __Use same seed__ Use the same seed for each call to process. Seed specified by __Seed__
+*     * __Seed__ The seed used to initialize the random sequence
+*
+*/
 
 /**
  * \class NoiseProcessor
  *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief A processor to generate a noise image
  */
 class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
-    enum class NoiseType {
-        Random , 
-        Perlin ,
-        PoissonDisk 
-    };
+    enum class NoiseType { Random, Perlin, PoissonDisk };
+
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     NoiseProcessor();
     virtual ~NoiseProcessor();
-     
+
     virtual void process() override;
-    
-    
 
 protected:
     ImageOutport noise_;
 
-    IntVec2Property size_;
-    TemplateOptionProperty<NoiseType> type_;
-    FloatMinMaxProperty range_;
-    IntMinMaxProperty levels_;
-    FloatProperty persistence_;
+    IntVec2Property size_; ///< Size of the output image.
+    TemplateOptionProperty<NoiseType> type_; ///< Witch type of noise to generate.
+    FloatMinMaxProperty range_;///< The min/max values of the output values (default: [0 1]).
+    IntMinMaxProperty levels_;///< Numbers of levels used in the generation of the Perlin noise
+    FloatProperty persistence_;///< Controls the sharpnes in Perlin noise
 
-    IntProperty poissonDotsAlongX_;
-    IntProperty poissonMaxPoints_;
+    IntProperty poissonDotsAlongX_;///< Average number of points along the x-axis.
+    IntProperty poissonMaxPoints_;///< Maximum number of output points (total).
 
     CompositeProperty randomness_;
-    BoolProperty useSameSeed_;
-    IntProperty seed_;
+    BoolProperty useSameSeed_;///< Use the same seed for each call to process.
+    IntProperty seed_;///<  The seed used to initialize the random sequence
+
 private:
     void randomNoise(Image *img, float minv, float maxv);
     void perlinNoise(Image *img);
     void poissonDisk(Image *img);
-
 
     std::random_device rd_;
     std::mt19937 mt_;

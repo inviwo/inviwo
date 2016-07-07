@@ -50,7 +50,7 @@ namespace inviwo {
  * post-processing of the output data stored in the outport. Furthermore, it is possible to
  * be notified of inport changes by overwriting VolumeGLProcessor::afterInportChanged().
  *
- * \see VolumeGLProcessor
+ * \see ImageGLProcessor
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:

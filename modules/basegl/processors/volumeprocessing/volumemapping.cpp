@@ -44,7 +44,7 @@ const ProcessorInfo VolumeMapping::processorInfo_{
     "org.inviwo.VolumeMapping",  // Class identifier
     "Volume Mapping",            // Display name
     "Volume Operation",          // Category
-    CodeState::Experimental,     // Code state
+    CodeState::Stable,     // Code state
     Tags::GL,                    // Tags
 };
 const ProcessorInfo VolumeMapping::getProcessorInfo() const {

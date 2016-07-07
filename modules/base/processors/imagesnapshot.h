@@ -41,24 +41,18 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageSnapshot, Image Snapshot}
  * ![](org.inviwo.ImageSnapshot.png?classIdentifier=org.inviwo.ImageSnapshot)
- * Explanation of how to use the processor.
+ * Save snapshot of images that can be viewed later. Useful for comparisons.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inport__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport1__ Outputs the input image or a saved image
+ *   * __outport2__ Outputs the input image or a saved image
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-
-/**
- * \class ImageSnapshot
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ *   * __Image 1 index__ The image to output on outport1, -1 means input pass through.
+ *   * __Image 2 index__ The image to output on outport2, -1 means input pass through.
  */
 class IVW_MODULE_BASE_API ImageSnapshot : public Processor { 
 public:

@@ -40,22 +40,27 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeGradient, Volume Gradient}
+ * ![](org.inviwo.VolumeGradient.png?classIdentifier=org.inviwo.VolumeGradient)
+ * Computes the gradient of one channel of a 3D scalar field. The input channel 
+ * can saved along with the gradient in the alpha channel of the output.
+ * 
+ * ### Inports
+ *   * __inputVolume__ Input volume
+ *
+ * ### Outports
+ *   * __outputVolume__ Output volume
+ *
+ * ### Properties
+ *   * __Channel__ Selects the channel used for the gradient computation 
+ *   * __Store Input Data in Alpha__ Toggles whether the input data is saved in the alpha channel of the output
+ *
+ */
+
 /**
  * \class VolumeGradientProcessor
  *
- * \brief Computes the gradient of a 3D scalar field and stores it in a vec3 volume.
- */
-/** \docpage{org.inviwo.VolumeGradient, Volume Gradient}
- * ![](org.inviwo.VolumeGradient.png?classIdentifier=org.inviwo.VolumeGradient)
- *
- * ...
- * 
- * 
- * 
- * ### Properties
- *   * __Render Channel__ ...
- *   * __Stored voxel values in 4th channel__ ...
- *
+ * \brief computes the gradient of a 3D scalar field.
  */
 class IVW_MODULE_BASEGL_API VolumeGradientProcessor : public VolumeGLProcessor  { 
 public:

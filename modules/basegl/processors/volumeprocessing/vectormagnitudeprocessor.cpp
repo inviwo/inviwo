@@ -42,11 +42,21 @@ const ProcessorInfo VectorMagnitudeProcessor::getProcessorInfo() const {
 }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
-    : VolumeGLProcessor("vectormagnitudeprocessor.frag") {
+    : VolumeGLProcessor("vectormagnitudeprocessor.frag")
+{
     this->dataFormat_ = DataFloat32::get();
 }
 
-VectorMagnitudeProcessor::~VectorMagnitudeProcessor() {}
+VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;
+
+void VectorMagnitudeProcessor::preProcess(TextureUnitContainer &cont) {
+    int numChannels = 3;
+    if (inport_.hasData()) {
+        numChannels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
+    }
+
+    shader_.setUniform("numInputChannels_", numChannels);
+}
 
 void VectorMagnitudeProcessor::postProcess() {
     volume_->dataMap_.dataRange = dvec2(0, 1);

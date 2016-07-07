@@ -52,9 +52,9 @@ public:
      * with camera looking towards the negative z-axis.
      * with X = (1, 0, 0), Y = (0, 1, 0), Z = (0, 0, -1)
      *
-     * @param vec3 lookFrom Camera position (eye)
-     * @param vec3 lookTo Camera focus point (center)
-     * @param vec3 lookUp Camera up direction
+     * @param lookFrom Camera position (eye)
+     * @param lookTo Camera focus point (center)
+     * @param lookUp Camera up direction
      */
     Camera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
            vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,

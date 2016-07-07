@@ -36,7 +36,7 @@ const ProcessorInfo FindEdges::processorInfo_{
     "org.inviwo.FindEdges",   // Class identifier
     "Image Find Edges",       // Display name
     "Image Operation",        // Category
-    CodeState::Experimental,  // Code state
+    CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
 const ProcessorInfo FindEdges::getProcessorInfo() const {
@@ -49,9 +49,9 @@ FindEdges::FindEdges()
     addProperty(alpha_);
 }
 
-FindEdges::~FindEdges() {}
+FindEdges::~FindEdges() = default;
 
-void FindEdges::preProcess() {
+void FindEdges::preProcess(TextureUnitContainer &cont) {
     shader_.setUniform("alpha_", alpha_.get());
 }
 

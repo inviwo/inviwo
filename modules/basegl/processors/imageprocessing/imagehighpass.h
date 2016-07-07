@@ -39,40 +39,37 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageHighPass}
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.ImageHighPass, Image High Pass}
+ * ![](org.inviwo.ImageHighPass.png?classIdentifier=org.inviwo.ImageHighPass)
+ * Applies a high pass filter on the input image.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __outputImage__ Filtered input image
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Kernel Size__ Size of the applied high pass filter
+ *   * __Sharpen__ Toggles additional sharpening operation
  */
 
 
 /**
  * \class ImageHighPass
  *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief Applies a high pass filter on the input image.
  */
 class IVW_MODULE_BASEGL_API ImageHighPass : public ImageGLProcessor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     ImageHighPass();
-    virtual ~ImageHighPass() {}
+    virtual ~ImageHighPass() = default;
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
     
-protected:
-
 private:
     IntProperty kernelSize_;
     BoolProperty sharpen_;

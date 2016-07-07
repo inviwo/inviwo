@@ -38,27 +38,25 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageLowPass}
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
+ * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
+ * Applies a low pass filter on the input image.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __outputImage__ Filtered input image
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Kernel Size__ Size of the applied low pass filter
  */
 
 
 /**
  * \class ImageLowPass
  *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief Applies a low pass filter on the input image.
  */
 class IVW_MODULE_BASEGL_API ImageLowPass : public ImageGLProcessor {
 public:
@@ -68,7 +66,7 @@ public:
     virtual ~ImageLowPass(){}
     
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
     IntProperty kernelSize_;
