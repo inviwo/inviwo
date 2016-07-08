@@ -61,6 +61,11 @@
 #include <QGraphicsSceneMouseEvent>
 #include <warn/pop>
 
+
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/helpwidget.h>
+
 namespace inviwo {
 
 const QSizeF ProcessorGraphicsItem::size_ = {150.f, 50.f};
@@ -85,6 +90,8 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , statusItem_(nullptr)
     , linkItem_(nullptr)
     , highlight_(false)
+    , wasSelected_(false)
+    , helpWidget_(nullptr)
     #if IVW_PROFILING
     , processCount_(0)
     , countLabel_(nullptr)
@@ -161,6 +168,16 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
+
+    if (auto network = processor->getNetwork()) {
+        if (auto app = network->getApplication()) {
+            if (auto appQT = dynamic_cast<InviwoApplicationQt*>(app)) {
+                if (auto mainWindow = dynamic_cast<InviwoMainWindow*>(appQT->getMainWindow())) {
+                    helpWidget_ = mainWindow->getHelpWidget();
+                }
+            }
+        }
+    }
 }
 
 
@@ -255,7 +272,11 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     // paint processor
     QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
 
-    if (isSelected()) {
+    auto selected = isSelected();
+    if (selected) {
+        if (!wasSelected_ && helpWidget_) {
+            helpWidget_->showDocForClassName(processor_->getClassIdentifier());
+        }
         grad.setColorAt(0.0f, topColor);
         grad.setColorAt(0.2f, middleColor);
         grad.setColorAt(0.5f, Qt::darkRed);
@@ -265,6 +286,7 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
         grad.setColorAt(0.2f, middleColor);
         grad.setColorAt(1.0f, bottomColor);
     }
+    wasSelected_ = selected;
 
     QRectF bRect = rect();
     QPainterPath roundRectPath = makeRoundedBox(rect(), roundedCorners_);
