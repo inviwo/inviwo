@@ -52,7 +52,6 @@ class ProcessorOutportGraphicsItem;
 class Port;
 class Inport;
 class Outport;
-class HelpWidget;
 
 class IVW_QTEDITOR_API ProcessorGraphicsItem : public EditorGraphicsItem,
                                                public ProcessorObserver,
@@ -126,8 +125,6 @@ private:
     std::map<Outport*, ProcessorOutportGraphicsItem*> outportItems_;
     
     bool highlight_;
-    bool wasSelected_;
-    HelpWidget* helpWidget_;
 
     static const float roundedCorners_;
     static const int labelHeight_;
