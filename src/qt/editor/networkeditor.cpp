@@ -636,10 +636,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             QAction* helpAction = menu.addAction(tr("Show Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
-                auto help = mainwindow_->getHelpWidget();
-                help->showDocForClassName(processor->getProcessor()->getClassIdentifier());
-                if(!help->isVisible()) help->show();
-                help->raise();
+                showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
 
             break;
@@ -704,6 +701,16 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {false, ivec2{0,0}};
     doingContextMenu_ = false;
 }
+
+void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
+    auto help = mainwindow_->getHelpWidget();
+    help->showDocForClassName(classIdentifier);
+    if (raise) {
+        if (!help->isVisible()) help->show();
+        help->raise();
+    }
+}
+
 bool NetworkEditor::doingContextMenu() const {
     return doingContextMenu_;
 }

@@ -119,6 +119,7 @@ public:
     void addPropertyWidgets(Processor* processor);
     void removeAndDeletePropertyWidgets(Processor* processor);
     void removePropertyWidgets(Processor* processor);
+    void showProecssorHelp(const std::string& classIdentifier, bool raise = false);
 
     bool isModified() const;
     void setModified(const bool modified = true);
@@ -154,7 +155,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void progagateEventToSelecedProcessors(KeyboardEvent &pressKeyEvent);
-
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;

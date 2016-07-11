@@ -373,6 +373,7 @@ void ProcessorGraphicsItem::updateWidgets() {
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(getProcessor());
+                editor->showProecssorHelp(getProcessor()->getClassIdentifier());
             }
         }
     } else {
