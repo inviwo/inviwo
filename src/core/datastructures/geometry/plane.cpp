@@ -114,15 +114,18 @@ std::string Plane::getDataInfo() const {
     return "Plane"; 
 }
 
-IVW_CORE_API bool rayPlaneIntersection(const vec3& origin, const vec3& dir, const vec3& pointInPlane, const vec3& planeNormal, float& tHit)
-{
-    // Ray-plane intersection ( http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/ )
+IVW_CORE_API std::pair<bool, float> rayPlaneIntersection(const vec3& origin, const vec3& dir,
+                                                         const vec3& pointInPlane,
+                                                         const vec3& planeNormal) {
+    // Ray-plane intersection (
+    // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
+    // )
     float denom = glm::dot(planeNormal, dir);
     if (denom > 1e-6) {
-        tHit = glm::dot(pointInPlane-origin, planeNormal) / denom;
-        return tHit >= 0.f;
+        auto tHit = glm::dot(pointInPlane - origin, planeNormal) / denom;
+        return {tHit >= 0.f, tHit};
     }
-    return false;
+    return {false, 0.0f};
 }
 
 IntersectionResult::IntersectionResult(bool intersects, vec3 intersection)

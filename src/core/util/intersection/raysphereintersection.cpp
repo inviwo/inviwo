@@ -31,27 +31,29 @@
 
 namespace inviwo {
 
-IVW_CORE_API bool raySphereIntersection(const vec3& sphereCenter, const float radius, const vec3& o, const vec3& d, float * __restrict t0, float* __restrict t1) {
-    vec3 m = o-sphereCenter;
-    float b = glm::dot(m, d);
-    float c = glm::dot(m, m)-radius*radius;
+IVW_CORE_API std::pair<bool, float> raySphereIntersection(const vec3& sphereCenter,
+                                                          const float radius, const vec3& origin,
+                                                          const vec3& direction, const float t0,
+                                                          const float t1) {
+    vec3 m = origin - sphereCenter;
+    float b = glm::dot(m, direction);
+    float c = glm::dot(m, m) - radius * radius;
     // Exit if ray origin is outside of sphere and pointing away from sphere
-    if(c > 0.f && b > 0.f) return false;
+    if (c > 0.f && b > 0.f) return {false, 0.0f};
 
-    float discr = b*b-c;
+    float discr = b * b - c;
     // Negative discriminant means that ray misses sphere
-    if(discr < 0.f) return false;
+    if (discr < 0.0f) return {false, 0.0f};
 
     // Ray intersects sphere, compute first intersection point (smallest t1)
     float tHit = -b - glm::sqrt(discr);
     // If t is negative, ray started inside sphere, so we clamp it to zero
-    if( tHit < 0.f ) tHit = 0.f;
+    if (tHit < 0.f) tHit = 0.f;
     // Check if intersection was behind start point
-    if (tHit >= *t0 && tHit <= *t1) {
-        *t1 = tHit;
-        return true;
+    if (tHit >= t0 && tHit <= t1) {
+        return {true, tHit};
     } else {
-        return false;
+        return {false, 0.0f};
     }
 }
 

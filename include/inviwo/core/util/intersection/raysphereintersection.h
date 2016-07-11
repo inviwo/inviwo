@@ -35,19 +35,25 @@
 
 namespace inviwo {
 
-/** 
- * \brief Intersects a ray with a sphere. If intersecting, t1 is the point of intersection along the ray
+/**
+ * \brief Intersects a ray with a sphere. If intersecting, t1 is the point of intersection along the
+ * ray
  *
- * 
+ *
  * @param sphereCenter Center of sphere
  * @param radius Sphere radius
  * @param o Ray origin
  * @param d Ray direction
  * @param t0 Parameterized start position along ray
  * @param t1 Parameterized end position along ray
- * @return True if intersecting, otherwise false. t1 will contain the point of intersection along the ray if intersecting.
+ * @return True if intersecting, otherwise false. res.second will contain the point of intersection
+ * along
+ * the ray if intersecting.
  */
-IVW_CORE_API bool raySphereIntersection(const vec3& sphereCenter, const float radius, const vec3& o, const vec3& d, float * __restrict t0, float* __restrict t1);
+IVW_CORE_API std::pair<bool, float> raySphereIntersection(const vec3& sphereCenter,
+                                                          const float radius, const vec3& origin,
+                                                          const vec3& direction, const float t0,
+                                                          const float t1);
 
 } // namespace
 
