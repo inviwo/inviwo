@@ -36,6 +36,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -48,6 +49,9 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/helpwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -61,10 +65,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <warn/pop>
 
-
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/editor/helpwidget.h>
 
 namespace inviwo {
 
