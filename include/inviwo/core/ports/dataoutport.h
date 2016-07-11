@@ -63,9 +63,6 @@ public:
 
     virtual std::string getContentInfo() const override;
 
-    template <typename... A>
-    std::shared_ptr<T> createData(A&&...args) const;
-
 protected:
     std::shared_ptr<const T> data_;
 };
@@ -133,12 +130,6 @@ std::string DataOutport<T>::getContentInfo() const {
     } else {
         return port_traits<T>::class_identifier() + "Outport has no data";
     }
-}
-
-template <typename T>
-template <typename... A>
-std::shared_ptr<T> DataOutport<T>::createData(A&&...args)const {
-    return std::make_shared<T>(std::forward<A>(args)...);
 }
 
 }  // namespace
