@@ -95,6 +95,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/bytereaderutil.h
