@@ -131,7 +131,7 @@ void ABufferGeometryGLProcessor::geometryRender() {
         utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
         for (auto& drawer : drawers_) {
-            utilgl::setShaderUniforms(abufferGeometryShader_, *(drawer.second->getGeometry()),
+            utilgl::setShaderUniforms(abufferGeometryShader_, *(drawer.second->getMesh()),
                                       "geometry_");
             drawer.second->draw();
         }

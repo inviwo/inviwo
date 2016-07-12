@@ -90,7 +90,7 @@ void Mesh2DRenderProcessorGL::process() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getGeometry()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
         drawer.second->draw();
     }
 

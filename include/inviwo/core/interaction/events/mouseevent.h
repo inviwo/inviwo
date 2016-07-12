@@ -44,7 +44,7 @@ public:
                MouseState state = MouseState::Press,
                MouseButtons buttonState = MouseButtons(flags::empty),
                KeyModifiers modifiers = KeyModifiers(flags::empty), 
-               ivec2 position = ivec2(0),
+               dvec2 position = dvec2(0),
                uvec2 canvasSize = uvec2(0),
                double depth = 1.0);
 

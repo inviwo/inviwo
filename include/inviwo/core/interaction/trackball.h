@@ -138,7 +138,9 @@ protected:
     TrackballObject* object_;
     bool isMouseBeingPressedAndHold_;
 
-    vec2 lastMousePos_;
+   
+    vec3 lastNDC_;
+
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 

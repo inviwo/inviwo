@@ -35,84 +35,42 @@
 
 namespace inviwo {
 
-PickingContainer::PickingContainer()
-    : src_(nullptr)
-    , mousePickObj_(nullptr)
-    , prevMouseCoord_(uvec2(0, 0))
-    , touchPickingOn_(false)
-{}
+PickingContainer::PickingContainer() : src_(nullptr), touchPickingOn_(false) {}
 
 PickingContainer::~PickingContainer() = default;
 
-bool PickingContainer::pickingEnabled() {
-    return PickingManager::getPtr()->pickingEnabled();
-}
+bool PickingContainer::pickingEnabled() { return PickingManager::getPtr()->pickingEnabled(); }
 
-bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled()) return false;
+void PickingContainer::performMousePick(MouseEvent* e) {
+    if (!pickingEnabled()) return;
 
-    if (touchPickingOn_) return true;
+    if (touchPickingOn_) return;
 
     const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
 
-    switch(e->state()) {
-        case MouseState::Press: {
-            LogWarn("Press");
-            if ((mousePickObj_ = findPickingObject(coord))) {
-                
-                // Update picking object;
-                mousePickObj_->setPosition(normalizedCoordinates(coord));
-                mousePickObj_->setDepth(e->depth());
-                mousePickObj_->setDelta(vec2(0.f, 0.f));
-                mousePickObj_->setMouseEvent(*e);
-                
-                // Invoke callback
-                mousePickObj_->picked();
-                prevMouseCoord_ = coord;
-                return true;
-            }
-            break;
-        }
-        case MouseState::Move: {
-            LogWarn("Move");
-            if (mousePickObj_) {
-                // Update picking object;
-                mousePickObj_->setDelta(normalizedMovement(prevMouseCoord_, coord));
-                mousePickObj_->setMouseEvent(*e);
-                
-                // Invoke callback
-                mousePickObj_->picked();
-                prevMouseCoord_ = coord;
-                return true;
-            }
-            break;
-        }
-        case MouseState::Release: {
-            LogWarn("Release");
-            if (mousePickObj_) {
-                // Update picking object;
-                mousePickObj_->setDelta(normalizedMovement(prevMouseCoord_, coord));
-                mousePickObj_->setMouseEvent(*e);
-                
-                // Invoke callback
-                mousePickObj_->picked();
-                mousePickObj_ = nullptr;
-                return true;
-            }
-            break;
-        }
-        case MouseState::DoubleClick: {
-            LogWarn("DoubleClick");
-            break;
-        }
+    if (!mousePressed_ && e->state() == MouseState::Press) {
+        mousePressed_ = true;
+        pressedPickObj_ = findPickingObject(coord);
+    } else if (mousePressed_ && e->state() == MouseState::Release) {
+        mousePressed_ = false;
+        pressedPickObj_ = nullptr;
     }
-    return false;
+    
+    auto pickObj = mousePressed_ ? pressedPickObj_ : findPickingObject(coord);
+    
+    if (lastPickObj_ && pickObj != lastPickObj_) {
+        lastPickObj_->picked(e, PickingState::Finished);
+    }
+    if (pickObj) {
+        pickObj->picked(e, pickObj == lastPickObj_ ? PickingState::Updated : PickingState::Started);
+    }
+    lastPickObj_ = pickObj;
 }
 
 bool PickingContainer::performTouchPick(TouchEvent* e) {
     if (!pickingEnabled())
         return false;
-
+    /*
     std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
 
     // Clear the picked touch point map
@@ -217,6 +175,8 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         touchPickObjs_it->second->picked();
 
     return !touchPickObjs_.empty();
+    */
+    return false;
 }
 
 void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {
@@ -233,25 +193,15 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
             return PickingManager::getPtr()->getPickingObjectFromColor(color);
         }
     }
-
     return nullptr;
 }
 
-vec2 PickingContainer::normalizedMovement(const uvec2& previous, const uvec2& current) const {
-    return normalizedCoordinates(current) - normalizedCoordinates(previous);
-}
+uvec2 PickingContainer::clampToScreenCoords(dvec2 pos, ivec2 dim) {
+    pos.x = std::max(pos.x - 1.0, 0.0);
+    pos.x = std::min(pos.x, dim.x - 1.0);
 
-vec2 PickingContainer::normalizedCoordinates(const uvec2& coord) const {
-    return vec2(coord) / vec2(src_->getDimensions());
-}
-
-uvec2 PickingContainer::clampToScreenCoords(ivec2 mpos, ivec2 dim) {
-    ivec2 pos = mpos;
-    pos.x = std::max(pos.x - 1, 0);
-    pos.x = std::min(pos.x, dim.x - 1);
-
-    pos.y = std::max(dim.y - pos.y - 1, 0);
-    pos.y = std::min(pos.y, dim.y - 1);
+    pos.y = std::max(pos.y - 1.0, 0.0);
+    pos.y = std::min(pos.y, dim.y - 1.0);
 
     return uvec2(pos);
 }

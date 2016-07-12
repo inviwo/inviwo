@@ -60,22 +60,25 @@ class IVW_MODULE_BASEGL_API ViewManager {
 public:
     ViewManager();
 
-    /** 
-     * \brief Creates a new event for the currently active viewport. 
-     * Sets the viewport that the event lie in as active when starting an action (pressing/touching).
+    /**
+     * \brief Creates a new event for the currently active viewport.
+     * Sets the viewport that the event lie in as active when starting an action
+     * (pressing/touching).
      * Further events will be propagated to the active viewport until a release appears.
      * Returns null if the initiating (pressing/touching) event is outside the added viewports.
      *
      * @param Event * event The event to transform.
-     * @return Event* An event transformed to the active viewport or null if initiated outside of added views.
+     * @return Event* An event transformed to the active viewport or null if initiated outside of
+     * added views.
      */
     Event* registerEvent(const Event* event);
-    /** 
-     * \brief Get the untransformed position, relative to the original viewport size, in the coordinate system of the ViewManager.
-     * 
-     * @return ivec2 The pixel position in the same coordinate system as the ViewManager.
+    /**
+     * \brief Get the untransformed position, relative to the original viewport size, in the
+     * coordinate system of the ViewManager.
+     *
+     * @return dvec2 The pixel position in the same coordinate system as the ViewManager.
      */
-    ivec2 getActivePosition() const { return activePosition_; }
+    dvec2 getActivePosition() const { return activePosition_; }
     /** 
      * \brief Returns the index of the last active view. Returns -1 if no active view has been set.
      * 
@@ -108,11 +111,11 @@ public:
 
 private:
     int findView(ivec2 pos) const;
-    static ivec2 flipY(ivec2 pos, ivec2 size);
+
     static bool inView(const ivec4& view, const ivec2& pos);
 
     bool viewportActive_;
-    ivec2 activePosition_;
+    dvec2 activePosition_;
     int activeView_;
     std::vector<ivec4> views_;
 };

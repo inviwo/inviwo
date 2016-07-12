@@ -32,10 +32,13 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
+
+#include <inviwo/core/interaction/pickingstate.h>
 
 namespace inviwo {
+
+class Event;
+
 
 /** \class PickingObject
  */
@@ -43,79 +46,128 @@ class IVW_CORE_API PickingObject {
 public:
     friend class PickingManager;
 
-    enum class InteractionEventType {
-        NoneSupported = 0,
-        MouseInteraction = 1,
-        TouchInteraction = 2
-    };
+    using Action = std::function<void(const PickingObject*)>;
 
+    /**
+    * Create a picking object for "size" objects starting a "start"
+    * PickingObjects are usually created by the Picking manager
+    */
     PickingObject(size_t start, size_t size = 1);
 
     virtual ~PickingObject();
 
+    /**
+    * Returns the global picking index, the global index can be used with the 
+    * PickingManager::indexToColor(size_t index) function to get a picking color.
+    * \param id the local picking index 
+    */
     size_t getPickingId(size_t id = 0) const;
-    size_t getPickedId() const;
-    size_t getSize() const;
 
+    /**
+     *	The picking color to use for the object with local index id.
+     *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
+     * \param id the local picking index 
+     */
     vec3 getColor(size_t id = 0) const;
     /**
-    * \brief Returns initial position of picking
-    * @return initial picking position
-    */
-    vec2 getInitialPosition() const;
-    
-    vec2 getPosition() const;
-    
-    /**
-    * \brief Returns the delta of the last mouse movement
-    * @return last mouse movement delta (normalized with respect to screen coordinates)
-    */
-    vec2 getDelta() const;
-
-    /** 
-     * \brief Returns delta between current mouse position and initial picking position
-     * @return delta of current mouse position and picking start (normalized with respect
-     *         to screen coordinates)
-     * \see getInitialPosition
+     *	The number of local picking indices in this picking object.
      */
-    vec2 getTotalDelta() const;
+    size_t getSize() const;
 
+    /**
+     *	Returns the local picking index of the object currently being picked. 
+     */
+    size_t getPickedId() const;
+
+    /**
+    * Returns the current normalized position
+    */
+    dvec2 getPosition() const;
+    /**
+    * Returns the current normalized depth
+    */
     double getDepth() const;
 
-    void picked() const;
+    /**
+    * Returns the previous normalized position
+    */
+    dvec2 getPreviousPosition() const;
+    /**
+    * Returns the previous normalized depth
+    */
+    double getPreviousDepth() const;
 
-    InteractionEventType getInteractionType() const;
+    /**
+    * Returns the normalized position of the most resent press
+    */
+    dvec2 getPressPosition() const;
+    /**
+    * Returns the normalized depth of the most resent press
+    */
+    double getPressDepth() const;
 
-    void setMouseEvent(MouseEvent);
-    const MouseEvent& getMouseEvent() const;
+    /**
+    * Returns the delta of the previous and current position;
+    */
+    dvec2 getDeltaPosition() const;
+    /**
+    * Returns the delta of the previous and current depth;
+    */
+    double getDeltaDepth() const;
 
-    void setTouchEvent(TouchEvent);
-    const TouchEvent& getTouchEvent() const;
+    /**
+    * Returns the delta of the press position and current position;
+    */
+    dvec2 getDeltaPressPosition() const;
+    
+    /**
+    * Returns the delta of the press depth and current depth;
+    */
+    double getDeltaPressDepth() const;
 
-    void setDelta(vec2);
-    void setPosition(vec2);
-    void setDepth(double);
+    /**
+     * Returns the normalized device coordinates. Position and depth normalized to the range of
+     * (-1,1) In in a left handed coordinate system.  The lower left near will be (-1,-1,-1)
+     * And the upper right far (1,1,1)
+     */
+    dvec3 getNDC() const;
+    dvec3 getPreviousNDC() const;
+    dvec3 getPressNDC();
+
+    PickingState getState() const;
+
+    void picked(Event* event, PickingState state);
+
+    Event* getEvent() const;
+
+    void setAction(Action action);
+    Action getAction() const;
+
+    bool isEnabled() const;
+    void setEnabled(bool enabled);
 
 private:
     size_t getCapacity() const;
     void setSize(size_t size);
     void setPickedId(size_t id);
-    void setCallback(std::function<void(const PickingObject*)> func);
 
     size_t start_;
     size_t size_;
     size_t capacity_;
+
     size_t pickedId_ = 0;
+    PickingState state_ = PickingState::None;
 
-    MouseEvent mouseEvent_;
-    TouchEvent touchEvent_;
-    InteractionEventType interactionEventType_;
+    Event* event_ = nullptr;
+    
+    dvec3 pressNDC_ = dvec3(0.0);
+    dvec2 pressPosition_ = vec2(0.0);
 
-    vec2 pos_;
-    double depth_;
-    vec2 move_;
+    dvec3 previousNDC_ = dvec3(0.0);
+    dvec2 previousPosition_ = dvec2(0.0);
 
-    std::function<void(const PickingObject*)> callback_;
+    Action action_;
+    bool enabled_ = true;
 };
 
 } // namespace

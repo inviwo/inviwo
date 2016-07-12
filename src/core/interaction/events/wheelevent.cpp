@@ -31,17 +31,17 @@
 
 namespace inviwo {
 
-WheelEvent::WheelEvent(MouseButtons buttonState, KeyModifiers modifiers, ivec2 delta,
-                       ivec2 position, uvec2 canvasSize, double depth) :
+WheelEvent::WheelEvent(MouseButtons buttonState, KeyModifiers modifiers, dvec2 delta,
+                       dvec2 position, uvec2 canvasSize, double depth) :
 MouseInteractionEvent(buttonState, modifiers, position, canvasSize, depth), delta_(delta) {}
 
 WheelEvent* WheelEvent::clone() const {
     return new WheelEvent(*this);
 }
 
-ivec2 WheelEvent::delta() const { return delta_;}
+dvec2 WheelEvent::delta() const { return delta_;}
 
-void WheelEvent::setDelta(ivec2 delta) {delta_ = delta;}
+void WheelEvent::setDelta(dvec2 delta) {delta_ = delta;}
 
 uint64_t WheelEvent::hash() const {
     return chash();

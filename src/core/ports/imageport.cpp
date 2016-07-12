@@ -125,7 +125,6 @@ void ImageOutport::propagateEvent(Event* event) {
     if (image_ && handleResizeEvents_ && newDimensions != image_->getDimensions()) { 
         // resize data.
         image_->setDimensions(newDimensions);
-        //defaultDimensions_ = image_->getDimensions();
         cache_.setInvalid();
 
         broadcast(newEvent.get());

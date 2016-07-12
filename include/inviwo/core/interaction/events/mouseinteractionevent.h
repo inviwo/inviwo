@@ -41,7 +41,7 @@ class IVW_CORE_API MouseInteractionEvent : public InteractionEvent {
 public:
     MouseInteractionEvent(MouseButtons buttonState = MouseButtons(flags::empty),
                           KeyModifiers modifiers = KeyModifiers(flags::empty),
-                          ivec2 position = ivec2(0), uvec2 canvasSize = uvec2(0),
+                          dvec2 position = dvec2(0), uvec2 canvasSize = uvec2(0),
                           double depth = 1.0);
 
     MouseInteractionEvent(const MouseInteractionEvent& rhs) = default;
@@ -56,10 +56,14 @@ public:
     void setButtonState(MouseButtons buttonState);
 
     /**
-     *	Position of the mouse in the canvas
+     * Position of the mouse in the canvas. The lower left corner is (0,0)
+     * the upper right corner is (canvasSize.x, canvasSize.y) This is in accordance
+     * with the positioning within an Inviwo Layer and an OpenGL texture. But opposite to
+     * QT which has (0,0) at the top left corner. The depth is then defined to be positive
+     * inwards by default, resulting in a left handed coordinate system.  
      */
-    ivec2 pos() const;
-    void setPos(ivec2 pos);
+    dvec2 pos() const;
+    void setPos(dvec2 pos);
 
     /**
      *	The size of the canvas where the event occurred.
@@ -70,20 +74,36 @@ public:
     /**
     * Retrieve depth value in normalized device coordinates at mouse position.
     * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
-    * Will be 1 if no depth value is available.
+    * Will be 1 if no depth value is available. The depth is then defined to be positive
+    * inwards by default, resulting in a left handed coordinate system together with the position.
     */
     double depth() const;
     void setDepth(double depth);
 
-    vec2 posNormalized() const;
-    unsigned int x() const;
-    unsigned int y() const;
+    /**
+     * Returns the position normalized to the range (0,1). The lower left will be (0,0) 
+     * And the upper right (1,1)
+     */
+    dvec2 posNormalized() const;
+    void setPosNormalized(dvec2 pos);
+
+    /**
+     * Returns the normalized device coordinates. Position and depth normalized to the range of
+     * (-1,1) In in a left handed coordinate system.  The lower left near will be (-1,-1,-1)
+     * And the upper right far (1,1,1)
+     */
+    dvec3 ndc() const;
+
+    double x() const;
+    double y() const;
+
     std::string buttonName() const;
 
 private:
     MouseButtons buttonState_;
 
-    ivec2 position_;
+    // Position is normalized to (0,1)
+    dvec2 position_;
     uvec2 canvasSize_;
     double depth_;  ///< Depth in normalized device coordinates [-1 1].
 };

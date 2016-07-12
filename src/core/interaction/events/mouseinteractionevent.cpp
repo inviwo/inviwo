@@ -32,32 +32,36 @@
 namespace inviwo {
 
 MouseInteractionEvent::MouseInteractionEvent(MouseButtons buttonState, KeyModifiers modifiers,
-                                             ivec2 position, uvec2 canvasSize, double depth)
+                                             dvec2 position, uvec2 canvasSize, double depth)
     : InteractionEvent(modifiers)
     , buttonState_(buttonState)
-    , position_(position)
+    , position_(position / dvec2(canvasSize))
     , canvasSize_(canvasSize)
     , depth_(depth) {}
 
-inviwo::MouseButtons MouseInteractionEvent::buttonState() const { return buttonState_; }
+MouseButtons MouseInteractionEvent::buttonState() const { return buttonState_; }
 
 void MouseInteractionEvent::setButtonState(MouseButtons buttonState) { buttonState_ = buttonState; }
 
-inviwo::ivec2 MouseInteractionEvent::pos() const { return position_; }
+dvec2 MouseInteractionEvent::pos() const { return position_ * dvec2(canvasSize_); }
 
-void MouseInteractionEvent::setPos(ivec2 pos) { position_ = pos; }
+void MouseInteractionEvent::setPos(dvec2 pos) { position_ = pos / dvec2(canvasSize_); }
 
-inviwo::uvec2 MouseInteractionEvent::canvasSize() const { return canvasSize_; }
+uvec2 MouseInteractionEvent::canvasSize() const { return canvasSize_; }
 
 void MouseInteractionEvent::setCanvasSize(uvec2 size) { canvasSize_ = size; }
 
-inviwo::vec2 MouseInteractionEvent::posNormalized() const {
-    return vec2(vec2(position_) / vec2(canvasSize_));
+dvec2 MouseInteractionEvent::posNormalized() const { return position_; }
+
+void MouseInteractionEvent::setPosNormalized(dvec2 pos) { position_ = pos; }
+
+dvec3 MouseInteractionEvent::ndc() const {
+    return dvec3(2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_);
 }
 
-unsigned int MouseInteractionEvent::x() const { return position_.x; }
+double MouseInteractionEvent::x() const { return position_.x * canvasSize_.x; }
 
-unsigned int MouseInteractionEvent::y() const { return position_.y; }
+double MouseInteractionEvent::y() const { return position_.y * canvasSize_.y; }
 
 double MouseInteractionEvent::depth() const { return depth_; }
 

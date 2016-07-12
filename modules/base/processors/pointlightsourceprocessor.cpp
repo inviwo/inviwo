@@ -226,7 +226,7 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
             if (mouseEvent->button() == MouseButton::Middle) {
                 // setLightPosFromScreenCoords(mouseEvent->posNormalized());
                 mouseEvent->markAsUsed();
-                screenPos_->set(mouseEvent->posNormalized());
+                screenPos_->set(static_cast<vec2>(mouseEvent->posNormalized()));
                 return;
             }
         }
@@ -248,20 +248,19 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
     vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f));
     vec3 rayDir = glm::normalize(
         camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f)) - rayOrigin);
-    float t0 = 0, t1 = std::numeric_limits<float>::max();
-    float lightRadius = glm::length(lightPosition_->get());
 
-    if (raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, &t0, &t1)) {
-        lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
+    float lightRadius = glm::length(lightPosition_->get());
+    auto res = raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, 0.0f,
+                                     std::numeric_limits<float>::max());
+    if (res.first) {
+        lightPosition_->set(glm::normalize(rayOrigin + res.second * rayDir) * lightRadius);
     } else {
-        // Project it to the rim of the sphere
-        t0 = 0;
-        t1 = std::numeric_limits<float>::max();
-        if (rayPlaneIntersection(camera_->getLookTo(),
-                                 glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
-                                 rayOrigin, rayDir, &t0, &t1)) {
+        auto res2 = rayPlaneIntersection(
+            camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
+            rayOrigin, rayDir);
+        if (res2.first) {
             // Project it to the edge of the sphere
-            lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
+            lightPosition_->set(glm::normalize(rayOrigin + res2.second * rayDir) * lightRadius);
         }
     }
     // Ensure that up vector is same as camera afterwards

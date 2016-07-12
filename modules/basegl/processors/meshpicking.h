@@ -45,6 +45,8 @@
 
 namespace inviwo {
 
+class MeshDrawerGL;
+
 /** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
  * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
  * Composite image with mesh where mesh repositioned through picking
@@ -89,6 +91,7 @@ private:
     OptionPropertyInt cullFace_;
 
     FloatVec3Property position_;
+    FloatVec4Property highlightColor_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
@@ -96,6 +99,11 @@ private:
     PickingMapper picking_;
 
     Shader shader_;
+
+    std::shared_ptr<const Mesh> mesh_;
+    std::unique_ptr<MeshDrawerGL> drawer_;
+
+    bool highlight_ = false;
 };
 
 }  // namespace

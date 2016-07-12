@@ -71,7 +71,7 @@ public:
     DrawMode getDrawMode(DrawType, ConnectivityType) const;
     GLenum getGLDrawMode(DrawMode) const;
 
-    virtual const Mesh* getGeometry() const override { return meshToDraw_; }
+    virtual const Mesh* getMesh() const override { return meshToDraw_; }
 
 protected:
     virtual MeshDrawer* create(const Mesh* geom) const override { return new MeshDrawerGL(geom); }

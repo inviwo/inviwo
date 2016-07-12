@@ -587,9 +587,8 @@ void VolumeSliceGL::eventShiftSlice(Event* event) {
 }
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 mousePos(mouseEvent->posNormalized());
-    setVolPosFromScreenPos(vec2(mousePos.x, 1.0f - mousePos.y));
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    setVolPosFromScreenPos(static_cast<vec2>(mouseEvent->posNormalized()));
     event->markAsUsed();
 }
 

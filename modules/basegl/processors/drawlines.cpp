@@ -122,17 +122,15 @@ void DrawLines::eventDraw(Event* event){
     if (!drawModeEnabled_)
         return;
 
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 line = mouseEvent->posNormalized();
-    line *= 2.f;
-    line -= 1.f;
-    line.y = -line.y;
-    addPoint(line);
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    auto line = mouseEvent->ndc();
+
+    addPoint(vec2(line.x, line.y));
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void DrawLines::eventEnableDraw(Event* event){
-    KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
+    auto keyEvent = static_cast<KeyboardEvent*>(event);
     drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 

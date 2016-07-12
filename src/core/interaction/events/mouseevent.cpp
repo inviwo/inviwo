@@ -32,7 +32,7 @@
 namespace inviwo {
 
 MouseEvent::MouseEvent(MouseButton button, MouseState state, MouseButtons buttonState,
-                       KeyModifiers modifiers, ivec2 position, uvec2 canvasSize, double depth)
+                       KeyModifiers modifiers, dvec2 position, uvec2 canvasSize, double depth)
     : MouseInteractionEvent(buttonState, modifiers, position, canvasSize, depth)
     , button_(button)
     , state_(state) {}

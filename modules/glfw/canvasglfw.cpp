@@ -161,7 +161,7 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
         return;
     }
 
-    CanvasGLFW* thisCanvas = getCanvasGLFW(window);
+    auto thisCanvas = getCanvasGLFW(window);
 
     KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)));
 
@@ -169,64 +169,46 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
 }
 
 void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mods) {
-    CanvasGLFW* thisCanvas = getCanvasGLFW(window);
+    auto thisCanvas = getCanvasGLFW(window);
     thisCanvas->mouseButton_ = mapMouseButton(button);
     thisCanvas->mouseState_ = mapMouseState(action);
     thisCanvas->mouseModifiers_ = mapModifiers(mods);
-    double x;
-    double y;
-    glfwGetCursorPos(window, &x, &y);
-    ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x,
-                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
-    
-    MouseEvent mouseEvent(thisCanvas->mouseButton_,
-                          thisCanvas->mouseState_,
-                          thisCanvas->mouseButton_,
-                          thisCanvas->mouseModifiers_,
-                          screenPos,
-                          thisCanvas->getScreenDimensions(),
-                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
+    dvec2 pos;
+    glfwGetCursorPos(window, &pos.x, &pos.y);
+    pos = util::invertY(pos, thisCanvas->getScreenDimensions());
+
+    MouseEvent mouseEvent(thisCanvas->mouseButton_, thisCanvas->mouseState_,
+                          thisCanvas->mouseButton_, thisCanvas->mouseModifiers_, pos,
+                          thisCanvas->getScreenDimensions(), thisCanvas->getDepthValueAtCoord(pos));
 
     thisCanvas->propagateEvent(&mouseEvent);
 }
 
 void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
-    CanvasGLFW* thisCanvas = getCanvasGLFW(window);
-    ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x,
-                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
+    auto thisCanvas = getCanvasGLFW(window);
+
+    const auto pos = util::invertY(dvec2(x, y), thisCanvas->getScreenDimensions());
 
     MouseState state =
         (thisCanvas->mouseState_ == MouseState::Press ? MouseState::Move : thisCanvas->mouseState_);
-    MouseEvent mouseEvent(thisCanvas->mouseButton_,
-                          state,
-                          thisCanvas->mouseButton_,
-                          thisCanvas->mouseModifiers_,
-                          screenPos,
-                          thisCanvas->getScreenDimensions(),
-                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
+    MouseEvent mouseEvent(thisCanvas->mouseButton_, state, thisCanvas->mouseButton_,
+                          thisCanvas->mouseModifiers_, pos, thisCanvas->getScreenDimensions(),
+                          thisCanvas->getDepthValueAtCoord(pos));
 
     thisCanvas->propagateEvent(&mouseEvent);
 }
 
 void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
-    CanvasGLFW* thisCanvas = getCanvasGLFW(window);
+    auto thisCanvas = getCanvasGLFW(window);
 
-    double x;
-    double y;
-    glfwGetCursorPos(window, &x, &y);
-    ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x,
-                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
-    
-    WheelEvent wheelEvent(thisCanvas->mouseButton_,
-                          thisCanvas->mouseModifiers_,
-                          ivec2(round(xoffset), round(yoffset)),
-                          screenPos,
-                          thisCanvas->getScreenDimensions(),
-                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
+    dvec2 pos;
+    glfwGetCursorPos(window, &pos.x, &pos.y);
+    pos = util::invertY(pos, thisCanvas->getScreenDimensions());
+
+    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->mouseModifiers_,
+                          dvec2(xoffset, yoffset), pos, thisCanvas->getScreenDimensions(),
+                          thisCanvas->getDepthValueAtCoord(pos));
 
     thisCanvas->propagateEvent(&wheelEvent);
 }

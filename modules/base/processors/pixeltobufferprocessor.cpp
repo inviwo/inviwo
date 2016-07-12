@@ -107,7 +107,7 @@ void PixelToBufferProcessor::handleInteractionEventsChanged() {
 void PixelToBufferProcessor::invokeEvent(Event* event) {
     if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
         if (mouseEvent->button() == MouseButton::Left && mouseEvent->state() == MouseState::Press) {
-            fromPixel_.set(mouseEvent->pos());
+            fromPixel_.set(static_cast<ivec2>(mouseEvent->pos()));
             clearOutput();
             mouseEvent->markAsUsed();
         }

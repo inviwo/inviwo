@@ -88,7 +88,7 @@ public:
      *
      * @return
      */
-    virtual const Mesh* getGeometry() const = 0;
+    virtual const Mesh* getMesh() const = 0;
 
 protected:
     /**

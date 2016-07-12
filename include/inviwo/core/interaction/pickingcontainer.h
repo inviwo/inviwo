@@ -48,8 +48,7 @@ public:
 
     bool pickingEnabled();
 
-    // Return true if picking was performed, otherwise false
-    bool performMousePick(MouseEvent*);
+    void performMousePick(MouseEvent*);
     bool performTouchPick(TouchEvent*);
 
     void setPickingSource(std::shared_ptr<const Image> src);
@@ -81,13 +80,15 @@ protected:
      * @param dim   canvas dimensions used for clamping
      * @return clamped position
      */
-    static uvec2 clampToScreenCoords(ivec2 mpos, ivec2 dim);
+    static uvec2 clampToScreenCoords(dvec2 mpos, ivec2 dim);
 
 private:
     std::shared_ptr<const Image> src_;
 
-    PickingObject* mousePickObj_;
-    uvec2 prevMouseCoord_;
+
+    bool mousePressed_ = false;
+    PickingObject* lastPickObj_ = nullptr;
+    PickingObject* pressedPickObj_ = nullptr;
 
     bool touchPickingOn_;
 

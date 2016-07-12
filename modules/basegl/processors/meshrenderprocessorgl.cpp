@@ -240,7 +240,7 @@ void MeshRenderProcessorGL::process() {
     utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getGeometry()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
         drawer.second->draw();
     }
 

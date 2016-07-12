@@ -111,12 +111,11 @@ void DrawPoints::eventDraw(Event* event){
     if (!drawModeEnabled_)
         return;
 
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 point = mouseEvent->posNormalized();
-    point *= 2.f;
-    point -= 1.f;
-    point.y = -point.y;
-    addPoint(point);
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    auto point = mouseEvent->ndc();
+
+    addPoint(vec2(point.x, point.y));
+
     invalidate(InvalidationLevel::InvalidOutput);
 }
 

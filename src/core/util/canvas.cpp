@@ -71,7 +71,7 @@ void Canvas::propagateEvent(Event* event) {
     switch (event->hash()) {
         case MouseEvent::chash(): {
             auto me = static_cast<MouseEvent*>(event);
-            if (pickingContainer_.performMousePick(me)) return;
+            pickingContainer_.performMousePick(me);
             break;
         }
         case TouchEvent::chash(): {
@@ -80,6 +80,8 @@ void Canvas::propagateEvent(Event* event) {
             break;
         }
     }
+
+    if (event->hasBeenUsed()) return;
 
     if (propagator_) {
         propagator_->propagateEvent(event, nullptr);

@@ -42,8 +42,8 @@ class IVW_CORE_API WheelEvent : public MouseInteractionEvent {
 public:
     WheelEvent(MouseButtons buttonState = MouseButtons(flags::empty),
                KeyModifiers modifiers = KeyModifiers(flags::empty), 
-               ivec2 delta = ivec2(0),
-               ivec2 position = ivec2(0),
+               dvec2 delta = dvec2(0),
+               dvec2 position = dvec2(0),
                uvec2 canvasSize = uvec2(0),
                double depth = 1.0);
 
@@ -53,8 +53,8 @@ public:
 
     virtual ~WheelEvent() = default;
 
-    ivec2 delta() const;
-    void setDelta(ivec2 delta);
+    dvec2 delta() const;
+    void setDelta(dvec2 delta);
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() {
@@ -62,7 +62,7 @@ public:
     }
 
 private:
-    ivec2 delta_;
+    dvec2 delta_;
 };
 
 } // namespace
