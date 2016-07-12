@@ -48,6 +48,12 @@ const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) con
     return it->second;
 }
 
+bool IntegralLine::hasMetaData(const std::string &name) const
+{
+    auto it = metaData_.find(name);
+    return it != metaData_.end();
+}
+
 double IntegralLine::getLength() const {
     if (length_ == -1) {
         
