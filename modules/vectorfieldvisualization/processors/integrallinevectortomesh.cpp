@@ -32,7 +32,49 @@
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
+
+
 namespace inviwo {
+    namespace {
+        struct Timestep {
+            Timestep(const IntegralLine &line) {
+                hasMetaData_ = line.hasMetaData("timestamp");
+                if (hasMetaData_) {
+                    it = line.getMetaData("timestamp").begin();
+                    t = it->x;
+                }
+                else {
+                    t = 0;
+                    dt = 1.0f / (line.getPositions().size() - 1);
+                }
+            }
+
+            operator float&() { return t; }
+            operator const float&() const { return t; }
+
+            float operator++() {
+                if (hasMetaData_) {
+                    it++;
+                    t = it->x;
+                }
+                else {
+                    t += dt;
+                }
+                return t;
+            }
+            float operator++(int) {
+                float prevt = t;
+                operator++();
+                return prevt;
+            }
+
+        private:
+            std::vector<dvec3>::const_iterator it;
+            bool hasMetaData_;
+            float t;
+            float dt;
+        };
+    }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
@@ -53,7 +95,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , mesh_("mesh")
     , ignoreBrushingList_("ignoreBrushingList", "Ignore Brushing List", false)
 
-    //    , coloringMethod_("coloringMethod", "Color by")
+    , timeBasedFiltering_("timeBasedFiltering","Time Based Filtering" , false)
+    , minMaxT_("minMaxT","Min/Max Timestep", -1,1,-10,10)
+    , setFromData_("setFromData","Set from data")
+    
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
@@ -73,6 +118,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     addProperty(stride_);
 
+    addProperty(timeBasedFiltering_);
+    timeBasedFiltering_.addProperty(minMaxT_);
+    timeBasedFiltering_.addProperty(setFromData_);
+
 
     tf_.autoLinkToProperty<PathLines>("transferFunction");
     tf_.autoLinkToProperty<StreamLines>("transferFunction");
@@ -85,6 +134,32 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     setAllPropertiesCurrentStateAsDefault();
     
 
+    setFromData_.onChange([&]() {
+        if (lines_.hasData()) {
+            float minT = std::numeric_limits<float>::max();
+            float maxT = std::numeric_limits<float>::lowest();
+
+            for (auto &line : (*lines_.getData())) {
+                auto size = line.getPositions().size();
+                if (size == 0) continue;
+
+                if (!ignoreBrushingList_.get() && brushingList_.isFiltered(line.getIndex())) {
+                    continue;
+                }
+
+                Timestep t(line);
+                for (size_t ii = 0; ii < size; ii++) {
+                    float tt = t++;
+                    minT = std::min(minT, tt);
+                    maxT = std::max(tt, maxT);
+                }
+            }
+            NetworkLock lock(getNetwork());
+            minMaxT_.setRangeMin(minT);
+            minMaxT_.setRangeMax(maxT);
+            minMaxT_.set(vec2(minT,maxT));
+        }
+    });
 
 }
     
@@ -99,6 +174,8 @@ void IntegralLineVectorToMesh::process() {
 
     vertices.reserve(lines_.getData()->size()*2000);
 
+   
+
     for (auto &line : (*lines_.getData())) {
         auto size = line.getPositions().size();
         if (size == 0) continue;
@@ -110,6 +187,7 @@ void IntegralLineVectorToMesh::process() {
 
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData("velocity").begin();
+        Timestep t(line);
 
         auto indexBuffer =
             mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
@@ -118,19 +196,26 @@ void IntegralLineVectorToMesh::process() {
 
         vec4 c(1, 1, 1, 1);
 
-        indexBuffer->add(0);
+        indexBuffer->add(vertices.size() - 1);
 
+
+        bool first = true;
         for (size_t ii = 0; ii < size; ii++) {
             vec3 pos(*position);
             vec3 v(*velocity);
 
             position++;
             velocity++;
+            float tt = t++;
 
-
-            if (!(ii == size - 1 || ii%stride_.get() == 0) ) {
+            if (timeBasedFiltering_.isChecked() && (tt < minMaxT_.get().x || tt > minMaxT_.get().y)) {
                 continue;
             }
+
+            if (!first && (!(ii == size - 1 || ii%stride_.get() == 0) )) {
+                continue;
+            }
+            first = false;
 
             float l = glm::length(v);
             float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
@@ -140,6 +225,7 @@ void IntegralLineVectorToMesh::process() {
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
             vertices.push_back({ pos,glm::normalize(v),pos,c });
+
 
         }
         indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));

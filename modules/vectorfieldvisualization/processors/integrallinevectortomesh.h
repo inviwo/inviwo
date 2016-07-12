@@ -44,7 +44,10 @@
 
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 
 namespace inviwo {
@@ -87,6 +90,10 @@ private:
     BoolProperty ignoreBrushingList_;
 
     IntSizeTProperty stride_;
+
+    BoolCompositeProperty timeBasedFiltering_;
+    FloatMinMaxProperty minMaxT_;
+    ButtonProperty setFromData_ ;
 
     TransferFunctionProperty tf_;
     //TemplateOptionProperty<ColoringMethod> coloringMethod_;
