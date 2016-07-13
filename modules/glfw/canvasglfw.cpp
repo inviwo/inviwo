@@ -62,7 +62,8 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     }
 #endif
 
-    glWindow_ = glfwCreateWindow(getCanvasDimensions().x, getCanvasDimensions().y,
+    glWindow_ = glfwCreateWindow(static_cast<int>(getCanvasDimensions().x), 
+                                 static_cast<int>(getCanvasDimensions().y),
                                  windowTitle_.c_str(), nullptr, sharedContext_);
 
     if (!glWindow_) {

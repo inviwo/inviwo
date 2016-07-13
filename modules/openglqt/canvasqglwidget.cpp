@@ -111,7 +111,8 @@ void CanvasQGLWidget::paintGL() {
 }
 
 void CanvasQGLWidget::resize(size2_t size) {
-    QGLWidget::resize(size.x, size.y); // this should trigger a resize event.
+    // this should trigger a resize event.
+    QGLWidget::resize(static_cast<int>(size.x), static_cast<int>(size.y));
 }
 
 Canvas::ContextID CanvasQGLWidget::activeContext() const {
