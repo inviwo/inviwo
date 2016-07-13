@@ -91,6 +91,8 @@ void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
+void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
+
 const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
 
 const IndexBuffer* Mesh::getIndicies(size_t idx) const { return indices_[idx].second.get(); }
