@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class Mesh;
+
 /** \docpage{org.inviwo.OrientationIndicator, Orientation Marker}
  * ![](org.inviwo.OrientationIndicator.png?classIdentifier=org.inviwo.OrientationIndicator)
  * Generates a mesh with three arrows indication the direction of the three coordinate axes.
@@ -75,7 +77,9 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 private:
-    MeshOutport mesh_;
+    void updateMesh();
+
+    MeshOutport outport_;
 
     FloatVec4Property baseColor_;
     FloatVec4Property xColor_;
@@ -94,7 +98,7 @@ private:
 
     FloatVec3Property offset_;
 
-
+    std::shared_ptr<Mesh> mesh_;
 };
 
 } // namespace
