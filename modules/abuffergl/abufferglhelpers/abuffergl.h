@@ -98,6 +98,9 @@ public:
     public:
         ABufferGLInteractionHandler(Inviwo_ABufferGL4* parent);
         ~ABufferGLInteractionHandler(){};
+
+        virtual std::string getClassIdentifier() const override; 
+
         void invokeEvent(Event* event);
 
     private:

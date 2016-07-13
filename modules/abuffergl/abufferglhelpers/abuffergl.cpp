@@ -777,6 +777,10 @@ Inviwo_ABufferGL4::ABufferGLInteractionHandler::ABufferGLInteractionHandler(
     , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control)
     , parent_(parent) {}
 
+std::string Inviwo_ABufferGL4::ABufferGLInteractionHandler::getClassIdentifier() const {
+    return "org.inviwo.ABufferGLInteractionHandler";
+}
+
 void Inviwo_ABufferGL4::ABufferGLInteractionHandler::invokeEvent(Event* event) {
     MouseEvent* mEvent = dynamic_cast<MouseEvent*>(event);
     if (mEvent) prevMousePos_ = glm::ivec2(mEvent->x(), mEvent->y());
