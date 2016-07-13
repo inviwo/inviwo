@@ -146,8 +146,9 @@ Shader* CanvasGL::noiseShader() {
 void CanvasGL::renderNoise() {
     if (!ready()) return;
     LGL_ERROR;
-    
-    glViewport(0, 0, getCanvasDimensions().x, getCanvasDimensions().y);
+
+    glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
+               static_cast<GLsizei>(getCanvasDimensions().y));
     LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
@@ -162,7 +163,8 @@ void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
     LGL_ERROR;
 
-    glViewport(0, 0, getCanvasDimensions().x, getCanvasDimensions().y);
+    glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
+               static_cast<GLsizei>(getCanvasDimensions().y));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

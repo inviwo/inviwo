@@ -117,7 +117,7 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
         
         dvec3 camDir(glm::normalize(camera_.get().getDirection()));
 
-        position_.set(position_.get() + vec3(0.05*(Zf-Zn)*we->delta().y * camDir));
+        position_.set(position_.get() + vec3(0.01*(Zf-Zn)*we->delta().y * camDir));
     }
 
     if (p->getState() == PickingState::Started) {

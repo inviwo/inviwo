@@ -257,7 +257,7 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
     } else {
         auto res2 = rayPlaneIntersection(
             camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
-            rayOrigin, rayDir);
+            rayOrigin, rayDir, 0.0f, std::numeric_limits<float>::max());
         if (res2.first) {
             // Project it to the edge of the sphere
             lightPosition_->set(glm::normalize(rayOrigin + res2.second * rayDir) * lightRadius);

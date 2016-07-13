@@ -468,8 +468,6 @@ set(SOURCE_FILES
     util/formats.cpp
     util/imagecache.cpp
     util/imagesampler.cpp
-    util/intersection/rayplaneintersection.cpp
-    util/intersection/raysphereintersection.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/logcentral.cpp

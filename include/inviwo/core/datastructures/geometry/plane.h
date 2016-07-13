@@ -38,7 +38,6 @@ namespace inviwo {
 struct IntersectionResult;
 
 class IVW_CORE_API Plane {
-
 public:
     Plane();
     Plane(vec3 point, vec3 normal);
@@ -47,9 +46,9 @@ public:
     vec3 getPoint() const;
     vec3 getNormal() const;
 
-    /** 
+    /**
      * \brief Get intersection point with plane between p1 and p2
-     * 
+     *
      * @param const vec3 & p1 Start point
      * @param const vec3 & p2 End point
      * @return vec3 Intersected point
@@ -75,7 +74,6 @@ public:
 private:
     vec3 point_;
     vec3 normal_;
-
 };
 
 struct IntersectionResult {
@@ -84,22 +82,6 @@ struct IntersectionResult {
     vec3 intersection_;
     bool intersects_;
 };
-
-/**
- * Computes ray-plane intersection point and
- * returns true if the ray hit the plane.
- *
- * @param origin Ray origin
- * @param dir Ray direction
- * @param pointInPlane Point on the plane
- * @param planeNormal Normalized plane normal
- * @param tHit Distance to hit point along ray direction if hit, otherwise undefined
- * @return Pair, first is True if ray hit the plane, false otherwise;  
- *               second is the Distance to hit point along ray direction if hit, otherwise 0.0f 
- */
-IVW_CORE_API std::pair<bool, float> rayPlaneIntersection(const vec3& origin, const vec3& dir,
-                                                         const vec3& pointInPlane,
-                                                         const vec3& planeNormal);
 
 } // namespace
 

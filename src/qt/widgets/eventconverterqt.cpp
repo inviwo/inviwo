@@ -96,6 +96,8 @@ GestureState getGestureState(const QGesture* gesture) {
             return GestureState::Finished;
         case Qt::GestureCanceled:
             return GestureState::Canceled;
+        default:
+            return GestureState::NoGesture;
     }
 }
 
