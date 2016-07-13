@@ -58,8 +58,10 @@ public:
     virtual void keyPressEvent(QKeyEvent* keyEvent);
 };
 
+class InviwoApplication;
 class InviwoMainWindow;
 class SyntaxHighligther;
+
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public FileObserver,
                                                     public PythonExecutionOutputObeserver {
@@ -109,6 +111,8 @@ private:
     SyntaxHighligther* syntaxHighligther_;
 
     static PythonEditorWidget* instance_;
+
+    InviwoApplication *app_;
 
 public slots:
     void onTextChange();

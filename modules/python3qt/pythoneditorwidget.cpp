@@ -72,7 +72,8 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , script_()
-    , unsavedChanges_(false) {
+    , unsavedChanges_(false)
+    , app_(app) {
 
     setObjectName("PythonEditor");
     settings_.beginGroup("PythonEditor");
@@ -160,15 +161,18 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
 
     connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
 
-    updateStyle();
-    app->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
-        this, &PythonEditorWidget::updateStyle);
-    app->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(
-        this, &PythonEditorWidget::updateStyle);
-    
-    resize(500, 700);
+    this->updateStyle();
 
-    app->registerFileObserver(this);
+    
+    this->resize(500, 700);
+
+    if (app_) {
+        app_->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
+            this, &PythonEditorWidget::updateStyle);
+        app_->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(
+            this, &PythonEditorWidget::updateStyle);
+        app_->registerFileObserver(this);
+    }
     unsavedChanges_ = false;
 
     if (lastFile.size() != 0) loadFile(lastFile.toLocal8Bit().constData(), false);
@@ -338,8 +342,9 @@ void PythonEditorWidget::run() {
         save();
 
     PyInviwo::getPtr()->addObserver(this);
-
     clearOutput();
+
+    app_->getInteractionStateManager().beginInteraction();
     Clock c;
     c.start();
     bool ok = script_.run();
@@ -350,6 +355,7 @@ void PythonEditorWidget::run() {
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
+    app_->getInteractionStateManager().endInteraction();
     PyInviwo::getPtr()->removeObserver(this);
 }
 
