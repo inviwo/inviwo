@@ -84,9 +84,14 @@ public:
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
 
+    virtual bool isFullScreen() const override;
+    virtual void setFullScreen(bool fullscreen) override;
+
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
+
+    dvec2 normalPos(dvec2 pos) const;
 
     virtual void releaseContext() override;
 

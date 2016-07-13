@@ -140,6 +140,9 @@ public:
 
     Event* getEvent() const;
 
+    template <typename EventType>
+    EventType* getEventAs() const;
+
     void setAction(Action action);
     Action getAction() const;
 
@@ -169,6 +172,14 @@ private:
     Action action_;
     bool enabled_ = true;
 };
+
+template <typename EventType>
+EventType* PickingObject::getEventAs() const {
+    if (event_ && event_->hash() == EventType::chash()) {
+        return static_cast<EventType*>(event_);
+    }
+    return nullptr;
+}
 
 } // namespace
 

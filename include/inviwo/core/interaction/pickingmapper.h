@@ -58,13 +58,16 @@ public:
     // this will invalidate all old indices/colors
     void resize(size_t newSize);
 
+    bool isEnabled() const;
+    void setEnabled(bool enabled);
+
     const PickingObject* getPickingObject() const;
 
 private:
     PickingManager* manager_ = nullptr;
     Processor* processor_ = nullptr;
     std::function<void(const PickingObject*)> callback_;
-    const PickingObject* pickingObject_ = nullptr;
+    PickingObject* pickingObject_ = nullptr;
 };
 
 } // namespace

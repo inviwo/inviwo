@@ -75,13 +75,27 @@ void PickingMapper::resize(size_t newSize) {
         //Same size or size zero, do nothing
         return;
     }
+    bool enabled = true;
     if (pickingObject_ && manager_) {
+        enabled = pickingObject_->isEnabled();
         manager_->unregisterPickingObject(pickingObject_);
         pickingObject_ = nullptr;
     }
     if(newSize > 0 && manager_) {
         pickingObject_ = manager_->registerPickingCallback(callback_, newSize);
+        pickingObject_->setEnabled(enabled);
     }
+}
+
+bool PickingMapper::isEnabled() const {
+    if (pickingObject_)
+        return pickingObject_->isEnabled();
+    else
+        return false;
+}
+
+void PickingMapper::setEnabled(bool enabled) {
+    if (pickingObject_) pickingObject_->setEnabled(enabled);
 }
 
 const PickingObject* PickingMapper::getPickingObject() const { return pickingObject_; }

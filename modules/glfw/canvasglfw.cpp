@@ -62,7 +62,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     }
 #endif
 
-    glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y,
+    glWindow_ = glfwCreateWindow(getCanvasDimensions().x, getCanvasDimensions().y,
                                  windowTitle_.c_str(), nullptr, sharedContext_);
 
     if (!glWindow_) {
@@ -151,6 +151,10 @@ CanvasGLFW* CanvasGLFW::getSharedContext() {
         return nullptr;
 }
 
+dvec2 CanvasGLFW::normalPos(dvec2 pos) const {
+    return util::invertY(pos, this->getCanvasDimensions()) / dvec2(this->getCanvasDimensions());
+}
+
 void CanvasGLFW::releaseContext() {}
 
 void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -176,11 +180,12 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
 
     dvec2 pos;
     glfwGetCursorPos(window, &pos.x, &pos.y);
-    pos = util::invertY(pos, thisCanvas->getScreenDimensions());
+    pos = thisCanvas->normalPos(pos);
 
     MouseEvent mouseEvent(thisCanvas->mouseButton_, thisCanvas->mouseState_,
                           thisCanvas->mouseButton_, thisCanvas->mouseModifiers_, pos,
-                          thisCanvas->getScreenDimensions(), thisCanvas->getDepthValueAtCoord(pos));
+                          thisCanvas->getImageDimensions(),
+                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
     thisCanvas->propagateEvent(&mouseEvent);
 }
@@ -188,13 +193,13 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
 void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
     auto thisCanvas = getCanvasGLFW(window);
 
-    const auto pos = util::invertY(dvec2(x, y), thisCanvas->getScreenDimensions());
+    const auto pos = thisCanvas->normalPos(dvec2(x, y));
 
     MouseState state =
         (thisCanvas->mouseState_ == MouseState::Press ? MouseState::Move : thisCanvas->mouseState_);
     MouseEvent mouseEvent(thisCanvas->mouseButton_, state, thisCanvas->mouseButton_,
-                          thisCanvas->mouseModifiers_, pos, thisCanvas->getScreenDimensions(),
-                          thisCanvas->getDepthValueAtCoord(pos));
+                          thisCanvas->mouseModifiers_, pos, thisCanvas->getImageDimensions(),
+                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
     thisCanvas->propagateEvent(&mouseEvent);
 }
@@ -204,11 +209,11 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
 
     dvec2 pos;
     glfwGetCursorPos(window, &pos.x, &pos.y);
-    pos = util::invertY(pos, thisCanvas->getScreenDimensions());
+    pos = thisCanvas->normalPos(pos);
 
     WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->mouseModifiers_,
-                          dvec2(xoffset, yoffset), pos, thisCanvas->getScreenDimensions(),
-                          thisCanvas->getDepthValueAtCoord(pos));
+                          dvec2(xoffset, yoffset), pos, thisCanvas->getImageDimensions(),
+                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
     thisCanvas->propagateEvent(&wheelEvent);
 }
@@ -254,5 +259,11 @@ std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
 Canvas::ContextID CanvasGLFW::activeContext() const {
     return static_cast<ContextID>(glfwGetCurrentContext());
 }
+
+bool CanvasGLFW::isFullScreen() const {
+    return false;
+}
+
+void CanvasGLFW::setFullScreen(bool fullscreen) {}
 
 }  // namespace

@@ -36,10 +36,10 @@
 
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize)
+ResizeEvent::ResizeEvent(size2_t canvasSize)
     : Event(), size_(canvasSize), previousSize_(canvasSize) {}
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
+ResizeEvent::ResizeEvent(size2_t canvasSize, size2_t previousSize)
     : Event(), size_(canvasSize), previousSize_(previousSize) {}
 
 ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
@@ -52,6 +52,21 @@ bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outpor
     return false;
 }
 
+size2_t ResizeEvent::size() const {
+    return size_;
+}
+
+size2_t ResizeEvent::previousSize() const {
+    return previousSize_;
+}
+
+void ResizeEvent::setSize(size2_t csize) {
+    size_ = csize;
+}
+
+void ResizeEvent::setPreviousSize(size2_t previousSize) {
+    previousSize_ = previousSize;
+}
 
 uint64_t ResizeEvent::hash() const {
     return chash();

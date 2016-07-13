@@ -37,8 +37,7 @@ namespace inviwo {
 
 PickingManager::~PickingManager() = default;
 
-const PickingObject* PickingManager::registerPickingCallback(PickingObject::Action action,
-                                                             size_t size) {
+PickingObject* PickingManager::registerPickingCallback(PickingObject::Action action, size_t size) {
     PickingObject* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
@@ -84,14 +83,13 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
 }
 
 bool PickingManager::pickingEnabled() {
-    if (!haveCallback_) {
+    if (!enableCallback_) {
         auto picking = &(InviwoApplication::getPtr()
                              ->getSettingsByType<SystemSettings>()
                              ->enablePickingProperty_);
 
-        picking->onChange([this, picking]() { enabled_ = picking->get(); });
+        enableCallback_ = picking->onChange([this, picking]() { enabled_ = picking->get(); });
         enabled_ = picking->get();
-        haveCallback_ = true;
     }
 
     return enabled_;

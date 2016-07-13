@@ -40,6 +40,7 @@ namespace inviwo {
 class Image;
 class PickingObject;
 class MouseEvent;
+class WheelEvent;
 
 class IVW_CORE_API PickingContainer {
 public:
@@ -48,30 +49,16 @@ public:
 
     bool pickingEnabled();
 
-    void performMousePick(MouseEvent*);
-    bool performTouchPick(TouchEvent*);
+    void propagateEvent(Event*);
 
     void setPickingSource(std::shared_ptr<const Image> src);
 
 protected:
+    void performMousePick(MouseEvent*);
+    void performWheelPick(WheelEvent*);
+    void performTouchPick(TouchEvent*);
+
     PickingObject* findPickingObject(const uvec2& coord);
-
-    /** 
-     * \brief normalized delta, i.e. (current - previous), with respect to canvas size
-     *
-     * @param previous  old position in screen coordinates
-     * @param current   new position in screen coordinates
-     * @return normalized delta
-     */
-    vec2 normalizedMovement(const uvec2& previous, const uvec2& current) const;
-
-    /** 
-     * \brief normalize coordinates with respect to the canvas size
-     * 
-     * @param coord   position in screen coordinates
-     * @return normalized position
-     */
-    vec2 normalizedCoordinates(const uvec2& coord) const;
 
     /** 
      * \brief clamps 2D position to be within the given rectangle [0, dim - 1]
@@ -84,7 +71,6 @@ protected:
 
 private:
     std::shared_ptr<const Image> src_;
-
 
     bool mousePressed_ = false;
     PickingObject* lastPickObj_ = nullptr;

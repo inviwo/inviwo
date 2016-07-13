@@ -44,14 +44,14 @@
 
 namespace inviwo {
 
-Canvas::Canvas(uvec2 dimensions)
+Canvas::Canvas(size2_t dimensions)
     : screenDimensions_(dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
     , ownerWidget_(nullptr) {}
 
-void Canvas::resize(uvec2 canvasSize) {
-    uvec2 previousScreenDimensions_ = screenDimensions_;
+void Canvas::resize(size2_t canvasSize) {
+    auto previousScreenDimensions_ = screenDimensions_;
     screenDimensions_ = canvasSize;
 
     if (propagator_) {
@@ -63,29 +63,16 @@ void Canvas::resize(uvec2 canvasSize) {
     }
 }
 
-uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
+size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
 
 void Canvas::propagateEvent(Event* event) {
     NetworkLock lock;
 
-    switch (event->hash()) {
-        case MouseEvent::chash(): {
-            auto me = static_cast<MouseEvent*>(event);
-            pickingContainer_.performMousePick(me);
-            break;
-        }
-        case TouchEvent::chash(): {
-            auto te = static_cast<TouchEvent*>(event);
-            if (pickingContainer_.performTouchPick(te)) return;
-            break;
-        }
-    }
+    if (pickingContainer_.pickingEnabled()) pickingContainer_.propagateEvent(event);
 
     if (event->hasBeenUsed()) return;
 
-    if (propagator_) {
-        propagator_->propagateEvent(event, nullptr);
-    }
+    if (propagator_) propagator_->propagateEvent(event, nullptr);
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

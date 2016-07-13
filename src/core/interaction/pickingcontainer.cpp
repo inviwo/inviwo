@@ -41,9 +41,27 @@ PickingContainer::~PickingContainer() = default;
 
 bool PickingContainer::pickingEnabled() { return PickingManager::getPtr()->pickingEnabled(); }
 
-void PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled()) return;
+void PickingContainer::propagateEvent(Event* event) {
+    switch (event->hash()) {
+        case MouseEvent::chash(): {
+            auto me = static_cast<MouseEvent*>(event);
+            performMousePick(me);
+            break;
+        }
+        case WheelEvent::chash(): {
+            auto we = static_cast<WheelEvent*>(event);
+            performWheelPick(we);
+            break;
+        }
+        case TouchEvent::chash(): {
+            auto te = static_cast<TouchEvent*>(event);
+            performTouchPick(te);
+            break;
+        }
+    }
+}
 
+void PickingContainer::performMousePick(MouseEvent* e) {
     if (touchPickingOn_) return;
 
     const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
@@ -67,9 +85,19 @@ void PickingContainer::performMousePick(MouseEvent* e) {
     lastPickObj_ = pickObj;
 }
 
-bool PickingContainer::performTouchPick(TouchEvent* e) {
-    if (!pickingEnabled())
-        return false;
+void PickingContainer::performWheelPick(WheelEvent* e) {
+    const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
+    auto pickObj = mousePressed_ ? pressedPickObj_ : findPickingObject(coord);
+    if (lastPickObj_ && pickObj != lastPickObj_) {
+        lastPickObj_->picked(e, PickingState::Finished);
+    }
+    if (pickObj) {
+        pickObj->picked(e, pickObj == lastPickObj_ ? PickingState::Updated : PickingState::Started);
+    }
+    lastPickObj_ = pickObj;
+}
+
+void PickingContainer::performTouchPick(TouchEvent* e) {
     /*
     std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
 
@@ -176,7 +204,6 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
 
     return !touchPickObjs_.empty();
     */
-    return false;
 }
 
 void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {

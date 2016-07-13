@@ -59,6 +59,22 @@ Event* ViewManager::registerEvent(const Event* event) {
                 return nullptr;
             }
         }
+        case WheelEvent::chash(): {
+            const auto wheelEvent = static_cast<const WheelEvent*>(event);
+
+            activePosition_ = wheelEvent->pos();
+            activeView_ = findView(activePosition_);
+
+            if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
+                auto newEvent = wheelEvent->clone();
+                const ivec4& view = views_[activeView_];
+                newEvent->setCanvasSize(uvec2(view.z, view.w));
+                newEvent->setPos(activePosition_ - dvec2(view.x, view.y));
+                return newEvent;
+            } else {
+                return nullptr;
+            }
+        }
         case GestureEvent::chash(): {
             const auto gestureEvent = static_cast<const GestureEvent*>(event);
             activePosition_ = gestureEvent->canvasSize() * gestureEvent->screenPosNormalized();

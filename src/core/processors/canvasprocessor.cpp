@@ -60,12 +60,15 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
+    , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
+    , fullscreen_("fullscreen", "FullScreen",
+                  [this](Event* event) { setFullScreen(!isFullScreen()); }, IvwKey::F,
+                  KeyState::Press, KeyModifier::Shift)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
     , canvasWidget_(nullptr)
     , queuedRequest_(false) {
-
     widgetMetaData_->addObserver(this);
     
     addPort(inport_);
@@ -110,6 +113,11 @@ CanvasProcessor::CanvasProcessor()
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         }
     });
+
+    toggleFullscreen_.onChange([this]() { setFullScreen(!isFullScreen()); });
+
+    addProperty(toggleFullscreen_);
+    addProperty(fullscreen_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
@@ -362,6 +370,19 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
             }
         }
         if (used) event->markAsUsed();
+    }
+}
+
+bool CanvasProcessor::isFullScreen() const {
+    if(canvasWidget_) {
+        return canvasWidget_->getCanvas()->isFullScreen();
+    }
+    return false;
+}
+
+void CanvasProcessor::setFullScreen(bool fullscreen) {
+    if (canvasWidget_) {
+        return canvasWidget_->getCanvas()->setFullScreen(fullscreen);
     }
 }
 
