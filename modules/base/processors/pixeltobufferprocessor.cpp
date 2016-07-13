@@ -48,7 +48,6 @@ const ProcessorInfo PixelToBufferProcessor::getProcessorInfo() const {
 
 PixelToBufferProcessor::PixelToBufferProcessor()
     : Processor()
-    , InteractionHandler()
     , inport_("input", true)
     , pixelValues_("pixelValues")
     , fromPixel_("fromPixel", "From pixel", ivec2(0), ivec2(0), ivec2(1))
@@ -67,8 +66,6 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addProperty(clearValues_);
     clearValues_.onChange(this, &PixelToBufferProcessor::clearOutput);
     addProperty(handleInteractionEvents_);
-    handleInteractionEvents_.onChange(this,
-                                      &PixelToBufferProcessor::handleInteractionEventsChanged);
     pixelValues_.setData(values_);
 }
 
@@ -96,22 +93,21 @@ void PixelToBufferProcessor::clearOutput() {
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void PixelToBufferProcessor::handleInteractionEventsChanged() {
-    if (handleInteractionEvents_.get()) {
-        addInteractionHandler(this);
-    } else {
-        removeInteractionHandler(this);
-    }
-}
-
 void PixelToBufferProcessor::invokeEvent(Event* event) {
-    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        if (mouseEvent->button() == MouseButton::Left && mouseEvent->state() == MouseState::Press) {
-            fromPixel_.set(static_cast<ivec2>(mouseEvent->pos()));
-            clearOutput();
-            mouseEvent->markAsUsed();
+    if (handleInteractionEvents_) {
+        if (event->hash() == MouseEvent::chash()) {
+            auto mouseEvent = static_cast<MouseEvent*>(event);
+            if (mouseEvent->button() == MouseButton::Left &&
+                mouseEvent->state() == MouseState::Press) {
+                fromPixel_.set(static_cast<ivec2>(mouseEvent->pos()));
+                clearOutput();
+                mouseEvent->markAsUsed();
+            }
         }
     }
+    if (event->hasBeenUsed()) return;
+
+    Processor::invokeEvent(event);
 }
 
 }  // namespace

@@ -31,26 +31,20 @@
 #define IVW_TRACKBALL_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/intersection/raysphereintersection.h>
-#include <inviwo/core/util/observer.h>
-#include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/interaction/trackballobject.h>
 
-#include <math.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
+
+class Event;
+class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
 public:
@@ -138,7 +132,6 @@ protected:
     TrackballObject* object_;
     bool isMouseBeingPressedAndHold_;
 
-   
     vec3 lastNDC_;
 
     double gestureStartNDCDepth_;

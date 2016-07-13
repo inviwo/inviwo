@@ -53,19 +53,16 @@ using PickingStates = flags::flags<PickingState>;
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, PickingState s) {
     switch (s) {
-        case TouchState::None:
+        case PickingState::None:
             ss << "None";
             break;
-        case TouchState::Started:
+        case PickingState::Started:
             ss << "Started";
             break;
-        case TouchState::Updated:
+        case PickingState::Updated:
             ss << "Updated";
             break;
-        case TouchState::Stationary:
-            ss << "Stationary";
-            break;
-        case TouchState::Finished:
+        case PickingState::Finished:
             ss << "Finished";
             break;
     }

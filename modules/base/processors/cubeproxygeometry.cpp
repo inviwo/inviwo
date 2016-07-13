@@ -106,22 +106,22 @@ void CubeProxyGeometry::process() {
         vec3 clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
 
         vec3 min(clipMin / vec3(dims));
-        vec3 extent((clipMax - clipMin) / vec3(dims));
+        vec3 clipextent((clipMax - clipMin) / vec3(dims));
 
         origin = origin + e1 * min.x + e2 * min.y + e3 * min.z;
-        e1 *= extent.x;
-        e2 *= extent.y;
-        e3 *= extent.z;
+        e1 *= clipextent.x;
+        e2 *= clipextent.y;
+        e3 *= clipextent.z;
 
         texOrigin = texOrigin + t1 * min.x + t2 * min.y + t3 * min.z;
-        t1 *= extent.x;
-        t2 *= extent.y;
-        t3 *= extent.z;
+        t1 *= clipextent.x;
+        t2 *= clipextent.y;
+        t3 *= clipextent.z;
 
         colOrigin += c1 * min.x + c2 * min.y + c3 * min.z;
-        c1 *= extent.x;
-        c2 *= extent.y;
-        c3 *= extent.z;
+        c1 *= clipextent.x;
+        c2 *= clipextent.y;
+        c3 *= clipextent.z;
     }
 
     // Create parallelepiped and set it to the outport. The outport will own the data.

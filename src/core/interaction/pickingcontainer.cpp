@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 

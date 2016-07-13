@@ -32,13 +32,10 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-
+#include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/pickingstate.h>
 
 namespace inviwo {
-
-class Event;
-
 
 /** \class PickingObject
  */

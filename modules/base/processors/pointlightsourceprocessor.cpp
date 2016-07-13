@@ -31,6 +31,8 @@
 #include <inviwo/core/util/intersection/rayplaneintersection.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 namespace inviwo {
 

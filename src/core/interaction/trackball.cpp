@@ -28,6 +28,15 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/trackballobject.h>
+#include <inviwo/core/util/intersection/raysphereintersection.h>
+
 
 namespace inviwo {
 
@@ -373,7 +382,6 @@ void Trackball::zoom(Event* event) {
 
     auto curNDC = static_cast<vec3>(mouseEvent->ndc());
 
-    const vec2 curMousePos = mouseEvent->posNormalized();
     // compute direction vector
     const vec3 direction = getLookFrom() - getLookTo();
     const float directionLength = glm::length(direction);

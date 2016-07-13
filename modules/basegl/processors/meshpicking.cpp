@@ -35,6 +35,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 #include <opengl/shader/shaderutils.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 
