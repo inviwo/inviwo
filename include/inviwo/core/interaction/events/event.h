@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <vector>
+#include <cstdint>
 
 namespace inviwo {
 
