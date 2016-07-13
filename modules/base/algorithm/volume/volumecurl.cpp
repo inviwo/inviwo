@@ -58,6 +58,8 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
     util::IndexMapper3D index(volume->getDimensions());
     auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
+            float minV = std::numeric_limits<float>::max(), maxV = std::numeric_limits<float>::lowest();
+
     std::function<void(const size3_t&)> func = [&](const size3_t& pos) {
         vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
@@ -75,10 +77,23 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
         c.x = static_cast<float>(Fy.z - Fz.y);
         c.y = static_cast<float>(Fz.x - Fx.z);
         c.z = static_cast<float>(Fx.y - Fy.x);
+
+                minV = std::min(minV, c.x);
+                minV = std::min(minV, c.y);
+                minV = std::min(minV, c.z);
+                maxV = std::max(maxV, c.x);
+                maxV = std::max(maxV, c.y);
+                maxV = std::max(maxV, c.z);
+
         data[index(pos)] = c;
     };
 
     util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+
+            auto range = std::max(std::abs(minV), std::abs(maxV));
+            newVolume->dataMap_.dataRange = dvec2(-range, range);
+            newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+
 
     return newVolume;
 }
