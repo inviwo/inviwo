@@ -143,7 +143,7 @@ void VolumeSlice::process() {
 
 void VolumeSlice::eventShiftSlice(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
-    int steps = wheelEvent->delta().x;
+    int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
 }
 

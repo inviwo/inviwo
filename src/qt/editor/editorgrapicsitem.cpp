@@ -147,8 +147,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 #endif
             }
 
-            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size,
-                         format);
+            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())),
+                         static_cast<int>(size), static_cast<int>(size), format);
             QBuffer buffer(&byteArray);
             image.save(&buffer, "PNG");
         } else {
