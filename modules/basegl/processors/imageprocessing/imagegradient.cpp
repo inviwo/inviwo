@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageGradient::processorInfo_{
     "org.inviwo.ImageGradient",      // Class identifier
     "Image Gradient",                // Display name
-    "Undefined",              // Category
+    "Image Operation",              // Category
     CodeState::Stable,  // Code state
     Tags::None,               // Tags
 };

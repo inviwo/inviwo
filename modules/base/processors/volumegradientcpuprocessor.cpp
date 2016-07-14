@@ -35,10 +35,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeGradientCPUProcessor::processorInfo_{
     "org.inviwo.VolumeGradientCPUProcessor",      // Class identifier
-    "Volume Gradient CPUProcessor",                // Display name
-    "Undefined",              // Category
+    "Volume Gradient",                // Display name
+    "Volume Operation",              // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    Tags::CPU,               // Tags
 };
 const ProcessorInfo VolumeGradientCPUProcessor::getProcessorInfo() const {
     return processorInfo_;

@@ -80,7 +80,7 @@ namespace inviwo {
 const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
     "org.inviwo.IntegralLineVectorToMesh",      // Class identifier
     "Integral Line Vector To Mesh",                // Display name
-    "Undefined",              // Category
+    "Vector Field Visualization",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };

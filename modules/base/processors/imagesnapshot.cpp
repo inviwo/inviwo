@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageSnapshot::processorInfo_{
     "org.inviwo.ImageSnapshot",  // Class identifier
     "Image Snapshot",            // Display name
-    "Undefined",                 // Category
+    "Image Operation",                 // Category
     CodeState::Experimental,     // Code state
     Tags::None,                  // Tags
 };
