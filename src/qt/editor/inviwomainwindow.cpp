@@ -807,6 +807,7 @@ void InviwoMainWindow::newWorkspace() {
 
 void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
     std::string fileName{workspaceFileName.toStdString()};
+    fileName = filesystem::cleanupPath(fileName);
 
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
@@ -840,6 +841,7 @@ void InviwoMainWindow::onNetworkEditorFileChanged(const std::string& filename) {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWindowTitle(); }
 
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
+    workspace = filesystem::cleanupPath(workspace);
     if (!workspace.empty()) {
         openWorkspace(QString::fromStdString(workspace));
     } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
