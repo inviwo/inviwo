@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo CubeProxyGeometry::processorInfo_{
     "org.inviwo.CubeProxyGeometry",  // Class identifier
     "Cube Proxy Geometry",           // Display name
-    "Geometry Creation",             // Category
+    "Mesh Creation",             // Category
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
 };

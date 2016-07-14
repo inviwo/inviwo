@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo MeshCreator::processorInfo_{
     "org.inviwo.MeshCreator",  // Class identifier
     "Mesh Creator",            // Display name
-    "Geometry Creation",       // Category
+    "Mesh Creation",       // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };

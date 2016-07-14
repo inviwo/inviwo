@@ -43,7 +43,7 @@ namespace inviwo {
 const ProcessorInfo MeshPicking::processorInfo_{
     "org.inviwo.GeometryPicking",  // Class identifier
     "Mesh Picking",                // Display name
-    "Geometry Rendering",          // Category
+    "Mesh Rendering",          // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };

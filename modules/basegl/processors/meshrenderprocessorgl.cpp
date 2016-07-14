@@ -47,7 +47,7 @@ namespace inviwo {
 const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "org.inviwo.GeometryRenderGL",  // Class identifier
     "Mesh Renderer",                // Display name
-    "Geometry Rendering",           // Category
+    "Mesh Rendering",           // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };

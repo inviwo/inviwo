@@ -49,7 +49,7 @@ namespace inviwo {
 const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
     "org.inviwo.Mesh2DRenderProcessorGL",  // Class identifier
     "2D Mesh Renderer",                    // Display name
-    "Geometry Rendering",                  // Category
+    "Mesh Rendering",                  // Category
     CodeState::Experimental,               // Code state
     Tags::GL,                              // Tags
 };

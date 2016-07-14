@@ -40,7 +40,7 @@ namespace inviwo {
 const ProcessorInfo MeshClipping::processorInfo_{
     "org.inviwo.MeshClipping",  // Class identifier
     "Mesh Clipping",            // Display name
-    "Geometry Creation",        // Category
+    "Mesh Creation",        // Category
     CodeState::Experimental,    // Code state
     Tags::CPU,                  // Tags
 };
