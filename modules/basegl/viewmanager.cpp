@@ -33,6 +33,8 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 
+#include <inviwo/core/util/exception.h>
+
 namespace inviwo {
 
 ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), activeView_(-1) {}
@@ -142,6 +144,32 @@ Event* ViewManager::registerEvent(const Event* event) {
 const std::vector<ivec4>& ViewManager::getViews() const { return views_; }
 
 void ViewManager::push_back(ivec4 view) { views_.push_back(view); }
+
+void ViewManager::erase(ivec4 view) {
+    auto it = views_.begin();
+    while (it != views_.end()) {
+        if (glm::all(glm::equal(view, *it))) {
+            views_.erase(it);
+            break;
+        }
+        ++it;
+    }
+}
+
+void ViewManager::erase(size_t ind) {
+    if (ind < views_.size()) {
+        views_.erase(views_.begin() + ind);
+    }
+}
+
+void ViewManager::replace(size_t ind, ivec4 view) {
+    if (ind < views_.size()) {
+        views_[ind] = view;
+    }
+    else {
+        throw Exception("Out of range", IvwContext);
+    }
+}
 
 ivec4& ViewManager::operator[](size_t ind) { return views_[ind]; }
 

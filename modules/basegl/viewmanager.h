@@ -87,6 +87,7 @@ public:
     int getActiveView() const { return activeView_; }
 
     const std::vector<ivec4>& getViews() const;
+
     /** 
      * \brief Add a viewport (x,y width,height) using the following coordinate system:
      * y ^
@@ -98,6 +99,36 @@ public:
      * @param ivec4 view Position and size of viewport (x,y width,height)
      */
     void push_back(ivec4 view);
+
+    /**
+    * \brief Erase a previously defined viewport (x,y width,height). If the viewport was not added
+    * before, nothing happens.
+    *
+    * @see ViewManager
+    * @param ivec4 view Position and size of viewport (x,y width,height)
+    */
+    void erase(ivec4 view);
+
+    /**
+    * \brief Erase a previously defined viewport using index ind.
+    *
+    * @param size_t ind Viewport index [0 size()-1]
+    */
+    void erase(size_t ind);
+
+    /**
+    * \brief replace a previously defined viewport at index ind with a new viewport (x,y
+    * width,height) using the following coordinate system:
+    * y ^
+    *   |
+    *   |
+    *   ------> x
+    *
+    * @see ViewManager
+    * @param size_t ind Viewport index [0 size()-1]
+    * @param ivec4 view Position and size of viewport (x,y width,height)
+    */
+    void replace(size_t ind, ivec4 view);
 
     /** 
      * \brief Return viewport using index ind.
