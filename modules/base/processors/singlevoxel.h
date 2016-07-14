@@ -72,7 +72,7 @@ public:
     static const ProcessorInfo processorInfo_;
 private:
     VolumeInport volume_;
-    FloatVec3Property position_;
+    DoubleVec3Property position_;
 
     DoubleProperty doubleProperty_;
     DoubleVec2Property dvec2Property_;
