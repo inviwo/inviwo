@@ -73,11 +73,14 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     , errorTextColor_(255, 107, 107)
     , script_()
     , unsavedChanges_(false)
-    , app_(app) {
+    , app_(app)
+    , appendLog_(true)
+{
 
     setObjectName("PythonEditor");
     settings_.beginGroup("PythonEditor");
     QString lastFile = settings_.value("lastScript", "").toString();
+    appendLog_ = settings_.value("appendLog", appendLog_).toBool();
     settings_.endGroup();
     setVisible(false);
     setWindowIcon(QIcon(":/icons/python.png"));
@@ -91,9 +94,10 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     setWidget(mainWindow);
 
     {
-        auto action = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and run");
+        auto action = toolBar->addAction(QIcon(":/icons/python-run.png"), "Compile and Run");
         action->setShortcut(QKeySequence(tr("F5")));
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Compile and Run Script");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){run();});
     }
@@ -101,14 +105,15 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
         auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
         action->setShortcut(QKeySequence::New);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("New Script");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){setDefaultText();});
     }
-
     {
         auto action = toolBar->addAction(QIcon(":/icons/open.png"), tr("&Open Script"));
         action->setShortcut(QKeySequence::Open);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Open Script");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){open();});
     }
@@ -117,20 +122,48 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
         auto action = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save Script"));
         action->setShortcut(QKeySequence::Save);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Save Script");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){save();});
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As"));
+        auto action = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As..."));
         action->setShortcut(QKeySequence::SaveAs);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Save Script As...");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){saveAs();});
     }
     {
-        auto action = toolBar->addAction("Clear Output");
+        QIcon icon;
+        icon.addFile(":/icons/log-append.png", QSize(), QIcon::Normal, QIcon::On);
+        icon.addFile(":/icons/log-clearonrun.png", QSize(), QIcon::Normal, QIcon::Off);
+
+        QString str = (appendLog_ ? "Append Log" : "Clear Log on Run");
+        auto action = toolBar->addAction(icon, str);
         action->setShortcut(Qt::ControlModifier + Qt::Key_E);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setCheckable(true);
+        action->setChecked(appendLog_);
+        action->setToolTip(appendLog_ ? "Append Log" : "Clear Log on Run");
+        mainWindow->addAction(action);
+        connect(action, &QAction::toggled, [this, action](bool toggle) { 
+            appendLog_ = toggle; 
+            // update tooltip and menu entry
+            QString str = (toggle ? "Append Log" : "Clear Log on Run");
+            action->setText(str);
+            action->setToolTip(str);
+            // update settings
+            settings_.beginGroup("PythonEditor");
+            settings_.setValue("appendLog", appendLog_);
+            settings_.endGroup();
+        });
+    }
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/log-clear.png"), "Clear Log Output");
+        action->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Clear Log Output");
         mainWindow->addAction(action);
         connect(action, &QAction::triggered, [this](){clearOutput();});
     }
@@ -193,7 +226,7 @@ void PythonEditorWidget::updateStyle() {
     syntaxHighligther_->rehighlight();
 }
 
-PythonEditorWidget::~PythonEditorWidget() {}
+PythonEditorWidget::~PythonEditorWidget() = default;
 
 void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
     pythonOutput_->setTextColor(error ? errorTextColor_ : infoTextColor_);
@@ -224,7 +257,7 @@ void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
         if (ret == 2)  // Cancel
             return;
     }
-    scriptFileName_ = fileName;
+    setFileName(fileName);    
     settings_.beginGroup("PythonEditor");
     settings_.setValue("lastScript", scriptFileName_.c_str());
     settings_.endGroup();
@@ -237,7 +270,7 @@ void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
 }
 
 void PythonEditorWidget::save() {
-    if (script_.getSource() == defaultSource) return;  // nothig to be saved
+    if (script_.getSource() == defaultSource) return;  // nothing to be saved
 
     if (scriptFileName_.size() == 0) {
         saveAs();
@@ -300,7 +333,7 @@ void PythonEditorWidget::saveAs() {
 
         if (!path.endsWith(".py")) path.append(".py");
 
-        scriptFileName_ = path.toLocal8Bit().constData();
+        setFileName(path.toLocal8Bit().constData());
         unsavedChanges_ = true;
         save();
     }
@@ -328,7 +361,7 @@ void PythonEditorWidget::open() {
 
     if (openFileDialog.exec()) {
         stopFileObservation(scriptFileName_);
-        scriptFileName_ = openFileDialog.selectedFiles().at(0).toLocal8Bit().constData();
+        setFileName(openFileDialog.selectedFiles().at(0).toLocal8Bit().constData());
         settings_.beginGroup("PythonEditor");
         settings_.setValue("lastScript", scriptFileName_.c_str());
         settings_.endGroup();
@@ -342,7 +375,9 @@ void PythonEditorWidget::run() {
         save();
 
     PyInviwo::getPtr()->addObserver(this);
-    clearOutput();
+    if (!appendLog_) {
+        clearOutput();
+    }
 
     app_->getInteractionStateManager().beginInteraction();
     Clock c;
@@ -382,7 +417,7 @@ void PythonEditorWidget::setDefaultText() {
     script_.setSource(defaultSource);
     script_.setFilename("");
     stopFileObservation(scriptFileName_);
-    scriptFileName_ = "";
+    setFileName("");
     settings_.beginGroup("PythonEditor");
     settings_.setValue("lastScript", scriptFileName_.c_str());
     settings_.endGroup();
@@ -396,6 +431,19 @@ void PythonEditorWidget::onTextChange() {
 
     script_.setSource(source);
     unsavedChanges_ = true;
+}
+
+void PythonEditorWidget::setFileName(const std::string filename) {
+    scriptFileName_ = filename;
+
+    QString str;
+    if (scriptFileName_.empty()) {
+        str = "(unnamed file)";
+    }
+    else {
+        str = QString::fromStdString(scriptFileName_);
+    }
+    updateWindowTitle(QString("Python Editor - %1").arg(str));
 }
 
 }  // namespace

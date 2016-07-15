@@ -95,6 +95,8 @@ public:
     void clearOutput();
 
 private:
+    void setFileName(const std::string filename);
+
     QSettings settings_;
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
@@ -113,6 +115,7 @@ private:
     static PythonEditorWidget* instance_;
 
     InviwoApplication *app_;
+    bool appendLog_;
 
 public slots:
     void onTextChange();
