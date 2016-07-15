@@ -42,8 +42,17 @@ const char* Exception::what() const throw() { return message_.c_str(); }
 
 const ExceptionContext& Exception::getContext() const { return context_; }
 
+RangeException::RangeException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {
+}
+
+NullPointerException::NullPointerException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {
+}
+
 IgnoreException::IgnoreException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
+    : Exception(message, context) {
+}
 
 AbortException::AbortException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}

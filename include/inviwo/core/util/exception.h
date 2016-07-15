@@ -81,6 +81,19 @@ private:
     ExceptionContext context_;
 };
 
+
+class IVW_CORE_API RangeException : public Exception {
+public:
+    RangeException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~RangeException() throw() {}
+};
+
+class IVW_CORE_API NullPointerException : public Exception {
+public:
+    NullPointerException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~NullPointerException() throw() {}
+};
+
 class IVW_CORE_API IgnoreException : public Exception {
 public:
     IgnoreException(const std::string& message = "", ExceptionContext context = ExceptionContext());
