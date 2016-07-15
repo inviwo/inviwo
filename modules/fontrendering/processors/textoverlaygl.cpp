@@ -29,8 +29,12 @@
 
 #include "textoverlaygl.h"
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/image/imagegl.h>
 
 #include <cctype>
 
@@ -60,8 +64,9 @@ TextOverlayGL::TextOverlayGL()
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
-    , textRenderer_()
+    , overlayShader_("img_identity.vert", "img_copy.frag")
     , numArgs_(0u)
+    , cachedOverlayGL_(nullptr)
 {
     addPort(inport_);
     addPort(outport_);
@@ -92,6 +97,8 @@ TextOverlayGL::TextOverlayGL()
     }
     fontSize_.setSelectedIndex(4);
     fontSize_.setCurrentStateAsDefault();
+
+    overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 
@@ -100,13 +107,31 @@ void TextOverlayGL::process() {
         outport_.setData(inport_.getData());
         return;
     }
+    
+    // check whether a property was modified
+    bool dirty = false;
+    for (auto property : this->getProperties()) {
+        if (property->isModified()) {
+            dirty = true;
+            break;
+        }
+    }
+    if (!cachedOverlay_ || cachedOverlay_->getDimensions() != outport_.getDimensions()) {
+        // create/update the overlay image matching the output dimensions
+        cachedOverlay_ = std::make_shared<Image>(outport_.getDimensions(), DataVec4UInt8::get());
+        cachedOverlayGL_ = cachedOverlay_->getEditableRepresentation<ImageGL>();
+        dirty = true;
+    }
 
-    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
+    if (dirty) {
+        updateCache();
+    }
 
-    glDepthFunc(GL_ALWAYS);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    // draw cached overlay on top of the input image
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
+    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#if 0
     vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
 
     int fontSize = fontSize_.getSelectedValue();
@@ -115,16 +140,35 @@ void TextOverlayGL::process() {
     // use integer position for best results
     ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
     pos.y += fontSize;
-    
+
     std::string str(getString());
 
     vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
-                          1 - pos.y * scale.y + shift.y, scale, color_.get());
+                         1 - pos.y * scale.y + shift.y, scale, color_.get());
 
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+#else
+    
+    TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
+    overlayShader_.activate();
+    overlayShader_.setUniform("color_", colorTexUnit);
+    overlayShader_.setUniform("depth_", depthTexUnit);
+    overlayShader_.setUniform("picking_", pickingTexUnit);
+
+    if (auto layer = cachedOverlayGL_->getColorLayerGL()) {
+        layer->bindTexture(colorTexUnit);
+    }
+    if (auto layer = cachedOverlayGL_->getDepthLayerGL()) {
+        layer->bindTexture(depthTexUnit);
+    }
+    //if (auto layer = cachedOverlayGL_->getPickingLayerGL()) {
+    //    layer->bindTexture(pickingTexUnit);
+    //}
+
+    utilgl::singleDrawImagePlaneRect();
+    overlayShader_.deactivate();
+#endif
     utilgl::deactivateCurrentTarget();
 }
 
@@ -189,5 +233,31 @@ std::string TextOverlayGL::getString() const {
     return str;
 }
 
-}  // namespace
+void TextOverlayGL::updateCache() {
+    // enable fbo for rendering the text
+    cachedOverlayGL_->activateBuffer(ImageType::ColorDepthPicking);
+    utilgl::clearCurrentTarget();
 
+    //utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+
+    vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
+
+    int fontSize = fontSize_.getSelectedValue();
+    textRenderer_.setFontSize(fontSize);
+
+    // use integer position for best results
+    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
+    pos.y += fontSize;
+
+    std::string str(getString());
+
+    vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
+    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
+    textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
+                         1 - pos.y * scale.y + shift.y, scale, color_.get());
+
+    cachedOverlayGL_->deactivateBuffer();
+}
+
+}  // namespace
