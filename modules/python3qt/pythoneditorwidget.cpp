@@ -192,7 +192,9 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     splitter->handle(1)->setAttribute(Qt::WA_Hover);
     mainWindow->setCentralWidget(splitter);
 
-    connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
+    QObject::connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
+    // close this window before the main window is closed
+    QObject::connect(ivwwin, &InviwoMainWindow::closingMainWindow, [this]() { delete this; });
 
     this->updateStyle();
 

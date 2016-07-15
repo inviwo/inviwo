@@ -1093,6 +1093,9 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         event->ignore();
         return;
     }
+
+    emit closingMainWindow();
+
     QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
     // save window state
