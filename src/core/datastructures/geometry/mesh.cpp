@@ -33,10 +33,10 @@
 namespace inviwo {
 
 Mesh::Mesh(DrawType dt, ConnectivityType ct)
-    : DataGroup(), SpatialEntity<3>(), defaultMeshInfo_(MeshInfo(dt, ct)) {}
+    : DataGroup(), SpatialEntity<3>(), meshInfo_(MeshInfo(dt, ct)) {}
 
 Mesh::Mesh(const Mesh& rhs)
-    : DataGroup(rhs), SpatialEntity<3>(rhs), defaultMeshInfo_(rhs.defaultMeshInfo_) {
+    : DataGroup(rhs), SpatialEntity<3>(rhs), meshInfo_(rhs.meshInfo_) {
     for (const auto& elem : rhs.buffers_) {
         buffers_.emplace_back(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
     }
@@ -62,7 +62,7 @@ Mesh& Mesh::operator=(const Mesh& that) {
 
         std::swap(buffers, buffers_);
         std::swap(indices, indices_);
-        defaultMeshInfo_ = that.defaultMeshInfo_;
+        meshInfo_ = that.meshInfo_;
     }
     return *this;
 }
@@ -101,7 +101,7 @@ BufferBase* Mesh::getBuffer(size_t idx) { return buffers_[idx].second.get(); }
 
 IndexBuffer* Mesh::getIndicies(size_t idx) { return indices_[idx].second.get(); }
 
-Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return defaultMeshInfo_; }
+Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
 Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const { return indices_[idx].first; }
 

@@ -64,12 +64,31 @@ public:
     MeshDrawerGL(MeshDrawerGL&& other);  // move constructor
     virtual ~MeshDrawerGL();
 
+    /**
+     * \brief draws the mesh using its mesh info. If index buffers are present, the mesh
+     * will be rendered with glDrawElements() using those index buffers and the associated draw
+     * modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode
+     * returned by Mesh::getDefaultMeshInfo().
+     *
+     * \see Mesh, Mesh::MeshInfo
+     */
     virtual void draw() override;
-    virtual void draw(DrawMode dm);
+
+    /**
+    * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
+    * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
+    * is rendered using glDrawArrays.
+    *
+    * \see Mesh, DrawMode
+    *
+    * @param drawMode draw mode used to render the mesh
+    */
+    virtual void draw(DrawMode drawMode);
 
     GLenum getDefaultDrawMode();
     DrawMode getDrawMode(DrawType, ConnectivityType) const;
     GLenum getGLDrawMode(DrawMode) const;
+    GLenum getGLDrawMode(Mesh::MeshInfo meshInfo) const;
 
     virtual const Mesh* getMesh() const override { return meshToDraw_; }
 
@@ -94,6 +113,8 @@ protected:
 
     DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NumberOfDrawModes)];
     const Mesh* meshToDraw_;
+
+    Mesh::MeshInfo meshInfo_;
 };
 
 }  // namespace

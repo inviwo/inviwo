@@ -137,7 +137,7 @@ public:
 protected:
     BufferVector buffers_;
     IndexVector indices_;
-    MeshInfo defaultMeshInfo_;
+    MeshInfo meshInfo_;
 };
 
 template <class Elem, class Traits>

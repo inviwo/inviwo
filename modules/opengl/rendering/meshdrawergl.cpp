@@ -37,31 +37,38 @@ namespace inviwo {
 
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
-    ivwAssert(mesh != nullptr, "MeshDrawerGL(): mesh is null");
-    initialize(mesh->getDefaultMeshInfo());
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
+    : meshToDraw_(mesh), meshInfo_(DrawType::NotSpecified, ConnectivityType::None) {
+    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
+    //    initialize(mesh->getDefaultMeshInfo());
+    meshInfo_ = mesh->getDefaultMeshInfo();
 }
 
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo ai) : meshToDraw_(mesh) {
-    initialize(ai);
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo ai) : meshToDraw_(mesh), meshInfo_(ai) {
+    // initialize(ai);
+    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct) : meshToDraw_(mesh) {
-    initialize(Mesh::MeshInfo(dt, ct));
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct)
+    : meshToDraw_(mesh)
+    , meshInfo_(Mesh::MeshInfo(dt, ct)) {
+    // initialize(Mesh::MeshInfo(dt, ct));
+    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
 MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
-    : MeshDrawer(std::move(other)), meshToDraw_{other.meshToDraw_} {
+    : MeshDrawer(std::move(other)), meshToDraw_{other.meshToDraw_}, meshInfo_{other.meshInfo_} {
     // move each element
     std::move(std::begin(other.drawMethods_), std::end(other.drawMethods_), &drawMethods_[0]);
     other.meshToDraw_ = nullptr;
 }
 
-MeshDrawerGL::~MeshDrawerGL(){}
+MeshDrawerGL::~MeshDrawerGL() = default;
 
 MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
     if (this != &rhs) {
         meshToDraw_ = rhs.meshToDraw_;
+        meshInfo_ = rhs.meshInfo_;
         std::copy(std::begin(rhs.drawMethods_), std::end(rhs.drawMethods_), &drawMethods_[0]);
     }
     return *this;
@@ -70,22 +77,50 @@ MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
 void MeshDrawerGL::draw() {
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
     utilgl::Enable<MeshGL> enable(meshGL);
-    
-    // If default is indices, render all index lists
-    if (!drawMethods_[0].elementBufferList.empty()) {
-        for (int i = 1; i < static_cast<int>(DrawMode::NumberOfDrawModes); i++) {
-            if (!drawMethods_[i].elementBufferList.empty())
-                (this->*drawMethods_[i].drawFunc)(static_cast<DrawMode>(i));
+
+    std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            auto indexBuffer = meshGL->getIndexBuffer(i);
+            auto numIndices = indexBuffer->getSize();
+            if (numIndices > 0) {
+                indexBuffer->bind();
+                auto drawMode = getGLDrawMode(meshGL->getMeshInfoForIndexBuffer(i));
+                glDrawElements(drawMode, static_cast<GLsizei>(numIndices),
+                               indexBuffer->getFormatType(), nullptr);
+            }
         }
-    } else {// Render just default one
-        (this->*drawMethods_[0].drawFunc)(DrawMode::NotSpecified);
+    } else {
+        // the mesh does not contain index buffers, render all vertices
+        auto drawMode = getGLDrawMode(meshToDraw_->getDefaultMeshInfo());
+        glDrawArrays(drawMode, 0, static_cast<GLsizei>(meshGL->getBufferGL(0)->getSize()));
     }
 }
 
-void MeshDrawerGL::draw(DrawMode dm) {
+void MeshDrawerGL::draw(DrawMode drawMode) {
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
-    utilgl::Enable<MeshGL> enable(meshGL);   
-    (this->*drawMethods_[static_cast<size_t>(dm)].drawFunc)(dm);
+    utilgl::Enable<MeshGL> enable(meshGL);
+
+    auto drawModeGL = getGLDrawMode(meshToDraw_->getDefaultMeshInfo());
+
+    std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            auto indexBuffer = meshGL->getIndexBuffer(i);
+            auto numIndices = indexBuffer->getSize();
+            if (numIndices > 0) {
+                indexBuffer->bind();
+                glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
+                               indexBuffer->getFormatType(), nullptr);
+            }
+        }
+    }
+    else {
+        // the mesh does not contain index buffers, render all vertices
+        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL->getBufferGL(0)->getSize()));
+    }
 }
 
 GLenum MeshDrawerGL::getDefaultDrawMode() { return drawMethods_[0].drawMode; }
@@ -233,6 +268,10 @@ GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) const {
         default:
             return GL_POINTS;
     }
+}
+
+GLenum MeshDrawerGL::getGLDrawMode(Mesh::MeshInfo meshInfo) const {
+    return getGLDrawMode(getDrawMode(meshInfo.dt, meshInfo.ct));
 }
 
 }  // namespace
