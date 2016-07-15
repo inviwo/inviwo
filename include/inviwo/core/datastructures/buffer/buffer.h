@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_CORE_API BufferBase : public Data<BufferRepresentation> {
 public:
-    BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage);
+    BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target);
     BufferBase(const BufferBase& rhs) = default;
     BufferBase& operator=(const BufferBase& that) = default;
 
@@ -58,6 +58,7 @@ public:
 
     size_t getSizeInBytes() const;
     BufferUsage getBufferUsage() const;
+    BufferTarget getBufferTarget() const;
 
     static uvec3 COLOR_CODE;
     static const std::string CLASS_IDENTIFIER;
@@ -65,28 +66,29 @@ public:
 protected:
     size_t size_;
     BufferUsage usage_;
+    BufferTarget target_;
 };
 
-template <typename T>
+template <typename T, BufferTarget Target = BufferTarget::Data>
 class Buffer : public BufferBase {
 public:
     Buffer(size_t size, BufferUsage usage = BufferUsage::Static);
     Buffer(BufferUsage usage = BufferUsage::Static);
-    Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr);
-    Buffer(const Buffer<T>& rhs) = default;
-    Buffer<T>& operator=(const Buffer<T>& that) = default;
-    virtual Buffer<T>* clone() const override;
+    Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
+    Buffer(const Buffer<T, Target>& rhs) = default;
+    Buffer<T, Target>& operator=(const Buffer<T, Target>& that) = default;
+    virtual Buffer<T, Target>* clone() const override;
     virtual ~Buffer() = default;
 
-    BufferRAMPrecision<T>* getEditableRAMRepresentation();
-    const BufferRAMPrecision<T>* getRAMRepresentation() const;
+    BufferRAMPrecision<T, Target>* getEditableRAMRepresentation();
+    const BufferRAMPrecision<T, Target>* getRAMRepresentation() const;
 
 protected:
     virtual std::shared_ptr<BufferRepresentation> createDefaultRepresentation() const override;
 };
 
 // Used for index buffers
-using IndexBuffer = Buffer<std::uint32_t>;
+using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 
 namespace util {
 
@@ -97,64 +99,64 @@ inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::vector<std::uint32_t>&&
     return indices;
 }
 
-template <typename T = vec3, BufferUsage U = BufferUsage::Static>
-std::shared_ptr<Buffer<T>> makeBuffer(std::vector<T>&& data) {
-    auto repr = std::make_shared<BufferRAMPrecision<T>>(std::vector<T>(std::move(data)), U);
-    auto buffer = std::make_shared<Buffer<T>>(repr);
+template <typename T = vec3, BufferUsage U = BufferUsage::Static, BufferTarget Target = BufferTarget::Data>
+std::shared_ptr<Buffer<T, Target>> makeBuffer(std::vector<T>&& data) {
+    auto repr = std::make_shared<BufferRAMPrecision<T, Target>>(std::vector<T>(std::move(data)), U);
+    auto buffer = std::make_shared<Buffer<T, Target>>(repr);
     return buffer;
 }
 
 struct IVW_CORE_API BufferDispatcher {
     using type = std::shared_ptr < BufferBase > ;
     template <class T>
-    std::shared_ptr<BufferBase> dispatch(size_t size, BufferUsage usage) {
+    std::shared_ptr<BufferBase> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
         typedef typename T::type F;
-        return std::make_shared<Buffer<F>>(size, usage);
+        return std::make_shared<Buffer<F, target>>(size, usage);
     }
 };
 
 }  // namespace
 
-template <typename T>
-Buffer<T>::Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr)
-    : BufferBase(repr->getSize(), repr->getDataFormat(), repr->getBufferUsage()) {
+template <typename T, BufferTarget Target>
+Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)
+    : BufferBase(repr->getSize(), repr->getDataFormat(), repr->getBufferUsage(), Target) {
     addRepresentation(repr);
 }
 
-template <typename T>
-Buffer<T>::Buffer(size_t size, BufferUsage usage /*= BufferUsage::Static*/)
-    : BufferBase(size, DataFormat<T>::get(), usage) {}
+template <typename T, BufferTarget Target>
+Buffer<T, Target>::Buffer(size_t size, BufferUsage usage /*= BufferUsage::Static*/)
+    : BufferBase(size, DataFormat<T>::get(), usage, Target) {}
 
-template <typename T>
-Buffer<T>::Buffer(BufferUsage usage /*= BufferUsage::Static*/)
-    : BufferBase(0, DataFormat<T>::get(), usage) {}
+template <typename T, BufferTarget Target>
+Buffer<T, Target>::Buffer(BufferUsage usage /*= BufferUsage::Static*/)
+    : BufferBase(0, DataFormat<T>::get(), usage, Target) {}
 
-template <typename T>
-Buffer<T>* Buffer<T>::clone() const {
-    return new Buffer<T>(*this);
+template <typename T, BufferTarget Target>
+Buffer<T, Target>* Buffer<T, Target>::clone() const {
+    return new Buffer<T, Target>(*this);
 }
 
-template <typename T>
-const BufferRAMPrecision<T>* Buffer<T>::getRAMRepresentation() const {
-    if (auto res = dynamic_cast<const BufferRAMPrecision<T>*>(getRepresentation<BufferRAM>())) {
+template <typename T, BufferTarget Target>
+const BufferRAMPrecision<T, Target>* Buffer<T, Target>::getRAMRepresentation() const {
+    if (auto res = dynamic_cast<const BufferRAMPrecision<T, Target>*>(getRepresentation<BufferRAM>())) {
         return res;
     } else {
         throw Exception("Unable to create requested RAM representation", IvwContext);
     }
 }
 
-template <typename T>
-BufferRAMPrecision<T>* Buffer<T>::getEditableRAMRepresentation() {
-    if (auto res = dynamic_cast<BufferRAMPrecision<T>*>(getEditableRepresentation<BufferRAM>())) {
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>* Buffer<T, Target>::getEditableRAMRepresentation() {
+    if (auto res = dynamic_cast<BufferRAMPrecision<T, Target>*>(getEditableRepresentation<BufferRAM>())) {
         return res;
     } else {
         throw Exception("Unable to create requested RAM representation", IvwContext);
     }
 }
 
-template <typename T>
-std::shared_ptr<BufferRepresentation> inviwo::Buffer<T>::createDefaultRepresentation() const {
-    return std::make_shared<BufferRAMPrecision<T>>(size_, usage_);
+template <typename T, BufferTarget Target>
+std::shared_ptr<BufferRepresentation> inviwo::Buffer<T, Target>::createDefaultRepresentation() const {
+    return std::make_shared<BufferRAMPrecision<T, Target>>(size_, usage_);
 }
 
 }  // namespace

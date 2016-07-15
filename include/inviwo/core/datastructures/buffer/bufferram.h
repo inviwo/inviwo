@@ -39,7 +39,7 @@ namespace inviwo {
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
     BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
-              BufferUsage usage = BufferUsage::Static);
+              BufferUsage usage = BufferUsage::Static, BufferTarget target = BufferTarget::Data);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
     virtual BufferRAM* clone() const override = 0;
@@ -79,25 +79,33 @@ public:
  *
  * @param size of buffer to create.
  * @param format of buffer to create.
+ * @param usage   usage of the buffer (static or dynamic)
+ * @param target  target of the buffer (index or data)
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
-                                                        BufferUsage usage);
+                                                        BufferUsage usage, BufferTarget target = BufferTarget::Data);
 
-template <typename T>
+template <typename T, BufferTarget Target>
 class BufferRAMPrecision;
 
-template <BufferUsage U = BufferUsage::Static, typename T = vec3>
-std::shared_ptr<BufferRAMPrecision<T>> createBufferRAM(std::vector<T> data) {
-    return std::make_shared<BufferRAMPrecision<T>>(std::move(data), DataFormat<T>::get(), U);
+template <BufferUsage U = BufferUsage::Static, typename T = vec3, BufferTarget Target = BufferTarget::Data>
+std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> data) {
+    return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), DataFormat<T>::get(), U);
 }
 
 struct BufferRamDispatcher {
     using type = std::shared_ptr<BufferRAM>;
     template <class T>
-    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage) {
+    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
         typedef typename T::type F;
-        return std::make_shared<BufferRAMPrecision<F>>(size, usage);
+        switch (target) {
+        case BufferTarget::Index:
+            return std::make_shared<BufferRAMPrecision<F, BufferTarget::Index>>(size, usage);
+        case BufferTarget::Data:
+        default:
+            return std::make_shared<BufferRAMPrecision<F, BufferTarget::Data>>(size, usage);
+        }
     }
 };
 
