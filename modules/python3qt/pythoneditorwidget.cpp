@@ -226,7 +226,14 @@ void PythonEditorWidget::updateStyle() {
     syntaxHighligther_->rehighlight();
 }
 
-PythonEditorWidget::~PythonEditorWidget() = default;
+PythonEditorWidget::~PythonEditorWidget() {
+    if (unsavedChanges_) {
+        int ret =
+            QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
+                                     "Save", "Discard");
+        if (ret == 0) save();
+    }
+}
 
 void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
     pythonOutput_->setTextColor(error ? errorTextColor_ : infoTextColor_);
@@ -249,7 +256,7 @@ void PythonEditorWidget::fileChanged(const std::string& fileName) {
 void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
     if (askForSave && unsavedChanges_) {
         int ret =
-            QMessageBox::information(this, "Python Editor", "Do you want to save unsaved changes?",
+            QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
                                      "Save", "Discard", "Cancel");
 
         if (ret == 0) save();
@@ -285,6 +292,7 @@ void PythonEditorWidget::save() {
         settings_.setValue("lastScript", scriptFileName_.c_str());
         settings_.endGroup();
         unsavedChanges_ = false;
+        updateTitleBar();
     }
 }
 
@@ -297,6 +305,7 @@ void PythonEditorWidget::readFile() {
     script_.setSource(text);
     script_.setFilename(scriptFileName_);
     unsavedChanges_ = false;
+    updateTitleBar();
 }
 
 bool PythonEditorWidget::hasFocus() const {
@@ -360,6 +369,7 @@ void PythonEditorWidget::open() {
     openFileDialog.addExtension("py", "Python Script");
 
     if (openFileDialog.exec()) {
+        unsavedChanges_ = false;
         stopFileObservation(scriptFileName_);
         setFileName(openFileDialog.selectedFiles().at(0).toLocal8Bit().constData());
         settings_.beginGroup("PythonEditor");
@@ -414,14 +424,14 @@ void PythonEditorWidget::setDefaultText() {
     }
 
     pythonCode_->setPlainText(defaultSource.c_str());
-    script_.setSource(defaultSource);
+    unsavedChanges_ = false;
     script_.setFilename("");
+    script_.setSource(defaultSource);
     stopFileObservation(scriptFileName_);
     setFileName("");
     settings_.beginGroup("PythonEditor");
     settings_.setValue("lastScript", scriptFileName_.c_str());
     settings_.endGroup();
-    unsavedChanges_ = false;
 }
 
 void PythonEditorWidget::clearOutput() { pythonOutput_->setText(""); }
@@ -431,11 +441,15 @@ void PythonEditorWidget::onTextChange() {
 
     script_.setSource(source);
     unsavedChanges_ = true;
+    updateTitleBar();
 }
 
 void PythonEditorWidget::setFileName(const std::string filename) {
     scriptFileName_ = filename;
+    updateTitleBar();
+}
 
+void PythonEditorWidget::updateTitleBar() {
     QString str;
     if (scriptFileName_.empty()) {
         str = "(unnamed file)";
@@ -443,7 +457,8 @@ void PythonEditorWidget::setFileName(const std::string filename) {
     else {
         str = QString::fromStdString(scriptFileName_);
     }
-    updateWindowTitle(QString("Python Editor - %1").arg(str));
+
+    updateWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
 }
 
 }  // namespace

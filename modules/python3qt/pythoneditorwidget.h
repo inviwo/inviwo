@@ -83,8 +83,6 @@ public:
 
     bool hasFocus() const;
 
-    static PythonEditorWidget* getPtr();
-
     void updateStyle();
     void save();
     void saveAs();
@@ -94,8 +92,12 @@ public:
     void setDefaultText();
     void clearOutput();
 
+public slots:
+    void onTextChange();
+
 private:
     void setFileName(const std::string filename);
+    void updateTitleBar();
 
     QSettings settings_;
     PythonTextEditor* pythonCode_;
@@ -116,9 +118,6 @@ private:
 
     InviwoApplication *app_;
     bool appendLog_;
-
-public slots:
-    void onTextChange();
 };
 
 }  // namespace
