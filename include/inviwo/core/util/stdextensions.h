@@ -43,6 +43,7 @@
 #include <vector>
 #include <type_traits>
 #include <future>
+#include <utility>
 #include <warn/pop>
 
 namespace inviwo {
@@ -124,7 +125,21 @@ struct is_string : detail::is_string<T> {};
 
 template <class F, class... Args>
 void for_each_argument(F f, Args&&... args) {
-    [](...){}((f(std::forward<Args>(args)), 0)...);
+    auto l = {(f(std::forward<Args>(args)), 0)...};
+}
+
+namespace detail {
+
+template <typename F, typename T, size_t... Is>
+void for_each_in_tuple_impl(F f, T&& t, std::index_sequence<Is...>) {
+    auto l = {(f(std::get<Is>(t)), 0)...};
+}
+
+}  // namespace
+
+template <typename F, typename... Ts>
+void for_each_in_tuple(F f, std::tuple<Ts...> const& t) {
+    detail::for_each_in_tuple_impl(f, t, std::index_sequence_for<Ts...>{});
 }
 
 template <typename T, typename V>
