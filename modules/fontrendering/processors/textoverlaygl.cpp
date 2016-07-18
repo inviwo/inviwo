@@ -131,24 +131,6 @@ void TextOverlayGL::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 0
-    vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
-
-    int fontSize = fontSize_.getSelectedValue();
-    textRenderer_.setFontSize(fontSize);
-
-    // use integer position for best results
-    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
-    pos.y += fontSize;
-
-    std::string str(getString());
-
-    vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
-    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
-                         1 - pos.y * scale.y + shift.y, scale, color_.get());
-
-#else
     
     TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
     overlayShader_.activate();
@@ -168,7 +150,7 @@ void TextOverlayGL::process() {
 
     utilgl::singleDrawImagePlaneRect();
     overlayShader_.deactivate();
-#endif
+
     utilgl::deactivateCurrentTarget();
 }
 
@@ -252,11 +234,11 @@ void TextOverlayGL::updateCache() {
 
     std::string str(getString());
 
-    vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
+    vec2 size = textRenderer_.computeTextSize(str);
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
-                         1 - pos.y * scale.y + shift.y, scale, color_.get());
 
+    textRenderer_.render(str, -1 + static_cast<int>(pos.x - shift.x) * scale.x,
+                         1 - static_cast<int>(pos.y - shift.y) * scale.y, scale, color_.get());
     cachedOverlayGL_->deactivateBuffer();
 }
 
