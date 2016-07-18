@@ -49,10 +49,13 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
             << processor->getClassIdentifier())
     }
     if (processor->getCategory().empty()) {
-        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no Category");
+        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no category");
+    }
+    else if (processor->getCategory() == "Undefined") {
+        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has category \"Undefined\"")
     }
     if (processor->getDisplayName().empty()) {
-        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no Display Name");
+        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no display name");
     }
 
     return true;

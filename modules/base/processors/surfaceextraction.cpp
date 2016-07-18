@@ -42,7 +42,7 @@ namespace inviwo {
 const ProcessorInfo SurfaceExtraction::processorInfo_{
     "org.inviwo.SurfaceExtraction",  // Class identifier
     "Surface Extraction",            // Display name
-    "Geometry Creation",             // Category
+    "Mesh Creation",             // Category
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };

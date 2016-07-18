@@ -160,8 +160,8 @@ void PickingObject::picked(Event* e, PickingState state) {
                 break;
             }
             case TouchEvent::chash(): {
-                auto te = static_cast<TouchEvent*>(event_);
-
+                //auto te = static_cast<TouchEvent*>(event_);
+                LogError("Picking with TouchEvent not implemented yet");
                 break;
             }
         }

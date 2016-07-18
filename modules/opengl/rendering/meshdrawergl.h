@@ -60,16 +60,37 @@ public:
     MeshDrawerGL(const Mesh* mesh);
     MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo);
     MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
-    MeshDrawerGL& operator=(const MeshDrawerGL& other);
     MeshDrawerGL(MeshDrawerGL&& other);  // move constructor
     virtual ~MeshDrawerGL();
 
+    MeshDrawerGL& operator=(const MeshDrawerGL& other);
+    MeshDrawerGL& operator=(MeshDrawerGL&& rhs);
+
+    /**
+     * \brief draws the mesh using its mesh info. If index buffers are present, the mesh
+     * will be rendered with glDrawElements() using those index buffers and the associated draw
+     * modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode
+     * returned by Mesh::getDefaultMeshInfo().
+     *
+     * \see Mesh, Mesh::MeshInfo
+     */
     virtual void draw() override;
-    virtual void draw(DrawMode dm);
+
+    /**
+    * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
+    * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
+    * is rendered using glDrawArrays.
+    *
+    * \see Mesh, DrawMode
+    *
+    * @param drawMode draw mode used to render the mesh
+    */
+    virtual void draw(DrawMode drawMode);
 
     GLenum getDefaultDrawMode();
     DrawMode getDrawMode(DrawType, ConnectivityType) const;
     GLenum getGLDrawMode(DrawMode) const;
+    GLenum getGLDrawMode(Mesh::MeshInfo meshInfo) const;
 
     virtual const Mesh* getMesh() const override { return meshToDraw_; }
 
@@ -77,23 +98,9 @@ protected:
     virtual MeshDrawer* create(const Mesh* geom) const override { return new MeshDrawerGL(geom); }
     virtual bool canDraw(const Mesh* geom) const override { return geom != nullptr; }
 
-    virtual void initialize(Mesh::MeshInfo = Mesh::MeshInfo());
-    void initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai);
-
-    void drawArray(DrawMode) const;
-    void drawElements(DrawMode) const;
-    void emptyFunc(DrawMode dt) const {};
-
-    // A member function pointer to Either drawArrays, drawElement or emptyFunc
-    using DrawFunc = void (MeshDrawerGL::*)(DrawMode) const;
-    struct DrawMethod {
-        DrawFunc drawFunc;
-        GLenum drawMode;
-        std::vector<const BufferBase*> elementBufferList;
-    };
-
-    DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NumberOfDrawModes)];
     const Mesh* meshToDraw_;
+
+    Mesh::MeshInfo meshInfo_;
 };
 
 }  // namespace

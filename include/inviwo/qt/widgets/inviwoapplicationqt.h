@@ -112,6 +112,7 @@ private:
 
     // Only non zero on windows, due to a QT bug in window decoration handling.
     QPoint windowDecorationOffset_;
+    std::locale uiLocal_;
 };
 
 }  // namespace

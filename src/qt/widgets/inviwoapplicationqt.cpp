@@ -53,7 +53,9 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
     , InviwoApplication(argc, argv, displayName)
     , movePointsOn_(movePointsOn)
     , mainWindow_(nullptr)
-    , windowDecorationOffset_(0, 0) {
+    , windowDecorationOffset_(0, 0) 
+    , uiLocal_ (  utilqt::getCurrentStdLocale() )
+{
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
@@ -114,7 +116,7 @@ void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
 
 void InviwoApplicationQt::playSound(Message message) {}
 
-std::locale InviwoApplicationQt::getUILocale() const { return utilqt::getCurrentStdLocale(); }
+std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 
 void InviwoApplicationQt::printApplicationInfo() {
     InviwoApplication::printApplicationInfo();

@@ -38,7 +38,7 @@ namespace inviwo {
     const ProcessorInfo PathLines::processorInfo_{
         "org.inviwo.PathLines",  // Class identifier
         "Path Lines",            // Display name
-        "Undefined",                // Category
+        "Vector Field Visualization",                // Category
         CodeState::Experimental,  // Code state
         Tags::CPU,               // Tags
     };

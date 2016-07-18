@@ -50,6 +50,7 @@ class DataOutport;
 template <typename T, size_t N = 1, bool Flat = false>
 class DataInport : public Inport, public InportIterable<T, Flat> {
 public:
+    using type = T;
     DataInport(std::string identifier);
     virtual ~DataInport();
 

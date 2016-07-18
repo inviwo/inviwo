@@ -32,9 +32,8 @@
 namespace inviwo {
 
 BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
-                           GLenum target /*= GL_ARRAY_BUFFER*/)
+                           BufferTarget target /*= BufferTarget::Data*/)
     : Observable<BufferObjectObserver>()
-    , target_(target)
     , glFormat_(getGLFormats()->getGLFormat(format->getId())) {
     switch (usage) {
         case BufferUsage::Dynamic:
@@ -45,6 +44,15 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
         default:
             usageGL_ = GL_STATIC_DRAW;
             break;
+    }
+    switch (target) {
+    case BufferTarget::Index:
+        target_ = GL_ELEMENT_ARRAY_BUFFER;
+        break;
+    case BufferTarget::Data:
+    default:
+        target_ = GL_ARRAY_BUFFER;
+        break;
     }
 
     glGenBuffers(1, &id_);
@@ -127,6 +135,8 @@ BufferObject::~BufferObject() { glDeleteBuffers(1, &id_); }
 BufferObject* BufferObject::clone() const { return new BufferObject(*this); }
 
 GLenum BufferObject::getFormatType() const { return glFormat_.type; }
+
+GLenum BufferObject::getTarget() const { return target_; }
 
 GLuint BufferObject::getId() const { return id_; }
 

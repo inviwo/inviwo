@@ -61,6 +61,7 @@ public:
 
     const std::vector<dvec3> &getPositions() const;
     const std::vector<dvec3> &getMetaData(const std::string &name) const;
+    bool hasMetaData(const std::string &name) const;
 
     double getLength()const;
 

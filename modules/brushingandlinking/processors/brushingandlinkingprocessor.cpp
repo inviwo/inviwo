@@ -38,7 +38,7 @@ namespace inviwo {
 const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
     "org.inviwo.BrushingAndLinkingProcessor",  // Class identifier
     "Brushing And Linking Processor",          // Display name
-    "Undefined",                               // Category
+    "Brushing And Linking",                    // Category
     CodeState::Experimental,                   // Code state
     Tags::None,                                // Tags
 };

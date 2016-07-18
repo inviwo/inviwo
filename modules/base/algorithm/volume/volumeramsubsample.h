@@ -72,11 +72,11 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSampleDispatcher::dispatch(const VolumeRe
     util::IndexMapper3D n(newDims);
 
     const double samplesInv = 1.0/(f.x*f.y*f.z);
-    for (size_t z=0; z < newDims.z; ++z) {
+#pragma omp parallel for
+    for (long long z_ =0; z_ < static_cast<long long>(newDims.z); ++z_) {
+        const size_t z = static_cast<size_t>(z_); // OpenMP need signed integral type.
         for (size_t y=0; y < newDims.y; ++y) {
-            #pragma omp parallel for
-            for (long long xomp=0; xomp < static_cast<long long>(newDims.x); ++xomp) {
-                const size_t x = static_cast<size_t>(xomp); // OpenMP need signed integral type.
+            for (size_t x=0; x < newDims.x; ++x) {
                 const size_t px{x*f.x};
                 const size_t py{y*f.y};
                 const size_t pz{z*f.z};

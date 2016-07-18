@@ -231,6 +231,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMAX(FloatProperty, theProperty);
     CAST_N_GETMAX(DoubleProperty, theProperty);
     CAST_N_GETMAX(IntProperty, theProperty);
+    CAST_N_GETMAX(IntSizeTProperty, theProperty);
     CAST_N_GETMAX(IntVec2Property, theProperty);
     CAST_N_GETMAX(IntVec3Property, theProperty);
     CAST_N_GETMAX(IntVec4Property, theProperty);
@@ -264,6 +265,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMIN(FloatProperty, theProperty);
     CAST_N_GETMIN(DoubleProperty, theProperty);
     CAST_N_GETMIN(IntProperty, theProperty);
+    CAST_N_GETMIN(IntSizeTProperty, theProperty);
     CAST_N_GETMIN(IntVec2Property, theProperty);
     CAST_N_GETMIN(IntVec3Property, theProperty);
     CAST_N_GETMIN(IntVec4Property, theProperty);

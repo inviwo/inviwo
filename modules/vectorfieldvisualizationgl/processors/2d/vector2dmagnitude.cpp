@@ -39,7 +39,7 @@ namespace inviwo {
 const ProcessorInfo Vector2DMagnitude::processorInfo_{
     "org.inviwo.Vector2DMagnitude",  // Class identifier
     "Vector 2D Magnitude",           // Display name
-    "Vector Field Topology",         // Category
+    "Vector Field Visualization",         // Category
     CodeState::Experimental,         // Code state
     Tags::GL,                        // Tags
 };

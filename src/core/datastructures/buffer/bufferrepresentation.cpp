@@ -31,15 +31,15 @@
 
 namespace inviwo {
 
-BufferRepresentation::BufferRepresentation(const DataFormatBase* format, BufferUsage usage)
-    : DataRepresentation(format), usage_(usage) {}
+BufferRepresentation::BufferRepresentation(const DataFormatBase* format, BufferUsage usage, BufferTarget target)
+    : DataRepresentation(format), usage_(usage), target_(target) {}
 
 size_t BufferRepresentation::getSizeOfElement() const {
     return getDataFormat()->getSize();
 }
 
-BufferUsage BufferRepresentation::getBufferUsage() const {
-    return usage_;
-}
+BufferUsage BufferRepresentation::getBufferUsage() const { return usage_; }
+
+BufferTarget BufferRepresentation::getBufferTarget() const { return target_; }
 
 }  // namespace

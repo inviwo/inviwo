@@ -40,7 +40,7 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API BufferObject : public Observable<BufferObjectObserver> {
 public:
     BufferObject(size_t sizeInBytes, const DataFormatBase* format,
-                 BufferUsage usage, GLenum target = GL_ARRAY_BUFFER);
+                 BufferUsage usage, BufferTarget target = BufferTarget::Data);
     BufferObject(const BufferObject& rhs);
     BufferObject(BufferObject&& rhs);
     BufferObject& operator=(const BufferObject& other);
@@ -48,8 +48,8 @@ public:
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
 
-    const BufferBase* getAttribute() const;
     GLenum getFormatType() const;
+    GLenum getTarget() const;
     GLuint getId() const;
 
     GLFormats::GLFormat getGLFormat() const { return glFormat_; }

@@ -105,6 +105,13 @@ public:
      */
     void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
 
+    /**
+     * Reserve memory for a given number of index buffers.
+     * Use full when having a mesh on which we will add a lot of index buffers
+     * @param size the new reserved size of the vector containing index buffers
+     */
+    void reserveIndexBuffers(size_t size);
+
     const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
@@ -130,7 +137,7 @@ public:
 protected:
     BufferVector buffers_;
     IndexVector indices_;
-    MeshInfo defaultMeshInfo_;
+    MeshInfo meshInfo_;
 };
 
 template <class Elem, class Traits>

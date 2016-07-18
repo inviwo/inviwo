@@ -106,18 +106,24 @@ bool MouseEventMatcher::operator()(Event* e) {
     auto me = static_cast<MouseEvent*>(e);
 
     if (me->state() == MouseState::Move) {
-        for (auto s : me->buttonState()) {
-            if (util::contains(buttons_.value, s)) {
-                if (util::contains(states_.value, me->state())) {
-                    if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
-                        return true;
+        if (states_.value & me->state()) {
+            if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
+                if (me->buttonState() != MouseButton::None) {
+                    for (auto s : me->buttonState()) {
+                        if (buttons_.value & s) {
+                            return true;
+                        }
                     }
+                } else if (buttons_.value == MouseButton::None) {
+                    return true;
+                } else if (buttons_.value == MouseButtons(flags::any)) {
+                    return true;
                 }
             }
         }
     } else {
-        if (util::contains(buttons_.value, me->button())) {
-            if (util::contains(states_.value, me->state())) {
+        if (buttons_.value & me->button()) {
+            if (states_.value & me->state()) {
                 if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
                     return true;
                 }

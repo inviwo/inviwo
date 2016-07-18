@@ -39,7 +39,7 @@ namespace inviwo {
 const ProcessorInfo Vector2DDivergence::processorInfo_{
     "org.inviwo.Vector2DDivergence",  // Class identifier
     "Vector 2D Divergence",           // Display name
-    "Vector Field Topology",          // Category
+    "Vector Field Visualization",          // Category
     CodeState::Experimental,          // Code state
     Tags::GL,                         // Tags
 };

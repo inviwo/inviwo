@@ -141,6 +141,7 @@ PyObject* py_saveWorkspace(PyObject* self, PyObject* args) {
     }
     if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            filename = filesystem::cleanupPath(filename);
             mw->getNetworkEditor()->saveNetwork(filename, setAsFilename);
         }
     }
