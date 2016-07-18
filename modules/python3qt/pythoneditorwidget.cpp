@@ -99,7 +99,8 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
         runAction_->setShortcut(QKeySequence(tr("F5")));
         runAction_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         runAction_->setToolTip("Compile and Run Script");
-        runAction_(runAction_, &QAction::triggered, [this](){run();});
+        mainWindow->addAction(runAction_);
+        connect(runAction_, &QAction::triggered, [this]() {run(); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
