@@ -106,6 +106,8 @@ private:
     QColor infoTextColor_;
     QColor errorTextColor_;
 
+    QAction* runAction_;
+
     PythonScript script_;
     std::string scriptFileName_;
 

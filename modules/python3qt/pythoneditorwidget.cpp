@@ -71,6 +71,7 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     , settings_("Inviwo", "Inviwo")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
+    , runAction_(nullptr)
     , script_()
     , unsavedChanges_(false)
     , app_(app)
@@ -94,12 +95,11 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     setWidget(mainWindow);
 
     {
-        auto action = toolBar->addAction(QIcon(":/icons/python-run.png"), "Compile and Run");
-        action->setShortcut(QKeySequence(tr("F5")));
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        action->setToolTip("Compile and Run Script");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){run();});
+        runAction_ = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and Run");
+        runAction_->setShortcut(QKeySequence(tr("F5")));
+        runAction_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        runAction_->setToolTip("Compile and Run Script");
+        runAction_(runAction_, &QAction::triggered, [this](){run();});
     }
     {
         auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
@@ -386,6 +386,10 @@ void PythonEditorWidget::run() {
     if (unsavedChanges_ && scriptFileName_.size() != 0)  // save if needed
         save();
 
+    runAction_->setDisabled(true);
+    util::OnScopeExit reenable([&]() {
+        runAction_->setEnabled(true);
+    });
     PyInviwo::getPtr()->addObserver(this);
     if (!appendLog_) {
         clearOutput();
@@ -398,7 +402,7 @@ void PythonEditorWidget::run() {
     c.tick();
 
     if (ok) {
-        LogInfo("Python Script Executed succesfully");
+        LogInfo("Python Script Executed successfully");
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
