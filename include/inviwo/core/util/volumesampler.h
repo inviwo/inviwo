@@ -48,7 +48,8 @@ namespace inviwo {
 template <unsigned int DataDims>
 class VolumeDoubleSampler : public SpatialSampler<3, DataDims, double> {
 public:
-    VolumeDoubleSampler(std::shared_ptr<const Volume> vol, Space space = Space::Data);
+    VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
+                        CoordinateSpace space = CoordinateSpace::Data);
     virtual ~VolumeDoubleSampler() = default;
 
     virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const override;
@@ -113,7 +114,8 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
 }
 
 template <unsigned int DataDims>
-VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol, Space space)
+VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
+                                                   CoordinateSpace space)
     : SpatialSampler<3, DataDims, double>(vol, space)
     , volume_(vol)
     , ram_(vol->getRepresentation<VolumeRAM>())

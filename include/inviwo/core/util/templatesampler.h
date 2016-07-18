@@ -62,7 +62,8 @@ class TemplateVolumeSampler : public SpatialSampler<3, DataDims, T> {
 public:
     static_assert(DataDims > 0, "zero extent");
 
-    TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume, Space space = Space::Data);
+    TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
+                          CoordinateSpace space = CoordinateSpace::Data);
     virtual ~TemplateVolumeSampler() = default;
 
     virtual Vector<DataDims, T> sampleDataSpace(const dvec3 &pos) const override;
@@ -78,7 +79,7 @@ private:
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
-    std::shared_ptr<const Volume> sharedVolume, Space space)
+    std::shared_ptr<const Volume> sharedVolume, CoordinateSpace space)
     : SpatialSampler<3, DataDims, T>(sharedVolume, space)
     , data_(static_cast<const DataType*>(sharedVolume->getRepresentation<VolumeRAM>()->getData()))
     , dims_(sharedVolume->getRepresentation<VolumeRAM>()->getDimensions())

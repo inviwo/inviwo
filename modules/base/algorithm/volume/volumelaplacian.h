@@ -69,7 +69,8 @@ std::shared_ptr<Volume> inviwo::util::detail::VolumeLaplacianDispatcher::dispatc
     static_assert(comp > 0, "zero extent");
 
     auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataFormat<R>::get());
-    auto newData = static_cast<R*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto newData =
+        static_cast<R*>(newVolume->template getEditableRepresentation<VolumeRAM>()->getData());
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
 
