@@ -76,6 +76,7 @@
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
 #include <modules/base/processors/volumegradientcpuprocessor.h>
 #include <modules/base/processors/volumecurlcpuprocessor.h>
+#include <modules/base/processors/volumelaplacianprocessor.h>
 
 namespace inviwo {
 
@@ -128,6 +129,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
     registerProcessor<VolumeGradientCPUProcessor>();
     registerProcessor<VolumeCurlCPUProcessor>();
+    registerProcessor<VolumeLaplacianProcessor>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();

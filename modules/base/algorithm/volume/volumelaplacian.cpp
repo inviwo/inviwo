@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "volumelaplacian.h"
-
-#include <modules/opengl/volume/volumegl.h>
+#include <modules/base/algorithm/volume/volumelaplacian.h>
 
 namespace inviwo {
 
-const ProcessorInfo VolumeLaplacian::processorInfo_{
-    "org.inviwo.VolumeLaplacian",  // Class identifier
-    "Volume Laplacian",            // Display name
-    "Volume Operation",            // Category
-    CodeState::Broken,             // Code state
-    Tags::CPU,                     // Tags
-};
-const ProcessorInfo VolumeLaplacian::getProcessorInfo() const {
-    return processorInfo_;
-}
-
-VolumeLaplacian::VolumeLaplacian()
-    : inport_("inport")
-    , outport_("outport") {
-    addPort(inport_);
-    addPort(outport_);
-}
-
-void VolumeLaplacian::process() {
-    auto volume = inport_.getData();
-
-    VolumeLaplacian::Dispatcher disp;
-    Volume* res = volume->getDataFormat()->dispatch(disp, volume.get());
-
-    outport_.setData(res);
+std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volume,
+                                              VolumeLaplacianPostProcessing postProcessing,
+                                              double scale) {
+    util::detail::VolumeLaplacianDispatcher disp;
+    return volume->getDataFormat()->dispatch(disp, volume, postProcessing, scale);
 }
 
 } // namespace
-
 

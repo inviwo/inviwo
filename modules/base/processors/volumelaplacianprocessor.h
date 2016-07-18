@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,51 +24,66 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#ifndef IVW_VOLUMELAPLACIANPROCESSOR_H
+#define IVW_VOLUMELAPLACIANPROCESSOR_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/algorithm/volume/volumelaplacian.h>
+#include <modules/base/properties/volumeinformationproperty.h>
+#include <inviwo/core/processors/activityindicator.h>
+
+#include <future>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+/** \docpage{org.inviwo.VolumeLaplacianProcessor, Volume Laplacian Processor}
+ * ![](org.inviwo.VolumeLaplacianProcessor.png?classIdentifier=org.inviwo.VolumeLaplacianProcessor)
+ * Computes the Laplacian of the input volume.
+ *
+ * ### Inports
+ *   * __inputVolume__ Input volume
+ *
+ * ### Outports
+ *   * __outputVolume__ Output volume
+ *
+ */
+class IVW_MODULE_BASE_API VolumeLaplacianProcessor : public Processor,
+                                                     public ActivityIndicatorOwner {
 public:
-    InviwoPropertyInfo();
-    VolumeInformationProperty(std::string identifier, std::string displayName,
-                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                              PropertySemantics semantics = PropertySemantics::Default);
-    VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
-    virtual VolumeInformationProperty* clone() const override;
-    virtual ~VolumeInformationProperty() = default;
+    VolumeLaplacianProcessor();
+    virtual ~VolumeLaplacianProcessor() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
-    void updateVolume(Volume& volume);
+    virtual void process() override;
 
-    // Read only used to show information
-    IntSize3Property dimensions_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
 
-    // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
+
+    static const ProcessorInfo processorInfo_;
 
 private:
-    auto props();
+    VolumeInport inport_;
+    VolumeOutport outport_;
+
+    TemplateOptionProperty<util::VolumeLaplacianPostProcessing> postProcessing_;
+    DoubleProperty scale_;
+
+    VolumeInformationProperty inVolume_;
+    VolumeInformationProperty outVolume_;
+
+    std::future<std::shared_ptr<Volume>> result_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H
+#endif // IVW_VOLUMELAPLACIANPROCESSOR_H
+
