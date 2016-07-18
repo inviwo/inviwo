@@ -79,7 +79,7 @@ private:
     DoubleVec3Property dvec3Property_;
     DoubleVec4Property dvec4Property_;
 
-    TemplateOptionProperty<SpatialCoordinateTransformer<3>::Space> space_;
+    TemplateOptionProperty<CoordinateSpace> space_;
 };
 
 } // namespace

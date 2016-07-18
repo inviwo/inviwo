@@ -107,10 +107,10 @@ public:
      */
     void setFarPlaneDist(float val);
 
-    const mat4& viewMatrix() const;
-    const mat4& projectionMatrix() const;
-    const mat4& inverseViewMatrix() const;
-    const mat4& inverseProjectionMatrix() const;
+    const mat4& getViewMatrix() const;
+    const mat4& getProjectionMatrix() const;
+    const mat4& getInverseViewMatrix() const;
+    const mat4& getInverseProjectionMatrix() const;
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.

@@ -48,7 +48,7 @@ public:
 template <unsigned DataDims, typename T>
 class Spatial4DSampler : public Spatial4DSamplerBase {
 public:
-    using Space = typename SpatialCoordinateTransformer<3>::Space;
+    using Space = CoordinateSpace;
 
     Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity);
     virtual ~Spatial4DSampler() = default;

@@ -64,7 +64,7 @@ public:
 
     IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
-    SpatialCoordinateTransformer<3>::Space getSeedPointsSpace() const;
+    CoordinateSpace getSeedPointsSpace() const;
 
 private:
     void setUpProperties();
@@ -75,7 +75,7 @@ protected:
 
     TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<SpatialCoordinateTransformer<3>::Space> seedPointsSpace_;
+    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
 };
 
 }  // namespace

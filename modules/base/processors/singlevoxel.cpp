@@ -74,9 +74,9 @@ SingleVoxel::SingleVoxel()
     dvec3Property_.setSemantics(PropertySemantics("Text"));
     dvec4Property_.setSemantics(PropertySemantics("Text"));
 
-    space_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
-    space_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
-    space_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
+    space_.addOption("model", "Model", CoordinateSpace::Model);
+    space_.addOption("world", "World", CoordinateSpace::World);
+    space_.addOption("data", "Data", CoordinateSpace::Data);
 
 
     setAllPropertiesCurrentStateAsDefault();

@@ -31,29 +31,28 @@
 
 namespace inviwo {
 
-    template<>
-    Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const {
-        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-        return ram_->getAsDouble(p);
-    }
+template <>
+Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const {
+    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDouble(p);
+}
 
-    template<>
-    Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const {
-        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-        return ram_->getAsDVec2(p);
-    }
+template <>
+Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const {
+    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec2(p);
+}
 
-    template<>
-    Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const {
-        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-        return ram_->getAsDVec3(p);
-    }
+template <>
+Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const {
+    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec3(p);
+}
 
-    template<>
-    Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const {
-        auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-        return ram_->getAsDVec4(p);
-    }
-
+template <>
+Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const {
+    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec4(p);
+}
 
 }  // namespace

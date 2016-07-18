@@ -113,7 +113,7 @@ void OrientationIndicator::process() {
         p2 = p2 * 2.0f - 1.0f;
         vec4 viewPos(p, 0.f, 1.f);
         vec4 viewPos2(p2, 0.f, 1.f);
-        auto m = cam_.get().inverseViewMatrix() * cam_.get().inverseProjectionMatrix();
+        auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
         auto point  = m * viewPos;
         auto point2 = m * viewPos2;
         start = point.xyz() / point.w;

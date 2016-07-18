@@ -385,14 +385,14 @@ vec3 CameraProperty::getLookRight() const {
     return glm::cross(glm::normalize(camera_->getDirection()), camera_->getLookUp());
 }
 
-const mat4& CameraProperty::viewMatrix() const { return camera_->viewMatrix(); }
+const mat4& CameraProperty::viewMatrix() const { return camera_->getViewMatrix(); }
 
-const mat4& CameraProperty::projectionMatrix() const { return camera_->projectionMatrix(); }
+const mat4& CameraProperty::projectionMatrix() const { return camera_->getProjectionMatrix(); }
 
-const mat4& CameraProperty::inverseViewMatrix() const { return camera_->inverseViewMatrix(); }
+const mat4& CameraProperty::inverseViewMatrix() const { return camera_->getInverseViewMatrix(); }
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
-    return camera_->inverseProjectionMatrix();
+    return camera_->getInverseProjectionMatrix();
 }
 
 void CameraProperty::changeFocusPoint(Event* event) {
