@@ -40,26 +40,21 @@ MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
     : meshToDraw_(mesh), meshInfo_(DrawType::NotSpecified, ConnectivityType::None) {
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
-    //    initialize(mesh->getDefaultMeshInfo());
     meshInfo_ = mesh->getDefaultMeshInfo();
 }
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo ai) : meshToDraw_(mesh), meshInfo_(ai) {
-    // initialize(ai);
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct)
     : meshToDraw_(mesh)
     , meshInfo_(Mesh::MeshInfo(dt, ct)) {
-    // initialize(Mesh::MeshInfo(dt, ct));
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
 MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
     : MeshDrawer(std::move(other)), meshToDraw_{other.meshToDraw_}, meshInfo_{other.meshInfo_} {
-    // move each element
-    std::move(std::begin(other.drawMethods_), std::end(other.drawMethods_), &drawMethods_[0]);
     other.meshToDraw_ = nullptr;
 }
 
@@ -67,9 +62,18 @@ MeshDrawerGL::~MeshDrawerGL() = default;
 
 MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
     if (this != &rhs) {
+        MeshDrawer::operator=(rhs);
         meshToDraw_ = rhs.meshToDraw_;
         meshInfo_ = rhs.meshInfo_;
-        std::copy(std::begin(rhs.drawMethods_), std::end(rhs.drawMethods_), &drawMethods_[0]);
+    }
+    return *this;
+}
+
+MeshDrawerGL& MeshDrawerGL::operator=(MeshDrawerGL&& rhs) {
+    if (this != &rhs) {
+        MeshDrawer::operator=(rhs);
+        meshToDraw_ = std::move(rhs.meshToDraw_);
+        meshInfo_ = rhs.meshInfo_;
     }
     return *this;
 }
@@ -123,65 +127,7 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
     }
 }
 
-GLenum MeshDrawerGL::getDefaultDrawMode() { return drawMethods_[0].drawMode; }
-
-void MeshDrawerGL::drawArray(DrawMode dmenum) const {
-    const auto dm = static_cast<size_t>(dmenum);
-    glDrawArrays(drawMethods_[dm].drawMode, 0,
-                 static_cast<GLsizei>(meshToDraw_->getBuffer(0)->getSize()));
-}
-
-void MeshDrawerGL::drawElements(DrawMode dmenum) const {
-    const auto dm = static_cast<size_t>(dmenum);
-    for (auto elem : drawMethods_[dm].elementBufferList) {
-        auto elementBufferGL = elem->getRepresentation<ElementBufferGL>();
-        elementBufferGL->bind();
-        glDrawElements(drawMethods_[dm].drawMode, static_cast<GLsizei>(elementBufferGL->getSize()),
-                       elementBufferGL->getFormatType(), nullptr);
-    }
-}
-
-void MeshDrawerGL::initialize(Mesh::MeshInfo ai) {
-    const auto dm = static_cast<size_t>(getDrawMode(ai.dt, ai.ct));
-    const auto ns = static_cast<size_t>(DrawMode::NotSpecified);
-    
-    drawMethods_[ns].drawFunc = &MeshDrawerGL::emptyFunc;
-    drawMethods_[ns].drawMode = getGLDrawMode(getDrawMode(ai.dt, ai.ct));
-    drawMethods_[ns].elementBufferList.clear();
-
-    for (size_t i = 1; i < static_cast<size_t>(DrawType::NumberOfDrawTypes); i++) {
-        drawMethods_[i].drawFunc = drawMethods_[ns].drawFunc;
-        drawMethods_[i].drawMode = drawMethods_[ns].drawMode;
-        drawMethods_[i].elementBufferList.clear();
-    }
-
-    drawMethods_[dm].drawFunc = &MeshDrawerGL::drawArray;
-    drawMethods_[ns].drawFunc = &MeshDrawerGL::drawArray;
-
-    for (size_t i = 0; i < meshToDraw_->getNumberOfIndicies(); ++i) {
-        if (meshToDraw_->getIndicies(i)->getSize() > 0)
-            initializeIndexBuffer(meshToDraw_->getIndicies(i),
-                                  meshToDraw_->getIndexMeshInfo(i));
-    }
-}
-
-void MeshDrawerGL::initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai) {
-    const auto dm = static_cast<int>(getDrawMode(ai.dt, ai.ct));
-    // check draw mode if there exists another indexBuffer
-    if (drawMethods_[dm].elementBufferList.size() == 0) {
-        drawMethods_[dm].drawFunc = &MeshDrawerGL::drawElements;
-        drawMethods_[dm].drawMode = getGLDrawMode(getDrawMode(ai.dt, ai.ct));
-    } 
-    drawMethods_[dm].elementBufferList.push_back(indexBuffer);
-
-    // Specify first element buffer as default rendering method
-    const auto ns = static_cast<int>(DrawType::NotSpecified);
-    if (drawMethods_[ns].elementBufferList.size() == 0) {
-        drawMethods_[ns].drawFunc = drawMethods_[dm].drawFunc;
-        drawMethods_[ns].drawMode = drawMethods_[dm].drawMode;
-        drawMethods_[ns].elementBufferList.push_back(drawMethods_[dm].elementBufferList.at(0));
-    }
-}
+GLenum MeshDrawerGL::getDefaultDrawMode() { return getGLDrawMode(meshInfo_); }
 
 MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) const {
     switch (dt) {
