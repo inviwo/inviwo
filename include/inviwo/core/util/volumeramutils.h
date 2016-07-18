@@ -33,27 +33,61 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
-    namespace util {
+namespace util {
 
-        template <typename C>
-        void forEachVoxel(const VolumeRAM &v, C callback){
-            const auto &dims = v.getDimensions();
-            size3_t pos;
-            for (pos.z = 0; pos.z < dims.z; pos.z++) {
-                for (pos.y = 0; pos.y < dims.y; pos.y++) {
-                    for (pos.x = 0; pos.x < dims.x; pos.x++) {
+template <typename C>
+void forEachVoxel(const VolumeRAM &v, C callback) {
+    const auto dims = v.getDimensions();
+    size3_t pos;
+    for (pos.z = 0; pos.z < dims.z; ++pos.z) {
+        for (pos.y = 0; pos.y < dims.y; ++pos.y) {
+            for (pos.x = 0; pos.x < dims.x; ++pos.x) {
+                callback(pos);
+            }
+        }
+    }
+}
+
+template <typename C>
+void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
+    const auto dims = v.getDimensions();
+
+    if (jobs == 0) {
+        auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+        jobs = 4*settings->poolSize_.get();
+    }
+
+    std::vector<std::future<void>> futures;
+    for (size_t job = 0; job < jobs; ++job) {
+        size3_t start = size3_t(0, 0, job * dims.z / jobs);
+        size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
+
+        futures.push_back(dispatchPool([&callback, start, stop]() {
+            size3_t pos{0};
+
+            for (pos.z = start.z; pos.z < stop.z; ++pos.z) {
+                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
+                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
                         callback(pos);
                     }
                 }
             }
-        }
-
+        }));
     }
 
+    for (const auto &e : futures) {
+        e.wait();
+    }
+}
+
 } // namespace
+
+}  // namespace
 
 #endif // IVW_VOLUMERAMUTILS_H
 
