@@ -110,6 +110,9 @@ struct rank : public std::rank<T> {};
 template <typename T>
 struct rank<const T> : public rank<T> {};
 
+template <>
+struct rank<half_float::half> : public std::integral_constant<std::size_t, 0> {};
+
 template <typename T, glm::precision P>
 struct rank<glm::detail::tvec2<T, P>> : public std::integral_constant<std::size_t, 1> {};
 template <typename T, glm::precision P>
