@@ -111,7 +111,13 @@ struct IVW_CORE_API BufferDispatcher {
     template <class T>
     std::shared_ptr<BufferBase> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
         typedef typename T::type F;
-        return std::make_shared<Buffer<F, target>>(size, usage);
+        switch (target) {
+            case BufferTarget::Index:
+                return std::make_shared<Buffer<F, BufferTarget::Index>>(size, usage);
+            case BufferTarget::Data:
+            default:
+                return std::make_shared<Buffer<F, BufferTarget::Data>>(size, usage);
+        }
     }
 };
 
