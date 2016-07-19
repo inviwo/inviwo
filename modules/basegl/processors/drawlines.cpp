@@ -48,7 +48,7 @@ const ProcessorInfo DrawLines::getProcessorInfo() const {
 }
 
 DrawLines::DrawLines()
-    : CompositeProcessorGL()
+    : Processor()
     , inport_("inport")
     , outport_("outport")
     , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
@@ -87,7 +87,7 @@ DrawLines::DrawLines()
         lineSize_.setVisible(false);
 }
 
-DrawLines::~DrawLines() {}
+DrawLines::~DrawLines() = default;
 
 void DrawLines::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
@@ -102,7 +102,7 @@ void DrawLines::process() {
     }
     utilgl::deactivateCurrentTarget();
 
-    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
+    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawLines::addPoint(vec2 p) {

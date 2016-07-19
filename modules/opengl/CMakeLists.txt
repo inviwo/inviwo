@@ -19,7 +19,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glformats.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.h
@@ -67,7 +67,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.cpp

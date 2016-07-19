@@ -52,10 +52,11 @@ const ProcessorInfo MeshPicking::getProcessorInfo() const {
 }
 
 MeshPicking::MeshPicking()
-    : CompositeProcessorGL()
+    : Processor()
     , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
+    , compositor_()
     , cullFace_("cullFace", "Cull Face", {{"culldisable", "Disable", GL_NONE},
                                           {"cullfront", "Front", GL_FRONT},
                                           {"cullback", "Back", GL_BACK},
@@ -137,11 +138,7 @@ void MeshPicking::process() {
         drawer_ = util::make_unique<MeshDrawerGL>(mesh_.get());
     }
 
-    if (imageInport_.hasData()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::AllLayers);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::AllLayers);
-    }
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
     shader_.setUniform("pickingColor", picking_.getPickingObject()->getColor());
@@ -154,14 +151,17 @@ void MeshPicking::process() {
     shader_.setUniform("dataToClip", dataToClip);
 
     {
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::CullFaceState culling(cullFace_.get());
-        utilgl::DepthFuncState depthfunc(GL_LESS);
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+
         drawer_->draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
+
+    compositor_.composite(imageInport_,outport_, ImageType::ColorDepthPicking);
 }
 
 }  // namespace

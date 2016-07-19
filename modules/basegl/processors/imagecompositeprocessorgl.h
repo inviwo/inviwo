@@ -33,7 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/opengl/image/compositeprocessorgl.h>
+#include <modules/opengl/image/imagecompositor.h>
 #include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
@@ -48,16 +48,16 @@ namespace inviwo {
  *
  * ### Outports
  *   * __outport__ Output image.
- * 
+ *
  */
 
-class IVW_MODULE_BASEGL_API ImageCompositeProcessorGL : public CompositeProcessorGL { 
+class IVW_MODULE_BASEGL_API ImageCompositeProcessorGL : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     ImageCompositeProcessorGL();
-    virtual ~ImageCompositeProcessorGL(){}
-     
+    virtual ~ImageCompositeProcessorGL() = default;
+
 protected:
     virtual void process() override;
 
@@ -65,6 +65,7 @@ private:
     ImageInport imageInport1_;
     ImageInport imageInport2_;
     ImageOutport outport_;
+    ImageCompositor compositor_;
 };
 
 } // namespace

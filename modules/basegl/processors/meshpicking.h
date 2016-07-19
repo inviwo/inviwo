@@ -32,10 +32,11 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/image/compositeprocessorgl.h>
+#include <modules/opengl/image/imagecompositor.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -71,7 +72,7 @@ class MeshDrawerGL;
 *
 */
 
-class IVW_MODULE_BASEGL_API MeshPicking : public CompositeProcessorGL {
+class IVW_MODULE_BASEGL_API MeshPicking : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -87,6 +88,7 @@ private:
     MeshInport meshInport_;
     ImageInport imageInport_;
     ImageOutport outport_;
+    ImageCompositor compositor_;
 
     OptionPropertyInt cullFace_;
 

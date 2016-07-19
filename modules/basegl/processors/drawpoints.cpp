@@ -49,7 +49,7 @@ const ProcessorInfo DrawPoints::getProcessorInfo() const {
 }
 
 DrawPoints::DrawPoints()
-    : CompositeProcessorGL()
+    : Processor()
     , inport_("inputImage")
     , outport_("outputImage")
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
@@ -79,7 +79,7 @@ DrawPoints::DrawPoints()
     points_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 }
 
-DrawPoints::~DrawPoints() {}
+DrawPoints::~DrawPoints() = default;
 
 void DrawPoints::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
@@ -91,7 +91,7 @@ void DrawPoints::process() {
         pointShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
+    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawPoints::addPoint(vec2 p) {

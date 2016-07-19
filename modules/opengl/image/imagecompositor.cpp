@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "compositeprocessorgl.h"
+#include <modules/opengl/image/imagecompositor.h>
+
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -35,21 +36,33 @@
 
 namespace inviwo {
 
-CompositeProcessorGL::CompositeProcessorGL()
-    : Processor(), shaderFileName_("composite.frag"), shader_(shaderFileName_) {}
+ImageCompositor::ImageCompositor(std::string programFileName) : shader_(programFileName) {}
 
-CompositeProcessorGL::CompositeProcessorGL(std::string programFileName)
-    : Processor(), shaderFileName_(programFileName), shader_(shaderFileName_) {}
+void ImageCompositor::composite(const Image& source, Image& target, ImageType type) {
+    utilgl::activateTarget(target, type);
+    shader_.activate();
 
-void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
-    if (inport.isReady() && outport.hasData()) {        
-        utilgl::activateTarget(outport, type);
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(shader_, units, source, "tex0", ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, target, "tex1", ImageType::ColorDepthPicking);
+    utilgl::setShaderUniforms(shader_, target, "outportParameters");
+    utilgl::singleDrawImagePlaneRect();
+
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
+}
+
+void ImageCompositor::composite(ImageInport& source, ImageOutport& target, ImageType type) {
+    if (source.isReady() && target.hasData()) {
+        utilgl::activateTarget(target, type);
         shader_.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *inport.getData(),  "tex0", ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader_, units, *outport.getData(), "tex1", ImageType::ColorDepthPicking);
-        utilgl::setShaderUniforms(shader_, outport, "outportParameters");
+        utilgl::bindAndSetUniforms(shader_, units, *source.getData(), "tex0",
+                                   ImageType::ColorDepthPicking);
+        utilgl::bindAndSetUniforms(shader_, units, *target.getData(), "tex1",
+                                   ImageType::ColorDepthPicking);
+        utilgl::setShaderUniforms(shader_, target, "outportParameters");
         utilgl::singleDrawImagePlaneRect();
 
         shader_.deactivate();
@@ -57,6 +70,5 @@ void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageT
     }
 }
 
-void CompositeProcessorGL::initializeResources() { shader_.build(); }
+} // namespace
 
-}  // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,37 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITEPROCESSORGL_H
-#define IVW_COMPOSITEPROCESSORGL_H
+#ifndef IVW_IMAGECOMPOSITOR_H
+#define IVW_IMAGECOMPOSITOR_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API CompositeProcessorGL : public Processor {
+/**
+ * \class ImageCompositor
+ */
+class IVW_MODULE_OPENGL_API ImageCompositor { 
 public:
-    CompositeProcessorGL();
-    CompositeProcessorGL(std::string programFileName);
-    virtual ~CompositeProcessorGL() {}
+    ImageCompositor(std::string programFileName = "composite.frag");
+    virtual ~ImageCompositor() = default;
 
-    // overloaded method called when INVALID_RESOURCE property is set
-    virtual void initializeResources();
+    void composite(const Image& source, Image& target, ImageType type);
+    void composite(ImageInport& source, ImageOutport& target, ImageType type);
 
-    void compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport);
-
-protected:
-    std::string shaderFileName_;
+private:
     Shader shader_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_COMPOSITEPROCESSORGL_H
+#endif // IVW_IMAGECOMPOSITOR_H
+
