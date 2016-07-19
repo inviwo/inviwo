@@ -30,6 +30,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/texturequadrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.h
@@ -78,6 +79,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/texturequadrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.cpp
@@ -113,10 +115,12 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/minimal.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/picking.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/raycasting.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rendertexturequad.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rendertexturequad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/standard.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/standard.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/classification.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/compositing.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl
