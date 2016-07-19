@@ -60,7 +60,12 @@ void SimpleMesh::addIndex(unsigned int idx) {
 }
 
 void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
-    indices_[0].first = Mesh::MeshInfo(dt, ct);
+    if (indices_.empty()) {
+        addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
+    }
+    else {
+        indices_[0].first = Mesh::MeshInfo(dt, ct);
+    }
 }
 
 const Buffer<vec3>* SimpleMesh::getVertexList() const {
