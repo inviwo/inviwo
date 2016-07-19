@@ -32,7 +32,9 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
+
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
 class Image;
