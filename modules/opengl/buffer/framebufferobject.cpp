@@ -236,16 +236,8 @@ void FrameBufferObject::detachTexture(GLenum attachmentID) {
     else if (attachmentID == GL_STENCIL_ATTACHMENT)
         hasStencilAttachment_ = false;
     else {
-        std::vector<GLenum>::iterator it = drawBuffers_.begin();
-        while (it != drawBuffers_.end()) {
-            if (*it == attachmentID) break;
-            ++it;
-        }
-        if (it == drawBuffers_.end()) {
-            LogError("Could not detach " << attachmentID << " from framebuffer");
-            return;
-        }
-        drawBuffers_.erase(it);
+        // keep internal state consistent and remove color attachment from draw buffers
+        util::erase_remove(drawBuffers_, attachmentID);
     }
 
     glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, 0, 0);

@@ -184,6 +184,7 @@ protected:
     std::unique_ptr<MeshDrawerGL> drawer_;
 
     FrameBufferObject fbo_;
+    std::shared_ptr<Texture2D> prevTexture_; //<! 2D texture handle which was used previously in renderToTexture()
 };
 
 }  // namespace
