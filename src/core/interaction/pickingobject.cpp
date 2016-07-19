@@ -137,7 +137,7 @@ dvec3 PickingObject::getPreviousNDC() const {
     return previousNDC_;
 }
 
-dvec3 PickingObject::getPressNDC() {
+dvec3 PickingObject::getPressNDC() const {
     return pressNDC_;
 }
 

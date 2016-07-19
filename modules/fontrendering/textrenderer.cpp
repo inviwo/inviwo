@@ -169,7 +169,7 @@ vec2 TextRenderer::computeTextSize(const std::string &str) {
     float x = 0.0f;
     // calculate height of first line
     // for most fonts descend is negative (see FreeType documentation for details)
-    float y = static_cast<float>(getFontAscend() + std::max(-getFontDescend(), 0.0));
+    float y = static_cast<float>(getFontAscent() + std::max(-getFontDescent(), 0.0));
 
     float maxx = 0.0f;
     float maxy = 0.0f;
@@ -247,13 +247,13 @@ int TextRenderer::getLineHeight() const {
     return static_cast<int>(fontSize_ * (1.0 + lineSpacing_));
 }
 
-int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscend()); }
+int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscent()); }
 
-double TextRenderer::getFontAscend() const {
+double TextRenderer::getFontAscent() const {
     return (fontface_->ascender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 
-double TextRenderer::getFontDescend() const {
+double TextRenderer::getFontDescent() const {
     return (fontface_->descender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 

@@ -129,7 +129,7 @@ public:
      */
     dvec3 getNDC() const;
     dvec3 getPreviousNDC() const;
-    dvec3 getPressNDC();
+    dvec3 getPressNDC() const;
 
     PickingState getState() const;
 

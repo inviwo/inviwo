@@ -169,8 +169,8 @@ public:
 protected:
     void initMesh();
 
-    double getFontAscend() const;
-    double getFontDescend() const;
+    double getFontAscent() const;
+    double getFontDescent() const;
 
     FT_Library fontlib_;
     FT_Face fontface_;
