@@ -222,8 +222,10 @@ void TextRenderer::initMesh() {
 }
 
 void TextRenderer::setFontSize(int val) {
-    fontSize_ = val;
-    FT_Set_Pixel_Sizes(fontface_, 0, val);
+    if (fontSize_ != val) {
+        fontSize_ = val;
+        FT_Set_Pixel_Sizes(fontface_, 0, val);
+    }
 }
 
 void TextRenderer::setLineSpacing(double lineSpacing) { 

@@ -64,9 +64,7 @@ TextOverlayGL::TextOverlayGL()
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
-    , overlayShader_("img_identity.vert", "img_copy.frag")
     , numArgs_(0u)
-    , cachedOverlayGL_(nullptr)
 {
     addPort(inport_);
     addPort(outport_);
@@ -97,10 +95,7 @@ TextOverlayGL::TextOverlayGL()
     }
     fontSize_.setSelectedIndex(4);
     fontSize_.setCurrentStateAsDefault();
-
-    overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
-
 
 void TextOverlayGL::process() {
     if (!enable_.get()) {
@@ -109,20 +104,13 @@ void TextOverlayGL::process() {
     }
     
     // check whether a property was modified
-    bool dirty = false;
+    bool dirty = (cacheTexture_.get() == nullptr);
     for (auto property : this->getProperties()) {
         if (property->isModified()) {
             dirty = true;
             break;
         }
     }
-    if (!cachedOverlay_ || cachedOverlay_->getDimensions() != outport_.getDimensions()) {
-        // create/update the overlay image matching the output dimensions
-        cachedOverlay_ = std::make_shared<Image>(outport_.getDimensions(), DataVec4UInt8::get());
-        cachedOverlayGL_ = cachedOverlay_->getEditableRepresentation<ImageGL>();
-        dirty = true;
-    }
-
     if (dirty) {
         updateCache();
     }
@@ -131,25 +119,15 @@ void TextOverlayGL::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
-    overlayShader_.activate();
-    overlayShader_.setUniform("color_", colorTexUnit);
-    overlayShader_.setUniform("depth_", depthTexUnit);
-    overlayShader_.setUniform("picking_", pickingTexUnit);
 
-    if (auto layer = cachedOverlayGL_->getColorLayerGL()) {
-        layer->bindTexture(colorTexUnit);
-    }
-    if (auto layer = cachedOverlayGL_->getDepthLayerGL()) {
-        layer->bindTexture(depthTexUnit);
-    }
-    //if (auto layer = cachedOverlayGL_->getPickingLayerGL()) {
-    //    layer->bindTexture(pickingTexUnit);
-    //}
+    // use integer position for best results
+    vec2 size(cacheTexture_->getDimensions());
+    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
 
-    utilgl::singleDrawImagePlaneRect();
-    overlayShader_.deactivate();
+    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
+    pos -= ivec2(shift);
+    // render texture containing the text onto the current canvas
+    textureRenderer_.render(cacheTexture_, pos, outport_.getDimensions());
 
     utilgl::deactivateCurrentTarget();
 }
@@ -216,30 +194,18 @@ std::string TextOverlayGL::getString() const {
 }
 
 void TextOverlayGL::updateCache() {
-    // enable fbo for rendering the text
-    cachedOverlayGL_->activateBuffer(ImageType::ColorDepthPicking);
-    utilgl::clearCurrentTarget();
-
-    //utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-
-    vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
-
-    int fontSize = fontSize_.getSelectedValue();
-    textRenderer_.setFontSize(fontSize);
-
-    // use integer position for best results
-    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
-    pos.y += fontSize;
-
+    textRenderer_.setFontSize(fontSize_.getSelectedValue());
     std::string str(getString());
 
-    vec2 size = textRenderer_.computeTextSize(str);
-    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-
-    textRenderer_.render(str, -1 + static_cast<int>(pos.x - shift.x) * scale.x,
-                         1 - static_cast<int>(pos.y - shift.y) * scale.y, scale, color_.get());
-    cachedOverlayGL_->deactivateBuffer();
+    size2_t labelSize(textRenderer_.computeTextSize(str));
+    if (!cacheTexture_ ||
+        (cacheTexture_->getDimensions() != labelSize)) {
+        auto texture = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA,
+                                                   GL_UNSIGNED_BYTE, GL_LINEAR);
+        texture->initialize(nullptr);
+        cacheTexture_ = texture;
+    }
+    textRenderer_.renderToTexture(cacheTexture_, str, color_.get());
 }
 
 }  // namespace

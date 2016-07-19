@@ -86,7 +86,7 @@ void TextureQuadRenderer::render(std::shared_ptr<Texture2D> texture, ivec2 pos,
 
     shader_.setUniform("tex", texUnit);
     shader_.setUniform("geometry_.dataToWorld",
-                       glm::translate(vec3(-1.0f + position.x, 1.0f - position.y, 0.0f)) *
+                       glm::translate(vec3(-1.0f + position.x, -1.0f + position.y, 0.0f)) *
                            glm::scale(vec3(scaling * vec2(texture->getDimensions()), 1.f)));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

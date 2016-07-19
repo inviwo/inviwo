@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
 
 
 namespace inviwo {
@@ -116,10 +117,9 @@ private:
 
     const std::size_t maxNumArgs_ = 99;
 
-    Shader overlayShader_;
+    std::shared_ptr<Texture2D> cacheTexture_; //!< cache rendered text
 
-    std::shared_ptr<Image> cachedOverlay_; //!< cache the rendered text for re-use
-    ImageGL *cachedOverlayGL_; //!< keep an ImageGL representation around to avoid overhead
+    TextureQuadRenderer textureRenderer_;
 };
 
 } // namespace
