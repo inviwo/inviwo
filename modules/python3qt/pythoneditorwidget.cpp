@@ -151,9 +151,9 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
         connect(action, &QAction::toggled, [this, action](bool toggle) { 
             appendLog_ = toggle; 
             // update tooltip and menu entry
-            QString str = (toggle ? "Append Log" : "Clear Log on Run");
-            action->setText(str);
-            action->setToolTip(str);
+            QString tglstr = (toggle ? "Append Log" : "Clear Log on Run");
+            action->setText(tglstr);
+            action->setToolTip(tglstr);
             // update settings
             settings_.beginGroup("PythonEditor");
             settings_.setValue("appendLog", appendLog_);

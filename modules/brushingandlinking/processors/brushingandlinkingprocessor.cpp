@@ -46,13 +46,13 @@ const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { retu
 
 void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
     if (auto brushingEvent = dynamic_cast<BrushingAndLinkingEvent*>(event)) {
-        if (auto filtering = dynamic_cast<FilteringEvent*>(event)) {
+        if (dynamic_cast<FilteringEvent*>(event)) {
             manager_->setFiltered(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
-        } else if (auto selection = dynamic_cast<SelectionEvent*>(event)) {
+        } else if (dynamic_cast<SelectionEvent*>(event)) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
-        } else if (auto remove = dynamic_cast<RemoveEvent*>(event)) {
+        } else if (dynamic_cast<RemoveEvent*>(event)) {
             manager_->remove(brushingEvent->getSource());
             event->markAsUsed();
         }
