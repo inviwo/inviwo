@@ -63,7 +63,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
         e.setReadOnly(true);
         e.setSerializationMode(PropertySerializationMode::None);
         e.setCurrentStateAsDefault();
-        addProperty(e);
+        this->addProperty(e);
     }, props());
 
     dataRange_.setSerializationMode(PropertySerializationMode::All);
@@ -85,7 +85,7 @@ VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProp
     , valueRange_(rhs.valueRange_)
     , valueUnit_(rhs.valueUnit_) {
 
-    util::for_each_in_tuple([&](auto& e) {addProperty(e);}, props());
+    util::for_each_in_tuple([&](auto& e) {this->addProperty(e);}, props());
 
     addProperty(dataRange_);
     addProperty(valueRange_);
