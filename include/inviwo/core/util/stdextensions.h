@@ -123,28 +123,27 @@ struct is_string<T, typename void_helper<typename T::value_type, typename T::tra
 template <typename T>
 struct is_string : detail::is_string<T> {};
 
-#include <warn/push>
-#include <warn/ignore/unused-variable>
-
+// https://isocpp.org/blog/2015/01/for-each-arg-eric-niebler
 template <class F, class... Args>
-void for_each_argument(F f, Args&&... args) {
-    auto l = {(f(std::forward<Args>(args)), 0)...};
+auto for_each_argument(F&& f, Args&&... args) {
+    return (void)std::initializer_list<int>{0, (f(std::forward<Args>(args)), 0)...},
+           std::forward<F>(f);
 }
 
 namespace detail {
 
 template <typename F, typename T, size_t... Is>
-void for_each_in_tuple_impl(F f, T&& t, std::index_sequence<Is...>) {
-    auto l = {(f(std::get<Is>(t)), 0)...};
+auto for_each_in_tuple_impl(F&& f, T&& t, std::index_sequence<Is...>) {
+    return (void)std::initializer_list<int>{0, (f(std::get<Is>(t)), 0)...}, std::forward<F>(f);
 }
 
 }  // namespace
 
 template <typename F, typename... Ts>
-void for_each_in_tuple(F f, std::tuple<Ts...> const& t) {
-    detail::for_each_in_tuple_impl(f, t, std::index_sequence_for<Ts...>{});
+void for_each_in_tuple(F&& f, std::tuple<Ts...>&& t) {
+    detail::for_each_in_tuple_impl(std::forward<F>(f), std::forward<std::tuple<Ts...>>(t),
+                                   std::index_sequence_for<Ts...>{});
 }
-#include <warn/pop>
 
 template <typename T, typename V>
 auto erase_remove(T& cont, const V& elem)
