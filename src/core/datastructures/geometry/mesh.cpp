@@ -95,11 +95,11 @@ void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
 
 const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
 
-const IndexBuffer* Mesh::getIndicies(size_t idx) const { return indices_[idx].second.get(); }
+const IndexBuffer* Mesh::getIndices(size_t idx) const { return indices_[idx].second.get(); }
 
 BufferBase* Mesh::getBuffer(size_t idx) { return buffers_[idx].second.get(); }
 
-IndexBuffer* Mesh::getIndicies(size_t idx) { return indices_[idx].second.get(); }
+IndexBuffer* Mesh::getIndices(size_t idx) { return indices_[idx].second.get(); }
 
 Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 

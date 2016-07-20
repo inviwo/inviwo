@@ -55,13 +55,13 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
     uvec2 outportDim = entryPoints->getDimensions();
     mat4 NDCToTextureMat = worldToTexMat * glm::inverse(worldToView) * glm::inverse(viewToClip);
 
-    int nIndices = static_cast<int>(mesh->getIndicies(0)->getSize());
+    int nIndices = static_cast<int>(mesh->getIndices(0)->getSize());
     if (useGLSharing) {
         SyncCLGL glSync;
         LayerCLGL* entryCL = entryPoints->getEditableRepresentation<LayerCLGL>();
         LayerCLGL* exitCL = exitPoints->getEditableRepresentation<LayerCLGL>();
         const BufferCLGL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCLGL>();
-        const BufferCLGL* indices = mesh->getIndicies(0)->getRepresentation<ElementBufferCLGL>();
+        const BufferCLGL* indices = mesh->getIndices(0)->getRepresentation<ElementBufferCLGL>();
         glSync.addToAquireGLObjectList(entryCL);
         glSync.addToAquireGLObjectList(exitCL);
         glSync.addToAquireGLObjectList(vertices);
@@ -74,7 +74,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
         LayerCL* entryCL = entryPoints->getEditableRepresentation<LayerCL>();
         LayerCL* exitCL = exitPoints->getEditableRepresentation<LayerCL>();
         const BufferCL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCL>();
-        const BufferCL* indices = mesh->getIndicies(0)->getRepresentation<ElementBufferCL>();
+        const BufferCL* indices = mesh->getIndices(0)->getRepresentation<ElementBufferCL>();
         computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL,
                                exitCL, outportDim, waitForEvents, event);
     }
