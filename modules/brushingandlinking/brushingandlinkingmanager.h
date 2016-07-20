@@ -59,7 +59,10 @@ public:
                      const std::unordered_set<size_t>& indices);
 
     void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+        const std::unordered_set<size_t>& indices);
+
+    const std::unordered_set<size_t> &getSelectedIndices() const;
+    const std::unordered_set<size_t> &getFilteredIndices() const;
 
 private:
     IndexList selected_;

@@ -74,8 +74,26 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     }
 }
 
-BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
-    : DataOutport<BrushingAndLinkingManager>(identifier) {
+const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
+    if (isConnected()) {
+        return getData()->getSelectedIndices();
+    }
+    else {
+        return selctionCache_;
+    }
 }
+
+
+const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices() const {
+    if (isConnected()) {
+        return getData()->getFilteredIndices();
+    }
+    else {
+        return filterCache_;
+    }
+}
+
+BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
+    : DataOutport<BrushingAndLinkingManager>(identifier) {}
 
 }  // namespace

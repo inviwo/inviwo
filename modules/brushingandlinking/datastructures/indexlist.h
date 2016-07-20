@@ -56,6 +56,9 @@ public:
     std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
 
     void update();
+    const std::unordered_set<size_t> &getIndices() const {
+        return indices_;
+    }
 
 private:
     std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>

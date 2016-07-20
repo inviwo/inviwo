@@ -52,8 +52,10 @@ public:
     void sendSelectionEvent(const std::unordered_set<size_t> &indices);
 
     bool isFiltered(size_t idx) const;
-
     bool isSelected(size_t idx) const;
+
+    const std::unordered_set<size_t> &getSelectedIndices()const;
+    const std::unordered_set<size_t> &getFilteredIndices()const;
 
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selctionCache_;

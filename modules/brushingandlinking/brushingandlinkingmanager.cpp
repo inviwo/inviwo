@@ -66,4 +66,12 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
     filtered_.set(src, indices);
 }
 
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
+    return selected_.getIndices();
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {
+    return filtered_.getIndices();
+}
+
 }  // namespace
