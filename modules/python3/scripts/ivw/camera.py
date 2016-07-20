@@ -54,14 +54,14 @@ class Camera:
 	def __init__(self, id):
 		self.id = id
 		(self.lookfrom, self.lookto, self.lookup) = inviwo.getPropertyValue(self.id)
-		(self.oldState.lookfrom, self.oldState.lookto, self.oldState.lookup) = inviwo.getPropertyValue(self.id)
+		(self.oldlookfrom, self.oldlookto, self.oldlookup) = inviwo.getPropertyValue(self.id)
 
 	def set(self):
 		inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
 		inviwoqt.update()
 
 	def restoreState(self):
-		inviwo.setPropertyValue(self.id, (self.oldState.lookfrom, self.oldState.lookto, self.oldState.lookup))
+		inviwo.setPropertyValue(self.id, (self.oldlookfrom, self.oldlookto, self.oldlookup))
 		inviwoqt.update()
 
 	def rotate(self, delta = math.pi/30, steps = 60, axis = None):
