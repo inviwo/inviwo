@@ -57,6 +57,7 @@
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
 #include <glm/gtx/io.hpp>
+#include <glm/gtx/component_wise.hpp>
 
 #include <half/half.hpp>
 
