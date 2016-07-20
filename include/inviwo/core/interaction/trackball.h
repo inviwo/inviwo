@@ -93,8 +93,9 @@ protected:
 
     vec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
     void rotateTrackBall(const vec3& fromTrackballPos, const vec3& toTrackballPos);
-    dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
-    double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
+    vec3 getBoundedTranslation(const vec3& lookFrom, const vec3& lookTo, vec3 translation);
+    float getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo, float zoom);
+    std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
 
     void rotate(Event* event);
     void zoom(Event* event);
@@ -144,7 +145,7 @@ protected:
     BoolProperty allowVerticalPanning_;    ///< Enable/disable vertical panning
     BoolProperty allowZooming_;            ///< Enable/disable zooming
 
-    DoubleProperty maxZoomInDistance_;     ///< Cannot zoom in closer than this distance
+    FloatProperty maxZoomInDistance_;     ///< Cannot zoom in closer than this distance
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
     BoolProperty allowVerticalRotation_;    ///< Enable/disable rotation around vertical axis
