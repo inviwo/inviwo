@@ -292,7 +292,9 @@ template <typename T>
 struct Enable {
     Enable(const T* item) : item_(item) { item->enable(); }
     Enable(const Enable&) = delete;
+    Enable(Enable&&) = default;
     Enable& operator=(const Enable&) = delete;
+    Enable& operator=(Enable&&) = default;
     ~Enable() { item_->disable(); }
 
 private:

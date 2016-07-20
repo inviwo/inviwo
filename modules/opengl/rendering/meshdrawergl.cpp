@@ -29,8 +29,6 @@
 
 #include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/openglutils.h>
-
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
@@ -38,44 +36,8 @@ namespace inviwo {
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
-    : meshToDraw_(mesh), meshInfo_(DrawType::NotSpecified, ConnectivityType::None) {
+    : meshToDraw_(mesh) {
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
-    meshInfo_ = mesh->getDefaultMeshInfo();
-}
-
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo ai) : meshToDraw_(mesh), meshInfo_(ai) {
-    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
-}
-
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct)
-    : meshToDraw_(mesh)
-    , meshInfo_(Mesh::MeshInfo(dt, ct)) {
-    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
-}
-
-MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
-    : MeshDrawer(std::move(other)), meshToDraw_{other.meshToDraw_}, meshInfo_{other.meshInfo_} {
-    other.meshToDraw_ = nullptr;
-}
-
-MeshDrawerGL::~MeshDrawerGL() = default;
-
-MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
-    if (this != &rhs) {
-        MeshDrawer::operator=(rhs);
-        meshToDraw_ = rhs.meshToDraw_;
-        meshInfo_ = rhs.meshInfo_;
-    }
-    return *this;
-}
-
-MeshDrawerGL& MeshDrawerGL::operator=(MeshDrawerGL&& rhs) {
-    if (this != &rhs) {
-        MeshDrawer::operator=(rhs);
-        meshToDraw_ = std::move(rhs.meshToDraw_);
-        meshInfo_ = rhs.meshInfo_;
-    }
-    return *this;
 }
 
 void MeshDrawerGL::draw() {
@@ -106,7 +68,7 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
     utilgl::Enable<MeshGL> enable(meshGL);
 
-    auto drawModeGL = getGLDrawMode(meshToDraw_->getDefaultMeshInfo());
+    auto drawModeGL = getGLDrawMode(drawMode);
 
     std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
     if (numIndexBuffers > 0) {
@@ -127,9 +89,7 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
     }
 }
 
-GLenum MeshDrawerGL::getDefaultDrawMode() { return getGLDrawMode(meshInfo_); }
-
-MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) const {
+MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) {
     switch (dt) {
         case DrawType::Triangles:
             switch (ct) {
@@ -185,7 +145,7 @@ MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType c
     }
 }
 
-GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) const {
+GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) {
     switch (dm) {
         case DrawMode::Points:
             return GL_POINTS;
@@ -216,8 +176,93 @@ GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) const {
     }
 }
 
-GLenum MeshDrawerGL::getGLDrawMode(Mesh::MeshInfo meshInfo) const {
+GLenum MeshDrawerGL::getGLDrawMode(Mesh::MeshInfo meshInfo) {
     return getGLDrawMode(getDrawMode(meshInfo.dt, meshInfo.ct));
+}
+
+MeshDrawerGL::DrawObject::DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo)
+    : enable_(mesh), meshGL_(mesh), arrayMeshInfo_(arrayMeshInfo) {}
+
+void MeshDrawerGL::DrawObject::draw() {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            const auto indexBuffer = meshGL_->getIndexBuffer(i);
+            const auto numIndices = indexBuffer->getSize();
+            if (numIndices > 0) {
+                indexBuffer->bind();
+                const auto drawModeGL = getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(i));
+                glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
+                               indexBuffer->getFormatType(), nullptr);
+            }
+        }
+    }
+    else {
+        // the mesh does not contain index buffers, render all vertices
+        const auto drawModeGL = getGLDrawMode(arrayMeshInfo_);
+        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
+    }
+}
+
+void MeshDrawerGL::DrawObject::draw(DrawMode drawMode) {
+    const auto drawModeGL = getGLDrawMode(drawMode);
+
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            const auto indexBuffer = meshGL_->getIndexBuffer(i);
+            const auto numIndices = indexBuffer->getSize();
+            if (numIndices > 0) {
+                indexBuffer->bind();
+                glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
+                               indexBuffer->getFormatType(), nullptr);
+            }
+        }
+    }
+    else {
+        // the mesh does not contain index buffers, render all vertices
+        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
+    }
+}
+
+void MeshDrawerGL::DrawObject::draw(std::size_t index) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (index >= numIndexBuffers) {
+        throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
+                                 std::to_string(numIndexBuffers) + " is out-of-range.",
+                             IvwContext);
+    }
+    const auto indexBuffer = meshGL_->getIndexBuffer(index);
+    const auto numIndices = indexBuffer->getSize();
+    if (numIndices > 0) {
+        indexBuffer->bind();
+        const auto drawModeGL = getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(index));
+        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices), indexBuffer->getFormatType(),
+                       nullptr);
+    }
+}
+
+void MeshDrawerGL::DrawObject::draw(DrawMode drawMode, std::size_t index) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (index >= numIndexBuffers) {
+        throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
+                                 std::to_string(numIndexBuffers) + " is out-of-range.",
+                             IvwContext);
+    }
+    const auto indexBuffer = meshGL_->getIndexBuffer(index);
+    const auto numIndices = indexBuffer->getSize();
+    if (numIndices > 0) {
+        indexBuffer->bind();
+        const auto drawModeGL = getGLDrawMode(drawMode);
+        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices), indexBuffer->getFormatType(),
+                       nullptr);
+    }
+}
+
+std::size_t MeshDrawerGL::DrawObject::size() const {
+    return meshGL_->getIndexBufferCount();
 }
 
 }  // namespace
