@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
     "org.inviwo.VolumeLaplacianProcessor",  // Class identifier
     "Volume Laplacian",                     // Display name
-    "Undefined",                            // Category
+    "Volume Operation",                     // Category
     CodeState::Experimental,                // Code state
     Tags::CPU,                              // Tags
 };
