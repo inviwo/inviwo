@@ -100,10 +100,10 @@ public:
     static std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius);
     static std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4 &color);
 
-    static std::shared_ptr<BasicMesh> square(const vec3& pos, const vec3& normal,
-                                             const glm::vec2& extent,
+    static std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal,
+                                             const vec2& extent,
                                              const vec4& color = vec4(1, 1, 1, 1),
-                                             const ivec2& res = ivec2(1));
+                                             const ivec2& segments = ivec2(1));
 
     static std::shared_ptr<BasicMesh> cube(const mat4& orientation,
                                            const vec4& color = vec4(1, 1, 1, 1));

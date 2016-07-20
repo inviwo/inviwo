@@ -812,10 +812,10 @@ std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, 
 
 }
 
-std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal,
-                                             const glm::vec2& extent,
+std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& center, const vec3& normal,
+                                             const vec2& extent,
                                              const vec4& color /*= vec4(1,1,1,1)*/,
-                                             const ivec2& inres /*= ivec2(1)*/) {
+                                             const ivec2& segments /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
@@ -823,19 +823,19 @@ std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal
     vec3 right = orthvec(normal);
     vec3 up = glm::cross(right, normal);
 
-    vec3 start = pos - 0.5f * extent.x * right - 0.5f * extent.y * up;
-    ivec2 res = inres + ivec2(1);
+    vec3 start = center - 0.5f * extent.x * right - 0.5f * extent.y * up;
+    ivec2 res = segments + ivec2(1);
 
     for (int j = 0; j < res.y; j++) {
         for (int i = 0; i < res.x; i++) {
             mesh->addVertex(
-                start + static_cast<float>(i) / static_cast<float>(inres.x) * extent.x * right +
-                    static_cast<float>(j) / static_cast<float>(inres.y) * extent.y * up,
-                normal, vec3(static_cast<float>(i) / static_cast<float>(inres.x),
-                             static_cast<float>(j) / static_cast<float>(inres.y), 0.0f),
+                start + static_cast<float>(i) / static_cast<float>(segments.x) * extent.x * right +
+                    static_cast<float>(j) / static_cast<float>(segments.y) * extent.y * up,
+                normal, vec3(static_cast<float>(i) / static_cast<float>(segments.x),
+                             static_cast<float>(j) / static_cast<float>(segments.y), 0.0f),
                 color);
 
-            if (i != inres.x && j != inres.y) {
+            if (i != segments.x && j != segments.y) {
                 inds->add(i + res.x * j);
                 inds->add(i + 1 + res.x * j);
                 inds->add(i + res.x * (j + 1));

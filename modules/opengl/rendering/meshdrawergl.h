@@ -58,6 +58,10 @@ public:
         NumberOfDrawModes
     };
 
+    /**
+     * \brief This class provides functionality for efficient, subsequent drawing of a mesh. The
+     * buffers of the mesh will be bound once this class is instantiated.
+     */
     class IVW_MODULE_OPENGL_API DrawObject {
     public:
         DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo);
