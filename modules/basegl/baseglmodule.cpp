@@ -70,7 +70,6 @@
 #include <modules/basegl/processors/volumeprocessing/volumediff.h>
 #include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>
 #include <modules/basegl/processors/volumeprocessing/volumegradientprocessor.h>
-#include <modules/basegl/processors/volumeprocessing/volumelaplacian.h>
 #include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
 #include <modules/basegl/processors/volumeprocessing/volumemerger.h>
@@ -126,7 +125,6 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeDiff>();
     registerProcessor<VolumeGradientMagnitude>();
     registerProcessor<VolumeGradientProcessor>();
-    registerProcessor<VolumeLaplacian>();
     registerProcessor<VolumeLowPass>();
     registerProcessor<VolumeMapping>();
     registerProcessor<VolumeBinary>();
@@ -219,6 +217,11 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
              "image.outport",
              "outputImage"},
 
+            // VolumeDiff
+            {{xml::Kind::processor("org.inviwo.VolumeDiff"),
+              xml::Kind::inport("org.inviwo.VolumeInport")},
+             "vol2",
+             "volume2"},
         };
 
         const std::vector<std::pair<std::string, std::string>> imageGLrepl = {

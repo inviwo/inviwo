@@ -44,20 +44,22 @@ class Image;
 class EventPropagator;
 class ProcessorWidget;
 class MouseEvent;
+class WheelEvent;
 class KeyboardEvent;
 class TouchEvent;
 class GestureEvent;
 
 class IVW_CORE_API Canvas {
 public:
-    Canvas(uvec2 dimensions);
+    Canvas(size2_t dimensions);
     virtual ~Canvas() = default;
 
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0) = 0;
-    virtual void resize(uvec2 canvasSize);
+    virtual void resize(size2_t canvasSize);
 
-    uvec2 getScreenDimensions() const;
+    size2_t getCanvasDimensions() const;
+    virtual size2_t getImageDimensions() const = 0;
 
     virtual void update() = 0;
     virtual void activate() = 0;
@@ -73,26 +75,13 @@ public:
 
     virtual void releaseContext() = 0;
 
+    virtual bool isFullScreen() const = 0;
+    virtual void setFullScreen(bool fullscreen) = 0;
+
 protected:
-    void interactionEvent(Event* e);
+    void propagateEvent(Event* e);
 
-    void mousePressEvent(MouseEvent* e);
-    void mouseDoubleClickEvent(MouseEvent *e);
-    void mouseReleaseEvent(MouseEvent* e);
-    void mouseMoveEvent(MouseEvent* e);
-
-    void mouseButtonEvent(MouseEvent* e);
-    void mouseWheelEvent(MouseEvent* e);
-
-    void keyPressEvent(KeyboardEvent* e);
-    void keyReleaseEvent(KeyboardEvent* e);
-
-    void gestureEvent(GestureEvent* e);
-    void touchEvent(TouchEvent* e);
-    
-    bool touchEnabled();
-
-    uvec2 screenDimensions_;
+    size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
     PickingContainer pickingContainer_;
     ProcessorWidget* ownerWidget_;  //< non-owning reference

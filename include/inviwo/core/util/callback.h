@@ -31,124 +31,82 @@
 #define IVW_CALLBACK_H
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/dispatcher.h>
+
 #include <functional>
 
+
 namespace inviwo {
-
-class BaseCallBack {
-public:
-    BaseCallBack(){};
-    virtual ~BaseCallBack(){};
-    virtual void invoke() const = 0;
-    virtual bool involvesObject(void*) const { return false; }
-};
-
-template <typename T>
-class MemberFunctionCallBack : public BaseCallBack {
-public:
-    typedef void (T::*fPointerType)();
-
-    MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
-    virtual ~MemberFunctionCallBack() {}
-    virtual void invoke() const  override {
-        if (func_) (*obj_.*func_)();
-    }
-
-    bool involvesObject(void* ptr) const override { return static_cast<void*>(obj_) == ptr; }
-
-private:
-    fPointerType func_;
-    T* obj_;
-};
-
-class LambdaCallBack : public BaseCallBack {
-public:
-    LambdaCallBack(std::function<void()> func) : func_{func} {}
-    virtual ~LambdaCallBack(){};
-    virtual void invoke() const {
-        if (func_) func_();
-    }
-
-private:
-    std::function<void()> func_;
-};
 
 // Example usage
 // CallBackList list;
 // list.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
 
+using BaseCallBack = std::function<void()>;
+
 class CallBackList {
 public:
-    CallBackList() {}
-    virtual ~CallBackList() {
-        clear();
-    }
+    CallBackList() = default;
+    virtual ~CallBackList() = default;
 
     void startBlockingCallbacks() {++callbacksBlocked_;}
     void stopBlockingCallbacks() {--callbacksBlocked_;}
 
     void invokeAll() const {
-        if (callbacksBlocked_>0) return;
-        for (BaseCallBack* cb : callBackList_) cb->invoke();
+        if (callbacksBlocked_ == 0) dispatcher_.invoke();
     }
 
     template <typename T>
     const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
-        MemberFunctionCallBack<T>* callBack = new MemberFunctionCallBack<T>(o, m);
-        callBackList_.push_back(callBack);
-        return callBack;
+        auto cb = dispatcher_.add([o, m](){if (m) (*o.*m)();});
+        callBackList_.push_back(cb);
+        objMap_[static_cast<void*>(o)].push_back(cb.get());
+        return cb.get();
     }
     const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
-        LambdaCallBack* callBack = new LambdaCallBack(lambda);
-        callBackList_.push_back(callBack);
-        return callBack;
+        auto cb = dispatcher_.add(lambda);
+        callBackList_.push_back(cb);
+        return cb.get();
     }
 
     /** 
-     * \brief Deletes and removes callback if the callback was added before.
-     * 
-     * @note Callback pointer is invalid after calling remove if true is returned.
+     * \brief Removes callback if the callback was added before.
      * @param callback Callback to be removed.
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        auto it = std::find(callBackList_.begin(), callBackList_.end(), callback);
-        if (it != callBackList_.end()) {
-            delete *it;
-            callBackList_.erase(it);
-            return true;
-        }
-        return false;
+        return util::erase_remove_if(callBackList_,
+                                     [&](const std::shared_ptr<std::function<void()>>& ptr) {
+                                         return ptr.get() == callback;
+                                     }) > 0;
     }
     /** 
-     * \brief Deletes and removes all added callbacks.
+     * \brief Removes all added callbacks.
      */
     void clear() {
-        for (BaseCallBack* cb : callBackList_) delete cb;
         callBackList_.clear();
+        objMap_.clear();
     }
 
     /** 
-     * \brief Delete and remove all callbacks associated with the object.
-     * 
+     * \brief Remove all callbacks associated with the object.
      */
     template <typename T>
     void removeMemberFunction(T* o) {
-        callBackList_.erase(std::remove_if(callBackList_.begin(), callBackList_.end(),
-                                           [o](BaseCallBack* cb) -> bool {
-                                if (cb->involvesObject(o)) {
-                                    delete cb;
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            }),
-                            callBackList_.end());
+        auto it = objMap_.find(static_cast<void*>(o));
+        if(it != objMap_.end()) {
+            for(auto ptr : it->second) {
+                remove(ptr);
+            }
+            objMap_.erase(it);
+        }
     }
 
 private:
     int callbacksBlocked_{0};
-    std::vector<BaseCallBack*> callBackList_;
+    std::vector<std::shared_ptr<std::function<void()>>> callBackList_;
+    std::unordered_map<void*, std::vector<const BaseCallBack*>> objMap_;
+    mutable Dispatcher<void()> dispatcher_;
 };
 
 }  // namespace

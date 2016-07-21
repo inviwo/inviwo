@@ -38,27 +38,26 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, ImageBinary}
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.ImageBinary, Image Binary}
+ * ![](org.inviwo.ImageBinary.png?classIdentifier=org.inviwo.ImageBinary)
+ * Computes a binary image of the input image using a threshold. The output 
+ * will contain "0" for all values below the threshold and "1" otherwise.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outputImage__ Binary output image
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Threshold__ Threshold used for the binarization of the input image
  */
 
 
 /**
  * \class ImageBinary
  *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief computes a binary image of the input image using a threshold.
  */
 class IVW_MODULE_BASEGL_API ImageBinary : public ImageGLProcessor {
 public:
@@ -68,7 +67,7 @@ public:
     virtual ~ImageBinary() {}
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 
     FloatProperty threshold_;
 private:

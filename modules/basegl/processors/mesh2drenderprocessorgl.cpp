@@ -49,7 +49,7 @@ namespace inviwo {
 const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
     "org.inviwo.Mesh2DRenderProcessorGL",  // Class identifier
     "2D Mesh Renderer",                    // Display name
-    "Geometry Rendering",                  // Category
+    "Mesh Rendering",                  // Category
     CodeState::Experimental,               // Code state
     Tags::GL,                              // Tags
 };
@@ -90,7 +90,7 @@ void Mesh2DRenderProcessorGL::process() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getGeometry()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
         drawer.second->draw();
     }
 

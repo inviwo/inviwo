@@ -109,6 +109,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
 void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     if (!processor) return;
+    RenderContext::getPtr()->activateDefaultRenderContext();
     removeProcessor(processor);
     delete processor;
 }
@@ -272,7 +273,6 @@ void ProcessorNetwork::clear() {
     }
 
     for (auto processor : processors) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
         removeAndDeleteProcessor(processor);
     }
 }
@@ -345,6 +345,10 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
     for (auto child : po->getCompositeProperties()) {
         removePropertyOwnerObservation(child);
     }
+}
+
+int ProcessorNetwork::getVersion() const {
+    return processorNetworkVersion_;
 }
 
 const int ProcessorNetwork::processorNetworkVersion_ = 13;

@@ -53,7 +53,11 @@
 
 namespace inviwo {
 
-AssimpReader::AssimpReader() : DataReaderType<Mesh>() {
+AssimpReader::AssimpReader()
+    : DataReaderType<Mesh>()
+    , logLevel_(AssimpLogLevel::Warn)
+    , verboseLog_(false)
+    , fixInvalidData_(true) {
     aiString str{};
     Assimp::Importer importer{};
 
@@ -72,6 +76,23 @@ AssimpReader::AssimpReader() : DataReaderType<Mesh>() {
 
 AssimpReader* AssimpReader::clone() const { return new AssimpReader(*this); }
 
+void AssimpReader::setLogLevel(AssimpLogLevel level, bool verbose) {
+    logLevel_ = level;
+    verboseLog_ = verbose;
+}
+
+AssimpLogLevel AssimpReader::getLogLevel() const {
+    return logLevel_;
+}
+
+
+void AssimpReader::setFixInvalidDataFlag(bool enable) {
+    fixInvalidData_ = enable;
+}
+
+bool AssimpReader::getFixInvalidDataFlag() const {
+    return fixInvalidData_;
+}
 
 std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     Assimp::Importer importer;
@@ -79,31 +100,53 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     std::clock_t start_readmetadata = std::clock();
 
     // logging
-    Assimp::DefaultLogger::create("AssimpImportLog.txt", Assimp::Logger::LogSeverity::NORMAL, 0);
-    Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Warn),
-                                               Assimp::Logger::ErrorSeverity::Warn);
-    Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Error),
-                                               Assimp::Logger::ErrorSeverity::Err);
+    bool logging = (logLevel_ != AssimpLogLevel::None);
+    if (logging) {
+        Assimp::Logger::LogSeverity logSeverity = verboseLog_ ? Assimp::Logger::LogSeverity::VERBOSE
+                                                              : Assimp::Logger::LogSeverity::NORMAL;
+        Assimp::DefaultLogger::create("AssimpImportLog.txt", logSeverity, 0);
+        // if logging is enabled, errors will always be logged
+        Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Error),
+                                                   Assimp::Logger::ErrorSeverity::Err);
+        if (logLevel_ >= AssimpLogLevel::Warn) {
+            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Warn),
+                                                       Assimp::Logger::ErrorSeverity::Warn);
+        }
+        if (logLevel_ >= AssimpLogLevel::Info) {
+            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Info),
+                                                       Assimp::Logger::ErrorSeverity::Info);
+        }
+        if (logLevel_ >= AssimpLogLevel::Debug) {
+            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Info),
+                                                       Assimp::Logger::ErrorSeverity::Debugging);
+        }
+    }
 
 
     //#define AI_CONFIG_PP_SBP_REMOVE "aiPrimitiveType_POINTS | aiPrimitiveType_LINES"
     //#define AI_CONFIG_PP_FD_REMOVE 1
 
-    const aiScene* scene = importer.ReadFile(
-        filePath, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |
-                      aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices |
-                      aiProcess_ValidateDataStructure | aiProcess_ImproveCacheLocality |
-                      aiProcess_RemoveRedundantMaterials | aiProcess_FindInvalidData |
-                      aiProcess_OptimizeMeshes);
+    unsigned int flags = aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |
+                         aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices |
+                         aiProcess_ValidateDataStructure | aiProcess_ImproveCacheLocality |
+                         aiProcess_RemoveRedundantMaterials | aiProcess_OptimizeMeshes;
+    //      aiProcess_GenUVCoords | aiProcess_CalcTangentSpace | aiProcess_TransformUVCoords |
+    //      aiProcess_FindInstances
+    //      aiProcess_OptimizeGraph | aiProcess_SortByPType | aiProcess_FindDegenerates |
     // aiProcess_OptimizeGraph is incompatible to aiProcess_PreTransformVertices
-    // aiProcess_GenUVCoords | aiProcess_CalcTangentSpace | aiProcess_TransformUVCoords |
-    // aiProcess_FindInstances
-    // aiProcess_OptimizeGraph | aiProcess_SortByPType | aiProcess_FindDegenerates |
+
+    if (fixInvalidData_) {
+        flags |= aiProcess_FindInvalidData;
+    }
+
+    const aiScene* scene = importer.ReadFile(filePath, flags);
 
     std::clock_t start_convert = std::clock();
-    Assimp::DefaultLogger::get()->debug(
-        "time to load: " +
-        std::to_string(double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
+    if (logging) {
+        Assimp::DefaultLogger::get()->debug(
+            "time to load: " +
+            std::to_string(double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
+    }
 
     if (!scene) {
         throw DataReaderException(importer.GetErrorString(), IvwContext);
@@ -116,9 +159,9 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
     // because we use aiProcess_PreTransformVertices we can safely ignore the scenegraph,
     // nevertheless we must not ignore all the other differences:
-    // to load multiple assimp meshes (from one model) in one inviwo mesh we add a vertex counter to
+    // to load multiple Assimp meshes (from one model) in one inviwo mesh we add a vertex counter to
     // correctly calculate the indices, assume all meshes have normal data or not (both options can
-    // be done with preprocessing);
+    // be fixed with preprocessing);
     // fill texture and color channels with garbage/padding data if the channel count differs
     // between meshes
 
@@ -160,10 +203,12 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     // if we have a material available, ensure that it's used
     if (use_materials) {
         color_channels = std::max(color_channels, size_t{1});
-        Assimp::DefaultLogger::get()->debug("model has materials.");
+        if (logging) {
+            Assimp::DefaultLogger::get()->debug("model has materials.");
+        }
     }
 
-    // create Inviwos data structures for the model
+    // create Inviwo's data structures for the model
     auto mesh = std::make_shared<Mesh>();
 
     auto prep = std::make_shared<Vec3BufferRAM>();
@@ -291,30 +336,37 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     }
 
     // add the data to the mesh
-    mesh->addBuffer(BufferType::PositionAttrib, pbuff);
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib), pbuff);
 
     if (use_normals) {
-        mesh->addBuffer(BufferType::NormalAttrib, nbuff);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::NormalAttrib), nbuff);
     }
 
+    // use additional unused attribute locations for extra color channels and texture coords
+    int auxLocation = static_cast<int>(BufferType::NumberOfBufferTypes);
     for (size_t i = 0; i < color_channels; ++i) {
-        mesh->addBuffer(BufferType::ColorAttrib, cbuff[i]);
+        int location = (i == 0 ? static_cast<int>(BufferType::ColorAttrib) : auxLocation++);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib, location), cbuff[i]);
     }
 
+    // texture coords
     for (size_t i = 0; i < texture_channels; ++i) {
-        mesh->addBuffer(BufferType::TexcoordAttrib, tbuff[i]);
+        int location = (i == 0 ? static_cast<int>(BufferType::TexcoordAttrib) : auxLocation++);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::TexcoordAttrib, location), tbuff[i]);
     }
 
     mesh->addIndicies(Mesh::MeshInfo(dt, ConnectivityType::None), inds);
 
     std::clock_t now = std::clock();
-    Assimp::DefaultLogger::get()->debug(
-        "time to convert: " + std::to_string(double((now - start_convert) / CLOCKS_PER_SEC)));
-    Assimp::DefaultLogger::get()->debug(
-        "overall time to import: " +
-        std::to_string(double((now - start_readmetadata) / CLOCKS_PER_SEC)));
+    if (logging) {
+        Assimp::DefaultLogger::get()->debug(
+            "time to convert: " + std::to_string(double((now - start_convert) / CLOCKS_PER_SEC)));
+        Assimp::DefaultLogger::get()->debug(
+            "overall time to import: " +
+            std::to_string(double((now - start_readmetadata) / CLOCKS_PER_SEC)));
 
-    Assimp::DefaultLogger::kill();
+        Assimp::DefaultLogger::kill();
+    }
 
     return mesh;
 }

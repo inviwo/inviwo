@@ -117,7 +117,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     setWidget(scrollArea_);
 }
 
-PropertyListWidget::~PropertyListWidget() {}
+PropertyListWidget::~PropertyListWidget() = default;
 
 void PropertyListWidget::addProcessorProperties(Processor* processor) {  
     setUpdatesEnabled(false);

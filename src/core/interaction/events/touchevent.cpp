@@ -24,65 +24,92 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
-TouchPoint::TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth)
-: id_(id), pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState), depth_(depth) {
+TouchPoint::TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized,
+                       TouchState touchState, double depth)
+    : id_(id)
+    , pos_(pos)
+    , posNormalized_(posNormalized)
+    , prevPos_(prevPos)
+    , prevPosNormalized_(prevPosNormalized)
+    , state_(touchState)
+    , depth_(depth) {}
 
+inviwo::TouchState TouchPoint::state() const {
+    return state_;
 }
 
-void TouchPoint::serialize(Serializer& s) const {
-    s.serialize("id", id_);
-    s.serialize("pos", pos_);
-    s.serialize("posNormalized", posNormalized_);
-    s.serialize("prevPos", prevPos_);
-    s.serialize("prevPosNormalized", prevPosNormalized_);
-    s.serialize("state", state_);
-    s.serialize("depth", depth_);
-
+int TouchPoint::getId() const {
+    return id_;
 }
 
-void TouchPoint::deserialize(Deserializer& d) {
-    d.deserialize("id", id_);
-    d.deserialize("pos", pos_);
-    d.deserialize("posNormalized", posNormalized_);
-    d.deserialize("prevPos", prevPos_);
-    d.deserialize("prevPosNormalized", prevPosNormalized_);
-    d.deserialize("state", state_);
-    d.deserialize("depth", depth_);
+void TouchPoint::setId(int id) {
+    id_ = id;
 }
 
-TouchEvent::TouchEvent(uvec2 canvasSize)
-    : InteractionEvent(), canvasSize_(canvasSize) {}
+inviwo::vec2 TouchPoint::getPos() const {
+    return pos_;
+}
+
+void TouchPoint::setPos(vec2 val) {
+    pos_ = val;
+}
+
+inviwo::vec2 TouchPoint::getPosNormalized() const {
+    return posNormalized_;
+}
+
+void TouchPoint::setPosNormalized(vec2 val) {
+    posNormalized_ = val;
+}
+
+inviwo::vec2 TouchPoint::getPrevPos() const {
+    return prevPos_;
+}
+
+void TouchPoint::setPrevPos(vec2 val) {
+    prevPos_ = val;
+}
+
+inviwo::vec2 TouchPoint::getPrevPosNormalized() const {
+    return prevPosNormalized_;
+}
+
+void TouchPoint::setPrevPosNormalized(vec2 val) {
+    prevPosNormalized_ = val;
+}
+
+double TouchPoint::getDepth() const {
+    return depth_;
+}
+
+void TouchPoint::setDepth(double val) {
+    depth_ = val;
+}
+
+TouchEvent::TouchEvent(uvec2 canvasSize) : InteractionEvent(), canvasSize_(canvasSize) {}
 
 TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, uvec2 canvasSize)
     : InteractionEvent(), touchPoints_(touchPoints), canvasSize_(canvasSize) {}
 
-TouchEvent* TouchEvent::clone() const {
-    return new TouchEvent(*this);
-}
+TouchEvent* TouchEvent::clone() const { return new TouchEvent(*this); }
 
-TouchEvent::~TouchEvent() {}
+bool TouchEvent::hasTouchPoints() const { return !touchPoints_.empty(); }
 
-bool TouchEvent::hasTouchPoints() const { 
-    return !touchPoints_.empty(); 
-}
+const std::vector<TouchPoint>& TouchEvent::getTouchPoints() const { return touchPoints_; }
 
-const std::vector<TouchPoint>& TouchEvent::getTouchPoints() const { 
-    return touchPoints_; 
-}
+std::vector<TouchPoint>& TouchEvent::getTouchPoints() { return touchPoints_; }
 
-std::vector<TouchPoint>& TouchEvent::getTouchPoints() { 
-    return touchPoints_; 
-}
+void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
 
-void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { 
-    touchPoints_ = val; 
+inviwo::uvec2 TouchEvent::canvasSize() const {
+    return canvasSize_;
 }
 
 vec2 TouchEvent::getCenterPoint() const {
@@ -91,9 +118,8 @@ vec2 TouchEvent::getCenterPoint() const {
     } else {
         // Compute average position
         vec2 sum(0);
-        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
-            sum += p.getPos();
-        });
+        std::for_each(touchPoints_.begin(), touchPoints_.end(),
+                      [&](const TouchPoint& p) { sum += p.getPos(); });
         return sum / static_cast<float>(touchPoints_.size());
     }
 }
@@ -104,9 +130,8 @@ inviwo::vec2 TouchEvent::getCenterPointNormalized() const {
     } else {
         // Compute average position
         vec2 sum(0);
-        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
-            sum += p.getPosNormalized();
-        });
+        std::for_each(touchPoints_.begin(), touchPoints_.end(),
+                      [&](const TouchPoint& p) { sum += p.getPosNormalized(); });
         return sum / static_cast<float>(touchPoints_.size());
     }
 }
@@ -117,9 +142,8 @@ vec2 TouchEvent::getPrevCenterPointNormalized() const {
     } else {
         // Compute average position
         vec2 sum(0);
-        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
-            sum += p.getPrevPosNormalized();
-        });
+        std::for_each(touchPoints_.begin(), touchPoints_.end(),
+                      [&](const TouchPoint& p) { sum += p.getPrevPosNormalized(); });
         return sum / static_cast<float>(touchPoints_.size());
     }
 }
@@ -132,7 +156,8 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
         float distance = std::numeric_limits<float>::max();
         for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
             for (size_t j = i + 1; j < touchPoints_.size(); ++j) {
-                float ijDistance = glm::distance2(touchPoints_[i].getPos(), touchPoints_[j].getPos());
+                float ijDistance =
+                    glm::distance2(touchPoints_[i].getPos(), touchPoints_[j].getPos());
                 if (ijDistance < distance) {
                     distance = ijDistance;
                     touchPoint1 = &touchPoints_[i];
@@ -142,43 +167,15 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
         }
         returnVec.push_back(touchPoint1);
         returnVec.push_back(touchPoint2);
-    }
-    else if (!touchPoints_.empty())
+    } else if (!touchPoints_.empty())
         returnVec.push_back(&touchPoints_[0]);
-    
+
     return returnVec;
 }
 
-void TouchEvent::serialize(Serializer& s) const {
-    s.serialize("touchPoints", touchPoints_, "touchPoint");
-    InteractionEvent::serialize(s); 
+uint64_t TouchEvent::hash() const {
+    return chash();
 }
 
-void TouchEvent::deserialize(Deserializer& d) { 
-    d.deserialize("touchPoints", touchPoints_, "touchPoint");
-    InteractionEvent::deserialize(d); 
-}
-
-bool TouchEvent::matching(const Event* aEvent) const {
-    const TouchEvent* event = dynamic_cast<const TouchEvent*>(aEvent);
-    if (event) {
-        return matching(event);
-    } else {
-        return false;
-    }
-}
-
-bool TouchEvent::matching(const TouchEvent* aEvent) const {
-    return InteractionEvent::matching(aEvent);
-}
-
-bool TouchEvent::equalSelectors(const Event* aEvent) const {
-    const TouchEvent* event = dynamic_cast<const TouchEvent*>(aEvent);
-    if (event) {
-        return InteractionEvent::equalSelectors(event);
-    } else {
-        return false;
-    }
-}
 
 }  // namespace

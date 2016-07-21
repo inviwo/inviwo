@@ -49,20 +49,16 @@ const ProcessorInfo DrawPoints::getProcessorInfo() const {
 }
 
 DrawPoints::DrawPoints()
-    : CompositeProcessorGL()
+    : Processor()
     , inport_("inputImage")
     , outport_("outputImage")
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
-    , mouseDraw_("mouseDraw", "Draw Point",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-                                MouseEvent::MOUSE_STATE_ANY),
-                 new Action(this, &DrawPoints::eventDraw))
-    , keyEnableDraw_(
-          "keyEnableDraw", "Enable Draw",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-          new Action(this, &DrawPoints::eventEnableDraw))
+    , mouseDraw_("mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+                 MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
+                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
     , points_(DrawType::Points, ConnectivityType::None)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")
@@ -83,7 +79,7 @@ DrawPoints::DrawPoints()
     points_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 }
 
-DrawPoints::~DrawPoints() {}
+DrawPoints::~DrawPoints() = default;
 
 void DrawPoints::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
@@ -95,7 +91,7 @@ void DrawPoints::process() {
         pointShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
+    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawPoints::addPoint(vec2 p) {
@@ -115,18 +111,17 @@ void DrawPoints::eventDraw(Event* event){
     if (!drawModeEnabled_)
         return;
 
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 point = mouseEvent->posNormalized();
-    point *= 2.f;
-    point -= 1.f;
-    point.y = -point.y;
-    addPoint(point);
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    auto point = mouseEvent->ndc();
+
+    addPoint(vec2(point.x, point.y));
+
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void DrawPoints::eventEnableDraw(Event* event){
     KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
-    drawModeEnabled_ = (keyEvent->state() != KeyboardEvent::KEY_STATE_RELEASE);
+    drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
 } // inviwo namespace

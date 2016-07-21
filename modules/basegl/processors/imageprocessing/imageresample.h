@@ -38,24 +38,30 @@
 
 namespace inviwo {
 
-/*! \class ImageResample
- *
- * \brief Upscale/Downscale image according to parameters
- *
- */
 /** \docpage{org.inviwo.ImageResample, Image Resample}
  * ![](org.inviwo.ImageResample.png?classIdentifier=org.inviwo.ImageResample)
+ * Resamples the input image, which corresponds to upscaling or downscaling to the respective target
+ * resolution.
  *
- * ...
- * 
- * 
- * 
+ * ### Inports
+ *   * __inputImage__ Input image
+ *
+ * ### Outports
+ *   * __outputImage__ Resampled input image
+ *
  * ### Properties
- *   * __Dimension Source__ ...
- *   * __Outport dimensions__ ...
- *   * __Interpolation Type__ ...
+ *   * __Interpolation Type__ Determines the interpolation for resampling (bilinear or bicubic)
+ *   * __Output Size Mode__ Determines the size of the resampled image (set by inport, resize events, or custom dimensions)
+ *   * __Target Resolution__ Custom target resolution
  *
  */
+
+/*! \class ImageResample
+*
+* \brief Resamples the input image, which corresponds to upscaling or downscaling to the respective
+* target resolution.
+*
+*/
 class IVW_MODULE_BASEGL_API ImageResample : public ImageGLProcessor  { 
 public:
     ImageResample();
@@ -72,8 +78,8 @@ protected:
 
 private:
     OptionPropertyInt interpolationType_;
-    OptionPropertyInt dimensionSource_;
-    IntVec2Property dimensions_;
+    OptionPropertyInt outputSizeMode_;
+    IntVec2Property targetResolution_;
 };
 
 } // namespace

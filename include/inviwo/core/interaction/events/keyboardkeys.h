@@ -31,8 +31,87 @@
 #define IVW_KEYBOARDKEYS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <flags/flags.h>
+
+#include <iterator>
+#include <ostream>
 
 namespace inviwo {
+
+enum class KeyModifier {
+    None    = 0,
+    Control = 1 << 0,
+    Shift   = 1 << 1,
+    Alt     = 1 << 2,
+    Super   = 1 << 3,
+    Menu    = 1 << 4,
+    Meta    = 1 << 5
+};
+ALLOW_FLAGS_FOR_ENUM(KeyModifier);
+using KeyModifiers = flags::flags<KeyModifier>;
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyModifier m) {
+    switch (m) {
+        case KeyModifier::None:
+            ss << "None";
+            break;
+        case KeyModifier::Control:
+            ss << "Control";
+            break;
+        case KeyModifier::Shift:
+            ss << "Shift";
+            break;
+        case KeyModifier::Alt:
+            ss << "Alt";
+            break;
+        case KeyModifier::Super:
+            ss << "Super";
+            break;
+        case KeyModifier::Menu:
+            ss << "Menu";
+            break;
+        case KeyModifier::Meta:
+            ss << "Meta";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyModifiers ms) {
+    std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ss, "+"));
+    return ss;
+}
+
+enum class KeyState {
+    Press = 1 << 0,
+    Release = 1 << 1,
+};
+ALLOW_FLAGS_FOR_ENUM(KeyState);
+using KeyStates = flags::flags<KeyState>;
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyState s) {
+    switch (s) {
+        case KeyState::Press:
+            ss << "Press";
+            break;
+        case KeyState::Release:
+            ss << "Release";
+            break;
+    }
+    return ss;
+}
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, KeyStates s) {
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
+    return ss;
+}
+
 
 enum class IvwKey {
     // key codes based on glfw
@@ -103,7 +182,6 @@ enum class IvwKey {
     GraveAccent      = 96,  /* ` */
     AsciiCircum      = 94,  /* ° */
     Underscore       = 95,  /* _ */
-    QuoteLeft        = 96,
     BraceLeft        = 123, /* { */ // 0x7b
     Bar              = 124, /* | */ // 0x7c
     BraceRight       = 125, /* } */ // 0x7d
@@ -187,6 +265,446 @@ enum class IvwKey {
     LeftMeta         = 349,
     RightMeta        = 350,
 };
+
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, IvwKey k) {
+    switch (k) {
+        case IvwKey::Unknown:
+            ss << "Unknown";
+            break;
+        case IvwKey::Space:
+            ss << "Space";
+            break;
+        case IvwKey::Exclam:
+            ss << "Exclam";
+            break;
+        case IvwKey::QuoteDbl:
+            ss << "QuoteDbl";
+            break;
+        case IvwKey::NumberSign:
+            ss << "NumberSign";
+            break;
+        case IvwKey::Dollar:
+            ss << "Dollar";
+            break;
+        case IvwKey::Percent:
+            ss << "Percent";
+            break;
+        case IvwKey::Ampersand:
+            ss << "Ampersand";
+            break;
+        case IvwKey::Apostrophe:
+            ss << "Apostrophe";
+            break;
+        case IvwKey::ParenLeft:
+            ss << "ParenLeft";
+            break;
+        case IvwKey::ParenRight:
+            ss << "ParenRight";
+            break;
+        case IvwKey::Asterisk:
+            ss << "Asterisk";
+            break;
+        case IvwKey::Plus:
+            ss << "Plus";
+            break;
+        case IvwKey::Comma:
+            ss << "Comma";
+            break;
+        case IvwKey::Minus:
+            ss << "Minus";
+            break;
+        case IvwKey::Period:
+            ss << "Period";
+            break;
+        case IvwKey::Slash:
+            ss << "Slash";
+            break;
+        case IvwKey::Num0:
+            ss << "Num0";
+            break;
+        case IvwKey::Num1:
+            ss << "Num1";
+            break;
+        case IvwKey::Num2:
+            ss << "Num2";
+            break;
+        case IvwKey::Num3:
+            ss << "Num3";
+            break;
+        case IvwKey::Num4:
+            ss << "Num4";
+            break;
+        case IvwKey::Num5:
+            ss << "Num5";
+            break;
+        case IvwKey::Num6:
+            ss << "Num6";
+            break;
+        case IvwKey::Num7:
+            ss << "Num7";
+            break;
+        case IvwKey::Num8:
+            ss << "Num8";
+            break;
+        case IvwKey::Num9:
+            ss << "Num9";
+            break;
+        case IvwKey::Colon:
+            ss << "Colon";
+            break;
+        case IvwKey::Semicolon:
+            ss << "Semicolon";
+            break;
+        case IvwKey::Less:
+            ss << "Less";
+            break;
+        case IvwKey::Equal:
+            ss << "Equal";
+            break;
+        case IvwKey::Greater:
+            ss << "Greater";
+            break;
+        case IvwKey::Question:
+            ss << "Question";
+            break;
+        case IvwKey::A:
+            ss << "A";
+            break;
+        case IvwKey::B:
+            ss << "B";
+            break;
+        case IvwKey::C:
+            ss << "C";
+            break;
+        case IvwKey::D:
+            ss << "D";
+            break;
+        case IvwKey::E:
+            ss << "E";
+            break;
+        case IvwKey::F:
+            ss << "F";
+            break;
+        case IvwKey::G:
+            ss << "G";
+            break;
+        case IvwKey::H:
+            ss << "H";
+            break;
+        case IvwKey::I:
+            ss << "I";
+            break;
+        case IvwKey::J:
+            ss << "J";
+            break;
+        case IvwKey::K:
+            ss << "K";
+            break;
+        case IvwKey::L:
+            ss << "L";
+            break;
+        case IvwKey::M:
+            ss << "M";
+            break;
+        case IvwKey::N:
+            ss << "N";
+            break;
+        case IvwKey::O:
+            ss << "O";
+            break;
+        case IvwKey::P:
+            ss << "P";
+            break;
+        case IvwKey::Q:
+            ss << "Q";
+            break;
+        case IvwKey::R:
+            ss << "R";
+            break;
+        case IvwKey::S:
+            ss << "S";
+            break;
+        case IvwKey::T:
+            ss << "T";
+            break;
+        case IvwKey::U:
+            ss << "U";
+            break;
+        case IvwKey::V:
+            ss << "V";
+            break;
+        case IvwKey::W:
+            ss << "W";
+            break;
+        case IvwKey::X:
+            ss << "X";
+            break;
+        case IvwKey::Y:
+            ss << "Y";
+            break;
+        case IvwKey::Z:
+            ss << "Z";
+            break;
+        case IvwKey::BracketLeft:
+            ss << "BracketLeft";
+            break;
+        case IvwKey::Backslash:
+            ss << "Backslash";
+            break;
+        case IvwKey::BracketRight:
+            ss << "BracketRight";
+            break;
+        case IvwKey::GraveAccent:
+            ss << "GraveAccent";
+            break;
+        case IvwKey::AsciiCircum:
+            ss << "AsciiCircum";
+            break;
+        case IvwKey::Underscore:
+            ss << "Underscore";
+            break;
+        case IvwKey::BraceLeft:
+            ss << "BraceLeft";
+            break;
+        case IvwKey::Bar:
+            ss << "Bar";
+            break;
+        case IvwKey::BraceRight:
+            ss << "BraceRight";
+            break;
+        case IvwKey::AsciiTilde:
+            ss << "AsciiTilde";
+            break;
+        case IvwKey::World1:
+            ss << "World1";
+            break;
+        case IvwKey::World2:
+            ss << "World2";
+            break;
+        case IvwKey::Escape:
+            ss << "Escape";
+            break;
+        case IvwKey::Enter:
+            ss << "Enter";
+            break;
+        case IvwKey::Tab:
+            ss << "Tab";
+            break;
+        case IvwKey::Backspace:
+            ss << "Backspace";
+            break;
+        case IvwKey::Insert:
+            ss << "Insert";
+            break;
+        case IvwKey::Delete:
+            ss << "Delete";
+            break;
+        case IvwKey::Right:
+            ss << "Right";
+            break;
+        case IvwKey::Left:
+            ss << "Left";
+            break;
+        case IvwKey::Down:
+            ss << "Down";
+            break;
+        case IvwKey::Up:
+            ss << "Up";
+            break;
+        case IvwKey::PageUp:
+            ss << "PageUp";
+            break;
+        case IvwKey::PageDown:
+            ss << "PageDown";
+            break;
+        case IvwKey::Home:
+            ss << "Home";
+            break;
+        case IvwKey::End:
+            ss << "End";
+            break;
+        case IvwKey::CapsLock:
+            ss << "CapsLock";
+            break;
+        case IvwKey::ScrollLock:
+            ss << "ScrollLock";
+            break;
+        case IvwKey::NumLock:
+            ss << "NumLock";
+            break;
+        case IvwKey::PrintScreen:
+            ss << "PrintScreen";
+            break;
+        case IvwKey::Pause:
+            ss << "Pause";
+            break;
+        case IvwKey::F1:
+            ss << "F1";
+            break;
+        case IvwKey::F2:
+            ss << "F2";
+            break;
+        case IvwKey::F3:
+            ss << "F3";
+            break;
+        case IvwKey::F4:
+            ss << "F4";
+            break;
+        case IvwKey::F5:
+            ss << "F5";
+            break;
+        case IvwKey::F6:
+            ss << "F6";
+            break;
+        case IvwKey::F7:
+            ss << "F7";
+            break;
+        case IvwKey::F8:
+            ss << "F8";
+            break;
+        case IvwKey::F9:
+            ss << "F9";
+            break;
+        case IvwKey::F10:
+            ss << "F10";
+            break;
+        case IvwKey::F11:
+            ss << "F11";
+            break;
+        case IvwKey::F12:
+            ss << "F12";
+            break;
+        case IvwKey::F13:
+            ss << "F13";
+            break;
+        case IvwKey::F14:
+            ss << "F14";
+            break;
+        case IvwKey::F15:
+            ss << "F15";
+            break;
+        case IvwKey::F16:
+            ss << "F16";
+            break;
+        case IvwKey::F17:
+            ss << "F17";
+            break;
+        case IvwKey::F18:
+            ss << "F18";
+            break;
+        case IvwKey::F19:
+            ss << "F19";
+            break;
+        case IvwKey::F20:
+            ss << "F20";
+            break;
+        case IvwKey::F21:
+            ss << "F21";
+            break;
+        case IvwKey::F22:
+            ss << "F22";
+            break;
+        case IvwKey::F23:
+            ss << "F23";
+            break;
+        case IvwKey::F24:
+            ss << "F24";
+            break;
+        case IvwKey::F25:
+            ss << "F25";
+            break;
+        case IvwKey::KP0:
+            ss << "KP0";
+            break;
+        case IvwKey::KP1:
+            ss << "KP1";
+            break;
+        case IvwKey::KP2:
+            ss << "KP2";
+            break;
+        case IvwKey::KP3:
+            ss << "KP3";
+            break;
+        case IvwKey::KP4:
+            ss << "KP4";
+            break;
+        case IvwKey::KP5:
+            ss << "KP5";
+            break;
+        case IvwKey::KP6:
+            ss << "KP6";
+            break;
+        case IvwKey::KP7:
+            ss << "KP7";
+            break;
+        case IvwKey::KP8:
+            ss << "KP8";
+            break;
+        case IvwKey::KP9:
+            ss << "KP9";
+            break;
+        case IvwKey::KPDecimal:
+            ss << "KPDecimal";
+            break;
+        case IvwKey::KPDivide:
+            ss << "KPDivide";
+            break;
+        case IvwKey::KPMultiply:
+            ss << "KPMultiply";
+            break;
+        case IvwKey::KPSubtract:
+            ss << "KPSubtract";
+            break;
+        case IvwKey::KPAdd:
+            ss << "KPAdd";
+            break;
+        case IvwKey::KPEnter:
+            ss << "KPEnter";
+            break;
+        case IvwKey::KPEqual:
+            ss << "KPEqual";
+            break;
+        case IvwKey::LeftShift:
+            ss << "LeftShift";
+            break;
+        case IvwKey::LeftControl:
+            ss << "LeftControl";
+            break;
+        case IvwKey::LeftAlt:
+            ss << "LeftAlt";
+            break;
+        case IvwKey::LeftSuper:
+            ss << "LeftSuper";
+            break;
+        case IvwKey::RightShift:
+            ss << "RightShift";
+            break;
+        case IvwKey::RightControl:
+            ss << "RightControl";
+            break;
+        case IvwKey::RightAlt:
+            ss << "RightAlt";
+            break;
+        case IvwKey::RightSuper:
+            ss << "RightSuper";
+            break;
+        case IvwKey::Menu:
+            ss << "Menu";
+            break;
+        case IvwKey::LeftMeta:
+            ss << "LeftMeta";
+            break;
+        case IvwKey::RightMeta:
+            ss << "RightMeta";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+
 
 }  // namespace inviwo
 

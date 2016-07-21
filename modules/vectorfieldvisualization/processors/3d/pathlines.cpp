@@ -38,7 +38,7 @@ namespace inviwo {
     const ProcessorInfo PathLines::processorInfo_{
         "org.inviwo.PathLines",  // Class identifier
         "Path Lines",            // Display name
-        "Undefined",                // Category
+        "Vector Field Visualization",                // Category
         CodeState::Experimental,  // Code state
         Tags::CPU,               // Tags
     };
@@ -54,7 +54,9 @@ PathLines::PathLines()
     , seedPoints_("seedpoints")
     , colors_("colors")
     , volume_("vectorvolume")
+
     , linesStripsMesh_("linesStripsMesh_")
+    , lines_("lines")
 
     , pathLineProperties_("pathLineProperties", "Path Line Properties")
 
@@ -76,6 +78,7 @@ PathLines::PathLines()
     addPort(colors_);
     addPort(volume_);
     addPort(linesStripsMesh_);
+    addPort(lines_);
 
     addProperty(pathLineProperties_);
 
@@ -139,83 +142,92 @@ void PathLines::process() {
     bool warnOnce = true;
     bool warnOnce2 = true;
 
+    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
-        for (auto &p : (*seeds)) {
+#pragma omp parallel for
+        for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
+            auto p = seeds->at(j);
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
-
-            auto position = line.getPositions().begin();
-            auto velocity = line.getMetaData("velocity").begin();
-            auto timestamp = line.getMetaData("timestamp").begin();
-
             auto size = line.getPositions().size();
             if (size == 0) continue;
+            #pragma omp critical
+            lines->push_back(line);
+        }
+    }
 
+    for (auto &line : *lines) {
+        auto size = line.getPositions().size();
+        if (size == 0) continue;
 
-            auto indexBuffer =
-                mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
-            indexBuffer->add(0);
+        auto position = line.getPositions().begin();
+        auto velocity = line.getMetaData("velocity").begin();
+        auto timestamp = line.getMetaData("timestamp").begin();
 
-            vec4 c;
-            if (hasColors) {
-                if (i >= colors_.getData()->size()) {
-                    if (warnOnce2) {
-                        warnOnce2 = false;
-                        LogWarn("The vector of colors is smaller then the vector of seed points");
-                    }
+        auto indexBuffer =
+            mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+        indexBuffer->add(0);
+
+        vec4 c;
+        if (hasColors) {
+            if (i >= colors_.getData()->size()) {
+                if (warnOnce2) {
+                    warnOnce2 = false;
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                }
+            }
+            else {
+                c = colors_.getData()->at(i);
+            }
+        }
+        i++;
+
+        for (size_t ii = 0; ii < size; ii++) {
+            vec3 pos(*position);
+            vec3 v(*velocity);
+            float t = static_cast<float>((*timestamp).x);
+
+            float l = glm::length(v);
+            float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
+            maxVelocity = std::max(maxVelocity, l);
+
+            switch (coloringMethod_.get())
+            {
+            case ColoringMethod::Timestamp:
+                c = vec4(tf.sample(dvec2(t, 0.0)));
+                break;
+            case ColoringMethod::ColorPort:
+                if (hasColors) {
+                    break;
                 }
                 else {
-                    c = colors_.getData()->at(i);
-                }
-            }
-            i++;
-
-            for (size_t ii = 0; ii < size; ii++) {
-                vec3 pos(*position);
-                vec3 v(*velocity);
-                float t =  static_cast<float>((*timestamp).x);
-
-                float l = glm::length(v);
-                float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
-                maxVelocity = std::max(maxVelocity, l);
-
-                switch (coloringMethod_.get())
-                {
-                case ColoringMethod::Timestamp:
-                    c = vec4(tf.sample(dvec2(t, 0.0)));
-                    break;
-                case ColoringMethod::ColorPort:
-                    if (hasColors) {
-                        break;
+                    if (warnOnce) {
+                        warnOnce = false;
+                        LogWarn("No colors in the color port, using velocity for coloring instead ");
                     }
-                    else {
-                        if (warnOnce) {
-                            warnOnce = false;
-                            LogWarn("No colors in the color port, using velocity for coloring instead ");
-                        }
-                    }
-                case ColoringMethod::Velocity:
-                    c = vec4(tf.sample(dvec2(d, 0.0)));
-                default:
-                    break;
                 }
-
-                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-
-                vertices.push_back({ pos,glm::normalize(v),pos,c });
-
-                position++;
-                velocity++;
-                timestamp++;
+            case ColoringMethod::Velocity:
+                c = vec4(tf.sample(dvec2(d, 0.0)));
+            default:
+                break;
             }
-            indexBuffer->add(static_cast<std::uint32_t>(vertices.size()-1));
+
+            indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+
+            vertices.push_back({ pos,glm::normalize(v),pos,c });
+
+            position++;
+            velocity++;
+            timestamp++;
         }
+        indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));
     }
 
     mesh->addVertices(vertices);
 
     linesStripsMesh_.setData(mesh);
+    lines_.setData(lines);
     maxVelocity_.set(toString(maxVelocity));
 
 }

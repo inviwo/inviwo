@@ -43,13 +43,18 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeLowPass, Volume Low Pass}
  * ![](org.inviwo.VolumeLowPass.png?classIdentifier=org.inviwo.VolumeLowPass)
+ * Applies a low pass filter on the input volume.
  *
- * ...
+ * ### Inports
+ *   * __inputVolume__ Input volume
  *
- *
+ * ### Outports
+ *   * __outputVolume__ Output volume
  *
  * ### Properties
- *   * __Kernel size__ ...
+ *   * __Kernel Size__ Size of the applied low pass filter
+ *   * __Use Gaussian Weights__ Toggles between a Gaussian kernel and a box filter
+ *   * __Sigma__ Sigma used by the Gaussian kernel
  *
  */
 class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor {

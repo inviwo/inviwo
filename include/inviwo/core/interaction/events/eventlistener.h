@@ -39,8 +39,8 @@ namespace inviwo {
 class IVW_CORE_API EventListener {
 
 public:
-    EventListener();
-    virtual ~EventListener();
+    EventListener() = default;
+    virtual ~EventListener() = default;
 
     virtual void invokeEvent(Event* event);
 };

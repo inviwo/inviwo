@@ -52,9 +52,9 @@ public:
      * with camera looking towards the negative z-axis.
      * with X = (1, 0, 0), Y = (0, 1, 0), Z = (0, 0, -1)
      *
-     * @param vec3 lookFrom Camera position (eye)
-     * @param vec3 lookTo Camera focus point (center)
-     * @param vec3 lookUp Camera up direction
+     * @param lookFrom Camera position (eye)
+     * @param lookTo Camera focus point (center)
+     * @param lookUp Camera up direction
      */
     Camera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
            vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
@@ -107,10 +107,10 @@ public:
      */
     void setFarPlaneDist(float val);
 
-    const mat4& viewMatrix() const;
-    const mat4& projectionMatrix() const;
-    const mat4& inverseViewMatrix() const;
-    const mat4& inverseProjectionMatrix() const;
+    const mat4& getViewMatrix() const;
+    const mat4& getProjectionMatrix() const;
+    const mat4& getInverseViewMatrix() const;
+    const mat4& getInverseProjectionMatrix() const;
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
@@ -266,54 +266,54 @@ bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 */
 class IVW_CORE_API SkewedPerspectiveCamera : public Camera {
 public:
-	SkewedPerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
-		vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-		float farPlane = 10000.0f, vec4 frustum = vec4(-01, 10, -10, 10), vec2 frustumOffset = vec2(0.0f, 0.0f));
-	virtual ~SkewedPerspectiveCamera() = default;
-	SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other) = default;
-	// Camera(Camera&& other) = default;
-	SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other) = default;
-	virtual SkewedPerspectiveCamera* clone() const override;
-	virtual bool update(const Camera* source) override;
-	virtual void configureProperties(CompositeProperty* comp) override;
+    SkewedPerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
+                            vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
+                            float farPlane = 10000.0f, vec4 frustum = vec4(-01, 10, -10, 10),
+                            vec2 frustumOffset = vec2(0.0f, 0.0f));
+    virtual ~SkewedPerspectiveCamera() = default;
+    SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other) = default;
+    // Camera(Camera&& other) = default;
+    SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other) = default;
+    virtual SkewedPerspectiveCamera* clone() const override;
+    virtual bool update(const Camera* source) override;
+    virtual void configureProperties(CompositeProperty* comp) override;
 
-	friend bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
-	friend bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
-		
-	const vec4& getFrustum() const;
-	/**
-	* \brief Left, right, bottom, top view volume
-	*
-	* Set view frustum used for projection matrix calculation.
-	*
-	* @param inviwo::vec4 val
-	* @return void
-	*/
-	void setFrustum(vec4 val);
+    friend bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
+    friend bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
 
-	const vec2& getFrustumOffset() const;
-	/**
-	* \brief Left, right, bottom, top view volume
-	*
-	* Set view frustum used for projection matrix calculation.
-	*
-	* @param inviwo::vec4 val
-	* @return void
-	*/
-	void setFrustumOffset(vec2 val);
-	virtual float getAspectRatio() const override;
-	virtual void setAspectRatio(float val) override;
+    const vec4& getFrustum() const;
+    /**
+    * \brief Left, right, bottom, top view volume
+    *
+    * Set view frustum used for projection matrix calculation.
+    *
+    * @param inviwo::vec4 val
+    * @return void
+    */
+    void setFrustum(vec4 val);
 
-	virtual void serialize(Serializer& s) const override;
-	virtual void deserialize(Deserializer& d) override;
+    const vec2& getFrustumOffset() const;
+    /**
+    * \brief Left, right, bottom, top view volume
+    *
+    * Set view frustum used for projection matrix calculation.
+    *
+    * @param inviwo::vec4 val
+    * @return void
+    */
+    void setFrustumOffset(vec2 val);
+    virtual float getAspectRatio() const override;
+    virtual void setAspectRatio(float val) override;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
-	virtual mat4 calculateProjectionMatrix() const override;
+    virtual mat4 calculateProjectionMatrix() const override;
 
-	// Left, right, bottom, top view volume
-	vec4 frustum_;
-	vec2 frustumSkewOffset_;
-
+    // Left, right, bottom, top view volume
+    vec4 frustum_;
+    vec2 frustumSkewOffset_;
 };
 
 bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
@@ -382,14 +382,14 @@ inline mat4 OrthographicCamera::calculateProjectionMatrix() const {
 inline const vec4& SkewedPerspectiveCamera::getFrustum() const { return frustum_; }
 
 inline void SkewedPerspectiveCamera::setFrustum(inviwo::vec4 val) {
-	frustum_ = val;
-	invalidateProjectionMatrix();
+    frustum_ = val;
+    invalidateProjectionMatrix();
 }
 
 inline const vec2& SkewedPerspectiveCamera::getFrustumOffset() const { return frustumSkewOffset_; }
 inline void SkewedPerspectiveCamera::setFrustumOffset(vec2 offset) {
-	frustumSkewOffset_ = offset;
-	invalidateProjectionMatrix();
+    frustumSkewOffset_ = offset;
+    invalidateProjectionMatrix();
 }
 
 }  // namespace

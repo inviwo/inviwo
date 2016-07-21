@@ -33,10 +33,10 @@
 namespace inviwo {
 
 Mesh::Mesh(DrawType dt, ConnectivityType ct)
-    : DataGroup(), SpatialEntity<3>(), defaultMeshInfo_(MeshInfo(dt, ct)) {}
+    : DataGroup(), SpatialEntity<3>(), meshInfo_(MeshInfo(dt, ct)) {}
 
 Mesh::Mesh(const Mesh& rhs)
-    : DataGroup(rhs), SpatialEntity<3>(rhs), defaultMeshInfo_(rhs.defaultMeshInfo_) {
+    : DataGroup(rhs), SpatialEntity<3>(rhs), meshInfo_(rhs.meshInfo_) {
     for (const auto& elem : rhs.buffers_) {
         buffers_.emplace_back(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
     }
@@ -62,7 +62,7 @@ Mesh& Mesh::operator=(const Mesh& that) {
 
         std::swap(buffers, buffers_);
         std::swap(indices, indices_);
-        defaultMeshInfo_ = that.defaultMeshInfo_;
+        meshInfo_ = that.meshInfo_;
     }
     return *this;
 }
@@ -73,13 +73,17 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
-void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
-    buffers_.emplace_back(type, att);
+void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att) {
+    buffers_.emplace_back(info, att);
 }
 
-void Mesh::setBuffer(size_t idx, BufferType type, std::shared_ptr<BufferBase> att) {
+void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
+    buffers_.emplace_back(BufferInfo(type), att);
+}
+
+void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
     if (idx < buffers_.size()) {
-        buffers_[idx] = std::make_pair(type, att);
+        buffers_[idx] = std::make_pair(info, att);
     }
 }
 
@@ -87,15 +91,17 @@ void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
+void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
+
 const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
 
-const IndexBuffer* Mesh::getIndicies(size_t idx) const { return indices_[idx].second.get(); }
+const IndexBuffer* Mesh::getIndices(size_t idx) const { return indices_[idx].second.get(); }
 
 BufferBase* Mesh::getBuffer(size_t idx) { return buffers_[idx].second.get(); }
 
-IndexBuffer* Mesh::getIndicies(size_t idx) { return indices_[idx].second.get(); }
+IndexBuffer* Mesh::getIndices(size_t idx) { return indices_[idx].second.get(); }
 
-Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return defaultMeshInfo_; }
+Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
 Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const { return indices_[idx].first; }
 

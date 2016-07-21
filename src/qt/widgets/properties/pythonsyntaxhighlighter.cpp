@@ -40,7 +40,7 @@
 #include <QTextBlock>
 #include <warn/pop>
 
-static const char* python_keywords[] = {
+static const std::vector<std::string>  python_keywords = {
     "\\band\\b",      "\\bas\\b",     "\\bassert\\b",  "\\bbreak\\b", "\\bclass\\b",
     "\\bcontinue\\b", "\\bdef\\b",    "\\bdel\\b",     "\\belif\\b",  "\\belse\\b",
     "\\bexcept\\b",   "\\bexec\\b",   "\\bfinally\\b", "\\bfor\\b",   "\\bfrom\\b",
@@ -93,10 +93,11 @@ public:
         return result;
     }
 
-    PythonKeywordFormater(const QTextCharFormat& format, const char** keywords) : format_(format) {
-        int i = -1;
-
-        while (keywords[++i]) regexps_.push_back(QRegExp(keywords[i]));
+    PythonKeywordFormater(const QTextCharFormat& format, const std::vector<std::string>& keywords)
+        : format_(format) {
+        for (const auto& key : keywords) {
+            regexps_.push_back(QRegExp(key.c_str()));
+        }
     }
 
 private:

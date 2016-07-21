@@ -32,7 +32,7 @@
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/integralline.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <inviwo/core/util/volumesampler.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>

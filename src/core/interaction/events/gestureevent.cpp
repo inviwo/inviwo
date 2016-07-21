@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureEvent::GestureType type,
-                           int state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize)
+GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureType type,
+                           GestureState state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize)
     : InteractionEvent()
     , type_(type)
     , state_(state)
@@ -40,82 +40,28 @@ GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureEvent::Ge
     , deltaPos_(deltaPos)
     , deltaDistance_(deltaDistance)
     , screenPosNorm_(screenPosNorm)
-    , canvasSize_(canvasSize)
-    {}
-
-GestureEvent::GestureEvent(GestureEvent::GestureType type,
-                           int state, int numFingers)
-    : InteractionEvent()
-    , type_(type)
-    , state_(state)
-    , numFingers_(numFingers)
-    , deltaPos_(0)
-    , deltaDistance_(0)
-    , screenPosNorm_(0)
-    , canvasSize_(0) {}
-
-
-GestureEvent::GestureEvent(const GestureEvent& rhs) 
-    : InteractionEvent(rhs)
-    , type_(rhs.type_)
-    , state_(rhs.state_)
-    , numFingers_(rhs.numFingers_)
-    , deltaPos_(rhs.deltaPos_)
-    , deltaDistance_(rhs.deltaDistance_)
-    , screenPosNorm_(rhs.screenPosNorm_)
-    , canvasSize_(rhs.canvasSize_){
-}
-
-GestureEvent& GestureEvent::operator=(const GestureEvent& that) {
-    if (this != &that) {
-        InteractionEvent::operator=(that);
-        type_ = that.type_;
-        state_ = that.state_;
-        numFingers_ = that.numFingers_;
-        deltaPos_ = that.deltaPos_;
-        deltaDistance_ = that.deltaDistance_;
-        screenPosNorm_ = that.screenPosNorm_;
-        canvasSize_ = that.canvasSize_;
-    }
-    return *this;
-}
+    , canvasSize_(canvasSize) {}
 
 GestureEvent* GestureEvent::clone() const { return new GestureEvent(*this); }
 
-GestureEvent::~GestureEvent() {}
+inviwo::vec2 GestureEvent::deltaPos() const { return deltaPos_; }
+
+double GestureEvent::deltaDistance() const { return deltaDistance_; }
+
+inviwo::GestureType GestureEvent::type() const { return type_; }
+
+inviwo::GestureState GestureEvent::state() const { return state_; }
+
+int GestureEvent::numFingers() const { return numFingers_; }
+
+inviwo::vec2 GestureEvent::screenPosNormalized() const { return screenPosNorm_; }
+
+inviwo::vec2 GestureEvent::canvasSize() const { return canvasSize_; }
 
 void GestureEvent::modify(vec2 posNorm) { screenPosNorm_ = posNorm; }
 
-void GestureEvent::serialize(Serializer& s) const { InteractionEvent::serialize(s); }
-
-void GestureEvent::deserialize(Deserializer& d) { InteractionEvent::deserialize(d); }
-
-bool GestureEvent::matching(const Event* aEvent) const {
-    const GestureEvent* event = dynamic_cast<const GestureEvent*>(aEvent);
-    if (event) {
-        return matching(event);
-    } else {
-        return false;
-    }
-}
-
-bool GestureEvent::matching(const GestureEvent* aEvent) const {
-    return type_ == aEvent->type_
-        && (state_ & aEvent->state_)
-        && numFingers_ == aEvent->numFingers_
-        && InteractionEvent::matching(aEvent);
-}
-
-bool GestureEvent::equalSelectors(const Event* aEvent) const {
-    const GestureEvent* event = dynamic_cast<const GestureEvent*>(aEvent);
-    if (event) {
-        return InteractionEvent::equalSelectors(event)
-            && type_ == event->type_
-            && state_ == event->state_
-            && numFingers_ == event->numFingers_;
-    } else {
-        return false;
-    }
+uint64_t GestureEvent::hash() const {
+    return chash();
 }
 
 }  // namespace

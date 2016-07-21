@@ -27,37 +27,49 @@
  *
  *********************************************************************************/
 
-#include "volumeinformationproperty.h"
+#include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/stdextensions.h>
+
+
 namespace inviwo {
 
 PropertyClassIdentifier(VolumeInformationProperty, "org.inviwo.VolumeInformationProperty");
+
+auto VolumeInformationProperty::props() {
+    return std::tie(dimensions_, format_, channels_, numVoxels_);
+}
 
 VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
                                                      std::string displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , dimensions_("dimensions", "Dimensions")
+    , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
+                  size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
+                  PropertySemantics("Text"))
     , format_("format", "Format", "")
+    , channels_("channels", "Channels", 0, 0, std::numeric_limits<size_t>::max(), 1,
+                InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
+    , numVoxels_("numVoxels", "Number of Voxels", 0, 0, std::numeric_limits<size_t>::max(), 1,
+                 InvalidationLevel::Valid, PropertySemantics::Text)
     , dataRange_("dataRange", "Data range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
                  0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
-    dimensions_.setReadOnly(true);
-    format_.setReadOnly(true);
-    dimensions_.setSerializationMode(PropertySerializationMode::None);
-    format_.setSerializationMode(PropertySerializationMode::None);
-    dimensions_.setCurrentStateAsDefault();
-    format_.setCurrentStateAsDefault();
+   
+    util::for_each_in_tuple([&](auto& e) {
+        e.setReadOnly(true);
+        e.setSerializationMode(PropertySerializationMode::None);
+        e.setCurrentStateAsDefault();
+        this->addProperty(e);
+    }, props());
 
     dataRange_.setSerializationMode(PropertySerializationMode::All);
     valueRange_.setSerializationMode(PropertySerializationMode::All);
     valueUnit_.setSerializationMode(PropertySerializationMode::All);
 
-    addProperty(dimensions_);
-    addProperty(format_);
     addProperty(dataRange_);
     addProperty(valueRange_);
     addProperty(valueUnit_);
@@ -67,14 +79,32 @@ VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProp
     : CompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
     , format_(rhs.format_)
+    , channels_(rhs.channels_)
+    , numVoxels_(rhs.numVoxels_)
     , dataRange_(rhs.dataRange_)
     , valueRange_(rhs.valueRange_)
     , valueUnit_(rhs.valueUnit_) {
-    addProperty(dimensions_);
-    addProperty(format_);
+
+    util::for_each_in_tuple([&](auto& e) {this->addProperty(e);}, props());
+
     addProperty(dataRange_);
     addProperty(valueRange_);
     addProperty(valueUnit_);
+}
+
+VolumeInformationProperty& VolumeInformationProperty::operator=(
+    const VolumeInformationProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        dimensions_ = that.dimensions_;
+        format_ = that.format_;
+        channels_ = that.channels_;
+        numVoxels_ = that.numVoxels_;
+        dataRange_ = that.dataRange_;
+        valueRange_ = that.valueRange_;
+        valueUnit_ = that.valueUnit_;
+    }
+    return *this;
 }
 
 VolumeInformationProperty* VolumeInformationProperty::clone() const {
@@ -82,14 +112,15 @@ VolumeInformationProperty* VolumeInformationProperty::clone() const {
 }
 
 void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
-    std::stringstream ss;
-    ss << volume.getDimensions().x << " x " << volume.getDimensions().y << " x "
-       << volume.getDimensions().z;
-
-    dimensions_.set(ss.str());
+    const auto dim = volume.getDimensions();
+    
+    dimensions_.set(dim);
     format_.set(volume.getDataFormat()->getString());
-    dimensions_.setCurrentStateAsDefault();
-    format_.setCurrentStateAsDefault();
+    channels_.set(volume.getDataFormat()->getComponents());
+    numVoxels_.set(dim.x * dim.y * dim.z);
+
+    util::for_each_in_tuple([&](auto& e) {e.setCurrentStateAsDefault();}, props());
+
     if (deserialize) {
         Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
         Property::setStateAsDefault(valueRange_, volume.dataMap_.valueRange);
@@ -102,19 +133,6 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
         valueRange_.setCurrentStateAsDefault();
         valueUnit_.setCurrentStateAsDefault();
     }
-}
-
-VolumeInformationProperty& VolumeInformationProperty::operator=(
-    const VolumeInformationProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        dimensions_ = that.dimensions_;
-        format_ = that.format_;
-        dataRange_ = that.dataRange_;
-        valueRange_ = that.valueRange_;
-        valueUnit_ = that.valueUnit_;
-    }
-    return *this;
 }
 
 void inviwo::VolumeInformationProperty::updateVolume(Volume& volume) {

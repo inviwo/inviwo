@@ -34,13 +34,16 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
+#include <opengl/shader/shaderutils.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 
 const ProcessorInfo MeshPicking::processorInfo_{
     "org.inviwo.GeometryPicking",  // Class identifier
     "Mesh Picking",                // Display name
-    "Geometry Rendering",          // Category
+    "Mesh Rendering",          // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
@@ -49,81 +52,116 @@ const ProcessorInfo MeshPicking::getProcessorInfo() const {
 }
 
 MeshPicking::MeshPicking()
-    : CompositeProcessorGL()
+    : Processor()
     , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
-    , cullFace_("cullFace", "Cull Face")
+    , compositor_()
+    , cullFace_("cullFace", "Cull Face", {{"culldisable", "Disable", GL_NONE},
+                                          {"cullfront", "Front", GL_FRONT},
+                                          {"cullback", "Back", GL_BACK},
+                                          {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
+                2)
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
+    , highlightColor_("highlightColor", "Highlight Color", vec4(1.0f, 0.0f, 0.0f, 1.0f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_)
-    , picking_(this, 1, [&](const PickingObject* p){updateWidgetPositionFromPicking(p);})
+    , picking_(this, 1, [&](const PickingObject* p) { updateWidgetPositionFromPicking(p); })
     , shader_("standard.vert", "picking.frag") {
-
+    
     imageInport_.setOptional(true);
 
     addPort(meshInport_);
     addPort(imageInport_);
     addPort(outport_);
-    outport_.addResizeEventListener(&camera_);
 
-    cullFace_.addOption("culldisable", "Disable", GL_NONE);
-    cullFace_.addOption("cullfront", "Front", GL_FRONT);
-    cullFace_.addOption("cullback", "Back", GL_BACK);
-    cullFace_.addOption("cullfrontback", "Front & Back", GL_FRONT_AND_BACK);
-    cullFace_.set(GL_BACK);
     addProperty(cullFace_);
-
     addProperty(position_);
+ 
+    highlightColor_.setSemantics(PropertySemantics::Color);
+    addProperty(highlightColor_);
+    
+    outport_.addResizeEventListener(&camera_);
     addProperty(camera_);
     addProperty(trackball_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
 }
 
-MeshPicking::~MeshPicking() {}
+MeshPicking::~MeshPicking() = default;
 
 void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
-    vec2 move = p->getPickingMove();
+    if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = static_cast<MouseEvent*>(p->getEvent());
+        if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
+            p->getEvent()->markAsUsed();
 
-    if (move.x == 0.f && move.y == 0.f) return;
+            auto currNDC = p->getNDC();
+            auto prevNDC = p->getPreviousNDC();
 
-    vec2 pos = p->getPickingPosition();
-    float depth = static_cast<float>(p->getPickingDepth());
-    vec3 startNdc = vec3(2.f * pos - 1.f, depth);
-    vec3 endNdc = vec3(2.f * (pos + move) - 1.f, depth);
-    vec3 startWorld = camera_.getWorldPosFromNormalizedDeviceCoords(startNdc);
-    vec3 endWorld = camera_.getWorldPosFromNormalizedDeviceCoords(endNdc);
-    position_.set(position_.get() + (endWorld - startWorld));
-    invalidate(InvalidationLevel::InvalidOutput);
+            // Use depth of initial press as reference to move in the image plane.
+            auto refDepth = p->getPressDepth();
+            currNDC.z = refDepth;
+            prevNDC.z = refDepth;
+
+            auto corrWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+            auto prevWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+
+            position_.set(position_.get() + (corrWorld - prevWorld));
+        }
+    } else if (auto we = p->getEventAs<WheelEvent>()) {
+        p->getEvent()->markAsUsed();
+
+        double Zn = camera_.getNearPlaneDist();
+        double Zf = camera_.getFarPlaneDist();
+        
+        dvec3 camDir(glm::normalize(camera_.get().getDirection()));
+
+        position_.set(position_.get() + vec3(0.01*(Zf-Zn)*we->delta().y * camDir));
+    }
+
+    if (p->getState() == PickingState::Started) {
+        highlight_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+    } else if (p->getState() == PickingState::Finished) {
+        highlight_ = false;
+        invalidate(InvalidationLevel::InvalidOutput);   
+    }
 }
 
 void MeshPicking::process() {
+    if (meshInport_.isChanged()) {
+        mesh_ = meshInport_.getData();
+        drawer_ = util::make_unique<MeshDrawerGL>(mesh_.get());
+    }
+
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
-    MeshDrawerGL drawer(meshInport_.getData().get());
     shader_.activate();
-    shader_.setUniform("pickingColor_", picking_.getPickingObject()->getPickingColor());
+    shader_.setUniform("pickingColor", picking_.getPickingObject()->getColor());
+    shader_.setUniform("highlight", highlight_);
+    utilgl::setShaderUniforms(shader_, highlightColor_);
 
-    const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
-
-    mat4 dataToClip =
+    const auto& ct = mesh_->getCoordinateTransformer(camera_.get());
+    const auto dataToClip =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
-
     shader_.setUniform("dataToClip", dataToClip);
 
     {
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::CullFaceState culling(cullFace_.get());
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::DepthFuncState depthfunc(GL_ALWAYS);
-        drawer.draw();
+
+        drawer_->draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, ImageType::ColorDepthPicking, imageInport_);
+
+    compositor_.composite(imageInport_,outport_, ImageType::ColorDepthPicking);
 }
 
 }  // namespace

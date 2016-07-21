@@ -33,7 +33,7 @@ namespace inviwo {
 
 ElementBufferGL::ElementBufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
                                  std::shared_ptr<ElementBufferObject> data)
-    : BufferGL(size, format, usage,
+    : BufferGL(size, format, usage, BufferTarget::Index,
                data != nullptr ? data : std::make_shared<ElementBufferObject>(
                                             size * format->getSize(), format, usage)) {}
 

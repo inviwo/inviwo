@@ -33,27 +33,42 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
+class Inport;
+class Processor;
+class Outport;
+
 class IVW_CORE_API ResizeEvent : public Event {
 public:
-    ResizeEvent(uvec2 newSize);
-    ResizeEvent(uvec2 newSize, uvec2 previousSize);
-    ResizeEvent(const ResizeEvent& rhs);
-    ResizeEvent& operator=(const ResizeEvent& that);
-    virtual ResizeEvent* clone() const;
-    virtual ~ResizeEvent();
+    ResizeEvent(size2_t newSize);
+    ResizeEvent(size2_t newSize, size2_t previousSize);
+    ResizeEvent(const ResizeEvent& rhs) = default;
+    ResizeEvent& operator=(const ResizeEvent& that) = default;
 
-    inline uvec2 size() const { return size_; }
-    inline uvec2 previousSize() const { return previousSize_; }
-    inline void setSize(uvec2 csize) { size_ = csize; }
-    inline void setPreviousSize(uvec2 previousSize) { previousSize_ = previousSize; }
+    virtual ResizeEvent* clone() const override;
+    virtual ~ResizeEvent() = default;
+
+    virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) override;
+
+    size2_t size() const;
+    size2_t previousSize() const;
+    void setSize(size2_t csize);
+    void setPreviousSize(size2_t previousSize);
+
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash();
 
 private:
-    uvec2 size_;
-    uvec2 previousSize_;
+    size2_t size_;
+    size2_t previousSize_;
 };
+
+constexpr uint64_t ResizeEvent::chash() {
+    return util::constexpr_hash("org.inviwo.ResizeEvent");
+}
 
 }  // namespace
 

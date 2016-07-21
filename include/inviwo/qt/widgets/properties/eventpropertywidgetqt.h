@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QObject>
@@ -41,9 +42,9 @@ namespace inviwo {
 
 class EditableLabelQt;
 class EventProperty;
-class MouseEvent;
-class KeyboardEvent;
-class InteractionEvent;
+class EventMatcher;
+class MouseEventMatcher;
+class KeyboardEventMatcher;
 
 class IVW_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
@@ -53,6 +54,7 @@ class IVW_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 
 public:
     EventPropertyWidgetQt(EventProperty* eventproperty);
+    virtual ~EventPropertyWidgetQt();
     void updateFromProperty();
 
 protected:
@@ -73,9 +75,9 @@ private:
     IvwPushButton* button_;
     EditableLabelQt* label_;
 
-    InteractionEvent* tmpEvent_;
-    KeyboardEvent* keyevent_; 
-    MouseEvent* mouseEvent_;
+    std::unique_ptr<EventMatcher> matcher_;
+    KeyboardEventMatcher* keyMatcher_ = nullptr;
+    MouseEventMatcher* mouseMatcher_ = nullptr;
 };
 
 } //namespace

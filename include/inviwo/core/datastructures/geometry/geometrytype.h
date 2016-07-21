@@ -52,6 +52,8 @@ enum class BufferType {
 
 enum class BufferUsage { Static, Dynamic };
 
+enum class BufferTarget { Data, Index }; // Index maps to GL_ELEMENT_ARRAY_BUFFER, Data maps to GL_ARRAY_BUFFER
+
 enum class DrawType { NotSpecified = 0, Points, Lines, Triangles, NumberOfDrawTypes };
 
 enum class ConnectivityType {

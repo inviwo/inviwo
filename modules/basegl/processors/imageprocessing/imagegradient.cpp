@@ -35,8 +35,8 @@ namespace inviwo {
 const ProcessorInfo ImageGradient::processorInfo_{
     "org.inviwo.ImageGradient",      // Class identifier
     "Image Gradient",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
+    "Image Operation",              // Category
+    CodeState::Stable,  // Code state
     Tags::None,               // Tags
 };
 const ProcessorInfo ImageGradient::getProcessorInfo() const {
@@ -44,12 +44,32 @@ const ProcessorInfo ImageGradient::getProcessorInfo() const {
 }
 
 ImageGradient::ImageGradient()
-    : ImageGLProcessor("imagegradient.frag") {
+    : ImageGLProcessor("imagegradient.frag")
+    , channel_("channel", "Channel") {
     dataFormat_ = DataVec2Float32::get();
+
+    channel_.addOption("Channel 1", "Channel 1", 0);
+    channel_.setCurrentStateAsDefault();
+
+    inport_.onChange([&]() {
+        if (inport_.hasData()) {
+            int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
+            if (channels == static_cast<int>(channel_.size())) return;
+            channel_.clearOptions();
+            for (int i = 0; i < channels; i++) {
+                std::stringstream ss;
+                ss << "Channel " << i;
+                channel_.addOption(ss.str(), ss.str(), i);
+            }
+            channel_.setCurrentStateAsDefault();
+        }
+    });
+
+    addProperty(channel_);
 }
-    
-void ImageGradient::preProcess() {
-    
+
+void ImageGradient::preProcess(TextureUnitContainer &cont) {
+    shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
 } // namespace

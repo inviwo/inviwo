@@ -41,7 +41,7 @@ namespace inviwo {
     const ProcessorInfo TMIP::processorInfo_{
         "org.inviwo.TMIP",  // Class identifier
         "TMIP",           // Display name
-        "Volume Vector Operation",                  // Category
+        "Volume Sequence Operation",                  // Category
         CodeState::Experimental,          // Code state
         Tags::GL,                        // Tags
     };

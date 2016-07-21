@@ -52,27 +52,42 @@ void MeshGL::enable() const { bufferArray_.bind(); }
 
 void MeshGL::disable() const { bufferArray_.unbind(); }
 
-const BufferGL* MeshGL::getBufferGL(size_t idx) const { return bufferGLs_[idx]; }
+const BufferGL* MeshGL::getBufferGL(size_t idx) const {
+    ivwAssert(idx < bufferGLs_.size(), "MeshGL::getBufferGL(): index out of bounds");
+    return bufferGLs_[idx];
+}
+
+const Mesh::MeshInfo & MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
+    ivwAssert(idx < indexBuffers_.size(), "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
+    return indexBuffers_[idx].first;
+}
+
+const BufferGL* MeshGL::getIndexBuffer(size_t idx) const {
+    ivwAssert(idx < indexBuffers_.size(), "MeshGL::getIndexBuffer(): index out of bounds");
+    return indexBuffers_[idx].second;
+}
+
+size_t MeshGL::getIndexBufferCount() const { return indexBuffers_.size(); }
 
 // save all buffers and to lazy attachment in enable.
 void MeshGL::update(bool editable) {
     bufferGLs_.clear();
-    Mesh* owner = this->getOwner();
+    indexBuffers_.clear();
 
-    if (editable) {
-        for (auto buf : owner->getBuffers()) {
-            auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
-            bufferGLs_.push_back(bufGL);
-            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                            static_cast<GLuint>(buf.first));
-        }
-    } else {
-        for (auto buf : owner->getBuffers()) {
-            auto bufGL = buf.second->getRepresentation<BufferGL>();
-            bufferGLs_.push_back(bufGL);
-            bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                            static_cast<GLuint>(buf.first));
-        }
+    Mesh* owner = this->getOwner();
+    // update all buffers except index buffers, i.e. position, color, normals, etc.)
+    for (auto buf : owner->getBuffers()) {
+        const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
+                                         : buf.second->getRepresentation<BufferGL>();
+        bufferGLs_.push_back(bufGL);
+        bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
+                                        static_cast<GLuint>(buf.first.location));
+    }
+    // update index buffers
+    for (auto buf : owner->getIndexBuffers()) {
+        const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
+            : buf.second->getRepresentation<BufferGL>();
+        indexBuffers_.push_back({ buf.first, bufGL });
     }
 }
 

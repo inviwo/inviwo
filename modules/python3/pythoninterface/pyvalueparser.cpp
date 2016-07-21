@@ -73,7 +73,6 @@ PyObject* PyValueParser::toPyObject(std::string str) {
     return Py_BuildValue("s#", str.c_str(), str.length());
 }
 
-
 template <>
 bool PyValueParser::is<bool>(PyObject* arg) {
     return PyBool_Check(arg);

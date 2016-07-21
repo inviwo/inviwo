@@ -37,7 +37,7 @@ const ProcessorInfo VolumeBinary::processorInfo_{
     "org.inviwo.VolumeBinary",  // Class identifier
     "Volume Binary",            // Display name
     "Volume Operation",         // Category
-    CodeState::Experimental,    // Code state
+    CodeState::Stable,    // Code state
     Tags::None,                 // Tags
 };
 const ProcessorInfo VolumeBinary::getProcessorInfo() const {

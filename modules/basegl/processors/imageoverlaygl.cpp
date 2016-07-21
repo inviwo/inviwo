@@ -51,15 +51,18 @@ const ProcessorInfo ImageOverlayGL::getProcessorInfo() const {
 OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048))
-    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048))
-    , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , blendMode_("blendMode", "Blending Mode") 
-    , positioningMode_("positioningMode", "Positioning Mode")
-    , sizeMode_("sizeMode", "Size Mode")
-{
+    , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
+    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
+    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1), InvalidationLevel::Valid)
+    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1), InvalidationLevel::Valid)
+    , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
+    , blendMode_("blendMode", "Blending Mode", InvalidationLevel::Valid)
+    , positioningMode_("positioningMode", "Positioning Mode", InvalidationLevel::Valid)
+    , sizeMode_("sizeMode", "Size Mode", InvalidationLevel::Valid)
+    , viewDimensions_(-1, -1)
+    , viewport_(0, 0, 1, 1)
+    , isDeserializing_(false)
+{ 
     blendMode_.addOption("replace", "Replace", BlendMode::Replace);
     blendMode_.addOption("over", "Blend", BlendMode::Over);
     blendMode_.setSelectedValue(BlendMode::Over);
@@ -75,14 +78,24 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
     sizeMode_.setSelectedValue(Positioning::Relative);
     sizeMode_.setCurrentStateAsDefault();
 
-    sizeMode_.onChange([&]() {
-        size_.setVisible(sizeMode_.get() == Positioning::Relative);
-        absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute); 
-    });
+    auto updateCallback = [&]() { updateViewport(); };
+
     positioningMode_.onChange([&]() {
         pos_.setVisible(positioningMode_.get() == Positioning::Relative);
         absolutePos_.setVisible(positioningMode_.get() == Positioning::Absolute);
+        updateViewport();
     });
+    pos_.onChange(updateCallback);
+    absolutePos_.onChange(updateCallback);
+    sizeMode_.onChange([&]() {
+        size_.setVisible(sizeMode_.get() == Positioning::Relative);
+        absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute);
+        updateViewport();
+    });
+    size_.onChange(updateCallback);
+    absoluteSize_.onChange(updateCallback);
+    anchorPos_.onChange(updateCallback);
+    blendMode_.onChange(updateCallback);
 
     addProperty(positioningMode_);
     addProperty(pos_);
@@ -95,39 +108,60 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
     addProperty(anchorPos_);
     addProperty(blendMode_);
 
-    updateState();
+    updateVisibilityState();
+}
+
+void OverlayProperty::setViewDimensions(ivec2 viewDim) {
+    viewDimensions_ = viewDim;
+    updateViewport();
+}
+
+const ivec4 & OverlayProperty::getViewport() const {
+    return viewport_;
+}
+
+GLint OverlayProperty::getBlendMode() const {
+    return static_cast<GLint>(blendMode_.get());
 }
 
 void OverlayProperty::deserialize(Deserializer& d) {
+    isDeserializing_ = true;
     CompositeProperty::deserialize(d);
-    updateState();
+    isDeserializing_ = false;
+    updateVisibilityState();
 }
 
-void OverlayProperty::updateViewport(vec2 destDim) {
+void OverlayProperty::updateViewport() {
+    if (isDeserializing_) return;
+
+    vec2 viewDim(viewDimensions_);
+
     // determine size and center position first (absolute coords)
-    vec2 pos(destDim * 0.25f);
-    vec2 size(destDim * 0.5f);
+    vec2 pos(viewDim * 0.25f);
+    vec2 size(viewDim * 0.5f);
 
     if (positioningMode_.get() == Positioning::Absolute) {
         pos = vec2(absolutePos_.get());
     }
     else {
-        pos = pos_.get() * destDim;
+        pos = pos_.get() * viewDim;
     }
     if (sizeMode_.get() == Positioning::Absolute) {
         size = vec2(absoluteSize_.get());
     }
     else {
-        size = size_.get() * destDim;
+        size = size_.get() * viewDim;
     }
 
     // adjust max values of absolute pos and size
     // need to save and restore current values since setMaxValue() will clip data values
+    Property::OnChangeBlocker block(absolutePos_);
+    Property::OnChangeBlocker block2(absoluteSize_);
     auto tmp = absolutePos_.get();
-    absolutePos_.setMaxValue(ivec2(destDim));
+    absolutePos_.setMaxValue(viewDimensions_);
     absolutePos_.set(tmp);
     tmp = absoluteSize_.get();
-    absoluteSize_.setMaxValue(ivec2(destDim));
+    absoluteSize_.setMaxValue(viewDimensions_);
     absoluteSize_.set(tmp);
 
     // consider anchor position
@@ -135,13 +169,14 @@ void OverlayProperty::updateViewport(vec2 destDim) {
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     pos.x -= shift.x;
     // negate y axis
-    pos.y = destDim.y - (pos.y + shift.y);
+    pos.y = viewDim.y - (pos.y + shift.y);
     
     // use pixel aligned positions for best results
     viewport_ = ivec4(pos.x, pos.y, size.x, size.y);
+    CompositeProperty::propertyModified();
 }
 
-void OverlayProperty::updateState() {
+void OverlayProperty::updateVisibilityState() {
     size_.setVisible(sizeMode_.get() == Positioning::Relative);
     absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute);
 
@@ -171,13 +206,12 @@ ImageOverlayGL::ImageOverlayGL()
     addPort(overlayPort_);
 
     overlayPort_.onConnect([this]() {
-        ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        viewManager_.push_back(overlayProperty_.getViewport());
+        onStatusChange();
     });
 
     overlayPort_.onDisconnect([this]() {
-        ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        viewManager_.clear();
     });
 
     addPort(outport_);
@@ -195,7 +229,7 @@ ImageOverlayGL::ImageOverlayGL()
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
 }
 
-ImageOverlayGL::~ImageOverlayGL() {}
+ImageOverlayGL::~ImageOverlayGL() = default;
 
 void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
@@ -204,44 +238,45 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-        std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
-        int activeView = viewManager_.getActiveView();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
 
-        if (newEvent && activeView >= 0) {
-            overlayPort_.propagateEvent(newEvent.get(), overlayPort_.getConnectedOutport());
-            if (newEvent->hasBeenUsed()) event->markAsUsed();
-        } else {
-            inport_.propagateEvent(event);
+        updateViewports(resizeEvent->size(), true);
+        inport_.propagateEvent(resizeEvent);
+
+        if (overlayPort_.isConnected()) {
+            ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+            overlayPort_.propagateEvent(&e);
+        }
+    } else {
+        if (overlayInteraction_.get() && overlayPort_.isConnected()) {
+            std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
+            int activeView = viewManager_.getActiveView();
+
+            if (newEvent && activeView >= 0) {
+                overlayPort_.propagateEvent(newEvent.get());
+                if (newEvent->hasBeenUsed()) event->markAsUsed();
+                for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+                return;
+            }
         }
 
-    } else {
-        inport_.propagateEvent(event);
+        if (event->shouldPropagateTo(&inport_, this, source)) {
+            inport_.propagateEvent(event);
+        }
     }
 }
 
 bool ImageOverlayGL::isReady() const { return inport_.isReady(); }
 
-void ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-    
-    updateViewports(resizeEvent->size(), true);
-
-    if (inport_.isConnected()) {
-        inport_.propagateResizeEvent(resizeEvent);
-    }
-
-    if (overlayPort_.isConnected()) {
-        ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
-        overlayPort_.propagateResizeEvent(
-            &e, static_cast<ImageOutport*>(overlayPort_.getConnectedOutport()));
-    }
-}
-
 void ImageOverlayGL::onStatusChange() {
-    ResizeEvent e(currentDim_);
-    propagateResizeEvent(&e, &outport_);
+    if (overlayPort_.isConnected()) {
+        // update viewport stored in view manager
+        viewManager_.replace(0, overlayProperty_.getViewport());
+
+        ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+        overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
+    }
 }
 
 void ImageOverlayGL::process() {
@@ -255,7 +290,7 @@ void ImageOverlayGL::process() {
     if (overlayPort_.hasData()) {  // draw overlay
         utilgl::DepthFuncState(GL_ALWAYS);
 
-        ivec4 viewport = overlayProperty_.viewport_;
+        ivec4 viewport = overlayProperty_.getViewport();
         int borderWidth = 0;
         if (border_.isChecked()) {
             // adjust viewport by border width
@@ -263,8 +298,7 @@ void ImageOverlayGL::process() {
             viewport += ivec4(-borderWidth, -borderWidth, 2 * borderWidth, 2 * borderWidth);
         }
 
-        utilgl::BlendModeState blendMode(static_cast<GLint>(overlayProperty_.blendMode_.get()),
-                                         GL_ONE_MINUS_SRC_ALPHA);
+        utilgl::BlendModeState blendMode(overlayProperty_.getBlendMode(), GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnit colorUnit, depthUnit, pickingUnit;
         shader_.activate();
@@ -287,11 +321,7 @@ void ImageOverlayGL::process() {
 void ImageOverlayGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim)) return;  // no changes
 
-    overlayProperty_.updateViewport(dim);
-    viewManager_.clear();
-    if (overlayPort_.isConnected()) {
-        viewManager_.push_back(overlayProperty_.viewport_);
-    }
+    overlayProperty_.setViewDimensions(dim);
     currentDim_ = dim;
 }
 

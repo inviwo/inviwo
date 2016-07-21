@@ -134,10 +134,10 @@ std::vector<TxElement*> xml::getMatchingElements(TxElement* node, std::string ke
 
 bool xml::findMatchingSubPropertiesForComposites(
     TxElement* processornode, const std::vector<const CompositeProperty*>& props) {
-    std::vector<TxElement*> pelm = xml::getMatchingElements(processornode, "Properties");
-
+    auto pelm = xml::getMatchingElements(processornode, "Properties");
+    if (pelm.empty()) return false;
+    
     bool res = false;
-
     for (auto& prop : props) {
         if (!xml::hasProp(pelm[0], *prop)) {
             bool foundMatchingComposite = xml::copyMatchingCompositeProperty(pelm[0], *prop);

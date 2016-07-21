@@ -46,19 +46,20 @@ class ProcessorWidget;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
-    CanvasGL(uvec2 dimensions);
+    CanvasGL(size2_t dimensions);
     virtual ~CanvasGL() = default;
 
     static void defaultGLState();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
-    virtual void resize(uvec2 size) override;
+    virtual void resize(size2_t size) override;
     virtual void glSwapBuffers() = 0;
     virtual void update() override;
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
+    virtual size2_t getImageDimensions() const override;
      /**
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
      * @return Depth layer RAM representation if existing, nullptr otherwise.
@@ -70,10 +71,12 @@ public:
      * Depth is defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available.
      *
-     * @param screenCoordinate Screen coordinates [0 dim-1]^2
+     * @param canvasCoordinate Canvas coordinates [0 dim-1]^2
      * @return NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(ivec2 screenCoordinate,
+    double getDepthValueAtCoord(ivec2 canvasCoordinate,
+                                const LayerRAM* depthLayerRAM = nullptr) const;
+    double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate,
                                 const LayerRAM* depthLayerRAM = nullptr) const;
 
 protected:
@@ -111,7 +114,6 @@ private:
     LayerType layerType_;
     std::unique_ptr<Shader> textureShader_;
     std::unique_ptr<Shader> noiseShader_;
-
 
     size_t channels_;
     size_t previousRenderedLayerIdx_;

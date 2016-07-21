@@ -59,6 +59,12 @@ if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
             "CMAKE_PREFIX_PATH, i.e. start cmake with the option -DCMAKE_PREFIX_PATH=\"/path/to/qt5\"")
     endif()
 
+    # Create a qt.conf file in the same dir as the executable to help qt find its plugins
+    # http://doc.qt.io/qt-5/qt-conf.html
+    set(QT_BASE_PATH "${Qt5Core_DIR}/../../..")
+    foreach(conf ${CMAKE_CONFIGURATION_TYPES})
+        configure_file("${IVW_CMAKE_TEMPLATES}/qt_template.conf" "${EXECUTABLE_OUTPUT_PATH}/${conf}/qt.conf" @ONLY)
+    endforeach()
 
     if(IVW_PACKAGE_PROJECT)
         if(WIN32 AND Qt5Core_FOUND)
@@ -68,11 +74,6 @@ if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
             install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icudt5*")
             install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuin5*")
             install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuuc5*")
-            set(QT_PLUGINS_DIR "${Qt5Core_DIR}/../../../plugins")
-            install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Debug)
-            install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Release)
-            install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Debug)
-            install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Release)
         endif()
     endif()
 

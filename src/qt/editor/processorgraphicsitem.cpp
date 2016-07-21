@@ -355,7 +355,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
         case QGraphicsItem::ItemVisibleHasChanged:
-            if (processorMeta_) processorMeta_->setVisibile(isVisible());
+            if (processorMeta_) processorMeta_->setVisible(isVisible());
             break;
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
@@ -373,6 +373,7 @@ void ProcessorGraphicsItem::updateWidgets() {
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(getProcessor());
+                editor->showProecssorHelp(getProcessor()->getClassIdentifier());
             }
         }
     } else {

@@ -57,7 +57,6 @@
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumesequencesource.h>
-#include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/base/processors/orientationindicator.h>
 #include <modules/base/processors/singlevoxel.h>
@@ -74,6 +73,9 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/processors/pixelvalue.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
+#include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/processors/volumecurlcpuprocessor.h>
+#include <modules/base/processors/volumelaplacianprocessor.h>
 
 namespace inviwo {
 
@@ -115,7 +117,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceSource>();
     registerProcessor<VolumeSequenceElementSelectorProcessor>();
     registerProcessor<ImageSequenceElementSelectorProcessor>();
-    registerProcessor<StereoCameraSyncer>();
 
     registerProcessor<VolumeBoundingBox>();
     registerProcessor<SingleVoxel>();
@@ -124,6 +125,9 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<OrientationIndicator>();
     registerProcessor<PixelValue>();
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
+    registerProcessor<VolumeGradientCPUProcessor>();
+    registerProcessor<VolumeCurlCPUProcessor>();
+    registerProcessor<VolumeLaplacianProcessor>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();

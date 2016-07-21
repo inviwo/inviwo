@@ -37,9 +37,9 @@ namespace inviwo {
 const ProcessorInfo PixelValue::processorInfo_{
     "org.inviwo.PixelValue",  // Class identifier
     "Pixel Value",            // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "Information",            // Category
+    CodeState::Stable,        // Code state
+    Tags::CPU,                // Tags
 };
 const ProcessorInfo PixelValue::getProcessorInfo() const { return processorInfo_; }
 
@@ -135,10 +135,8 @@ PixelValue::PixelValue()
     , pickingStrValue_("pickingStrValue", "Picking Value (as string)", "", InvalidationLevel::Valid)
     , depthStrValue_("depthStrValue", "Depth Value (as string)", "", InvalidationLevel::Valid)
 
-    , mouseMove_("mouseMove", "Mouse Move",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY_AND_NONE,
-                                InteractionEvent::MODIFIER_NONE, MouseEvent::MOUSE_STATE_MOVE),
-                 new Action(this, &PixelValue::mouseMoveEvent))
+    , mouseMove_("mouseMove", "Mouse Move", [this](Event* e) { mouseMoveEvent(e); },
+                 MouseButtons(flags::any), MouseState::Move)
 
 {
     addPort(inport_);
@@ -181,12 +179,11 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
         auto dims = img->getDimensions();
         auto numCh = img->getNumberOfColorLayers();
         auto p = mouseEvent->posNormalized();
-        if (glm::any(glm::lessThan(p, vec2(0, 0))) || glm::any(glm::greaterThan(p, vec2(1, 1)))) {
+        if (glm::any(glm::lessThan(p, dvec2(0, 0))) || glm::any(glm::greaterThan(p, dvec2(1, 1)))) {
             LogError("How often can this happen");
             return;
         }
-        p.y = 1 - p.y;
-        size2_t pos = static_cast<size2_t>(p * vec2(dims));
+        size2_t pos = static_cast<size2_t>(p * dvec2(dims));
         coordinates_.set(pos);
         for (size_t i = 0; i < numCh; i++) {
             auto v = img->getColorLayer(i)->getRepresentation<LayerRAM>()->getAsDVec4(pos);

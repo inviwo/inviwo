@@ -53,7 +53,6 @@ PyObject* py_clearResourceManager(PyObject* self, PyObject* args);
 PyObject* py_disableEvaluation(PyObject* self, PyObject* args);
 PyObject* py_enableEvaluation(PyObject* self, PyObject* args);
 
-
 }  // namespace
 
 #endif  // IVW_PYSNAPSHOTMEHTODINVIWO_H

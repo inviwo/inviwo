@@ -67,11 +67,11 @@ IntegralLineProperties* IntegralLineProperties::clone() const {
     return new IntegralLineProperties(*this);
 }
 
-IntegralLineProperties::~IntegralLineProperties() {}
+IntegralLineProperties::~IntegralLineProperties() = default;
 
 inviwo::mat4 IntegralLineProperties::getSeedPointTransformationMatrix(
     const SpatialCoordinateTransformer<3>& T) const {
-    return T.getMatrix(seedPointsSpace_.get(), SpatialCoordinateTransformer<3>::Space::Data);
+    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
 }
 
 int IntegralLineProperties::getNumberOfSteps() const { return numberOfSteps_.get(); }
@@ -86,7 +86,7 @@ IntegralLineProperties::IntegrationScheme IntegralLineProperties::getIntegration
     return integrationScheme_.get();
 }
 
-SpatialCoordinateTransformer<3>::Space IntegralLineProperties::getSeedPointsSpace() const {
+CoordinateSpace IntegralLineProperties::getSeedPointsSpace() const {
     return seedPointsSpace_.get();
 }
 
@@ -101,9 +101,9 @@ void IntegralLineProperties::setUpProperties() {
                                  IntegralLineProperties::IntegrationScheme::RK4);
     integrationScheme_.setSelectedValue(IntegralLineProperties::IntegrationScheme::RK4);
 
-    seedPointsSpace_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
-    seedPointsSpace_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
-    seedPointsSpace_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
+    seedPointsSpace_.addOption("data", "Data", CoordinateSpace::Data);
+    seedPointsSpace_.addOption("model", "Model", CoordinateSpace::Model);
+    seedPointsSpace_.addOption("world", "World", CoordinateSpace::World);
 
     addProperty(numberOfSteps_);
     addProperty(stepSize_);

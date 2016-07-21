@@ -29,20 +29,19 @@
 
 #include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 
 namespace inviwo {
 
 PickingObject::PickingObject(size_t id, size_t size)
     : start_(id)
     , size_(size)
-    , capacity_(size)
-    , interactionEventType_(InteractionEventType::NoneSupported)
-    , pos_(vec2(0.f))
-    , depth_(0.f)
-    , move_(vec2(0.f)) {
+    , capacity_(size) {
 }
 
-PickingObject::~PickingObject() {}
+PickingObject::~PickingObject() = default;
 
 size_t PickingObject::getPickingId(size_t id) const {
     if (id < size_)
@@ -51,74 +50,145 @@ size_t PickingObject::getPickingId(size_t id) const {
         throw Exception("Out of range", IvwContext);
 }
 
-size_t PickingObject::getPickedId() const {
-    return pickedId_;
+vec3 PickingObject::getColor(size_t id) const {
+    return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
 }
 
 size_t PickingObject::getSize() const {
     return size_;
 }
 
-vec3 PickingObject::getPickingColor(size_t id) const {
-    return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
+size_t PickingObject::getPickedId() const {
+    return pickedId_;
 }
 
-const vec2& PickingObject::getPickingPosition() const {
-    return pos_;
+dvec2 PickingObject::getPosition() const {
+    if(event_) {
+        switch (event_->hash()) {
+            case MouseEvent::chash():
+                return static_cast<MouseEvent*>(event_)->posNormalized();
+            case TouchEvent::chash():
+                return static_cast<TouchEvent*>(event_)->getCenterPointNormalized();
+        }  
+    } 
+    return dvec2(0.0f);
 }
 
-const vec2& PickingObject::getPickingMove() const {
-    return move_;
+double PickingObject::getDepth() const {
+    if (event_) {
+        switch (event_->hash()) {
+            case MouseEvent::chash():
+                return static_cast<MouseEvent*>(event_)->depth();
+            case TouchEvent::chash():
+                return static_cast<TouchEvent*>(event_)->getTouchPoints().front().getDepth();
+        }
+    }
+    return 0.0f;
 }
 
-const double& PickingObject::getPickingDepth() const {
-    return depth_;
+dvec2 PickingObject::getPreviousPosition() const {
+    return previousPosition_;
 }
 
-vec2 PickingObject::getPickingTotalDelta() const {
-    return mouseEvent_.posNormalized() - pos_;
+
+double PickingObject::getPreviousDepth() const {
+    return previousNDC_.z;
 }
 
-void PickingObject::picked() const {
-    callback_(this);
+
+dvec2 PickingObject::getPressPosition() const {
+    return pressPosition_;
 }
 
-PickingObject::InteractionEventType PickingObject::getPickingInteractionType() const {
-    return interactionEventType_;
+
+double PickingObject::getPressDepth() const {
+    return pressNDC_.z;
 }
 
-void PickingObject::setPickingMouseEvent(MouseEvent e){
-    mouseEvent_ = e;
-    interactionEventType_ = InteractionEventType::MouseInteraction;
+dvec2 PickingObject::getDeltaPosition() const {
+    return getPosition() - previousPosition_;
 }
 
-const MouseEvent& PickingObject::getPickingMouseEvent() const {
-    return mouseEvent_;
+double PickingObject::getDeltaDepth() const {
+    return getDepth() - previousNDC_.z;
 }
 
-void PickingObject::setPickingTouchEvent(TouchEvent e){
-    touchEvent_ = e;
-    interactionEventType_ = InteractionEventType::TouchInteraction;
+dvec2 PickingObject::getDeltaPressPosition() const {
+    return getPosition() - pressPosition_;
 }
 
-const TouchEvent& PickingObject::getPickingTouchEvent() const {
-    return touchEvent_;
+double PickingObject::getDeltaPressDepth() const {
+    return getDepth() - pressNDC_.z;
 }
 
-void PickingObject::setPickingPosition(vec2 pos) {
-    pos_ = pos;
+dvec3 PickingObject::getNDC() const {
+    if (event_) {
+        switch (event_->hash()) {
+            case MouseEvent::chash():
+                return static_cast<MouseEvent*>(event_)->ndc();
+            //case TouchEvent::chash():
+            //    return static_cast<TouchEvent*>(event_)->getCenterPointNormalized();
+        }
+    }
+    return dvec3(0.0f);
 }
 
-void PickingObject::setPickingMove(vec2 move) {
-    move_ = move;
+dvec3 PickingObject::getPreviousNDC() const {
+    return previousNDC_;
 }
 
-void PickingObject::setPickingDepth(double depth) {
-    depth_ = depth;
+dvec3 PickingObject::getPressNDC() const {
+    return pressNDC_;
 }
 
-void PickingObject::setCallback(std::function<void(const PickingObject*)> func) {
-    callback_ = func;
+PickingState PickingObject::getState() const {
+    return state_;
+}
+
+void PickingObject::picked(Event* e, PickingState state) {
+    event_ = e;
+    state_ = state;
+    if (event_) {
+        switch (event_->hash()) {
+            case MouseEvent::chash(): {
+                auto me = static_cast<MouseEvent*>(event_);
+                if (me->state() == MouseState::Press) {
+                    pressPosition_ = me->posNormalized();
+                    pressNDC_ = me->ndc();
+                }
+
+                break;
+            }
+            case TouchEvent::chash(): {
+                //auto te = static_cast<TouchEvent*>(event_);
+                LogError("Picking with TouchEvent not implemented yet");
+                break;
+            }
+        }
+    }
+
+    if (enabled_)  action_(this);
+
+    previousPosition_ = getPosition();
+    previousNDC_ = getNDC();
+    event_ = nullptr;
+    state_ = PickingState::None;
+}
+
+Event* PickingObject::getEvent() const {
+    return event_;
+}
+
+bool PickingObject::isEnabled() const {
+    return enabled_;
+}
+
+void PickingObject::setEnabled(bool enabled) {
+    enabled_ = enabled;
+}
+
+void PickingObject::setAction(Action action) {
+    action_ = action;
 }
 
 size_t PickingObject::getCapacity() const {

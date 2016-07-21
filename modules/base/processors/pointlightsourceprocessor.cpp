@@ -31,6 +31,8 @@
 #include <inviwo/core/util/intersection/rayplaneintersection.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 namespace inviwo {
 
@@ -196,12 +198,12 @@ float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->g
 
 float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
-inviwo::vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
+vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
     const vec3& ndcCoords) const {
     return camera_->getWorldPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-inviwo::vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
     const vec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
@@ -213,27 +215,20 @@ std::string PointLightInteractionHandler::getClassIdentifier() const {
 const Camera& PointLightInteractionHandler::getCamera() { return camera_->get(); }
 
 void PointLightInteractionHandler::invokeEvent(Event* event) {
-    // if(event->hasBeenUsed())
-    //    return;
-
     if (screenPosEnabled_->get()) setLightPosFromScreenCoords(screenPos_->get());
 
     if (interactionEventOption_ == 1 || interactionEventOption_ == 3) {
-        GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
-        if (gestureEvent) {
-            if (gestureEvent->type() == GestureEvent::PAN) {
+        if (auto gestureEvent = dynamic_cast<GestureEvent*>(event)) {
+            if (gestureEvent->type() == GestureType::Pan) {
                 setLightPosFromScreenCoords(gestureEvent->screenPosNormalized());
                 gestureEvent->markAsUsed();
                 return;
             }
-        }
-        MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-        if (mouseEvent) {
-            int button = mouseEvent->button();
-            if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
+        } else if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+            if (mouseEvent->button() == MouseButton::Middle) {
                 // setLightPosFromScreenCoords(mouseEvent->posNormalized());
                 mouseEvent->markAsUsed();
-                screenPos_->set(mouseEvent->posNormalized());
+                screenPos_->set(static_cast<vec2>(mouseEvent->posNormalized()));
                 return;
             }
         }
@@ -255,20 +250,19 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
     vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f));
     vec3 rayDir = glm::normalize(
         camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f)) - rayOrigin);
-    float t0 = 0, t1 = std::numeric_limits<float>::max();
-    float lightRadius = glm::length(lightPosition_->get());
 
-    if (raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, &t0, &t1)) {
-        lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
+    float lightRadius = glm::length(lightPosition_->get());
+    auto res = raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, 0.0f,
+                                     std::numeric_limits<float>::max());
+    if (res.first) {
+        lightPosition_->set(glm::normalize(rayOrigin + res.second * rayDir) * lightRadius);
     } else {
-        // Project it to the rim of the sphere
-        t0 = 0;
-        t1 = std::numeric_limits<float>::max();
-        if (rayPlaneIntersection(camera_->getLookTo(),
-                                 glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
-                                 rayOrigin, rayDir, &t0, &t1)) {
+        auto res2 = rayPlaneIntersection(
+            camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
+            rayOrigin, rayDir, 0.0f, std::numeric_limits<float>::max());
+        if (res2.first) {
             // Project it to the edge of the sphere
-            lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
+            lightPosition_->set(glm::normalize(rayOrigin + res2.second * rayDir) * lightRadius);
         }
     }
     // Ensure that up vector is same as camera afterwards

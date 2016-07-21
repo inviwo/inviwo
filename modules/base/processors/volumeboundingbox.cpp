@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo VolumeBoundingBox::processorInfo_{
     "org.inviwo.VolumeBoundingBox",      // Class identifier
     "Volume Bounding Box",                // Display name
-    "Undefined",              // Category
+    "Volume Operation",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };

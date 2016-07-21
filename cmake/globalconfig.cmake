@@ -27,38 +27,29 @@
  # 
  #################################################################################
  
-set(IVW_VERSION 0.9.6)
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 6)
+set(IVW_PATCH_VERSION 7)
+set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION})
 
 #--------------------------------------------------------------------
 # Requirement checks
 if(MSVC) 
-    if(MSVC_VERSION LESS 1800)
-        message(FATAL_ERROR "Inviwo requires C++11 features. " 
-                "You need at least Visual Studio 12 (Microsoft Visual Studio 2013)")
-    endif()
-
     if(MSVC_VERSION LESS 1900)
-        message(WARNING "Notice! The next release (0.9.7) will be the last one that will support Visual Studio 2013. "
-            "After 0.9.7 we will require Visual Studio 2015. The switch will happen in the beginning of May. "
-            "The latest Visual Studio version is available at https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
+        message(FATAL_ERROR "Inviwo requires C++14 features. " 
+                "You need at least Visual Studio 14 (Microsoft Visual Studio 2015) "
+                "The latest Visual Studio version is available at "
+                "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
-
 else()
     include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-    if(COMPILER_SUPPORTS_CXX11)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+    if(COMPILER_SUPPORTS_CXX14)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
     else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. "
+                "Please use a different C++ compiler.")
     endif()
-endif()
-
-if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_LESS "3.2.0")
-    message(WARNING "After release 0.9.7 Inviwo will require a CMake version of at least 3.2.0 " 
-        "You have version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
@@ -128,15 +119,14 @@ set(IVW_EXTERNAL_MODULES "" CACHE STRING "Paths to directory containing external
 #--------------------------------------------------------------------
 # Add parameter for paths to external projects
 set(IVW_EXTERNAL_PROJECTS "" CACHE STRING "Paths to directory containing external projects")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
+   "Single Directory for all static libraries.")
 
 #--------------------------------------------------------------------
 # Output paths for the executables, runtimes, archives and libraries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH
    "Single Directory for all Executables.")
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
-   "Single Directory for all static libraries.")
-   
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all Libraries")
 
@@ -150,14 +140,14 @@ mark_as_advanced(
 #--------------------------------------------------------------------
 # Path for this solution
 if(NOT EXECUTABLE_OUTPUT_PATH)
-  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH 
-    "Single output directory for building all executables.")
-endif(NOT EXECUTABLE_OUTPUT_PATH)
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH 
+        "Single output directory for building all executables.")
+endif()
 
 if(NOT LIBRARY_OUTPUT_PATH)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE PATH
-    "Single output directory for building all libraries.")
-endif(NOT LIBRARY_OUTPUT_PATH)
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE PATH
+        "Single output directory for building all libraries.")
+endif()
 
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 
@@ -186,22 +176,6 @@ configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
                ${CMAKE_BINARY_DIR}/modules/_generated/inviwocommondefines.h 
                @ONLY IMMEDIATE)
 
-# Set ignored libs
-set(VS_MULTITHREADED_DEBUG_DLL_IGNORE_LIBRARY_FLAGS
-    "/NODEFAULTLIB:libc.lib
-     /NODEFAULTLIB:libcmt.lib
-     /NODEFAULTLIB:msvcrt.lib
-     /NODEFAULTLIB:libcd.lib
-     /NODEFAULTLIB:libcmtd.lib"
-)
-set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
-    "/NODEFAULTLIB:libc.lib
-     /NODEFAULTLIB:libcmt.lib
-     /NODEFAULTLIB:libcd.lib
-     /NODEFAULTLIB:libcmtd.lib
-     /NODEFAULTLIB:msvcrtd.lib"
-)
-    
 #--------------------------------------------------------------------
 # Mac specific
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -240,6 +214,22 @@ mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
+    # Set ignored libs
+    set(VS_MULTITHREADED_DEBUG_DLL_IGNORE_LIBRARY_FLAGS
+        "/NODEFAULTLIB:libc.lib
+         /NODEFAULTLIB:libcmt.lib
+         /NODEFAULTLIB:msvcrt.lib
+         /NODEFAULTLIB:libcd.lib
+         /NODEFAULTLIB:libcmtd.lib"
+    )
+    set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
+        "/NODEFAULTLIB:libc.lib
+         /NODEFAULTLIB:libcmt.lib
+         /NODEFAULTLIB:libcd.lib
+         /NODEFAULTLIB:libcmtd.lib
+         /NODEFAULTLIB:msvcrtd.lib"
+    )
+    
     if(SHARED_LIBS)
         set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
     else()
@@ -262,26 +252,12 @@ if(WIN32 AND MSVC)
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
     endif()
 
-    if(MSVC_VERSION LESS 1900) # Pre visual studio 2015
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Zi")
-    else()
-        # For >=VS2015 enable edit and continue "ZI"
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
-    endif()
+    # For >=VS2015 enable edit and continue "ZI"
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
 
     # Disable deprecation warnings for standard C functions
     add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
-
-    if(MSVC_VERSION LESS 1900) # Pre visualstdio 2015
-        # http://www.beta.microsoft.com/VisualStudio/feedbackdetail/view/746718/frequently-get-c1027-from-vc-100-compiler-after-installing-vs-2012-rc
-        # https://github.com/inviwo/inviwo-dev/commit/6054985bdd471b209b9d5ef7a8b9a1db66518cfa#commitcomment-16684802
-        string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
-    endif()
-    
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
@@ -296,28 +272,14 @@ if(WIN32 AND MSVC)
 
     # MSVC Variable checks and include redist in packs
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        if(MSVC_VERSION GREATER 1599)
-          # VS 10 and later:
-          set(CMAKE_MSVC_ARCH x64)
-        else()
-          # VS 9 and earlier:
-          set(CMAKE_MSVC_ARCH amd64)
-        endif()
+        set(CMAKE_MSVC_ARCH x64)
     else()
         set(CMAKE_MSVC_ARCH x86)
     endif()
     # default dll dependencies for Visual Studio versions 2005, 2008, 2010, and 2013
     # In VS 2015, "msvcr140.dll" was replaced by several other dlls.
     set(MSVC_DLLNAMES "msvcp" "msvcr")
-    if(MSVC90)
-        set(MSVC_ACRO "9")
-    elseif(MSVC10)
-        set(MSVC_ACRO "10")
-    elseif(MSVC11)
-        set(MSVC_ACRO "11")
-    elseif(MSVC12)
-        set(MSVC_ACRO "12")
-    elseif(MSVC14)
+    if(MSVC14)
         set(MSVC_ACRO "14")
         set(MSVC_DLLNAMES "msvcp" "concrt" "vccorlib" "vcruntime")
     endif()
@@ -327,9 +289,15 @@ if(WIN32 AND MSVC)
         if(DEFINED MSVC_ACRO)
             foreach(dllname ${MSVC_DLLNAMES})
                 # debug build
-                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" 
+                        DESTINATION bin 
+                        COMPONENT core 
+                        CONFIGURATIONS Debug)
                 # release build
-                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" 
+                        DESTINATION bin 
+                        COMPONENT core 
+                        CONFIGURATIONS Release)
             endforeach()
         endif()
     endif()

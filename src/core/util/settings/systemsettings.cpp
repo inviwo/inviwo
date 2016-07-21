@@ -37,11 +37,14 @@ namespace inviwo {
 
 SystemSettings::SystemSettings()
     : Settings("System Settings")
-    , applicationUsageModeProperty_("applicationUsageMode", "Application usage mode")
+    , applicationUsageMode_("applicationUsageMode", "Application usage mode",
+                            {{"applicationMode", "Application Mode", UsageMode::Application},
+                             {"developerMode", "Developer Mode", UsageMode::Development}},
+                            1)
     , poolSize_("poolSize", "Pool Size", 4, 0, 32)
-    , txtEditorProperty_("txtEditor", "Use system text editor", true)
-    , enablePortInformationProperty_("enablePortInformation", "Enable port information", true)
-    , enablePortInspectorsProperty_("enablePortInspectors", "Enable port inspectors", true)
+    , txtEditor_("txtEditor", "Use system text editor", true)
+    , enablePortInformation_("enablePortInformation", "Enable port information", true)
+    , enablePortInspectors_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
 #if __APPLE__
     , enableTouchProperty_("enableTouch", "Enable touch", false)
@@ -82,9 +85,9 @@ SystemSettings::SystemSettings()
                              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , pythonSyntax_("pythonSyntax_", "Python Syntax Highlighting")
-    , pyFontSize_("pyFontSize_" , "Font Size" , 11 , 1, 72)
+    , pyFontSize_("pyFontSize_", "Font Size", 11, 1, 72)
     , pyBGColor_("pyBGColor", "Background", ivec4(0xb0, 0xb0, 0xbc, 255), ivec4(0, 0, 0, 1),
-                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput, 
+                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
                  PropertySemantics::Color)
     , pyTextColor_("pyTextColor", "Text", ivec4(0x11, 0x11, 0x11, 255), ivec4(0, 0, 0, 1),
                    ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
@@ -97,15 +100,12 @@ SystemSettings::SystemSettings()
                        InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , allocTest_(nullptr) {
-    applicationUsageModeProperty_.addOption("applicationMode", "Application Mode", 0);
-    applicationUsageModeProperty_.addOption("developerMode", "Developer Mode", 1);
-    applicationUsageModeProperty_.setSelectedIndex(1);
-    applicationUsageModeProperty_.setCurrentStateAsDefault();
-    addProperty(applicationUsageModeProperty_);
+
+    addProperty(applicationUsageMode_);
     addProperty(poolSize_);
-    addProperty(txtEditorProperty_);
-    addProperty(enablePortInformationProperty_);
-    addProperty(enablePortInspectorsProperty_);
+    addProperty(txtEditor_);
+    addProperty(enablePortInformation_);
+    addProperty(enablePortInspectors_);
     addProperty(portInspectorSize_);
     addProperty(enableTouchProperty_);
     addProperty(enablePickingProperty_);
@@ -178,7 +178,7 @@ void SystemSettings::allocationTest() {
 }
 
 UsageMode SystemSettings::getApplicationUsageMode() const {
-    return static_cast<UsageMode>(applicationUsageModeProperty_.get());
+    return applicationUsageMode_.get();
 }
 
 }  // namespace

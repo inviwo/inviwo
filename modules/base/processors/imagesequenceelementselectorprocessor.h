@@ -38,21 +38,29 @@
 
 namespace inviwo {
 
-/**
- * \class ImageVectorElementSelectorProcessor
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+/** \docpage{org.inviwo.ImageTimeStepSelector, Image Sequence Element Selector}
+ * ![](org.inviwo.ImageTimeStepSelector.png?classIdentifier=org.inviwo.ImageTimeStepSelector)
+ *
+ * Select a specific volume out of a sequence of images
+ *
+ * ### Inport
+ *   * __inport__ Sequence of images
+ * ### Outport
+ *   * __outport__ Selected image
+ *
+ * ### Properties
+ *   * __Step__ The image sequence index to extract
  */
 
-    class IVW_MODULE_BASE_API ImageSequenceElementSelectorProcessor : public VectorElementSelectorProcessor < Image, ImageOutport > {
-    public:
-        ImageSequenceElementSelectorProcessor();
-        virtual ~ImageSequenceElementSelectorProcessor() = default;
+class IVW_MODULE_BASE_API ImageSequenceElementSelectorProcessor
+    : public VectorElementSelectorProcessor<Image, ImageOutport> {
+public:
+    ImageSequenceElementSelectorProcessor();
+    virtual ~ImageSequenceElementSelectorProcessor() = default;
 
-        virtual const ProcessorInfo getProcessorInfo() const override;
-        static const ProcessorInfo processorInfo_;
-    };
-} // namespace
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+};
+}  // namespace
 
-#endif // IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
-
+#endif  // IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H

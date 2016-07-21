@@ -34,19 +34,17 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo OrientationIndicator::processorInfo_{
-    "org.inviwo.OrientationIndicator",      // Class identifier
-    "Orientation Indicator",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.OrientationIndicator",  // Class identifier
+    "Orientation Indicator",            // Display name
+    "Information",                      // Category
+    CodeState::Experimental,            // Code state
+    Tags::None,                         // Tags
 };
-const ProcessorInfo OrientationIndicator::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
 
 OrientationIndicator::OrientationIndicator()
     : Processor()
-    , mesh_("mesh")
+    , outport_("mesh")
     , baseColor_("baseColor", "Base Color", vec4(1.0f))
     , xColor_("xColor", "X axis Color", vec4(1.0f, 0.0f, 0.0f, 1.0f))
     , yColor_("yColor", "Y axis Color", vec4(0.0f, 1.0f, 0.0f, 1.0f))
@@ -60,15 +58,9 @@ OrientationIndicator::OrientationIndicator()
 
     , viewCoords_("viewCoords","View Coords", vec2(0.05f), vec2(0.f), vec2(1.f))
     , cam_("cam","Camera") 
-
-
-    , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) 
-
-
-
-{
+    , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
     
-    addPort(mesh_);
+    addPort(outport_);
     addProperty(baseColor_);
     addProperty(xColor_);
     addProperty(yColor_);
@@ -82,7 +74,6 @@ OrientationIndicator::OrientationIndicator()
     location_.addProperty(cam_);
     location_.addProperty(offset_);
 
-   // cam_.setReadOnly(true);
     cam_.setCurrentStateAsDefault();
 
     locationType_.addOption("2d", "2D", Location::TwoD);
@@ -108,10 +99,12 @@ OrientationIndicator::OrientationIndicator()
 }
     
 void OrientationIndicator::process() {
+    if (!mesh_ || axisScale_.isModified()) {
+        updateMesh();
+    }
+    
     auto start = offset_.get();
-
     float scale = scale_.get();
-
 
     if (locationType_.get() == Location::TwoD) {
         auto p = viewCoords_.get();
@@ -120,7 +113,7 @@ void OrientationIndicator::process() {
         p2 = p2 * 2.0f - 1.0f;
         vec4 viewPos(p, 0.f, 1.f);
         vec4 viewPos2(p2, 0.f, 1.f);
-        auto m = cam_.get().inverseViewMatrix() * cam_.get().inverseProjectionMatrix();
+        auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
         auto point  = m * viewPos;
         auto point2 = m * viewPos2;
         start = point.xyz() / point.w;
@@ -128,29 +121,32 @@ void OrientationIndicator::process() {
         scale = glm::distance(start, end);
     }
 
-    float xScale = axisScale_.get().x * scale;
-    float yScale = axisScale_.get().y * scale;
-    float zScale = axisScale_.get().z * scale;
+    mat4 basisOffset(glm::scale(vec3(scale)));
+    basisOffset[3] = vec4(start, 1.0f);
+    mesh_->setModelMatrix(basisOffset);
 
-    auto endX = start + vec3(1, 0, 0) * xScale;
-    auto endY = start + vec3(0, 1, 0) * yScale;
-    auto endZ = start + vec3(0, 0, 1) * zScale;
-    
-    const static float baseRadius = 0.06f;
-    const static float baseHeadradius = 0.15f;
-    float radius = radius_.get() * baseRadius;
-    float headradius = radius_.get() * baseHeadradius;
-    auto xArrow = BasicMesh::arrow(start, endX, xColor_, xScale * radius, 0.25, xScale * headradius, 64);
-    auto yArrow = BasicMesh::arrow(start, endY, yColor_, yScale * radius, 0.25, yScale * headradius, 64);
-    auto zArrow = BasicMesh::arrow(start, endZ, zColor_, zScale * radius, 0.25, zScale * headradius, 64);
+    outport_.setData(mesh_);
+}
 
-    auto base = BasicMesh::sphere(start, scale * radius * 2, baseColor_);
+void OrientationIndicator::updateMesh() {
+    vec3 origin(0.0f);
+    mat3 basis(glm::scale(axisScale_.get()));
 
+    const static float baseRadius = 0.06f; // radius
+    const static float baseHeadradius = 0.15f; // outer radius of arrow tips
+    vec3 radius = axisScale_.get() * radius_.get() * baseRadius;
+    vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
+
+    // build indicator using a sphere and three arrows
+    auto base = BasicMesh::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
+    auto xArrow = BasicMesh::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
+    auto yArrow = BasicMesh::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
+    auto zArrow = BasicMesh::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
     base->append(xArrow.get());
     base->append(yArrow.get());
     base->append(zArrow.get());
 
-    mesh_.setData(base);
+    mesh_ = base;
 }
 
 } // namespace

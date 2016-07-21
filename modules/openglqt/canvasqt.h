@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
@@ -64,7 +65,7 @@ class CanvasQtBase : public T {
 public:
     using QtBase = typename T::QtBase;
 
-    explicit CanvasQtBase(uvec2 dim = uvec2(256,256));
+    explicit CanvasQtBase(size2_t dim = size2_t(256,256));
     virtual ~CanvasQtBase() = default;
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
@@ -76,10 +77,15 @@ public:
         return static_cast<CanvasQtBase<T>*>(T::sharedCanvas_);
     }
 
+    virtual bool isFullScreen() const override;
+    virtual void setFullScreen(bool fullscreen) override;
+
 protected:
     virtual bool event(QEvent *e) override;
 
 private:
+    dvec2 normalPos(dvec2 pos) const;
+
     bool mapMousePressEvent(QMouseEvent* e);
     bool mapMouseDoubleClickEvent(QMouseEvent* e);
     bool mapMouseReleaseEvent(QMouseEvent* e);
@@ -91,9 +97,7 @@ private:
     bool mapGestureEvent(QGestureEvent*);
     bool mapPanTriggered(QPanGesture* );
     bool mapPinchTriggered(QPinchGesture* e);
-    
-    void touchFallback(QTouchEvent*);
-    
+        
     bool gestureMode_ = false;
     Qt::GestureType lastType_;
     int lastNumFingers_;
@@ -106,7 +110,7 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 //using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(uvec2 dim) : T(nullptr, dim) {}
+CanvasQtBase<T>::CanvasQtBase(size2_t dim) : T(nullptr, dim) {}
 
 template <typename T>
 std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
@@ -128,28 +132,31 @@ void CanvasQtBase<T>::render(std::shared_ptr<const Image> image, LayerType layer
     }
 }
 
+template <typename T>
+void inviwo::CanvasQtBase<T>::setFullScreen(bool fullscreen) {
+    if (fullscreen) {
+        this->parentWidget()->showFullScreen();
+    } else {
+        this->parentWidget()->showNormal();
+    }
+}
+
+template <typename T>
+bool inviwo::CanvasQtBase<T>::isFullScreen() const {
+    return this->parentWidget()->windowState() == Qt::WindowFullScreen;
+}
+
+
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 
 template <typename T>
 bool CanvasQtBase<T>::event(QEvent* e) {
     switch (e->type()) {
-        case QEvent::KeyPress: {
-            auto keyEvent = static_cast<QKeyEvent*>(e);
-            auto parent = this->parentWidget();
-            if (parent && keyEvent->key() == Qt::Key_F &&
-                keyEvent->modifiers() == Qt::ShiftModifier) {
-                if (parent->windowState() == Qt::WindowFullScreen) {
-                    parent->showNormal();
-                } else {
-                    parent->showFullScreen();
-                }
-            }
-            return mapKeyPressEvent(keyEvent);
-        }
-        case QEvent::KeyRelease: {
+        case QEvent::KeyPress: 
+            return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
+        case QEvent::KeyRelease: 
             return mapKeyReleaseEvent(static_cast<QKeyEvent*>(e));
-        }
         case QEvent::MouseButtonPress:
             return mapMousePressEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonDblClick:
@@ -158,20 +165,14 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseMove:
             return mapMouseMoveEvent(static_cast<QMouseEvent*>(e));
-
         case QEvent::Wheel:
             return mapWheelEvent(static_cast<QWheelEvent*>(e));
-
         case QEvent::TouchBegin:
-            touchFallback(static_cast<QTouchEvent*>(e));
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchEnd:
-            touchFallback(static_cast<QTouchEvent*>(e));
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        case QEvent::TouchUpdate: {
-            touchFallback(static_cast<QTouchEvent*>(e));
+        case QEvent::TouchUpdate: 
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        }
         case QEvent::Gesture:
             return mapGestureEvent(static_cast<QGestureEvent*>(e));
         default:
@@ -180,19 +181,24 @@ bool CanvasQtBase<T>::event(QEvent* e) {
 }
 
 template <typename T>
+dvec2 inviwo::CanvasQtBase<T>::normalPos(dvec2 pos) const {
+    return util::invertY(pos, this->getCanvasDimensions()) /
+        dvec2(this->getCanvasDimensions() - size2_t(1));
+}
+
+template <typename T>
 bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
     if (gestureMode_) return true;
 
-    const ivec2 screenPos{ utilqt::toGLM(e->pos()) };
-    const ivec2 screenPosInvY{ util::invertY(screenPos, this->getScreenDimensions()) };
+    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
-    MouseEvent mouseEvent(screenPos, EventConverterQt::getMouseButton(e),
-        MouseEvent::MOUSE_STATE_PRESS, EventConverterQt::getModifier(e),
-        this->getScreenDimensions(),
-        this->getDepthValueAtCoord(screenPosInvY));
+    MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
+                          pos, this->getImageDimensions(),
+                          this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
-    Canvas::mousePressEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -200,16 +206,14 @@ template <typename T>
 bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
     if (gestureMode_) return true;
 
-    const ivec2 screenPos{ utilqt::toGLM(e->pos()) };
-    const ivec2 screenPosInvY{ util::invertY(screenPos, this->getScreenDimensions()) };
-
-    MouseEvent mouseEvent(screenPos, EventConverterQt::getMouseButton(e),
-        MouseEvent::MOUSE_STATE_DOUBLE_CLICK, EventConverterQt::getModifier(e),
-        this->getScreenDimensions(),
-        this->getDepthValueAtCoord(screenPosInvY));
+    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
+    MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
+                          pos, this->getImageDimensions(),
+                          this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
-    Canvas::mouseDoubleClickEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -220,15 +224,14 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
         return true;
     }
 
-    const ivec2 screenPos{utilqt::toGLM(e->pos())};
-    const ivec2 screenPosInvY{util::invertY(screenPos, this->getScreenDimensions())};
+    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
-    MouseEvent mouseEvent(screenPos, EventConverterQt::getMouseButtonCausingEvent(e),
-                          MouseEvent::MOUSE_STATE_RELEASE, EventConverterQt::getModifier(e),
-                          this->getScreenDimensions(),
-                          this->getDepthValueAtCoord(screenPosInvY));
+    MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
+                          pos, this->getImageDimensions(),
+                          this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
-    Canvas::mouseReleaseEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
@@ -236,77 +239,59 @@ template <typename T>
 bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
     if (gestureMode_) return true;
 
-    const ivec2 screenPos{utilqt::toGLM(e->pos())};
-    const ivec2 screenPosInvY{util::invertY(screenPos, this->getScreenDimensions())};
+    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
     // Optimization, do not sample depth value when hovering,
     // i.e. move without holding a mouse button
-    int button = EventConverterQt::getMouseButton(e);
-    double depth = 1.0;
-    if (button != MouseEvent::MOUSE_BUTTON_NONE) {
-        depth = this->getDepthValueAtCoord(screenPosInvY);
-    }
+    const auto buttons = utilqt::getMouseButtons(e);
+    const auto depth = buttons != MouseButton::None ? this->getDepthValueAtNormalizedCoord(pos) : 1.0;
 
-    MouseEvent mouseEvent(screenPos, button, MouseEvent::MOUSE_STATE_MOVE,
-                          EventConverterQt::getModifier(e), this->getScreenDimensions(), depth);
+    MouseEvent mouseEvent(MouseButton::None, MouseState::Move, buttons,
+                          utilqt::getModifiers(e), pos, this->getImageDimensions(), depth);
     e->accept();
-    Canvas::mouseMoveEvent(&mouseEvent);
+    Canvas::propagateEvent(&mouseEvent);
     return true;
 }
 
 template <typename T>
 bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
-    MouseEvent::MouseWheelOrientation orientation;
-    if (e->orientation() == Qt::Horizontal) {
-        orientation = MouseEvent::MOUSE_WHEEL_HORIZONTAL;
-    } else {
-        orientation = MouseEvent::MOUSE_WHEEL_VERTICAL;
-    }
-
     QPoint numPixels = e->pixelDelta();
     QPoint numDegrees = e->angleDelta() / 8 / 15;
 
-    int numSteps = 0;
+    dvec2 numSteps{0.0};
     if (!numPixels.isNull()) {
-        numSteps =
-            (orientation == MouseEvent::MOUSE_WHEEL_HORIZONTAL ? numPixels.x() : numPixels.y()) / 5;
+        numSteps = utilqt::toGLM(numPixels) / 5;
     } else if (!numDegrees.isNull()) {
-        numSteps =
-            (orientation == MouseEvent::MOUSE_WHEEL_HORIZONTAL ? numDegrees.x() : numDegrees.y());
+        numSteps = utilqt::toGLM(numDegrees);
     }
 
-    const ivec2 screenPos{utilqt::toGLM(e->pos())};
-    const ivec2 screenPosInvY{util::invertY(screenPos, this->getScreenDimensions())};
+    const auto pos{normalPos(utilqt::toGLM(QPointF(e->pos())))};
 
-    MouseEvent mouseEvent(screenPos, numSteps, EventConverterQt::getMouseWheelButton(e),
-                          MouseEvent::MOUSE_STATE_WHEEL, orientation,
-                          EventConverterQt::getModifier(e), this->getScreenDimensions(),
-                          this->getDepthValueAtCoord(screenPosInvY));
+    WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps,
+                          pos, this->getImageDimensions(),
+                          this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
-    Canvas::mouseWheelEvent(&mouseEvent);
+    Canvas::propagateEvent(&wheelEvent);
     return true;
 }
 
 template <typename T>
 bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
-    KeyboardEvent pressKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                EventConverterQt::getModifier(keyEvent),
-                                KeyboardEvent::KEY_STATE_PRESS);
+    KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
+                                utilqt::getModifiers(keyEvent));
 
     // set respective modifier if the pressed key is one of those
-    int modifier = static_cast<int>(pressKeyEvent.modifiers());
+    auto modifiers = pressKeyEvent.modifiers();
     if (keyEvent->key() == Qt::Key_Alt) {
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_ALT);
+        modifiers |= KeyModifier::Alt;
+    } else if (keyEvent->key() == Qt::Key_Control) {
+        modifiers |= KeyModifier::Control;
+    } else if (keyEvent->key() == Qt::Key_Shift) {
+        modifiers |= KeyModifier::Shift;
     }
-    else if (keyEvent->key() == Qt::Key_Control) {
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_CTRL);
-    }
-    else if (keyEvent->key() == Qt::Key_Shift) {
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_SHIFT);
-    }
-    pressKeyEvent.setModifiers(modifier);
-    
-    Canvas::keyPressEvent(&pressKeyEvent);
+    pressKeyEvent.setModifiers(modifiers);
+
+    Canvas::propagateEvent(&pressKeyEvent);
     if (pressKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -317,11 +302,10 @@ bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
-    KeyboardEvent releaseKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                  EventConverterQt::getModifier(keyEvent),
-                                  KeyboardEvent::KEY_STATE_RELEASE);
-    
-    Canvas::keyReleaseEvent(&releaseKeyEvent);
+    KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
+                                  utilqt::getModifiers(keyEvent));
+
+    Canvas::propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -357,7 +341,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     touchPoints.reserve(touch->touchPoints().size());
     // Fetch layer before loop (optimization)
     const LayerRAM* depthLayerRAM = this->getDepthLayerRAM();
-    vec2 screenSize(this->getScreenDimensions());
+    vec2 screenSize(this->getCanvasDimensions());
 
     std::vector<int> endedTouchIds;
 
@@ -366,22 +350,22 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
         const vec2 prevScreenTouchPos{utilqt::toGLM(touchPoint.lastPos())};
         const vec2 pixelCoord{util::invertY(screenTouchPos, screenSize)};
 
-        TouchPoint::TouchState touchState;
+        TouchState touchState;
         switch (touchPoint.state()) {
             case Qt::TouchPointPressed:
-                touchState = TouchPoint::TOUCH_STATE_STARTED;
+                touchState = TouchState::Started;
                 break;
             case Qt::TouchPointMoved:
-                touchState = TouchPoint::TOUCH_STATE_UPDATED;
+                touchState = TouchState::Updated;
                 break;
             case Qt::TouchPointStationary:
-                touchState = TouchPoint::TOUCH_STATE_STATIONARY;
+                touchState = TouchState::Stationary;
                 break;
             case Qt::TouchPointReleased:
-                touchState = TouchPoint::TOUCH_STATE_ENDED;
+                touchState = TouchState::Finished;
                 break;
             default:
-                touchState = TouchPoint::TOUCH_STATE_NONE;
+                touchState = TouchState::None;
         }
 
         // Note that screenTouchPos/prevScreenTouchPos are in [0 screenDim] and does not need to be
@@ -392,7 +376,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
         const auto lastIdIdx = util::find(lastTouchIds_, touchPoint.id());
 
         if (lastIdIdx != lastTouchIds_.end()) {
-            if (touchState == TouchPoint::TOUCH_STATE_ENDED) {
+            if (touchState == TouchState::Finished) {
                 endedTouchIds.push_back(touchPoint.id());
             }
         } else {
@@ -435,13 +419,13 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     });
 
     // We need to send out touch event all the time to support one -> two finger touch switch
-    TouchEvent touchEvent(touchPoints, this->getScreenDimensions());
+    TouchEvent touchEvent(touchPoints, this->getCanvasDimensions());
     touch->accept();
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
 
-    Canvas::touchEvent(&touchEvent);
+    Canvas::propagateEvent(&touchEvent);
     return true;
 }
 
@@ -495,15 +479,15 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
             gestureMode_ = false;
     }
     vec2 deltaPos =
-        vec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getScreenDimensions().x,
-             (gesture->offset().y() - gesture->lastOffset().y()) /  this->getScreenDimensions().y);
+        vec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getCanvasDimensions().x,
+             (gesture->offset().y() - gesture->lastOffset().y()) /  this->getCanvasDimensions().y);
 
     if (deltaPos == vec2(0.f)) return true;
 
-    GestureEvent ge(deltaPos, 0.0, GestureEvent::PAN, EventConverterQt::getGestureState(gesture),
-                    lastNumFingers_, screenPositionNormalized_,  this->getScreenDimensions());
+    GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
+                    lastNumFingers_, screenPositionNormalized_,  this->getCanvasDimensions());
 
-    Canvas::gestureEvent(&ge);
+    Canvas::propagateEvent(&ge);
     return true;
 }
 
@@ -524,57 +508,12 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
             gestureMode_ = false;
     }
     GestureEvent ge(vec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
-                    static_cast<double>(gesture->scaleFactor()) - 1.0, GestureEvent::PINCH,
-                    EventConverterQt::getGestureState(gesture), lastNumFingers_,
-                    screenPositionNormalized_, this->getScreenDimensions());
+                    static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
+                    utilqt::getGestureState(gesture), lastNumFingers_,
+                    screenPositionNormalized_, this->getCanvasDimensions());
 
-    Canvas::gestureEvent(&ge);
+    Canvas::propagateEvent(&ge);
     return true;
-}
-
-template <typename T>
-void CanvasQtBase<T>::touchFallback(QTouchEvent* touch) {
-// Mouse events will be triggered for touch events by Qt4 and Qt >= 5.3.0
-// https://bugreports.qt.io/browse/QTBUG-40038
-#if (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
-    if (touch->touchPoints().size() == 1 && eventMapper_.getLastNumFingers() < 2) {
-        size_t nTouchPoints = touch->touchPoints().size();
-        if (nTouchPoints == 0) return;
-
-        QTouchEvent::TouchPoint firstPoint = touch->touchPoints()[0];
-
-        MouseEvent* mouseEvent = nullptr;
-        const ivec2 pos = utilqt::toGLM(firstPoint.pos());
-        const ivec2 screenPosInvY{util::invertY(pos, getScreenDimensions())};
-
-        double depth = getDepthValueAtCoord(screenPosInvY);
-        switch (touch->touchPoints().front().state()) {
-            case TouchPoint::TOUCH_STATE_STARTED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mousePressEvent(mouseEvent);
-                break;
-            case TouchPoint::TOUCH_STATE_UPDATED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseMoveEvent(mouseEvent);
-                break;
-            case TouchPoint::TOUCH_STATE_STATIONARY:
-                break;  // Do not fire event while standing still.
-            case TouchPoint::TOUCH_STATE_ENDED:
-                mouseEvent = new MouseEvent(
-                    pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE,
-                    EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
-                Canvas::mouseReleaseEvent(mouseEvent);
-                break;
-            default:
-                break;
-        }
-        delete mouseEvent;
-    }
-#endif
 }
 
 #include <warn/pop>

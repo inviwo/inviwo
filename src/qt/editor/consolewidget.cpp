@@ -38,12 +38,14 @@
 #include <QLabel>
 #include <QThread>
 #include <QCoreApplication>
+#include <QFontDatabase>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/processor.h>
+
 
 namespace inviwo {
 
@@ -58,13 +60,18 @@ ConsoleWidget::ConsoleWidget(QWidget* parent)
     , numErrors_(0)
     , numWarnings_(0)
     , numInfos_(0) {
+
     setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
     textField_ = new QTextEdit(this);
     textField_->setReadOnly(true);
     textField_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     textField_->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(textField_, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    textField_->setFont(fixedFont);
+
+    connect(textField_, SIGNAL(customContextMenuRequested(const QPoint&)), this,
+            SLOT(showContextMenu(const QPoint&)));
 
     QHBoxLayout *statusBar = new QHBoxLayout();
 
@@ -112,8 +119,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent)
     connect(this, SIGNAL(clearSignal()), this, SLOT(clear()));
 }
 
-ConsoleWidget::~ConsoleWidget() {
-}
+ConsoleWidget::~ConsoleWidget() = default;
 
 void ConsoleWidget::showContextMenu(const QPoint& pos) {
     QMenu* menu = textField_->createStandardContextMenu();
@@ -161,7 +167,6 @@ void ConsoleWidget::logMessage(LogLevel level, QString message) {
         case LogLevel::Warn: {
             textField_->setTextColor(warnTextColor_);
             warningsLabel_->setText(toString(++numWarnings_).c_str());
-
             break;
         }
         case LogLevel::Info: {

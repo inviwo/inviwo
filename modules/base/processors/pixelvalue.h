@@ -40,25 +40,26 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PixelValue, Pixel Value}
+ /** docpage{org.inviwo.PixelValue, Pixel Value}
  * ![](org.inviwo.PixelValue.png?classIdentifier=org.inviwo.PixelValue)
- * Explanation of how to use the processor.
+ * Read the pixel value under the mouse of the image that is passed through the processor
+ * 
+ * ### Inport
+ *   * __inport___ Input image
  *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ * ### Outport
+ *   * __outport__ Output image, pass through of input image
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class PixelValue
- * \brief <brief description>
- * <Detailed description from a developer prespective>
+ *   * __Pixel Value__ The pixel value under the mouse of the first color layer
+ *   * __Pixel Value (as string)__ As a string.
+ *   * __Normalized Pixel Value__ Normalized to [0,1]
+ *   * __Picking Value__ The pixel value under the mouse of the picking layer
+ *   * __Picking Value (as string)__ As a string.
+ *   * __Depth Value__ The depth value under the mouse of the depth layer
+ *   * __Depth Value (as string)__ As a string.
+ *   * __Coordinates__ The mouse coordinates in the image.
+ *
  */
 class IVW_MODULE_BASE_API PixelValue : public Processor {
 public:

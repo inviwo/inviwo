@@ -30,6 +30,7 @@
 uniform ivec3 volumeSize_;
 
 in vec4 texCoord_;
+in vec4 dataposition_;
 
 uniform vec2 xRange;
 uniform vec2 yRange;
@@ -41,9 +42,9 @@ float getPos(float v ,vec2 range){
 
 vec4 getPos(){
 	return vec4(
-		      getPos(texCoord_.x , xRange)
-			, getPos(texCoord_.y , yRange)
-			, getPos(texCoord_.z , zRange)
+		      getPos(dataposition_.x , xRange)
+			, getPos(dataposition_.y , yRange)
+			, getPos(dataposition_.z , zRange)
 			, 1.0
 		);
 }

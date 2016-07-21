@@ -31,6 +31,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
 
@@ -142,26 +143,8 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     grad.setColorAt(1.0f, bottomColor);
 
     p->setBrush(grad);
-    QPainterPath roundRectPath;
-    QRectF bRect = rect();
-    roundRectPath.moveTo(bRect.left(), bRect.top() + linkdialog::processorRoundedCorners);
-    roundRectPath.lineTo(bRect.left(), bRect.bottom() - linkdialog::processorRoundedCorners);
-    roundRectPath.arcTo(bRect.left(), bRect.bottom() - (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners), 180.0, 90.0);
-    roundRectPath.lineTo(bRect.right() - linkdialog::processorRoundedCorners, bRect.bottom());
-    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::processorRoundedCorners),
-                        bRect.bottom() - (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners), 270.0, 90.0);
-    roundRectPath.lineTo(bRect.right(), bRect.top() + linkdialog::processorRoundedCorners);
-    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::processorRoundedCorners), bRect.top(),
-                        (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners), 0.0, 90.0);
-    roundRectPath.lineTo(bRect.left() + linkdialog::processorRoundedCorners, bRect.top());
-    roundRectPath.arcTo(bRect.left(), bRect.top(), (2 * linkdialog::processorRoundedCorners),
-                        (2 * linkdialog::processorRoundedCorners), 90.0, 90.0);
-    p->drawPath(roundRectPath);
+    p->drawRoundedRect(rect(), linkdialog::processorRoundedCorners,
+                       linkdialog::processorRoundedCorners);
     p->restore();
 }
 

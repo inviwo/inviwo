@@ -38,85 +38,151 @@ namespace inviwo {
 
 /**
  * \class SpatialSampler
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
  */
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 class SpatialSampler {
 public:
-    using Space = typename SpatialCoordinateTransformer<SpatialDims>::Space;
+    using Space = CoordinateSpace;
 
-    SpatialSampler(std::shared_ptr<const SpatialEntity<SpatialDims>> spatialEntity)
-        : spatialEntity_(spatialEntity) {}
-    virtual ~SpatialSampler() {}
+    SpatialSampler(std::shared_ptr<const SpatialEntity<SpatialDims>> spatialEntity,
+                   Space space = Space::Data);
+    virtual ~SpatialSampler() = default;
 
-    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, double> &pos,
-                                       Space space = Space::Data) const {
-        auto dataPos = pos;
-        if (space != Space::Data) {
-            auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
-            auto p = m * Vector<SpatialDims + 1, float>(
-                             static_cast<Vector<SpatialDims, float>>(pos), 1.0);
-            dataPos = p.xyz() / p.w;
-        }
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, double> &pos) const;
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, float> &pos) const;
 
-        return sampleDataSpace(dataPos);
-    }
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, double> &pos, Space space) const;
+    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, float> &pos, Space space) const;
 
-    virtual Vector<DataDims, T> sample(const Vector<SpatialDims, float> &pos,
-        Space space = Space::Data) const {
-        return sample(static_cast<Vector<SpatialDims, double>>(pos), space);
-    }
+    virtual bool withinBounds(const Vector<SpatialDims, double> &pos) const;
+    virtual bool withinBounds(const Vector<SpatialDims, float> &pos) const;
 
-    virtual bool withinBounds(const Vector<SpatialDims, double> &pos,
-        Space space = Space::Data) const {
-        auto dataPos = pos;
-        if (space != Space::Data) {
-            auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
-            auto p = m * Vector<SpatialDims + 1, float>(
-                static_cast<Vector<SpatialDims, float>>(pos), 1.0);
-            dataPos = p.xyz() / p.w;
-        }
+    virtual bool withinBounds(const Vector<SpatialDims, double> &pos, Space space) const;
+    virtual bool withinBounds(const Vector<SpatialDims, float> &pos, Space space) const;
 
-        return withinBoundsDataSpace(dataPos);
-    }
+    Matrix<SpatialDims, float> getBasis() const;
+    Matrix<SpatialDims + 1, float> getModelMatrix() const;
+    Matrix<SpatialDims + 1, float> getWorldMatrix() const;
 
-    virtual bool withinBounds(const Vector<SpatialDims, float> &pos,
-        Space space = Space::Data) const {
-        return withinBounds(static_cast<Vector<SpatialDims, double>>(pos), space);
-    }
+    const SpatialCoordinateTransformer<SpatialDims> &getCoordinateTransformer() const;
 
-    Matrix<SpatialDims, float> getBasis() const {
-        return spatialEntity_->getBasis();
-    }
-
-    Matrix<SpatialDims +1, float> getModelMatrix() const {
-        return spatialEntity_->getModelMatrix();
-    }
-
-    Matrix<SpatialDims +1, float> getWorldMatrix() const {
-        return spatialEntity_->getWorldMatrix();
-    }
-
-    const SpatialCoordinateTransformer<SpatialDims> &getCoordinateTransformer() const {
-        return spatialEntity_->getCoordinateTransformer();
-    }
-
-    virtual std::string getDataInfo() const { return "SpatialSampler" + toString(SpatialDims) + toString(DataDims) + inviwo::parseTypeIdName(std::string(typeid(T).name()));}
+    virtual std::string getDataInfo() const;
     static uvec3 COLOR_CODE;
 
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
 
-
+    Space space_;
     std::shared_ptr<const SpatialEntity<SpatialDims>> spatialEntity_;
-
+    Matrix<SpatialDims + 1, double> transform_;
 };
 
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-uvec3 SpatialSampler<SpatialDims, DataDims,T>::COLOR_CODE = uvec3(153, 0, 76);
 
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+SpatialSampler<SpatialDims, DataDims, T>::SpatialSampler(
+    std::shared_ptr<const SpatialEntity<SpatialDims>> spatialEntity, Space space)
+    : space_(space)
+    , spatialEntity_(spatialEntity)
+    , transform_{spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data)} {}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
+    const Vector<SpatialDims, float> &pos) const {
+    return sample(static_cast<Vector<SpatialDims, double>>(pos));
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
+    const Vector<SpatialDims, double> &pos) const {
+    if (space_ != Space::Data) {
+        const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
+        return sampleDataSpace(p.xyz() / p.w);
+    } else {
+        return sampleDataSpace(pos);
+    }
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
+    const Vector<SpatialDims, float> &pos, Space space) const {
+    return sample(static_cast<Vector<SpatialDims, double>>(pos), space);
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
+    const Vector<SpatialDims, double> &pos, Space space) const {
+    if (space != Space::Data) {
+        const dmat4 m{spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data)};
+        const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
+        return sampleDataSpace(p.xyz() / p.w);
+    } else {
+        return sampleDataSpace(pos);
+    }
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(
+    const Vector<SpatialDims, float> &pos) const {
+    return withinBounds(static_cast<Vector<SpatialDims, double>>(pos));
+}
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(
+    const Vector<SpatialDims, double> &pos) const {
+    if (space_ != Space::Data) {
+        const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
+        return withinBoundsDataSpace(p.xyz() / p.w);
+    } else {
+        return withinBoundsDataSpace(pos);
+    }
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<SpatialDims, float> &pos,
+                                                            Space space) const {
+    return withinBounds(static_cast<Vector<SpatialDims, double>>(pos), space);
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<SpatialDims, double> &pos,
+                                                            Space space) const {
+    if (space != Space::Data) {
+        const dmat4 m{ spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data) };
+        const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
+        return withinBoundsDataSpace(p.xyz() / p.w);
+    } else {
+        return withinBoundsDataSpace(pos);
+    }
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+const SpatialCoordinateTransformer<SpatialDims>
+    &SpatialSampler<SpatialDims, DataDims, T>::getCoordinateTransformer() const {
+    return spatialEntity_->getCoordinateTransformer();
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Matrix<SpatialDims + 1, float> SpatialSampler<SpatialDims, DataDims, T>::getWorldMatrix() const {
+    return spatialEntity_->getWorldMatrix();
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Matrix<SpatialDims + 1, float> SpatialSampler<SpatialDims, DataDims, T>::getModelMatrix() const {
+    return spatialEntity_->getModelMatrix();
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Matrix<SpatialDims, float> SpatialSampler<SpatialDims, DataDims, T>::getBasis() const {
+    return spatialEntity_->getBasis();
+}
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+std::string SpatialSampler<SpatialDims, DataDims, T>::getDataInfo() const {
+    return "SpatialSampler" + toString(SpatialDims) + toString(DataDims) +
+           parseTypeIdName(std::string(typeid(T).name()));
+}
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+uvec3 SpatialSampler<SpatialDims, DataDims, T>::COLOR_CODE = uvec3(153, 0, 76);
 
 }  // namespace
 

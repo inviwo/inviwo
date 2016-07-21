@@ -33,7 +33,7 @@ namespace inviwo {
 
 ElementBufferObject::ElementBufferObject(size_t size, const DataFormatBase* format,
                                          BufferUsage usage)
-    : BufferObject(size, format, usage, GL_ELEMENT_ARRAY_BUFFER) {}
+    : BufferObject(size, format, usage, BufferTarget::Index) {}
 
 ElementBufferObject::~ElementBufferObject(){}
 

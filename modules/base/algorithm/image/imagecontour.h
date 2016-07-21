@@ -44,20 +44,22 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API ImageContour {
 public:
-    static std::shared_ptr<Mesh> apply(const LayerRepresentation* in, double isoValue,
-                                       vec4 color = vec4(1.0));
+    static std::shared_ptr<Mesh> apply(const LayerRepresentation* in, size_t channel,
+                                       double isoValue, vec4 color = vec4(1.0));
 };
 
 namespace detail {
 struct IVW_MODULE_BASE_API ImageContourDispatcher {
     using type = std::shared_ptr<Mesh>;
     template <class T>
-    std::shared_ptr<Mesh> dispatch(const LayerRepresentation* in, double isoValue, vec4 color);
+    std::shared_ptr<Mesh> dispatch(const LayerRepresentation* in, size_t channel, double isoValue,
+                                   vec4 color);
 };
 
 template <class DataType>
 std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation* in,
-                                                       double isoValue, vec4 color) {
+                                                       size_t channel, double isoValue,
+                                                       vec4 color) {
     static const std::vector<std::vector<int>> caseTable = {
         std::vector<int>(),                          // case 0
         std::vector<int>({0, 1, 0, 3}),              // case 1
@@ -73,8 +75,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
     auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
 
     using T = typename DataType::type;
-    using P = typename DataType::primitive;
-    using D = typename util::same_extent<P, double>::type;
+    channel = std::min(channel, util::extent<typename DataType::type>::value - 1);
 
     const LayerRAMPrecision<T>* ram = dynamic_cast<const LayerRAMPrecision<T>*>(in);
     if (!ram) return nullptr;
@@ -85,7 +86,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
 
     if (dim.x == 0 || dim.y == 0) return nullptr;
 
-    D vals[4];
+    double vals[4];
     vec3 outPos[4];
     vec3 outPosScale =
         vec3(1.0f / static_cast<float>(dim.x - 1), 1.0f / static_cast<float>(dim.y - 1), 1);
@@ -93,10 +94,10 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
     for (size_t y = 0; y < dim.y - 1; y++) {
         for (size_t x = 0; x < dim.x - 1; x++) {
             auto idx = index(x, y);
-            vals[0] = static_cast<D>(util::glm_convert<P, T>(data[idx]));
-            vals[1] = static_cast<D>(util::glm_convert<P, T>(data[idx + 1]));
-            vals[2] = static_cast<D>(util::glm_convert<P, T>(data[idx + 1 + dim.x]));
-            vals[3] = static_cast<D>(util::glm_convert<P, T>(data[idx + dim.x]));
+            vals[0] = util::glm_convert<double>(util::glmcomp(data[idx], channel));
+            vals[1] = util::glm_convert<double>(util::glmcomp(data[idx + 1], channel));
+            vals[2] = util::glm_convert<double>(util::glmcomp(data[idx + 1 + dim.x], channel));
+            vals[3] = util::glm_convert<double>(util::glmcomp(data[idx + dim.x], channel));
 
             int theCase = 0;
             theCase += vals[0] < isoValue ? 0 : 1;
@@ -118,10 +119,10 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
                 theCase = 15 - theCase;
             }
 
-            outPos[0] = vec3(x, y, 1) * outPosScale;
-            outPos[1] = vec3(x + 1, y, 1) * outPosScale;
-            outPos[2] = vec3(x + 1, y + 1, 1) * outPosScale;
-            outPos[3] = vec3(x, y + 1, 1) * outPosScale;
+            outPos[0] = vec3(x, y, 0) * outPosScale;
+            outPos[1] = vec3(x + 1, y, 0) * outPosScale;
+            outPos[2] = vec3(x + 1, y + 1, 0) * outPosScale;
+            outPos[3] = vec3(x, y + 1, 0) * outPosScale;
 
             auto& edges = caseTable[theCase];
             for (size_t i = 0; i < edges.size(); i += 2) {

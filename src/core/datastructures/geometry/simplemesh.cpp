@@ -36,7 +36,6 @@ SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
     addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec3>>());  // pos 0
     addBuffer(BufferType::TexcoordAttrib, std::make_shared<Buffer<vec3>>());  // pos 1
     addBuffer(BufferType::ColorAttrib, std::make_shared<Buffer<vec4>>());     // pos 2
-    addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
 }
 
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
@@ -53,12 +52,20 @@ unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
 }
 
 void SimpleMesh::addIndex(unsigned int idx) {
+    if (indices_.empty()) {
+        addIndicies(Mesh::getDefaultMeshInfo(), std::make_shared<IndexBuffer>());
+    }
     static_cast<IndexBufferRAM*>(indices_[0].second->getEditableRepresentation<BufferRAM>())
         ->add(idx);
 }
 
 void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
-    indices_[0].first = Mesh::MeshInfo(dt, ct);
+    if (indices_.empty()) {
+        addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
+    }
+    else {
+        indices_[0].first = Mesh::MeshInfo(dt, ct);
+    }
 }
 
 const Buffer<vec3>* SimpleMesh::getVertexList() const {

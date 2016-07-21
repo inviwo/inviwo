@@ -59,7 +59,7 @@ PortInspector::PortInspector(std::string portClassIdentifier,
 
         auto meta =
             processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        meta->setVisibile(false);
+        meta->setVisible(false);
         meta->setSelected(false);
 
         // Find and save the canvasProcessor

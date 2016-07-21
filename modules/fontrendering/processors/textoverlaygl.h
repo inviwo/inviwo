@@ -42,8 +42,14 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+
 
 namespace inviwo {
+
+class Image;
+class ImageGL;
 
 /** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
  * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
@@ -90,6 +96,8 @@ protected:
      */
     std::string getString() const;
 
+    void updateCache();
+
 private:
     ImageInport inport_;
     ImageOutport outport_;
@@ -108,6 +116,10 @@ private:
     std::size_t numArgs_; //!< number of optional place marker properties 
 
     const std::size_t maxNumArgs_ = 99;
+
+    std::shared_ptr<Texture2D> cacheTexture_; //!< cache rendered text
+
+    TextureQuadRenderer textureRenderer_;
 };
 
 } // namespace

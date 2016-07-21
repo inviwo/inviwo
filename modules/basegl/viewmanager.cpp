@@ -31,100 +31,145 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
 ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), activeView_(-1) {}
 
 Event* ViewManager::registerEvent(const Event* event) {
-    if (const MouseEvent* mouseEvent = dynamic_cast<const MouseEvent*>(event)) {
-        activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
-        if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
-            viewportActive_ = true;
-            activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
-            viewportActive_ = false;
-        }
+    switch (event->hash()) {
+        case MouseEvent::chash(): {
+            const auto mouseEvent = static_cast<const MouseEvent*>(event);
 
-        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
-            MouseEvent* newEvent = mouseEvent->clone();
-            const ivec4& view = views_[activeView_];
-            newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
-                             uvec2(view.z, view.w));
-            return newEvent;
-        } else {
-            return nullptr;
-        }
-
-    } else if (const GestureEvent* gestureEvent = dynamic_cast<const GestureEvent*>(event)) {
-        activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
-                                gestureEvent->canvasSize());
-        if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
-            viewportActive_ = true;
-            activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_ENDED) {
-            viewportActive_ = false;
-        }
-
-        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
-            GestureEvent* newEvent = gestureEvent->clone();
-            const ivec4& view = views_[activeView_];
-            newEvent->modify(
-                vec2(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w))) /
-                vec2(view.z, view.w));
-            return newEvent;
-        } else {
-            return nullptr;
-        }
-
-    } else if (const TouchEvent* touchEvent = dynamic_cast<const TouchEvent*>(event)) {
-        activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
-        if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchPoint::TOUCH_STATE_STARTED) {
-            viewportActive_ = true;
-            activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && touchEvent->getTouchPoints().front().state() ==
-            TouchPoint::TOUCH_STATE_ENDED) {
-            viewportActive_ = false;
-        }
-
-        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
-            // Modify all touch points
-            const ivec4& view = views_[activeView_];
-            vec2 viewportOffset(view.x, view.y);
-            vec2 viewportSize(view.z, view.w);
-            std::vector<TouchPoint> modifiedTouchPoints;
-            auto touchPoints = touchEvent->getTouchPoints();
-            modifiedTouchPoints.reserve(touchPoints.size());
-            // Loop over all touch points and modify their positions
-            for (auto elem : touchPoints) {
-                // Switch to the same coordinate system as ViewManager:
-                // y ^
-                //   |
-                //   --> x
-                vec2 flippedPos = flipY(elem.getPos(), touchEvent->canvasSize());
-                vec2 flippedPrevPos = flipY(elem.getPrevPos(), touchEvent->canvasSize());
-                // Translate position to viewport and 
-                // convert back to event coordinate system by flipping y.
-                vec2 pos = flipY(flippedPos - viewportOffset, viewportSize);
-                vec2 posNormalized = pos / viewportSize;
-                vec2 prevPos = flipY(flippedPrevPos - viewportOffset, viewportSize);
-                vec2 prevPosNormalized = prevPos / viewportSize;
-                modifiedTouchPoints.push_back(TouchPoint(elem.getId(), pos, posNormalized, prevPos, prevPosNormalized, elem.state()));
+            activePosition_ = mouseEvent->pos();
+            if (!viewportActive_ && mouseEvent->state() == MouseState::Press) {
+                viewportActive_ = true;
+                activeView_ = findView(activePosition_);
+            } else if (viewportActive_ && mouseEvent->state() == MouseState::Release) {
+                viewportActive_ = false;
             }
-            TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, viewportSize);
 
-            return newEvent;
-        } else {
-            return nullptr;
+            if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
+                auto newEvent = mouseEvent->clone();
+                const ivec4& view = views_[activeView_];
+                newEvent->setCanvasSize(uvec2(view.z, view.w));
+                newEvent->setPos(activePosition_ - dvec2(view.x, view.y));
+                return newEvent;
+            } else {
+                return nullptr;
+            }
         }
-    }
+        case WheelEvent::chash(): {
+            const auto wheelEvent = static_cast<const WheelEvent*>(event);
 
-    return nullptr;
+            activePosition_ = wheelEvent->pos();
+            activeView_ = findView(activePosition_);
+
+            if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
+                auto newEvent = wheelEvent->clone();
+                const ivec4& view = views_[activeView_];
+                newEvent->setCanvasSize(uvec2(view.z, view.w));
+                newEvent->setPos(activePosition_ - dvec2(view.x, view.y));
+                return newEvent;
+            } else {
+                return nullptr;
+            }
+        }
+        case GestureEvent::chash(): {
+            const auto gestureEvent = static_cast<const GestureEvent*>(event);
+            activePosition_ = gestureEvent->canvasSize() * gestureEvent->screenPosNormalized();
+            if (!viewportActive_ && gestureEvent->state() == GestureState::Started) {
+                viewportActive_ = true;
+                activeView_ = findView(activePosition_);
+            } else if (viewportActive_ && gestureEvent->state() == GestureState::Finished) {
+                viewportActive_ = false;
+            }
+
+            if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
+                GestureEvent* newEvent = gestureEvent->clone();
+                const ivec4& view = views_[activeView_];
+                newEvent->modify(vec2(activePosition_ - dvec2(view.x, view.y)) /
+                                 vec2(view.z, view.w));
+                return newEvent;
+            } else {
+                return nullptr;
+            }
+        }
+        case TouchEvent::chash(): {
+            const auto touchEvent = static_cast<const TouchEvent*>(event);
+            activePosition_ = touchEvent->getCenterPoint();
+            if (!viewportActive_ &&
+                touchEvent->getTouchPoints().front().state() == TouchState::Started) {
+                viewportActive_ = true;
+                activeView_ = findView(activePosition_);
+            } else if (viewportActive_ &&
+                       touchEvent->getTouchPoints().front().state() == TouchState::Finished) {
+                viewportActive_ = false;
+            }
+
+            if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
+                // Modify all touch points
+                const ivec4& view = views_[activeView_];
+                vec2 viewportOffset(view.x, view.y);
+                vec2 viewportSize(view.z, view.w);
+                std::vector<TouchPoint> modifiedTouchPoints;
+                auto touchPoints = touchEvent->getTouchPoints();
+                modifiedTouchPoints.reserve(touchPoints.size());
+                // Loop over all touch points and modify their positions
+                for (auto elem : touchPoints) {
+                    // Translate position to viewport
+                    vec2 pos = elem.getPos() - viewportOffset;
+                    vec2 posNormalized = pos / viewportSize;
+                    vec2 prevPos = elem.getPrevPos() - viewportOffset;
+                    vec2 prevPosNormalized = prevPos / viewportSize;
+                    modifiedTouchPoints.push_back(TouchPoint(elem.getId(), pos, posNormalized,
+                                                             prevPos, prevPosNormalized,
+                                                             elem.state()));
+                }
+                TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, viewportSize);
+
+                return newEvent;
+            } else {
+                return nullptr;
+            }
+        }
+        default:
+            return nullptr;
+    }
 }
 
 const std::vector<ivec4>& ViewManager::getViews() const { return views_; }
 
 void ViewManager::push_back(ivec4 view) { views_.push_back(view); }
+
+void ViewManager::erase(ivec4 view) {
+    auto it = views_.begin();
+    while (it != views_.end()) {
+        if (glm::all(glm::equal(view, *it))) {
+            views_.erase(it);
+            break;
+        }
+        ++it;
+    }
+}
+
+void ViewManager::erase(size_t ind) {
+    if (ind < views_.size()) {
+        views_.erase(views_.begin() + ind);
+    }
+}
+
+void ViewManager::replace(size_t ind, ivec4 view) {
+    if (ind < views_.size()) {
+        views_[ind] = view;
+    }
+    else {
+        throw Exception("Out of range", IvwContext);
+    }
+}
 
 ivec4& ViewManager::operator[](size_t ind) { return views_[ind]; }
 
@@ -140,8 +185,6 @@ int ViewManager::findView(ivec2 pos) const {
     }
     return -1;
 }
-
-inviwo::ivec2 ViewManager::flipY(ivec2 pos, ivec2 size) { return ivec2(pos.x, size.y - pos.y); }
 
 bool ViewManager::inView(const ivec4& view, const ivec2& pos) {
     return view.x < pos.x && pos.x < view.x + view.z && view.y < pos.y && pos.y < view.y + view.w;

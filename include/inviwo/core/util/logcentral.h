@@ -154,8 +154,8 @@ enum class IVW_CORE_API LogAudience : int { User, Developer };
 
 class IVW_CORE_API Logger {
 public:
-    Logger(){};
-    virtual ~Logger(){};
+    Logger() = default;
+    virtual ~Logger() = default;
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
                      const char* fileName, const char* functionName, int lineNumber,
@@ -194,21 +194,18 @@ private:
 class IVW_CORE_API LogCentral : public Singleton<LogCentral> {
 public:
     LogCentral();
-    virtual ~LogCentral();
+    virtual ~LogCentral() = default;
 
     void setLogLevel(LogLevel logLevel) { logLevel_ = logLevel; }
     LogLevel getLogLevel() { return logLevel_; }
 
     /**
-     * \brief Register logger for use. LogCentral takes ownership of registered loggers
+     * \brief Register logger for use. LogCentral does not take ownership
+     * of registered loggers.
      * @param logger Logger to register.
      */
-    void registerLogger(Logger* logger);
-    /**
-     * \brief Unregister and delete logger.
-     * @param logger Logger to unregister
-     */
-    void unregisterLogger(Logger* logger);
+    void registerLogger(std::weak_ptr<Logger> logger);
+
     void log(std::string source, LogLevel level, LogAudience audience, const char* file,
              const char* function, int line, std::string msg);
 
@@ -226,7 +223,7 @@ private:
     LogLevel logLevel_;
     #include <warn/push>
     #include <warn/ignore/dll-interface>
-    std::vector<Logger*> loggers_;
+    std::vector<std::weak_ptr<Logger>> loggers_;
     #include <warn/pop>
     bool logStacktrace_;
 };

@@ -45,7 +45,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.h
@@ -98,7 +97,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.cpp

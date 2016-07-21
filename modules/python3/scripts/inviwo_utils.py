@@ -17,7 +17,7 @@ def snapshotAllCanvasesWithWorkspace(basePath: str , workspaceName  , canvasFile
     import inviwo as i
     canvases = [];
     for canvas in i.listCanvases():
-        canvases.append(canvas[0])
+        canvases.append(canvas[0].trim())
     return snapshotWithWorkspace(basePath , canvases, workspaceName, canvasFilenamePrefix, canvasFilenameSufix , filetype )
 
 
@@ -34,8 +34,12 @@ def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilen
     import inviwo
     import inviwoqt
 
+    workspaceName = workspaceName.trim();
+    canvasFilenamePrefix = canvasFilenamePrefix.trim();
+    canvasFilenameSufix = canvasFilenameSufix.trim();
+
     if not workspaceName.endswith('.inv'):
-        workspaceName = workspaceName + '.inv'
+        workspaceName = workspaceName.ltrim() + '.inv'
 
 
     workspacePath = basePath + "/" + workspaceName;

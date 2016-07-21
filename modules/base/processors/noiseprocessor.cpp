@@ -50,7 +50,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NoiseProcessor::processorInfo_{
     "org.inviwo.NoiseProcessor",  // Class identifier
-    "NoiseProcessor",             // Display name
+    "Noise Processor",             // Display name
     "Data Creation",              // Category
     CodeState::Experimental,      // Code state
     Tags::CPU,                    // Tags
@@ -68,7 +68,7 @@ NoiseProcessor::NoiseProcessor()
     , levels_("levels", "Levels", 2, 8, 1, 16)
     , persistence_("persistence", "Persistence", 0.5f, 0.001f, 1.0f, 0.001f)
     , poissonDotsAlongX_("poissonDotsAlongX","Dots Along X",100,1,1024)
-    , poissonMaxPoints_("poissonMaxPoints","Max Points" , 1 , 1000, 1000000)
+    , poissonMaxPoints_("poissonMaxPoints","Max Points" , 1 , 10000000, 10000000)
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, 1000)

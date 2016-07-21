@@ -33,7 +33,6 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -44,13 +43,19 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageNormalization, Image Normalization}
  * ![](org.inviwo.ImageNormalization.png?classIdentifier=org.inviwo.ImageNormalization)
+ * Normalizes the rgb channels of an input image given a specific range.
  *
- * ...
- * 
- * 
- * 
+ * ### Inports
+ *   * __inputImage__ Input image
+ *
+ * ### Outports
+ *   * __outputImage__ Filtered input image
+ *
  * ### Properties
- *   * __Normalize Channels Individually__ ...
+ *   * __Normalize Channels Separately__ If true, each channel will be normalized on its own. Otherwise the global min/max values are used for all channels.
+ *   * __Centered at Zero__ Toggles normalization centered at zero to range [-max, max]
+ *   * __Min value__ Min value of the input image (read-only)
+ *   * __Max Value__ Max value of the input image (read-only)
  *
  */
 class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
@@ -61,16 +66,13 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void invalidateMinMax();
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
     void updateMinMax();
 
-protected:
-    virtual void preProcess() override;
-
 private:
-    bool minMaxInvalid_;
-    BoolProperty eachChannelsIndividually_;
-    BoolProperty zeroAtPoint5_;
+    BoolProperty normalizeSeparately_;
+    BoolProperty zeroCentered_;
     StringProperty minS_;
     StringProperty maxS_;
     dvec4 min_;

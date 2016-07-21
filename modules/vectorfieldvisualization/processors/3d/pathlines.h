@@ -43,6 +43,7 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
@@ -106,6 +107,7 @@ private:
     SeedPointsInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
     VolumeSequenceInport volume_;
+    IntegralLineSetOutport lines_;
 
 
     MeshOutport linesStripsMesh_;

@@ -32,10 +32,11 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/image/compositeprocessorgl.h>
+#include <modules/opengl/image/imagecompositor.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -44,6 +45,8 @@
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
+
+class MeshDrawerGL;
 
 /** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
  * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
@@ -59,7 +62,7 @@ namespace inviwo {
  *   * __ImageOutport__ The output image.
  *
  * ### Properties
- *   * __Position_ Defines size of all lines.
+ *   * __Position__ Defines size of all lines.
  *   * __Camera__ Camera of the scene.
  *   * __Trackball__ Camera trackball.
  */
@@ -69,7 +72,7 @@ namespace inviwo {
 *
 */
 
-class IVW_MODULE_BASEGL_API MeshPicking : public CompositeProcessorGL {
+class IVW_MODULE_BASEGL_API MeshPicking : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -85,10 +88,12 @@ private:
     MeshInport meshInport_;
     ImageInport imageInport_;
     ImageOutport outport_;
+    ImageCompositor compositor_;
 
     OptionPropertyInt cullFace_;
 
     FloatVec3Property position_;
+    FloatVec4Property highlightColor_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
@@ -96,6 +101,11 @@ private:
     PickingMapper picking_;
 
     Shader shader_;
+
+    std::shared_ptr<const Mesh> mesh_;
+    std::unique_ptr<MeshDrawerGL> drawer_;
+
+    bool highlight_ = false;
 };
 
 }  // namespace

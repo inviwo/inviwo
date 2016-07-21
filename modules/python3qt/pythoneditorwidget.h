@@ -58,8 +58,10 @@ public:
     virtual void keyPressEvent(QKeyEvent* keyEvent);
 };
 
+class InviwoApplication;
 class InviwoMainWindow;
 class SyntaxHighligther;
+
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public FileObserver,
                                                     public PythonExecutionOutputObeserver {
@@ -81,8 +83,6 @@ public:
 
     bool hasFocus() const;
 
-    static PythonEditorWidget* getPtr();
-
     void updateStyle();
     void save();
     void saveAs();
@@ -92,13 +92,21 @@ public:
     void setDefaultText();
     void clearOutput();
 
+public slots:
+    void onTextChange();
+
 private:
+    void setFileName(const std::string filename);
+    void updateTitleBar();
+
     QSettings settings_;
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
 
     QColor infoTextColor_;
     QColor errorTextColor_;
+
+    QAction* runAction_;
 
     PythonScript script_;
     std::string scriptFileName_;
@@ -110,8 +118,8 @@ private:
 
     static PythonEditorWidget* instance_;
 
-public slots:
-    void onTextChange();
+    InviwoApplication *app_;
+    bool appendLog_;
 };
 
 }  // namespace

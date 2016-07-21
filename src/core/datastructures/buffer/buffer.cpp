@@ -34,12 +34,15 @@
 
 namespace inviwo {
 
-BufferBase::BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage)
-    : Data<BufferRepresentation>(format), size_(size), usage_(usage) {}
+BufferBase::BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage,
+                       BufferTarget target)
+    : Data<BufferRepresentation>(format), size_(size), usage_(usage), target_(target) {}
 
 size_t BufferBase::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
 
-inviwo::BufferUsage BufferBase::getBufferUsage() const { return usage_; }
+BufferUsage BufferBase::getBufferUsage() const { return usage_; }
+
+BufferTarget BufferBase::getBufferTarget() const { return target_; }
 
 inviwo::uvec3 BufferBase::COLOR_CODE = uvec3(255, 113, 0);
 
@@ -64,7 +67,5 @@ size_t BufferBase::getSize() const {
 
     return size_;
 }
-
-
 
 }

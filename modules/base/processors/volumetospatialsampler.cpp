@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo VolumeToSpatialSampler::processorInfo_{
     "org.inviwo.VolumeToSpatialSampler",      // Class identifier
     "Volume To Spatial Sampler",                // Display name
-    "Undefined",              // Category
+    "Spatial Sampler",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };

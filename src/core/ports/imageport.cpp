@@ -88,11 +88,18 @@ void ImageOutport::disconnectFrom(Inport* port) {
 
     // update image size
     ResizeEvent event(uvec2(0,0));
-    propagateResizeEvent(&event);
+    propagateEvent(&event);
 }
 
 
-void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
+void ImageOutport::propagateEvent(Event* event) {
+    if (event->hash() != ResizeEvent::chash()) {
+        DataOutport<Image>::propagateEvent(event);
+        return;
+    }
+    
+    auto resizeEvent = static_cast<ResizeEvent*>(event);
+
     // This function should check which dimensions request exists, by going through the successors
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up unused data
@@ -112,13 +119,12 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // fallback to default if newDim == 0
     if (newDimensions == size2_t(0,0)) newDimensions = defaultDimensions_;
 
-    std::unique_ptr<ResizeEvent> newEvent {resizeEvent->clone()};
+    std::unique_ptr<ResizeEvent> newEvent{resizeEvent->clone()};
     newEvent->setSize(newDimensions);
 
     if (image_ && handleResizeEvents_ && newDimensions != image_->getDimensions()) { 
         // resize data.
         image_->setDimensions(newDimensions);
-        //defaultDimensions_ = image_->getDimensions();
         cache_.setInvalid();
 
         broadcast(newEvent.get());
@@ -137,7 +143,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     }
 
     // Propagate the resize event
-    getProcessor()->propagateResizeEvent(newEvent.get(), this);
+    getProcessor()->propagateEvent(newEvent.get(), this);
     
     if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }

@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 
 namespace inviwo {
@@ -77,7 +78,10 @@ public:
     void triggerQueuedEvaluation();
     virtual bool isReady() const override;
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
-    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateEvent(Event* event, Outport* source) override;
+
+    bool isFullScreen() const;
+    void setFullScreen(bool fullscreen);
 
 protected:
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
@@ -97,12 +101,13 @@ protected:
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     CompositeProperty inputSize_;
+    ButtonProperty toggleFullscreen_;
+    EventProperty fullscreen_;
 
 private:
     const Layer* getSelectedLayer() const;
     std::shared_ptr<DataWriterType<Layer>> getWriter(const std::string& fileExtension) const;
 
-    void resizeCanvas();
     void sizeChanged();
     ivec2 calcSize();
 

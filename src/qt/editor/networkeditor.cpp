@@ -524,9 +524,8 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent pressKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                    EventConverterQt::getModifier(keyEvent),
-                                    KeyboardEvent::KEY_STATE_PRESS);
+        KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
+                                    utilqt::getModifiers(keyEvent));
 
         progagateEventToSelecedProcessors(pressKeyEvent);
     }
@@ -536,9 +535,8 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent releaseKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                      EventConverterQt::getModifier(keyEvent),
-                                      KeyboardEvent::KEY_STATE_RELEASE);
+        KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
+                                      utilqt::getModifiers(keyEvent));
 
         progagateEventToSelecedProcessors(releaseKeyEvent);
     }
@@ -638,10 +636,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             QAction* helpAction = menu.addAction(tr("Show Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
-                auto help = mainwindow_->getHelpWidget();
-                help->showDocForClassName(processor->getProcessor()->getClassIdentifier());
-                if(!help->isVisible()) help->show();
-                help->raise();
+                showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
 
             break;
@@ -706,6 +701,16 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {false, ivec2{0,0}};
     doingContextMenu_ = false;
 }
+
+void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
+    auto help = mainwindow_->getHelpWidget();
+    help->showDocForClassName(classIdentifier);
+    if (raise) {
+        if (!help->isVisible()) help->show();
+        help->raise();
+    }
+}
+
 bool NetworkEditor::doingContextMenu() const {
     return doingContextMenu_;
 }

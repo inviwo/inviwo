@@ -138,7 +138,7 @@ void Shader::createAndAddHelper(ShaderObject *object) {
         delete shaderObject;
     });
 
-    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebildShader(o); }));
+    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebuildShader(o); }));
     attachShaderObject(ptr.get());
 
     shaderObjects_[object->getShaderType()] = std::move(ptr);
@@ -195,7 +195,7 @@ void Shader::linkShader(bool notifyRebuild /*= false*/) {
     if (notifyRebuild) onReloadCallback_.invokeAll();
 }
 
-void Shader::rebildShader(ShaderObject *obj) {
+void Shader::rebuildShader(ShaderObject *obj) {
     try {
         ready_ = false;
         obj->build();
@@ -335,96 +335,6 @@ GLint Shader::findUniformLocation(const std::string &name) const {
 
         return location;
     }
-}
-
-void Shader::setUniform(const std::string &name, const GLint &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1i(location, value);
-}
-
-void Shader::setUniform(const std::string &name, const GLint *value, int count) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1iv(location, count, value);
-}
-
-void Shader::setUniform(const std::string &name, const GLuint &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1ui(location, value);
-}
-
-void Shader::setUniform(const std::string &name, const GLuint *value, int count) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1uiv(location, count, value);
-}
-
-void Shader::setUniform(const std::string &name, const GLfloat *value, int count) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1fv(location, count, value);
-}
-
-void Shader::setUniform(const std::string &name, const ivec2 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform2iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const ivec3 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform3iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const ivec4 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform4iv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const uvec2 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform2uiv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const uvec3 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform3uiv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const uvec4 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform4uiv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const GLfloat &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform1f(location, value);
-}
-
-void Shader::setUniform(const std::string &name, const vec2 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform2fv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const vec3 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform3fv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const vec4 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniform4fv(location, 1, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const mat2 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const mat3 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
-}
-
-void Shader::setUniform(const std::string &name, const mat4 &value) const {
-    GLint location = findUniformLocation(name);
-    if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 ShaderObject *Shader::getShaderObject(ShaderType type) const {

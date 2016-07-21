@@ -87,6 +87,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , modules_()
     , clearModules_([&]() {
         ResourceManager::getPtr()->clearAllResources();
+        // Need to clear the modules in reverse order since the might depend on each other.
+        // The destuction order of vector is undefined.
         for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
             it->reset();
         }
@@ -103,7 +105,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         if (dir.empty() || !filesystem::directoryExists(dir)){
             filename = commandLineParser_.getOutputPath() + "/" + filename;
         }
-        LogCentral::getPtr()->registerLogger(new FileLogger(filename));
+        filelogger_ = std::make_shared<FileLogger>(filename);
+        LogCentral::getPtr()->registerLogger(filelogger_);
     }
 
     init(this);

@@ -43,6 +43,9 @@
 #include <modules/python3/defaultinterface/pylist.h>
 #include <modules/python3/defaultinterface/pyutil.h>
 #include <modules/python3/defaultinterface/pyvolume.h>
+#include <modules/python3/defaultinterface/pyprocessor.h>
+#include <modules/python3/defaultinterface/pyprocessorwidget.h>
+#include <modules/python3/defaultinterface/pynetwork.h>
 
 namespace inviwo {
 
@@ -108,58 +111,97 @@ static PyMethodDef Inviwo_Internals_METHODS[] =
 
 static PyMethodDef Inviwo_METHODS[] =
 {
-    //Defined in pyproperties.h
-    { "setPropertyValue" , py_setPropertyValue , METH_VARARGS, "Assigns a value to a processor property. The value has to be passed as scalar or "
-    "tuple, depending on the property's cardinality. Camera properties take a 3-tuple "
-    "of 3-tuples, containing the position, focus and up vectors. Option properties "
-    "expect an option key." },
-    { "setPropertyMaxValue" , py_setPropertyMaxValue , METH_VARARGS, "Sets the max value for a property." },
-    { "setPropertyMinValue" , py_setPropertyMinValue , METH_VARARGS, "Sets the min value for a property." },
-    { "getPropertyValue" , py_getPropertyValue , METH_VARARGS, "Returns the current value of a processor property (scalar or tuple)." },
-    { "getPropertyMaxValue" , py_getPropertyMaxValue , METH_VARARGS, "Returns the max value for a property (scalar or tuple)." },
-    { "getPropertyMinValue" , py_getPropertyMinValue , METH_VARARGS, "Returns the min value for a property (scalar or tuple)." },
-    { "clickButton" , py_clickButton , METH_VARARGS, "Simulates a click on a button property." }, 
+    // Defined in pyproperties.h
+    {"setPropertyValue",   py_setPropertyValue,     METH_VARARGS, "Assigns a value to a processor property."
+    " The value has to be passed as scalar or tuple, depending on the property's cardinality. Camera properties take a 3-tuple"
+    " of 3-tuples, containing the position, focus and up vectors. Option properties expect an option key." },
+    {"setPropertyMaxValue", py_setPropertyMaxValue, METH_VARARGS, "Sets the max value for a property." },
+    {"setPropertyMinValue", py_setPropertyMinValue, METH_VARARGS, "Sets the min value for a property." },
+    {"getPropertyValue",    py_getPropertyValue,    METH_VARARGS, "Returns the current value of a processor property (scalar or tuple)." },
+    {"getPropertyMaxValue", py_getPropertyMaxValue, METH_VARARGS, "Returns the max value for a property (scalar or tuple)." },
+    {"getPropertyMinValue", py_getPropertyMinValue, METH_VARARGS, "Returns the min value for a property (scalar or tuple)." },
+    {"clickButton",         py_clickButton,         METH_VARARGS, "Simulates a click on a button property." },
 
-    //Defined in pycamera.h
-    { "setCameraFocus" , py_setCameraFocus , METH_VARARGS, "Function to set the cameras focal point." },
-    { "setCameraUp" , py_setCameraUp , METH_VARARGS, "Function to set the cameras up direction." },
-    { "setCameraPos" , py_setCameraPos , METH_VARARGS, "Function to set the cameras position." },
+    // Defined in pycamera.h
+    {"setCameraFocus", py_setCameraFocus, METH_VARARGS, "Function to set the cameras focal point." },
+    {"setCameraUp",    py_setCameraUp,    METH_VARARGS, "Function to set the cameras up direction." },
+    {"setCameraPos",   py_setCameraPos,   METH_VARARGS, "Function to set the cameras position." },
 
 
-    //Defined in pycanvas.h
-    { "canvascount" , py_canvascount , METH_VARARGS, "Returns the number of canvases in the current network." },
-    { "resizecanvas" , py_resizecanvas , METH_VARARGS, "Resizes the canvas in the network to the given size. Canvas can either be given using a canvas index (starting at 0) or a canvas ID string." },
+    // Defined in pycanvas.h
+    {"canvascount",  py_canvascount,  METH_VARARGS, "Returns the number of canvases in the current network." },
+    {"resizecanvas", py_resizecanvas, METH_VARARGS, "Resizes the canvas in the network to the given size. Canvas can either be given using a canvas index (starting at 0) or a canvas ID string." },
 
-    //Defined in pylist.h
-    { "listProperties" , py_listProperties , METH_VARARGS, "List all properties for a processor." },
-    { "listProcessors" , py_listProcessors , METH_VARARGS, "Lists all processors in the current network." },
-    { "listCanvases" , py_listCanvases , METH_NOARGS, "Lists all canvas processors in the current network." },
+    // Defined in pylist.h
+    {"listProperties" , py_listProperties, METH_VARARGS, "List all properties for a processor." },
+    {"listProcessors" , py_listProcessors, METH_VARARGS, "Lists all processors in the current network." },
+    { "listCanvases"  , py_listCanvases,   METH_NOARGS,  "Lists all canvas processors in the current network." },
+    // Defined in pyutil.h
+    {"wait" ,                py_wait,                 METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },
+    {"snapshot",             py_snapshot,             METH_VARARGS, "Saves a snapshot of the specified canvas to the given file. If no canvas name is "
+                                                                    "passed, the first canvas in the network is chosen." },
+    {"snapshotCanvas",       py_snapshotCanvas,       METH_VARARGS, "Saves a snapshot of the ith canvas to the given file." },
+    {"snapshotAllCanvases",  py_snapshotAllCanvases,  METH_VARARGS, "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string)." },
+    {"getBasePath",          py_getBasePath,          METH_VARARGS, "Returns the path to Inviwos base folder." },
+    {"getOutputPath",        py_getOutputPath,        METH_VARARGS, "Returns the output path given by the -o command line option." },
+    {"getDataPath",          py_getDataPath,          METH_VARARGS, "Returns the path to Inviwos data folder." },
+    {"getWorkspaceSavePath", py_getWorkspaceSavePath, METH_VARARGS, "Returns the path to Inviwos workspace folder." },
+    {"getVolumePath",        py_getVolumePath,        METH_VARARGS, "Returns the path to Inviwos volume folder." },
+    {"getImagePath",         py_getImagePath,         METH_VARARGS, "Returns the path to Inviwos image folder." },
+    {"getModulePath",        py_getModulePath,        METH_VARARGS, "Returns the path to the given module." },
+    {"getTransferFunctionPath", py_getTransferFunctionPath, METH_VARARGS, "Returns the path to Inviwo transfer function folder." },
+    {"getMemoryUsage",       py_getMemoryUsage,       METH_VARARGS, "Return how big Inviwo's current RAM working set is." },
+    {"clearResourceManager", py_clearResourceManager, METH_VARARGS, "Method to clear Inviwo's resource manager." },
+    {"disableEvaluation",    py_disableEvaluation,    METH_VARARGS, "Method to disable evaluation of Inviwo's network." },
+    {"enableEvaluation",     py_enableEvaluation,     METH_VARARGS, "Method to re-enable evaluation of Inviwo's network." },
 
-    //Defined in pyutil.h
-    { "wait" , py_wait , METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },
-    { "snapshot" , py_snapshot , METH_VARARGS, "Saves a snapshot of the specified canvas to the given file. If no canvas name is "
-                                               "passed, the first canvas in the network is chosen." },
-    { "snapshotCanvas" , py_snapshotCanvas , METH_VARARGS, "Saves a snapshot of the ith canvas to the given file." },
-    { "snapshotAllCanvases" , py_snapshotAllCanvases , METH_VARARGS, "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string)." },
-    { "getBasePath" , py_getBasePath , METH_VARARGS, "Returns the path to Inviwos base folder." },
-    { "getOutputPath" , py_getOutputPath , METH_VARARGS, "Returns the output path given by the -o command line option." },
-    { "getDataPath" , py_getDataPath , METH_VARARGS, "Returns the path to Inviwos data folder." },
-    { "getWorkspaceSavePath" , py_getWorkspaceSavePath , METH_VARARGS, "Returns the path to Inviwos workspace folder." },
-    { "getVolumePath" , py_getVolumePath , METH_VARARGS, "Returns the path to Inviwos volume folder." },
-    { "getImagePath" , py_getImagePath , METH_VARARGS, "Returns the path to Inviwos image folder." },
-    { "getModulePath" , py_getModulePath , METH_VARARGS, "Returns the path to the given module." },
-    { "getTransferFunctionPath" , py_getTransferFunctionPath , METH_VARARGS, "Returns the path to Inviwo transfer function folder." },
-    { "getMemoryUsage" , py_getMemoryUsage , METH_VARARGS, "Return how big Inviwo's current RAM working set is." },
-    { "clearResourceManager" , py_clearResourceManager , METH_VARARGS, "Method to clear Inviwo's resource manager." },
-    { "disableEvaluation" , py_disableEvaluation , METH_VARARGS, "Method to disable evaluation of Inviwo's network." },
-    { "enableEvaluation" , py_enableEvaluation , METH_VARARGS, "Method to re-enable evaluation of Inviwo's network." },
+    // Defined in pyvolume.h
+    {"saveTransferFunction",       py_saveTransferFunction,     METH_VARARGS, "Save a transfer function to file from the specified transfer function property." },
+    {"loadTransferFunction",       py_loadTransferFunction,     METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+    {"clearTransferfunction",      py_clearTransferfunction,    METH_VARARGS, "Clears a transfer function." },
+    {"addPointToTransferFunction", py_addPointTransferFunction, METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+    
+    // Defined in pyprocessor
+    {"setProcessorSelected", py_setProcessorSelected, METH_VARARGS, "Control whether a processor is selected"},
+    {"isProcessorSelected",  py_isProcessorSelected,  METH_VARARGS, "Is processor selected"},
+    {"setProcessorVisible",  py_setProcessorVisible,  METH_VARARGS, "Control whether a processor is visible"},
+    {"isProcessorVisible",   py_isProcessorVisible,   METH_VARARGS, "Is processor visible"},
+    {"setProcessorPosition", py_setProcessorPosition, METH_VARARGS, "Set the position of a processor"},
+    {"getProcessorPosition", py_getProcessorPosition, METH_VARARGS, "Get the position of a processor"},
 
-    //Defined in pyvolume.h
 
-    { "saveTransferFunction" , py_saveTransferFunction , METH_VARARGS, "Save a transfer function to file from the specified transfer function property." },
-    { "loadTransferFunction" , py_loadTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
-    { "clearTransferfunction" , py_clearTransferfunction , METH_VARARGS, "Clears a transfer function." },
-    { "addPointToTransferFunction" , py_addPointTransferFunction , METH_VARARGS, "Load a transfer function from file into the specified transfer function property." },
+    {"getProcessorClassIdentifier", py_getProcessorClassIdentifier, METH_VARARGS, "Get the Processor class identifier"},
+    {"getProcessorDisplayName",     py_getProcessorDisplayName,     METH_VARARGS, "Get the Processor display name"},
+    {"getProcessorCategory",        py_getProcessorCategory,        METH_VARARGS, "Get the Processor category"},
+    {"getProcessorState",           py_getProcessorState,           METH_VARARGS, "Get the Processor state"},
+    {"getProcessorTags",            py_getProcessorTags,            METH_VARARGS, "Get the Processor tags"},
+
+    {"getProcessorProperties",      py_getProcessorProperties,      METH_VARARGS, "Get all properties for processor"},
+    {"getProcessorInports",         py_getProcessorInports,         METH_VARARGS, "Get all inports for processor"},
+    {"getProcessorOutports",        py_getProcessorOutports,        METH_VARARGS, "Get all outports for processor"},
+
+    // Defined in pyprocessorwidget
+    {"hasProcessorWidget",           py_hasProcessorWidget,           METH_VARARGS, "Does processor have a widget"},
+    {"setProcessorWidgetVisible",    py_setProcessorWidgetVisible,    METH_VARARGS, "Set processor widget visibility"},
+    {"isProcessorWidgetVisible",     py_isProcessorWidgetVisible,     METH_VARARGS, "Is processor widget visible"},
+    {"setProcessorWidgetPosition",   py_setProcessorWidgetPosition,   METH_VARARGS, "Set processor widget position"},
+    {"getProcessorWidgetPosition",   py_getProcessorWidgetPosition,   METH_VARARGS, "Get processor widget position"},
+    {"setProcessorWidgetDimensions", py_setProcessorWidgetDimensions, METH_VARARGS, "Set processor widget dimensions"},
+    {"getProcessorWidgetDimensions", py_getProcessorWidgetDimensions, METH_VARARGS, "Get processor widget dimensions"},
+
+    // Defined in pynetwork
+    {"getFactoryProcessors", py_getFactoryProcessors, METH_VARARGS, "Get a list of all factory processors"},
+    {"getProcessors",    py_getProcessors,    METH_VARARGS, "Get a list of all processors"},
+    {"addProcessor",     py_addProcessor,     METH_VARARGS, "Add a processor using classIdentifier and identifier"},
+    {"removeProcessor",  py_removeProcessor,  METH_VARARGS, "Remove a processor using a identifier"},
+
+    {"getConnections",   py_getConnections,   METH_VARARGS, "Get a list of all connections"},
+    {"addConnection",    py_addConnection,    METH_VARARGS, "Add a connection using two processor id and port id"},
+    {"removeConnection", py_removeConnection, METH_VARARGS, "Remove a connection using processor id and port id"},
+
+    {"getLinks",         py_getLinks,         METH_VARARGS, "Get a list of all links"},
+    {"addLink",          py_addLink,          METH_VARARGS, "Add a link using two property paths"},
+    {"removeLink",       py_removeLink,       METH_VARARGS, "Remove a link using two property paths"},
 
     nullptr
 };

@@ -251,7 +251,7 @@ IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
     case Qt::Key_Underscore:
         return IvwKey::Underscore;
     case Qt::Key_QuoteLeft:
-        return IvwKey::QuoteLeft;
+        return IvwKey::GraveAccent;
     case Qt::Key_BraceLeft:
         return IvwKey::BraceLeft;
     case Qt::Key_Bar:

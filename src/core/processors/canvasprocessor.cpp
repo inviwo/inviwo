@@ -60,12 +60,15 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
+    , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
+    , fullscreen_("fullscreen", "FullScreen",
+                  [this](Event* event) { setFullScreen(!isFullScreen()); }, IvwKey::F,
+                  KeyState::Press, KeyModifier::Shift)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
     , canvasWidget_(nullptr)
     , queuedRequest_(false) {
-
     widgetMetaData_->addObserver(this);
     
     addPort(inport_);
@@ -110,6 +113,11 @@ CanvasProcessor::CanvasProcessor()
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         }
     });
+
+    toggleFullscreen_.onChange([this]() { setFullScreen(!isFullScreen()); });
+
+    addProperty(toggleFullscreen_);
+    addProperty(fullscreen_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
@@ -177,7 +185,7 @@ void CanvasProcessor::sizeChanged() {
     }
 
     inputSize_.invalidate(InvalidationLevel::Valid, &customInputDimensions_);
-    inport_.propagateResizeEvent(&resizeEvent);
+    inport_.propagateEvent(&resizeEvent);
 }
 
 ivec2 CanvasProcessor::calcSize() {
@@ -332,21 +340,49 @@ bool CanvasProcessor::isReady() const {
     return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
-void CanvasProcessor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-    
-    // Avoid continues evaluation when port dimensions changes
-    NetworkLock lock(this);
+void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
 
-    dimensions_.set(resizeEvent->size());
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
 
-    if (enableCustomInputDimensions_) {
-        sizeChanged();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+
+        // Avoid continues evaluation when port dimensions changes
+        NetworkLock lock(this);
+        dimensions_.set(resizeEvent->size());
+        if (enableCustomInputDimensions_) {
+            sizeChanged();
+        } else {
+            inport_.propagateEvent(resizeEvent, nullptr);
+            // Make sure this processor is invalidated.
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
     } else {
-        inport_.propagateResizeEvent(resizeEvent);
-        // Make sure this processor is invalidated.
-        invalidate(InvalidationLevel::InvalidOutput);
+        bool used = event->hasBeenUsed();
+        for (auto inport : getInports()) {
+            if (event->shouldPropagateTo(inport, this, source)) {
+                inport->propagateEvent(event);
+                used |= event->hasBeenUsed();
+                event->markAsUnused();
+            }
+        }
+        if (used) event->markAsUsed();
+    }
+}
+
+bool CanvasProcessor::isFullScreen() const {
+    if(canvasWidget_) {
+        return canvasWidget_->getCanvas()->isFullScreen();
+    }
+    return false;
+}
+
+void CanvasProcessor::setFullScreen(bool fullscreen) {
+    if (canvasWidget_) {
+        return canvasWidget_->getCanvas()->setFullScreen(fullscreen);
     }
 }
 

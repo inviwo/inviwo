@@ -633,7 +633,7 @@ void OpenGLCapabilities::rebuildGLSLHeader() {
 void OpenGLCapabilities::rebuildGLSLVertexDefines() {
     currentGlobalGLSLVertexDefines_ = "";
 
-    // layout locations for GLSL >= 3.30 are handled now via glBindAttributeLocation
+    // layout locations for GLSL >= 3.30 are handled now via glBindAttribLocation
     currentGlobalGLSLVertexDefines_ += "in vec4 in_Vertex;\n";
     currentGlobalGLSLVertexDefines_ += "in vec3 in_Normal;\n";
     currentGlobalGLSLVertexDefines_ += "in vec4 in_Color;\n";

@@ -34,29 +34,34 @@ import math
 import numpy as np
 
 def rotation_matrix(axis, theta):
-    """
-    Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta radians.
-    """
-    axis = np.asarray(axis)
-    theta = np.asarray(theta)
-    axis = axis/math.sqrt(np.dot(axis, axis))
-    a = math.cos(theta/2.0)
-    b, c, d = -axis*math.sin(theta/2.0)
-    aa, bb, cc, dd = a*a, b*b, c*c, d*d
-    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
-    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
-                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
-                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+	"""
+	Return the rotation matrix associated with counterclockwise rotation about
+	the given axis by theta radians.
+	"""
+	axis = np.asarray(axis)
+	theta = np.asarray(theta)
+	axis = axis/math.sqrt(np.dot(axis, axis))
+	a = math.cos(theta/2.0)
+	b, c, d = -axis*math.sin(theta/2.0)
+	aa, bb, cc, dd = a*a, b*b, c*c, d*d
+	bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+	return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+					 [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+					 [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
 
 
 class Camera:
 	def __init__(self, id):
 		self.id = id
 		(self.lookfrom, self.lookto, self.lookup) = inviwo.getPropertyValue(self.id)
+		(self.oldlookfrom, self.oldlookto, self.oldlookup) = inviwo.getPropertyValue(self.id)
 
 	def set(self):
 		inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
+		inviwoqt.update()
+
+	def restoreState(self):
+		inviwo.setPropertyValue(self.id, (self.oldlookfrom, self.oldlookto, self.oldlookup))
 		inviwoqt.update()
 
 	def rotate(self, delta = math.pi/30, steps = 60, axis = None):

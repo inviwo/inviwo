@@ -70,11 +70,17 @@ void activateAndClearTarget(Image& image, ImageType type) {
 }
 
 void activateTargetAndCopySource(Image& outImage, ImageInport& inport, ImageType type) {
-     auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
+    auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
 
-    auto inImage = inport.getData();
-    auto inImageGL = inImage->getRepresentation<ImageGL>();
-    inImageGL->copyRepresentationsTo(outImageGL);
+    if (auto inImage = inport.getData()) {
+        if (auto inImageGL = inImage->getRepresentation<ImageGL>()) {
+            inImageGL->copyRepresentationsTo(outImageGL);
+        }
+    } else {
+        LogWarnCustom("TextureUtils", "Trying to copy empty image inport: \""
+                                          << inport.getIdentifier() << "\" in processor: \""
+                                          << inport.getProcessor()->getIdentifier() << "\"");
+    }
     outImageGL->activateBuffer(type);
 }
 
@@ -379,7 +385,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
     const Texture& texture, const std::string samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);
-    shader.setUniform(samplerID, unit.getUnitNumber());
+    shader.setUniform(samplerID, unit);
     cont.push_back(std::move(unit));
 }
 
@@ -394,7 +400,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
     const TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
-    shader.setUniform(tf.getIdentifier(), unit.getUnitNumber());
+    shader.setUniform(tf.getIdentifier(), unit);
     cont.push_back(std::move(unit));
 }
 
@@ -417,7 +423,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             TextureUnit unit;
             bindColorTexture(image, unit);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit.getUnitNumber());
+            shader.setUniform(id + "Color", unit);
             cont.push_back(std::move(unit));
             break;
         }
@@ -425,8 +431,8 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             TextureUnit unit1, unit2;
             bindTextures(image, unit1, unit2);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1.getUnitNumber());
-            shader.setUniform(id + "Depth", unit2.getUnitNumber());
+            shader.setUniform(id + "Color", unit1);
+            shader.setUniform(id + "Depth", unit2);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             break;
@@ -436,8 +442,8 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             bindColorTexture(image, unit1);
             bindPickingTexture(image, unit2);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1.getUnitNumber());
-            shader.setUniform(id + "Picking", unit2.getUnitNumber());
+            shader.setUniform(id + "Color", unit1);
+            shader.setUniform(id + "Picking", unit2);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             break;
@@ -446,9 +452,9 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             TextureUnit unit1, unit2, unit3;
             bindTextures(image, unit1, unit2, unit3);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1.getUnitNumber());
-            shader.setUniform(id + "Depth", unit2.getUnitNumber());
-            shader.setUniform(id + "Picking", unit3.getUnitNumber());
+            shader.setUniform(id + "Color", unit1);
+            shader.setUniform(id + "Depth", unit2);
+            shader.setUniform(id + "Picking", unit3);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             cont.push_back(std::move(unit3));

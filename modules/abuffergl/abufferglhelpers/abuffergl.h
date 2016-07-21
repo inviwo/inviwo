@@ -76,9 +76,9 @@ public:
 
     ABufferGLCompositeProperty(const ABufferGLCompositeProperty& rhs);
     ABufferGLCompositeProperty& operator=(const ABufferGLCompositeProperty& that);
-    virtual ABufferGLCompositeProperty* clone() const;
+    virtual ABufferGLCompositeProperty* clone() const override;
     virtual ~ABufferGLCompositeProperty();
-    virtual std::string getClassIdentifierForWidget() const;
+    virtual std::string getClassIdentifierForWidget() const override;
 
     BoolProperty abufferEnable_;
     IntProperty abufferPageSize_;
@@ -98,6 +98,9 @@ public:
     public:
         ABufferGLInteractionHandler(Inviwo_ABufferGL4* parent);
         ~ABufferGLInteractionHandler(){};
+
+        virtual std::string getClassIdentifier() const override; 
+
         void invokeEvent(Event* event);
 
     private:

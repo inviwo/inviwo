@@ -35,6 +35,7 @@
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
+#include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
@@ -52,6 +53,8 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<StreamLines>();
     registerProcessor<PathLines>();
     registerProcessor<StreamRibbons>();
+
+    registerProcessor<IntegralLineVectorToMesh>();
 
     registerPort < SeedPointsOutport>("SeedPointsOutport");
     registerPort < SeedPointsInport>("SeedPointsInport");
@@ -73,10 +76,6 @@ bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, u
     bool res = false;
     for (child = child.begin(node); child != child.end(); child++) {
         res |= traverseNodes(child.Get(), update);
-    }
-
-    if (res) {
-        node->GetDocument()->SaveFile("D:/temp/temp.ivw");
     }
 
     return res;

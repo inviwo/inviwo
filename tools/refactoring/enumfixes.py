@@ -6,15 +6,15 @@ colorama.init()
 
 import refactoring # Note: refactoring.py need to be in the current working directory
 
-#paths = [
-#	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-dev", 
-#	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-research"
-#]
-
 paths = [
-	"C:/Users/petst55/Work/Inviwo/Inviwo-dev",
-	"C:/Users/petst55/Work/Inviwo/Inviwo-research"
+	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-dev", 
+	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-research"
 ]
+
+#paths = [
+#	"C:/Users/petst55/Work/Inviwo/Inviwo-dev",
+#	"C:/Users/petst55/Work/Inviwo/Inviwo-research"
+#]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"];
 
@@ -255,6 +255,44 @@ propertySerializationModeReplacements  = {
 	"PropertySerializationMode::NONE" : "PropertySerializationMode::None"
 	}
 
+eventReplacements = {
+    "MouseEvent::MOUSE_BUTTON_NONE" : "MouseButton::None",
+    "MouseEvent::MOUSE_BUTTON_LEFT" : "MouseButton::Left",
+    "MouseEvent::MOUSE_BUTTON_MIDDLE" : "MouseButton::Middle",
+    "MouseEvent::MOUSE_BUTTON_RIGHT" : "MouseButton::Right",
+
+    "MouseEvent::MOUSE_STATE_NONE" : "MouseState::None",
+    "MouseEvent::MOUSE_STATE_MOVE" : "MouseState::Move",
+    "MouseEvent::MOUSE_STATE_PRESS" : "MouseState::Press",
+    "MouseEvent::MOUSE_STATE_RELEASE" : "MouseState::Release",
+    "MouseEvent::MOUSE_STATE_DOUBLE_CLICK" : "MouseState::DoubleClick",
+
+    "KeyboardEvent::KEY_STATE_PRESS" : "KeyState::Press",
+    "KeyboardEvent::KEY_STATE_RELEASE" : "KeyState::Release",
+
+    "TouchPoint::TOUCH_STATE_NONE" : "TouchState::None",
+    "TouchPoint::TOUCH_STATE_STARTED" : "TouchState::Started",
+    "TouchPoint::TOUCH_STATE_UPDATED" : "TouchState::Updated",
+    "TouchPoint::TOUCH_STATE_STATIONARY" : "TouchState::Stationary",
+   	"TouchPoint::TOUCH_STATE_ENDED" : "TouchState::Finished",
+
+    "GestureEvent::PAN" : "GestureType::Pan", 
+    "GestureEvent::PINCH" : "GestureType::Pinch",
+    "GestureEvent::SWIPE" : "GestureType::Swipe",
+
+    "GestureEvent::GESTURE_STATE_NONE" : "GestureState::None",
+    "GestureEvent::GESTURE_STATE_STARTED" : "GestureState::Started",
+    "GestureEvent::GESTURE_STATE_UPDATED" : "GestureState::Updated",
+    "GestureEvent::GESTURE_STATE_ENDED" : "GestureState::Finished",
+    "GestureEvent::GESTURE_STATE_CANCELED" : "GestureState::Canceled",
+
+    "InteractionEvent::MODIFIER_NONE" : "KeyModifier::None",
+    "InteractionEvent::MODIFIER_ALT" : "KeyModifier::Alt",
+    "InteractionEvent::MODIFIER_CTRL" : "KeyModifier::Control",
+    "InteractionEvent::MODIFIER_SHIFT" : "KeyModifier::Shift"
+}
+
+
 print("Looking in " + str(len(files)) + " files")
 
 # order matters here...
@@ -297,7 +335,10 @@ print("Looking in " + str(len(files)) + " files")
 #for k,v in geometryTypeReplacements.items():
 #	replace(r"\b"+k+r"\b", v)
 
-for k,v in propertySerializationModeReplacements.items():
+#for k,v in propertySerializationModeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
+
+for k,v in eventReplacements.items():
 	replace(r"\b"+k+r"\b", v)
 
 

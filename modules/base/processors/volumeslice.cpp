@@ -29,7 +29,7 @@
 
 #include "volumeslice.h"
 #include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 
 namespace inviwo {
@@ -51,23 +51,23 @@ VolumeSlice::VolumeSlice()
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, InvalidationLevel::Valid)
-    , mouseShiftSlice_(
-          "mouseShiftSlice", "Mouse Slice Shift",
-          new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
-                         MouseEvent::MOUSE_STATE_WHEEL, MouseEvent::MOUSE_WHEEL_ANY),
-          new Action(this, &VolumeSlice::eventShiftSlice))
-    , stepSliceUp_(
-          "stepSliceUp", "Key Slice Up",
-          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSlice::eventStepSliceUp))
-    , stepSliceDown_(
-          "stepSliceDown", "Key Slice Down",
-          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSlice::eventStepSliceDown))
-    , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
-                         new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-                         new Action(this, &VolumeSlice::eventGestureShiftSlice)) {
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
+                               InvalidationLevel::Valid)
+    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
+                       [this](Event* e) { eventShiftSlice(e); },
+                       util::make_unique<WheelEventMatcher>())
+
+    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+                   IvwKey::W, KeyState::Press)
+
+    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
+                     IvwKey::S, KeyState::Press)
+
+    , gestureShiftSlice_(
+          "gestureShiftSlice", "Gesture Slice Shift",
+          [this](Event* e) { eventGestureShiftSlice(e); },
+          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3)) {
+        
     addPort(inport_);
     addPort(outport_);
     outport_.setHandleResizeEvents(false);
@@ -93,7 +93,7 @@ VolumeSlice::VolumeSlice()
     addProperty(gestureShiftSlice_);
 }
 
-VolumeSlice::~VolumeSlice() {}
+VolumeSlice::~VolumeSlice() = default;
 
 void VolumeSlice::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
@@ -142,8 +142,8 @@ void VolumeSlice::process() {
 }
 
 void VolumeSlice::eventShiftSlice(Event* event) {
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    int steps = mouseEvent->wheelSteps();
+    auto wheelEvent = static_cast<WheelEvent*>(event);
+    int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
 }
 

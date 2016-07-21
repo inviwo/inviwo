@@ -41,19 +41,10 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VectorElementSelectorProcessor, Vector Element Selector Processor}
- * ![](org.inviwo.VectorElementSelectorProcessor.png?classIdentifier=org.inviwo.VectorElementSelectorProcessor)
- *
- * Template for processors that want to select an element from an input vector and set it as output.
+/**
+ * Template for processors that want to select an element from an
+ * input vector and set it as output.
  * @see VolumeSequenceElementSelectorProcessor for an example
- * ### Inports
- *   * __inport__ ... Vector of data
- * ### Outports
- *   * __outport__ ... Selected element from input vector
- *
- * ### Properties
- *   * __Time Step__ ...
- *
  */
 template <typename T, typename OutportType = DataOutport<T>>
 class VectorElementSelectorProcessor : public Processor {

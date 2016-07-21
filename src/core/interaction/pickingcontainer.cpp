@@ -32,96 +32,80 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 
-PickingContainer::PickingContainer()
-    : src_(nullptr)
-    , mousePickObj_(nullptr)
-    , prevMouseCoord_(uvec2(0, 0))
-    , mousePickingOngoing_(false)
-    , mouseIsDown_(false)
-    , touchPickingOn_(false)
-{}
+PickingContainer::PickingContainer() : src_(nullptr), touchPickingOn_(false) {}
 
-PickingContainer::~PickingContainer() {}
+PickingContainer::~PickingContainer() = default;
 
-bool PickingContainer::pickingEnabled() {
-    return PickingManager::getPtr()->pickingEnabled();
+bool PickingContainer::pickingEnabled() { return PickingManager::getPtr()->pickingEnabled(); }
+
+void PickingContainer::propagateEvent(Event* event) {
+    switch (event->hash()) {
+        case MouseEvent::chash(): {
+            auto me = static_cast<MouseEvent*>(event);
+            performMousePick(me);
+            break;
+        }
+        case WheelEvent::chash(): {
+            auto we = static_cast<WheelEvent*>(event);
+            performWheelPick(we);
+            break;
+        }
+        case TouchEvent::chash(): {
+            auto te = static_cast<TouchEvent*>(event);
+            performTouchPick(te);
+            break;
+        }
+    }
 }
 
-bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled() || e->button() == MouseEvent::MOUSE_BUTTON_NONE)
-        return false;
+void PickingContainer::performMousePick(MouseEvent* e) {
+    if (touchPickingOn_) return;
 
-    if (touchPickingOn_)
-        return true;
+    const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
 
-    if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
-        mouseIsDown_ = false;
-        if (mousePickingOngoing_) {
-            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
-            mousePickObj_->setPickingMouseEvent(*e);
-            prevMouseCoord_ = coord;
-            mousePickObj_->picked();
-            mousePickingOngoing_ = false;
-            return true;
-        }
-        else {
-            mousePickObj_ = nullptr;
-            return false;
-        }
+    if (!mousePressed_ && e->state() == MouseState::Press) {
+        mousePressed_ = true;
+        pressedPickObj_ = findPickingObject(coord);
+    } else if (mousePressed_ && e->state() == MouseState::Release) {
+        mousePressed_ = false;
+        pressedPickObj_ = nullptr;
     }
-    else if (!mouseIsDown_ || e->state() == MouseEvent::MOUSE_STATE_PRESS){
-        mouseIsDown_ = true;
-
-        uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-        prevMouseCoord_ = coord;
-
-        mousePickObj_ = findPickingObject(coord);
-
-        if (mousePickObj_) {
-            mousePickingOngoing_ = true;
-            mousePickObj_->setPickingPosition(normalizedCoordinates(coord));
-            mousePickObj_->setPickingDepth(e->depth());
-            mousePickObj_->setPickingMouseEvent(*e);
-
-            mousePickObj_->setPickingMove(vec2(0.f, 0.f));
-            mousePickObj_->picked();
-            return true;
-        }
-        else{
-            mousePickingOngoing_ = false;
-            return false;
-        }
+    
+    auto pickObj = mousePressed_ ? pressedPickObj_ : findPickingObject(coord);
+    
+    if (lastPickObj_ && pickObj != lastPickObj_) {
+        lastPickObj_->picked(e, PickingState::Finished);
     }
-    else if (e->state() == MouseEvent::MOUSE_STATE_MOVE){
-        if (mousePickingOngoing_){
-            uvec2 coord = clampToScreenCoords(e->pos(), e->canvasSize());
-            mousePickObj_->setPickingMove(normalizedMovement(prevMouseCoord_, coord));
-            mousePickObj_->setPickingMouseEvent(*e);
-            prevMouseCoord_ = coord;
-            mousePickObj_->picked();
-            return true;
-        }
-        else
-            return false;
+    if (pickObj) {
+        pickObj->picked(e, pickObj == lastPickObj_ ? PickingState::Updated : PickingState::Started);
     }
-
-    return false;
+    lastPickObj_ = pickObj;
 }
 
-bool PickingContainer::performTouchPick(TouchEvent* e) {
-    if (!pickingEnabled())
-        return false;
+void PickingContainer::performWheelPick(WheelEvent* e) {
+    const auto coord = clampToScreenCoords(e->pos(), e->canvasSize());
+    auto pickObj = mousePressed_ ? pressedPickObj_ : findPickingObject(coord);
+    if (lastPickObj_ && pickObj != lastPickObj_) {
+        lastPickObj_->picked(e, PickingState::Finished);
+    }
+    if (pickObj) {
+        pickObj->picked(e, pickObj == lastPickObj_ ? PickingState::Updated : PickingState::Started);
+    }
+    lastPickObj_ = pickObj;
+}
 
+void PickingContainer::performTouchPick(TouchEvent* e) {
+    /*
     std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
 
     // Clear the picked touch point map
     pickedTouchPoints_.clear();
 
-    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchPoint::TOUCH_STATE_ENDED)
+    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchState::Finished)
         touchPickingOn_ = true;
     else
         touchPickingOn_ = false;
@@ -132,7 +116,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     auto touchPoint = touchPoints.begin();
     while (touchPoint != touchPoints.end()) {
         bool isAssociated = false;
-        if (touchPoint->state() == TouchPoint::TOUCH_STATE_STARTED) {
+        if (touchPoint->state() == TouchState::Started) {
             // Find out if new touch point is touching inside a picking object
             uvec2 coord = clampToScreenCoords(touchPoint->getPos(), e->canvasSize());
             PickingObject* pickObj = findPickingObject(coord);
@@ -154,7 +138,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
                 isAssociated = true;
             }
         }
-        else if (touchPoint->state() == TouchPoint::TOUCH_STATE_ENDED) {
+        else if (touchPoint->state() == TouchState::Finished) {
             // Erase touch point from TouchIDPickingMap
             size_t numberOfErasedElements = touchPickObjs_.erase(touchPoint->getId());
             isAssociated = (numberOfErasedElements > 0);
@@ -189,23 +173,23 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         // Treat one touch point the same as mouse event, for now
         if (pickedTouchPoints_it->second.size() == 1){
             uvec2 coord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
-            if (pickedTouchPoints_it->second[0].state() & TouchPoint::TOUCH_STATE_STARTED){
-                pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
-                pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
-                pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));
+            if (pickedTouchPoints_it->second[0].state() & TouchState::Started){
+                pickedTouchPoints_it->first->setPosition(normalizedCoordinates(coord));
+                pickedTouchPoints_it->first->setDepth(pickedTouchPoints_it->second[0].getDepth());
+                pickedTouchPoints_it->first->setDelta(vec2(0.f, 0.f));
             }
             else{
                 uvec2 prevCoord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
-                pickedTouchPoints_it->first->setPickingMove(normalizedMovement(prevCoord, coord));
+                pickedTouchPoints_it->first->setDelta(normalizedMovement(prevCoord, coord));
             }
             // One touch point is currently treated as mouse event as well...
             // So prepare for that
             prevMouseCoord_ = coord;
             mousePickObj_ = pickedTouchPoints_it->first;
-            mousePickingOngoing_ = true;
+           // mousePickingOngoing_ = true;
         }
 
-        pickedTouchPoints_it->first->setPickingTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
+        pickedTouchPoints_it->first->setTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
     }
 
     // One touch point is currently treated as mouse event as well...
@@ -220,6 +204,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         touchPickObjs_it->second->picked();
 
     return !touchPickObjs_.empty();
+    */
 }
 
 void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {
@@ -228,35 +213,23 @@ void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {
 
 PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
     if (pickingEnabled() && src_) {
-        const Layer* pickingLayer = src_->getPickingLayer();
-
-        if (pickingLayer) {
-            const LayerRAM* pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
-            dvec4 value = pickingLayerRAM->getAsNormalizedDVec4(coord);
-            dvec3 pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
-            uvec3 color(pickedColor*255.0);
+        if (auto pickingLayer = src_->getPickingLayer()) {
+            const auto pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
+            const auto value = pickingLayerRAM->getAsNormalizedDVec4(coord);
+            const auto pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
+            const uvec3 color(pickedColor*255.0);
             return PickingManager::getPtr()->getPickingObjectFromColor(color);
         }
     }
-
     return nullptr;
 }
 
-vec2 PickingContainer::normalizedMovement(const uvec2& previous, const uvec2& current) const {
-    return normalizedCoordinates(current) - normalizedCoordinates(previous);
-}
+uvec2 PickingContainer::clampToScreenCoords(dvec2 pos, ivec2 dim) {
+    pos.x = std::max(pos.x - 1.0, 0.0);
+    pos.x = std::min(pos.x, dim.x - 1.0);
 
-vec2 PickingContainer::normalizedCoordinates(const uvec2& coord) const {
-    return vec2(coord) / vec2(src_->getDimensions());
-}
-
-uvec2 PickingContainer::clampToScreenCoords(ivec2 mpos, ivec2 dim) {
-    ivec2 pos = mpos;
-    pos.x = std::max(pos.x - 1, 0);
-    pos.x = std::min(pos.x, dim.x - 1);
-
-    pos.y = std::max(dim.y - pos.y - 1, 0);
-    pos.y = std::min(pos.y, dim.y - 1);
+    pos.y = std::max(pos.y - 1.0, 0.0);
+    pos.y = std::min(pos.y, dim.y - 1.0);
 
     return uvec2(pos);
 }

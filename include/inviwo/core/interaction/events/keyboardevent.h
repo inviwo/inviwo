@@ -32,46 +32,36 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
 class IVW_CORE_API KeyboardEvent : public InteractionEvent {
 public:
-    enum KeyState { 
-        KEY_STATE_NONE = 1 << 0,
-        KEY_STATE_PRESS = 1 << 1,
-        KEY_STATE_RELEASE = 1 << 2,
-        KEY_STATE_ANY = KEY_STATE_PRESS | KEY_STATE_RELEASE,
-        KEY_STATE_ANY_AND_NONE = KEY_STATE_NONE | KEY_STATE_ANY
-    };
+    KeyboardEvent(IvwKey key = IvwKey::Unknown,
+                  KeyState state = KeyState::Press,
+                  KeyModifiers modifiers = KeyModifiers(flags::empty));
 
-    KeyboardEvent(int key = 0,
-                  int modifiers = InteractionEvent::MODIFIER_NONE,
-                  int state = KeyboardEvent::KEY_STATE_PRESS);
+    KeyboardEvent(const KeyboardEvent& rhs) = default;
+    KeyboardEvent& operator=(const KeyboardEvent& that) = default;
+    virtual KeyboardEvent* clone() const override;
+    virtual ~KeyboardEvent() = default;
 
-    KeyboardEvent(const KeyboardEvent& rhs);
-    KeyboardEvent& operator=(const KeyboardEvent& that);
-    virtual KeyboardEvent* clone() const;
-    virtual ~KeyboardEvent();
-
-    int state() const;
-    void setState(int state);
+    KeyState state() const;
+    void setState(KeyState state);
   
-    virtual int button() const;
-    void setButton(int button);
+    virtual IvwKey key() const;
+    void setKey(IvwKey key);
 
-    virtual std::string getClassIdentifier() const;
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-
-    virtual bool matching(const Event* aEvent) const;
-    virtual bool matching(const KeyboardEvent* aEvent) const;
-    virtual bool equalSelectors(const Event* aEvent) const;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.KeyboardEvent");
+    }
 
 private:
-    // Event selectors:
-    int state_;
-    int key_;
+    KeyState state_;
+    IvwKey key_;
 };
 
 }  // namespace

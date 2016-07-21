@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/callback.h>
 
 namespace inviwo {
 
@@ -49,9 +50,9 @@ public:
     virtual ~PickingManager();
 
     template <typename T>
-    const PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
+    PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
                                                  size_t size = 1);
-    const PickingObject* registerPickingCallback(std::function<void(const PickingObject*)> callback,
+    PickingObject* registerPickingCallback(std::function<void(const PickingObject*)> callback,
                                                  size_t size = 1);
 
     bool unregisterPickingObject(const PickingObject*);
@@ -69,12 +70,14 @@ private:
     std::vector<std::unique_ptr<PickingObject>> pickingObjects_;
     // unusedObjects_ should be sorted on capacity.
     std::vector<PickingObject*> unusedObjects_;
+    
+    bool enabled_ = false;
+    const BaseCallBack* enableCallback_ = nullptr;
 };
 
 template <typename T>
-const PickingObject* PickingManager::registerPickingCallback(T* o,
-                                                             void (T::*m)(const PickingObject*),
-                                                             size_t size) {
+PickingObject* PickingManager::registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
+                                                       size_t size) {
     using namespace std::placeholders;
     return registerPickingCallback(std::bind(m, o, _1), size);
 }

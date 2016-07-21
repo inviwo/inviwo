@@ -29,28 +29,47 @@
 
 #include <inviwo/core/interaction/events/resizeevent.h>
 
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/imageport.h>
+
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize)
+ResizeEvent::ResizeEvent(size2_t canvasSize)
     : Event(), size_(canvasSize), previousSize_(canvasSize) {}
 
-ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
+ResizeEvent::ResizeEvent(size2_t canvasSize, size2_t previousSize)
     : Event(), size_(canvasSize), previousSize_(previousSize) {}
-
-ResizeEvent::ResizeEvent(const ResizeEvent& rhs)
-    : Event(rhs), size_(rhs.size_), previousSize_(rhs.previousSize_) {}
-
-ResizeEvent& ResizeEvent::operator=(const ResizeEvent& that) {
-    if (this != &that) {
-        Event::operator=(that);
-        size_ = that.size_;
-        previousSize_ = that.previousSize_;
-    }
-    return *this;
-}
 
 ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 
-ResizeEvent::~ResizeEvent() {}
+bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
+    // Only propagate to image ports in the same port group.
+    if (processor->getPortGroup(inport) == processor->getPortGroup(source)) {
+        if (dynamic_cast<ImagePortBase*>(inport)) return true;
+    }
+    return false;
+}
+
+size2_t ResizeEvent::size() const {
+    return size_;
+}
+
+size2_t ResizeEvent::previousSize() const {
+    return previousSize_;
+}
+
+void ResizeEvent::setSize(size2_t csize) {
+    size_ = csize;
+}
+
+void ResizeEvent::setPreviousSize(size2_t previousSize) {
+    previousSize_ = previousSize;
+}
+
+uint64_t ResizeEvent::hash() const {
+    return chash();
+}
 
 }  // namespace

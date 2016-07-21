@@ -48,24 +48,20 @@ const ProcessorInfo DrawLines::getProcessorInfo() const {
 }
 
 DrawLines::DrawLines()
-    : CompositeProcessorGL()
+    : Processor()
     , inport_("inport")
     , outport_("outport")
     , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
     , lineColor_("lineColor", "Line Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Lines")
-    , mouseDraw_("mouseDraw", "Draw Line",
-                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-                                MouseEvent::MOUSE_STATE_ANY),
-                 new Action(this, &DrawLines::eventDraw))
-    , keyEnableDraw_(
-          "keyEnableDraw", "Enable Draw",
-          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-          new Action(this, &DrawLines::eventEnableDraw))
+    , mouseDraw_("mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+                 MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
+                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
+
     , lines_(DrawType::Lines, ConnectivityType::Strip)
     , lineDrawer_(&lines_)
     , lineShader_("img_color.frag") {
-
     addPort(inport_);
     addPort(outport_);
 
@@ -91,7 +87,7 @@ DrawLines::DrawLines()
         lineSize_.setVisible(false);
 }
 
-DrawLines::~DrawLines() {}
+DrawLines::~DrawLines() = default;
 
 void DrawLines::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
@@ -106,7 +102,7 @@ void DrawLines::process() {
     }
     utilgl::deactivateCurrentTarget();
 
-    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
+    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawLines::addPoint(vec2 p) {
@@ -126,18 +122,16 @@ void DrawLines::eventDraw(Event* event){
     if (!drawModeEnabled_)
         return;
 
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 line = mouseEvent->posNormalized();
-    line *= 2.f;
-    line -= 1.f;
-    line.y = -line.y;
-    addPoint(line);
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    auto line = mouseEvent->ndc();
+
+    addPoint(vec2(line.x, line.y));
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void DrawLines::eventEnableDraw(Event* event){
-    KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
-    drawModeEnabled_ = (keyEvent->state() != KeyboardEvent::KEY_STATE_RELEASE);
+    auto keyEvent = static_cast<KeyboardEvent*>(event);
+    drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
 }  // namespace

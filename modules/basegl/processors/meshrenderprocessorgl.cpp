@@ -47,7 +47,7 @@ namespace inviwo {
 const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "org.inviwo.GeometryRenderGL",  // Class identifier
     "Mesh Renderer",                // Display name
-    "Geometry Rendering",           // Category
+    "Mesh Rendering",           // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };
@@ -74,7 +74,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , enableDepthTest_("enableDepthTest_","Enable Depth Test" , true)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , layers_("layers", "Layers")
+    , layers_("layers", "Output Layers")
     , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
     , texCoordLayer_("texCoordLayer", "Texture Coordinates", false,
                      InvalidationLevel::InvalidResources)
@@ -240,7 +240,7 @@ void MeshRenderProcessorGL::process() {
     utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getGeometry()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
         drawer.second->draw();
     }
 
@@ -258,7 +258,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
         vec3 minPos(std::numeric_limits<float>::max());
         vec3 maxPos(std::numeric_limits<float>::lowest());
         for (auto buff : mesh->getBuffers()) {
-            if (buff.first == BufferType::PositionAttrib) {
+            if (buff.first.type == BufferType::PositionAttrib) {
                 const Vec3BufferRAM* posbuff =
                     dynamic_cast<const Vec3BufferRAM*>(buff.second->getRepresentation<BufferRAM>());
 

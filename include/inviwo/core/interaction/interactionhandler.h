@@ -39,10 +39,10 @@ namespace inviwo {
 class IVW_CORE_API InteractionHandler : public EventListener, public Serializable {
 
 public:
-    InteractionHandler();
-    virtual ~InteractionHandler();
+    InteractionHandler() = default;
+    virtual ~InteractionHandler() = default;
 
-    virtual std::string getClassIdentifier() const { return "undefined"; }
+    virtual std::string getClassIdentifier() const = 0;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);

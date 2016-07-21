@@ -32,104 +32,47 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/mouseinteractionevent.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
-class IVW_CORE_API MouseEvent : public InteractionEvent {
+class IVW_CORE_API MouseEvent : public MouseInteractionEvent {
 public:
-    enum MouseButton {
-        MOUSE_BUTTON_NONE = 1 << 0,
-        MOUSE_BUTTON_LEFT = 1 << 1,
-        MOUSE_BUTTON_MIDDLE = 1 << 2,
-        MOUSE_BUTTON_RIGHT = 1 << 3,
-        MOUSE_BUTTON_ANY = MOUSE_BUTTON_LEFT | MOUSE_BUTTON_MIDDLE | MOUSE_BUTTON_RIGHT,
-        MOUSE_BUTTON_ANY_AND_NONE = MOUSE_BUTTON_NONE | MOUSE_BUTTON_ANY
-    };
+    MouseEvent(MouseButton button = MouseButton::Left,
+               MouseState state = MouseState::Press,
+               MouseButtons buttonState = MouseButtons(flags::empty),
+               KeyModifiers modifiers = KeyModifiers(flags::empty), 
+               dvec2 normalizedPosition = dvec2(0),
+               uvec2 canvasSize = uvec2(0),
+               double depth = 1.0);
 
-    enum MouseState {
-        MOUSE_STATE_NONE = 1 << 0,
-        MOUSE_STATE_MOVE = 1 << 1,
-        MOUSE_STATE_PRESS = 1 << 2,
-        MOUSE_STATE_RELEASE = 1 << 3,
-        MOUSE_STATE_WHEEL = 1 << 4,
-        MOUSE_STATE_DOUBLE_CLICK = 1 << 5 , 
-        MOUSE_STATE_ANY = MOUSE_STATE_MOVE | MOUSE_STATE_PRESS | MOUSE_STATE_RELEASE | MOUSE_STATE_WHEEL | MOUSE_STATE_DOUBLE_CLICK,
-        MOUSE_STATE_ANY_AND_NONE = MOUSE_STATE_NONE | MOUSE_STATE_ANY
-    };
+    MouseEvent(const MouseEvent& rhs) = default;
+    MouseEvent& operator=(const MouseEvent& that) = default;
+    virtual MouseEvent* clone() const override;
+    virtual ~MouseEvent() = default;
 
-    enum MouseWheelOrientation {
-        MOUSE_WHEEL_NONE = 1 << 0,
-        MOUSE_WHEEL_HORIZONTAL = 1 << 1,
-        MOUSE_WHEEL_VERTICAL = 1 << 2,
-        MOUSE_WHEEL_ANY = MOUSE_WHEEL_HORIZONTAL | MOUSE_WHEEL_VERTICAL,
-        MOUSE_WHEEL_ANY_AND_NONE = MOUSE_WHEEL_NONE | MOUSE_WHEEL_ANY
-    };
-
-    MouseEvent();
-
-    // Mouse and wheel event
-    MouseEvent(ivec2 position, int delta, int button, int state = MOUSE_STATE_NONE,
-               int orientation = MOUSE_WHEEL_NONE, int modifiers = InteractionEvent::MODIFIER_NONE,
-               uvec2 canvasSize = uvec2(0), double depth = 1.0);
-
-    // Mouse event
-    MouseEvent(ivec2 position, int button, int state = MOUSE_STATE_NONE,
-               int modifiers = InteractionEvent::MODIFIER_NONE, 
-               uvec2 canvasSize = uvec2(0), double depth = 1.0);
-
-    // Selector
-    MouseEvent(int button, int modifiers = InteractionEvent::MODIFIER_NONE,
-               int state = MOUSE_STATE_NONE, int orientation = MOUSE_WHEEL_NONE);
-
-    MouseEvent(const MouseEvent& rhs);
-    MouseEvent& operator=(const MouseEvent& that);
-    virtual MouseEvent* clone() const;
-
-    virtual ~MouseEvent();
-
-    inline ivec2 pos() const { return position_; }
-    inline vec2 posNormalized() const { return vec2(vec2(position_) / vec2(canvasSize_)); }
-    inline int wheelSteps() const { return wheelSteps_; }
-    inline unsigned int x() const { return position_.x; }
-    inline unsigned int y() const { return position_.y; }
-    inline int state() const { return state_; }
-    inline int wheelOrientation() const { return wheelOrientation_; }
-    inline uvec2 canvasSize() const { return canvasSize_; }
     /**
-    * Retrieve depth value in normalized device coordinates at mouse position.
-    * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
-    * Will be 1 if no depth value is available.
-    */
-    inline double depth() const { return depth_; }
-    inline int button() const { return button_; }
-    inline void setButton(int button) { button_ = button; }
-    std::string buttonName() const;
+     *	The button responsible for the current event.
+     */
+    MouseButton button() const;
+    void setButton(MouseButton button);
 
-    void modify(ivec2, uvec2);
+    /**
+     *	The state of the button that generated the event.
+     */
+    MouseState state() const;
+    void setState(MouseState state);
 
-    virtual std::string getClassIdentifier() const;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.MouseEvent");
+    }
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-
-    virtual bool matching(const Event* aEvent) const;
-    virtual bool matching(const MouseEvent* aEvent) const;
-    virtual bool equalSelectors(const Event* aEvent) const;
-    
 private:
-    // Event selectors:
-    int button_;
-    int state_;
-    int wheelOrientation_;
-
-    // Event state:
-    ivec2 position_;
-    int wheelSteps_;
-    uvec2 canvasSize_;
-    double depth_; ///< Depth in normalized device coordinates [-1 1].
-
-    static const std::string buttonNames_[4];
+    MouseButton button_;
+    MouseState state_;
 };
 
 }  // namespace

@@ -31,9 +31,6 @@
 
 namespace inviwo {
 
-InteractionHandler::InteractionHandler() : EventListener() {}
-InteractionHandler::~InteractionHandler() {}
-
 void InteractionHandler::serialize(Serializer& s) const {}
 
 void InteractionHandler::deserialize(Deserializer& d) {}

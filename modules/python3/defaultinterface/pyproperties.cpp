@@ -32,45 +32,43 @@
 #include "pyproperties.h"
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <modules/python3/pythoninterface/pythonparameterparser.h>
+#include <modules/python3/pythoninterface/pyvalueparser.h>
 
 namespace inviwo {
 
+static std::pair<Property*, PyObject*> getProperty(PyObject* args, std::string methodName) {
+    static PythonParameterParser tester;
 
-    static std::pair<Property*,PyObject *> getProperty(PyObject* args, std::string methodName) {
-        static PythonParameterParser tester;
-
-         
-        std::string path;
-        PyObject* parameter;
-        if (tester.parse<std::string, PyObject*>(args, path, parameter) == -1) {
-            return std::make_pair<Property*, PyObject *>(nullptr, nullptr);
-        }
-        Property* theProperty =
-            InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
-
-        if (!theProperty) {
-            std::string msg = std::string(methodName + "() no property with path: ") + path;
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return std::make_pair<Property*, PyObject *>(nullptr, nullptr);
-        }
-        return std::make_pair(theProperty, parameter);
+    std::string path;
+    PyObject* parameter;
+    if (tester.parse<std::string, PyObject*>(args, path, parameter) == -1) {
+        return std::make_pair<Property*, PyObject*>(nullptr, nullptr);
     }
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
+    if (!theProperty) {
+        std::string msg = std::string(methodName + "() no property with path: ") + path;
+        PyErr_SetString(PyExc_TypeError, msg.c_str());
+        return std::make_pair<Property*, PyObject*>(nullptr, nullptr);
+    }
+    return std::make_pair(theProperty, parameter);
+}
 
 PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
     auto propertyAndParameter = getProperty(args, "setPropertyValue");
@@ -185,7 +183,6 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
 
-     
     std::string path;
     if (tester.parse<std::string>(args, path) == -1) {
         return nullptr;
@@ -218,7 +215,6 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
 
-     
     std::string path;
     if (tester.parse<std::string>(args, path) == -1) {
         return nullptr;
@@ -235,6 +231,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMAX(FloatProperty, theProperty);
     CAST_N_GETMAX(DoubleProperty, theProperty);
     CAST_N_GETMAX(IntProperty, theProperty);
+    CAST_N_GETMAX(IntSizeTProperty, theProperty);
     CAST_N_GETMAX(IntVec2Property, theProperty);
     CAST_N_GETMAX(IntVec3Property, theProperty);
     CAST_N_GETMAX(IntVec4Property, theProperty);
@@ -252,7 +249,6 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
 
-     
     std::string path;
     if (tester.parse<std::string>(args, path) == -1) {
         return nullptr;
@@ -269,6 +265,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     CAST_N_GETMIN(FloatProperty, theProperty);
     CAST_N_GETMIN(DoubleProperty, theProperty);
     CAST_N_GETMIN(IntProperty, theProperty);
+    CAST_N_GETMIN(IntSizeTProperty, theProperty);
     CAST_N_GETMIN(IntVec2Property, theProperty);
     CAST_N_GETMIN(IntVec3Property, theProperty);
     CAST_N_GETMIN(IntVec4Property, theProperty);
@@ -286,7 +283,6 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     static PythonParameterParser tester;
 
-     
     std::string path;
     if (tester.parse<std::string>(args, path) == -1) {
         return nullptr;

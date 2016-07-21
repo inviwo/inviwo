@@ -41,24 +41,19 @@
 
 namespace inviwo {
 
-EventConverterQt::EventConverterQt() {}
-EventConverterQt::~EventConverterQt() {}
+namespace utilqt {
 
-MouseEvent::MouseButton inviwo::EventConverterQt::getMouseButton(const QMouseEvent* e) {
-    switch (e->buttons())
-    {
-    case Qt::LeftButton:
-        return MouseEvent::MOUSE_BUTTON_LEFT;
-    case Qt::RightButton:
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
-    case Qt::MiddleButton:
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
-    default:
-        return MouseEvent::MOUSE_BUTTON_NONE;
-    }
+MouseButtons getMouseButtons(const QMouseEvent* e) {
+    MouseButtons res(flags::none);
+    
+    if(e->buttons() & Qt::LeftButton)   res |= MouseButton::Left;
+    if(e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
+    if(e->buttons() & Qt::RightButton)  res |= MouseButton::Right;
+    
+    return res;
 }
 
-MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMouseEvent* e) {
+MouseButton getMouseButtonCausingEvent(const QMouseEvent* e) {
     // QMouseEvent::getButtons does not
     // include the button that caused the event.
     // The QMouseEvent::getButton function
@@ -68,55 +63,59 @@ MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMous
     switch (e->button())
     {
     case Qt::LeftButton:
-        return MouseEvent::MOUSE_BUTTON_LEFT;
+        return MouseButton::Left;
     case Qt::RightButton:
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
+        return MouseButton::Right;
     case Qt::MiddleButton:
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
+        return MouseButton::Middle;
     default:
-        return MouseEvent::MOUSE_BUTTON_NONE;
+        return MouseButton::None;
     }
     #include <warn/pop>
 }
 
-MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(const QWheelEvent* e) {
-    if (e->buttons() == Qt::LeftButton)
-        return MouseEvent::MOUSE_BUTTON_LEFT;
-    else if (e->buttons() == Qt::RightButton)
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
-    else if (e->buttons() == Qt::MiddleButton)
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
-
-    return MouseEvent::MOUSE_BUTTON_NONE;
+MouseButtons getMouseWheelButtons(const QWheelEvent* e) {
+    MouseButtons res(flags::none);
+    
+    if(e->buttons() & Qt::LeftButton)   res |= MouseButton::Left;
+    if(e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
+    if(e->buttons() & Qt::RightButton)  res |= MouseButton::Right;
+    
+    return res;
 }
 
-GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(const QGesture* gesture){
-    if (gesture->state() == Qt::GestureStarted)
-        return GestureEvent::GESTURE_STATE_STARTED;
-    else if (gesture->state() == Qt::GestureUpdated)
-        return GestureEvent::GESTURE_STATE_UPDATED;
-    else if (gesture->state() == Qt::GestureFinished)
-        return GestureEvent::GESTURE_STATE_ENDED;
-    else if (gesture->state() == Qt::GestureCanceled)
-        return GestureEvent::GESTURE_STATE_CANCELED;
-
-    return GestureEvent::GESTURE_STATE_NONE;
+GestureState getGestureState(const QGesture* gesture) {
+    switch (gesture->state()) {
+        case Qt::NoGesture:
+            return GestureState::NoGesture;
+        case Qt::GestureStarted:
+            return GestureState::Started;
+        case Qt::GestureUpdated:
+            return GestureState::Updated;
+        case Qt::GestureFinished:
+            return GestureState::Finished;
+        case Qt::GestureCanceled:
+            return GestureState::Canceled;
+        default:
+            return GestureState::NoGesture;
+    }
 }
 
-InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEvent* e) {
-    int modifier = static_cast<int>(InteractionEvent::MODIFIER_NONE);
-    if (e->modifiers() == Qt::ShiftModifier)
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_SHIFT);
-    if (e->modifiers() == Qt::ControlModifier)
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_CTRL);
-    if (e->modifiers() == Qt::AltModifier)
-        modifier |= static_cast<int>(InteractionEvent::MODIFIER_ALT);
+KeyModifiers getModifiers(const QInputEvent* e) {
+    KeyModifiers res(flags::none);
 
-    return static_cast<InteractionEvent::Modifier>(modifier);
+    if (e->modifiers() & Qt::ShiftModifier)   res |= KeyModifier::Shift;
+    if (e->modifiers() & Qt::ControlModifier) res |= KeyModifier::Control;
+    if (e->modifiers() & Qt::AltModifier)     res |= KeyModifier::Alt;
+    if (e->modifiers() & Qt::MetaModifier)    res |= KeyModifier::Meta;
+    
+    return res;
 }
 
-int EventConverterQt::getKeyButton(const QKeyEvent* e) {
-    return static_cast<int>(util::mapKeyFromQt(e));
+IvwKey getKeyButton(const QKeyEvent* e) {
+    return util::mapKeyFromQt(e);
 }
+
+} // namespace
 
 } // namespace

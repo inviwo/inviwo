@@ -31,27 +31,20 @@
 #define IVW_TRACKBALL_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/interaction/action.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/intersection/raysphereintersection.h>
-#include <inviwo/core/util/observer.h>
-#include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/interaction/trackballobject.h>
 
-#include <math.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
+
+class Event;
+class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
 public:
@@ -100,8 +93,9 @@ protected:
 
     vec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
     void rotateTrackBall(const vec3& fromTrackballPos, const vec3& toTrackballPos);
-    dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
-    double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
+    vec3 getBoundedTranslation(const vec3& lookFrom, const vec3& lookTo, vec3 translation);
+    float getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo, float zoom);
+    std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
 
     void rotate(Event* event);
     void zoom(Event* event);
@@ -139,7 +133,8 @@ protected:
     TrackballObject* object_;
     bool isMouseBeingPressedAndHold_;
 
-    vec2 lastMousePos_;
+    vec3 lastNDC_;
+
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 
@@ -150,7 +145,7 @@ protected:
     BoolProperty allowVerticalPanning_;    ///< Enable/disable vertical panning
     BoolProperty allowZooming_;            ///< Enable/disable zooming
 
-    DoubleProperty maxZoomInDistance_;     ///< Cannot zoom in closer than this distance
+    FloatProperty maxZoomInDistance_;     ///< Cannot zoom in closer than this distance
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
     BoolProperty allowVerticalRotation_;    ///< Enable/disable rotation around vertical axis
@@ -165,7 +160,6 @@ protected:
     EventProperty mouseZoom_;
     EventProperty mousePan_;
     EventProperty mouseReset_;
-
 
     EventProperty stepRotateUp_;
     EventProperty stepRotateLeft_;

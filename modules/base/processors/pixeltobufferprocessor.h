@@ -33,7 +33,6 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/bufferport.h>
 #include <inviwo/core/ports/imageport.h>
@@ -61,11 +60,11 @@ namespace inviwo {
  *   * __Enable picking__ ...
  *
  */
-class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor, public InteractionHandler { 
+class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor {
 public:
     using PosBuffer = Buffer<double>;
     PixelToBufferProcessor();
-    virtual ~PixelToBufferProcessor(){}
+    virtual ~PixelToBufferProcessor() = default;
     
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

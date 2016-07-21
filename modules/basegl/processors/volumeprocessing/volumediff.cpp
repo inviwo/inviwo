@@ -41,14 +41,14 @@ const ProcessorInfo VolumeDiff::processorInfo_{
     "org.inviwo.VolumeDiff",  // Class identifier
     "Volume Difference",      // Display name
     "Volume Operation",       // Category
-    CodeState::Experimental,  // Code state
+    CodeState::Stable,  // Code state
     Tags::GL,                 // Tags
 };
 const ProcessorInfo VolumeDiff::getProcessorInfo() const {
     return processorInfo_;
 }
 
-VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("vol2") {
+VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2") {
     addPort(vol2_);
 }
 

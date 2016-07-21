@@ -64,7 +64,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
     virtual void afterInportChanged() override;
 
 private:

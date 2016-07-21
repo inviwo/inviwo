@@ -34,40 +34,24 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
 namespace inviwo {
 
 class IVW_CORE_API InteractionEvent : public Event {
 public:
-    enum Modifier { 
-        MODIFIER_NONE = 0, 
-        MODIFIER_ALT = 1, 
-        MODIFIER_CTRL = 2, 
-        MODIFIER_SHIFT = 4, 
-        MODIFIER_ANY = MODIFIER_ALT | MODIFIER_CTRL | MODIFIER_SHIFT
-    };
+    InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
+    InteractionEvent(const InteractionEvent& rhs) = default;
+    InteractionEvent& operator=(const InteractionEvent& that) = default;
+    virtual InteractionEvent* clone() const override = 0;
+    virtual ~InteractionEvent() = default;
 
-    InteractionEvent(int modifiers = MODIFIER_NONE);
-    InteractionEvent(const InteractionEvent& rhs);
-    InteractionEvent& operator=(const InteractionEvent& that);
-    virtual InteractionEvent* clone() const;
-    virtual ~InteractionEvent();
-
-    int modifiers() const;
-    void setModifiers(int modifiers);
+    KeyModifiers modifiers() const;
+    void setModifiers(KeyModifiers modifiers);
     std::string modifierNames() const;
- 
-    virtual std::string getClassIdentifier() const;
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-
-    virtual bool matching(const Event* event) const;
-    virtual bool equalSelectors(const Event* event) const;
 
 protected:
-    int modifiers_;
-    static const std::string modifierNames_[4];
+    KeyModifiers modifiers_;
 };
 
 }  // namespace

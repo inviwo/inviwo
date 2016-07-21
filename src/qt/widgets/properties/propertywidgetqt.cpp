@@ -107,7 +107,7 @@ PropertyWidgetQt::PropertyWidgetQt()
     , nestedDepth_(0) {
     applicationUsageMode_ = &(InviwoApplication::getPtr()
                                   ->getSettingsByType<SystemSettings>()
-                                  ->applicationUsageModeProperty_);
+                                  ->applicationUsageMode_);
     setNestedDepth(nestedDepth_);
     setObjectName("PropertyWidget");
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -134,7 +134,7 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     property_->addObserver(this);
     applicationUsageMode_ = &(InviwoApplication::getPtr()
                                   ->getSettingsByType<SystemSettings>()
-                                  ->applicationUsageModeProperty_);
+                                  ->applicationUsageMode_);
 
     appModeCallback_ =
         applicationUsageMode_->onChange([this]() { onSetUsageMode(property_->getUsageMode()); });
@@ -434,7 +434,7 @@ void PropertyWidgetQt::setApplicationUsageMode(bool value) {
 }
 
 UsageMode PropertyWidgetQt::getApplicationUsageMode() {
-    return static_cast<UsageMode>(applicationUsageMode_->get());
+    return applicationUsageMode_->get();
 }
 
 void PropertyWidgetQt::moduleAction() {

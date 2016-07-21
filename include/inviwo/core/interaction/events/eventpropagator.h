@@ -31,24 +31,19 @@
 #define IVW_EVENTPROPAGATOR_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-class ResizeEvent;
 class Event;
 class Outport;
 
 /**
  * \class EventPropagator
- *
  * \brief Abstract base class for a event propagator.
- *
  */
 class IVW_CORE_API EventPropagator { 
 public:
     virtual ~EventPropagator() = default;
-    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) = 0;
     virtual void propagateEvent(Event* event, Outport* source) = 0;
 };
 

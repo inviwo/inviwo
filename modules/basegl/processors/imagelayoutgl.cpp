@@ -70,16 +70,16 @@ ImageLayoutGL::ImageLayoutGL()
     
     multiinport_.onConnect([this](){
         ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        propagateEvent(&e, &outport_);
     });
     
     multiinport_.onDisconnect([this](){
         ResizeEvent e(currentDim_);
-        propagateResizeEvent(&e, &outport_);
+        propagateEvent(&e, &outport_);
     });
     
     addPort(outport_);
-    layout_.addOption("single", "Single Only", Layout::Single);
+    layout_.addOption("single", "Single", Layout::Single);
     layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
     layout_.addOption("verticalSplit", "Vertical Split", Layout::VerticalSplit);
     layout_.addOption("crossSplit", "Cross Split", Layout::CrossSplit);
@@ -109,7 +109,7 @@ ImageLayoutGL::ImageLayoutGL()
     layout_.onChange(this, &ImageLayoutGL::onStatusChange);
 }
 
-ImageLayoutGL::~ImageLayoutGL() {}
+ImageLayoutGL::~ImageLayoutGL() = default;
 
 void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
@@ -117,30 +117,32 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
-    
-    std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
 
-    int activeView = viewManager_.getActiveView();
-    auto data = multiinport_.getConnectedOutports();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+        updateViewports(resizeEvent->size(), true);
+        auto outports = multiinport_.getConnectedOutports();
+        size_t minNum = std::min(outports.size(), viewManager_.size());
 
-    if (newEvent && activeView >= 0 && activeView < static_cast<long>(data.size()) ) {
+        for (size_t i = 0; i < minNum; ++i) {
+            ResizeEvent e(uvec2(viewManager_[i].z, viewManager_[i].w));
+            multiinport_.propagateEvent(&e, outports[i]);
+        }
+    } else {
+        std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
+        int activeView = viewManager_.getActiveView();
+        auto data = multiinport_.getConnectedOutports();
+        if (newEvent && activeView >= 0 && activeView < static_cast<long>(data.size())) {
+            multiinport_.propagateEvent(newEvent.get(), data[activeView]);
+            
+            if (newEvent->hasBeenUsed()) event->markAsUsed();
+            for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+            return;
+        }
 
-        multiinport_.propagateEvent(newEvent.get(), data[activeView]);
-        if (newEvent->hasBeenUsed()) event->markAsUsed();
-    }
-}
-
-void ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-    
-    updateViewports(resizeEvent->size(), true);
-    auto outports = multiinport_.getConnectedOutports();
-    size_t minNum = std::min(outports.size(), viewManager_.size());
-
-    for (size_t i = 0; i < minNum; ++i) {
-        ResizeEvent e(uvec2(viewManager_[i].z, viewManager_[i].w));
-        multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(outports[i]));
+        if (event->shouldPropagateTo(&multiinport_, this, source)) {
+            multiinport_.propagateEvent(event);
+        }
     }
 }
 
@@ -173,7 +175,7 @@ void ImageLayoutGL::onStatusChange() {
     }
 
     ResizeEvent e(currentDim_);
-    propagateResizeEvent(&e, &outport_);
+    propagateEvent(&e, &outport_);
 }
 
 void ImageLayoutGL::process() {

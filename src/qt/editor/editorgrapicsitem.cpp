@@ -103,8 +103,8 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
 
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
     SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    bool portinfo = settings->enablePortInformationProperty_.get();
-    bool inspector = settings->enablePortInspectorsProperty_.get();
+    bool portinfo = settings->enablePortInformation_.get();
+    bool inspector = settings->enablePortInspectors_.get();
 
     if (!inspector && !portinfo) return;
 
@@ -147,8 +147,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 #endif
             }
 
-            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size,
-                         format);
+            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())),
+                         static_cast<int>(size), static_cast<int>(size), format);
             QBuffer buffer(&byteArray);
             image.save(&buffer, "PNG");
         } else {

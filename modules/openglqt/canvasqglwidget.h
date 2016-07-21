@@ -56,7 +56,7 @@ class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasG
 public:
     using QtBase = QGLWidget;
 
-    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, uvec2 dim = uvec2(256,256));
+    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, size2_t dim = size2_t(256,256));
     ~CanvasQGLWidget();
 
     static void defineDefaultContextFormat();
@@ -65,7 +65,7 @@ public:
     virtual void glSwapBuffers() override;
     virtual void update() override;
 
-    virtual void resize(uvec2 size) override;
+    virtual void resize(size2_t size) override;
     virtual ContextID activeContext() const override;
 protected:
     void initializeGL() override;

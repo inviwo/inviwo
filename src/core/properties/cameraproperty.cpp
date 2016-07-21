@@ -66,9 +66,8 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
 
     , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
-        new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-            MouseEvent::MOUSE_STATE_DOUBLE_CLICK),
-        new Action(this, &CameraProperty::changeFocusPoint))
+                             [this](Event* e) { changeFocusPoint(e); }, MouseButton::Left,
+                             MouseState::DoubleClick)
 
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
 
@@ -286,16 +285,16 @@ vec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 }
 
 void CameraProperty::invokeEvent(Event* event) {
-    if (auto resizeEvent = dynamic_cast<ResizeEvent*>(event)) {
-        uvec2 canvasSize = resizeEvent->size();
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+        auto canvasSize = resizeEvent->size();
         // Do not set aspect ratio if canvas size is 0 in any dimension.
         if (canvasSize.x > 0 && canvasSize.y > 0) {
             const double width{static_cast<double>(canvasSize[0])};
             const double height{static_cast<double>(canvasSize[1])};
             setAspectRatio(static_cast<float>(width / height));
         }
-    }
-    else {
+    } else {
         PropertyOwner::invokeEvent(event);
     }
 }
@@ -386,30 +385,23 @@ vec3 CameraProperty::getLookRight() const {
     return glm::cross(glm::normalize(camera_->getDirection()), camera_->getLookUp());
 }
 
-const mat4& CameraProperty::viewMatrix() const { return camera_->viewMatrix(); }
+const mat4& CameraProperty::viewMatrix() const { return camera_->getViewMatrix(); }
 
-const mat4& CameraProperty::projectionMatrix() const { return camera_->projectionMatrix(); }
+const mat4& CameraProperty::projectionMatrix() const { return camera_->getProjectionMatrix(); }
 
-const mat4& CameraProperty::inverseViewMatrix() const { return camera_->inverseViewMatrix(); }
+const mat4& CameraProperty::inverseViewMatrix() const { return camera_->getInverseViewMatrix(); }
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
-    return camera_->inverseProjectionMatrix();
+    return camera_->getInverseProjectionMatrix();
 }
 
 void CameraProperty::changeFocusPoint(Event* event) {
     if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        auto p = mouseEvent->posNormalized();
-        auto d = mouseEvent->depth();
-        if (std::abs(d - 1.0) < glm::epsilon<decltype(d)>()) {
-            return;
-        }
-        p.y = 1.0f - p.y;
-        p = p * 2.0f - 1.0f;
-        vec4 viewPos(p.x, p.y, static_cast<float>(d), 1.0f);
+        auto p = mouseEvent->ndc();
 
-        auto point = (inverseViewMatrix() * inverseProjectionMatrix()) * viewPos;
-        auto newLookTo = point.xyz() / point.w;
-
+        if (std::abs(p.z - 1.0) < glm::epsilon<decltype(p.z)>()) return;
+     
+        auto newLookTo = camera_->getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(p));
         auto newLookFrom = lookFrom_.get() + (newLookTo - lookTo_.get());
 
         setLookTo(newLookTo);

@@ -125,7 +125,7 @@ function(ivw_generate_module_paths_header)
     set(IVW_MODULES_PATHS_ARRAY ${paths})
 
     configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY IMMEDIATE)
+                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY)
 endfunction()
 
 #--------------------------------------------------------------------
@@ -493,10 +493,10 @@ endfunction()
 #--------------------------------------------------------------------
 # Specify console as target
 function(ivw_define_standard_properties project_name)
-    if(NOT MSVC)
-        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
-        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
-    endif()
+    #if(NOT MSVC)
+    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 14)
+    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
+    #endif()
 
     # Specify warnings
     if(APPLE)
@@ -514,7 +514,8 @@ function(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
     elseif(MSVC)
-        set_property(TARGET ${project_name}  PROPERTY COMPILE_FLAGS "/w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
+        set_property(TARGET ${project_name} APPEND_STRING PROPERTY 
+            COMPILE_FLAGS " /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
         # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
         # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
         # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled
@@ -694,7 +695,7 @@ macro(ivw_make_package package_name project_name)
     set(_project_name ${project_name})
   
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
-                   ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
+                   ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY)
 endmacro()
 
 
@@ -972,6 +973,14 @@ macro(ivw_qt_add_to_install qtarget ivw_comp)
                         DESTINATION bin 
                         COMPONENT ${ivw_comp} 
                         CONFIGURATIONS Release)
+                foreach(plugin ${${qtarget}_PLUGINS})
+                    get_target_property(_loc ${plugin} LOCATION)
+                    get_filename_component(_path ${_loc} PATH)
+                    get_filename_component(_dirname ${_path} NAME)
+                    install(FILES ${_loc} 
+                            DESTINATION bin/${_dirname} 
+                            COMPONENT ${ivw_comp})
+                endforeach()
             elseif(APPLE)
                 foreach(plugin ${${qtarget}_PLUGINS})
                     get_target_property(_loc ${plugin} LOCATION)

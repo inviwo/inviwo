@@ -60,7 +60,7 @@ enum IVW_QTWIDGETS_API InviwoWidgetGraphicsItemType {
 
 class PropertyListWidget;
 class Property;
-class BaseCallBack;
+using BaseCallBack = std::function<void()>;
 
 class IVW_QTWIDGETS_API IvwLineEdit : public QLineEdit {
     #include <warn/push>
@@ -184,7 +184,7 @@ private:
     PropertyWidgetQt* parent_;
     InviwoDockWidget* baseContainer_;
 
-    OptionPropertyInt* applicationUsageMode_;
+    TemplateOptionProperty<UsageMode>* applicationUsageMode_;
     const BaseCallBack* appModeCallback_;
     QMenu* contextMenu_;
     QMap<QString, QMenu*> moduleSubMenus_;

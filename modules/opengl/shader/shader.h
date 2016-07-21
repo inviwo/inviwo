@@ -34,6 +34,7 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/uniformutils.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
 #include <unordered_map>
@@ -90,30 +91,8 @@ public:
     void activate();
     void deactivate();
 
-    void setUniform(const std::string &name, const GLint &value) const;
-    void setUniform(const std::string &name, const GLint *value, int count) const;
-    
-    void setUniform(const std::string &name, const GLuint &value) const;
-    void setUniform(const std::string &name, const GLuint *value, int count) const;
-
-    void setUniform(const std::string &name, const GLfloat &value) const;
-    void setUniform(const std::string &name, const GLfloat *value, int count) const;
-
-    void setUniform(const std::string &name, const ivec2 &value) const;
-    void setUniform(const std::string &name, const ivec3 &value) const;
-    void setUniform(const std::string &name, const ivec4 &value) const;
-
-    void setUniform(const std::string &name, const uvec2 &value) const;
-    void setUniform(const std::string &name, const uvec3 &value) const;
-    void setUniform(const std::string &name, const uvec4 &value) const;
-
-    void setUniform(const std::string &name, const vec2 &value) const;
-    void setUniform(const std::string &name, const vec3 &value) const;
-    void setUniform(const std::string &name, const vec4 &value) const;
-
-    void setUniform(const std::string &name, const mat2 &value) const;
-    void setUniform(const std::string &name, const mat3 &value) const;
-    void setUniform(const std::string &name, const mat4 &value) const;
+    template <typename T>
+    void setUniform(const std::string &name, const T& value) const;
 
     void setUniformWarningLevel(UniformWarning level);
 
@@ -125,7 +104,7 @@ private:
     void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
-    void rebildShader(ShaderObject* obj);
+    void rebuildShader(ShaderObject* obj);
     void linkShader(bool notifyRebuild = false);
 
     void createAndAddShader(ShaderType type, std::string fileName);
@@ -157,6 +136,13 @@ private:
 
     std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
 };
+
+
+template <typename T>
+void Shader::setUniform(const std::string &name, const T& value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) utilgl::UniformSetter<T>::set(location, value);
+}
 
 }  // namespace
 

@@ -36,6 +36,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 
+#include <flags/flags.h>
+
 #include <type_traits>
 #include <list>
 
@@ -189,6 +191,11 @@ public:
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
     void deserialize(const std::string& key, T& data,
+                     const SerializationTarget& target = SerializationTarget::Node);
+
+    // Flag types
+    template <typename T>
+    void deserialize(const std::string& key, flags::flags<T>& data,
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
@@ -565,6 +572,16 @@ void Deserializer::deserialize(const std::string& key, T& data, const Serializat
     ET tmpdata{static_cast<ET>(data)};
     deserialize(key, tmpdata, target);
     data = static_cast<T>(tmpdata);
+}
+
+// Flag types
+template <typename T>
+void Deserializer::deserialize(const std::string& key, flags::flags<T>& data,
+                 const SerializationTarget& target) {
+
+    auto tmp = data.underlying_value();
+    deserialize(key, tmp, target);
+    data.set_underlying_value(tmp);
 }
 
 // glm vector types

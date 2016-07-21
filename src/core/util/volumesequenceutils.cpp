@@ -128,6 +128,10 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
     }
 }
 
+bool hasTimestamp(SharedVolume vol) {
+    return vol->hasMetaData<DoubleMetaData>("timestamp");
+}
+
 double getTimestamp(SharedVolume vol) {
     return vol->getMetaData<DoubleMetaData>("timestamp")->get();
 }

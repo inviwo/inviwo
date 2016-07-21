@@ -27,11 +27,13 @@
  * 
  *********************************************************************************/
 
-uniform vec3 pickingColor_;
+uniform vec3 pickingColor;
+uniform bool highlight = false;
+uniform vec4 highlightColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 in vec4 color_;
 
 void main() {
-    FragData0 = color_;
-    PickingData = vec4(pickingColor_, 1.0);
+    FragData0 = highlight? highlightColor : color_;
+    PickingData = vec4(pickingColor, 1.0);
 }

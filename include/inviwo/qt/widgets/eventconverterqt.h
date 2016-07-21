@@ -31,8 +31,10 @@
 #define IVW_EVENTCONVERTERQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
+
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
 
 class QMouseEvent;
 class QWheelEvent;
@@ -42,12 +44,8 @@ class QKeyEvent;
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API EventConverterQt {
-public:
-    EventConverterQt();
-    ~EventConverterQt();
-
-    /** 
+namespace utilqt {
+    /**
      * \brief  Convert the button state
      * when the event was generated 
      * to an inviwo button.
@@ -57,7 +55,7 @@ public:
      * @param QMouseEvent * e 
      * @return MouseEvent::MouseButton 
      */
-    static MouseEvent::MouseButton getMouseButton(const QMouseEvent* e);
+    IVW_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
     /** 
      * \brief Convert the button originally 
      * causing the event to an inviwo button.
@@ -72,12 +70,12 @@ public:
      * @param QMouseEvent * e 
      * @return MouseEvent::MouseButton 
      */
-    static MouseEvent::MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
-    static MouseEvent::MouseButton getMouseWheelButton(const QWheelEvent* e);
-    static InteractionEvent::Modifier getModifier(const QInputEvent* e);
-    static GestureEvent::GestureState getGestureState(const QGesture* e);
+    IVW_QTWIDGETS_API MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
+    IVW_QTWIDGETS_API MouseButtons getMouseWheelButtons(const QWheelEvent* e);
+    IVW_QTWIDGETS_API KeyModifiers getModifiers(const QInputEvent* e);
+    IVW_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
 
-    static int getKeyButton(const QKeyEvent* e);
+    IVW_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
 };
 
 } // namespace

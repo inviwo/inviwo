@@ -32,11 +32,29 @@
 uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
 
+uniform int numInputChannels_ = 3;
+
 in vec4 texCoord_;
 
 
 void main() {
-    vec4 v1 = getVoxel(volume , volumeParameters , texCoord_.xyz);
-    float m = length(v1.xyz);
-    FragData0 = vec4(m,m,m,m);
+    vec4 v = getVoxel(volume , volumeParameters , texCoord_.xyz);
+
+    float magnitude = 0.0;
+    switch (numInputChannels_) {
+    case 1:
+        magnitude = v.x;
+        break;
+    case 2:
+        magnitude = length(v.xy);
+        break;
+    case 3:
+        magnitude = length(v.xyz);
+        break;
+    case 4:
+        magnitude = length(v);
+        break;
+    }
+
+    FragData0 = vec4(magnitude);
 }

@@ -57,6 +57,7 @@
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
 #include <glm/gtx/io.hpp>
+#include <glm/gtx/component_wise.hpp>
 
 #include <half/half.hpp>
 
@@ -109,6 +110,9 @@ struct rank : public std::rank<T> {};
 
 template <typename T>
 struct rank<const T> : public rank<T> {};
+
+template <>
+struct rank<half_float::half> : public std::integral_constant<std::size_t, 0> {};
 
 template <typename T, glm::precision P>
 struct rank<glm::detail::tvec2<T, P>> : public std::integral_constant<std::size_t, 1> {};
@@ -638,6 +642,10 @@ auto glmcomp(T& elem, size_t i) ->
                               typename T::value_type&>::type {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
 }
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
+    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
+}
 
 // matrix like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
@@ -654,6 +662,10 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::t
 auto glmcomp(T& elem, size_t i, size_t j) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
+    return elem[i][j];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
     return elem[i][j];
 }
 

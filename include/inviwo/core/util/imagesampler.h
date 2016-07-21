@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -30,15 +30,14 @@
 #ifndef IVW_IMAGESAMPLER_H
 #define IVW_IMAGESAMPLER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/indexmapper.h>
 
-#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/image.h>
-
+#include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
 
@@ -49,9 +48,12 @@ class LayerRAM;
 /**
  * \class ImageSampler
  *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * \brief ImageSampler aids sampling of images using Bi-Linear Interpolation.
  *
- * DESCRIBE_THE_CLASS
+ * A helper class to aid sampling of images. Expects the input to be on the range [0 1]. Eg., input
+ * of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right
+ * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
+ *
  */
 class IVW_CORE_API ImageSampler {
 public:
@@ -61,62 +63,129 @@ public:
     ImageSampler(std::shared_ptr<const Image> img);
     virtual ~ImageSampler();
 
+    /**
+     * Samples the image at the given position using bi-linear interpolation.
+     *
+     * @param pos Position to sample at, expects range [0 1]
+     */
     dvec4 sample(const dvec2 &pos) const;
-    dvec4 sample(double x, double y) const { return sample(dvec2(x, y)); }
-    dvec4 sample(const vec2 &pos) const { return sample(dvec2(pos)); }
+
+    /**
+    * @see sample(const dvec2 &pos)
+     * @param x X coordinate of the position to sample at, expects range [0 1]
+     * @param y Y coordinate of the position to sample at, expects range [0 1]
+    */
+    dvec4 sample(double x, double y) const;
+
+    /**
+    * @see sample(const dvec2 &pos)
+    * @param pos Position to sample at, expects range [0 1]
+    */
+    dvec4 sample(const vec2 &pos) const;
 
 private:
-    dvec4 getPixel(const size2_t &pos)const;
+    dvec4 getPixel(const size2_t &pos) const;
     const LayerRAM *layer_;
     size2_t dims_;
 
     std::shared_ptr<const Image> sharedImage_;
 };
 
-template <typename T,typename P>
+/**
+* \class TemplateImageSampler<T,P>
+*
+* \brief TemplateImageSampler<T,P> aids sampling of images of a given type (T) using Bi-Linear
+* Interpolation with precision (P).
+*
+* A helper class to aid sampling of images of a given type (T). Expects the input to be on the range
+* [0 1]. Eg., input
+* of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right
+* pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
+*
+* The template parameter P should be either double of float. When T is either float our double P
+* should be the same.
+*
+*/
+template <typename T, typename P>
 class TemplateImageSampler {
 public:
-    TemplateImageSampler(const LayerRAM *ram)
-        : data_(static_cast<const T *>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_), sharedImage_(nullptr) {}
-    TemplateImageSampler(const Layer *layer)
-        : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
+    TemplateImageSampler(const LayerRAM *ram);
+    TemplateImageSampler(const Layer *layer);
 
-    TemplateImageSampler(const Image *img) : TemplateImageSampler(img->getColorLayer()) {}
-    TemplateImageSampler(std::shared_ptr<const Image> sharedImage)
-        : TemplateImageSampler(sharedImage->getColorLayer()) {
-        sharedImage_ = sharedImage;
-    }
-    virtual ~TemplateImageSampler(){}
+    TemplateImageSampler(const Image *img);
+    TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
+    virtual ~TemplateImageSampler() = default;
+    
+    /**
+    * @see sample()
+    * @param x X coordinate of the position to sample at, expects range [0 1]
+    * @param y Y coordinate of the position to sample at, expects range [0 1]
+    */
+    T sample(P x, P y);
 
-    T sample(P x,P y) { return sample(Vector<2, P>(x,y)); }
-    T sample(const Vector<2, P> &pos) {
-        Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
-        size2_t indexPos = size2_t(samplePos);
-        Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);
-
-
-        T samples[4];
-        samples[0] = getPixel(indexPos);
-        samples[1] = getPixel(indexPos + size2_t(1, 0));
-
-        samples[2] = getPixel(indexPos + size2_t(0, 1));
-        samples[3] = getPixel(indexPos + size2_t(1, 1));
-
-        return Interpolation<T, P>::bilinear(samples, interpolants);
-    }
+    /**
+    * Samples the image at the given position using bi-linear interpolation.
+    * @param pos Position to sample at, expects range [0 1]
+    */
+    T sample(const Vector<2, P> &pos);
 
 private:
-    T getPixel(const size2_t &pos) {
-        auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
-        return data_[ic_(p)];;
-
-    }
+    T getPixel(const size2_t &pos);
     const T *data_;
     size2_t dims_;
     util::IndexMapper2D ic_;
 
     std::shared_ptr<const Image> sharedImage_;
 };
+
+template <typename T, typename P>
+T TemplateImageSampler<T, P>::sample(const Vector<2, P> &pos) {
+    Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
+    size2_t indexPos = size2_t(samplePos);
+    Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);
+
+    T samples[4];
+    samples[0] = getPixel(indexPos);
+    samples[1] = getPixel(indexPos + size2_t(1, 0));
+
+    samples[2] = getPixel(indexPos + size2_t(0, 1));
+    samples[3] = getPixel(indexPos + size2_t(1, 1));
+
+    return Interpolation<T, P>::bilinear(samples, interpolants);
+}
+
+template <typename T, typename P>
+T TemplateImageSampler<T, P>::getPixel(const size2_t &pos) {
+    auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
+    return data_[ic_(p)];
+    ;
+}
+
+template <typename T, typename P>
+TemplateImageSampler<T, P>::TemplateImageSampler(const LayerRAM *ram)
+    : data_(static_cast<const T *>(ram->getData()))
+    , dims_(ram->getDimensions())
+    , ic_(dims_)
+    , sharedImage_(nullptr) {}
+
+template <typename T, typename P>
+TemplateImageSampler<T, P>::TemplateImageSampler(const Layer *layer)
+    : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
+
+template <typename T, typename P>
+TemplateImageSampler<T, P>::TemplateImageSampler(const Image *img)
+    : TemplateImageSampler(img->getColorLayer()) {}
+
+template <typename T, typename P>
+TemplateImageSampler<T, P>::TemplateImageSampler(std::shared_ptr<const Image> sharedImage)
+    : TemplateImageSampler(sharedImage->getColorLayer()) {
+    sharedImage_ = sharedImage;
+}
+
+template <typename T, typename P>
+T TemplateImageSampler<T, P>::sample(P x, P y) {
+    return sample(Vector<2, P>(x, y));
+}
 
 }  // namespace
 

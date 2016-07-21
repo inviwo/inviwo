@@ -27,8 +27,8 @@
  # 
  #################################################################################
  
-cmake_minimum_required(VERSION 2.8.11)
-cmake_policy(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.2.0)
+cmake_policy(VERSION 3.2.0)
 
 if(POLICY CMP0020)
     cmake_policy(SET CMP0020 OLD) # Missing dependencies policy.
@@ -63,8 +63,11 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(inviwo-projects)
-
+if(IVW_PROJECT_NAME)
+    project(${IVW_PROJECT_NAME})
+else()
+    project(inviwo-projects)
+endif()
 # Build
 option(SHARED_LIBS "Build shared libs, else static libs" ON)
 
@@ -78,8 +81,14 @@ option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 
 #--------------------------------------------------------------------
 # Add externals
+add_subdirectory(ext/flags)
+add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
 add_subdirectory(ext/gtest)
+add_subdirectory(ext/warn)
+add_subdirectory(ext/tclap)
+add_subdirectory(ext/tinydir)
+add_subdirectory(ext/half)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)

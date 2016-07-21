@@ -36,16 +36,16 @@
 
 namespace inviwo {
 
-template <typename T>
+template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
 public:
     BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
-    BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
-    BufferRAMPrecision<T>& operator=(const BufferRAMPrecision<T>& that);
+    BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs);
+    BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that);
     virtual ~BufferRAMPrecision() = default;
-    virtual BufferRAMPrecision<T>* clone() const override;
+    virtual BufferRAMPrecision<T, Target>* clone() const override;
 
     virtual void setSize(size_t size) override;
     virtual size_t getSize() const override;
@@ -97,39 +97,39 @@ using Vec2BufferRAM = BufferRAMPrecision<vec2>;
 using Vec3BufferRAM = BufferRAMPrecision<vec3>;
 using Vec4BufferRAM = BufferRAMPrecision<vec4>;
 // Used for index buffers
-using IndexBufferRAM = BufferRAMPrecision<std::uint32_t>;
+using IndexBufferRAM = BufferRAMPrecision<std::uint32_t, BufferTarget::Index>;
 
-template <typename T>
-const T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) const {
+template <typename T, BufferTarget Target>
+const T& inviwo::BufferRAMPrecision<T, Target>::operator[](size_t i) const {
     return (*data_)[i];
 }
 
-template <typename T>
-T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) {
+template <typename T, BufferTarget Target>
+T& inviwo::BufferRAMPrecision<T, Target>::operator[](size_t i) {
     return (*data_)[i];
 }
 
-template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(BufferUsage usage)
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>::BufferRAMPrecision(BufferUsage usage)
     : BufferRAMPrecision(0, usage) {}
 
-template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage), data_(new std::vector<T>(size)) {}
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>::BufferRAMPrecision(size_t size, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(new std::vector<T>(size)) {}
 
-template <typename T>
-inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage)
+template <typename T, BufferTarget Target>
+inviwo::BufferRAMPrecision<T, Target>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), usage, Target)
     , data_(util::make_unique<std::vector<T>>(std::move(data))) {}
 
-template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(const BufferRAMPrecision<T>& rhs)
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>::BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs)
     : BufferRAM(rhs), data_(new std::vector<T>(rhs.data_->size())) {
     *data_ = *(rhs.data_);
 }
 
-template <typename T>
-BufferRAMPrecision<T>& inviwo::BufferRAMPrecision<T>::operator=(const BufferRAMPrecision<T>& that) {
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>& inviwo::BufferRAMPrecision<T, Target>::operator=(const BufferRAMPrecision<T, Target>& that) {
     if (this != &that) {
         BufferRAM::operator=(that);
         auto data = util::make_unique<std::vector<T>>(that.data_->size());
@@ -139,155 +139,155 @@ BufferRAMPrecision<T>& inviwo::BufferRAMPrecision<T>::operator=(const BufferRAMP
     return *this;
 }
 
-template <typename T>
-BufferRAMPrecision<T>* BufferRAMPrecision<T>::clone() const {
-    return new BufferRAMPrecision<T>(*this);
+template <typename T, BufferTarget Target>
+BufferRAMPrecision<T, Target>* BufferRAMPrecision<T, Target>::clone() const {
+    return new BufferRAMPrecision<T, Target>(*this);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setSize(size_t size) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setSize(size_t size) {
     return data_->resize(size);
 }
 
-template <typename T>
-size_t BufferRAMPrecision<T>::getSize() const {
+template <typename T, BufferTarget Target>
+size_t BufferRAMPrecision<T, Target>::getSize() const {
     return data_->size();
 }
 
-template <typename T>
-void* BufferRAMPrecision<T>::getData() {
+template <typename T, BufferTarget Target>
+void* BufferRAMPrecision<T, Target>::getData() {
     return (data_->empty() ? nullptr : data_->data());
 }
 
-template <typename T>
-const void* BufferRAMPrecision<T>::getData() const {
+template <typename T, BufferTarget Target>
+const void* BufferRAMPrecision<T, Target>::getData() const {
     return (data_->empty() ? nullptr : data_->data());
 }
 
-template <typename T>
-std::vector<T>* inviwo::BufferRAMPrecision<T>::getDataContainer() {
+template <typename T, BufferTarget Target>
+std::vector<T>* inviwo::BufferRAMPrecision<T, Target>::getDataContainer() {
     return data_.get();
 }
 
-template <typename T>
-const std::vector<T>* BufferRAMPrecision<T>::getDataContainer() const {
+template <typename T, BufferTarget Target>
+const std::vector<T>* BufferRAMPrecision<T, Target>::getDataContainer() const {
     return data_.get();
 }
 
-template <typename T>
-double BufferRAMPrecision<T>::getAsDouble(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+double BufferRAMPrecision<T, Target>::getAsDouble(const size_t& pos) const {
     return util::glm_convert<double>((*data_)[pos]);
 }
 
-template <typename T>
-dvec2 BufferRAMPrecision<T>::getAsDVec2(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec2 BufferRAMPrecision<T, Target>::getAsDVec2(const size_t& pos) const {
     return util::glm_convert<dvec2>((*data_)[pos]);
 }
 
-template <typename T>
-dvec3 BufferRAMPrecision<T>::getAsDVec3(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec3 BufferRAMPrecision<T, Target>::getAsDVec3(const size_t& pos) const {
     return util::glm_convert<dvec3>((*data_)[pos]);
 }
 
-template <typename T>
-dvec4 BufferRAMPrecision<T>::getAsDVec4(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec4 BufferRAMPrecision<T, Target>::getAsDVec4(const size_t& pos) const {
     return util::glm_convert<dvec4>((*data_)[pos]);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromDouble(const size_t& pos, double val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromDouble(const size_t& pos, double val) {
     (*data_)[pos] = util::glm_convert<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromDVec2(const size_t& pos, dvec2 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromDVec2(const size_t& pos, dvec2 val) {
     (*data_)[pos] = util::glm_convert<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromDVec3(const size_t& pos, dvec3 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromDVec3(const size_t& pos, dvec3 val) {
     (*data_)[pos] = util::glm_convert<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromDVec4(const size_t& pos, dvec4 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromDVec4(const size_t& pos, dvec4 val) {
     (*data_)[pos] = util::glm_convert<T>(val);
 }
 
-template <typename T>
-double BufferRAMPrecision<T>::getAsNormalizedDouble(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+double BufferRAMPrecision<T, Target>::getAsNormalizedDouble(const size_t& pos) const {
     return util::glm_convert_normalized<double>((*data_)[pos]);
 }
 
-template <typename T>
-dvec2 BufferRAMPrecision<T>::getAsNormalizedDVec2(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec2 BufferRAMPrecision<T, Target>::getAsNormalizedDVec2(const size_t& pos) const {
     return util::glm_convert_normalized<dvec2>((*data_)[pos]);
 }
 
-template <typename T>
-dvec3 BufferRAMPrecision<T>::getAsNormalizedDVec3(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec3 BufferRAMPrecision<T, Target>::getAsNormalizedDVec3(const size_t& pos) const {
     return util::glm_convert_normalized<dvec3>((*data_)[pos]);
 }
 
-template <typename T>
-dvec4 BufferRAMPrecision<T>::getAsNormalizedDVec4(const size_t& pos) const {
+template <typename T, BufferTarget Target>
+dvec4 BufferRAMPrecision<T, Target>::getAsNormalizedDVec4(const size_t& pos) const {
     return util::glm_convert_normalized<dvec4>((*data_)[pos]);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromNormalizedDouble(const size_t& pos, double val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromNormalizedDouble(const size_t& pos, double val) {
     (*data_)[pos] = util::glm_convert_normalized<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
     (*data_)[pos] = util::glm_convert_normalized<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
     (*data_)[pos] = util::glm_convert_normalized<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
     (*data_)[pos] = util::glm_convert_normalized<T>(val);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::add(const T& item) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::add(const T& item) {
     data_->push_back(item);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::add(std::initializer_list<T> data) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::add(std::initializer_list<T> data) {
     for (auto& elem : data) {
         data_->push_back(elem);
     }
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::append(const std::vector<T>* data) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::append(const std::vector<T>* data) {
     data_->insert(data_->end(), data->begin(), data->end());
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::set(size_t index, const T& item) {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::set(size_t index, const T& item) {
     data_->at(index) = item;
 }
 
-template <typename T>
-T BufferRAMPrecision<T>::get(size_t index) const {
+template <typename T, BufferTarget Target>
+T BufferRAMPrecision<T, Target>::get(size_t index) const {
     return data_->at(index);
 }
 
-template <typename T>
-T& BufferRAMPrecision<T>::get(size_t index) {
+template <typename T, BufferTarget Target>
+T& BufferRAMPrecision<T, Target>::get(size_t index) {
     return data_->at(index);
 }
 
-template <typename T>
-void BufferRAMPrecision<T>::clear() {
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::clear() {
     data_->clear();
 }
 

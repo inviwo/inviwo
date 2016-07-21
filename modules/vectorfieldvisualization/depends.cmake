@@ -5,4 +5,5 @@ set(dependencies
       #InviwoOpenGLModule
     InviwoBaseModule  
     InviwoEigenUtilsModule  
+    InviwoBrushingAndLinkingModule  
 )

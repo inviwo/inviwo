@@ -409,21 +409,15 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
+    bool used = event->hasBeenUsed();
     for (auto inport : getInports()) {
-        inport->propagateEvent(event);
-        if (event->hasBeenUsed()) return;
-    }
-}
-
-void Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    if (resizeEvent->hasVisitedProcessor(this)) return;
-    resizeEvent->markAsVisited(this);
-
-    for (auto port : getPortsInSameGroup(source)) {
-        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
-            imageInport->propagateResizeEvent(resizeEvent);
+        if (event->shouldPropagateTo(inport, this, source)) {
+            inport->propagateEvent(event);
+            used |= event->hasBeenUsed();
+            event->markAsUnused();
         }
     }
+    if (used) event->markAsUsed();
 }
 
 const std::string Processor::getCodeStateString(CodeState state) {

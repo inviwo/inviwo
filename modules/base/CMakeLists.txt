@@ -8,6 +8,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
@@ -36,12 +39,14 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.h
@@ -50,11 +55,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetospatialsampler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/worldtransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/worldtransform.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -65,6 +70,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
@@ -91,10 +99,12 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.cpp

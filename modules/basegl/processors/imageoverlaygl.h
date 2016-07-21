@@ -72,28 +72,35 @@ public:
                     PropertySemantics semantics = PropertySemantics::Default);
     virtual ~OverlayProperty() {}
 
-    void updateViewport(vec2 destDim);
+    void setViewDimensions(ivec2 viewDim);
 
+    const ivec4& getViewport() const;
+
+    GLint getBlendMode() const;
+
+private:
     virtual void deserialize(Deserializer& d) override;
+    void updateViewport();
+    void updateVisibilityState();
 
-    ivec4 viewport_;
+    FloatVec2Property pos_;   //<! relative position [0,1]
+    FloatVec2Property size_;  //<! relative size[0,1]
 
-    FloatVec2Property pos_; //<! relative position [0,1]
-    FloatVec2Property size_; //<! relative size[0,1]
-    
-    IntVec2Property absolutePos_; //<! absolute position [pixel]
-    IntVec2Property absoluteSize_; //<! absolute size [pixel]
+    IntVec2Property absolutePos_;   //<! absolute position [pixel]
+    IntVec2Property absoluteSize_;  //<! absolute size [pixel]
 
     FloatVec2Property anchorPos_;
 
     TemplateOptionProperty<BlendMode> blendMode_;
 
     // consider absolute positioning
-     TemplateOptionProperty<Positioning> positioningMode_;
-     TemplateOptionProperty<Positioning> sizeMode_;
+    TemplateOptionProperty<Positioning> positioningMode_;
+    TemplateOptionProperty<Positioning> sizeMode_;
 
-private:
-    void updateState();
+    ivec2 viewDimensions_;
+    ivec4 viewport_;
+
+    bool isDeserializing_;
 };
 
 /** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
@@ -128,7 +135,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
     bool isReady() const override;
-    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
     virtual void propagateEvent(Event*, Outport* source) override;
 
 protected:

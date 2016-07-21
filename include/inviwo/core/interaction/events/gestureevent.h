@@ -33,60 +33,41 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
 class IVW_CORE_API GestureEvent : public InteractionEvent {
 public:
-    enum GestureType { PAN = 0, PINCH, SWIPE, COUNT };
+    GestureEvent(vec2 deltaPos, double deltaDistance, GestureType type,
+                 GestureState state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize);
 
-    enum GestureState {
-        GESTURE_STATE_NONE = 1 << 0,
-        GESTURE_STATE_STARTED = 1 << 1,
-        GESTURE_STATE_UPDATED = 1 << 2,
-        GESTURE_STATE_ENDED = 1 << 3,
-        GESTURE_STATE_CANCELED = 1 << 4,
-        GESTURE_STATE_ANY = GESTURE_STATE_STARTED | GESTURE_STATE_UPDATED | GESTURE_STATE_ENDED | GESTURE_STATE_CANCELED,
-        GESTURE_STATE_ANY_AND_NONE = GESTURE_STATE_NONE | GESTURE_STATE_ANY
+    GestureEvent(const GestureEvent& rhs) = default;
+    GestureEvent& operator=(const GestureEvent& that) = default;
+    virtual GestureEvent* clone() const override;
+    virtual ~GestureEvent() = default;
 
-    };
-
-    GestureEvent(vec2 deltaPos, double deltaDistance, GestureEvent::GestureType type,
-                 int state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize);
-
-    GestureEvent(GestureEvent::GestureType type, int state, int numFingers);
-
-    GestureEvent(const GestureEvent& rhs);
-    GestureEvent& operator=(const GestureEvent& that);
-    virtual GestureEvent* clone() const;
-    virtual ~GestureEvent();
-
-    inline vec2 deltaPos() const { return deltaPos_; }
-    inline double deltaDistance() const { return deltaDistance_; }
-    inline GestureEvent::GestureType type() const { return type_; }
-    inline int state() const { return state_; }
-    inline int numFingers() const { return numFingers_; }
-    inline vec2 screenPosNormalized() const { return screenPosNorm_; }
-    inline vec2 canvasSize() const { return canvasSize_; }
+    vec2 deltaPos() const;
+    double deltaDistance() const;
+    GestureType type() const;
+    GestureState state() const;
+    int numFingers() const;
+    vec2 screenPosNormalized() const;
+    vec2 canvasSize() const;
 
     void modify(vec2);
 
-    virtual std::string getClassIdentifier() const { return "org.inviwo.GestureEvent"; }
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-
-    virtual bool matching(const Event* aEvent) const;
-    virtual bool matching(const GestureEvent* aEvent) const;
-    virtual bool equalSelectors(const Event* aEvent) const;
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.GestureEvent");
+    }
 
 private:
-    // Event selectors
-    GestureEvent::GestureType type_;
-    int state_;
+    GestureType type_;
+    GestureState state_;
     int numFingers_;
 
-    // Event state
     vec2 deltaPos_;
     double deltaDistance_;
     vec2 screenPosNorm_;

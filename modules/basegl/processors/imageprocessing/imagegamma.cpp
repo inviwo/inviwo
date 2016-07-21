@@ -50,9 +50,9 @@ ImageGamma::ImageGamma()
     addProperty(gamma_);
 }
 
-ImageGamma::~ImageGamma() {}
+ImageGamma::~ImageGamma() = default;
 
-void ImageGamma::preProcess() {
+void ImageGamma::preProcess(TextureUnitContainer &cont) {
     shader_.setUniform("gamma_", gamma_.get());
 }
 

@@ -49,9 +49,17 @@ public:
         DrawType dt;
         ConnectivityType ct;
     };
+    struct BufferInfo {
+        BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
+        BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
+        BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
+
+        BufferType type;
+        int location; //<! attribute location of buffer in GLSL shader 
+    };
 
     using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<IndexBuffer>>>;
-    using BufferVector = std::vector<std::pair<BufferType, std::shared_ptr<BufferBase>>>;
+    using BufferVector = std::vector<std::pair<BufferInfo, std::shared_ptr<BufferBase>>>;
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
@@ -65,19 +73,28 @@ public:
     /**
      * Add a buffer with rendering data, such as positions/colors/normals.
      *
-     * @param att Data to be rendered.
-     * @param takeOwnership True if the buffer should be deleted by the mesh.
+     * @param info  information about the buffer contents (e.g. buffer type and attrib location)
+     * @param att   buffer data used during rendering
      */
+    void addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att);
+
+    /**
+    * Add a buffer with rendering data, such as positions/colors/normals, and associate it with its
+    * default attrib location.
+    *
+    * @param type  buffer type (Position, Color, Normal, etc.)
+    * @param att   buffer data used during rendering
+    */
     void addBuffer(BufferType type, std::shared_ptr<BufferBase> att);
 
     /**
-     * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
+     * Replaces buffer at index with new buffer
      * Does nothing if index out of range.
-     * @param idx Index of buffer to replace
-     * @param att New buffer
-     * @param takeOwnership True if new buffer should be owned.
+     * @param idx   Index of buffer to replace
+     * @param info  information about the buffer contents (e.g. buffer type and shader location)
+     * @param att   new buffer data used during rendering
      */
-    void setBuffer(size_t idx, BufferType type, std::shared_ptr<BufferBase> att);
+    void setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
 
     /**
      * Add index buffer. The indices will be used as look up
@@ -88,14 +105,21 @@ public:
      */
     void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
 
+    /**
+     * Reserve memory for a given number of index buffers.
+     * Use full when having a mesh on which we will add a lot of index buffers
+     * @param size the new reserved size of the vector containing index buffers
+     */
+    void reserveIndexBuffers(size_t size);
+
     const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
     const BufferBase* getBuffer(size_t idx) const;
-    const IndexBuffer* getIndicies(size_t idx) const;
+    const IndexBuffer* getIndices(size_t idx) const;
 
     BufferBase* getBuffer(size_t idx);
-    IndexBuffer* getIndicies(size_t idx);
+    IndexBuffer* getIndices(size_t idx);
 
     MeshInfo getDefaultMeshInfo() const;
     MeshInfo getIndexMeshInfo(size_t idx) const;
@@ -113,8 +137,14 @@ public:
 protected:
     BufferVector buffers_;
     IndexVector indices_;
-    MeshInfo defaultMeshInfo_;
+    MeshInfo meshInfo_;
 };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Mesh::BufferInfo info) {
+    ss << info.type << " (location = " << info.location << ")";
+    return ss;
+}
 
 }  // namespace
 

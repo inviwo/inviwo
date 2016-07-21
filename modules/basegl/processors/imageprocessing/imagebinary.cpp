@@ -37,7 +37,7 @@ const ProcessorInfo ImageBinary::processorInfo_{
     "org.inviwo.ImageBinary",  // Class identifier
     "Image Binary",            // Display name
     "Image Operation",         // Category
-    CodeState::Experimental,   // Code state
+    CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
 };
 const ProcessorInfo ImageBinary::getProcessorInfo() const {
@@ -50,7 +50,7 @@ ImageBinary::ImageBinary()
     addProperty(threshold_);
 }
 
-void ImageBinary::preProcess() {
+void ImageBinary::preProcess(TextureUnitContainer &cont) {
     utilgl::setUniforms(shader_, threshold_);
 }
 

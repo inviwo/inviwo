@@ -29,89 +29,22 @@
 
 #include <inviwo/core/interaction/events/keyboardevent.h>
 
+
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(int key, int modifiers, int state)
-    : InteractionEvent(modifiers)
-    , state_(state)
-    , key_(key) {
-}
-
-KeyboardEvent::KeyboardEvent(const KeyboardEvent& rhs) 
-    : InteractionEvent(rhs)
-    , state_(rhs.state_)
-    , key_(rhs.key_) {
-}
-
-KeyboardEvent& KeyboardEvent::operator=(const KeyboardEvent& that) {
-    if (this != &that) {
-        InteractionEvent::operator=(that);
-        state_ = that.state_;
-        key_ = that.key_;
-    }
-    return *this;
-}
+KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers)
+    : InteractionEvent(modifiers), state_(state), key_(key) {}
 
 KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
 
-KeyboardEvent::~KeyboardEvent() {}
+KeyState KeyboardEvent::state() const { return state_; }
 
-void KeyboardEvent::serialize(Serializer& s) const {
-    InteractionEvent::serialize(s);
-    s.serialize("state", state_);
-    s.serialize("key", key_);
-}
+IvwKey KeyboardEvent::key() const { return key_; }
 
-void KeyboardEvent::deserialize(Deserializer& d) {
-    InteractionEvent::deserialize(d);
-    d.deserialize("state", state_);
-    d.deserialize("key", key_);
-}
+void KeyboardEvent::setState(KeyState state) { state_ = state; }
 
-std::string KeyboardEvent::getClassIdentifier() const {
-    return "org.inviwo.KeyboardEvent";
-}
+void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
 
-int KeyboardEvent::state() const {
-    return state_;
-}
-
-int KeyboardEvent::button() const {
-    return key_;
-}
-
-bool KeyboardEvent::matching(const Event* aEvent) const {
-    const KeyboardEvent* event = dynamic_cast<const KeyboardEvent*>(aEvent);
-    if (event) {
-        return matching(event);
-    } else {
-        return false;
-    }
-}
-
-bool KeyboardEvent::matching(const KeyboardEvent* aEvent) const {
-    return key_ == aEvent->key_
-        && (state_ & aEvent->state_)
-        && InteractionEvent::matching(aEvent);
-}
-
-bool KeyboardEvent::equalSelectors(const Event* aEvent) const {
-    const KeyboardEvent* event = dynamic_cast<const KeyboardEvent*>(aEvent);
-    if (event) {
-        return InteractionEvent::equalSelectors(event)
-            && state_ == event->state_
-            && key_ == event->key_;
-    } else {
-        return false;
-    }
-}
-
-void KeyboardEvent::setState(int state) {
-    state_ = state;
-}
-
-void KeyboardEvent::setButton(int button) {
-    key_ = button;
-}
+uint64_t KeyboardEvent::hash() const { return chash(); }
 
 }  // namespace

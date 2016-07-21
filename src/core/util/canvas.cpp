@@ -35,6 +35,7 @@
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -43,14 +44,14 @@
 
 namespace inviwo {
 
-Canvas::Canvas(uvec2 dimensions)
+Canvas::Canvas(size2_t dimensions)
     : screenDimensions_(dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
     , ownerWidget_(nullptr) {}
 
-void Canvas::resize(uvec2 canvasSize) {
-    uvec2 previousScreenDimensions_ = screenDimensions_;
+void Canvas::resize(size2_t canvasSize) {
+    auto previousScreenDimensions_ = screenDimensions_;
     screenDimensions_ = canvasSize;
 
     if (propagator_) {
@@ -58,69 +59,20 @@ void Canvas::resize(uvec2 canvasSize) {
         RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent resizeEvent(screenDimensions_);
         resizeEvent.setPreviousSize(previousScreenDimensions_);
-        propagator_->propagateResizeEvent(&resizeEvent, nullptr);
+        propagator_->propagateEvent(&resizeEvent, nullptr);
     }
 }
 
-uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
+size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
 
-void Canvas::interactionEvent(Event* event) {
-    if (propagator_) {
-        NetworkLock lock;
-        propagator_->propagateEvent(event, nullptr);
-    }
-}
-
-void Canvas::mousePressEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseDoubleClickEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseReleaseEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseMoveEvent(MouseEvent* e) { mouseButtonEvent(e); }
-
-void Canvas::mouseButtonEvent(MouseEvent* e) {
-    NetworkLock lock;
-    if (!pickingContainer_.performMousePick(e)) interactionEvent(e);
-}
-
-void Canvas::mouseWheelEvent(MouseEvent* e) { interactionEvent(e); }
-
-void Canvas::keyPressEvent(KeyboardEvent* e) { interactionEvent(e); }
-
-void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
-
-void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
-
-void Canvas::touchEvent(TouchEvent* e) {
-    if (!touchEnabled()) return;
-
+void Canvas::propagateEvent(Event* event) {
     NetworkLock lock;
 
-    if (!pickingContainer_.performTouchPick(e)) {
-        // One single touch point is already sent out as mouse event
-        if (e->getTouchPoints().size() > 1) {
-            interactionEvent(e);
-        }
-    } else if (e->hasTouchPoints()) {
-        // As one touch point is handle as mouse event
-        // Send out a mouse event if only one touch point remains
-        const std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
-        if (touchPoints.size() == 1) {
-            MouseEvent mouseEvent(touchPoints[0].getPos(), MouseEvent::MOUSE_BUTTON_LEFT,
-                                  MouseEvent::MOUSE_STATE_MOVE, InteractionEvent::MODIFIER_NONE,
-                                  e->canvasSize(), touchPoints[0].getDepth());
-            interactionEvent(&mouseEvent);
-        } else {
-            interactionEvent(e);
-        }
-    }
-}
+    if (pickingContainer_.pickingEnabled()) pickingContainer_.propagateEvent(event);
 
-bool Canvas::touchEnabled() {
-    auto touchEnabledProperty =
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->enableTouchProperty_;
-    return (touchEnabledProperty.get());
+    if (event->hasBeenUsed()) return;
+
+    if (propagator_) propagator_->propagateEvent(event, nullptr);
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

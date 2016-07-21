@@ -31,147 +31,33 @@
 
 namespace inviwo {
 
-MouseEvent::MouseEvent()
-    : InteractionEvent(InteractionEvent::MODIFIER_NONE)
-    , button_(MOUSE_BUTTON_NONE)
-    , state_(MOUSE_STATE_NONE)
-    , wheelOrientation_(MOUSE_WHEEL_NONE)
-
-    , position_(ivec2(0))
-    , wheelSteps_(0)
-    , canvasSize_(uvec2(0))
-    , depth_(1.0) {}
-
-MouseEvent::MouseEvent(ivec2 position, int delta, int button, int state, int orientation,
-                       int modifiers, uvec2 canvasSize, double depth)
-    : InteractionEvent(modifiers)
+MouseEvent::MouseEvent(MouseButton button, MouseState state, MouseButtons buttonState,
+                       KeyModifiers modifiers, dvec2 normalizedPosition, uvec2 canvasSize,
+                       double depth)
+    : MouseInteractionEvent(buttonState, modifiers, normalizedPosition, canvasSize, depth)
     , button_(button)
-    , state_(state)
-    , wheelOrientation_(orientation)
+    , state_(state) {}
 
-    , position_(position)
-    , wheelSteps_(delta)
-    , canvasSize_(canvasSize)
-    , depth_(depth) {}
+MouseEvent* MouseEvent::clone() const { return new MouseEvent(*this); }
 
-MouseEvent::MouseEvent(ivec2 position, int button, int state /*= MOUSE_STATE_NONE*/,
-                       int modifiers /*= InteractionEvent::MODIFIER_NONE*/,
-                       uvec2 canvasSize /*= uvec2(0)*/, double depth)
-    : InteractionEvent(modifiers)
-    , button_(button)
-    , state_(state)
-    , wheelOrientation_(MOUSE_WHEEL_NONE)
-
-    , position_(position)
-    , wheelSteps_(0)
-    , canvasSize_(canvasSize)
-    , depth_(depth) {}
-
-MouseEvent::MouseEvent(int button, int modifiers /*= InteractionEvent::MODIFIER_NONE*/,
-                       int state /*= MOUSE_STATE_NONE*/, int orientation /*= MOUSE_WHEEL_NONE*/)
-    : InteractionEvent(modifiers)
-    , button_(button)
-    , state_(state)
-    , wheelOrientation_(orientation)
-
-    , position_(0)
-    , wheelSteps_(0)
-    , canvasSize_(0)
-    , depth_(1.0) {}
-
-MouseEvent::MouseEvent(const MouseEvent& rhs)
-    : InteractionEvent(rhs)
-    , button_(rhs.button_)
-    , state_(rhs.state_)
-    , wheelOrientation_(rhs.wheelOrientation_)
-    , position_(rhs.position_)
-    , wheelSteps_(rhs.wheelSteps_)
-    , canvasSize_(rhs.canvasSize_)
-    , depth_(rhs.depth_) {}
-
-MouseEvent& MouseEvent::operator=(const MouseEvent& that) {
-    if (this != &that) {
-        InteractionEvent::operator=(that);
-        button_ = that.button_;
-        state_ = that.state_;
-        wheelOrientation_ = that.wheelOrientation_;
-        position_ = that.position_;
-        wheelSteps_ = that.wheelSteps_;
-        canvasSize_ = that.canvasSize_;
-        depth_ = that.depth_;
-    }
-    return *this;
+inviwo::MouseButton MouseEvent::button() const {
+    return button_;
 }
 
-MouseEvent* MouseEvent::clone() const {
-    return new MouseEvent(*this);
+void MouseEvent::setButton(MouseButton button) {
+    button_ = button;
 }
 
-MouseEvent::~MouseEvent() {}
-
-void MouseEvent::modify(ivec2 newPosition, uvec2 newCanvasSize) {
-    position_ = newPosition;
-    canvasSize_ = newCanvasSize;
-};
-
-void MouseEvent::serialize(Serializer& s) const {
-    InteractionEvent::serialize(s);
-    s.serialize("button", button_);
-    s.serialize("state", state_);
-    s.serialize("wheelOrientation", wheelOrientation_);
+inviwo::MouseState MouseEvent::state() const {
+    return state_;
 }
 
-void MouseEvent::deserialize(Deserializer& d) {
-    InteractionEvent::deserialize(d);
-    d.deserialize("button", button_);
-    d.deserialize("state", state_);
-    d.deserialize("wheelOrientation", wheelOrientation_);
+void MouseEvent::setState(MouseState state) {
+    state_ = state;
 }
 
-const std::string MouseEvent::buttonNames_[] = {"", "Left button", "Middle button", "Right button"};
-
-std::string MouseEvent::getClassIdentifier() const { return "org.inviwo.MouseEvent"; }
-
-bool MouseEvent::matching(const Event* aEvent) const {
-    const MouseEvent* event = dynamic_cast<const MouseEvent*>(aEvent);
-    if (event) {
-        return matching(event);
-    } else {
-        return false;
-    }
+uint64_t MouseEvent::hash() const {
+    return chash();
 }
-bool MouseEvent::matching(const MouseEvent* aEvent) const {
-    return (button_ & aEvent->button_)
-        && (state_ & aEvent->state_)
-        && (wheelOrientation_ & aEvent->wheelOrientation_) 
-        && InteractionEvent::matching(aEvent);
-}
-
-bool MouseEvent::equalSelectors(const Event* aEvent) const {
-    const MouseEvent* event = dynamic_cast<const MouseEvent*>(aEvent);
-    if (event) {
-        return InteractionEvent::equalSelectors(event)
-            && button_ == event->button_
-            && state_ == event->state_
-            && wheelOrientation_ == event->wheelOrientation_;
-    } else {
-        return false;
-    }
-}
-
-std::string MouseEvent::buttonName() const {
-    std::vector<std::string> names;
-    if (button_ & MOUSE_BUTTON_LEFT) names.push_back(buttonNames_[1]);
-    if (button_ & MOUSE_BUTTON_MIDDLE) names.push_back(buttonNames_[2]);
-    if (button_ & MOUSE_BUTTON_RIGHT) names.push_back(buttonNames_[3]);
-
-    if (!names.empty()) {
-        return joinString(names, "+");
-    } else {
-        return buttonNames_[0];
-    }
-}
-
-
 
 }  // namespace

@@ -35,6 +35,14 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
+
+namespace {
+    std::string idToString (const size_t& id){
+        if (id == 0) return "";
+        return inviwo::toString(id);
+    };
+}
+
 namespace inviwo {
 
 const ProcessorInfo VolumeCombiner::processorInfo_{
@@ -144,8 +152,8 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
     
     size_t id = 0;
     for (const auto& dummy : inport_) {
-        ss << "uniform sampler3D volume" << id << ";\n";
-        ss << "uniform VolumeParameters volume" << id << "Parameters;\n";
+        ss << "uniform sampler3D volume" << idToString(id) << ";\n";
+        ss << "uniform VolumeParameters volume" << idToString(id) << "Parameters;\n";
         ++id;
     }
     for (auto prop : scales_.getProperties()) {
@@ -157,13 +165,13 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
     id = 0;
     for (const auto& dummy : inport_) {
         const std::string vol = "vol" + toString(id);
-        const std::string v = "volume" + toString(id);
-        const std::string vp = "volume" + toString(id) + "Parameters";
+        const std::string v = "volume" + idToString(id);
+        const std::string vp = "volume" + idToString(id) + "Parameters";
         if (useWorldSpace_) {
             const std::string coord = "coord" + toString(id);
             // Retrieve data from world space and use border value if outside of volume
             ss << "    vec3 " << coord << " = (" << vp << ".worldToTexture * "
-               << "volume0Parameters.textureToWorld * texCoord_).xyz;\n";
+               << "volumeParameters.textureToWorld * texCoord_).xyz;\n";
             ss << "    vec4 " << vol << ";\n";
             ss << "    if (all(greaterThanEqual(" << coord << ", vec3(0))) &&"
                << " all(lessThanEqual(" << coord << ", vec3(1)))) {\n";
@@ -227,7 +235,7 @@ void VolumeCombiner::process() {
     TextureUnitContainer cont;
     int i = 0;
     for (const auto& vol : inport_) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume" + toString(i));
+        utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume" + idToString(i));
         ++i;
     }
 

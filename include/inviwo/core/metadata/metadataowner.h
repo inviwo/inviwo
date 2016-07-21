@@ -130,8 +130,6 @@ U MetaDataOwner::getMetaData(const std::string &key, U val) const {
     return val;
 }
 
-
-//param val is required to deduce the template argument
 template<typename T>
 T* MetaDataOwner::getMetaData(const std::string &key) const {
     return dynamic_cast<T*>(metaData_->get(key));

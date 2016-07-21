@@ -45,7 +45,7 @@ void ProcessorMetaData::setPosition(const ivec2& pos) {
 
 ivec2 ProcessorMetaData::getPosition() const { return position_; }
 
-void ProcessorMetaData::setVisibile(bool visibility) {
+void ProcessorMetaData::setVisible(bool visibility) {
     if (visibility != visibility_) {
         visibility_ = visibility;
         forEachObserver(
@@ -79,7 +79,7 @@ void ProcessorMetaData::deserialize(Deserializer& d) {
     
     bool visibility{true};
     d.deserialize("visibility", visibility);
-    setVisibile(visibility);
+    setVisible(visibility);
     
     bool selection{false};
     d.deserialize("selection", selection);

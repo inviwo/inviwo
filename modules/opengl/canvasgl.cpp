@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-CanvasGL::CanvasGL(uvec2 dimensions)
+CanvasGL::CanvasGL(size2_t dimensions)
     : Canvas(dimensions)
     , imageGL_(nullptr)
     , image_()
@@ -88,7 +88,7 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
     update();
 }
 
-void CanvasGL::resize(uvec2 size) {
+void CanvasGL::resize(size2_t size) {
     imageGL_ = nullptr;
     pickingContainer_.setPickingSource(nullptr);
     Canvas::resize(size);
@@ -146,8 +146,9 @@ Shader* CanvasGL::noiseShader() {
 void CanvasGL::renderNoise() {
     if (!ready()) return;
     LGL_ERROR;
-    
-    glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
+
+    glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
+               static_cast<GLsizei>(getCanvasDimensions().y));
     LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
@@ -162,7 +163,8 @@ void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
     LGL_ERROR;
 
-    glViewport(0, 0, getScreenDimensions().x, getScreenDimensions().y);
+    glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
+               static_cast<GLsizei>(getCanvasDimensions().y));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -207,17 +209,18 @@ const LayerRAM* CanvasGL::getDepthLayerRAM() const {
 }
 
 double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM) const {
+    const dvec2 canvasDims{getCanvasDimensions() - size2_t(1)};
+    return getDepthValueAtNormalizedCoord(dvec2(coord) / canvasDims, depthLayerRAM);
+}
+
+double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate,
+                                                const LayerRAM* depthLayerRAM) const {
     if (!depthLayerRAM) depthLayerRAM = getDepthLayerRAM();
 
     if (depthLayerRAM) {
-        const dvec2 screenDims(getScreenDimensions());
-        const auto depthDims = depthLayerRAM->getDimensions();
-        coord = glm::max(coord, ivec2(0));
-
-        const dvec2 depthScreenRatio{dvec2(depthDims) / screenDims};
-        size2_t coordDepth{depthScreenRatio * dvec2(coord)};
-        coordDepth = glm::min(coordDepth, depthDims - size2_t(1, 1));
-
+        const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
+        const dvec2 depthDims{ depthLayerRAM->getDimensions() - size2_t(1, 1) };
+        const size2_t coordDepth{ depthDims * coords };      
         const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
 
         // Convert to normalized device coordinates
@@ -233,6 +236,14 @@ void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     imageGL_ = nullptr;
     pickingContainer_.setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);
+}
+
+size2_t CanvasGL::getImageDimensions() const {
+    if (image_) {
+        return image_->getDimensions();
+    } else {
+        return size2_t(0, 0);
+    }
 }
 
 }  // namespace

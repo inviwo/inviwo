@@ -29,22 +29,34 @@
 
 #include <modules/python3/pythonincluder.h>
 
+#include "pythonqtmethods.h"
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
-#include "pythonqtmethods.h"
 
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <modules/python3/pyinviwo.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDir>
 #include <QInputDialog>
+#include <QImageWriter>
+#include <QBuffer>
+#include <QImage>
+#include <QByteArray>
+#include <warn/pop>
+
 
 namespace inviwo {
 
@@ -61,9 +73,13 @@ static PyMethodDef Inviwo_QT_METHODS[] = {
     {"update", py_update, METH_VARARGS, "Ask QT to update its widgets"},
     {"showTransferFunctionEditor", py_showTransferFunctionEditor, METH_VARARGS,
      "Show the transfer function editor for given transfer function property."},
+    {"showHelp", py_showHelp, METH_VARARGS, "Show help for processor"},
+    {"saveProcessorPreview", py_saveProcessorPreview,  METH_VARARGS, 
+     "Generate a processor preview image"},
     nullptr};
 
 #include <warn/pop>
+
 
 struct PyModuleDef Inviwo_QT_Module_Def = {PyModuleDef_HEAD_INIT,
                                            "inviwoqt",
@@ -125,6 +141,7 @@ PyObject* py_saveWorkspace(PyObject* self, PyObject* args) {
     }
     if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
         if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            filename = filesystem::cleanupPath(filename);
             mw->getNetworkEditor()->saveNetwork(filename, setAsFilename);
         }
     }
@@ -210,4 +227,57 @@ PyObject* py_showTransferFunctionEditor(PyObject* self, PyObject* args) {
     }
     Py_RETURN_NONE;
 }
+
+PyObject* py_showHelp(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+
+    std::string classIdentifier;
+    if (tester.parse<std::string>(args, classIdentifier) == 1) {
+        auto app = InviwoApplication::getPtr();
+
+        try {
+
+            if (auto qt = dynamic_cast<InviwoApplicationQt*>(app)) {
+                if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+
+                    auto help = mw->getHelpWidget();
+                    help->showDocForClassName(classIdentifier);
+                    if (!help->isVisible()) help->show();
+                    help->raise();
+                    Py_RETURN_NONE;
+                }
+            }
+        } catch (Exception& exception) {
+            std::string msg = "Unable to show help for processor " + classIdentifier + " due to " +
+                exception.getMessage();
+            PyErr_SetString(PyExc_ValueError, msg.c_str());
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+
+PyObject* py_saveProcessorPreview(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+
+    std::string classIdentifier;
+    std::string path;
+    if (tester.parse<std::string, std::string>(args, classIdentifier, path) == 2) {
+        QString imgname(QString::fromStdString(path));
+
+        QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
+        if (!img.isNull()) {
+            QByteArray data;
+            QBuffer buffer(&data);
+            buffer.open(QIODevice::WriteOnly);
+            img.save(&buffer, "PNG");
+
+            QImageWriter writer(imgname);
+            writer.write(img);
+            Py_RETURN_NONE;
+        }
+    }
+    return nullptr;
+}
+
 }

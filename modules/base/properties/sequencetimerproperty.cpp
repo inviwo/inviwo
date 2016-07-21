@@ -29,7 +29,6 @@
 
 #include "sequencetimerproperty.h"
 #include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/action.h>
 
 namespace inviwo {
 
@@ -42,10 +41,8 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)
-    , playPause_(
-          "playPause", "Play / Pause",
-          new KeyboardEvent('P', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action([this](Event* e){play_.set(!play_.get());}))
+    , playPause_("playPause", "Play / Pause",
+                 [this](Event* e) { play_.set(!play_.get()); }, IvwKey::P, KeyState::Press)
     , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
     play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 

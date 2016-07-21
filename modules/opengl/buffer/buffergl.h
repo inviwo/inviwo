@@ -52,7 +52,7 @@ public:
      * @param std::shared_ptr<BufferObject> data Will be created if nullptr.
      * @return
      */
-    BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
+    BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target,
              std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
     BufferGL(const BufferGL& rhs);
     virtual ~BufferGL();

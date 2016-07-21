@@ -39,7 +39,7 @@ namespace inviwo {
 const ProcessorInfo Vector2DCurl::processorInfo_{
     "org.inviwo.Vector2DCurl",  // Class identifier
     "Vector 2D Curl",           // Display name
-    "Vector Field Topology",    // Category
+    "Vector Field Visualization",    // Category
     CodeState::Experimental,    // Code state
     Tags::GL,                   // Tags
 };

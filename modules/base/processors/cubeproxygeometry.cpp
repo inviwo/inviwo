@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo CubeProxyGeometry::processorInfo_{
     "org.inviwo.CubeProxyGeometry",  // Class identifier
     "Cube Proxy Geometry",           // Display name
-    "Geometry Creation",             // Category
+    "Mesh Creation",             // Category
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
 };
@@ -87,45 +87,47 @@ void CubeProxyGeometry::process() {
         extent -= marginsBottomLeft + marginsTopRight;
     }
 
-    glm::vec3 pos(0.0f);
-    glm::vec3 p1(1.0f, 0.0f, 0.0f);
-    glm::vec3 p2(0.0f, 1.0f, 0.0f);
-    glm::vec3 p3(0.0f, 0.0f, 1.0f);
-    glm::vec3 tex(startDataTexCoord);
+    glm::vec3 origin(0.0f);
+    glm::vec3 e1(1.0f, 0.0f, 0.0f);
+    glm::vec3 e2(0.0f, 1.0f, 0.0f);
+    glm::vec3 e3(0.0f, 0.0f, 1.0f);
+    glm::vec3 texOrigin(startDataTexCoord);
     glm::vec3 t1(extent.x, 0.0f, 0.0f);
     glm::vec3 t2(0.0f, extent.y, 0.0f);
     glm::vec3 t3(0.0f, 0.0f, extent.z);
-    glm::vec4 col(startDataTexCoord, 1.0f);
+    glm::vec4 colOrigin(startDataTexCoord, 1.0f);
     glm::vec4 c1(t1, 0.0f);
     glm::vec4 c2(t2, 0.0f);
     glm::vec4 c3(t3, 0.0f);
     auto dims = inport_.getData()->getDimensions();
 
     if (clippingEnabled_.get()) {
-        pos = pos + p1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
-                  + p2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
-                  + p3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
-        p1 = p1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
-        p2 = p2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
-        p3 = p3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
-        tex = tex + t1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
-                  + t2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
-                  + t3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
-        t1 = t1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
-        t2 = t2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
-        t3 = t3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
-        col = col + c1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
-                  + c2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
-                  + c3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
-        c1 = c1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
-        c2 = c2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
-        c3 = c3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
+        vec3 clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
+        vec3 clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
+
+        vec3 min(clipMin / vec3(dims));
+        vec3 clipextent((clipMax - clipMin) / vec3(dims));
+
+        origin = origin + e1 * min.x + e2 * min.y + e3 * min.z;
+        e1 *= clipextent.x;
+        e2 *= clipextent.y;
+        e3 *= clipextent.z;
+
+        texOrigin = texOrigin + t1 * min.x + t2 * min.y + t3 * min.z;
+        t1 *= clipextent.x;
+        t2 *= clipextent.y;
+        t3 *= clipextent.z;
+
+        colOrigin += c1 * min.x + c2 * min.y + c3 * min.z;
+        c1 *= clipextent.x;
+        c2 *= clipextent.y;
+        c3 *= clipextent.z;
     }
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
-    auto geom = SimpleMeshCreator::parallelepiped(pos, p1, p2, p3,
-                                                  tex, t1, t2, t3,
-                                                  col, c1, c2, c3);
+    auto geom = SimpleMeshCreator::parallelepiped(origin, e1, e2, e3,
+                                                  texOrigin, t1, t2, t3,
+                                                  colOrigin, c1, c2, c3);
     geom->setModelMatrix(inport_.getData()->getModelMatrix());
     geom->setWorldMatrix(inport_.getData()->getWorldMatrix());
     outport_.setData(geom);

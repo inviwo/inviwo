@@ -28,22 +28,24 @@
  *
  *********************************************************************************/
 
-#include "textrenderer.h"
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include "textrenderer.h"
 
 namespace inviwo {
 
-TextRenderer::TextRenderer(const std::string& fontPath)
-    : textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true) {
+TextRenderer::TextRenderer(const std::string &fontPath)
+    : textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true)
+    , fontSize_(-1)
+    , lineSpacing_(0.2) {
     if (FT_Init_FreeType(&fontlib_)) LogWarnCustom("TextRenderer", "FreeType: Major error.");
 
-    int error = 0;
-    error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
+    int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
         LogWarnCustom("TextRenderer", "FreeType: File opened and read, format unsupported.");
     } else if (error) {
@@ -53,7 +55,11 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     glGenTextures(1, &texCharacter_);
 
     initMesh();
-    setFontSize(12);
+    setFontSize(10);
+
+    fbo_.activate();
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    fbo_.deactivate();
 }
 
 TextRenderer::~TextRenderer() {
@@ -61,7 +67,8 @@ TextRenderer::~TextRenderer() {
     glDeleteTextures(1, &texCharacter_);
 }
 
-void TextRenderer::render(const char* text, float x, float y, const vec2& scale, vec4 color) {
+void TextRenderer::render(const std::string &str, float x, float y, const vec2 &scale,
+                          const vec4 &color) {
     TextureUnit texUnit;
     texUnit.activate();
 
@@ -76,44 +83,45 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
     textShader_.setUniform("tex", texUnit.getUnitNumber());
     textShader_.setUniform("color", color);
 
-    const char* p;
+    // account for baseline offset
+    // y += getBaseLineOffset() * scale.y;
 
     float offset = 0;
     float inputX = x;
 
     // TODO: To make things more reliable ask the system for proper ascii
-    char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
-    char tab = (char)0x9;  // Tab Ascii
+    const char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
+    const char tab = (char)0x9;  // Tab Ascii
 
-    BufferObjectArray rectArray;
-
-    for (p = text; *p; p++) {
-        if (FT_Load_Char(fontface_, *p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char: '" << *p << "' (0x" << std::hex << *p << ")");
+    for (auto p : str) {
+        // load glyph to access metric and bitmap of it
+        if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
+            LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
+                                                         << static_cast<int>(p) << ")");
             continue;
         }
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, fontface_->glyph->bitmap.width,
-                     fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
-                     fontface_->glyph->bitmap.buffer);
-
-        float x2 = x + fontface_->glyph->bitmap_left * scale.x;
-        float y2 = -y - fontface_->glyph->bitmap_top * scale.y;
         float w = fontface_->glyph->bitmap.width * scale.x;
         float h = fontface_->glyph->bitmap.rows * scale.y;
 
-        if (*p == lf) {
-            offset += (2 * h);
+        if (p == lf) {
+            offset += getLineHeight() * scale.y;
             x = inputX;
             y += (fontface_->glyph->advance.y >> 6) * scale.y;
             continue;
-        } else if (*p == tab) {
+        } else if (p == tab) {
             x += (fontface_->glyph->advance.x >> 6) * scale.x;
             y += (fontface_->glyph->advance.y >> 6) * scale.y;
             x += (4 * w);  // 4 times glyph character width
             continue;
         }
 
+        // load glyph into texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, fontface_->glyph->bitmap.width,
+                     fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
+                     fontface_->glyph->bitmap.buffer);
+
+        float x2 = x + fontface_->glyph->bitmap_left * scale.x;
+        float y2 = -y - fontface_->glyph->bitmap_top * scale.y;
         y2 += offset;
         // Translate quad to correct position and render
         mesh_->setModelMatrix(glm::translate(vec3(x2, -y2, 0.f)) * glm::scale(vec3(w, -h, 1.f)));
@@ -127,37 +135,63 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
     textShader_.deactivate();
 }
 
-vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
-    const char* p;
+void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
+                                   const vec4 &color) {
+    // disable depth test and writing depth
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
 
+    fbo_.activate();
+    if (prevTexture_ != texture) {
+        // detach previous texture and attach new texture as a render target, no depth texture
+        fbo_.detachTexture(GL_COLOR_ATTACHMENT0);
+        fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
+        prevTexture_ = texture;
+    }
+
+    // set up viewport
+    ivec2 dim(texture->getDimensions());
+    utilgl::ViewportState viewport(0, 0, dim.x, dim.y);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // render text into texture
+    vec2 scale(2.f / vec2(dim));
+    render(str, -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, color);
+
+    fbo_.deactivate();
+}
+
+vec2 TextRenderer::computeTextSize(const std::string &str, const vec2 &scale) {
+    return computeTextSize(str) * scale;
+}
+
+vec2 TextRenderer::computeTextSize(const std::string &str) {
     float x = 0.0f;
-    float y = 0.0f;
+    // calculate height of first line
+    // for most fonts descend is negative (see FreeType documentation for details)
+    float y = static_cast<float>(getFontAscent() + std::max(-getFontDescent(), 0.0));
 
     float maxx = 0.0f;
     float maxy = 0.0f;
 
-    char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
-    char tab = (char)0x9;  // Tab Ascii
-    
-    for (p = text; *p; p++) {
-        if (FT_Load_Char(fontface_, *p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char: '" << *p << "' (0x" << std::hex << *p << ")");
+    const char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
+    const char tab = (char)0x9;  // Tab Ascii
+
+    for (auto p : str) {
+        if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
+            LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
+                                                         << static_cast<int>(p) << ")");
             continue;
         }
 
         float w = static_cast<float>(fontface_->glyph->bitmap.width);
-        float h = static_cast<float>(fontface_->glyph->bitmap.rows);
 
-        if (y == 0.0f) y += h;
-
-        if (*p == lf) {
-            y += 2 * h;
-            x += (fontface_->glyph->advance.x >> 6);
+        if (p == lf) {
+            y += getLineHeight();
             y += (fontface_->glyph->advance.y >> 6);
-            maxx = std::max(maxx, x);
             x = 0.0f;
             continue;
-        } else if (*p == tab) {
+        } else if (p == tab) {
             x += (fontface_->glyph->advance.x >> 6);
             y += (fontface_->glyph->advance.y >> 6);
             x += (4 * w);  // 4 times glyph character width
@@ -171,15 +205,18 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
         maxy = std::max(maxy, y);
     }
 
-    return vec2(maxx, maxy) * scale;
+    // add 2 pixel in vertical direction to prevent cut-off. This is caused by the fact
+    // that the font ascend and descend are not necessarily correct
+    // (see FreeType documentation for details)
+    return vec2(maxx, maxy + 2);
 }
 
 void TextRenderer::initMesh() {
-    auto verticesBuffer = util::makeBuffer<vec2>(
-        {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+    auto verticesBuffer =
+        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
 
-    auto texCoordsBuffer = util::makeBuffer<vec2>(
-        {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+    auto texCoordsBuffer =
+        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
 
     auto indices = util::makeIndexBuffer({0, 1, 2, 3});
 
@@ -192,8 +229,32 @@ void TextRenderer::initMesh() {
 }
 
 void TextRenderer::setFontSize(int val) {
-    fontSize_ = val;
-    FT_Set_Pixel_Sizes(fontface_, 0, val);
+    if (fontSize_ != val) {
+        fontSize_ = val;
+        FT_Set_Pixel_Sizes(fontface_, 0, val);
+    }
+}
+
+void TextRenderer::setLineSpacing(double lineSpacing) { lineSpacing_ = lineSpacing; }
+
+double TextRenderer::getLineSpacing() const { return lineSpacing_; }
+
+void TextRenderer::setLineHeight(int lineHeight) {
+    lineSpacing_ = static_cast<double>(lineHeight) / static_cast<double>(fontSize_) - 1.0;
+}
+
+int TextRenderer::getLineHeight() const {
+    return static_cast<int>(fontSize_ * (1.0 + lineSpacing_));
+}
+
+int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscent()); }
+
+double TextRenderer::getFontAscent() const {
+    return (fontface_->ascender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
+}
+
+double TextRenderer::getFontDescent() const {
+    return (fontface_->descender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 
 }  // namespace

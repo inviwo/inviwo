@@ -64,6 +64,11 @@ void BasicMesh::addVertices(const std::vector<Vertex> &data) {
     auto c = getEditableColorsRAM();
     auto n = getEditableNormalsRAM();
 
+    v->getDataContainer()->reserve(data.size() + v->getDataContainer()->size());
+    t->getDataContainer()->reserve(data.size() + t->getDataContainer()->size());
+    c->getDataContainer()->reserve(data.size() + c->getDataContainer()->size());
+    n->getDataContainer()->reserve(data.size() + n->getDataContainer()->size());
+
     for (const auto& elem : data) {
         v->add(elem.pos);
         n->add(elem.normal);
@@ -130,6 +135,14 @@ const Buffer<vec3>* BasicMesh::getTexCoords() const { return texCoords_.get(); }
 const Buffer<vec4>* BasicMesh::getColors() const { return colors_.get(); }
 
 const Buffer<vec3>* BasicMesh::getNormals() const { return normals_.get(); }
+
+Buffer<vec3>* BasicMesh::getEditableVertices() { return vertices_.get(); }
+
+Buffer<vec3>* BasicMesh::getEditableTexCoords() { return texCoords_.get(); }
+
+Buffer<vec4>* BasicMesh::getEditableColors() { return colors_.get(); }
+
+Buffer<vec3>* BasicMesh::getEditableNormals() { return normals_.get(); }
 
 const Vec3BufferRAM* BasicMesh::getVerticesRAM() const { return vertices_->getRAMRepresentation(); }
 const Vec3BufferRAM* BasicMesh::getTexCoordsRAM() const {
@@ -799,10 +812,10 @@ std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, 
 
 }
 
-std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal,
-                                             const glm::vec2& extent,
+std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& center, const vec3& normal,
+                                             const vec2& extent,
                                              const vec4& color /*= vec4(1,1,1,1)*/,
-                                             const ivec2& inres /*= ivec2(1)*/) {
+                                             const ivec2& segments /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
@@ -810,19 +823,19 @@ std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal
     vec3 right = orthvec(normal);
     vec3 up = glm::cross(right, normal);
 
-    vec3 start = pos - 0.5f * extent.x * right - 0.5f * extent.y * up;
-    ivec2 res = inres + ivec2(1);
+    vec3 start = center - 0.5f * extent.x * right - 0.5f * extent.y * up;
+    ivec2 res = segments + ivec2(1);
 
     for (int j = 0; j < res.y; j++) {
         for (int i = 0; i < res.x; i++) {
             mesh->addVertex(
-                start + static_cast<float>(i) / static_cast<float>(inres.x) * extent.x * right +
-                    static_cast<float>(j) / static_cast<float>(inres.y) * extent.y * up,
-                normal, vec3(static_cast<float>(i) / static_cast<float>(inres.x),
-                             static_cast<float>(j) / static_cast<float>(inres.y), 0.0f),
+                start + static_cast<float>(i) / static_cast<float>(segments.x) * extent.x * right +
+                    static_cast<float>(j) / static_cast<float>(segments.y) * extent.y * up,
+                normal, vec3(static_cast<float>(i) / static_cast<float>(segments.x),
+                             static_cast<float>(j) / static_cast<float>(segments.y), 0.0f),
                 color);
 
-            if (i != inres.x && j != inres.y) {
+            if (i != segments.x && j != segments.y) {
                 inds->add(i + res.x * j);
                 inds->add(i + 1 + res.x * j);
                 inds->add(i + res.x * (j + 1));

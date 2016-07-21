@@ -44,7 +44,7 @@ namespace inviwo {
 const ProcessorInfo EntryExitPoints::processorInfo_{
     "org.inviwo.EntryExitPoints",  // Class identifier
     "Entry Exit Points",           // Display name
-    "Geometry Rendering",          // Category
+    "Mesh Rendering",          // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };

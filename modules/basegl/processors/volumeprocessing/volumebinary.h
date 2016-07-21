@@ -38,27 +38,26 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, VolumeBinary}
- * Explanation of how to use the processor.
- *
+/** \docpage{org.inviwo.VolumeBinary, Volume Binary}
+ * ![](org.inviwo.VolumeBinary.png?classIdentifier=org.inviwo.VolumeBinary)
+ * Computes a binary volume of the input volume using a threshold. The output 
+ * will contain "0" for all values below the threshold and "1" otherwise. 
+ * 
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputVolume__ Input volume
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __outputVolume__ Binary output volume
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Threshold__ Threshold used for the binarization of the input volume
  */
 
 
 /**
  * \class VolumeBinary
  *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief computes a binary volume of the input volume using a threshold.
  */
 class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor { 
 public:

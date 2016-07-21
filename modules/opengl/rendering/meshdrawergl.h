@@ -34,6 +34,8 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/rendering/meshdrawer.h>
+#include <modules/opengl/openglutils.h>
+
 #include <vector>
 
 namespace inviwo {
@@ -56,43 +58,79 @@ public:
         NumberOfDrawModes
     };
 
+    /**
+     * \brief This class provides functionality for efficient, subsequent drawing of a mesh. The
+     * buffers of the mesh will be bound once this class is instantiated.
+     */
+    class IVW_MODULE_OPENGL_API DrawObject {
+    public:
+        DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo);
+        DrawObject(const DrawObject&) = delete;
+        DrawObject(DrawObject&&) = default;
+        DrawObject& operator=(const DrawObject&) = delete;
+        DrawObject& operator=(DrawObject&&) = default;
+        ~DrawObject() = default;
+
+        void draw();
+        void draw(DrawMode drawMode);
+
+        void draw(std::size_t index);
+        void draw(DrawMode drawMode, std::size_t index);
+
+
+        /** 
+         * \brief returns the number of index buffers associated with the mesh representation
+         */
+        std::size_t size() const;
+
+    private:
+        utilgl::Enable<MeshGL> enable_;
+        const MeshGL *meshGL_;
+        Mesh::MeshInfo arrayMeshInfo_;
+    };
+
     MeshDrawerGL();
     MeshDrawerGL(const Mesh* mesh);
-    MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo);
-    MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
-    MeshDrawerGL& operator=(const MeshDrawerGL& other);
-    MeshDrawerGL(MeshDrawerGL&& other);  // move constructor
-    virtual ~MeshDrawerGL();
+    MeshDrawerGL(const MeshDrawerGL &rhs) = default;
+    MeshDrawerGL(MeshDrawerGL&& other) = default;
+    virtual ~MeshDrawerGL() = default;
 
+    MeshDrawerGL& operator=(const MeshDrawerGL& other) = default;
+    MeshDrawerGL& operator=(MeshDrawerGL&& rhs) = default;
+
+    DrawObject getDrawObject() const { return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo()); }
+
+    /**
+     * \brief draws the mesh using its mesh info. If index buffers are present, the mesh
+     * will be rendered with glDrawElements() using those index buffers and the associated draw
+     * modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode
+     * returned by Mesh::getDefaultMeshInfo().
+     *
+     * \see Mesh, Mesh::MeshInfo
+     */
     virtual void draw() override;
-    virtual void draw(DrawMode dm);
 
-    GLenum getDefaultDrawMode();
-    DrawMode getDrawMode(DrawType, ConnectivityType) const;
-    GLenum getGLDrawMode(DrawMode) const;
+    /**
+    * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
+    * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
+    * is rendered using glDrawArrays.
+    *
+    * \see Mesh, DrawMode
+    *
+    * @param drawMode draw mode used to render the mesh
+    */
+    virtual void draw(DrawMode drawMode);
 
-    virtual const Mesh* getGeometry() const override { return meshToDraw_; }
+    static DrawMode getDrawMode(DrawType, ConnectivityType);
+    static GLenum getGLDrawMode(DrawMode);
+    static GLenum getGLDrawMode(Mesh::MeshInfo meshInfo);
+
+    virtual const Mesh* getMesh() const override { return meshToDraw_; }
 
 protected:
     virtual MeshDrawer* create(const Mesh* geom) const override { return new MeshDrawerGL(geom); }
     virtual bool canDraw(const Mesh* geom) const override { return geom != nullptr; }
 
-    virtual void initialize(Mesh::MeshInfo = Mesh::MeshInfo());
-    void initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai);
-
-    void drawArray(DrawMode) const;
-    void drawElements(DrawMode) const;
-    void emptyFunc(DrawMode dt) const {};
-
-    // A member function pointer to Either drawArrays, drawElement or emptyFunc
-    using DrawFunc = void (MeshDrawerGL::*)(DrawMode) const;
-    struct DrawMethod {
-        DrawFunc drawFunc;
-        GLenum drawMode;
-        std::vector<const BufferBase*> elementBufferList;
-    };
-
-    DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NumberOfDrawModes)];
     const Mesh* meshToDraw_;
 };
 

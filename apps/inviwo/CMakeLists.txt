@@ -3,12 +3,9 @@
 ivw_project(inviwo)
 
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
-
-if(POLICY CMP0043)
-    cmake_policy(SET CMP0043 OLD) # Ignore compile definitions.
-endif()
-
+find_package(Qt5Help QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -65,14 +62,15 @@ set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
 elseif(APPLE)
-    set(MACOSX_BUNDLE_BUNDLE_NAME Inviwo)
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER "Inviwo")
-    set(MACOSX_BUNDLE_ICON_FILE inviwo_light.icns)
-    set(MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-2015 Inviwo Foundation")
+    string(TIMESTAMP YEAR "%Y")
+    set(MACOSX_BUNDLE_BUNDLE_NAME          Inviwo)
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER       "Inviwo")
+    set(MACOSX_BUNDLE_ICON_FILE            inviwo_light.icns)
+    set(MACOSX_BUNDLE_INFO_STRING          "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}.")
-    set(MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_COPYRIGHT "(C) 2012-2015 Inviwo Foundation")
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${IVW_VERSION}.")
+    set(MACOSX_BUNDLE_BUNDLE_VERSION       "${IVW_VERSION}")
+    set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2012-${YEAR} Inviwo Foundation")
     set_source_files_properties(${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
 endif()
@@ -98,25 +96,24 @@ ivw_define_standard_properties(inviwo)
 # Add application to pack
 if(IVW_PACKAGE_PROJECT)
     if(WIN32)
-        install(TARGETS inviwo
-                RUNTIME DESTINATION bin
-                COMPONENT qt_app)
+        install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
 
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
 
-        install(TARGETS inviwo 
-            RUNTIME DESTINATION bin 
-            BUNDLE DESTINATION . 
-            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS/ 
-            LIBRARY DESTINATION Inviwo.app/Contents/MacOS/ 
+        install(
+            TARGETS inviwo 
+            RUNTIME   DESTINATION bin 
+            BUNDLE    DESTINATION . 
+            ARCHIVE   DESTINATION Inviwo.app/Contents/MacOS/ 
+            LIBRARY   DESTINATION Inviwo.app/Contents/MacOS/ 
             COMPONENT qt_app
         )
 
         set(plugin_dest_dir Inviwo.app/Contents/MacOS)
         set(qtconf_dest_dir Inviwo.app/Contents/Resources)
         set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
-        set(DIRS "${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
+        set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
         
         # get link errors with out this line.
         install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
@@ -128,21 +125,24 @@ if(IVW_PACKAGE_PROJECT)
                       fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
                 COMPONENT qt_app
         )
+
         install(
-            DIRECTORY ${IVW_ROOT_DIR}/data/ 
+            DIRECTORY   ${IVW_ROOT_DIR}/data/ 
             DESTINATION Inviwo.app/Contents/Resources/data
-            COMPONENT qt_app
+            COMPONENT   qt_app
         )
 
         set(CPACK_BINARY_DRAGNDROP ON)
 
     else()
-        install(TARGETS inviwo
-                RUNTIME DESTINATION bin
-                BUNDLE DESTINATION bin
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib
-                COMPONENT qt_app)
+        install(
+            TARGETS   inviwo
+            RUNTIME   DESTINATION bin
+            BUNDLE    DESTINATION bin
+            ARCHIVE   DESTINATION lib
+            LIBRARY   DESTINATION lib
+            COMPONENT qt_app
+        )
     endif()
 endif()
 
@@ -157,14 +157,12 @@ ivw_add_dependencies(${package_list})
 ivw_memleak_setup(inviwo)
 
 #--------------------------------------------------------------------
-# and a console version of inviwo.exe called inviwo-cli.exe
+# add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
-    set_target_properties(inviwo PROPERTIES LINK_FLAGS 
-        "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 
+        " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
     ivw_project(inviwo-cli)
-
-    #set(_pchDisabledForThisModule TRUE)
 
     add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
         ${SOURCE_FILES} 
@@ -173,14 +171,13 @@ if(WIN32)
         ${QRC_FILE} 
         ${RES_FILES})
 
-    set_target_properties(inviwo-cli PROPERTIES LINK_FLAGS 
-        "/SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
-    
     add_dependencies(inviwo-cli inviwo)
 
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
     ivw_add_dependencies(${package_list})
-    #ivw_compile_optimize_inviwo_core()
     ivw_memleak_setup(inviwo-cli)
+
+    set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
+        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
 endif()

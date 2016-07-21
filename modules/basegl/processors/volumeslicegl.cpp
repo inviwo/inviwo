@@ -42,6 +42,8 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/network/networklock.h>
@@ -66,7 +68,7 @@ VolumeSliceGL::VolumeSliceGL()
     , indicatorShader_("standard.vert", "standard.frag", true)
     , trafoGroup_("trafoGroup", "Transformations")
     , pickGroup_("pickGroup", "Position Selection")
-    , tfGroup_("tfGroup", "Transfer Function")
+    , tfGroup_("tfGroup", "Transfer Function Properties")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
@@ -91,30 +93,26 @@ VolumeSliceGL::VolumeSliceGL()
                       PropertySemantics::Color)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
+    , transferFunction_("transferFunction", "Transfer Function", TransferFunction(), &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
+    , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_(
-          "mouseShiftSlice", "Mouse Slice Shift",
-          new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
-                         MouseEvent::MOUSE_STATE_WHEEL, MouseEvent::MOUSE_WHEEL_ANY),
-          new Action(this, &VolumeSliceGL::eventShiftSlice))
-    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker",
-                      new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-                                     MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-                      new Action(this, &VolumeSliceGL::eventSetMarker))
-    , stepSliceUp_(
-          "stepSliceUp", "Key Slice Up",
-          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSliceGL::eventStepSliceUp))
+    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
+                      [this](Event* e) { eventShiftSlice(e); },
+                      util::make_unique<WheelEventMatcher>())
+    
+    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
+                      MouseButton::Left, MouseState::Press | MouseState::Move)
+    
+    , stepSliceUp_( "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+          IvwKey::W, KeyState::Press)
     , stepSliceDown_(
-          "stepSliceDown", "Key Slice Down",
-          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-          new Action(this, &VolumeSliceGL::eventStepSliceDown))
-    , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
-                         new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-                         new Action(this, &VolumeSliceGL::eventGestureShiftSlice))
+          "stepSliceDown", "Key Slice Down",  [this](Event* e) { eventStepSliceDown(e); },
+          IvwKey::S, KeyState::Press)
+    , gestureShiftSlice_(
+          "gestureShiftSlice", "Gesture Slice Shift",
+          [this](Event* e) { eventGestureShiftSlice(e); },
+          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -131,7 +129,7 @@ VolumeSliceGL::VolumeSliceGL()
                               static_cast<int>(CartesianCoordinateAxis::Y));
     sliceAlongAxis_.addOption("z", "x-y plane (Z axis)",
                               static_cast<int>(CartesianCoordinateAxis::Z));
-    sliceAlongAxis_.addOption("p", "plane equation", 3);
+    sliceAlongAxis_.addOption("p", "Plane Equation", 3);
     sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
     sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
@@ -156,14 +154,14 @@ VolumeSliceGL::VolumeSliceGL()
     rotationAroundAxis_.addOption("90", "90 deg", 1);
     rotationAroundAxis_.addOption("180", "180 deg", 2);
     rotationAroundAxis_.addOption("270", "270 deg", 3);
-    rotationAroundAxis_.addOption("free", "Free rotation", 4);
+    rotationAroundAxis_.addOption("free", "Free Rotation", 4);
     rotationAroundAxis_.set(0);
     rotationAroundAxis_.setCurrentStateAsDefault();
 
-    volumeWrapping_.addOption("color", "Fill with color", GL_CLAMP_TO_EDGE);
-    volumeWrapping_.addOption("edge", "Fill with edge", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("color", "Fill with Color", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("edge", "Fill with Edge", GL_CLAMP_TO_EDGE);
     volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
-    volumeWrapping_.addOption("m-repeat", "Mirrored repeat", GL_MIRRORED_REPEAT);
+    volumeWrapping_.addOption("m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT);
     volumeWrapping_.setSelectedIndex(0);
     volumeWrapping_.setCurrentStateAsDefault();
 
@@ -582,16 +580,15 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 }
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    int steps = mouseEvent->wheelSteps();
+    auto wheelEvent = static_cast<WheelEvent*>(event);
+    int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
     event->markAsUsed();
 }
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
-    MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
-    vec2 mousePos(mouseEvent->posNormalized());
-    setVolPosFromScreenPos(vec2(mousePos.x, 1.0f - mousePos.y));
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+    setVolPosFromScreenPos(static_cast<vec2>(mouseEvent->posNormalized()));
     event->markAsUsed();
 }
 

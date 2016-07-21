@@ -107,6 +107,8 @@ public:
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
+    vec4 sample(float v)const;
+
     typedef std::vector<TransferFunctionDataPoint*> TFPoints;
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 protected:

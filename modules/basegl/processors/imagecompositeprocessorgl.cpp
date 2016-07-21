@@ -41,26 +41,23 @@ const ProcessorInfo ImageCompositeProcessorGL::processorInfo_{
     CodeState::Experimental,                 // Code state
     Tags::GL,                                // Tags
 };
-const ProcessorInfo ImageCompositeProcessorGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageCompositeProcessorGL::ImageCompositeProcessorGL()
-    : CompositeProcessorGL()
+    : Processor()
     , imageInport1_("imageInport1")
     , imageInport2_("imageInport2")
     , outport_("outport") {
-    
     addPort(imageInport1_);
     addPort(imageInport2_);
     addPort(outport_);
 }
-    
+
 void ImageCompositeProcessorGL::process() {
     utilgl::activateTargetAndCopySource(outport_, imageInport1_);
     utilgl::deactivateCurrentTarget();
 
-    compositePortsToOutport(outport_, ImageType::ColorDepth, imageInport2_);
+    compositor_.composite(imageInport2_, outport_, ImageType::ColorDepth);
 }
 
 } // namespace

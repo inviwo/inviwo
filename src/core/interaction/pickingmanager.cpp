@@ -35,17 +35,14 @@
 
 namespace inviwo {
 
-PickingManager::~PickingManager() {}
+PickingManager::~PickingManager() = default;
 
-const PickingObject* PickingManager::registerPickingCallback(
-    std::function<void(const PickingObject*)> callback, size_t size /*= 1*/) {
+PickingObject* PickingManager::registerPickingCallback(PickingObject::Action action, size_t size) {
     PickingObject* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
     auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
-                               [](PickingObject* p, size_t s) {
-                                   return p->getCapacity() < s;
-                               });
+                               [](PickingObject* p, size_t s) { return p->getCapacity() < s; });
 
     if (it != unusedObjects_.end()) {
         pickObj = *it;
@@ -58,7 +55,7 @@ const PickingObject* PickingManager::registerPickingCallback(
         lastIndex_ += size;
         pickObj = pickingObjects_.back().get();
     }
-    pickObj->setCallback(callback);
+    pickObj->setAction(std::move(action));
     return pickObj;
 }
 
@@ -69,13 +66,13 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
             pickingObjects_, [p](const std::unique_ptr<PickingObject>& o) { return p == o.get(); });
 
         if (it2 != pickingObjects_.end()) {
-            (*it2)->setCallback(nullptr);
+            (*it2)->setAction(nullptr);
 
-            auto insit =
-                std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(), (*it2)->getCapacity(),
-                                 [](const size_t& capacity, PickingObject* po) {
-                return capacity < po->getCapacity();
-            });
+            auto insit = std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(),
+                                          (*it2)->getCapacity(),
+                                          [](const size_t& capacity, PickingObject* po) {
+                                              return capacity < po->getCapacity();
+                                          });
 
             unusedObjects_.insert(insit, (*it2).get());
             return true;
@@ -86,23 +83,29 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
 }
 
 bool PickingManager::pickingEnabled() {
-    BoolProperty* pickingEnabledProperty = dynamic_cast<BoolProperty*>(
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getPropertyByIdentifier(
-            "enablePicking"));
-    return (pickingEnabledProperty && pickingEnabledProperty->get());
+    if (!enableCallback_) {
+        auto picking = &(InviwoApplication::getPtr()
+                             ->getSettingsByType<SystemSettings>()
+                             ->enablePickingProperty_);
+
+        enableCallback_ = picking->onChange([this, picking]() { enabled_ = picking->get(); });
+        enabled_ = picking->get();
+    }
+
+    return enabled_;
 }
 
-inviwo::uvec3 PickingManager::indexToColor(size_t id) {
+uvec3 PickingManager::indexToColor(size_t id) {
     const size_t Nr = 13;
     const size_t colors = 256 * 256 * 256;
-    id++; // avoid zero
+    id++;  // avoid zero
 
     size_t i = id % Nr;
     size_t n = static_cast<size_t>(
         std::floor(i * colors / static_cast<double>(Nr) + id / static_cast<double>(Nr)));
     return uvec3(static_cast<unsigned char>(std::floor(n / (256.0 * 256.0))),
-              static_cast<unsigned char>(std::floor(static_cast<double>(n) / 256.0)) % 256,
-              static_cast<unsigned char>(n % 256));
+                 static_cast<unsigned char>(std::floor(static_cast<double>(n) / 256.0)) % 256,
+                 static_cast<unsigned char>(n % 256));
 }
 
 size_t PickingManager::colorToIndex(uvec3 color) {
@@ -111,7 +114,7 @@ size_t PickingManager::colorToIndex(uvec3 color) {
     size_t n = color.r * 256 * 256 + color.g * 256 + color.b;
     auto i = std::round(n / (colors / static_cast<double>(Nr)));
     auto o = n - std::round(i * colors / static_cast<double>(Nr));
-    return static_cast<size_t>(o * Nr + i)-1;
+    return static_cast<size_t>(o * Nr + i) - 1;
 }
 
 PickingObject* PickingManager::getPickingObjectFromColor(const uvec3& c) {

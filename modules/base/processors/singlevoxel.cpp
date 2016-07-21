@@ -27,35 +27,42 @@
  *
  *********************************************************************************/
 
-#include "singlevoxel.h"
 #include <inviwo/core/util/volumesampler.h>
+#include "singlevoxel.h"
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SingleVoxel::processorInfo_{
-    "org.inviwo.SingleVoxel",      // Class identifier
-    "Single Voxel",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.SingleVoxel",  // Class identifier
+    "Single Voxel",            // Display name
+    "Information",             // Category
+    CodeState::Experimental,   // Code state
+    Tags::None,                // Tags
 };
 
-const ProcessorInfo SingleVoxel::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo SingleVoxel::getProcessorInfo() const { return processorInfo_; }
 
 SingleVoxel::SingleVoxel()
     : Processor()
     , volume_("volume")
-    , position_("position", "Position", vec3(0.0f), vec3(0.0f), vec3(1.0f)) 
-    , doubleProperty_("doubleProperty", "Voxel value", 0, std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max())
-    , dvec2Property_("dvec2Property", "Voxel value", dvec2(0), dvec2(std::numeric_limits<double>::lowest()), dvec2(std::numeric_limits<double>::max()))
-    , dvec3Property_("dvec3Property", "Voxel value", dvec3(0), dvec3(std::numeric_limits<double>::lowest()), dvec3(std::numeric_limits<double>::max()))
-    , dvec4Property_("dvec4Property", "Voxel value", dvec4(0), dvec4(std::numeric_limits<double>::lowest()), dvec4(std::numeric_limits<double>::max()))
-    , space_("space", "Space")
-{
-    
+    , position_("position", "Position", dvec3(0.0), dvec3(0.0), dvec3(1.0))
+    , doubleProperty_("doubleProperty", "Voxel value", 0, std::numeric_limits<double>::lowest(),
+                      std::numeric_limits<double>::max(), 0.0001, InvalidationLevel::Valid,
+                      PropertySemantics::Text)
+    , dvec2Property_("dvec2Property", "Voxel value", dvec2(0),
+                     dvec2(std::numeric_limits<double>::lowest()),
+                     dvec2(std::numeric_limits<double>::max()), dvec2(0.0001), InvalidationLevel::Valid,
+                     PropertySemantics::Text)
+    , dvec3Property_("dvec3Property", "Voxel value", dvec3(0),
+                     dvec3(std::numeric_limits<double>::lowest()),
+                     dvec3(std::numeric_limits<double>::max()), dvec3(0.0001), InvalidationLevel::Valid,
+                     PropertySemantics::Text)
+    , dvec4Property_("dvec4Property", "Voxel value", dvec4(0),
+                     dvec4(std::numeric_limits<double>::lowest()),
+                     dvec4(std::numeric_limits<double>::max()), dvec4(0.0001), InvalidationLevel::Valid,
+                     PropertySemantics::Text)
+    , space_("space", "Space") {
     addPort(volume_);
     addProperty(space_);
     addProperty(position_);
@@ -74,14 +81,13 @@ SingleVoxel::SingleVoxel()
     dvec3Property_.setSemantics(PropertySemantics("Text"));
     dvec4Property_.setSemantics(PropertySemantics("Text"));
 
-    space_.addOption("model", "Model", SpatialCoordinateTransformer<3>::Space::Model);
-    space_.addOption("world", "World", SpatialCoordinateTransformer<3>::Space::World);
-    space_.addOption("data", "Data", SpatialCoordinateTransformer<3>::Space::Data);
-
+    space_.addOption("model", "Model", CoordinateSpace::Model);
+    space_.addOption("world", "World", CoordinateSpace::World);
+    space_.addOption("data", "Data", CoordinateSpace::Data);
 
     setAllPropertiesCurrentStateAsDefault();
 }
-    
+
 void SingleVoxel::process() {
     auto vol = volume_.getData();
     auto df = vol->getDataFormat();
@@ -112,10 +118,6 @@ void SingleVoxel::process() {
         auto sample = sampler.sample(position_, space_.get());
         dvec4Property_.set(sample);
     }
-
-
 }
 
-
-} // namespace
-
+}  // namespace

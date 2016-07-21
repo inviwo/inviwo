@@ -66,6 +66,10 @@ inviwo::IntegralLine PathLineTracer::traceFrom(const dvec4 &p) {
         std::reverse(line.positions_.begin(),
                      line.positions_.end());  // reverse is faster than insert first
         line.positions_.pop_back();           // dont repeat first step
+        for (auto &m : line.metaData_) {
+            std::reverse(m.second.begin(), m.second.end());  // reverse is faster than insert first
+            m.second.pop_back();                             // dont repeat first step
+        }
     }
     if (fwd) {
         step(steps_ / (both ? 2 : 1), p, line, true);
@@ -104,43 +108,12 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
         line.metaData_["velocity"].push_back(worldVelocty);
         line.metaData_["timestamp"].push_back(dvec3(curPos.a));
 
-        curPos += dvec4(velocity, stepSize_);
+        curPos += dvec4(velocity, stepSize_* (fwd ? 1.0 : -1.0));
     }
 }
 
 dvec3 PathLineTracer::sample(const dvec4 &pos) {
     return sampler_->sample(pos);
-    /*double t = pos.w;
-    dvec3 pos3 = pos.xyz();
-    auto vols = util::getVolumesForTimestep(volumeSequence_, t);
-    auto vol0 = vols.first.get();
-    auto vol1 = vols.second.get();
-    if (vol0 == vol1) {
-        auto it = samplers_.find(vol0);
-        return it->second.sample(pos3);
-    }
-    auto s0 = samplers_.find(vol0)->second;
-    auto s1 = samplers_.find(vol1)->second;
-
-    auto v0 = s0.sample(pos3);
-    auto v1 = s1.sample(pos3);
-
-    double t0, t1;
-
-    if (hasTimestamps_) {
-        t0 = util::getTimestamp(vols.first);
-        t1 = util::getTimestamp(vols.second);
-    } else {
-        auto i0 = std::find(volumeSequence_.begin(), volumeSequence_.end(), vols.first) -
-                  volumeSequence_.begin();
-        auto i1 = std::find(volumeSequence_.begin(), volumeSequence_.end(), vols.second) -
-                  volumeSequence_.begin();
-        t0 = i0 / (volumeSequence_.size() - 1.0);
-        t1 = i1 / (volumeSequence_.size() - 1.0);
-    }
-
-    auto x = (t - t0) / (t1 - t0);
-    return Interpolation<dvec3>::linear(v0, v1, x);*/
 }
 
 inviwo::dvec3 PathLineTracer::euler(const dvec4 &curPos) { return sample(curPos); }

@@ -41,26 +41,26 @@
 
 namespace inviwo {
 
+class Mesh;
+
 /** \docpage{org.inviwo.OrientationIndicator, Orientation Marker}
  * ![](org.inviwo.OrientationIndicator.png?classIdentifier=org.inviwo.OrientationIndicator)
- * Explanation of how to use the processor.
+ * Generates a mesh with three arrows indication the direction of the three coordinate axes.
  *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ * ### Outport
+ *   * __mesh__ The generated indicator mesh
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-
-/**
- * \class OrientationIndicator
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ *   * __Base Color__ Color of the central sphere
+ *   * __X axis Color__ Color of the first arrow
+ *   * __Y axis Color__ Color of the second arrow
+ *   * __Z axis Color__ Color of the third arrow
+ *   * __Scale__ Overall scaling factor for the widget
+ *   * __Radius__ Radius of arrows
+ *   * __Axis scale__ scaling factors for each arrow.
+ *   * __Location Type__ Locate the widget in image space (2D) or world space (3D)
+ *   * __View Coords__ Where to put the widget in normalized image coordinates
+ *   * __Offset__ Where to put the widget in world space
  */
 class IVW_MODULE_BASE_API OrientationIndicator : public Processor { 
 public:
@@ -77,7 +77,9 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 private:
-    MeshOutport mesh_;
+    void updateMesh();
+
+    MeshOutport outport_;
 
     FloatVec4Property baseColor_;
     FloatVec4Property xColor_;
@@ -96,7 +98,7 @@ private:
 
     FloatVec3Property offset_;
 
-
+    std::shared_ptr<Mesh> mesh_;
 };
 
 } // namespace

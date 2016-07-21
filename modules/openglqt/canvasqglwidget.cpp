@@ -49,7 +49,7 @@ inline QGLFormat GetQGLFormat() {
 QGLFormat CanvasQGLWidget::sharedFormat_ = GetQGLFormat();
 CanvasQGLWidget* CanvasQGLWidget::sharedCanvas_ = nullptr;
 
-CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, uvec2 dim)
+CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, size2_t dim)
     : QGLWidget(sharedFormat_, parent, sharedCanvas_)
     , CanvasGL(dim) {
     // This is our default rendering context
@@ -110,8 +110,9 @@ void CanvasQGLWidget::paintGL() {
     CanvasGL::update();
 }
 
-void CanvasQGLWidget::resize(uvec2 size) {
-    QGLWidget::resize(size.x, size.y); // this should trigger a resize event.
+void CanvasQGLWidget::resize(size2_t size) {
+    // this should trigger a resize event.
+    QGLWidget::resize(static_cast<int>(size.x), static_cast<int>(size.y));
 }
 
 Canvas::ContextID CanvasQGLWidget::activeContext() const {
@@ -124,7 +125,7 @@ void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
 
-    CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
+    CanvasGL::resize(size2_t(event->size().width(), event->size().height()));
     QGLWidget::resizeEvent(event);
 }
 

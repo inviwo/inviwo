@@ -42,6 +42,7 @@ namespace inviwo {
 template <typename T>
 class DataOutport : public Outport, public OutportIterableImpl<T> {
 public:
+    using type = T;
     DataOutport(std::string identifier);
     virtual ~DataOutport();
 

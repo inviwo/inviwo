@@ -33,36 +33,40 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <vector>
+#include <cstdint>
 
 namespace inviwo {
 
 class Processor;
+class Inport;
+class Outport;
 
-class IVW_CORE_API Event : public Serializable {
+class IVW_CORE_API Event {
 public:
-    Event() = default;
-    Event(const Event& rhs) = default;
-    Event& operator=(const Event& that) = default;
-    virtual Event* clone() const;
-    virtual ~Event() = default;
+    virtual ~Event() = default;   
+    virtual Event* clone() const = 0;
+    virtual uint64_t hash() const = 0;
 
-    // Check if this event has the same type and selectors as aEvent.
-    // this should be the selector, and aEvent the "real" event.
-    virtual bool matching(const Event* aEvent) const { return false; }
-    virtual bool equalSelectors(const Event* aEvent) const { return false; }
+    /**
+     * Determine if the event should be propagated upwards to inport.
+     * Can be overloaded to limit the number or ports a event is propagated through. 
+     */
+    virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source);
 
     void markAsUsed();
     bool hasBeenUsed() const;
+    void markAsUnused();
 
     void markAsVisited(Processor*);
     bool hasVisitedProcessor(Processor*) const;
-
     // Can be used to figure out where an event came from. 
     // Processors are added in chronological order.
     const std::vector<Processor*>& getVisitedProcessors() const;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+protected:
+    Event() = default;
+    Event(const Event& rhs) = default;
+    Event& operator=(const Event& that) = default;   
 
 private:
     bool used_ = false;

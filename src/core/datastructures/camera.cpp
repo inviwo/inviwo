@@ -42,7 +42,7 @@ Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float f
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true) {}
 
-const mat4& Camera::viewMatrix() const {
+const mat4& Camera::getViewMatrix() const {
     if (invalidViewMatrix_) {
         viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
         inverseViewMatrix_ = glm::inverse(viewMatrix_);
@@ -51,7 +51,7 @@ const mat4& Camera::viewMatrix() const {
     return viewMatrix_;
 }
 
-const mat4& Camera::projectionMatrix() const {
+const mat4& Camera::getProjectionMatrix() const {
     if (invalidProjectionMatrix_) {
         projectionMatrix_ = calculateProjectionMatrix();
         inverseProjectionMatrix_ = glm::inverse(projectionMatrix_);
@@ -60,20 +60,20 @@ const mat4& Camera::projectionMatrix() const {
     return projectionMatrix_;
 }
 
-const mat4& Camera::inverseViewMatrix() const {
-    if (invalidViewMatrix_) viewMatrix();
+const mat4& Camera::getInverseViewMatrix() const {
+    if (invalidViewMatrix_) getViewMatrix();
     return inverseViewMatrix_;
 }
 
-const mat4& Camera::inverseProjectionMatrix() const {
-    if (invalidProjectionMatrix_) projectionMatrix();
+const mat4& Camera::getInverseProjectionMatrix() const {
+    if (invalidProjectionMatrix_) getProjectionMatrix();
     return inverseProjectionMatrix_;
 }
 
 vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     vec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
-    vec4 eyeCoords = inverseProjectionMatrix() * clipCoords;
-    vec4 worldCoords = inverseViewMatrix() * eyeCoords;
+    vec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
+    vec4 worldCoords = getInverseViewMatrix() * eyeCoords;
     worldCoords /= worldCoords.w;
     return worldCoords.xyz();
 }
@@ -87,7 +87,7 @@ vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
 vec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
     const vec2& normalizedScreenCoord) const {
     // Default to using focus point for depth
-    vec4 lookToClipCoord = projectionMatrix() * viewMatrix() * vec4(getLookTo(), 1.f);
+    vec4 lookToClipCoord = getProjectionMatrix() * getViewMatrix() * vec4(getLookTo(), 1.f);
     return vec3(2.f * normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
 }
 
@@ -136,9 +136,10 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
     if (fov) {
         setFovy(fov->get());
     } else {
-        fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
-        comp->addProperty(fov, true);
+        fov = new FloatProperty("fov", "FOV", 38.0f, 10.0f, 180.0f, 0.1f);
         fov->setSerializationMode(PropertySerializationMode::All);
+        fov->setCurrentStateAsDefault();
+        comp->addProperty(fov, true);
     }
 
     fov->onChange([this, fov]() { setFovy(fov->get()); });

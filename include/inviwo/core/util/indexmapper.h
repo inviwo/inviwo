@@ -35,44 +35,38 @@
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo {
-    namespace util {
-        /**
-         * \class IndexMapper
-         *
-         * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
-         *
-         * DESCRIBE_THE_CLASS
-         */
-        struct IndexMapper2D {
-            inline IndexMapper2D(const size2_t &dim) : dimx(dim.x) {};
-            inline size_t operator() (size_t x, size_t y) const {
-                return x + y * dimx;
-            }
-            inline size_t operator() (long long x, long long y) const {
-                return static_cast<size_t>(x + y * dimx );
-            }
-            inline size_t operator() (const size2_t &pos) const { return pos.x + pos.y * dimx; }
+namespace util {
 
-        private:
-            const size_t dimx;
-        };
+struct IndexMapper2D {
+    constexpr IndexMapper2D(const size2_t &dim) : dimx(dim.x){};
+    constexpr size_t operator()(size_t x, size_t y) const noexcept { return x + y * dimx; }
+    constexpr size_t operator()(long long x, long long y) const noexcept {
+        return static_cast<size_t>(x + y * dimx);
+    }
+    constexpr size_t operator()(const size2_t &pos) const noexcept { return pos.x + pos.y * dimx; }
 
+private:
+    const size_t dimx;
+};
 
-        struct IndexMapper3D {
-            inline IndexMapper3D(const size3_t &dim) : dimx(dim.x), dimxy(dim.x * dim.y) {};
-            inline size_t operator() (size_t x, size_t y, size_t z) {
-                return x + y * dimx + z * dimxy;
-            }
-            inline size_t operator() (long long x, long long y, long long z) {
-                return static_cast<size_t>(x + y * dimx + z * dimxy);
-            }
-            inline size_t operator() (const size3_t &pos) { return pos.x + pos.y * dimx + pos.z * dimxy; }
+struct IndexMapper3D {
+    constexpr IndexMapper3D(const size3_t &dim) noexcept : dimx(dim.x), dimxy(dim.x *dim.y){};
+    constexpr size_t operator()(size_t x, size_t y, size_t z) const noexcept {
+        return x + y * dimx + z * dimxy;
+    }
+    constexpr size_t operator()(long long x, long long y, long long z) const noexcept {
+        return static_cast<size_t>(x + y * dimx + z * dimxy);
+    }
+    constexpr size_t operator()(const size3_t &pos) const noexcept {
+        return pos.x + pos.y * dimx + pos.z * dimxy;
+    }
 
-        private:
-            const size_t dimx;
-            const size_t dimxy;
-        };
-    } //namespace util
+private:
+    const size_t dimx;
+    const size_t dimxy;
+};
+
+}  // namespace util
 }  // namespace
 
 #endif  // IVW_INDEXMAPPER_H

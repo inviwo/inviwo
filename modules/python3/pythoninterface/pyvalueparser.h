@@ -35,6 +35,9 @@
 #include <modules/python3/pythonincluder.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <tuple>
+#include <utility>
+
 namespace inviwo {
 class Property;
 
@@ -58,47 +61,162 @@ public:
 
 namespace detail {
 
+template<size_t...>
+struct IntSequence { };
+
+template<size_t N, size_t... S>
+struct GenerateIntSequence : GenerateIntSequence<N-1, N-1, S...> { };
+
+template<size_t... S>
+struct GenerateIntSequence<0, S...> {
+  typedef IntSequence<S...> type;
+};
+
+template <size_t N>
+using GenerateIntSequence_t = typename GenerateIntSequence<N>::type;
+
+
+template<typename Dependent, size_t Index>
+using DependOn = Dependent;
+
+template<typename T, size_t N, typename I = GenerateIntSequence_t<N>>
+struct repeat;
+
+template<typename T, size_t N, size_t... Indices>
+struct repeat<T, N, IntSequence<Indices...>> {
+    using type = std::tuple<DependOn<T, Indices>...>;
+};
+
+
+
 template <typename T>
-struct typeToChar {};
+using glmToTupleType = typename repeat<typename T::value_type, util::flat_extent<T>::value>::type;
 
-template <> struct typeToChar<unsigned char> : std::integral_constant<char, 'b'> {};
-template <> struct typeToChar<short> : std::integral_constant<char, 'h'> {};
-template <> struct typeToChar<unsigned short> : std::integral_constant<char, 'H'> {};
-template <> struct typeToChar<int> : std::integral_constant<char, 'i'> {};
-template <> struct typeToChar<unsigned int> : std::integral_constant<char, 'I'> {};
-template <> struct typeToChar<long int> : std::integral_constant<char, 'l'> {};
-template <> struct typeToChar<unsigned long> : std::integral_constant<char, 'k'> {};
-template <> struct typeToChar<long long> : std::integral_constant<char, 'L'> {};
-template <> struct typeToChar<unsigned long long> : std::integral_constant<char, 'K'> {};
-template <> struct typeToChar<float> : std::integral_constant<char, 'f'> {};
-template <> struct typeToChar<double> : std::integral_constant<char, 'd'> {};
+template <typename T, int N, typename... Args>
+typename std::enable_if<0 == N, glmToTupleType<T>>::type glmToFlatTupleImpl(const T& val,
+                                                                            Args... args) {
+    return std::make_tuple(args...);
+}
+template <typename T, int N, typename... Args>
+typename std::enable_if<0 < N, glmToTupleType<T>>::type glmToFlatTupleImpl(const T& val,
+                                                                           Args... args) {
+    return glmToFlatTupleImpl<T, N - 1>(val, util::glmcomp(val, N - 1), args...);
+}
+template <typename T>
+auto glmToFlatTuple(const T& arg) -> glmToTupleType<T> {
+    return glmToFlatTupleImpl<T, util::flat_extent<T>::value>(arg);
+}
 
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-std::string typestring() {
-    return toString(typeToChar<T>::value);
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-std::string typestring() {
-    using type = typename T::value_type;
-    std::stringstream ss;
-    for (size_t i = 0; i < util::extent<T, 0>::value; ++i) ss << typeToChar<type>::value;
-    return ss.str();
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-std::string typestring() {
-    using type = typename T::col_type;
-    std::stringstream ss;
-    for (size_t i = 0; i < util::extent<T, 1>::value; ++i) {
-        ss << "(" << typestring<type>() << ")";
+template <typename T>
+struct typeToPy {
+    static std::string str() {
+        using type = typename T::value_type;
+        std::stringstream ss;
+
+        if (util::rank<T>::value == 1) {
+            for (size_t i = 0; i < util::extent<T, 0>::value; ++i) {
+                ss << typeToPy<type>::str();
+            }
+
+        } else if (util::rank<T>::value == 2) {
+            for (size_t i = 0; i < util::extent<T, 0>::value; ++i) {
+                ss << "(";
+                for (size_t j = 0; j < util::extent<T, 1>::value; ++j) {
+                    ss << typeToPy<type>::str();
+                }
+                ss << ")";
+            }
+        }
+        return ss.str();
     }
-    return ss.str();
-}
+
+    static auto data(const T& val) -> glmToTupleType<T> {
+        return glmToFlatTuple<T>(val);
+    }
+};
+
+template <typename U, typename V>
+struct typeToPy<std::pair<U, V>> {
+    static std::string str() { return "(" + typeToPy<U>::str() + typeToPy<V>::str() + ")"; }
+
+    static auto data(const std::pair<U, V>& p)
+        -> decltype(std::tuple_cat(typeToPy<U>::data(std::declval<U>()),
+                                   typeToPy<V>::data(std::declval<V>()))) {
+        return std::tuple_cat(typeToPy<U>::data(p.first), typeToPy<V>::data(p.second));
+    }
+};
+
+template <>
+struct typeToPy<unsigned char>{
+    static std::string str() { return "b"; }
+    static std::tuple<unsigned char> data(unsigned char v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<short>{
+    static std::string str() { return "h"; }
+    static std::tuple<short> data(short v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<unsigned short>{
+    static std::string str() { return "H"; }
+    static std::tuple<unsigned short> data(unsigned short v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<int>{
+    static std::string str() { return "i"; }
+    static std::tuple<int> data(int v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<unsigned int>{
+    static std::string str() { return "I"; }
+    static std::tuple<unsigned int> data(unsigned int v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<long int>{
+    static std::string str() { return "l"; }
+    static std::tuple<long int> data(long int v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<unsigned long>{
+    static std::string str() { return "k"; }
+    static std::tuple<unsigned long> data(unsigned long v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<long long>{
+    static std::string str() { return "L"; }
+    static std::tuple<long long> data(long long v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<unsigned long long>{
+    static std::string str() { return "K"; }
+    static std::tuple<unsigned long long> data(unsigned long long v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<float>{
+    static std::string str() { return "f"; }
+    static std::tuple<float> data(float v) { return std::make_tuple(v); }
+};    
+template <>
+struct typeToPy<double>{
+    static std::string str() { return "d"; }
+    static std::tuple<double> data(double v) { return std::make_tuple(v); }
+};
+template <>
+struct typeToPy<std::string> {
+    static std::string str() { return "s#"; }
+    static auto data(const std::string& f)
+        -> decltype(std::make_tuple(std::declval<std::string>().c_str(),
+                                    std::declval<std::string>().size())) {
+        return std::make_tuple(f.c_str(), f.size());
+    }
+};
+
 
 
 // Parse: PyObject -> C++
 template <typename T, int N, typename... Args>
 typename std::enable_if<0 == N, void>::type parseImpl(PyObject* arg, T& val, Args*... args) {
-    std::string ts = typestring<T>();
+    std::string ts = typeToPy<T>::str();
     if (PyTuple_Check(arg)) 
         PyArg_ParseTuple(arg, ts.c_str(), args...);
     else
@@ -115,22 +233,21 @@ T parse(PyObject* args) {
     return val;
 }
 
+
 // Build C++ -> PyObject
-template <typename T, int N, typename... Args>
-typename std::enable_if<0 == N, PyObject*>::type buildImpl(T& val, Args... args) {
-    std::string ts = typestring<T>();
-    return Py_BuildValue(ts.c_str(), args...);
+
+template <typename T, size_t... S>
+PyObject* buildHelper(const std::string& ts, const T& params, IntSequence<S...>) {
+    return Py_BuildValue(ts.c_str(), std::get<S>(params)...);;
 }
-template <typename T, int N, typename... Args>
-typename std::enable_if<0 < N, PyObject*>::type buildImpl(T& val, Args... args) {
-    return buildImpl<T, N - 1>(val, util::glmcomp(val, N - 1), args...);
-}
+
 template <typename T>
-PyObject* build(T arg) {
-    return buildImpl<T, util::flat_extent<T>::value>(arg);
+PyObject* build(const T& arg) {
+    auto str = typeToPy<T>::str();
+    auto vals = typeToPy<T>::data(arg);
+    return buildHelper(
+        str, vals, GenerateIntSequence_t<std::tuple_size<decltype(vals)>::value>());
 }
-
-
 
 // Test, check PyObject
 template <typename T, typename std::enable_if<

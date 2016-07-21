@@ -279,10 +279,10 @@ function(make_doxygen_target modules_var)
 
     if(PYTHONINTERP_FOUND)
         set(FILER_PATTERNS_LIST
-            "\"*.frag=${ivw_doxy_dir}/filter/glslfilter.py\""
-            "\"*.vert=${ivw_doxy_dir}/filter/glslfilter.py\""
-            "\"*.geom=${ivw_doxy_dir}/filter/glslfilter.py\""
-            "\"*.glsl=${ivw_doxy_dir}/filter/glslfilter.py\""
+            "\"*.frag=${PYTHON_EXECUTABLE} ${ivw_doxy_dir}/filter/glslfilter.py\""
+            "\"*.vert=${PYTHON_EXECUTABLE} ${ivw_doxy_dir}/filter/glslfilter.py\""
+            "\"*.geom=${PYTHON_EXECUTABLE} ${ivw_doxy_dir}/filter/glslfilter.py\""
+            "\"*.glsl=${PYTHON_EXECUTABLE} ${ivw_doxy_dir}/filter/glslfilter.py\""
          )
         string(REGEX REPLACE ";" " \\\\\n                         " FILER_PATTERNS "${FILER_PATTERNS_LIST}")
         set(FILER_PATTERNS ${FILER_PATTERNS})

@@ -32,85 +32,14 @@
 
 namespace inviwo {
 
-const std::string InteractionEvent::modifierNames_[] = {"", "Alt", "Ctrl", "Shift"};
+InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
 
-InteractionEvent::InteractionEvent(int modifiers)
-    : Event()
-    , modifiers_(modifiers) {
-}
-
-InteractionEvent::InteractionEvent(const InteractionEvent& rhs)
-    : Event(rhs)
-    , modifiers_(rhs.modifiers_) {
-}
-
-InteractionEvent& InteractionEvent::operator=(const InteractionEvent& that) {
-    if (this != &that) {
-        Event::operator=(that);
-        modifiers_ = that.modifiers_;
-    }
-    return *this;
-}
-
-InteractionEvent* InteractionEvent::clone() const {
-    return new InteractionEvent(*this);
-}
-
-InteractionEvent::~InteractionEvent() {}
-
-void InteractionEvent::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize("modifiers", modifiers_);
-}
-
-void InteractionEvent::deserialize(Deserializer& d) {
-    d.deserialize("modifiers", modifiers_);
-}
-
-int InteractionEvent::modifiers() const {
-    return modifiers_;
-}
+KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
+void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
 std::string InteractionEvent::modifierNames() const {
-    std::vector<std::string> names;
-    if ((modifiers_ & MODIFIER_ALT) == MODIFIER_ALT) names.push_back(modifierNames_[1]);
-    if ((modifiers_ & MODIFIER_CTRL) == MODIFIER_CTRL) names.push_back(modifierNames_[2]);
-    if ((modifiers_ & MODIFIER_SHIFT) == MODIFIER_SHIFT) names.push_back(modifierNames_[3]);
-
-    if (!names.empty()) {
-        return joinString(names, "+");
-    } else {
-        return "";
-    }
+    std::stringstream ss;
+    ss << modifiers_;
+    return ss.str();
 }
-
-std::string InteractionEvent::getClassIdentifier() const {
-    return "org.inviwo.InteractionEvent";
-}
-
-bool InteractionEvent::matching(const Event* event) const {
-    auto interactionEvent = dynamic_cast<const InteractionEvent*>(event);
-    if (event) {
-        // check whether the modifiers are identical or whether one of them accepts any modifier
-        return ((modifiers_ == interactionEvent->modifiers_)
-                || (modifiers_ == InteractionEvent::MODIFIER_ANY)
-                || (interactionEvent->modifiers_ == InteractionEvent::MODIFIER_ANY));
-    } else {
-        return false;
-    }
-}
-
-bool InteractionEvent::equalSelectors(const Event* event) const {
-    auto interactionEvent = dynamic_cast<const InteractionEvent*>(event);
-    if (interactionEvent) {
-        return modifiers_ == interactionEvent->modifiers_;
-    } else {
-        return false;
-    }
-}
-
-void InteractionEvent::setModifiers(int modifiers) {
-    modifiers_ = modifiers;
-}
-
 } // namespace

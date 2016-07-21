@@ -83,16 +83,16 @@ void BufferObjectArray::bind() const {
     }
     glBindVertexArray(id_);
     if (reattach_) {
-        
-        GLuint location = 0;
-        for (auto& bo : attachedBuffers_) {
-            if (bo) {
+        for (GLuint location=0; location < attachedBuffers_.size(); ++location) {
+            if (auto bufferObject = attachedBuffers_[location]) {
                 glEnableVertexAttribArray(location);
-                bo->bind();
-                glVertexAttribPointer(location, bo->getGLFormat().channels, bo->getGLFormat().type,
+                bufferObject->bind();
+                glVertexAttribPointer(location, bufferObject->getGLFormat().channels, bufferObject->getGLFormat().type,
                                       GL_FALSE, 0, (void*)nullptr);
             }
-            location++;
+            else {
+                glDisableVertexAttribArray(location);
+            }
         }
         reattach_ = false;
     }
@@ -102,6 +102,15 @@ void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
     if (location < attachedBuffers_.size()) {
+#ifdef IVW_DEBUG
+        // print warning if a different buffer is already attached to this location
+        if (attachedBuffers_[location] && bo && (attachedBuffers_[location] != bo)) {
+            LogWarn("BufferObjectArray (" << id_ << "): location "
+                    << location << " is already bound to different buffer object (id "
+                    << attachedBuffers_[location]->getId()
+                    << "). Replacing with new buffer object (id " << bo->getId() << ").");
+        }
+#endif
         attachedBuffers_[location] = bo;
     } else {
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");

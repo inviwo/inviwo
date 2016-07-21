@@ -76,9 +76,7 @@ class ImageOutport;
 class IVW_CORE_API ImagePortBase {
 public:
     virtual ~ImagePortBase() = default;
-    virtual size2_t getRequestedDimensions(ImageOutport* outport) const = 0;
-    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
-                                      ImageOutport* target = nullptr) = 0;
+    virtual size2_t getRequestedDimensions(Outport* outport) const = 0;
     virtual bool isOutportDeterminingSize() const = 0;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
 };
@@ -105,10 +103,9 @@ public:
         const override;
     virtual std::string getContentInfo() const override;
 
-    virtual size2_t getRequestedDimensions(ImageOutport* outport) const override;
+    virtual size2_t getRequestedDimensions(Outport* outport) const override;
 
-    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
-                                      ImageOutport* target = nullptr) override;
+    virtual void propagateEvent(Event* event, Outport* target = nullptr) override;
 
     virtual bool isOutportDeterminingSize() const override;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
@@ -118,7 +115,7 @@ public:
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
 
-    std::unordered_map<ImageOutport*, size2_t> requestedDimensionsMap_;
+    std::unordered_map<Outport*, size2_t> requestedDimensionsMap_;
     bool outportDeterminesSize_;
 };
 
@@ -147,7 +144,7 @@ public:
     /**
      * Handle resize event
      */
-    void propagateResizeEvent(ResizeEvent* resizeEvent);
+    void propagateEvent(Event* event) override;
     const DataFormatBase* getDataFormat() const;
     size2_t getDimensions() const;   
     /**
@@ -192,20 +189,19 @@ BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDetermin
     }
 
 template <size_t N>
-BaseImageInport<N>::~BaseImageInport() {}
+BaseImageInport<N>::~BaseImageInport() = default;
 
 template <size_t N>
 void BaseImageInport<N>::connectTo(Outport* outport) {
     if (this->getNumberOfConnections() + 1 > this->getMaxNumberOfConnections())
         throw Exception("Trying to connect to a full port.", IvwContext);
 
-    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
-    if (requestedDimensionsMap_.find(imageOutport) != requestedDimensionsMap_.end()) {
-        ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
-        imageOutport->propagateResizeEvent(&resizeEvent);
+    if (requestedDimensionsMap_.find(outport) != requestedDimensionsMap_.end()) {
+        ResizeEvent resizeEvent(requestedDimensionsMap_[outport]);
+        outport->propagateEvent(&resizeEvent);
     } else {
         ResizeEvent resizeEvent(requestedDimensionsMap_[nullptr]);
-        imageOutport->propagateResizeEvent(&resizeEvent);
+        outport->propagateEvent(&resizeEvent);
     }
 
     DataInport<Image, N>::connectTo(outport);
@@ -213,31 +209,32 @@ void BaseImageInport<N>::connectTo(Outport* outport) {
 
 template <size_t N>
 void BaseImageInport<N>::disconnectFrom(Outport* outport) {
-    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
-    requestedDimensionsMap_.erase(imageOutport);
+    requestedDimensionsMap_.erase(outport);
     DataInport<Image, N>::disconnectFrom(outport);
 }
 
-// set dimensions based on port groups
 template <size_t N>
-void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOutport* target) {
-    if (target) {
-        requestedDimensionsMap_[target] = resizeEvent->size();
-        target->propagateResizeEvent(resizeEvent);
-    } else {
-        for (auto outport : this->connectedOutports_) {
-            if (auto imageOutport = static_cast<ImageOutport*>(outport)) {
-                requestedDimensionsMap_[imageOutport] = resizeEvent->size();
-                imageOutport->propagateResizeEvent(resizeEvent);
+void BaseImageInport<N>::propagateEvent(Event* event, Outport* target) {
+    if (event->hash() == ResizeEvent::chash()) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+        if (target) {
+            requestedDimensionsMap_[target] = resizeEvent->size();
+            target->propagateEvent(resizeEvent);
+        } else {
+            for (auto outport : this->connectedOutports_) {
+                requestedDimensionsMap_[outport] = resizeEvent->size();
+                outport->propagateEvent(resizeEvent);
             }
+            // Save a default size.
+            requestedDimensionsMap_[nullptr] = resizeEvent->size();
         }
-        // Save a default size.
-        requestedDimensionsMap_[nullptr] = resizeEvent->size();
+    } else {
+        DataInport<Image, N>::propagateEvent(event, target);
     }
 }
 
 template <size_t N>
-size2_t BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
+size2_t BaseImageInport<N>::getRequestedDimensions(Outport* outport) const {
     auto it = requestedDimensionsMap_.find(outport);
     if (it != requestedDimensionsMap_.end()) {
         return it->second;
@@ -260,7 +257,7 @@ std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
     }
 }
 
-template <size_t N /*= 1*/>
+template <size_t N>
 std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() const {
     std::vector<std::shared_ptr<const Image>> res(N);
 

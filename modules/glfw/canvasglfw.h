@@ -34,7 +34,10 @@
 #include <stdlib.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/canvasgl.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -72,18 +75,23 @@ public:
     static void mouseMotion(GLFWwindow*, double, double);
     static void scroll(GLFWwindow*, double, double);
 
-    static MouseEvent::MouseButton mapMouseButton(const int mouseButtonGLFW);
-    static MouseEvent::MouseState mapMouseState(const int mouseStateGLFW);
-    static InteractionEvent::Modifier mapModifiers(const int modifiersGLFW);
+    static MouseButton mapMouseButton(const int mouseButtonGLFW);
+    static MouseState mapMouseState(const int mouseStateGLFW);
+    static KeyModifiers mapModifiers(const int modifiersGLFW);
 
     static void setAlwaysOnTopByDefault(bool);
     
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
 
+    virtual bool isFullScreen() const override;
+    virtual void setFullScreen(bool fullscreen) override;
+
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
+
+    dvec2 normalPos(dvec2 pos) const;
 
     virtual void releaseContext() override;
 
@@ -91,9 +99,9 @@ private:
     std::string windowTitle_;
     GLFWwindow* glWindow_;
 
-    MouseEvent::MouseButton mouseButton_;
-    MouseEvent::MouseState mouseState_;
-    InteractionEvent::Modifier mouseModifiers_;
+    MouseButton mouseButton_;
+    MouseState mouseState_;
+    KeyModifiers mouseModifiers_;
 
     static GLFWwindow* sharedContext_;
     static int glfwWindowCount_;

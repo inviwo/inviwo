@@ -49,17 +49,17 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSlice, Volume Slice}
  * ![](org.inviwo.VolumeSlice.png?classIdentifier=org.inviwo.VolumeSlice)
- * Outputs a slice from a volume, CPU-based
+ * This processor extracts an axis aligned 2D slice from an input volume.
  *
  * ### Inports
- *   * __VolumeInport__ The input volume.
+ *   * __VolumeInport__ The input volume
  *
  * ### Outports
- *   * __ImageOutport__ The output image.
+ *   * __ImageOutport__ The extracted volume slice
  *
  * ### Properties
- *   * __sliceAlongAxis_ Defines the volume axis for the output slice.
- *   * __sliceNumber_ Defines the slice number for the output slice.
+ *   * __sliceAlongAxis_ Defines the volume axis for the output slice
+ *   * __sliceNumber_ Defines the slice number for the output slice
  */
 
 /**

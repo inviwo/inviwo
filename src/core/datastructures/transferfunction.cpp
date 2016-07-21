@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/interpolation.h>
 #include <math.h>
 
 namespace inviwo {
@@ -244,6 +245,29 @@ void TransferFunction::deserialize(Deserializer& d) {
     interpolationType_ = static_cast<TransferFunction::InterpolationType>(type);
     
     invalidate();
+}
+
+vec4 TransferFunction::sample(float v) const {
+    if (v < 0) {
+        return points_.front()->getRGBA();
+    }
+    else if (v > 1) {
+        return points_.back()->getRGBA();
+    }
+
+    auto it = std::upper_bound(
+        points_.begin(), points_.end(), v,
+        [](float val, const TransferFunctionDataPoint* p) { return val < p->getPos().x; });
+    if (it == points_.begin()) {
+        return points_.front()->getRGBA();
+    }
+    if (it == points_.end()) {
+        return points_.back()->getRGBA();
+    }
+
+    auto next = it--;
+    float x = (v - (*it)->getPos().x) / ((*next)->getPos().x - (*it)->getPos().x);
+    return Interpolation<vec4, float>::linear((*it)->getRGBA(), (*next)->getRGBA(), x);
 }
 
 const Layer* TransferFunction::getData() const {

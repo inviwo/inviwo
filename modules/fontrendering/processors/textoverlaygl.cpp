@@ -29,8 +29,12 @@
 
 #include "textoverlaygl.h"
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/image/imagegl.h>
 
 #include <cctype>
 
@@ -60,7 +64,6 @@ TextOverlayGL::TextOverlayGL()
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
-    , textRenderer_()
     , numArgs_(0u)
 {
     addPort(inport_);
@@ -94,37 +97,38 @@ TextOverlayGL::TextOverlayGL()
     fontSize_.setCurrentStateAsDefault();
 }
 
-
 void TextOverlayGL::process() {
     if (!enable_.get()) {
         outport_.setData(inport_.getData());
         return;
     }
+    
+    // check whether a property was modified
+    bool dirty = (cacheTexture_.get() == nullptr);
+    for (auto property : this->getProperties()) {
+        if (property->isModified()) {
+            dirty = true;
+            break;
+        }
+    }
+    if (dirty) {
+        updateCache();
+    }
 
-    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
-
-    glDepthFunc(GL_ALWAYS);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
-
-    int fontSize = fontSize_.getSelectedValue();
-    textRenderer_.setFontSize(fontSize);
+    // draw cached overlay on top of the input image
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
+    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // use integer position for best results
-    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
-    pos.y += fontSize;
-    
-    std::string str(getString());
-
-    vec2 size = textRenderer_.computeTextSize(str.c_str(), scale);
+    vec2 size(cacheTexture_->getDimensions());
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_.render(str.c_str(), -1 + pos.x * scale.x - shift.x,
-                          1 - pos.y * scale.y + shift.y, scale, color_.get());
 
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
+    pos -= ivec2(shift);
+    // render texture containing the text onto the current canvas
+    textureRenderer_.render(cacheTexture_, pos, outport_.getDimensions());
+
     utilgl::deactivateCurrentTarget();
 }
 
@@ -189,5 +193,19 @@ std::string TextOverlayGL::getString() const {
     return str;
 }
 
-}  // namespace
+void TextOverlayGL::updateCache() {
+    textRenderer_.setFontSize(fontSize_.getSelectedValue());
+    std::string str(getString());
 
+    size2_t labelSize(textRenderer_.computeTextSize(str));
+    if (!cacheTexture_ ||
+        (cacheTexture_->getDimensions() != labelSize)) {
+        auto texture = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA,
+                                                   GL_UNSIGNED_BYTE, GL_LINEAR);
+        texture->initialize(nullptr);
+        cacheTexture_ = texture;
+    }
+    textRenderer_.renderToTexture(cacheTexture_, str, color_.get());
+}
+
+}  // namespace
