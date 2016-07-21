@@ -339,10 +339,9 @@ void Trackball::rotate(Event* event) {
             const auto Pc = glm::normalize(curTBI.second - to);
             lastRot_ = glm::quat(Pc, Pa);
         } else {
-            const float vRot = 0.5f * (curNDC.x - lastNDC_.x) * static_cast<float>(M_PI);
-            const float hRot = 0.5f * (curNDC.y - lastNDC_.y) * static_cast<float>(M_PI);
+            const auto rot = glm::half_pi<float>() * (curNDC - lastNDC_);
             const auto Pa = glm::normalize(from - to);
-            const auto Pc = glm::rotate(glm::rotate(Pa, hRot, glm::cross(Pa, up)), vRot, up);
+            const auto Pc = glm::rotate(glm::rotate(Pa, rot.y, glm::cross(Pa, up)), rot.x, up);
             lastRot_ = glm::quat(Pc, Pa);
         }
         lastRotTime_ = std::chrono::system_clock::now();
