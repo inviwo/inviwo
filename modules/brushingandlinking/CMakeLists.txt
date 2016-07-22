@@ -13,8 +13,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/events/selectionevent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/brushingandlinkingports.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/brushingandlinkingprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/brushinglistproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/indexlistproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -29,8 +27,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/events/selectionevent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/brushingandlinkingports.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/brushingandlinkingprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/brushinglistproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/indexlistproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
