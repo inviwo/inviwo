@@ -31,13 +31,13 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/linerenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
@@ -83,13 +83,13 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/linerenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
@@ -134,6 +134,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/linerenderer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/linerenderer.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/linerenderer.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
