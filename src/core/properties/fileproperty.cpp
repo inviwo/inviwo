@@ -231,4 +231,67 @@ void FileProperty::requestFile() {
     }
 }
 
+Document FileProperty::getDescription() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc = TemplateProperty<std::string>::getDescription();
+    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
+
+    utildoc::TableBuilder tb(table);
+    switch (fileMode_) {
+        case FileProperty::FileMode::AnyFile:
+        case FileProperty::FileMode::ExistingFile:
+        case FileProperty::FileMode::ExistingFiles: {
+            tb(H("File"), value_.value);
+            break;
+        }
+
+        case FileProperty::FileMode::Directory:
+        case FileProperty::FileMode::DirectoryOnly: {
+            tb(H("Directory"), value_.value);
+            break;
+        }
+    }
+
+    tb(H("Accept Mode"), acceptMode_);
+    tb(H("File Mode"), fileMode_);
+    tb(H("Content Type"), contentType_);
+
+    return doc;
+}
+
+std::ostream& operator<<(std::ostream &out, const FileProperty::AcceptMode& mode) {
+    switch(mode) {
+        case FileProperty::AcceptMode::Open:
+            out << "Open";
+            break;
+        case FileProperty::AcceptMode::Save:
+            out << "Save";
+            break;
+    }
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FileProperty::FileMode& mode) {
+    switch (mode) {
+        case FileProperty::FileMode::AnyFile:
+            out << "Any File";
+            break;
+        case FileProperty::FileMode::ExistingFile:
+            out << "Existing File";
+            break;
+        case FileProperty::FileMode::Directory:
+            out << "Directory";
+            break;
+        case FileProperty::FileMode::ExistingFiles:
+            out << "Existing Files";
+            break;
+        case FileProperty::FileMode::DirectoryOnly:
+            out << "Directory Only";
+            break;
+    }
+    return out;
+}
+
 }  // namespace

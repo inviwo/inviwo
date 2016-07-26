@@ -76,6 +76,8 @@ public:
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
+    virtual Document getDescription() const override;
+
 private:
     using TemplateProperty<T>::value_;
     ValueWrapper<T> minValue_;
@@ -116,7 +118,9 @@ using DoubleMat2Property = OrdinalProperty<dmat2>;
 using DoubleMat3Property = OrdinalProperty<dmat3>;
 using DoubleMat4Property = OrdinalProperty<dmat4>;
 
-template <typename T> PropertyClassIdentifier(OrdinalProperty<T>,  "org.inviwo." + Defaultvalues<T>::getName() + "Property");
+template <typename T>
+PropertyClassIdentifier(OrdinalProperty<T>,
+                        "org.inviwo." + Defaultvalues<T>::getName() + "Property");
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
@@ -266,6 +270,27 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) this->propertyModified();
 }
+
+
+template <typename T>
+Document OrdinalProperty<T>::getDescription() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc = TemplateProperty<T>::getDescription();
+    auto b = doc.get({P("html"), P("body")});
+
+    utildoc::TableBuilder tb(b, P::end());
+    tb(H("#"), H("Value"), H("Min"), H("Max"), H("Inc"));
+    size_t size = getDim().x * getDim().y;
+    for (size_t i = 0; i < size; i++) {
+        tb(H(i), util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
+           util::glmcomp(maxValue_.value, i), util::glmcomp(increment_.value, i));
+    }
+
+    return doc;
+}
+
 
 }  // namespace
 

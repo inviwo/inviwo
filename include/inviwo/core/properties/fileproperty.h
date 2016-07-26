@@ -105,12 +105,18 @@ public:
      */
     void requestFile();
 
+    virtual Document getDescription() const override;
+
 private:
     std::vector<FileExtension> nameFilters_;
     AcceptMode acceptMode_;
     FileMode fileMode_;
     std::string contentType_;
 };
+
+IVW_CORE_API std::ostream& operator<<(std::ostream &out, const FileProperty::AcceptMode& mode);
+IVW_CORE_API std::ostream& operator<<(std::ostream &out, const FileProperty::FileMode& mode);
+
 
 }  // namespace
 

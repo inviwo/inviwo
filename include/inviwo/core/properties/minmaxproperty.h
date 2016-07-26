@@ -85,6 +85,8 @@ public:
     virtual void deserialize(Deserializer& s) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
+    
+    virtual Document getDescription() const override;
 
 protected:
     void validateValues();
@@ -315,6 +317,25 @@ void MinMaxProperty<T>::validateValues() {
         }
     }
     TemplateProperty<range_type>::propertyModified();
+}
+
+template <typename T>
+Document MinMaxProperty<T>::getDescription() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    
+    Document doc = TemplateProperty<range_type>::getDescription();
+
+    auto b = doc.get({P("html"), P("body")});
+    utildoc::TableBuilder tb(b, P::end());
+    tb(H("Min"), H("Start"), H("Stop"), H("Max"));
+    tb(range_.value[0], value_.value[0], value_.value[1], range_.value[1]);
+
+    utildoc::TableBuilder tb2(b, P::end());
+    util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
+                            increment_, minSeparation_);
+
+    return doc;
 }
 
 }  // namespace

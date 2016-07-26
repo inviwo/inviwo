@@ -44,6 +44,27 @@ enum class InvalidationLevel {
     InvalidResources    // Trigger a call to initializeResources and then process.
 };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const InvalidationLevel& level) {
+    switch (level) {
+        case InvalidationLevel::Valid:
+            ss << "Valid";
+            break;
+        case InvalidationLevel::InvalidOutput:
+            ss << "Invalid output";
+            break;
+        case InvalidationLevel::InvalidResources:
+            ss << "Invalid resources";
+            break;
+        default:
+            ss << "Unknown";
+            break;
+    }
+
+    return ss;
+}
+
 } // namespace
 
 #endif // IVW_INVALIDATIONLEVEL_H

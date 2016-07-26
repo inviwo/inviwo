@@ -177,6 +177,20 @@ std::string dotSeperatedToPascalCase(const std::string& s) {
     return ss.str();
 }
 
+std::string camelCaseToHeader(const std::string& s) {
+    if (s.empty()) return s;
+    std::stringstream ss;
+    char last = ' ';
+    for (auto c : s) {
+        if (std::tolower(last) == last && std::toupper(c) == c) ss << " ";
+        ss << c;
+        last = c;
+    }
+    auto str{ ss.str() };
+    str[0] = std::toupper(str[0]);
+    return str;
+}
+
 // trim from end
 std::string rtrim(std::string s) {
     s.erase(

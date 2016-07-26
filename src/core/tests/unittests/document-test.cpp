@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2014-2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,59 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
-#ifndef IVW_FILEPROPERTYWIDGETQT_H
-#define IVW_FILEPROPERTYWIDGETQT_H
-
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/filepathlineeditqt.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/fileproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
+#include <gtest/gtest.h>
 #include <warn/pop>
 
-class QDropEvent;
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/document.h>
+
+#include <iostream>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
+TEST(DocumentTest, Minimal) {
+    Document doc;
+    
+    using P = Document::PathComponent;
+    
+    doc.append("html").append("body").append("table").append("tr").append("td", "hej");
+    std::string res{doc};
+    
+    replaceInString(res, " ", "");
+    replaceInString(res, "\n", "");
+    
+    EXPECT_EQ("<html><body><table><tr><td>hej</td></tr></table></body></html>", res);
+}
 
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 
-public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
-
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
-
-public slots:
-    void setPropertyValue();
-
-protected:
-    virtual void dropEvent(QDropEvent *) override;
-    virtual void dragEnterEvent(QDragEnterEvent *) override;
-    virtual void dragMoveEvent(QDragMoveEvent *) override;
-
-private:
-    void generateWidget();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
-};
 
 } // namespace
 
-#endif // IVW_FILEPROPERTYWIDGETQT_H

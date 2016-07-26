@@ -204,6 +204,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual Document getDescription() const override;
+
 protected:
     size_t selectedIndex_;
     std::vector<OptionPropertyOption<T>> options_;
@@ -650,6 +652,22 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
         BaseTemplateOptionProperty<T>::operator=(that);
     }
     return *this;
+}
+
+template <typename T>
+Document BaseTemplateOptionProperty<T>::getDescription() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc = BaseOptionProperty::getDescription();
+
+    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
+    utildoc::TableBuilder tb(table);
+    tb(H("Selected Index"), selectedIndex_);
+    tb(H("Selected Name"), options_[selectedIndex_].name_);
+    tb(H("Selected Value"), options_[selectedIndex_].value_);
+
+    return doc;
 }
 
 // template <typename T>

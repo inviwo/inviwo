@@ -105,6 +105,30 @@ QSize toQSize(ivec2 v) {
     return QSize(v.x, v.y);
 }
 
+IVW_QTWIDGETS_API QString formatToolTipText(Property* prop) {
+    using Elem = Document::Element;
+    auto doc = prop->getDescription();
+    std::stringstream ss;
+    doc.visit(
+        [&](Elem* elem, std::vector<Elem*>& stack) {
+            ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
+            if (elem->name() == "th") {
+                elem->attributes()["align"] += "left";
+            }
+            for (const auto& item : elem->attributes()) {
+                ss << " " << item.first << "='" << item.second << "'";
+            }
+            ss << ">\n";
+            if (!elem->content().empty())
+                ss << std::string((1 + stack.size()) * 4, ' ') << elem->content() << "\n";
+        },
+        [&](Elem* elem, std::vector<Elem*>& stack) {
+            ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
+        });
+
+    return utilqt::toLocalQString(ss.str());
+}
+
 } // namespace utilqt
 
 }  // namespace

@@ -165,7 +165,6 @@ protected:
     virtual void initializeEditorWidgetsMetaData() override;
 
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
-    virtual std::string getToolTipText();
 
     void paintEvent(QPaintEvent* pe) override;
 

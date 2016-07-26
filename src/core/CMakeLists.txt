@@ -234,6 +234,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h
@@ -462,6 +463,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
+    util/document.cpp
     util/exception.cpp
     util/fileextension.cpp
     util/fileobserver.cpp
@@ -520,6 +522,7 @@ set(TEST_FILES
     tests/unittests/filesystem-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
+    tests/unittests/document-test.cpp
     tests/unittests/glm-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})

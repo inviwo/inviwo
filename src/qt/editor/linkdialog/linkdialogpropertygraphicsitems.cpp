@@ -39,6 +39,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <numeric>
 
@@ -245,7 +246,7 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 }
 
 void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    //showToolTipHelper(e, utilqt::toLocalQString("todo"));
+    showToolTipHelper(e, utilqt::formatToolTipText(item_));
 }
 
 void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,

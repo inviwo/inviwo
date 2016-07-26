@@ -248,37 +248,6 @@ bool FilePropertyWidgetQt::requestFile() {
    return !property_->get().empty();
 }
 
-std::string FilePropertyWidgetQt::getToolTipText() {
-    if (property_) {
-        ToolTipHelper t(property_->getDisplayName());
-        t.tableTop();
-        t.row("Identifier", property_->getIdentifier());
-        t.row("Path", joinString(property_->getPath(), "."));
-        t.row("Semantics", property_->getSemantics().getString());
-        t.row("Validation Level",
-              PropertyOwner::invalidationLevelToString(property_->getInvalidationLevel()));
-
-        switch (property_->getFileMode()) {
-            case FileProperty::FileMode::AnyFile:
-            case FileProperty::FileMode::ExistingFile:
-            case FileProperty::FileMode::ExistingFiles: {
-                t.row("File", property_->get());
-                break;
-            }
-
-            case FileProperty::FileMode::Directory:
-            case FileProperty::FileMode::DirectoryOnly: {
-                t.row("Directory", property_->get());
-                break;
-            }
-        }
-        t.tableBottom();
-        return t;
-    } else {
-        return "";
-    }
-}
-
 void FilePropertyWidgetQt::updateFromProperty() {
     lineEdit_->setPath(property_->get());
 }

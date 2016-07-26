@@ -58,6 +58,13 @@ StringProperty* StringProperty::clone() const {
     return new StringProperty(*this);
 }
 
-StringProperty::~StringProperty() {}
+Document StringProperty::getDescription() const {
+    using P = Document::PathComponent;
+    Document doc = TemplateProperty<std::string>::getDescription();
+    auto b = doc.get({P("html"), P("body")});
+    b.append("p", value_.value);   
+    return doc;
+}
+
 
 }  // namespace

@@ -97,8 +97,6 @@ public:
 
     void setAllPropertiesCurrentStateAsDefault();
     void resetAllPoperties();
-    
-    static std::string invalidationLevelToString(InvalidationLevel level);
 
     virtual void invokeEvent(Event* event) override;
 

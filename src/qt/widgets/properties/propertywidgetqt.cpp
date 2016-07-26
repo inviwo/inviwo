@@ -477,28 +477,12 @@ void PropertyWidgetQt::updateContextMenu() {
 }
 
 bool PropertyWidgetQt::event(QEvent* event) {
-    if (event->type() == QEvent::ToolTip) {
+    if (event->type() == QEvent::ToolTip && property_) {
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(), utilqt::toLocalQString(getToolTipText()));
+        QToolTip::showText(helpEvent->globalPos(), utilqt::formatToolTipText(property_));
         return true;
     } else {
         return QWidget::event(event);
-    }
-}
-
-std::string PropertyWidgetQt::getToolTipText() {
-    if (property_) {
-        ToolTipHelper t(property_->getDisplayName());
-        t.tableTop();
-        t.row("Identifier", property_->getIdentifier());
-        t.row("Path", joinString(property_->getPath(), "."));
-        t.row("Semantics", property_->getSemantics().getString());
-        t.row("Validation Level",
-              PropertyOwner::invalidationLevelToString(property_->getInvalidationLevel()));
-        t.tableBottom();
-        return t;
-    } else {
-        return "";
     }
 }
 

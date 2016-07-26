@@ -282,15 +282,6 @@ void PropertyOwner::resetAllPoperties(){
     for (auto& elem : properties_) (elem)->resetToDefaultState();
 }
 
-std::string PropertyOwner::invalidationLevelToString(InvalidationLevel level) {
-    switch (level) {
-        case InvalidationLevel::Valid: return "Valid";
-        case InvalidationLevel::InvalidOutput: return "Invalid output";
-        case InvalidationLevel::InvalidResources: return "Invalid resources";
-        default: return "Unknown";
-    }
-}
-
 std::vector<std::string> PropertyOwner::getPath() const {
     return std::vector<std::string>();
 }
