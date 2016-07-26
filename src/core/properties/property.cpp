@@ -284,22 +284,20 @@ void Property::setVisible(bool visible) {
 
 Document Property::getDescription() const {
     Document doc;
-    using P = Document::Path;
-    auto b = doc.addElementIn({}, "html", "html").addElementIn("body", "body");
+    using P = Document::PathComponent;
+    auto b = doc.append("html").append("body");
 
-    b.addElementIn("b", "name")
-        .setContent(displayName_.value)
-        .addAttribute("style", "color:white;");
+    b.append("b", displayName_.value, {{"style", "color:white;"}});
 
-    using h = utildoc::TableBuilder::Header;
-    using t = utildoc::TableBuilder::Text;
+    using H = utildoc::TableBuilder::Header;
 
-    utildoc::TableBuilder tb(b, "property");
-    tb(h{}, "Identifier", t{}, identifier_);
-    tb(h{}, "Class Identifier", t{}, getClassIdentifier());
-    tb(h{}, "Path", t{}, joinString(getPath(), "."));
-    util::for_each_argument(tb, readOnly_, semantics_, usageMode_, visible_);
-    tb(h{}, "Validation Level", t{}, invalidationLevel_);
+    utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
+    tb(H("Identifier"), identifier_);
+    tb(H("Class Identifier"), getClassIdentifier());
+    tb(H("Path"), joinString(getPath(), "."));
+    util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
+                            semantics_, usageMode_, visible_);
+    tb(H("Validation Level"), invalidationLevel_);
 
     return doc;
 }

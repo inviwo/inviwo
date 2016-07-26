@@ -59,12 +59,10 @@ StringProperty* StringProperty::clone() const {
 }
 
 Document StringProperty::getDescription() const {
-    using P = Document::Path;
-
+    using P = Document::PathComponent;
     Document doc = TemplateProperty<std::string>::getDescription();
-    auto b = doc.getElement({P("html"), P("body")});
-    b.addElementIn("p", "value").setContent(value_.value);
-     
+    auto b = doc.get({P("html"), P("body")});
+    b.append("p", value_.value);   
     return doc;
 }
 

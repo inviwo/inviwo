@@ -432,7 +432,6 @@ set(SOURCE_FILES
     properties/eventproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
-    properties/invalidationlevel.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
@@ -445,7 +444,6 @@ set(SOURCE_FILES
     properties/propertyowner.cpp
     properties/propertyownerobserver.cpp
     properties/propertysemantics.cpp
-    properties/propertyvisibility.cpp
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
     properties/propertywidgetfactoryobject.cpp

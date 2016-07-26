@@ -42,31 +42,15 @@ namespace inviwo {
 TEST(DocumentTest, Minimal) {
     Document doc;
     
-    using P = Document::Path;
+    using P = Document::PathComponent;
     
-    auto w = doc.addElementIn({}, "body", "body").addElementIn("table", "t1").addElementIn("tr", "r1");
-    Document d2(doc);
-    d2.addElementAfter({P("body"),P("t1")}, "table", "d2");
-    Document d3 = doc;
-    d3.addElementAfter({P("body"),P("t1")}, "table", "d3");
+    doc.append("html").append("body").append("table").append("tr").append("td", "hej");
+    std::string res{doc};
     
-    doc.addElementIn({P("body"), P("t1")}, "tr", "r1");
-    doc.addElementIn({P("body"), P("t1")}, "tr", "r1");
+    replaceInString(res, " ", "");
+    replaceInString(res, "\n", "");
     
-    doc.addElementIn({P("body"), P("t1"), P::first()}, "td", "nil");
-    doc.addElementIn({P("body"), P("t1"), P(-2)}, "td", "-2").setContent("bla bla").addAttribute("key", "balue");
-    doc.addElementIn({P("body"), P("t1"), P::last()}, "td", "end");
-    
-    doc.addElementAfter({P("body"),P("t1")}, "table", "t2");
-    
-    std::string test = doc;
-    
-    std::cout << test << std::endl;
-    
-    std::cout << d2 << std::endl;
-    std::cout << d3 << std::endl;
-    
-    EXPECT_STREQ("test", "test");
+    EXPECT_EQ("<html><body><table><tr><td>hej</td></tr></table></body></html>", res);
 }
 
 

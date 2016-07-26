@@ -656,23 +656,19 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
 
 template <typename T>
 Document BaseTemplateOptionProperty<T>::getDescription() const {
-    using P = Document::Path;
-    using Append = utildoc::TableBuilder::Append;
-
-    using h = utildoc::TableBuilder::Header;
-    using t = utildoc::TableBuilder::Text;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
 
     Document doc = BaseOptionProperty::getDescription();
 
-    auto b = doc.getElement({P("html"), P("body"), P("property")});
-    utildoc::TableBuilder tb(Append{}, b, "value");
-    tb(h{}, "Selected Index", t{}, selectedIndex_);
-    tb(h{}, "Selected Name", t{}, options_[selectedIndex_].name_);
-    tb(h{}, "Selected Value", t{}, options_[selectedIndex_].value_);
+    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
+    utildoc::TableBuilder tb(table);
+    tb(H("Selected Index"), selectedIndex_);
+    tb(H("Selected Name"), options_[selectedIndex_].name_);
+    tb(H("Selected Value"), options_[selectedIndex_].value_);
 
     return doc;
 }
-
 
 // template <typename T>
 // TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {

@@ -37,131 +37,178 @@
 #include <inviwo/core/util/introspection.h>
 
 #include <unordered_map>
+#include <memory>
+#include <functional>
+#include <string>
+#include <algorithm>
 
 namespace inviwo {
 
 /**
  * \class Document
- * \brief A helper class to represent a simple document
+ * \brief A helper class to represent a document
  */
+
 class IVW_CORE_API Document {
 public:
-    class Element {
+    class Element;
+    class DocumentHandle;
+
+    using ElemVec = std::vector<std::unique_ptr<Element>>;
+
+    class IVW_CORE_API Element {
     public:
-        Element(const std::string& type, const std::string& name);
-        Element(const Element&) = default;
-        Element& operator=(const Element&) = default;
-        
-        Element& setName(const std::string& name);
-        Element& setType(const std::string& type);
-        Element& setContent(const std::string& contents);
-        Element& addAttribute(const std::string& key, const std::string& value);
-        
+        friend Document;
+        friend DocumentHandle;
+
+        Element(const Element&) = delete;
+        Element& operator=(const Element&) = delete;
+        Element(Element&&) = default;
+        Element& operator=(Element&&) = default;
+
+        Element(Element* parent, const std::string& name, const std::string content = "",
+                const std::unordered_map<std::string, std::string>& attributes = {});
+
         const std::string& name() const;
-        const std::string& type() const;
-        const std::string& contents() const;
+        const std::unordered_map<std::string, std::string>& attributes() const;
+        const std::string& content() const;
+
+        std::string& name();
         std::unordered_map<std::string, std::string>& attributes();
-        
+        std::string& content();
+
     private:
-        std::string type_;
+        Element* parent_;
+        std::vector<std::unique_ptr<Element>> children_;
         std::string name_;
         std::unordered_map<std::string, std::string> attributes_;
-        std::string contents_;
+        std::string content_;
     };
-    
-    class Path {
+
+    class IVW_CORE_API PathComponent {
     public:
-        using C = std::vector<std::unique_ptr<Element>>;
-        Path(const std::string strrep, std::function<C::const_iterator(const C&)> func);
-        Path(const std::string&);
-        Path(int index);
-        static Path first();
-        static Path last();
-        C::const_iterator operator()(const C& elements) const;
-        operator const std::string&() const;
-        friend std::ostream& operator<<(std::ostream &out, const Path& path);
+        PathComponent(const std::string strrep,
+                      std::function<ElemVec::const_iterator(const ElemVec&)> matcher);
+
+        PathComponent(int index);
+        PathComponent(const std::string name);
+        PathComponent(const std::unordered_map<std::string, std::string>& attributes);
+
+        PathComponent(const std::string name,
+                      const std::unordered_map<std::string, std::string>& attributes);
+
+        static PathComponent first();
+
+        static PathComponent last();
+
+        static PathComponent end();
+
+        ElemVec::const_iterator operator()(const ElemVec& elements) const;;
+
+        template <class Elem, class Traits>
+        friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                                            const Document::PathComponent& path) {
+            ss << path.strrep_;
+            return ss;
+        }
+
     private:
         std::string strrep_;
-        std::function<C::const_iterator(const C&)> func_;
+        std::function<ElemVec::const_iterator(const ElemVec&)> matcher_;
     };
 
-    class ElementWrapper {
+    class IVW_CORE_API DocumentHandle {
     public:
-        ElementWrapper(Document* doc, Element* element, const std::vector<Path>& path);
+        friend Document;
 
-        Element& element();
-        const std::vector<Path>& path();
-        
-        ElementWrapper getElement(const std::vector<Path>& path);
+        DocumentHandle(const DocumentHandle&) = default;
+        DocumentHandle& operator=(const DocumentHandle&) = default;
+        DocumentHandle(DocumentHandle&&) = default;
+        DocumentHandle& operator=(DocumentHandle&&) = default;
 
-        ElementWrapper addElementIn(const std::string& type, const std::string& name);
-        ElementWrapper addElementAfter(const std::string& type, const std::string& name);
-        ElementWrapper addElementBefore(const std::string& type, const std::string& name);
+        DocumentHandle get(const std::vector<PathComponent>& path);
+        DocumentHandle insert(PathComponent pos, const std::string& name,
+                              const std::string content = "",
+                              const std::unordered_map<std::string, std::string>& attributes = {});
 
-        ElementWrapper& setName(const std::string& name);
-        ElementWrapper& setType(const std::string& type);
-        ElementWrapper& setContent(const std::string& contents);
-        ElementWrapper& addAttribute(const std::string& key, const std::string& value);
+        DocumentHandle append(const std::string& name,
+                              const std::string content = "",
+                              const std::unordered_map<std::string, std::string>& attributes = {});
 
-        size_t numberOfChildren() const;
+        const Element* element() const;
+        Element* element();
+
+        operator bool() const;
 
     private:
-        Document* doc_;
-        Element* element_;
-        std::vector<Path> path_;
+        DocumentHandle(const Document* doc, Element* elem);
+
+        const Document* doc_;
+        Element* elem_;
     };
 
-    Document();
-    Document(const Document& rhs);
-    Document(Document&& rhs);
-    Document& operator=(Document rhs);
-    
-    virtual ~Document() = default;
+    Document();;
+    Document(const Document&) = delete;
+    Document& operator=(const Document&) = delete;
+    Document(Document&&) = default;
+    Document& operator=(Document&&) = default;
 
-    ElementWrapper getElement(const std::vector<Path>& path);
-    ElementWrapper addElementIn(const std::vector<Path>& path, const std::string& type,
-                const std::string& name);
-    ElementWrapper addElementAfter(const std::vector<Path>& path, const std::string& type,
-                     const std::string& name);
-    ElementWrapper addElementBefore(const std::vector<Path>& path, const std::string& type,
-                      const std::string& name);
-    
-    size_t numberOfChildren(const std::vector<Path>& path) const;
+    DocumentHandle handle() const;
 
-    operator std::string() const;
-    friend std::ostream& operator<<(std::ostream &out, const Document& doc);
+    DocumentHandle get(const std::vector<PathComponent>& path);
+    DocumentHandle insert(PathComponent pos, const std::string& name,
+                          const std::string content = "",
+                          const std::unordered_map<std::string, std::string>& attributes = {});
 
-private:
-    Element* getElement(std::vector<Path>::const_iterator b,
-                        std::vector<Path>::const_iterator e) const;
+    DocumentHandle append(const std::string& name,
+                          const std::string content = "",
+                          const std::unordered_map<std::string, std::string>& attributes = {});
 
     template <typename BeforVisitor, typename AfterVisitor>
-    void visitElements(BeforVisitor before, AfterVisitor after) const {
+    void visit(BeforVisitor before, AfterVisitor after) const {
         const std::function<void(Element*, std::vector<Element*>&)> traverser = [&](
             Element* elem, std::vector<Element*>& stack) {
             before(elem, stack);
             stack.push_back(elem);
-            auto it = elements_.find(elem);
-            if (it != elements_.end()) {
-                for (const auto& e : it->second) traverser(e.get(), stack);
-            }
+
+            for (const auto& e : elem->children_) traverser(e.get(), stack);
+
             stack.pop_back();
             after(elem, stack);
         };
-        auto it = elements_.find(root_.get());
-        if (it != elements_.end()) {
-            std::vector<Element*> stack;
-            for (const auto& e : it->second) traverser(e.get(), stack);
-        }
+        std::vector<Element*> stack;
+        for (const auto& e : root_->children_) traverser(e.get(), stack);
     }
 
+    template <class Elem, class Traits>
+    friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                                        const Document& doc) {
+        doc.visit(
+            [&](Element* elem, std::vector<Element*>& stack) {
+                ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
+                for (const auto& item : elem->attributes()) {
+                    ss << " " << item.first << "='" << item.second << "'";
+                }
+                ss << ">\n";
+                if (!elem->content().empty())
+                    ss << std::string((1 + stack.size()) * 4, ' ') << elem->content() << "\n";
+            },
+            [&](Element* elem, std::vector<Element*>& stack) {
+                ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
+            });
+
+        return ss;
+    }
+
+    operator std::string() const {
+        std::stringstream ss;
+        ss << *this;
+        return ss.str();
+    }
+
+private:
     std::unique_ptr<Element> root_;
-    std::unordered_map<Element*, std::vector<std::unique_ptr<Element>>> elements_;
 };
-
-IVW_CORE_API std::ostream& operator<<(std::ostream &out, const Document::Path& path);
-IVW_CORE_API std::ostream& operator<<(std::ostream &out, const Document& doc);
-
 
 
 namespace utildoc {
@@ -180,106 +227,84 @@ template <typename T,
 std::string convert(T&& val) {
     return "???";
 }
-
 }
 
+class IVW_CORE_API TableBuilder {
+public:
+    struct IVW_CORE_API Wrapper {
+        std::string data_;
 
-struct TableBuilder {
-    struct ColSpan {};
-    struct Header {};
-    struct Text {};
+    protected:
+        template <typename T>
+        Wrapper(T&& data)
+            : data_(detail::convert(std::forward<T>(data))) {}
+        Wrapper(const std::string& data);
+        Wrapper(const char* const data);
+    };
 
-    struct Append {};
+    struct IVW_CORE_API ArrributeWrapper : Wrapper {
+        template <typename T>
+        ArrributeWrapper(const std::unordered_map<std::string, std::string>& attributes, T&& data)
+            : Wrapper(std::forward<T>(data)), (attributes) {}
+        std::unordered_map<std::string, std::string> attributes_;
+        std::string data_;
+    };
+    struct IVW_CORE_API Header : Wrapper {
+        template <typename T>
+        Header(T&& data)
+            : Wrapper(std::forward<T>(data)) {}
+    };
 
-    TableBuilder(Document::ElementWrapper r, const std::string& id)
-        : t_{r.addElementIn("table", id)
-                 .addAttribute("border", "0")
-                 .addAttribute("cellspacing", "0")
-                 .addAttribute("cellpadding", "0")} {}
+    struct Span_t {};
+    static constexpr Span_t span{};
 
-    TableBuilder(Append, Document::ElementWrapper t, const std::string& id)
-        : t_{t} { }
+    TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
+                 const std::unordered_map<std::string, std::string>& attributes = {});
 
-    void operator()(const std::string& id, const std::string& val) {
-        auto tr = t_.addElementIn("tr", "row" + toString(t_.numberOfChildren()));
-        State s;
-        buildrow(tr, s, Header{}, id, Text{}, val);
+    TableBuilder(Document::DocumentHandle table);
+
+    template <typename... Args>
+    Document::DocumentHandle operator()(Document::PathComponent pos, Args&&... args) {
+        auto row = table_.insert(pos, "tr");
+        tablerow(row, std::forward<Args>(args)...);
+        return row;
     }
 
     template <typename... Args>
-    void operator()(Args&&... args) {
-        auto tr = t_.addElementIn("tr", "row" + toString(t_.numberOfChildren()));
-        State s;
-        buildrow(tr, s, std::forward<Args>(args)...);
-    }
-
-    template <typename T>
-    void operator()(const ValueWrapper<T>& v) {
-        std::string name{v.name};
-        name[0] = std::toupper(name[0]);
-        auto tr = t_.addElementIn("tr", "row" + toString(t_.numberOfChildren()));
-        State s;
-        buildrow(tr, s, Header{}, name, Text{}, v.value);
+    Document::DocumentHandle operator()(Args&&... args) {
+        return operator()(Document::PathComponent::end(), std::forward<Args>(args)...);
     }
 
 private:
-    enum class Format { Header, Text };
-    struct State {
-        Format format = Format::Text;
-        size_t col = 0;
-    };
-
-    template <typename T>
-    void processItem(Document::ElementWrapper& w, State& s, T&& val) {
-        auto td = w.addElementIn("td", "col" + toString(s.col))
-                      .setContent(detail::convert(std::forward<T>(val)));
-        switch (s.format) {
-            case Format::Header:
-                td.addAttribute("style", "color:#bbb;padding-right:8px;");
-                break;
-            case Format::Text:
-                td.addAttribute("style", "padding-right:8px;");
-                break;
-        }
-        s.col++;
-    }
-    void processItem(Document::ElementWrapper& w, State& s, ColSpan val) {
-        auto l = w.getElement({Document::Path::last()});
-        auto it = l.element().attributes().find("colspan");
-        if(it != l.element().attributes().end()) {
-            std::stringstream ss;
-            ss << it->second;
-            int count{0};
-            ss >> count;
-            l.addAttribute("colspan", toString(count + 1));
-        } else {
-            l.addAttribute("colspan", "1");
-        }
-    }
-    
-    void processItem(Document::ElementWrapper& w,  State& s, Header val) {
-        s.format = Format::Header;
-
-    }
-    void processItem(Document::ElementWrapper& w,  State& s, Text val) {
-        s.format = Format::Text;
-    }
-
     template <typename T, typename... Args>
-    void buildrow(Document::ElementWrapper& w, State& s, T&& val, Args&&... args) {
-        processItem(w, s, val);
-        buildrow(w, s, std::forward<Args>(args)...);
+    void tablerow(Document::DocumentHandle& w, T&& val, Args&&... args) {
+        tabledata(w, std::forward<T>(val));
+        tablerow(w, std::forward<Args>(args)...);
     }
 
     template <typename T>
-    void buildrow(Document::ElementWrapper& w,  State& s, T&& val) {
-        processItem(w, s, val);
+    void tablerow(Document::DocumentHandle& w, T&& val) {
+        tabledata(w, std::forward<T>(val));
     }
-    
-    Document::ElementWrapper t_;
+
+    void tabledata(Document::DocumentHandle& row, const std::string& val);
+    void tabledata(Document::DocumentHandle& row, const char* const val);
+
+    template <typename T,
+              typename std::enable_if<
+                  !std::is_base_of<Wrapper, std::decay_t<T>>::value, int>::type = 0>
+    void tabledata(Document::DocumentHandle& row, T&& val) {
+        row.insert(Document::PathComponent::end(), "td", detail::convert(val));
+    }
+    void tabledata(Document::DocumentHandle& row, Span_t val);
+
+    void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val);
+    void tabledata(Document::DocumentHandle& row, const Header& val);
+
+    Document::DocumentHandle table_;
 };
 
-}
+}  // namespace
 
 }  // namespace
 

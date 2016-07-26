@@ -479,8 +479,7 @@ void PropertyWidgetQt::updateContextMenu() {
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(),
-                           utilqt::toLocalQString(property_->getDescription()));
+        QToolTip::showText(helpEvent->globalPos(), utilqt::formatToolTipText(property_));
         return true;
     } else {
         return QWidget::event(event);

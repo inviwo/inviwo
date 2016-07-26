@@ -33,173 +33,43 @@
 
 namespace inviwo {
 
-Document::Document() : root_{util::make_unique<Element>("root", "root")} {
-    elements_[root_.get()] = std::vector<std::unique_ptr<Element>>();
-}
-
-Document::Document(const Document& rhs) : root_{util::make_unique<Element>(*rhs.root_)} {
-    elements_[root_.get()] = std::vector<std::unique_ptr<Element>>();
-    std::vector<Element*> parent = {root_.get()};
-    rhs.visitElements(
-        [&](Element* elem, std::vector<Element*>& stack) {
-            auto clone = util::make_unique<Element>(*elem);
-            auto c = clone.get();
-            elements_[parent.back()].push_back(std::move(clone));
-            parent.push_back(c);
-        },
-        [&](Element* elem, std::vector<Element*>& stack) { parent.pop_back(); });
-}
-Document::Document(Document&& rhs)
-    : root_{std::move(rhs.root_)}, elements_{std::move(rhs.elements_)} {}
-
-Document& Document::operator=(Document that) {
-    std::swap(root_, that.root_);
-    std::swap(elements_, that.elements_);
-    return *this;
-}
-
-Document::operator std::string() const {
-    std::stringstream ss;
-
-    visitElements(
-        [&](Element* elem, std::vector<Element*>& stack) {
-            ss << std::string(stack.size() * 4, ' ') << "<" << elem->type() << " id='"
-               << elem->name() << "'";
-            for (const auto& item : elem->attributes()) {
-                ss << " " << item.first << "='" << item.second << "'";
-            }
-            ss << ">\n";
-            if (!elem->contents().empty())
-                ss << std::string((1+stack.size()) * 4, ' ') << elem->contents() << "\n";
-        },
-        [&](Element* elem, std::vector<Element*>& stack) {
-            ss << std::string(stack.size() * 4, ' ') << "</" << elem->type() << ">\n";
-        });
-
-    return ss.str();
-}
-
-Document::ElementWrapper Document::getElement(const std::vector<Path>& paths) {
-    return ElementWrapper(this, getElement(paths.begin(), paths.end()), paths);
-}
-
-Document::Element* Document::getElement(std::vector<Path>::const_iterator b,
-                                        std::vector<Path>::const_iterator e) const {
-    Element* elem = root_.get();
-    for (auto path = b; path != e; ++path) {
-        auto it = elements_.find(elem);
-        if (it != elements_.end()) {
-            auto eit = (*path)(it->second);
-            if (eit != it->second.end()) elem = eit->get();
-            else return nullptr;
-        } else {
-            return nullptr;
-        }
-    }
-    return elem;
-}
-
-size_t Document::numberOfChildren(const std::vector<Path>& path) const {
-    if(auto elem = getElement(path.begin(), path.end())) {
-        auto it = elements_.find(elem);
-        if (it != elements_.end()) return it->second.size();
-    }
-    return 0;
-}
-
-Document::ElementWrapper Document::addElementIn(const std::vector<Path>& path,
-                                                const std::string& type, const std::string& name) {
-    if (auto elem = getElement(path.begin(), path.end())) {
-        auto e = util::make_unique<Element>(type, name);
-        auto res = e.get();
-        elements_[elem].push_back(std::move(e));
-        auto newpath = path;
-        newpath.push_back(Path(name));
-        return ElementWrapper(this, res, newpath);
-    }
-    throw Exception("Invalid Path: " + joinString(path, "/"));
-}
-
-Document::ElementWrapper Document::addElementAfter(const std::vector<Path>& path, const std::string& type,
-                      const std::string& name) {
-    
-    if (path.empty()) throw Exception("Empty path");
-    
-    if (auto elem = path.size() > 1 ? getElement(path.begin(), --path.end()) : root_.get()) {
-        auto& vec = elements_[elem];
-        auto it = (path.back())(vec);
-        if (it != vec.end()) {
-            auto e = util::make_unique<Element>(type, name);
-            auto res = e.get();
-            vec.insert(++it, std::move(e));
-            auto newpath = path;
-            newpath.pop_back();
-            newpath.push_back(Path(name));
-            return ElementWrapper(this, res, newpath);
-        }
-    }
-    throw Exception("Invalid Path: " + joinString(path, "/"));
-}
-
-Document::ElementWrapper Document::addElementBefore(const std::vector<Path>& path, const std::string& type,
-                      const std::string& name) {
-    if (path.empty()) throw Exception("Empty path");
-    
-    if (auto elem = path.size() > 1 ? getElement(path.begin(), --path.end()) : root_.get()) {
-        auto& vec = elements_[elem];
-        auto it = (path.back())(vec);
-        if (it != vec.end()) {
-            auto e = util::make_unique<Element>(type, name);
-            auto res = e.get();
-            vec.insert(it, std::move(e));
-            auto newpath = path;
-            newpath.pop_back();
-            newpath.push_back(Path(name));
-            return ElementWrapper(this, res, newpath);
-        }
-    }
-    throw Exception("Invalid Path: " + joinString(path, "/"));
-}
-
-Document::Element::Element(const std::string& type, const std::string& name)
-    : type_(type), name_(name) {}
-
-Document::Element& Document::Element::setName(const std::string& name) {
-    name_ = name;
-    return *this;
-}
-Document::Element& Document::Element::setType(const std::string& type) {
-    type_ = type;
-    return *this;
-}
-Document::Element& Document::Element::setContent(const std::string& contents) {
-    contents_ = contents;
-    return *this;
-}
-Document::Element& Document::Element::addAttribute(const std::string& key,
-                                                   const std::string& value) {
-    attributes_[key] = value;
-    return *this;
-}
-
-const std::string& Document::Element::name() const { return name_; }
-const std::string& Document::Element::type() const { return type_; }
-const std::string& Document::Element::contents() const { return contents_; }
 std::unordered_map<std::string, std::string>& Document::Element::attributes() {
     return attributes_;
 }
 
-Document::Path::Path(const std::string strrep, std::function<C::const_iterator(const C&)> func)
-    : strrep_(strrep), func_(func) {}
+const std::unordered_map<std::string, std::string>& Document::Element::attributes() const {
+    return attributes_;
+}
 
-Document::Path::Path(const std::string& name)
-    : strrep_(name), func_{[name](const C& elements) -> C::const_iterator {
-        return util::find_if(elements,
-                             [&](const std::unique_ptr<Element>& e) { return e->name() == name; });
-    }} {}
+std::string& Document::Element::content() { return content_; }
 
-Document::Path::Path(int index)
-    : strrep_(toString(index)), func_{[index](const C& elements) -> C::const_iterator {
+const std::string& Document::Element::content() const { return content_; }
+
+Document::Element::Element(Element* parent, const std::string& name, const std::string content,
+                           const std::unordered_map<std::string, std::string>& attributes)
+    : parent_(parent), name_(name), attributes_(attributes), content_(content) {}
+
+std::string& Document::Element::name() { return name_; }
+
+const std::string& Document::Element::name() const { return name_; }
+
+
+Document::PathComponent Document::PathComponent::first() {
+    return PathComponent("<first>", [](const ElemVec& elements) -> ElemVec::const_iterator {
+        if (!elements.empty())
+            return elements.begin();
+        else
+            return elements.end();
+    });
+}
+
+Document::PathComponent::PathComponent(
+    const std::string strrep, std::function<ElemVec::const_iterator(const ElemVec&)> matcher)
+    : strrep_(strrep), matcher_(matcher) {}
+
+Document::PathComponent::PathComponent(int index)
+    : strrep_("Index: " + std::to_string(index))
+    , matcher_{[index](const ElemVec& elements) -> ElemVec::const_iterator {
         size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
         if (i < elements.size())
             return elements.begin() + i;
@@ -207,16 +77,44 @@ Document::Path::Path(int index)
             return elements.end();
     }} {}
 
-Document::Path Document::Path::first() {
-    return Path("<first>", [](const C& elements) -> C::const_iterator {
-        if (!elements.empty())
-            return elements.begin();
-        else
-            return elements.end();
-    });
-}
-Document::Path Document::Path::last() {
-    return Path("<last>", [](const C& elements) -> C::const_iterator {
+Document::PathComponent::PathComponent(const std::string name)
+    : strrep_(name)
+    , matcher_{[name](const ElemVec& elements) -> ElemVec::const_iterator {
+        return std::find_if(elements.begin(), elements.end(),
+                            [name](const auto& e) { return e->name() == name; });
+    }} {}
+
+Document::PathComponent::PathComponent(
+    const std::unordered_map<std::string, std::string>& attributes)
+    : strrep_("attr")
+    , matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
+        return std::find_if(elements.begin(), elements.end(), [attributes](const auto& e) {
+            for (auto& attr : attributes) {
+                auto it = e->attributes().find(attr.first);
+                if (it == e->attributes().end()) return false;
+                if (it->second != attr.second) return false;
+            }
+            return true;
+        });
+    }} {}
+
+Document::PathComponent::PathComponent(
+    const std::string name, const std::unordered_map<std::string, std::string>& attributes)
+    : strrep_("attr")
+    , matcher_{[name, attributes](const ElemVec& elements) -> ElemVec::const_iterator {
+        return std::find_if(elements.begin(), elements.end(), [name, attributes](const auto& e) {
+            if (e->name() != name) return false;
+            for (auto& attr : attributes) {
+                auto it = e->attributes().find(attr.first);
+                if (it == e->attributes().end()) return false;
+                if (it->second != attr.second) return false;
+            }
+            return true;
+        });
+    }} {}
+
+Document::PathComponent Document::PathComponent::last() {
+    return PathComponent("<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {
         if (!elements.empty())
             return --elements.end();
         else
@@ -224,70 +122,118 @@ Document::Path Document::Path::last() {
     });
 }
 
-Document::Path::C::const_iterator Document::Path::operator() (const C& elements) const {
-    return func_(elements);
-}
-Document::Path::operator const std::string&() const {
-    return strrep_;
+Document::PathComponent Document::PathComponent::end() {
+    return PathComponent(
+        "<end>", [](const ElemVec& elements) -> ElemVec::const_iterator { return elements.end(); });
 }
 
-
-Document::ElementWrapper::ElementWrapper(Document* doc, Element* element,
-                                         const std::vector<Path>& path)
-    : doc_{doc}, element_(element), path_(path) {}
-
-Document::Element& Document::ElementWrapper::element() { return *element_; }
-const std::vector<Document::Path>& Document::ElementWrapper::path() { return path_; }
-
-
-Document::ElementWrapper Document::ElementWrapper::getElement(const std::vector<Path>& path){
-    auto p = path_;
-    std::copy(path.begin(),path.end(), std::back_inserter(p));
-    return doc_->getElement(p);
+Document::ElemVec::const_iterator Document::PathComponent::operator()(
+    const ElemVec& elements) const {
+    return matcher_(elements);
 }
 
-Document::ElementWrapper Document::ElementWrapper::addElementIn(const std::string& type,
-                                                                const std::string& name) {
-    return doc_->addElementIn(path_, type, name);
-}
-Document::ElementWrapper Document::ElementWrapper::addElementAfter(const std::string& type,
-                                                                   const std::string& name) {
-    return doc_->addElementAfter(path_, type, name);
-}
-Document::ElementWrapper Document::ElementWrapper::addElementBefore(const std::string& type,
-                                                                    const std::string& name) {
-    return doc_->addElementBefore(path_, type, name);
+Document::DocumentHandle::DocumentHandle(const Document* doc, Element* elem)
+    : doc_(doc), elem_(elem) {}
+
+Document::DocumentHandle Document::DocumentHandle::get(
+    const std::vector<PathComponent>& path) {
+    Element* current = elem_;
+    for (const auto& pc : path) {
+        auto it = pc(current->children_);
+        if (it != current->children_.end()) {
+            current = (*it).get();
+        } else {
+            return DocumentHandle(doc_, nullptr);
+        }
+    }
+    return DocumentHandle(doc_, current);
 }
 
-Document::ElementWrapper& Document::ElementWrapper::setName(const std::string& name) {
-    element_->setName(name);
-    return *this;
-}
-Document::ElementWrapper& Document::ElementWrapper::setType(const std::string& type) {
-    element_->setType(type);
-    return *this;
-}
-Document::ElementWrapper& Document::ElementWrapper::setContent(const std::string& contents) {
-    element_->setContent(contents);
-    return *this;
-}
-Document::ElementWrapper& Document::ElementWrapper::addAttribute(const std::string& key,
-                                                                 const std::string& value) {
-    element_->addAttribute(key, value);
-    return *this;
+Document::DocumentHandle Document::DocumentHandle::insert(
+    PathComponent pos, const std::string& name, const std::string content,
+    const std::unordered_map<std::string, std::string>& attributes) {
+    auto iter = pos(elem_->children_);
+
+    auto it =
+        elem_->children_.insert(iter, std::make_unique<Element>(elem_, name, content, attributes));
+
+    return DocumentHandle(doc_, it->get());
 }
 
-size_t Document::ElementWrapper::numberOfChildren() const {
-    return doc_->numberOfChildren(path_);
+Document::DocumentHandle Document::DocumentHandle::append(
+    const std::string& name, const std::string content,
+    const std::unordered_map<std::string, std::string>& attributes) {
+    return insert(PathComponent::end(), name, content, attributes);
 }
 
-std::ostream& operator<<(std::ostream &out, const Document::Path& path) {
-    out << path.strrep_;
-    return out;
+Document::Element* Document::DocumentHandle::element() { return elem_; }
+
+const Document::Element* Document::DocumentHandle::element() const { return elem_; }
+
+Document::DocumentHandle::operator bool() const { return elem_ != nullptr; }
+
+Document::Document() : root_{ std::make_unique<Element>(nullptr, "root") } {}
+
+Document::DocumentHandle Document::handle() const {
+    return DocumentHandle(this, root_.get());
 }
-std::ostream& operator<<(std::ostream &out, const Document& doc) {
-    out << doc.operator std::string();
-    return out;
+
+Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
+    return handle().get(path);
 }
+
+Document::DocumentHandle Document::insert(
+    PathComponent pos, const std::string& name, const std::string content,
+    const std::unordered_map<std::string, std::string>& attributes) {
+    return handle().insert(pos, name, content, attributes);
+}
+
+Document::DocumentHandle Document::append(
+    const std::string& name, const std::string content,
+    const std::unordered_map<std::string, std::string>& attributes) {
+    return handle().append(name, content, attributes);
+}
+
+utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
+                                    const std::unordered_map<std::string, std::string>& attributes)
+    : table_(handle.insert(pos, "table", "", attributes)) {}
+
+utildoc::TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}
+
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) {
+    row.insert(Document::PathComponent::end(), "td", val.data_, val.attributes_);
+}
+
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
+    row.insert(Document::PathComponent::end(), "th", val.data_);
+}
+
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {
+    row.insert(Document::PathComponent::end(), "td", std::string(val));
+}
+
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, Span_t val) {
+    auto l = row.get({Document::PathComponent::last()});
+    if (l) {
+        auto it = l.element()->attributes().find("colspan");
+        if (it != l.element()->attributes().end()) {
+            std::stringstream ss;
+            ss << it->second;
+            int count{0};
+            ss >> count;
+            l.element()->attributes()["colspan"] = std::to_string(count + 1);
+        } else {
+            l.element()->attributes()["colspan"] = std::to_string(1);
+        }
+    }
+}
+
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) {
+    row.insert(Document::PathComponent::end(), "td", val);
+}
+
+utildoc::TableBuilder::Wrapper::Wrapper(const char* const data) : data_(data) {}
+
+utildoc::TableBuilder::Wrapper::Wrapper(const std::string& data) : data_(data) {}
 
 }  // namespace

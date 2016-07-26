@@ -274,19 +274,17 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
 
 template <typename T>
 Document OrdinalProperty<T>::getDescription() const {
-    using P = Document::Path;
-    
-    using h = utildoc::TableBuilder::Header;
-    using t = utildoc::TableBuilder::Text;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
 
     Document doc = TemplateProperty<T>::getDescription();
+    auto b = doc.get({P("html"), P("body")});
 
-    auto b = doc.getElement({P("html"), P("body")});
-    utildoc::TableBuilder tb(b, "value");
-    tb(h{}, "#", "Value", "Min", "Max", "Inc");
+    utildoc::TableBuilder tb(b, P::end());
+    tb(H("#"), H("Value"), H("Min"), H("Max"), H("Inc"));
     size_t size = getDim().x * getDim().y;
     for (size_t i = 0; i < size; i++) {
-        tb(h{}, i, t{}, util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
+        tb(H(i), util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
            util::glmcomp(maxValue_.value, i), util::glmcomp(increment_.value, i));
     }
 

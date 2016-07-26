@@ -232,35 +232,31 @@ void FileProperty::requestFile() {
 }
 
 Document FileProperty::getDescription() const {
-    using P = Document::Path;
-
-    using h = utildoc::TableBuilder::Header;
-    using t = utildoc::TableBuilder::Text;
-    using Append = utildoc::TableBuilder::Append;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
 
     Document doc = TemplateProperty<std::string>::getDescription();
+    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
 
-    auto b = doc.getElement({P("html"), P("body"), P("property")});
-
-    utildoc::TableBuilder tb(Append{}, b, "value");
+    utildoc::TableBuilder tb(table);
     switch (fileMode_) {
         case FileProperty::FileMode::AnyFile:
         case FileProperty::FileMode::ExistingFile:
         case FileProperty::FileMode::ExistingFiles: {
-            tb(h{}, "File", t{}, value_.value);
+            tb(H("File"), value_.value);
             break;
         }
 
         case FileProperty::FileMode::Directory:
         case FileProperty::FileMode::DirectoryOnly: {
-            tb(h{}, "Directory", t{}, value_.value);
+            tb(H("Directory"), value_.value);
             break;
         }
     }
 
-    tb(h{}, "Accept Mode", t{}, acceptMode_);
-    tb(h{}, "File Mode", t{}, fileMode_);
-    tb(h{}, "Content Type", t{}, contentType_);
+    tb(H("Accept Mode"), acceptMode_);
+    tb(H("File Mode"), fileMode_);
+    tb(H("Content Type"), contentType_);
 
     return doc;
 }

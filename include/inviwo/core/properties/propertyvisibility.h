@@ -40,7 +40,19 @@ enum class UsageMode {
     Development = 1, // Default, Only show in developer mode
 };
 
-IVW_CORE_API std::ostream& operator<<(std::ostream &out, const UsageMode& mode);
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const UsageMode& mode) {
+    switch (mode) {
+        case UsageMode::Application:
+            ss << "Application";
+            break;
+        case UsageMode::Development:
+            ss << "Development";
+            break;
+    }
+    return ss;
+}
 
 } //namespace
 

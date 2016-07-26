@@ -87,6 +87,9 @@ IVW_QTWIDGETS_API ivec2 toGLM(QSize);
 IVW_QTWIDGETS_API QSizeF toQSize(dvec2);
 IVW_QTWIDGETS_API QSize toQSize(ivec2);
 
+
+IVW_QTWIDGETS_API QString formatToolTipText(Property* prop);
+
 } // namespace utilqt
 
 
