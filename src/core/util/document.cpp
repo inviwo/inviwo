@@ -205,7 +205,7 @@ void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const Arrri
 }
 
 void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
-    row.insert(Document::PathComponent::end(), "th", val.data_);
+    row.insert(Document::PathComponent::end(), "th", val.data_, {{"align", "left"}});
 }
 
 void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {

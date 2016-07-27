@@ -40,7 +40,6 @@
 #include <inviwo/qt/widgets/rangesliderqt.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/tooltiphelper.h>
 
 namespace inviwo {
 

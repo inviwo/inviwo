@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/document.h>
 
 #include <locale>
 #include <ios>
@@ -46,6 +47,8 @@
 #include <warn/pop>
 
 namespace inviwo {
+
+class Property;
 
 namespace utilqt {
     
@@ -86,9 +89,6 @@ IVW_QTWIDGETS_API ivec2 toGLM(QSize);
 
 IVW_QTWIDGETS_API QSizeF toQSize(dvec2);
 IVW_QTWIDGETS_API QSize toQSize(ivec2);
-
-
-IVW_QTWIDGETS_API QString formatToolTipText(Property* prop);
 
 } // namespace utilqt
 

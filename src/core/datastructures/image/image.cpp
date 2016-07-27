@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/imagedisk.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -236,18 +237,19 @@ inviwo::uvec3 Image::COLOR_CODE  = uvec3(90, 127, 183);
 
 const std::string Image::CLASS_IDENTIFIER = "org.inviwo.Image";
 
-std::string Image::getDataInfo() const{
-    std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>" << "Image </nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Color channels</td><td><nobr>" << colorLayers_.size() << "</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Depth</td><td><nobr>" << (getDepthLayer() ? "Yes" : "No") << "</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Picking</td><td><nobr>" << (getPickingLayer() ? "Yes" : "No") << "</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Format</td><td><nobr>" << getDataFormat()->getString() << "</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Dimension</td><td><nobr>" << "(" << getDimensions().x << ", "
-        << getDimensions().y << ")" << "</nobr></td></tr>\n"
-        << "</tr></table>\n";
-    return ss.str();
+std::string Image::getDataInfo() const {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    Document doc;
+    doc.append("b", "Image", { {"style", "color:white;"} });
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Color channels"), colorLayers_.size());
+    tb(H("Depth"), getDepthLayer() ? "Yes" : "No");
+    tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
+    tb(H("Format"), getDataFormat()->getString());
+    tb(H("Dimension"), getDimensions());
+
+    return doc;
 }
 
 } // namespace

@@ -175,7 +175,7 @@ void NetworkEditorView::focusInEvent(QFocusEvent* e) {
 
 void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
     if(networkEditor_->doingContextMenu()) return;
-    
+
     setDragMode(QGraphicsView::RubberBandDrag);
     
     takeDownAction("Cut");

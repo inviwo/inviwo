@@ -37,7 +37,6 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/core/common/moduleaction.h>
 
 #include <inviwo/qt/widgets/propertylistwidget.h>
@@ -479,7 +478,8 @@ void PropertyWidgetQt::updateContextMenu() {
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(), utilqt::formatToolTipText(property_));
+        QToolTip::showText(helpEvent->globalPos(),
+                           utilqt::toLocalQString(property_->getDescription()));
         return true;
     } else {
         return QWidget::event(event);

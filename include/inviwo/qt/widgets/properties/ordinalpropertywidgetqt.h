@@ -39,7 +39,6 @@
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <math.h>

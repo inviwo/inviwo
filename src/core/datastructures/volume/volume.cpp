@@ -31,7 +31,7 @@
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -58,16 +58,20 @@ Volume& Volume::operator=(const Volume& that) {
     return *this;
 }
 Volume* Volume::clone() const { return new Volume(*this); }
-Volume::~Volume() {}
+Volume::~Volume() = default;
 
 std::string Volume::getDataInfo() const {
-    ToolTipHelper t("Volume");
-    t.tableTop();
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    doc.append("b", "Volume", { {"style", "color:white;"} });
+    utildoc::TableBuilder tb(doc.handle(), P::end());
 
-    t.row("Format", getDataFormat()->getString());
-    t.row("Dimension", toString(getDimensions()));
-    t.row("Data Range", toString(dataMap_.dataRange));
-    t.row("Value Range", toString(dataMap_.valueRange));
+    tb(H("Format"), getDataFormat()->getString());
+    tb(H("Dimension"), getDimensions());
+    tb(H("Data Range"), dataMap_.dataRange);
+    tb(H("Value Range"), dataMap_.valueRange);
+    tb(H("Unit"), dataMap_.valueUnit);
 
     if (hasRepresentation<VolumeRAM>()) {
         auto volumeRAM = getRepresentation<VolumeRAM>();
@@ -76,24 +80,22 @@ std::string Volume::getDataInfo() const {
             for (size_t i = 0; i < histograms->size(); ++i) {
                 std::stringstream ss;
                 ss << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
-                   << " Mean: " << (*histograms)[i].stats_.mean
-                   << " Max: " << (*histograms)[i].stats_.max
-                   << " Std: " << (*histograms)[i].stats_.standardDeviation;
-                t.row("Stats", ss.str());
+                    << " Mean: " << (*histograms)[i].stats_.mean
+                    << " Max: " << (*histograms)[i].stats_.max
+                    << " Std: " << (*histograms)[i].stats_.standardDeviation;
+                tb(H("Stats"), ss.str());
 
                 std::stringstream ss2;
                 ss2 << "(1: " << (*histograms)[i].stats_.percentiles[1]
-                   << ", 25: " << (*histograms)[i].stats_.percentiles[25]
-                   << ", 50: " << (*histograms)[i].stats_.percentiles[50]
-                   << ", 75: " << (*histograms)[i].stats_.percentiles[75]
-                   << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")";
-                t.row("Percentiles", ss2.str());
+                    << ", 25: " << (*histograms)[i].stats_.percentiles[25]
+                    << ", 50: " << (*histograms)[i].stats_.percentiles[50]
+                    << ", 75: " << (*histograms)[i].stats_.percentiles[75]
+                    << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")";
+                tb(H("Percentiles"), ss2.str());
             }
         }
     }
-
-    t.tableBottom();
-    return t;
+    return doc;
 }
 
 size3_t Volume::getDimensions() const {

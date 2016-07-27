@@ -246,7 +246,7 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 }
 
 void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    showToolTipHelper(e, utilqt::formatToolTipText(item_));
+    showToolTipHelper(e, utilqt::toLocalQString(item_->getDescription()));
 }
 
 void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,

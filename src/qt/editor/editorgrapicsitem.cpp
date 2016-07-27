@@ -29,11 +29,13 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/util/document.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
+
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -111,9 +113,11 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     std::unique_ptr<std::vector<unsigned char>> data;
     size_t size = static_cast<size_t>(settings->portInspectorSize_.get());
 
-    ToolTipHelper t;
-    t.tableTop();
-
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    auto t = doc.append("html").append("body").append("table");
+    
     std::string imageType = "png";
 
     if (inspector) {
@@ -123,11 +127,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     }
 
     if (portinfo) {
-        ToolTipHelper head(port->getClassIdentifier());
-        head.tableTop();
-        head.row("Identifier", port->getIdentifier());
-        head.tableBottom();
-        t << "<tr><td>" << std::string(head) << "</td></tr>";
+        auto pi = t.append("tr").append("td");
+        pi.append("b", port->getClassIdentifier(), {{"style", "color:white;"}});
+        utildoc::TableBuilder tb(pi, P::end());
+        tb(H("Identifier"), port->getIdentifier());
     }
 
     if (data) {
@@ -156,17 +159,22 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                                  static_cast<unsigned int>(data->size()));
         }
 
-        t << "<tr><td><img width='" << size << "' height='" << size << "' ";
-        t << "src=\"data:image/png;base64," << byteArray.toBase64().data() << "\"/></td></tr>";
+        t.append("tr").append("td").append(
+            "img", "",
+            {{"width", std::to_string(size)},
+             {"height", std::to_string(size)},
+             {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
     }
 
     if (portinfo) {
-        t << "<tr><td>" << port->getContentInfo() << "</td></tr>";
+        t.append("tr").append("td", port->getContentInfo());
     }
 
-    t.tableBottom();
+    // Need to make sure that we have not pending qt stuff before showing tooltip
+    // otherwise we might loose focus and the tooltip will go away...
+    static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->processEvents();
 
-    showToolTipHelper(e, utilqt::toLocalQString(t));
+    showToolTipHelper(e, utilqt::toLocalQString(doc));
 }
 
 } // namespace

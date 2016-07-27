@@ -35,7 +35,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/util/document.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
@@ -234,14 +234,22 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
     newItem->setData(0, ProcessorTree::IDENTIFIER_ROLE,
                      QString::fromStdString(processor->getClassIdentifier()));
 
-    ToolTipHelper t(processor->getDisplayName());
-    t.row("Module", moduleId);
-    t.row("Identifier", processor->getClassIdentifier());
-    t.row("Category", processor->getCategory());
-    t.row("Code", Processor::getCodeStateString(processor->getCodeState()));
-    t.row("Tags", processor->getTags().getString());
+    {
+        Document doc;
+        using P = Document::PathComponent;
+        auto b = doc.append("html").append("body");
+        b.append("b", processor->getDisplayName(), { {"style", "color:white;"} });
+        using H = utildoc::TableBuilder::Header;
+        utildoc::TableBuilder tb(b, P::end(), { {"identifier", "propertyInfo"} });
 
-    newItem->setToolTip(0, utilqt::toLocalQString(t));
+        tb(H("Module"), moduleId);
+        tb(H("Identifier"), processor->getClassIdentifier());
+        tb(H("Category"), processor->getCategory());
+        tb(H("Code"), Processor::getCodeStateString(processor->getCodeState()));
+        tb(H("Tags"), processor->getTags().getString());
+
+        newItem->setToolTip(0, utilqt::toLocalQString(doc));
+    }
 
     QFont font = newItem->font(1);
     font.setWeight(QFont::Bold);

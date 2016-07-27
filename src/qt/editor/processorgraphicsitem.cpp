@@ -35,7 +35,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/util/document.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -448,22 +448,29 @@ ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const {
 }
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    ToolTipHelper t(processor_->getDisplayName());
-    t.row("Identifier", processor_->getIdentifier());
-    t.row("Class", processor_->getClassIdentifier());
-    t.row("Category", processor_->getCategory());
-    t.row("Code", Processor::getCodeStateString(processor_->getCodeState()));
-    t.row("Tags", processor_->getTags().getString());
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    
+    Document doc;
+    auto b = doc.append("html").append("body");
+    b.append("b", processor_->getDisplayName(), { {"style", "color:white;"} });
+    utildoc::TableBuilder tb(b, P::end());
+
+    tb(H("Identifier"), processor_->getIdentifier());
+    tb(H("Class"), processor_->getClassIdentifier());
+    tb(H("Category"), processor_->getCategory());
+    tb(H("Code"), Processor::getCodeStateString(processor_->getCodeState()));
+    tb(H("Tags"), processor_->getTags().getString());
 
 #if IVW_PROFILING
-    t.row("Ready", processor_->isReady()?"Yes":"No");
-    t.row("Eval Count", processCount_);
-    t.row("Eval Time", evalTime_);
-    t.row("Mean Time", totEvalTime_/ std::max(static_cast<double>(processCount_), 1.0));
-    t.row("Max Time", maxEvalTime_);
+    tb(H("Ready"), processor_->isReady()?"Yes":"No");
+    tb(H("Eval Count"), processCount_);
+    tb(H("Eval Time"), evalTime_);
+    tb(H("Mean Time"), totEvalTime_/ std::max(static_cast<double>(processCount_), 1.0));
+    tb(H("Max Time"), maxEvalTime_);
 #endif
 
-    showToolTipHelper(e, utilqt::toLocalQString(t));
+    showToolTipHelper(e, utilqt::toLocalQString(doc));
 }
 
 void ProcessorGraphicsItem::setHighlight(bool val) {

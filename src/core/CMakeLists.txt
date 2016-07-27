@@ -275,7 +275,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/tooltiphelper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -492,7 +491,6 @@ set(SOURCE_FILES
     util/threadpool.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
-    util/tooltiphelper.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
