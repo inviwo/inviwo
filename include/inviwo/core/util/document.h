@@ -245,7 +245,7 @@ public:
     struct IVW_CORE_API ArrributeWrapper : Wrapper {
         template <typename T>
         ArrributeWrapper(const std::unordered_map<std::string, std::string>& attributes, T&& data)
-            : Wrapper(std::forward<T>(data)), (attributes) {}
+            : Wrapper(std::forward<T>(data)), attributes_(attributes) {}
         std::unordered_map<std::string, std::string> attributes_;
         std::string data_;
     };
