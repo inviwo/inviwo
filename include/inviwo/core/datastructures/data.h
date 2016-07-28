@@ -42,7 +42,7 @@ namespace inviwo {
 
 /**
  *	\defgroup datastructures Data Structures
- *  \brief Properties represents a parameters to Processors.
+ *  \brief Various data structures used in inviwo
  */
 
 class IVW_CORE_API BaseData : public MetaDataOwner {

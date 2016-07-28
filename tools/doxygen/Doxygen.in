@@ -12,12 +12,13 @@ WARN_FORMAT            = "@WARN_FORMAT@"
 QUIET                  = NO
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
-JAVADOC_AUTOBRIEF      = YES
-QT_AUTOBRIEF           = YES
+JAVADOC_AUTOBRIEF      = NO
+QT_AUTOBRIEF           = NO
 FULL_PATH_NAMES        = NO
 SHOW_FILES             = NO
 SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
+SORT_GROUP_NAMES       = YES
 
 TAB_SIZE               = 4
 
