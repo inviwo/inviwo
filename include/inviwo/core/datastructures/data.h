@@ -40,6 +40,11 @@
 
 namespace inviwo {
 
+/**
+ *	\defgroup datastructures Data Structures
+ *  \brief Properties represents a parameters to Processors.
+ */
+
 class IVW_CORE_API BaseData : public MetaDataOwner {
 public:
     BaseData() = default;
@@ -51,7 +56,7 @@ public:
 };
 
 /**
- * \class Data
+ * \ingroup datastructures
  *
  * \brief The base class for all data objects.
  *
@@ -65,7 +70,6 @@ public:
  *
  *  1 and 2 are needed to be a vaild member type of std::vector.
  *  3 is needed for the factory pattern, 3 should be implemented using 1.
- *
  */
 template <class Repr>
 class Data : public BaseData {

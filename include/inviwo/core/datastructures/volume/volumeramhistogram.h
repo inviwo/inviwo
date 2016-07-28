@@ -39,11 +39,9 @@ namespace inviwo {
 namespace util {
 
 template <typename T>
-HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions,
-                                                           dvec2 dataRange,
-                                                           const bool& stop = false,
-                                                           size_t bins = 2048,
-                                                           size3_t sampleRate = size3_t(1)) {
+HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, dvec2 dataRange,
+                                            const bool& stop = false, size_t bins = 2048,
+                                            size3_t sampleRate = size3_t(1)) {
     // a double type with the same extent as T
     typedef typename util::same_extent<T, double>::type D;
     // a size_t type with same extent as T

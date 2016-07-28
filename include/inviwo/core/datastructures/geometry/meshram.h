@@ -39,6 +39,9 @@ namespace inviwo {
 class Mesh;
 class BufferRAM;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API MeshRAM : public MeshRepresentation {
 
 public:

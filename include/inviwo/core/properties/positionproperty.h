@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \class PositionProperty
+ * \ingroup properties
  *
  * \brief Enables Edit a position in world or view space.
  *
@@ -72,7 +72,7 @@ public:
     using CompositeProperty::set; // Enable calling CompositeProperty::set(...) functions even though overriding with set(const vec3& value)
     /** 
      * \brief Set coordinate in world space.
-     * @param const vec3 & worldSpacePos Position in world space.
+     * @param worldSpacePos Position in world space.
      */
     void set(const vec3& worldSpacePos);
 

@@ -37,10 +37,29 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup ports
+ */
 using VolumeInport = DataInport<Volume>;
+
+/**
+ * \ingroup ports
+ */
 using VolumeOutport = DataOutport<Volume>;
+
+/**
+ * \ingroup ports
+ */
 using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
+
+/**
+ * \ingroup ports
+ */
 using VolumeSequenceInport = DataInport<VolumeSequence>;
+
+/**
+ * \ingroup ports
+ */
 using VolumeSequenceOutport = DataOutport<VolumeSequence>;
 
 }  // namespace

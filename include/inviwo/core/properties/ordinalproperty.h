@@ -38,6 +38,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A property representing a Ordinal value, for example int, floats. 
+ */
 template <typename T>
 class OrdinalProperty : public TemplateProperty<T> {
 public:

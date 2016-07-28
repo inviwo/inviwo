@@ -66,12 +66,12 @@ ProcessorInfo processorInfo() {
  * This provides a customization point if one wants to generate the processor info dynamically,
  * by specializing the traits for your kind of processor:
  *
- * template <typename T>
- * struct processor_traits<MyProcessor<T>> {
- *    static ProcessorInfo get_processor_info() {
- *       return generateMyProcessorInfo<T>();
- *   }
- * };
+ *     template <typename T>
+ *     struct processor_traits<MyProcessor<T>> {
+ *        static ProcessorInfo get_processor_info() {
+ *           return generateMyProcessorInfo<T>();
+ *        } 
+ *     };
  *
  * The default behaviour returns the static member processorInfo_;
  *

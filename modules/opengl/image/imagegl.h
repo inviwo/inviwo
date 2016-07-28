@@ -42,6 +42,10 @@
 namespace inviwo {
 
 class Shader;
+
+/**
+ * \ingroup datastructures	
+ */
 class IVW_MODULE_OPENGL_API ImageGL : public ImageRepresentation {
 
 public:

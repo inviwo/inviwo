@@ -39,6 +39,9 @@ namespace inviwo {
 
 class BufferGL;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
 public:
     using ContextId = void*;

@@ -61,13 +61,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class PathLines
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
 public:
     enum class ColoringMethod{

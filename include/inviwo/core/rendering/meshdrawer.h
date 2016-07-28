@@ -45,7 +45,6 @@ class MeshDrawerFactory;
  * without knowing the type of Geometry. This is enabled by
  * implementing the abstract functions canRender and create.
  *
- * \section MeshDrawer.example Example
  * Example of how to implement a derived MeshDrawer.
  * @code
  *    class IVW_XXX_API DerivedDrawer: public MeshDrawer {
@@ -53,7 +52,7 @@ class MeshDrawerFactory;
  *        DerivedDrawer(const DerivedMesh* g): MeshDrawer(), geomToRender_(g) {};
  *        virtual void draw() { // do stuff
  *        }
- *        virtual const Mesh* getGeometry() const { return geomToRender_; }
+ *        virtual const Mesh* getMesh() const { return geomToRender_; }
  *    protected:
  *        virtual DerivedDrawer* create(const Mesh* geom) const { 
  *            return new DerivedDrawer(static_cast<const DerivedMesh*>(geom)); 

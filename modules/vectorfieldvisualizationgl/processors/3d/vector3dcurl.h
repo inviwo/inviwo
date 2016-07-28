@@ -53,13 +53,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class Vector3DCurl
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DCurl : public VolumeGLProcessor {
 public:
     Vector3DCurl();

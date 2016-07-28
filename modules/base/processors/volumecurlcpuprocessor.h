@@ -52,13 +52,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class VolumeCurlCPUProcessor
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public Processor { 
 public:
     VolumeCurlCPUProcessor();

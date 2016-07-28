@@ -37,6 +37,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
@@ -106,10 +109,12 @@ private:
  *
  * @param dimensions of volume to create.
  * @param format of volume to create.
+ * @param dataPtr optional pointer to data to be handed into the volume.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
-                                        void* dataPtr = nullptr);
+IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions,
+                                                        const DataFormatBase* format,
+                                                        void* dataPtr = nullptr);
 
 struct VolumeRamDispatcher {
     using type = std::shared_ptr<VolumeRAM>;

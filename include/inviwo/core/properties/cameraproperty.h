@@ -49,12 +49,10 @@ class SpatialEntity;
 class Inport;
 
 /**
-* \class CameraProperty
-*
-* Besides giving access to a perspective camera in the GUI
-* it also enables linking individual camera properties.
-* @see PerspectiveCamera
-*/
+ * \ingroup properties
+ * A property wrapping the Camera data structure
+ * @see Camera 
+ */
 class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
     InviwoPropertyInfo();
@@ -144,8 +142,8 @@ public:
      *
      * @note requires that adjustCameraOnDataChange_ is true
      * and that an inport has been supplied during construction.
-     * @param const mat4 & prevDataToWorldMatrix Matrix of previous object
-     * @param const mat4 & newDataToWorldMatrix Matrix of new object
+     * @param prevDataToWorldMatrix Matrix of previous object
+     * @param newDataToWorldMatrix Matrix of new object
      */
     void adjustCameraToData(const mat4& prevDataToWorldMatrix, const mat4& newDataToWorldMatrix);
     /** 

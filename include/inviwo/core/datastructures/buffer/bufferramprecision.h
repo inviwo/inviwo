@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
 public:

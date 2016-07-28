@@ -39,6 +39,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A property holding a TransferFunction data structure
+ */
 class IVW_CORE_API TransferFunctionProperty 
     : public TemplateProperty<TransferFunction>
     , public TransferFunctionObserver {

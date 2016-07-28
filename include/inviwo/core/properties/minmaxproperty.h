@@ -38,6 +38,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A property representing a range.
+ */
 template <typename T>
 class MinMaxProperty : public TemplateProperty<glm::detail::tvec2<T, glm::defaultp> > {
 public:

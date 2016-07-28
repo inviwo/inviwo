@@ -35,10 +35,10 @@
 
 namespace inviwo {
 
-/** class DirectoryProperty
- *  A class for file representations.
- *  Holds the value of the path to a file as a string.
- *
+/** 
+ * \ingroup properties
+ * A class for file representations.
+ * Holds the value of the path to a file as a string.
  * @see FileProperty, StringProperty
  */
 class IVW_CORE_API DirectoryProperty : public FileProperty {

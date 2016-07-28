@@ -46,8 +46,6 @@ class Layer;
 class LayerRAM;
 
 /**
- * \class ImageSampler
- *
  * \brief ImageSampler aids sampling of images using Bi-Linear Interpolation.
  *
  * A helper class to aid sampling of images. Expects the input to be on the range [0 1]. Eg., input
@@ -92,8 +90,6 @@ private:
 };
 
 /**
-* \class TemplateImageSampler<T,P>
-*
 * \brief TemplateImageSampler<T,P> aids sampling of images of a given type (T) using Bi-Linear
 * Interpolation with precision (P).
 *
@@ -104,7 +100,6 @@ private:
 *
 * The template parameter P should be either double of float. When T is either float our double P
 * should be the same.
-*
 */
 template <typename T, typename P>
 class TemplateImageSampler {

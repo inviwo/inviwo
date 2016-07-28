@@ -39,6 +39,10 @@ namespace inviwo {
 
 class DiskRepresentationLoader;
 
+/**
+ * \ingroup datastructures
+ * Base class for all DiskRepresentations \see Data, DataRepresentation
+ */
 class IVW_CORE_API DiskRepresentation {
 public:
     DiskRepresentation();

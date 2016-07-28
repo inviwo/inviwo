@@ -41,6 +41,10 @@ class BaseData;
 
 class IVW_CORE_API DataRepresentation {
 
+/**
+ * \ingroup datastructures
+ * \brief Base class for all DataRepresentations \see Data
+ */
 public:
     DataRepresentation();
     DataRepresentation(const DataFormatBase* format);

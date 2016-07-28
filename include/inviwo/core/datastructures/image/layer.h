@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API Layer : public Data<LayerRepresentation>, public StructuredGridEntity<2> {
 public:
     Layer(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get(),

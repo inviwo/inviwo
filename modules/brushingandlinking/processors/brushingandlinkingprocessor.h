@@ -54,12 +54,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class BrushingAndLinkingProcessor
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
 public:
     BrushingAndLinkingProcessor();

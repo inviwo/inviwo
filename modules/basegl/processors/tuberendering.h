@@ -56,15 +56,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class TubeRendering
- *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASEGL_API TubeRendering : public Processor { 
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

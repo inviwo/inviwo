@@ -34,12 +34,11 @@
 #include <inviwo/core/properties/templateproperty.h>
 
 namespace inviwo {
-/** class BoolProperty
- *\brief The BoolProperty class provides a property holding boolean values
+/** 
+ * \ingroup properties
+ * \brief The BoolProperty class provides a property holding boolean values
  *
- * A bool property are normally used by a processor.
- * The bool property is created and added in the constructor of the processor.
- * The propertys widget consist of a checkbox that sets the value of the property.
+ * The property widget consist of a check box that sets the value of the property.
  * @see TemplateProperty
  * @see BoolPropertyWidgetQt
  */

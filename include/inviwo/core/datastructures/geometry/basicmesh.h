@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API BasicMesh : public Mesh {
 public:
     BasicMesh();

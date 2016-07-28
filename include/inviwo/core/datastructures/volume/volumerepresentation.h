@@ -38,6 +38,9 @@ namespace inviwo {
 
 class Volume;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API VolumeRepresentation : public DataRepresentation {
 public:
     VolumeRepresentation();

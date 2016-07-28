@@ -37,6 +37,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API LayerRepresentation : public DataRepresentation {
 public:
     LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,

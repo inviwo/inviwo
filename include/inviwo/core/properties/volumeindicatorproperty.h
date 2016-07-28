@@ -39,7 +39,7 @@
 namespace inviwo {
 
 /**
- * \class VolumeIndicatorProperty
+ * \ingroup properties
  *
  * \brief A property for highlighting a plane, line of point in 3D
  *

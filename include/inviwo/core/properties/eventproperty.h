@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-/** class EventProperty
- *
+/** 
+ * \ingroup properties
  * Property which contains one event matcher and one action to represent the current
  * key binding for the contained action.
  * @see EventPropertyWidgetQt
@@ -58,8 +58,9 @@ public:
      *
      * @param identifier
      * @param displayName
-     * @param eventMatcher The selection of events to bind to an action
+     * @param matcher The selection of events to bind to an action
      * @param action The action to executed upon the event.
+     * @param invalidationLevel
      * @param semantics
      */
     EventProperty(const std::string& identifier, const std::string& displayName, Action action,

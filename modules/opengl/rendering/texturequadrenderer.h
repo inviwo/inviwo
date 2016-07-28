@@ -73,8 +73,7 @@ public:
     * @param image   input image which is to be rendered onto the current render target
     * @param pos     position of lower left corner in screen space coordinates
     * @param canvasSize   dimensions of the current render target
-    * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
-    *                   or Picking
+    * @param colorLayerIndex defines which color layer of the input image will be rendered.
     */
     void render(std::shared_ptr<Image> image, ivec2 pos, size2_t canvasSize,
                 std::size_t colorLayerIndex);

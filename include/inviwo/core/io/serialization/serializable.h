@@ -40,9 +40,9 @@ class SerializeBase;
 
 class IVW_CORE_API Serializable {
 public:
-    virtual ~Serializable() {}
-    virtual void serialize(Serializer& s) const=0;
-    virtual void deserialize(Deserializer& d)=0;
+    virtual ~Serializable() = default;
+    virtual void serialize(Serializer& s) const = 0;
+    virtual void deserialize(Deserializer& d) = 0;
 };
 
 } //namespace

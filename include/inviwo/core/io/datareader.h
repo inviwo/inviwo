@@ -36,7 +36,13 @@
 
 namespace inviwo {
 
-/** \brief A abstract base class for all file readers.
+/**
+ * \defgroup dataio Data Reader & Writers
+ */
+
+/**
+ * \ingroup dataio
+ * \brief A abstract base class for all file readers.
  */
 class IVW_CORE_API DataReader {
 public:
@@ -53,7 +59,9 @@ private:
     std::vector<FileExtension> extensions_;
 };
 
-/** \brief Template base class for file readers designating what type of data
+/**
+ * \ingroup dataio
+ *\brief Template base class for file readers designating what type of data
  * object the reader returns.
  */
 template <typename T>

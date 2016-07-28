@@ -39,6 +39,11 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A grouping property for collecting properties in a hierarchy, CompositeProperties can be nested
+ * arbitrarily deep.
+ */
 class IVW_CORE_API CompositeProperty : public Property,
                                        public PropertyOwner,
                                        public CompositePropertyObservable {

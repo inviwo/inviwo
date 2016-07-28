@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-/** \class BaseOptionProperty
+/** 
  *  Base class for the option properties
  *  @see TemplateOptionProperty
  */
@@ -100,11 +100,6 @@ struct OptionPropertyOption : public Serializable {
     bool operator!=(const OptionPropertyOption<T>& rhs) const { return !operator==(rhs); }
 };
 
-/** \class TemplateOptionProperty
- *  Template class for option properties
- *  @see OptionProperties
- *  @see BaseOptionProperty
- */
 template <typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
 
@@ -158,9 +153,6 @@ public:
      *
      * Adds a option to the property and stores it as a struct in the options_
      * The option name is the name of the option that will be displayed in the widget.
-     *
-     * @param identifier identifier name
-     * @param value the value of the option
      */
     virtual void addOption(std::string identifier, std::string displayName, T value);
     virtual void removeOption(size_t index);
@@ -215,6 +207,12 @@ private:
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 
+/**
+ * \ingroup properties
+ * Template class for option properties
+ * @see OptionProperties
+ * @see BaseOptionProperty
+ */
 template <typename T>
 class TemplateOptionProperty : public BaseTemplateOptionProperty<T> {
 public:

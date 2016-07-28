@@ -39,6 +39,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A CompositeProperty holding the properties needed to represent a bases matrix.
+ */
 class IVW_MODULE_BASE_API BasisProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();

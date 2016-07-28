@@ -45,7 +45,8 @@ public:
     virtual bool requestFile() = 0;
 };
 
-/** class FileProperty
+/** 
+ * \ingroup properties
  *  A class for file representations.
  *  Holds the value of the path to a file as a string.
  *
@@ -61,11 +62,13 @@ public:
      * \brief Constructor for the FileProperty
      *
      * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
-     *of a FilePropertyWidget
+     * of a FilePropertyWidget
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
      * @param value the path to the file
+     * @param contentType
+     * @param invalidationLevel
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string identifier, std::string displayName, std::string value = "",

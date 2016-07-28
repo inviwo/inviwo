@@ -37,7 +37,10 @@
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
-
+/**
+ * \ingroup properties
+ * A CompositeProperty holding simple raycasting properties. 
+ */
 class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty { 
 public:
     InviwoPropertyInfo();

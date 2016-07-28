@@ -45,7 +45,9 @@ namespace kind {
     struct GL {};
 }
 
-
+/**
+ * \ingroup datastructures	
+ */
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:

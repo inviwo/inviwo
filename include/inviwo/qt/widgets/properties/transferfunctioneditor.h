@@ -92,7 +92,7 @@ public:
      * \brief Set the display size of the control points.
      *
      * @see TransferFunctionEditorControlPoint::setSize
-     * @param float val Display size
+     * @param val Display size
      */
     void setControlPointSize(float val);
 signals:
@@ -108,12 +108,12 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
     void keyPressEvent(QKeyEvent* keyEvent);
 
-    /** \Add new control point
-    *      Adds a new control point at the event position
+    /** 
+    * \brief Adds a new control point at the event position
     *
-    *      Adds a new control point the the points_ array, adds a new line item to the lines_ array,
-    *      sorts the points_ array and updates the line items to go to and from the correct points.
-    *      Runs CalcTransferValues to update the TransferFunction data Image
+    * Adds a new control point the the points_ array, adds a new line item to the lines_ array,
+    * sorts the points_ array and updates the line items to go to and from the correct points.
+    * Runs CalcTransferValues to update the TransferFunction data Image
     */
     void addControlPoint(QPointF pos);
     void addControlPoint(QPointF pos, vec4 color);

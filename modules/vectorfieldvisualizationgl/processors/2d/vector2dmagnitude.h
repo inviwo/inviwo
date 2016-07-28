@@ -52,13 +52,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class Vector2DMagnitude
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DMagnitude : public Processor { 
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

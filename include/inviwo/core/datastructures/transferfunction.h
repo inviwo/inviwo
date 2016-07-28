@@ -55,7 +55,8 @@ public:
 };
 
 
-/** \class TransferFunction 
+/** 
+ * \ingroup datastructures 
  * \brief for holding transfer function data.
  *  This class holds transfer function data, currently one parameter in the variable data_.
  */

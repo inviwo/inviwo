@@ -40,10 +40,30 @@
 
 #include <unordered_map>
 
-/*                                                 ImageOutport                              
- *                                           isHandlingResizeEvents()                        
- *                                                                                           
- *                               True (default)                          False               
+                                                                                                                                                                                                                                                               
+namespace inviwo {
+
+class ImageOutport;
+
+class IVW_CORE_API ImagePortBase {
+public:
+    virtual ~ImagePortBase() = default;
+    virtual size2_t getRequestedDimensions(Outport* outport) const = 0;
+    virtual bool isOutportDeterminingSize() const = 0;
+    virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
+};
+
+/**
+ * \ingroup ports
+ * BaseImageInport extends  DataInport<Image> with extra functionality for handing
+ * ResizeEvents. The following table explains the behaviors:
+ *
+ *
+ * \verbatim
+ *                                                 ImageOutport
+ *                                           isHandlingResizeEvents()
+ *
+ *                               True (default)                          False
  *                    ┌──────────────────────────────────┬──────────────────────────────────┐
  *                    │ Outport::Size = max(Inports      │ Outport::Size = Outport::size    │
  *                    │ requested sizes)                 │ (no resize of data)              │
@@ -66,21 +86,8 @@
  *                    │                                  │                                  │
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
- */                                                                                                                                                                                                                                                                   
-
-
-namespace inviwo {
-
-class ImageOutport;
-
-class IVW_CORE_API ImagePortBase {
-public:
-    virtual ~ImagePortBase() = default;
-    virtual size2_t getRequestedDimensions(Outport* outport) const = 0;
-    virtual bool isOutportDeterminingSize() const = 0;
-    virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
-};
-
+ * \endverbatim
+ */
 template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
 public:
@@ -88,12 +95,12 @@ public:
     virtual ~BaseImageInport();
 
     /**
-     * Connects this inport to the outport. Propagates the inport size to the outport if the
-     * processor is an end processor (Canvas) or any of the dependent outports of this inport are
-     * connected.
+     * Connects this inport to the Outport. Propagates the inport size to the Outport, if the
+     * Processor is a Processor::sink Processor, or any of the dependent Outports of this 
+     * Inport are connected.
      *
      * @note Does not check if the outport is an ImageOutport
-     * @param Outport * outport ImageOutport to connect
+     * @param outport ImageOutport to connect
      */
     virtual void connectTo(Outport* outport) override;
     virtual void disconnectFrom(Outport* outport) override;
@@ -119,9 +126,50 @@ private:
     bool outportDeterminesSize_;
 };
 
+/**
+ * \ingroup ports
+ */
 using ImageInport = BaseImageInport<1>;
+
+/**
+ * \ingroup ports
+ */
 using ImageMultiInport = BaseImageInport<0>;
 
+/**
+ * \ingroup ports
+ * ImageOutport extends  DataOutport<Image> with extra functionality for handing
+ * ResizeEvents. The following table explains the behaviors:
+ * 
+ * \verbatim
+ *                                                 ImageOutport                              
+ *                                           isHandlingResizeEvents()                        
+ *                                                                                           
+ *                               True (default)                          False               
+ *                    ┌──────────────────────────────────┬──────────────────────────────────┐
+ *                    │ Outport::Size = max(Inports      │ Outport::Size = Outport::size    │
+ *                    │ requested sizes)                 │ (no resize of data)              │
+ *                    │ (resize the data in the outport  │                                  │
+ *             False  │ if needed)                       │                                  │
+ *           (default)│                                  │                                  │
+ *                    │ Inport::Size = Inport requested  │ Inport::Size = Inport requested  │
+ *                    │ size                             │ size                             │
+ *  ImageInport       │ (return a resized copy if        │ (return a resized copy if        │
+ *                    │ needed)                          │ needed)                          │
+ *   isOutport-       │                                  │                                  │
+ *  Determining-      ├──────────────────────────────────┼──────────────────────────────────┤
+ *     Size()         │ Outport::Size = max(all inports  │ Outport::Size = Outport::Size    │
+ *                    │ requested sizes)                 │ (no resize of data)              │
+ *                    │ (resize the data in the outport  │                                  │
+ *              True  │ if needed)                       │                                  │
+ *                    │                                  │                                  │
+ *                    │ Inport::Size = Outport::size     │ Inport::Size = Outport::size     │
+ *                    │ (no copy)                        │ (no copy)                        │
+ *                    │                                  │                                  │
+ *                    │                                  │                                  │
+ *                    └──────────────────────────────────┴──────────────────────────────────┘
+ * \endverbatim
+ */  
 class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler {
     template <size_t N> friend class BaseImageInport;
 

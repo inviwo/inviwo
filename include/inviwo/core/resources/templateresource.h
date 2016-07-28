@@ -48,7 +48,7 @@ class TemplateResource : public Resource {
 public:
     /**
      * Resource will take ownership of data and then delete it upon destruction.
-     *
+     * @param identifier
      * @param value Pointer to allocated data.
      */
     TemplateResource(const std::string& identifier, T* value);

@@ -52,8 +52,8 @@ enum class ShadingFunctionKind {
     None
 };
 
-/** \class AdvancedMaterialProperty
- *
+/**  
+ * \ingroup properties
  * Adds advanced shading properties to a PropertyOwner (Processor).
  * @see ShadingFunctionEnum
  */

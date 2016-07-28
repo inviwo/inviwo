@@ -39,8 +39,7 @@
 
 namespace inviwo {
 
-/** \class TinyDirInteface
- *
+/** 
  * Interface for tinydir responsible for listing files in a directory. Depending
  * on the list mode (default ListMode::FilesOnly), the result contains files, directories or both.
  */
@@ -94,7 +93,6 @@ public:
     /**
     * \brief Returns the current mode used for listing the directory.
     *
-    * @param
     * @return current listing mode
     */
     ListMode getListMode() const;

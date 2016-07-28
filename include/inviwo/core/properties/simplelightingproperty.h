@@ -40,10 +40,6 @@
 
 namespace inviwo {
 
-/** \class SimpleLightingProperty
- * Add simple light properties, position, ambient, diffuse, specular color. Used for phong shading.
- */
-
 namespace ShadingMode {
     enum Modes {
         None,
@@ -55,10 +51,12 @@ namespace ShadingMode {
     };
 }
 
-
-
 class CameraProperty;
-
+/**
+ * \ingroup properties
+ * A CompositeProperty representing a light with position, ambient, diffuse, specular color. Used
+ * for phong shading.
+ */
 class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();

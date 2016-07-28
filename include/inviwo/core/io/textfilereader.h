@@ -36,8 +36,8 @@
 #include <string>
 
 namespace inviwo {
-/** \class TextFileReader
- *
+/** 
+ * \ingroup dataio
  * Reader for text files.
  */
 class IVW_CORE_API TextFileReader {

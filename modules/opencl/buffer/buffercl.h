@@ -44,14 +44,12 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API BufferCL : public BufferCLBase, public BufferRepresentation {
 public:
     /**
-     * .
-     *
      * @param size
      * @param type
      * @param format
      * @param data Data to transfer. Does not transfer data if data is nullptr.
      * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY,
-     *CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
+     * CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
     BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
              const void* data = nullptr, cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);

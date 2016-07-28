@@ -47,8 +47,6 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API ElementBufferCL : public BufferCL {
 public:
     /**
-     * .
-     *
      * @param size
      * @param type
      * @param format

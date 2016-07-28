@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API Image : public DataGroup<ImageRepresentation> {
 public:
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());

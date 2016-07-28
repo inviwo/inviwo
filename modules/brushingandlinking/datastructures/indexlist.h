@@ -37,11 +37,7 @@
 namespace inviwo {
 class BrushingAndLinkingInport;
 class BrushingAndLinkingManager;
-/**
- * \class BrushingList
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
+
 class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
 public:
     IndexList();

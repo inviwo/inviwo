@@ -63,8 +63,8 @@ protected:
     /** 
      * \brief clamps 2D position to be within the given rectangle [0, dim - 1]
      * 
-     * @param pos   coordinate in screen coordinates which needs to be clamped
-     * @param dim   canvas dimensions used for clamping
+     * @param mpos coordinate in screen coordinates which needs to be clamped
+     * @param dim canvas dimensions used for clamping
      * @return clamped position
      */
     static uvec2 clampToScreenCoords(dvec2 mpos, ivec2 dim);

@@ -39,17 +39,20 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
     /**
      * \brief Create a buffer stored on the GPU.
      *
-     * @param size_t size Size in bytes.
-     * @param const DataFormatBase * format Data format
-     * @param BufferType type What kind of data is stored (positions, normals...) ? Will determine
+     * @param size Size in bytes.
+     * @param format Data format
+     * @param type What kind of data is stored (positions, normals...) ? Will determine
      *location in shader.
-     * @param BufferUsage usage STATIC if not changing all the time, else DYNAMIC.
-     * @param std::shared_ptr<BufferObject> data Will be created if nullptr.
+     * @param usage STATIC if not changing all the time, else DYNAMIC.
+     * @param data Will be created if nullptr.
      * @return
      */
     BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target,

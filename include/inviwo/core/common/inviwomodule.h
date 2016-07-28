@@ -90,7 +90,8 @@ enum class ModulePath {
 class IVW_CORE_API InviwoModule {
 public:
     /**
-     * @param identifier Name of module folder
+     * @param app the inviwo application.
+     * @param identifier Name of module folder.
      */
     InviwoModule(InviwoApplication* app, const std::string& identifier);
     InviwoModule(const InviwoModule&) = delete;

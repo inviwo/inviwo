@@ -39,7 +39,10 @@
 
 namespace inviwo {
 
- class IVW_MODULE_CIMG_API CImgVolumeReader : public DataReaderType<Volume> {
+/**
+ * \ingroup dataio
+ */
+class IVW_MODULE_CIMG_API CImgVolumeReader : public DataReaderType<Volume> {
 public:
     CImgVolumeReader();
     CImgVolumeReader(const CImgVolumeReader& rhs) = default;

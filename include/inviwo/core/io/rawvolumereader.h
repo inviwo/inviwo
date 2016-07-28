@@ -40,6 +40,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup dataio
+ */
 class IVW_CORE_API RawVolumeReader : public DataReaderType<Volume> {
 public:
     RawVolumeReader();

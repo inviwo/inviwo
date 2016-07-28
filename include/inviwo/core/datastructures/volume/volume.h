@@ -41,6 +41,9 @@ namespace inviwo {
 
 class CameraProperty;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API Volume : public Data<VolumeRepresentation>, public StructuredGridEntity<3> {
 public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),

@@ -78,17 +78,16 @@ public:
 
     /**
      * \brief adds an additional output specifier to the fragment shader
-     *  The given name will be added as
-     *  \code{.cpp}
-     *     out vec4 <name>;
-     *  \encode
-     *  If location index is positive, the output will be
-     *  \code{.cpp}
-     *     layout(location = <location>) out vec4 <name>;
-     *  \encode
-     *
-     *  Location indices can be reused several times unless more than
-     *  one output specifier is used.
+     * The given name will be added as
+     * 
+     *     out vec4 __name__;
+     * 
+     * If location index is positive, the output will be
+     * 
+     *     layout(location = __location__) out vec4 __name__;
+     * 
+     * Location indices can be reused several times unless more than
+     * one output specifier is used.
      *
      * @param name      identifier of the output specifier
      * @param location  index location of the output (< MAX_RENDER_TARGETS)

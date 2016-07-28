@@ -40,38 +40,32 @@
 #include <modules/opencl/kernelowner.h>
 
 namespace inviwo {
-/** \class MeshEntryExitPointsCL
- *
+/** 
  * Computes entry and exit points (in texture coordinates) given a camera and viewport.
  */
-class IVW_MODULE_BASECL_API MeshEntryExitPointsCL : public KernelOwner { 
+class IVW_MODULE_BASECL_API MeshEntryExitPointsCL : public KernelOwner {
 public:
-
     MeshEntryExitPointsCL(const glm::size2_t& workGroupSize = size2_t(16));
-    virtual ~MeshEntryExitPointsCL(){}
+    virtual ~MeshEntryExitPointsCL() {}
 
-    /** 
+    /**
      * \brief Computes entry exit points in texture coordinates
-     *
-     * DESCRIBE_THE_METHOD
-     * 
-     * @param const Mesh * mesh 
-     * @param const mat4 & worldToView 
-     * @param const mat4 & viewToClip 
-     * @param Layer * entryPoints 
-     * @param Layer * exitPoints 
-     * @param bool useGLSharing 
-     * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
-     * @param cl::Event * event 
-     * @return bool 
      */
-    bool computeEntryExitPoints(const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip, Layer* entryPoints, Layer* exitPoints, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    bool computeEntryExitPoints(const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip,
+                                Layer* entryPoints, Layer* exitPoints, bool useGLSharing,
+                                const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                                cl::Event* event = nullptr);
 
-    void computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices, const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL, const LayerCLBase* exitPointsCL,
-        const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event* event = nullptr);
+    void computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat,
+                                const BufferCLBase* vertices, const BufferCLBase* indices,
+                                int nIndices, const LayerCLBase* entryPointsCL,
+                                const LayerCLBase* exitPointsCL, const uvec2& outportDim,
+                                const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                                cl::Event* event = nullptr);
 
     size2_t getWorkGroupSize() const { return workGroupSize_; }
     void setWorkGroupSize(size2_t val) { workGroupSize_ = val; }
+
 private:
     glm::size2_t workGroupSize_;
 

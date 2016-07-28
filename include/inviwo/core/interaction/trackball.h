@@ -79,9 +79,9 @@ public:
      * \brief Set look from, look to and up vector at the same time.
      * Should be used when more than one parameter will be changed to avoid duplicate evaluations.
      *
-     * @param vec3 lookFrom
-     * @param vec3 lookTo
-     * @param vec3 lookUp
+     * @param lookFrom
+     * @param lookTo
+     * @param lookUp
      */
     void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
 
@@ -125,7 +125,7 @@ protected:
      * \brief Rotates around the direction vector,
      * zooms along the direction vector and translates along up/right vector.
      *
-     * @param Event * event TouchEvent
+     * @param event TouchEvent
      */
     void touchGesture(Event* event);
     void animate();

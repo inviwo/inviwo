@@ -54,15 +54,13 @@ public:
 
     /**
      * Get normal of area light.
-     *
      * @return Area light normal.
      */
     const vec3& getNormal() const { return normal_; }
 
     /**
      * Set normal of area light.
-     *
-     * @param direction normal of light source.
+     * @param normal of light source.
      */
     void setNormal(const vec3& normal) { normal_ = normal; }
 

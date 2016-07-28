@@ -42,13 +42,13 @@ class IVW_CORE_API TouchPoint {
 public:
     TouchPoint() = default;
     /**
-     * @param int id Touch point id that distinguishes a particular touch point
-     * @param vec2 pos Position in screen coordinates [0 dim-1]^2.
-     * @param vec2 posNormalized Position normalized to the size of the screen [0 1]^2.
-     * @param vec2 prevPos Previous position in screen coordinates [0 dim-1]^2.
-     * @param vec2 prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
-     * @param TouchPoint::TouchState touchState State of the touch point.
-     * @param double depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1
+     * @param id Touch point id that distinguishes a particular touch point
+     * @param pos Position in screen coordinates [0 dim-1]^2.
+     * @param posNormalized Position normalized to the size of the screen [0 1]^2.
+     * @param prevPos Previous position in screen coordinates [0 dim-1]^2.
+     * @param  prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
+     * @param touchState State of the touch point.
+     * @param depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1
      * if no depth is available.
      */
     TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized,

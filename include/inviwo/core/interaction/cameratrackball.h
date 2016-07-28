@@ -45,7 +45,7 @@ public:
      * Rotates and moves the camera around a sphere.
      * This object does not take ownership of pointers handed to it.
      * @see Trackball
-     * @param CameraProperty* cameraProp Pointer to the camera that will be controlled.
+     * @param cameraProp Pointer to the camera that will be controlled.
      */
     CameraTrackball(CameraProperty* cameraProp);
     virtual ~CameraTrackball();

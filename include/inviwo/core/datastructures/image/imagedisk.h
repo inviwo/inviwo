@@ -35,6 +35,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API ImageDisk : public ImageRepresentation {
 
 public:

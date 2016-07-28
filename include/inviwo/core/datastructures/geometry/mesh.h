@@ -41,6 +41,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API Mesh : public DataGroup<MeshRepresentation>, public SpatialEntity<3> {
 public:
     struct MeshInfo {

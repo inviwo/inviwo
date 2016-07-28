@@ -125,12 +125,12 @@ protected:
  * \brief Encodes the position and direction in a matrix.
  * 
  * Light source position is extracted using:
- * p = M * vec4(0, 0, 0, 1) 
+ * `p = M * vec4(0, 0, 0, 1)` 
  * And the light source direction using:
- * d = normalize(M * vec4(0, 0, 1, 0)) 
- * @param vec3 pos Light source position.
- * @param vec3 dir Light source direction.
- * @return IVW_CORE_API mat4 Transformation from light source model space to world space.
+ * `d = normalize(M * vec4(0, 0, 1, 0))`
+ * @param pos Light source position.
+ * @param dir Light source direction.
+ * @return Transformation from light source model space to world space.
  */
 IVW_CORE_API mat4 getLightTransformationMatrix(vec3 pos, vec3 dir);
 

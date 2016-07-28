@@ -41,8 +41,12 @@ namespace inviwo {
 class Processor;
 
 /**
- *    Traits class to make ports and data less intertwined. Port traits will by default ask
- *    it's data for a class identifier, a color code, and data info. You can specialize port
+ * \defgroup ports Ports
+ */
+
+/**
+ *  Traits class to make ports and data less intertwined. Port traits will by default ask
+ *  it's data for a class identifier, a color code, and data info. You can specialize port
  *  traits for type that does not have those methods, and where you can't add them easily.
  *  Note that if a method is missing we will still compile and fail gracefully.
  */
@@ -53,8 +57,10 @@ struct port_traits {
     static std::string data_info(const T* data) { return util::data_info<T>(data); }
 };
 
-/** \class Port
+/**
+ * \ingroup ports
  * \brief A abstract base class for all ports.
+ * 
  * A port can be connected to other ports and is owned by a processor.
  */
 class IVW_CORE_API Port : public Serializable {

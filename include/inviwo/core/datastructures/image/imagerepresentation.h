@@ -37,6 +37,9 @@
 namespace inviwo {
 class Image;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation {
     friend class Image;
 public:

@@ -60,39 +60,38 @@ class Texture2D;
  * spacing of 20% of the font size is used, which corresponds to a line height of 1.2 * font size.
  *
  *
- *
+ * \verbatim 
  * Origin
- *  +───────────────────────────ffffffffffffffff──────────────────── Top line
- *                             f::::::::::::::::f    ▲          ▲
- *                            f::::::::::::::::::f   │          │
- *                            f::::::fffffff:::::f   │          │
- *         ggggggggg   ggggg  f:::::f       ffffff   │          │
- *        g:::::::::ggg::::g  f:::::f                │          │
- *       g:::::::::::::::::g f:::::::ffffff          │          │
- *      g::::::ggggg::::::gg f::::::::::::f          │        Ascent
- *      g:::::g     g:::::g  f::::::::::::f          │          │
- *      g:::::g     g:::::g  f:::::::ffffff          │          │
- *      g:::::g     g:::::g   f:::::f                │          │
- *      g::::::g    g:::::g   f:::::f                │          │
- *      g:::::::ggggg:::::g  f:::::::f               │          │
- *       g::::::::::::::::g  f:::::::f          Line height     │
- *        gg::::::::::::::g  f:::::::f               │          ▼
- *  ────────gggggggg::::::g──fffffffff───────────────│────────────── Base line
- *                  g:::::g                          │          ▲
- *      gggggg      g:::::g                          │          │
- *      g:::::gg   gg:::::g                          │       Descent
- *       g::::::ggg:::::::g                          │          │
- *        gg:::::::::::::g                           │          │
- *          ggg::::::ggg                             │          ▼
- *  ───────────gggggg────────────────────────────────│────────────── Bottom line
- *                                                   │          ▲
- *                                                   │          │
- *                                                   │     Line spacing
- *                                                   │          │
- *                                                   ▼          ▼
- *  ──────────────────────────────────────────────────────────────── Top line (of subsequent line)
- *
- *
+ * +───────────────────────────ffffffffffffffff──────────────────── Top line
+ *                            f::::::::::::::::f    ▲          ▲
+ *                           f::::::::::::::::::f   │          │
+ *                           f::::::fffffff:::::f   │          │
+ *        ggggggggg   ggggg  f:::::f       ffffff   │          │
+ *       g:::::::::ggg::::g  f:::::f                │          │
+ *      g:::::::::::::::::g f:::::::ffffff          │          │
+ *     g::::::ggggg::::::gg f::::::::::::f          │        Ascent
+ *     g:::::g     g:::::g  f::::::::::::f          │          │
+ *     g:::::g     g:::::g  f:::::::ffffff          │          │
+ *     g:::::g     g:::::g   f:::::f                │          │
+ *     g::::::g    g:::::g   f:::::f                │          │
+ *     g:::::::ggggg:::::g  f:::::::f               │          │
+ *      g::::::::::::::::g  f:::::::f          Line height     │
+ *       gg::::::::::::::g  f:::::::f               │          ▼
+ * ────────gggggggg::::::g──fffffffff───────────────│────────────── Base line
+ *                 g:::::g                          │          ▲
+ *     gggggg      g:::::g                          │          │
+ *     g:::::gg   gg:::::g                          │       Descent
+ *      g::::::ggg:::::::g                          │          │
+ *       gg:::::::::::::g                           │          │
+ *         ggg::::::ggg                             │          ▼
+ * ───────────gggggg────────────────────────────────│────────────── Bottom line
+ *                                                  │          ▲
+ *                                                  │          │
+ *                                                  │     Line spacing
+ *                                                  │          │
+ *                                                  ▼          ▼
+ * ──────────────────────────────────────────────────────────────── Top line (of subsequent line)
+ * \endverbatim
  *
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {

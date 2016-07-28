@@ -56,14 +56,14 @@ public:
      * Added object will be enquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
      * @note aquireAllObjects need to be called to actually enquire the added object.
-     * @param const BufferCLGL * object
+     * @param object
      */
     void addToAquireGLObjectList(const BufferCLGL* object);
     /**
      * Added object will be enquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
      * @note aquireAllObjects need to be called to actually enquire the added object.
-     * @param const LayerCLGL * object
+     * @param object
      */
     void addToAquireGLObjectList(const LayerCLGL* object);
     /**
@@ -71,14 +71,14 @@ public:
      * will be enquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
      * @note aquireAllObjects need to be called to actually enquire the added object.
-     * @param const ImageCLGL * object
+     * @param object
      */
     void addToAquireGLObjectList(const ImageCLGL* object);
     /**
      * Added object will be enquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
      * @note aquireAllObjects need to be called to actually enquire the added object.
-     * @param const VolumeCLGL * object
+     * @param object
      */
     void addToAquireGLObjectList(const VolumeCLGL* object);
 

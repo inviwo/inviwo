@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
     VolumeRAM(const DataFormatBase* format = DataFormatBase::get());

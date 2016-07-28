@@ -69,6 +69,10 @@ protected:
     BufferTarget target_;
 };
 
+
+/**
+ * \ingroup datastructures	
+ */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class Buffer : public BufferBase {
 public:

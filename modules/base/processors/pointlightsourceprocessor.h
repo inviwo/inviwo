@@ -88,7 +88,7 @@ public:
     * to the camera at the same distance as before.
     *
     *
-    * @param vec2 normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of
+    * @param normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of
     * screen.
     */
     void setLightPosFromScreenCoords(const vec2& normalizedScreenCoord);

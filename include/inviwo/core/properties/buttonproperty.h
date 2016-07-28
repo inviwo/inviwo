@@ -34,17 +34,17 @@
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
-/** class ButtonProperty
+/**
+ * \ingroup properties
  * \brief The Button property class provides buttons that you can bind functions to.
  *
  * The button property has a widget witch creates a button and register a function to it.
  * You can only assign one function to the property.
  * To bind a function to a button property use onChange.
- * Example usage
- * myButton_.onChange(this, &MyButton::doSomethingFunction);
- * A button property are normally used by a processor.
- * The button property is created and added in the constructor of the processor.
- *
+ * Example usage:
+ *     
+ *     myButton_.onChange([&](){doSomthing();});
+ *     
  * @see ButtonPropertyWidgetQt
  */
 class IVW_CORE_API ButtonProperty : public Property {

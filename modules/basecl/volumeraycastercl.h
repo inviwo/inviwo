@@ -106,7 +106,7 @@ public:
     * \brief Set the default background color to use in the rendering.
     * Will only be used if background layer is set to nullptr.
     *
-    * @param RGBA color in [0 1]^4
+    * @param color RGBA color in [0 1]^4
     */
     void setDefaultBackgroundColor(const vec4 color);
 

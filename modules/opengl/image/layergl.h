@@ -41,6 +41,9 @@ namespace inviwo {
 class Shader;
 class Texture2D;
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
     LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,

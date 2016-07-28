@@ -123,7 +123,6 @@ private:
  *
  * Class to support observer pattern.
  *
- * \section Observable.example Example
  * Example of how to apply it to a simple button.
  * @code
  *     class ButtonObservable;

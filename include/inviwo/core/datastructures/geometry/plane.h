@@ -49,9 +49,9 @@ public:
     /**
      * \brief Get intersection point with plane between p1 and p2
      *
-     * @param const vec3 & p1 Start point
-     * @param const vec3 & p2 End point
-     * @return vec3 Intersected point
+     * @param p1 Start point
+     * @param p2 End point
+     * @return Intersected point
      */
     vec3 getIntersection(const vec3& p1, const vec3& p2) const;
 

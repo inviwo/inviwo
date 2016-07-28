@@ -166,8 +166,8 @@ public:
     /**
      * Create and add Property Link to the network
      * Adds a link between two properties, that are owned by processor network.
-     * @param[in] sourceProperty Property at which link starts
-     * @param[in] destinationProperty Property at which link ends
+     * @param[in] source Property at which link starts
+     * @param[in] destination Property at which link ends
      * @return PropertyLink* Newly added link
      */
     void addLink(Property* source, Property* destination);
@@ -176,8 +176,8 @@ public:
     /**
      * Remove and delete Property Link from the network
      * Removes a link between two properties, that are owned by processor network.
-     * @param[in] sourceProperty Property at which link starts
-     * @param[in] destinationProperty Property at which link ends
+     * @param[in] source Property at which link starts
+     * @param[in] destination Property at which link ends
      * @return void
      */
     void removeLink(Property* source, Property* destination);
@@ -186,8 +186,8 @@ public:
     /**
      * Check whether Property Link exists
      * Checks if there is a link between two properties, that are owned by processor network.
-     * @param[in] sourceProperty Property at which link starts
-     * @param[in] destinationProperty Property at which link ends
+     * @param[in] source Property at which link starts
+     * @param[in] destination Property at which link ends
      * @return bool true if link exists otherwise returns false
      */
     bool isLinked(Property* source, Property* destination) const;

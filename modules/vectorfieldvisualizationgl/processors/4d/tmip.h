@@ -57,12 +57,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TMIP
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API TMIP : public Processor {
 public:
 

@@ -35,12 +35,10 @@
 
 namespace inviwo {
 /**
- * \class DataMapper
- *
  * \brief Map values into data or value ranges.
- * Data range refer to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data. 
- * Value range refer to the physical meaning of the value, i.e. Hounsfield value range is from [-1000 3000].
- *
+ * Data range refer to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data.
+ * Value range refer to the physical meaning of the value, i.e. Hounsfield value range is from
+ * [-1000 3000].
  */
 class IVW_CORE_API DataMapper {
 public:

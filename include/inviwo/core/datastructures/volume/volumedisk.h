@@ -37,6 +37,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation, public DiskRepresentation {
 public:
     VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),

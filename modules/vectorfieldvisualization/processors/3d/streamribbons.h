@@ -59,14 +59,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class StreamRibbons
- *
- * \brief <brief description>
- *
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbons : public Processor {
 public:
     enum class ColoringMethod {

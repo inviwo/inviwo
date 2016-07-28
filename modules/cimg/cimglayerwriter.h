@@ -38,7 +38,9 @@ namespace inviwo {
 
 class Layer;
 
-/** \brief Writer for Images files
+/**
+ * \ingroup dataio
+ * \brief Writer for Images files
  */
 class IVW_MODULE_CIMG_API CImgLayerWriter : public DataWriterType<Layer> {
 public:

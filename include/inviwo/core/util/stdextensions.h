@@ -420,13 +420,15 @@ bool is_future_ready(const std::future<T>& future) {
  * This is a slightly modified version to avoid constexpr.
  *
  * Requirements on Container T:
- * T::iterator = T::begin();
- * T::iterator = T::end();
- * T::const_iterator = T::begin() const;
- * T::const_iterator = T::end() const;
+ * \code{.cpp}
+ *     T::iterator = T::begin();
+ *     T::iterator = T::end();
+ *     T::const_iterator = T::begin() const;
+ *     T::const_iterator = T::end() const;
  * 
- * *T::iterator = T::value_type &
- * *T::const_iterator = T::value_type const &
+ *     *T::iterator = T::value_type &
+ *     *T::const_iterator = T::value_type const &
+ * \endcode
  */
 
 template <typename T>

@@ -44,7 +44,7 @@ namespace inviwo {
 
 /**
 * \class LineEditQt
-* \brief customized line edit class based on QLineEdit. Pressing <escape> will emit a cancel signal.
+* \brief customized line edit class based on QLineEdit. Pressing Escape will emit a cancel signal.
 *  This signal can be used to revert the changes and loose focus without changing the property. 
 */
 class IVW_QTWIDGETS_API LineEditQt : public QLineEdit {

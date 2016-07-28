@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
     BufferRAM(const DataFormatBase* format = DataFormatBase::get(),

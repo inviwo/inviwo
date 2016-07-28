@@ -53,22 +53,15 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public VolumeGLProcessor {
+public:
+    Vector3DDivergence();
+    virtual ~Vector3DDivergence();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-
-/**
- * \class Vector3DDivergence
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
-    class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public VolumeGLProcessor {
-    public:
-        Vector3DDivergence();
-        virtual ~Vector3DDivergence();
-        virtual const ProcessorInfo getProcessorInfo() const override;
-        static const ProcessorInfo processorInfo_;
-
-    protected:
-        virtual void postProcess() override;
+protected:
+    virtual void postProcess() override;
 };
 
 } // namespace

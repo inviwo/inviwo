@@ -67,8 +67,8 @@ public:
      * Further events will be propagated to the active viewport until a release appears.
      * Returns null if the initiating (pressing/touching) event is outside the added viewports.
      *
-     * @param Event * event The event to transform.
-     * @return Event* An event transformed to the active viewport or null if initiated outside of
+     * @param event The event to transform.
+     * @return An event transformed to the active viewport or null if initiated outside of
      * added views.
      */
     Event* registerEvent(const Event* event);
@@ -76,13 +76,13 @@ public:
      * \brief Get the untransformed position, relative to the original viewport size, in the
      * coordinate system of the ViewManager.
      *
-     * @return dvec2 The pixel position in the same coordinate system as the ViewManager.
+     * @return The pixel position in the same coordinate system as the ViewManager.
      */
     dvec2 getActivePosition() const { return activePosition_; }
     /** 
      * \brief Returns the index of the last active view. Returns -1 if no active view has been set.
      * 
-     * @return int Index of active view, -1 if not set.
+     * @return Index of active view, -1 if not set.
      */
     int getActiveView() const { return activeView_; }
 
@@ -96,7 +96,7 @@ public:
      *   ------> x
      *
      * @see ViewManager
-     * @param ivec4 view Position and size of viewport (x,y width,height)
+     * @param view Position and size of viewport (x,y width,height)
      */
     void push_back(ivec4 view);
 
@@ -105,14 +105,14 @@ public:
     * before, nothing happens.
     *
     * @see ViewManager
-    * @param ivec4 view Position and size of viewport (x,y width,height)
+    * @param view Position and size of viewport (x,y width,height)
     */
     void erase(ivec4 view);
 
     /**
     * \brief Erase a previously defined viewport using index ind.
     *
-    * @param size_t ind Viewport index [0 size()-1]
+    * @param ind Viewport index [0 size()-1]
     */
     void erase(size_t ind);
 
@@ -125,15 +125,15 @@ public:
     *   ------> x
     *
     * @see ViewManager
-    * @param size_t ind Viewport index [0 size()-1]
-    * @param ivec4 view Position and size of viewport (x,y width,height)
+    * @param ind Viewport index [0 size()-1]
+    * @param view Position and size of viewport (x,y width,height)
     */
     void replace(size_t ind, ivec4 view);
 
     /** 
      * \brief Return viewport using index ind.
      *
-     * @param size_t ind Viewport index [0 size()-1]
+     * @param ind Viewport index [0 size()-1]
      * @return ivec4& 
      */
     ivec4& operator[](size_t ind);

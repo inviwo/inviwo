@@ -41,7 +41,7 @@ template<typename Repr>
 class DataGroup;
 
 /** 
- *  \class DataGroupRepresentation
+ * \ingroup datastructures
  *
  *  \brief The base class for all DataGroupRepresentation objects.
  *

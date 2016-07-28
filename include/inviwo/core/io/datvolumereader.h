@@ -37,19 +37,21 @@
 
 namespace inviwo {
 
-/** \brief Reader for *.dat files
+/**
+ * \ingroup dataio
+ *\brief Reader for *.dat files
  *
  *  The following tags are supported:
- *   - Rawfile :: The name of the raw data file, should be in the same directory (Mandatory).
- *   - ByteOrder :: the byte order in the raw data file. (Optional, LittleEndian|BigEndian,
+ *   - __Rawfile__ The name of the raw data file, should be in the same directory (Mandatory).
+ *   - __ByteOrder__ the byte order in the raw data file. (Optional, LittleEndian|BigEndian,
  *     default: LittleEndian).
- *   - Resolution | Dimension ::The size of the data grid: nx,ny,nz (Mandatory).
- *   - Format :: The type of values in the raw file. (Mandatory)
- *   - Spacing | SliceThickness :: The size of the voxels in the data. (Optional)
- *   - BasisVector(1|2|3) :: Defines a coordinate system for the data. (Optional, overides spacing,
+ *   - __Resolution | Dimension__ The size of the data grid: nx,ny,nz (Mandatory).
+ *   - __Format__ The type of values in the raw file. (Mandatory)
+ *   - __Spacing | SliceThickness__ The size of the voxels in the data. (Optional)
+ *   - __BasisVector(1|2|3)__ Defines a coordinate system for the data. (Optional, overides spacing,
  *     default: 2*IdentityMatrix);
- *   - Offset :: Offsets the basisvecors in space. (Optional, defaults to center the data on origo)
- *   - WorldVector(1|2|3|4) :: Defines a world transformation matrix that is applied last to orient
+ *   - __Offset__ Offsets the basisvecors in space. (Optional, defaults to center the data on origo)
+ *   - __WorldVector(1|2|3|4)__ Defines a world transformation matrix that is applied last to orient
  *     the data in world space. (Optional, default: IdentityMatrix)
  *
  *  The tag names are case insensitive and should always be followed by a ":"

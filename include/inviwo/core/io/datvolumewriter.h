@@ -36,7 +36,9 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
-
+/**
+ * \ingroup dataio
+ */
 class IVW_CORE_API DatVolumeWriter : public DataWriterType<Volume> {
 public:
     DatVolumeWriter();

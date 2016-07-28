@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
     LayerRAM(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,

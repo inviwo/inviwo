@@ -65,13 +65,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class IntegralLineVectorToMesh
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor { 
 public:
     IntegralLineVectorToMesh();

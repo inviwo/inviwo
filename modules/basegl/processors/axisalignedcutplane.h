@@ -48,166 +48,158 @@
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 
 namespace inviwo {
-    /** \docpage{<classIdentifier>, AxisAlignedCutPlane}
-    * Explanation of how to use the processor.
-    *
-    * ### Inports
-    *   * __<Inport1>__ <description>.
-    *
-    * ### Outports
-    *   * __<Outport1>__ <description>.
-    *
-    * ### Properties
-    *   * __<Prop1>__ <description>.
-    *   * __<Prop2>__ <description>
-    */
 
-    /**
-    * \class AxisAlignedCutPlane
-    *
-    * \brief <brief description>
-    *
-    * <Detailed description from a developer prespective>
-    */
-    class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
-        enum class Axis { X = 0, Y = 1, Z = 2 };
-        template <Axis axis>
-        class SliceProperty : public BoolCompositeProperty {
-        public:
-            SliceProperty(const std::string &identifier, const std::string &displayName);
-
-            IntProperty slice_;
-
-            std::unique_ptr<SimpleMesh> mesh_;
-            std::unique_ptr<MeshDrawer> drawer_;
-
-            void onVolumeChange(std::shared_ptr<const Volume> vol);
-
-            void createDrawer(std::shared_ptr<const Volume> vol);
-
-            void draw(Shader &shader);
-
-        private:
-            static vec3 forSlice(int axes, double a, double b, double t);
-        };
-
+/** \docpage{<classIdentifier>, AxisAlignedCutPlane}
+* Explanation of how to use the processor.
+*
+* ### Inports
+*   * __<Inport1>__ <description>.
+*
+* ### Outports
+*   * __<Outport1>__ <description>.
+*
+* ### Properties
+*   * __<Prop1>__ <description>.
+*   * __<Prop2>__ <description>
+*/
+class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
+    enum class Axis { X = 0, Y = 1, Z = 2 };
+    template <Axis axis>
+    class SliceProperty : public BoolCompositeProperty {
     public:
-        virtual const ProcessorInfo getProcessorInfo() const override;
-        static const ProcessorInfo processorInfo_;
-        AxisAlignedCutPlane();
-        virtual ~AxisAlignedCutPlane() {}
+        SliceProperty(const std::string &identifier, const std::string &displayName);
 
-    protected:
-        virtual void process() override;
-        virtual void initializeResources() override {
-            if (disableTF_.get()) {
-                sliceShader_.getFragmentShaderObject()->removeShaderDefine("USE_TF");
-            }
-            else {
-                sliceShader_.getFragmentShaderObject()->addShaderDefine("USE_TF");
-            }
-            sliceShader_.build();
-        }
+        IntProperty slice_;
 
-        VolumeInport volume_;
-        ImageInport imageInport_;
-        ImageOutport outport_;
+        std::unique_ptr<SimpleMesh> mesh_;
+        std::unique_ptr<MeshDrawer> drawer_;
 
-        SliceProperty<Axis::X> xSlide_;
-        SliceProperty<Axis::Y> ySlide_;
-        SliceProperty<Axis::Z> zSlide_;
+        void onVolumeChange(std::shared_ptr<const Volume> vol);
 
-        BoolProperty disableTF_;
-        TransferFunctionProperty tf_;
+        void createDrawer(std::shared_ptr<const Volume> vol);
 
-        BoolProperty showBoundingBox_;
-        FloatVec4Property boundingBoxColor_;
-        FloatProperty renderPointSize_;
-        FloatProperty renderLineWidth_;
-
-        BoolProperty  nearestInterpolation_;
-
-        CameraProperty camera_;
-        CameraTrackball trackball_;
-
-
-        Shader sliceShader_;
-
-        Shader boundingBoxShader_;
-        std::unique_ptr<SimpleMesh> boundingBoxMesh_;
-        std::unique_ptr<MeshDrawer> boundingBoxDrawer_;
-
-        void createBoundingBox();
-        void drawBoundingBox();
+        void draw(Shader &shader);
 
     private:
+        static vec3 forSlice(int axes, double a, double b, double t);
     };
 
-    template <AxisAlignedCutPlane::Axis axis>
-    AxisAlignedCutPlane::SliceProperty<axis>::SliceProperty(const std::string &identifier,
-        const std::string &displayName)
-        : BoolCompositeProperty(identifier, displayName, true)
-        , slice_("slice", "Slice", 50, 1, 100)
-        , mesh_(nullptr)
-        , drawer_(nullptr) {
-        addProperty(slice_);
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+    AxisAlignedCutPlane();
+    virtual ~AxisAlignedCutPlane() {}
+
+protected:
+    virtual void process() override;
+    virtual void initializeResources() override {
+        if (disableTF_.get()) {
+            sliceShader_.getFragmentShaderObject()->removeShaderDefine("USE_TF");
+        } else {
+            sliceShader_.getFragmentShaderObject()->addShaderDefine("USE_TF");
+        }
+        sliceShader_.build();
     }
 
-    template <AxisAlignedCutPlane::Axis axis>
-    void AxisAlignedCutPlane::SliceProperty<axis>::onVolumeChange(std::shared_ptr<const Volume> vol) {
-        double t = static_cast<double>(slice_.get()) / static_cast<double>(slice_.getMaxValue());
-        auto max = static_cast<int>(vol->getDimensions()[static_cast<int>(axis)]);
-        slice_.setMaxValue(max);
-        slice_.set(static_cast<int>(t * max));
-        createDrawer(vol);
-    }
+    VolumeInport volume_;
+    ImageInport imageInport_;
+    ImageOutport outport_;
 
-    template <AxisAlignedCutPlane::Axis axis>
-    void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<const Volume> vol) {
-        mesh_ = util::make_unique<SimpleMesh>(DrawType::Triangles, ConnectivityType::Strip);
+    SliceProperty<Axis::X> xSlide_;
+    SliceProperty<Axis::Y> ySlide_;
+    SliceProperty<Axis::Z> zSlide_;
 
-        double z = (static_cast<double>(slice_.get())-0.5) / static_cast<double>(slice_.getMaxValue());
+    BoolProperty disableTF_;
+    TransferFunctionProperty tf_;
 
-        auto v0 = forSlice(static_cast<int>(axis), 0, 0, z);
-        auto v1 = forSlice(static_cast<int>(axis), 0, 1, z);
-        auto v2 = forSlice(static_cast<int>(axis), 1, 0, z);
-        auto v3 = forSlice(static_cast<int>(axis), 1, 1, z);
+    BoolProperty showBoundingBox_;
+    FloatVec4Property boundingBoxColor_;
+    FloatProperty renderPointSize_;
+    FloatProperty renderLineWidth_;
 
-        mesh_->addVertex(v0, v0, vec4(v0, 1.0));
-        mesh_->addVertex(v1, v1, vec4(v1, 1.0));
-        mesh_->addVertex(v2, v2, vec4(v2, 1.0));
-        mesh_->addVertex(v3, v3, vec4(v3, 1.0));
+    BoolProperty nearestInterpolation_;
 
-        mesh_->addIndices(0, 1, 2, 3);
-        mesh_->setModelMatrix(vol->getModelMatrix());
-        mesh_->setWorldMatrix(vol->getWorldMatrix());
+    CameraProperty camera_;
+    CameraTrackball trackball_;
 
-        drawer_ = InviwoApplication::getPtr()->getMeshDrawerFactory()->create(mesh_.get());
-    }
+    Shader sliceShader_;
 
-    template <AxisAlignedCutPlane::Axis axis>
-    void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader &shader) {
-        if (!isChecked()) return;
-        LGL_ERROR;
-        utilgl::setShaderUniforms(shader, *mesh_, "geometry_");
-        LGL_ERROR;
-        drawer_->draw();
-        LGL_ERROR;
-    }
+    Shader boundingBoxShader_;
+    std::unique_ptr<SimpleMesh> boundingBoxMesh_;
+    std::unique_ptr<MeshDrawer> boundingBoxDrawer_;
 
-    template <AxisAlignedCutPlane::Axis axis>
-    vec3 inviwo::AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b,
-        double t) {
-        switch (axes) {
+    void createBoundingBox();
+    void drawBoundingBox();
+
+private:
+};
+
+template <AxisAlignedCutPlane::Axis axis>
+AxisAlignedCutPlane::SliceProperty<axis>::SliceProperty(const std::string &identifier,
+                                                        const std::string &displayName)
+    : BoolCompositeProperty(identifier, displayName, true)
+    , slice_("slice", "Slice", 50, 1, 100)
+    , mesh_(nullptr)
+    , drawer_(nullptr) {
+    addProperty(slice_);
+}
+
+template <AxisAlignedCutPlane::Axis axis>
+void AxisAlignedCutPlane::SliceProperty<axis>::onVolumeChange(std::shared_ptr<const Volume> vol) {
+    double t = static_cast<double>(slice_.get()) / static_cast<double>(slice_.getMaxValue());
+    auto max = static_cast<int>(vol->getDimensions()[static_cast<int>(axis)]);
+    slice_.setMaxValue(max);
+    slice_.set(static_cast<int>(t * max));
+    createDrawer(vol);
+}
+
+template <AxisAlignedCutPlane::Axis axis>
+void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<const Volume> vol) {
+    mesh_ = util::make_unique<SimpleMesh>(DrawType::Triangles, ConnectivityType::Strip);
+
+    double z =
+        (static_cast<double>(slice_.get()) - 0.5) / static_cast<double>(slice_.getMaxValue());
+
+    auto v0 = forSlice(static_cast<int>(axis), 0, 0, z);
+    auto v1 = forSlice(static_cast<int>(axis), 0, 1, z);
+    auto v2 = forSlice(static_cast<int>(axis), 1, 0, z);
+    auto v3 = forSlice(static_cast<int>(axis), 1, 1, z);
+
+    mesh_->addVertex(v0, v0, vec4(v0, 1.0));
+    mesh_->addVertex(v1, v1, vec4(v1, 1.0));
+    mesh_->addVertex(v2, v2, vec4(v2, 1.0));
+    mesh_->addVertex(v3, v3, vec4(v3, 1.0));
+
+    mesh_->addIndices(0, 1, 2, 3);
+    mesh_->setModelMatrix(vol->getModelMatrix());
+    mesh_->setWorldMatrix(vol->getWorldMatrix());
+
+    drawer_ = InviwoApplication::getPtr()->getMeshDrawerFactory()->create(mesh_.get());
+}
+
+template <AxisAlignedCutPlane::Axis axis>
+void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader &shader) {
+    if (!isChecked()) return;
+    LGL_ERROR;
+    utilgl::setShaderUniforms(shader, *mesh_, "geometry_");
+    LGL_ERROR;
+    drawer_->draw();
+    LGL_ERROR;
+}
+
+template <AxisAlignedCutPlane::Axis axis>
+vec3 inviwo::AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b,
+                                                                double t) {
+    switch (axes) {
         case 0:
             return vec3(t, a, b);
         case 1:
             return vec3(a, t, b);
         case 2:
             return vec3(a, b, t);
-        }
-        return vec3(0);
     }
+    return vec3(0);
+}
 
 }  // namespace
 

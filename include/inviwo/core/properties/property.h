@@ -52,29 +52,45 @@ namespace inviwo {
 #define PropertyClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier
 
-/** \class Property
- *
- *  \brief A Property represents a parameter to a processor.
- *
- *  Concepts:
- *   - Owner: A property can have a owner, usually a processor. If the property is modified, by
- *     calling propertyModified() then the property will set it's owner's invalidation level to the
- *     property's invalidation level, usually InvalidationLevel::InvalidOutput. This will in turn trigger a network
- *     evaluation that will update the processors to a valid state again.
- *
- *   - Reset: A property has a default state specified in the constructor, or optionally be calling
- *     setCurrentStateAsDefault. The property can then also be reset to it's default state by
- *     calling resetToDefaultState. Both these functions are virtual and all property subclasses
- *     that introduce more state should make sure to implement these two functions and also in their
- *     implementation make sure that to call the base class implementation.
- *
- *   - Widget: A property can have one or multiple PropertyWidgets. The widget are used in the user
- *     interface to implement interactivity.
- *
+
+/**
+ *	\defgroup properties Properties
+ *  \brief Properties represents a parameters to Processors.
  */
 
 class PropertyOwner;
-
+/**
+ * \ingroup properties
+ *
+ * \brief A Property represents a parameter to a processor.
+ *
+ * Concepts:
+ *  * __PropertyOwner__: A property can have a owner, usually a Processor or a CompositeProperty. If
+ *    the property is modified, by calling Property::propertyModified then the property will set
+ * it's
+ *    owner's invalidation level to the property's invalidation level, usually
+ *    InvalidationLevel::InvalidOutput. This will in turn trigger a network evaluation that will
+ *    update the processors to a valid state again.
+ *
+ *  * __Serializable__: A property is serializable to be able to store all the processor parameters
+ *    for each Processor in the saved ProcessorNetwork
+ *
+ *  * __PropertySemantics__: A property can be set to one or several different semantics, which is
+ *    often used to display different PropertyWidets. For example using a color picker for Color
+ *    Semantic or a text field for Text Semantics.
+ *
+ *  * __UsageMode__: A property can have different usage modes. Either Development or Application.
+ *    Only properties with Application mode will show up when running Inviwo in Application mode.
+ *
+ *  * __Reset__: A property has a default state specified in the constructor, or optionally be
+ *    calling Property::setCurrentStateAsDefault. The property can then also be reset to it's
+ *    default state  by calling Property::resetToDefaultState. Both these functions are virtual and
+ *    all property subclasses that introduce more state should make sure to implement these two
+ *    function and also in their implementation make sure that to call the base class implementation.
+ *
+ *  * __PropertyWidget__: A property can have one or multiple PropertyWidgets. The widget are used
+ *    in the user interface to implement interactivity
+ */
 class IVW_CORE_API Property : public PropertyObservable, public Serializable, public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;

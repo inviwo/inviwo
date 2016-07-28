@@ -37,6 +37,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup dataio
+ */
 class IVW_CORE_API IvfVolumeWriter : public DataWriterType<Volume> {
 public:
     IvfVolumeWriter();

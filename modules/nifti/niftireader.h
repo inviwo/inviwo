@@ -67,8 +67,8 @@ public:
     /**
      * \brief Convert from Nifti defined data types to inviwo DataFormat.
      *
-     * @param int niftiDataType nifti_image::datatype.
-     * @return const DataFormatBase* Equivalent data type, null if not found.
+     * @param niftiDataType nifti_image::datatype.
+     * @return Equivalent data type, null if not found.
      */
     static const DataFormatBase* niftiDataTypeToInviwoDataFormat(int niftiDataType);
 };

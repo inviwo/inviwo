@@ -38,7 +38,7 @@ namespace inviwo {
 class CompositeProperty;
 
 /**
- * \class Camera
+ * \ingroup datastructures
  *
  * \brief Base class for cameras.
  * Override this class to set your own projection matrix.
@@ -61,9 +61,8 @@ public:
            float farPlane = 10000.0f);
     virtual ~Camera() = default;
     Camera(const Camera& other) = default;
-    // Camera(Camera&& other) = default;
     Camera& operator=(const Camera& other) = default;
-    
+
     virtual Camera* clone() const = 0;
     virtual bool update(const Camera* source) = 0;
 
@@ -176,7 +175,6 @@ public:
                       float farPlane = 10000.0f, float fieldOfView = 60.f, float aspectRatio = 1.f);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other) = default;
-    // Camera(Camera&& other) = default;
     PerspectiveCamera& operator=(const PerspectiveCamera& other) = default;
     virtual PerspectiveCamera* clone() const override;
     virtual bool update(const Camera* source) override;
@@ -219,7 +217,6 @@ public:
                        float farPlane = 10000.0f, vec4 frustum = vec4(-01, 10, -10, 10));
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other) = default;
-    // Camera(Camera&& other) = default;
     OrthographicCamera& operator=(const OrthographicCamera& other) = default;
     virtual OrthographicCamera* clone() const override;
     virtual bool update(const Camera* source) override;
@@ -233,9 +230,6 @@ public:
      * \brief Left, right, bottom, top view volume
      *
      * Set view frustum used for projection matrix calculation.
-     *
-     * @param inviwo::vec4 val
-     * @return void
      */
     void setFrustum(vec4 val);
     virtual float getAspectRatio() const override;
@@ -255,15 +249,14 @@ bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 
 /**
-* \class SkewedPerspectiveCamera
-*
-* \brief Camera with off axis perspective projection
-* The camera with unsymmetrical frustum for stereo in VR
-* Kooima, Robert. "Generalized perspective projection." School of Elect. Eng. and Computer Science
-* (2008): 1-7.
-* @see Camera
-* @see SkewedPerspectiveCamera
-*/
+ * \brief Camera with off axis perspective projection.
+ *
+ * The camera with unsymmetrical frustum for stereo in VR
+ * Kooima, Robert. "Generalized perspective projection." School of Elect. Eng. and Computer Science
+ * (2008): 1-7.
+ * @see Camera
+ * @see SkewedPerspectiveCamera
+ */
 class IVW_CORE_API SkewedPerspectiveCamera : public Camera {
 public:
     SkewedPerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
@@ -272,7 +265,6 @@ public:
                             vec2 frustumOffset = vec2(0.0f, 0.0f));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other) = default;
-    // Camera(Camera&& other) = default;
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other) = default;
     virtual SkewedPerspectiveCamera* clone() const override;
     virtual bool update(const Camera* source) override;
@@ -286,9 +278,6 @@ public:
     * \brief Left, right, bottom, top view volume
     *
     * Set view frustum used for projection matrix calculation.
-    *
-    * @param inviwo::vec4 val
-    * @return void
     */
     void setFrustum(vec4 val);
 
@@ -297,9 +286,6 @@ public:
     * \brief Left, right, bottom, top view volume
     *
     * Set view frustum used for projection matrix calculation.
-    *
-    * @param inviwo::vec4 val
-    * @return void
     */
     void setFrustumOffset(vec2 val);
     virtual float getAspectRatio() const override;

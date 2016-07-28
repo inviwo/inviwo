@@ -57,11 +57,6 @@ namespace inviwo {
  */
 
 
-/**
- * \class VolumeSequenceToSpatial4DSampler
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASE_API VolumeSequenceToSpatial4DSampler : public Processor { 
 public:
     VolumeSequenceToSpatial4DSampler();

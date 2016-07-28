@@ -34,6 +34,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
@@ -83,6 +86,7 @@ private:
  * Creates an LayerRAM with data type specified by format.
  *
  * @param dimensions of layer to create.
+ * @param type of layer to create.
  * @param format of layer to create.
  * @return nullptr if no valid format was specified.
  */

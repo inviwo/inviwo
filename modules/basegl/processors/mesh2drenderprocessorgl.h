@@ -55,15 +55,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-
-/**
- * \class Mesh2DRenderer
- *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASEGL_API Mesh2DRenderProcessorGL : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

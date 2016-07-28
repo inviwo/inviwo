@@ -39,6 +39,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup ports
+ * DataOutport hold data of type T
+ */
 template <typename T>
 class DataOutport : public Outport, public OutportIterableImpl<T> {
 public:

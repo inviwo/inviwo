@@ -47,6 +47,14 @@ namespace inviwo {
 template <typename T>
 class DataOutport;
 
+/**
+ * \ingroup ports
+ * DataInport represents a general inport providing data as a std:shared_ptr<const T>
+ * If N is set to 0 the port will accept multiple connections, and will provide a
+ * std::vector<std::shared_ptr<const T>> of data. If N is larger then 1 exaclyt that many
+ * connections are accepted. If Flat is set to true, the inport will also accept connections from
+ * outport with vector data of type T and merge them into the data return data vector.
+ */
 template <typename T, size_t N = 1, bool Flat = false>
 class DataInport : public Inport, public InportIterable<T, Flat> {
 public:

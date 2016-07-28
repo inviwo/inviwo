@@ -40,6 +40,10 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A CompositeProperty holding properties to show a information about a volume
+ */
 class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();

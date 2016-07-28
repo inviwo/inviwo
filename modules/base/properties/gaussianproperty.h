@@ -39,7 +39,10 @@
 
 namespace inviwo {
 
-
+/**
+ * \ingroup properties
+ * A property representing a Gaussian function
+ */
 template<typename T>
 class GaussianProperty : public CompositeProperty { 
 public:

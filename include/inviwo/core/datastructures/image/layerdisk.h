@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
 public:
     LayerDisk(LayerType type = LayerType::Color);

@@ -57,8 +57,8 @@ typedef struct {
 } PackedLightSource;
 
 // Transform a BaseLightSource to PackedLightSource
-IVW_MODULE_OPENCL_API PackedLightSource
-baseLightToPackedLight(const LightSource* lightsource, float radianceScale);
+IVW_MODULE_OPENCL_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource,
+                                                               float radianceScale);
 
 /**
 * \brief Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to the light
@@ -68,14 +68,14 @@ baseLightToPackedLight(const LightSource* lightsource, float radianceScale);
 * that a light size of (1,1) can be specified and it will be as large as the volume
 * if transformLightMat == worldToTexture.
 *
-* @param const LightSource * lightsource Input light source
-* @param float radianceScale Scales light power
-* @param const mat4 & transformLightMat Transformation to be applied to lightSource.modelToWorld.
+* @param lightsource Input light source
+* @param radianceScale Scales light power
+* @param transformLightMat Transformation to be applied to lightSource.modelToWorld.
 * @return PackedLightSource
 */
 IVW_MODULE_OPENCL_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource,
-    float radianceScale,
-    const mat4& transformLightMat);
+                                                               float radianceScale,
+                                                               const mat4& transformLightMat);
 
 } // namespace
 

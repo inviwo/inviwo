@@ -45,6 +45,9 @@ public:
     virtual ~DataWriterException() throw(){};
 };
 
+/**
+ * \ingroup dataio
+ */
 class IVW_CORE_API DataWriter {
 
 public:
@@ -69,6 +72,9 @@ private:
 };
 
 
+/**
+ * \ingroup dataio
+ */
 template <typename T>
 class DataWriterType : public DataWriter {
 public:

@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * \ingroup datastructures	
+ */
 class IVW_CORE_API MeshDisk : public MeshRepresentation, public DiskRepresentation {
 public:
     MeshDisk() = default;
