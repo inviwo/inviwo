@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/buffergl.h>
 

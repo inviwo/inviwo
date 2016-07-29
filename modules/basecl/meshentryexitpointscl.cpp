@@ -31,8 +31,7 @@
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclgl.h>
 #include <modules/opencl/buffer/buffercl.h>
-#include <modules/opencl/buffer/elementbuffercl.h>
-#include <modules/opencl/buffer/elementbufferclgl.h>
+#include <modules/opencl/buffer/bufferclgl.h>
 #include <modules/opencl/syncclgl.h>
 
 namespace inviwo {
@@ -61,7 +60,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
         LayerCLGL* entryCL = entryPoints->getEditableRepresentation<LayerCLGL>();
         LayerCLGL* exitCL = exitPoints->getEditableRepresentation<LayerCLGL>();
         const BufferCLGL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCLGL>();
-        const BufferCLGL* indices = mesh->getIndices(0)->getRepresentation<ElementBufferCLGL>();
+        const BufferCLGL* indices = mesh->getIndices(0)->getRepresentation<BufferCLGL>();
         glSync.addToAquireGLObjectList(entryCL);
         glSync.addToAquireGLObjectList(exitCL);
         glSync.addToAquireGLObjectList(vertices);
@@ -74,7 +73,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
         LayerCL* entryCL = entryPoints->getEditableRepresentation<LayerCL>();
         LayerCL* exitCL = exitPoints->getEditableRepresentation<LayerCL>();
         const BufferCL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCL>();
-        const BufferCL* indices = mesh->getIndices(0)->getRepresentation<ElementBufferCL>();
+        const BufferCL* indices = mesh->getIndices(0)->getRepresentation<BufferCL>();
         computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL,
                                exitCL, outportDim, waitForEvents, event);
     }

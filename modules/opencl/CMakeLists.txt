@@ -10,10 +10,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbuffercl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cl.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clformats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.h
@@ -53,10 +49,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferclglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbuffercl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clformats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.cpp
@@ -106,9 +98,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/shading.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/shadingmath.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/wardbrdf.cl
-	${CMAKE_CURRENT_SOURCE_DIR}/cl/colorconversion.cl
+    ${CMAKE_CURRENT_SOURCE_DIR}/cl/colorconversion.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/gradients.cl
-	${CMAKE_CURRENT_SOURCE_DIR}/cl/image3d_write.cl
+    ${CMAKE_CURRENT_SOURCE_DIR}/cl/image3d_write.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/img_resize.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/samplers.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/transformations.cl

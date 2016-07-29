@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/buffer/buffergl.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {

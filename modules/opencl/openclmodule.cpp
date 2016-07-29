@@ -30,7 +30,6 @@
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/buffer/bufferclconverter.h>
 #include <modules/opencl/buffer/bufferclglconverter.h>
-#include <modules/opencl/buffer/elementbufferclglconverter.h>
 #include <modules/opencl/image/layerclconverter.h>
 #include <modules/opencl/image/layerclglconverter.h>
 #include <modules/opencl/openclmodule.h>
@@ -71,9 +70,6 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
         registerRepresentationConverter(util::make_unique<BufferCLGL2RAMConverter>());
         registerRepresentationConverter(util::make_unique<BufferCLGL2GLConverter>());
         registerRepresentationConverter(util::make_unique<BufferCLGL2CLConverter>());
-        // ElementBuffer CLGL
-        registerRepresentationConverter(util::make_unique<ElementBufferCLGL2GLConverter>());
-        registerRepresentationConverter(util::make_unique<ElementBufferGL2CLGLConverter>());
     }
     // LayerCL
     registerRepresentationConverter(util::make_unique<LayerRAM2CLConverter>());

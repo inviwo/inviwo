@@ -30,8 +30,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <modules/opengl/buffer/bufferglconverter.h>
-#include <modules/opengl/buffer/elementbuffergl.h>
-#include <modules/opengl/buffer/elementbufferglconverter.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/opengl/image/layerglconverter.h>
 #include <modules/opengl/openglcapabilities.h>
@@ -65,8 +63,6 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
 
     registerRepresentationConverter(util::make_unique<BufferRAM2GLConverter>());
     registerRepresentationConverter(util::make_unique<BufferGL2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<ElementBufferRAM2GLConverter>());
-    registerRepresentationConverter(util::make_unique<ElementBufferGL2RAMConverter>());
 
     registerProcessor<CanvasProcessorGL>();
 
