@@ -40,129 +40,43 @@ else()
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ON)
 endif()
 
-function(make_template FILENAME DOXY_NAME BRIEF OUTPUT_DIR INPUT_LIST TAGFILE INPUT_TAG_LIST
-                       EXTRA_FILE_LIST image_path_list aliases_list)
+function(ivw_format_doxy_arg retval )
+    string(REGEX REPLACE ";" " \\\\\n                         " result "${ARGN}")
+    set(${retval} ${result} PARENT_SCOPE)
+endfunction()    
 
-    set(PROJNAME ${DOXY_NAME})
+function(ivw_make_documentation outdir doxy_name BRIEF input_list TAGFILE input_tag_list 
+         extra_file_list, image_path_list aliases_list aditional_flags_list)
+    string(TOLOWER ${doxy_name} name_lower)
 
+    set(PROJNAME ${doxy_name})
     set(MAINPAGE "${IVW_ROOT_DIR}/README.md")
+    set(OUTPUT_DIR "${outdir}/${name_lower}")
 
-    list(APPEND INPUT_LIST ${MAINPAGE})
-    string(REGEX REPLACE ";" " \\\\\n                         " INPUTS "${INPUT_LIST}")
-    set(INPUTS ${INPUTS})
-    
-    string(REGEX REPLACE ";" " \\\\\n                         " INPUT_TAGS "${INPUT_TAG_LIST}")
-    set(INPUT_TAGS ${INPUT_TAGS})
+    list(APPEND input_list ${MAINPAGE})
+    ivw_format_doxy_arg(INPUTS ${input_list})
+    ivw_format_doxy_arg(INPUT_TAGS ${input_tag_list})
+    ivw_format_doxy_arg(EXTRA_FILES ${extra_file_list})
+    ivw_format_doxy_arg(IMAGE_PATH ${image_path_list})
+    ivw_format_doxy_arg(ALIASES ${aliases_list})
+    string(REGEX REPLACE ";" " \n " ADITIONAL_FLAGS "${aditional_flags_list}")
+    set(ADITIONAL_FLAGS ${ADITIONAL_FLAGS}) # ADITIONAL_FLAGS is appended to Doxygen.in
 
-    string(REGEX REPLACE ";" " \\\\\n                         " EXTRA_FILES "${EXTRA_FILE_LIST}")
-    set(EXTRA_FILES ${EXTRA_FILES})
+    configure_file(${ivw_doxy_dir}/Doxygen.in ${outdir}/${name_lower}.doxy)
 
-    string(REGEX REPLACE ";" " \\\\\n                         " IMAGE_PATH "${image_path_list}")
-    set(IMAGE_PATH ${IMAGE_PATH})
-
-    string(REGEX REPLACE ";" " \\\\\n                         " ALIASES "${aliases_list}")
-    set(ALIASES ${ALIASES})
-
-    configure_file(${ivw_doxy_dir}/Doxygen.in ${FILENAME})
-endfunction()
- 
-function(get_unique_names retval paths)
-    list(LENGTH paths npaths)
-
-    # Remove non-unique start of path
-    set(ind 0)
-    set(names ${paths})
-    set(ret ${paths})
-    list(LENGTH names n_names)
-    while(n_names EQUAL npaths)
-        set(ret ${names})
-        set(names "")
-        foreach(module ${paths})
-            set(path "")
-            set(i 0)
-            string(REPLACE "/" ";" module_list ${module})
-            foreach(dir ${module_list})
-                if( i GREATER ind OR i EQUAL ind)
-                    list(APPEND path ${dir})
-                endif()
-                MATH(EXPR i "${i}+1")
-            endforeach()
-            string(REPLACE ";" "/" path_joined "${path}")
-            list(APPEND names ${path_joined})
-        endforeach()
-        list(REMOVE_DUPLICATES names)
-        list(LENGTH names n_names)
-        MATH(EXPR ind "${ind}+1")
-    endwhile()
-    
-    # Remove non-unique end of path
-    set(ind 0)
-    set(new_module_bases ${ret})
-    set(names ${ret})
-    list(LENGTH names n_names)
-    while(n_names EQUAL npaths)
-        set(ret ${names})
-        set(names "")
-        foreach(module ${new_module_bases})
-            set(path "")
-            set(i 0)
-            string(REPLACE "/" ";" module_list ${module})
-            list(REVERSE module_list)
-            foreach(dir ${module_list})
-                if( i GREATER ind OR i EQUAL ind)
-                    list(APPEND path ${dir})
-                endif()
-                MATH(EXPR i "${i}+1")
-            endforeach()
-            list(REVERSE path)
-            string(REPLACE ";" "/" path_joined "${path}")
-            list(APPEND names ${path_joined})
-        endforeach()
-        list(REMOVE_DUPLICATES names)
-        list(LENGTH names n_names)
-        MATH(EXPR ind "${ind}+1")
-    endwhile()
-    set(${retval} ${ret} PARENT_SCOPE)
-endfunction()
-
-function(make_doxy_target OUTPUT_DIR DOXY_NAME image_path_list)
-    string(TOLOWER ${DOXY_NAME} name_lower)
-    add_custom_target("DOXY-${DOXY_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen ${DOXY_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/${name_lower}/html"
-        COMMAND ${DOXYGEN_EXECUTABLE} "${OUTPUT_DIR}/${name_lower}.doxy"
-        COMMAND ${CMAKE_COMMAND} -DDEST_PATH="${OUTPUT_DIR}/${name_lower}/html" -P "${OUTPUT_DIR}/copy_img.cmake"
-        WORKING_DIRECTORY ${OUTPUT_DIR}
-        COMMENT "Generating ${DOXY_NAME} API documentation with Doxygen"
+    add_custom_target("DOXY-${doxy_name}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen ${doxy_name}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${outdir}/${name_lower}/html"
+        COMMAND ${DOXYGEN_EXECUTABLE} "${outdir}/${name_lower}.doxy"
+        COMMAND ${CMAKE_COMMAND} -DDEST_PATH="${outdir}/${name_lower}/html" -P "${outdir}/copy_img.cmake"
+        WORKING_DIRECTORY ${outdir}
+        COMMENT "Generating ${doxy_name} API documentation with Doxygen"
         VERBATIM
     )
-    set_target_properties("DOXY-${DOXY_NAME}" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
+    set_target_properties("DOXY-${doxy_name}" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 endfunction()
 
-function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_TAG_LIST 
-         EXTRA_FILE_LIST, image_path_list aliases_list)
-    string(TOLOWER ${DOXY_NAME} name_lower)
-
-    make_template(
-        "${OUTPUT_DIR}/${name_lower}.doxy" 
-        "${DOXY_NAME}" 
-        "${BRIEF}" 
-        "${OUTPUT_DIR}/${name_lower}"
-        "${INPUT_LIST}" 
-        "${TAGFILE}" 
-        "${INPUT_TAG_LIST}"
-        "${EXTRA_FILE_LIST}"
-        "${image_path_list}"
-        "${aliases_list}"
-    )
-    make_doxy_target(
-        "${OUTPUT_DIR}"
-        "${DOXY_NAME}"
-        "${image_path_list}"
-    )
-endfunction()
-
-function(make_help INPUT_DIR SOURCE_LIST image_path_list)
+function(ivw_make_help INPUT_DIR SOURCE_LIST image_path_list)
     # Help, used for the help inside invowo
     set(GENERATE_QHP "YES")
     set(GENERATE_IMG "NO")
@@ -175,7 +89,7 @@ function(make_help INPUT_DIR SOURCE_LIST image_path_list)
         "docpage{2}=\"\\page docpage-\\1 \\2\""
     )
 
-    set(ADITIONAL_FLAGS_LIST 
+    set(aditional_flags_list 
         "AUTOLINK_SUPPORT       = NO"
         "HIDE_SCOPE_NAMES       = YES"
         "SHOW_INCLUDE_FILES     = NO"
@@ -195,19 +109,18 @@ function(make_help INPUT_DIR SOURCE_LIST image_path_list)
         "GENERATE_AUTOGEN_DEF   = NO"
         "CLASS_DIAGRAMS         = NO"
     )
-    string(REGEX REPLACE ";" " \n " ADITIONAL_FLAGS "${ADITIONAL_FLAGS_LIST}")
-    set(ADITIONAL_FLAGS ${ADITIONAL_FLAGS}) # ADITIONAL_FLAGS is appended to Doxygen.in
 
-    make_documentation(
+    ivw_make_documentation(
         "${ivw_doxy_out}" 
         "Help" 
         "Inviwo help"  
         "${SOURCE_LIST}"
         "" 
         ""
-        "${ivw_doxy_extra_files}"
+        "${extra_files}"
         "${image_path_list}"
         "${aliases_list}"
+        "${aditional_flags_list}"
     )
 
     get_filename_component(QT_BIN_PATH ${QT_QMAKE_EXECUTABLE} PATH)
@@ -221,7 +134,7 @@ function(make_help INPUT_DIR SOURCE_LIST image_path_list)
         "        <register>"
         "            <file>inviwo.qch</file>"
         "        </register>"
-            "    </docFiles>"
+        "    </docFiles>"
         "</QHelpCollectionProject>"
     )
     string(REPLACE ";" "\n" INV_QHCP ${INV_QHCP})
@@ -254,10 +167,10 @@ function(make_doxygen_target modules_var)
         return()
     endif()
 
-    find_package(Perl QUIET)            # sets, PERL_FOUND, PERL_EXECUTABLE
-    find_package(Doxygen QUIET)         # sets, DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
+    find_package(Perl QUIET)            # sets: PERL_FOUND, PERL_EXECUTABLE
+    find_package(Doxygen QUIET)         # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
                                         # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE    
-    find_package(PythonInterp QUIET)    # sets, PYTHONINTERP_FOUND PYTHON_EXECUTABLE
+    find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE
 
     if(NOT ${DOXYGEN_FOUND})
         ivw_message(WARNING "Tried to create doxygen project, but doxygen was not found")
@@ -270,40 +183,34 @@ function(make_doxygen_target modules_var)
 
     set(ivw_doxy_dir ${IVW_ROOT_DIR}/tools/doxygen)
     set(ivw_doxy_out ${CMAKE_CURRENT_BINARY_DIR}/doc)
-    set(ivw_doxy_tag_files "")
-    set(ivw_doxy_depends "")
+    set(tag_files "")
+    set(dependency_list "")
 
     set(GENERATE_IMG "YES")
-    string(REGEX REPLACE ";" " \\\\\n                         " SHADER_INC_PATH "${IVW_SHADER_INCLUDE_PATHS}")
-    set(SHADER_INC_PATH ${SHADER_INC_PATH})
-
+    ivw_format_doxy_arg(SHADER_INC_PATH ${IVW_SHADER_INCLUDE_PATHS})
+    
     if(PYTHONINTERP_FOUND)
         set(PREFIX_PYTHON "")
         #set(PREFIX_PYTHON "${PYTHON_EXECUTABLE} ") # This is sometimes needed but gives errors on win7
-        set(FILER_PATTERNS_LIST
+        set(filer_patterns_list
             "\"*.frag=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.vert=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.geom=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.glsl=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
          )
-        string(REGEX REPLACE ";" " \\\\\n                         " FILER_PATTERNS "${FILER_PATTERNS_LIST}")
-        set(FILER_PATTERNS ${FILER_PATTERNS})
+        ivw_format_doxy_arg(FILER_PATTERNS ${filer_patterns_list})
     endif()
 
-    set(ivw_doxy_extra_files 
-        "${ivw_doxy_dir}/style/img_downArrow.png"
-    )
+    set(extra_files "${ivw_doxy_dir}/style/img_downArrow.png")
 
     set(aliases_list
         "docpage{1}=\"\\ingroup processors \\n \#\\1\""
         "docpage{2}=\"\\ingroup processors \\n \#\\2\""
     )
 
-    set(image_path_list 
-        "${IVW_ROOT_DIR}/data/help/images"
-    )
+    set(image_path_list "${IVW_ROOT_DIR}/data/help/images")
 
-    set(ivw_doxy_all_sources 
+    set(all_sources 
         "${IVW_INCLUDE_DIR}"
         "${IVW_SOURCE_DIR}"
         "${IVW_APPLICATION_DIR}"
@@ -313,63 +220,66 @@ function(make_doxygen_target modules_var)
         set(WARN_FORMAT "\$file(\$line): \$text")
     endif()
 
+    # Group target
     add_custom_target("DOXY-ALL"
         WORKING_DIRECTORY ${ivw_doxy_out}
         COMMENT "Generating ALL API documentation with Doxygen"
         VERBATIM
     )
-    set_target_properties("DOXY-ALL" PROPERTIES FOLDER "doc")
+    set_target_properties("DOXY-ALL" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
     # Core
-    set(ivw_doxy_tag_core "${ivw_doxy_out}/core/ivwcore.tag")
-    make_documentation(
+    set(core_tag "${ivw_doxy_out}/core/ivwcore.tag")
+    ivw_make_documentation(
         "${ivw_doxy_out}" 
         "Core" 
         "Core functionality of Inviwo" 
         "${IVW_CORE_INCLUDE_DIR};${IVW_CORE_SOURCE_DIR}" 
-        "${ivw_doxy_tag_core}"
-        "${ivw_doxy_tag_files}"
-        "${ivw_doxy_extra_files}"
+        "${core_tag}"
+        "${tag_files}"
+        "${extra_files}"
         "${image_path_list}"
         "${aliases_list}"
+        ""
     )
-    list(APPEND ivw_doxy_depends "DOXY-Core")
-    list(APPEND ivw_doxy_tag_files "${ivw_doxy_tag_core}=${ivw_doxy_out}/core/html")
+    list(APPEND dependency_list "DOXY-Core")
+    list(APPEND tag_files "${core_tag}=${ivw_doxy_out}/core/html")
     
-    # OT
-    set(ivw_doxy_tag_qt "${ivw_doxy_out}/qt/ivwqt.tag")
-    #list(APPEND ivw_doxy_tag_files "qtcore.tags=http://qt-project.org/doc/qt-5/")
-    make_documentation(
+    # Ot
+    set(qt_tag "${ivw_doxy_out}/qt/ivwqt.tag")
+    #list(APPEND tag_files "qtcore.tags=http://qt-project.org/doc/qt-5/")
+    ivw_make_documentation(
         "${ivw_doxy_out}" 
         "Qt" 
         "Main Qt elements of Inviwo" 
         "${IVW_QT_INCLUDE_DIR};${IVW_QT_SOURCE_DIR}" 
-        "${ivw_doxy_tag_qt}"
-        "${ivw_doxy_tag_files}"
-        "${ivw_doxy_extra_files}"
+        "${qt_tag}"
+        "${tag_files}"
+        "${extra_files}"
         "${image_path_list}"
         "${aliases_list}"
+        ""
     )
-    foreach(depends "${ivw_doxy_depends}")
+    foreach(depends "${dependency_list}")
         add_dependencies("DOXY-Qt" ${depends})
     endforeach()
-    list(APPEND ivw_doxy_depends "DOXY-Qt")
-    list(APPEND ivw_doxy_tag_files "${ivw_doxy_tag_qt}=${ivw_doxy_out}/qt/html")
+    list(APPEND dependency_list "DOXY-Qt")
+    list(APPEND tag_files "${qt_tag}=${ivw_doxy_out}/qt/html")
 
     # Modules
-    set(ivw_doxy_module_bases "")
+    set(module_bases "")
     foreach(mod ${${modules_var}})
-        list(APPEND ivw_doxy_module_bases ${${mod}_base})
-        list(REMOVE_DUPLICATES ivw_doxy_module_bases)
+        list(APPEND module_bases ${${mod}_base})
+        list(REMOVE_DUPLICATES module_bases)
         if(EXISTS "${${mod}_path}/docs/images")
             list(APPEND image_path_list "${${mod}_path}/docs/images")
         endif()
-        list(APPEND ivw_doxy_all_sources ${${mod}_path})
+        list(APPEND all_sources ${${mod}_path})
     endforeach()
-    get_unique_names(unique_names "${ivw_doxy_module_bases}")
+    ivw_find_unique_path_segements(unique_names "${module_bases}")
     
     set(index 0)
-    foreach(base ${ivw_doxy_module_bases})
+    foreach(base ${module_bases})
         list(GET unique_names ${index} name)
             
         string(REPLACE "/" "-" desc_name ${name})
@@ -377,78 +287,77 @@ function(make_doxygen_target modules_var)
         
         set(inc_dirs "")
         foreach(mod ${${modules_var}})
-            if(${${mod}_path} STREQUAL base)
-                list(APPEND inc_dirs ${module})
+            if(${${mod}_base} STREQUAL ${base})
+                list(APPEND inc_dirs ${${mod}_path})
             endif()
         endforeach()
         
-        set(ivw_doxy_tag_module "${ivw_doxy_out}/${desc_name_lower}/${desc_name_lower}.tag")
-        make_documentation(
+        set(module_tag "${ivw_doxy_out}/${desc_name_lower}/${desc_name_lower}.tag")
+        ivw_make_documentation(
             "${ivw_doxy_out}" 
             "${desc_name}" 
             "Modules for ${desc_name}"  
             "${inc_dirs}" 
-            "${ivw_doxy_tag_module}"
-            "${ivw_doxy_tag_files}"
-            "${ivw_doxy_extra_files}"
+            "${module_tag}"
+            "${tag_files}"
+            "${extra_files}"
             "${image_path_list}"
             "${aliases_list}"
+            ""
         )
-        foreach(depends "${ivw_doxy_depends}")
+        foreach(depends "${dependency_list}")
             add_dependencies("DOXY-${desc_name}" ${depends})
         endforeach()
-        list(APPEND ivw_doxy_depends "DOXY-${desc_name}")
-        list(APPEND ivw_doxy_tag_files "${ivw_doxy_tag_module}=${ivw_doxy_out}/${desc_name_lower}/html")
+        list(APPEND dependency_list "DOXY-${desc_name}")
+        list(APPEND tag_files "${module_tag}=${ivw_doxy_out}/${desc_name_lower}/html")
         MATH(EXPR index "${index}+1")
     endforeach()
         
     # Apps
-    set(ivw_doxy_tag_apps "${ivw_doxy_out}/apps/ivwapps.tag")
-    make_documentation(
+    set(app_tag "${ivw_doxy_out}/apps/ivwapps.tag")
+    ivw_make_documentation(
         "${ivw_doxy_out}" 
         "Apps" 
         "Applications using Inviwo Core and Modules" 
         "${IVW_APPLICATION_DIR}" 
-        "${ivw_doxy_tag_apps}"
-        "${ivw_doxy_tag_files}"
-        "${ivw_doxy_extra_files}"
+        "${app_tag}"
+        "${tag_files}"
+        "${extra_files}"
         "${image_path_list}"
         "${aliases_list}"
+        ""
     )
-    foreach(depends "${ivw_doxy_depends}")
+    foreach(depends "${dependency_list}")
         add_dependencies("DOXY-Apps" ${depends})
     endforeach()
-    list(APPEND ivw_doxy_depends "DOXY-Apps")
-    list(APPEND ivw_doxy_tag_files "${ivw_doxy_tag_apps}={ivw_doxy_out}/apps/html")
+    list(APPEND dependency_list "DOXY-Apps")
+    list(APPEND tag_files "${app_tag}={ivw_doxy_out}/apps/html")
 
-    foreach(depends "${ivw_doxy_depends}")
+    foreach(depends "${dependency_list}")
         add_dependencies("DOXY-ALL" ${depends})
     endforeach()
 
 
     # All In one.
-    make_documentation(
+    ivw_make_documentation(
         "${ivw_doxy_out}" 
         "Inviwo" 
         "Inviwo documentation" 
-        "${ivw_doxy_all_sources}"
+        "${all_sources}"
         "" 
         ""
-        "${ivw_doxy_extra_files}"
+        "${extra_files}"
         "${image_path_list}"
         "${aliases_list}"
+        ""
     )
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 
 
     # Help, used for the help inside invowo
-    make_help("${ivw_doxy_dir}/help" "${ivw_doxy_all_sources}" "${image_path_list}")
+    ivw_make_help("${ivw_doxy_dir}/help" "${all_sources}" "${image_path_list}")
     add_dependencies("DOXY-ALL" "DOXY-Help")
     add_dependencies("DOXY-ALL" "DOXY-QCH")
-
-    foreach(path ${IMG_PATHS})
-        message(${path})
-    endforeach()
 
     # make a img-copy script
     set(COPY_SCRIPT_LIST
