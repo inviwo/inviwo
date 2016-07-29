@@ -43,39 +43,47 @@ namespace inviwo{
 
 TEST(PickingTests, GenerateColor0) {
     auto c0 = PickingManager::indexToColor(0);
-    EXPECT_EQ(c0, uvec3(19, 177, 59));
+    EXPECT_EQ(c0, uvec3(0, 0, 128));
 }
 
 TEST(PickingTests, GenerateColor1) {
     auto c1 = PickingManager::indexToColor(1);
-    EXPECT_EQ(c1, uvec3(39, 98, 118));
+    EXPECT_EQ(c1, uvec3(0, 128, 0));
 }
 TEST(PickingTests, GenerateIndex0) {
-    auto i0 = PickingManager::colorToIndex(uvec3(19, 177, 59));
+    auto i0 = PickingManager::colorToIndex(uvec3(0, 0, 128));
     EXPECT_EQ(i0, 0);
 }
 TEST(PickingTests, GenerateIndex1) {
-    auto i1 = PickingManager::colorToIndex(uvec3(39, 98, 118));
+    auto i1 = PickingManager::colorToIndex(uvec3(0, 128, 0));
     EXPECT_EQ(i1, 1);
 }
 
 TEST(PickingTests, GenerateLots) {
-    for(size_t i = 0; i < 1000000; ++i) {
+    //const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
+    const size_t ncolors = 100000;
+
+    for(size_t i = 0; i < ncolors; ++i) {
         auto c = PickingManager::indexToColor(i);
+        EXPECT_NE(c, uvec3(0));
         auto ind = PickingManager::colorToIndex(c);
         EXPECT_EQ(ind, i);
     }
 }
 
 TEST(PickingTests, Unique) {
-    std::unordered_set<uvec3> colors;
+    //const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
+    const size_t ncolors = 100000;
+    std::unordered_set<uvec3> colors(ncolors * 2);
+    colors.insert(uvec3(0));
 
-    for (size_t i = 0; i < 100000; ++i) {
+    for (size_t i = 0; i < ncolors; ++i) {
         auto c = PickingManager::indexToColor(i);
-        colors.insert(c);
+        auto res = colors.insert(c);
+        EXPECT_TRUE(res.second);
     }
 
-    EXPECT_EQ(colors.size(), 100000);
+    EXPECT_EQ(colors.size(), ncolors+1);
 }
 
 TEST(PickingMapperTests, Create) {

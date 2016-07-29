@@ -95,26 +95,44 @@ bool PickingManager::pickingEnabled() {
     return enabled_;
 }
 
-uvec3 PickingManager::indexToColor(size_t id) {
-    const size_t Nr = 13;
-    const size_t colors = 256 * 256 * 256;
-    id++;  // avoid zero
+// First the left four bits are swapped with the right four bits.
+// Then all adjacent pairs are swapped and then all adjacent single bits.
+// This results in a reversed order.
+std::uint8_t reverse(std::uint8_t b) {
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
+}
 
-    size_t i = id % Nr;
-    size_t n = static_cast<size_t>(
-        std::floor(i * colors / static_cast<double>(Nr) + id / static_cast<double>(Nr)));
-    return uvec3(static_cast<unsigned char>(std::floor(n / (256.0 * 256.0))),
-                 static_cast<unsigned char>(std::floor(static_cast<double>(n) / 256.0)) % 256,
-                 static_cast<unsigned char>(n % 256));
+uvec3 PickingManager::indexToColor(size_t id) {
+    std::uint32_t index = static_cast<std::uint32_t>(id + 1);
+
+    std::uint8_t r = 0;
+    std::uint8_t g = 0;
+    std::uint8_t b = 0;
+
+    for (int i = 0; i < 8; ++i) {
+        r |= ((index & (1 << (3 * i + 2))) >> (2 * i + 2));
+        g |= ((index & (1 << (3 * i + 1))) >> (2 * i + 1));
+        b |= ((index & (1 << (3 * i + 0))) >> (2 * i + 0));
+    }
+
+    return uvec3{reverse(r), reverse(g), reverse(b)};
 }
 
 size_t PickingManager::colorToIndex(uvec3 color) {
-    const size_t Nr = 13;
-    const size_t colors = 256 * 256 * 256;
-    size_t n = color.r * 256 * 256 + color.g * 256 + color.b;
-    auto i = std::round(n / (colors / static_cast<double>(Nr)));
-    auto o = n - std::round(i * colors / static_cast<double>(Nr));
-    return static_cast<size_t>(o * Nr + i) - 1;
+    const std::uint32_t r = reverse(color[0]);
+    const std::uint32_t g = reverse(color[1]);
+    const std::uint32_t b = reverse(color[2]);
+
+    std::uint32_t index = 0;
+    for (int i = 0; i < 8; ++i) {
+        index |= (((b & (1 << i)) << (0 + 2 * i)));
+        index |= (((g & (1 << i)) << (1 + 2 * i)));
+        index |= (((r & (1 << i)) << (2 + 2 * i)));
+    }
+    return index - 1;
 }
 
 PickingObject* PickingManager::getPickingObjectFromColor(const uvec3& c) {
