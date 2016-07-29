@@ -1,0 +1,2301 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    109120,       2292]
+NotebookOptionsPosition[    108114,       2255]
+NotebookOutlinePosition[    108460,       2270]
+CellTagsIndexPosition[    108417,       2267]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"SetOptions", "[", 
+  RowBox[{"$FrontEndSession", ",", 
+   RowBox[{"\"\<ExportTypesetOptions\>\"", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"\"\<PageWidth\>\"", "\[Rule]", "5000"}], "}"}]}]}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.627103105555641*^9, 3.6271031061937046`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"spaces", " ", "=", " ", GridBox[{
+     {"\"\<Space\>\"", "\"\<Position\>\"", "\"\<Description\>\"", 
+      "\"\<Range\>\""},
+     {"\"\<Data\>\"", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}], "\"\<raw data numbers\>\"", 
+      "\"\<generally (-inf, inf), ([0,1] for textures)\>\""},
+     {"\"\<Model\>\"", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}], "\"\<model space coordinates\>\"", 
+      "\"\<(data min, data max)\>\""},
+     {"\"\<World\>\"", 
+      RowBox[{"{", 
+       RowBox[{"2", ",", "0"}], "}"}], "\"\<world space coordinates\>\"", 
+      "\"\<(-inf, inf)\>\""},
+     {"\"\<View\>\"", 
+      RowBox[{"{", 
+       RowBox[{"2", ",", 
+        RowBox[{"-", "1"}]}], "}"}], "\"\<view space coordinates\>\"", 
+      "\"\<(-inf, inf)\>\""},
+     {"\"\<Clip\>\"", 
+      RowBox[{"{", 
+       RowBox[{"3", ",", 
+        RowBox[{"-", "1"}]}], "}"}], "\"\<clip space coordinates\>\"", 
+      "\"\<[-1,1]\>\""},
+     {"\"\<Index\>\"", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", 
+        RowBox[{"-", "1"}]}], "}"}], "\"\<voxel index coordinates\>\"", 
+      "\"\<[0, number of voxels)\>\""}
+    },
+    GridBoxDividers->{
+     "Columns" -> {{False}}, "ColumnsIndexed" -> {}, 
+      "Rows" -> {False, {True}, False}, "RowsIndexed" -> {}}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transforms", "=", GridBox[{
+      {"\"\<From Space\>\"", "\"\<To Space\>\"", "\"\<Transform\>\"", 
+       "\"\<Entity\>\"", "\"\<Member\>\""},
+      {"\"\<Data\>\"", "\"\<Model\>\"", "\"\<ModelMatrix\>\"", 
+       "\"\<const SpatialEntity<N>*\>\"", "\"\<entity_\>\""},
+      {"\"\<Model\>\"", "\"\<World\>\"", "\"\<WorldMatrix\>\"", 
+       "\"\<const SpatialEntity<N>*\>\"", "\"\<entity_\>\""},
+      {"\"\<World\>\"", "\"\<View\>\"", "\"\<ViewMatrix\>\"", 
+       "\"\<const CameraND<N>*\>\"", "\"\<camera_\>\""},
+      {"\"\<View\>\"", "\"\<Clip\>\"", "\"\<ProjectionMatrix\>\"", 
+       "\"\<const CameraND<N>*\>\"", "\"\<camera_\>\""},
+      {"\"\<Data\>\"", "\"\<Index\>\"", "\"\<IndexMatrix\>\"", 
+       "\"\<const StructuredGridEntity<N>*\>\"", "\"\<entity_\>\""}
+     },
+     GridBoxDividers->{
+      "Columns" -> {{False}}, "ColumnsIndexed" -> {}, 
+       "Rows" -> {False, {True}, False}, "RowsIndexed" -> {}}]}], ";"}], " ", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"spacedict", " ", "=", " ", 
+   RowBox[{"<|", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"spaces", "[", 
+        RowBox[{"[", 
+         RowBox[{"i", ",", "1"}], "]"}], "]"}], "->", 
+       RowBox[{"AssociationThread", "[", 
+        RowBox[{
+         RowBox[{"spaces", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], ",", 
+         RowBox[{"spaces", "[", 
+          RowBox[{"[", "i", "]"}], "]"}]}], "]"}]}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "2", ",", 
+        RowBox[{"Length", "[", "spaces", "]"}]}], "}"}]}], "]"}], "|>"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"graph", " ", "=", " ", 
+   RowBox[{"Graph", "[", 
+    RowBox[{
+     RowBox[{"transforms", "[", 
+      RowBox[{"[", 
+       RowBox[{"2", ";;"}], "]"}], "]"}], "/.", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"from_", "?", "StringQ"}], ",", 
+        RowBox[{"to_", "?", "StringQ"}], ",", "transform_", ",", "x_", ",", 
+        "y_"}], "}"}], "\[RuleDelayed]", 
+      RowBox[{"Sequence", "[", 
+       RowBox[{
+        RowBox[{"from", "\[Rule]", "to"}], ",", 
+        RowBox[{"to", "\[Rule]", "from"}]}], 
+       StyleBox["]", "Input"]}]}]}], 
+    StyleBox["]", "Input"]}]}], 
+  StyleBox[";", "Input"]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"posList", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"spaces", "[", 
+     RowBox[{"[", 
+      RowBox[{
+       RowBox[{"2", ";;"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}]}], "]"}], "]"}], "/.", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"space_", ",", "pos_"}], "}"}], "\[RuleDelayed]", 
+     RowBox[{"space", "\[Rule]", "pos"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vertexPos", "=", 
+   RowBox[{
+    RowBox[{"VertexList", "[", "graph", "]"}], "/.", "posList"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"edgeLables", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"transforms", "[", 
+     RowBox[{"[", 
+      RowBox[{"2", ";;"}], "]"}], "]"}], "/.", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"from_", "?", "StringQ"}], ",", 
+       RowBox[{"to_", "?", "StringQ"}], ",", "transform_", ",", "x_", ",", 
+       "y_"}], "}"}], "\[RuleDelayed]", 
+     RowBox[{"Sequence", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"from", " ", "\[DirectedEdge]", "to"}], "\[Rule]", 
+        RowBox[{"Rotate", "[", 
+         RowBox[{"transform", ",", 
+          RowBox[{"VectorAngle", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"1", ",", "0"}], "}"}], ",", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"to", "/.", "posList"}], ")"}], "-", 
+             RowBox[{"(", 
+              RowBox[{"from", "/.", "posList"}], ")"}]}]}], "]"}]}], "]"}]}], 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"to", "\[DirectedEdge]", "from"}], "\[Rule]", 
+        RowBox[{"Rotate", "[", 
+         RowBox[{
+          RowBox[{"Superscript", "[", 
+           RowBox[{"transform", ",", "\"\<-1\>\""}], "]"}], ",", 
+          RowBox[{"VectorAngle", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"1", ",", "0"}], "}"}], ",", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"to", "/.", "posList"}], ")"}], "-", 
+             RowBox[{"(", 
+              RowBox[{"from", "/.", "posList"}], ")"}]}]}], "]"}]}], 
+         "]"}]}]}], "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"gview", "=", 
+  RowBox[{"Graph", "[", 
+   RowBox[{"graph", ",", "\[IndentingNewLine]", 
+    RowBox[{"VertexCoordinates", "\[Rule]", "vertexPos"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"VertexLabels", "\[Rule]", 
+     RowBox[{"Placed", "[", 
+      RowBox[{"\"\<Name\>\"", ",", 
+       RowBox[{"{", 
+        RowBox[{"0.5", ",", "0.5"}], "}"}]}], "]"}]}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"VertexSize", "\[Rule]", "Medium"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"VertexLabelStyle", "\[Rule]", 
+     RowBox[{"Directive", "[", "12", "]"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"EdgeLabels", "\[Rule]", "edgeLables"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"EdgeLabelStyle", "\[Rule]", 
+     RowBox[{"Directive", "[", 
+      RowBox[{"12", ",", 
+       RowBox[{"Background", "\[Rule]", "White"}]}], "]"}]}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", "800"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Prolog", "\[Rule]", 
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{"LightBlue", ",", 
+       RowBox[{"Ellipsoid", "[", 
+        RowBox[{
+         RowBox[{"spacedict", "[", 
+          RowBox[{"\"\<Model\>\"", ",", "\"\<Position\>\""}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"1.25", ",", "0.25"}], "}"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "Black", ",", 
+       RowBox[{"Text", "[", 
+        RowBox[{
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Spatial\>\"", ",", "14"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"spacedict", "[", 
+           RowBox[{"\"\<Model\>\"", ",", "\"\<Position\>\""}], "]"}], "+", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0.17"}], "}"}]}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "LightBlue", ",", 
+       RowBox[{"Ellipsoid", "[", 
+        RowBox[{
+         RowBox[{"spacedict", "[", 
+          RowBox[{"\"\<Index\>\"", ",", "\"\<Position\>\""}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{".25", ",", "0.25"}], "}"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "Black", ",", 
+       RowBox[{"Text", "[", 
+        RowBox[{
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Structured\>\"", ",", "14"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"spacedict", "[", 
+           RowBox[{"\"\<Index\>\"", ",", "\"\<Position\>\""}], "]"}], "+", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", 
+            RowBox[{"-", "0.17"}]}], "}"}]}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "LightBlue", ",", 
+       RowBox[{"Ellipsoid", "[", 
+        RowBox[{
+         RowBox[{"0.5", "*", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"spacedict", "[", 
+             RowBox[{"\"\<View\>\"", ",", "\"\<Position\>\""}], "]"}], "+", 
+            RowBox[{"spacedict", "[", 
+             RowBox[{"\"\<Clip\>\"", ",", "\"\<Position\>\""}], "]"}]}], 
+           ")"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{".7", ",", "0.25"}], "}"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "Black", ",", 
+       RowBox[{"Text", "[", 
+        RowBox[{
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Camera\>\"", ",", "14"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"0.5", "*", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"spacedict", "[", 
+              RowBox[{"\"\<View\>\"", ",", "\"\<Position\>\""}], "]"}], "+", 
+             RowBox[{"spacedict", "[", 
+              RowBox[{"\"\<Clip\>\"", ",", "\"\<Position\>\""}], "]"}]}], 
+            ")"}]}], "+", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0.17"}], "}"}]}]}], "]"}]}], "}"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]}], "Input",
+ CellChangeTimes->{
+  3.626759417975708*^9, {3.6267595462878227`*^9, 3.626759632258997*^9}, {
+   3.6267596701949883`*^9, 3.62675978073913*^9}, {3.626759855671728*^9, 
+   3.6267600090235977`*^9}, {3.626763198080349*^9, 3.6267632970108423`*^9}, 
+   3.626766656356968*^9, {3.626766694337973*^9, 3.6267669623675623`*^9}, {
+   3.6267691003083*^9, 3.6267691235687037`*^9}, 3.626769929177979*^9, {
+   3.6267705265036383`*^9, 3.6267705494971323`*^9}, {3.626775749236268*^9, 
+   3.626775775143839*^9}, {3.626783846852429*^9, 3.626783847563867*^9}, {
+   3.627013653472582*^9, 3.627013663959042*^9}, {3.627013720010756*^9, 
+   3.627013730165812*^9}, {3.627013780790102*^9, 3.627013965281624*^9}, {
+   3.627014103696972*^9, 3.6270141215031433`*^9}, {3.627014182590939*^9, 
+   3.627014271826942*^9}, {3.627014303675709*^9, 3.627014507130896*^9}, {
+   3.627020612432473*^9, 3.6270206132316113`*^9}, {3.6270209758282557`*^9, 
+   3.627020994148889*^9}, {3.627022691702467*^9, 3.627022693101224*^9}, {
+   3.62702987633254*^9, 3.6270299471980467`*^9}, {3.627029986713911*^9, 
+   3.627029989032504*^9}, {3.6270325396151667`*^9, 3.627032540925517*^9}, 
+   3.627041866654336*^9, {3.62710812634767*^9, 3.627108221917226*^9}, {
+   3.6271083059306264`*^9, 3.627108310887122*^9}, {3.6271266291845393`*^9, 
+   3.6271266586315393`*^9}, {3.6775742205240097`*^9, 3.6775742361785746`*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{
+      "Data", "Model", "World", "View", "Clip", "Index"}, {{{1, 2}, {2, 1}, {
+       2, 3}, {3, 2}, {3, 4}, {4, 3}, {4, 5}, {5, 4}, {1, 6}, {6, 1}}, 
+       Null}, {EdgeLabels -> {
+        DirectedEdge["World", "View"] -> 
+         Rotate["ViewMatrix", Rational[1, 2] Pi], 
+         DirectedEdge["View", "Clip"] -> Rotate["ProjectionMatrix", 0], 
+         DirectedEdge["Model", "World"] -> Rotate["WorldMatrix", 0], 
+         DirectedEdge["Data", "Model"] -> Rotate["ModelMatrix", 0], 
+         DirectedEdge["View", "World"] -> Rotate[
+           Superscript["ViewMatrix", "-1"], Rational[1, 2] Pi], 
+         DirectedEdge["Clip", "View"] -> Rotate[
+           Superscript["ProjectionMatrix", "-1"], 0], 
+         DirectedEdge["World", "Model"] -> Rotate[
+           Superscript["WorldMatrix", "-1"], 0], 
+         DirectedEdge["Index", "Data"] -> Rotate[
+           Superscript["IndexMatrix", "-1"], Rational[1, 2] Pi], 
+         DirectedEdge["Model", "Data"] -> Rotate[
+           Superscript["ModelMatrix", "-1"], 0], 
+         DirectedEdge["Data", "Index"] -> 
+         Rotate["IndexMatrix", Rational[1, 2] Pi]}, EdgeLabelStyle -> {
+         Directive[12, Background -> GrayLevel[1]]}, 
+       GraphLayout -> {"Dimension" -> 2}, ImageSize -> 800, Prolog -> {
+         RGBColor[0.87, 0.94, 1], 
+         Ellipsoid[{1, 0}, {1.25, 0.25}], 
+         GrayLevel[0], 
+         Text[
+          Style["Spatial", 14], {1, 0.17}], 
+         RGBColor[0.87, 0.94, 1], 
+         Ellipsoid[{0, -1}, {0.25, 0.25}], 
+         GrayLevel[0], 
+         Text[
+          Style["Structured", 14], {0, -1.17}], 
+         RGBColor[0.87, 0.94, 1], 
+         Ellipsoid[{2.5, -1.}, {0.7, 0.25}], 
+         GrayLevel[0], 
+         Text[
+          Style["Camera", 14], {2.5, -0.83}]}, 
+       VertexCoordinates -> {{0, 0}, {1, 0}, {2, 0}, {2, -1}, {3, -1}, {
+        0, -1}}, VertexLabels -> {
+         Placed["Name", {0.5, 0.5}]}, VertexLabelStyle -> {
+         Directive[12]}, VertexSize -> {Medium}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[
+        0.028937842778793414`], {
+         ArrowBox[BezierCurveBox[{{0., 0.}, {0.5000000000000004, 
+          0.1644407471831171}, {1., 0.}}], 0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox["\<\"ModelMatrix\"\>",
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {0.5000000000000001, 0.07000000000000006},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{0., 0.}, {0.16444074718311655`, -0.5}, {
+          0., -1.}}], 0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox["\<\"IndexMatrix\"\>",
+            BoxRotation->1.5707963267948966`],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {0.07000000000000006, -0.5000000000000001},
+           ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{1., 0.}, {
+          0.5000000000000007, -0.16444074718311624`}, {0., 0.}}], 
+          0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox[
+            TemplateBox[{"\"ModelMatrix\"","\"-1\""},
+             "Superscript"],
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {0.5, -0.07000000000000006}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{1., 0.}, {1.4999999999999987`, 
+          0.16444074718310983`}, {2., 0.}}], 0.030239520958083826`], 
+         InsetBox[
+          StyleBox[
+           RotationBox["\<\"WorldMatrix\"\>",
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {1.5, 0.07000000000000006}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{2., 0.}, {
+          1.5000000000000018`, -0.16444074718312243`}, {1., 0.}}], 
+          0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox[
+            TemplateBox[{"\"WorldMatrix\"","\"-1\""},
+             "Superscript"],
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {1.5, -0.07000000000000006}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{2., 0.}, {
+          2.164440747183118, -0.5000000000000593}, {2., -1.}}], 
+          0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox["\<\"ViewMatrix\"\>",
+            BoxRotation->1.5707963267948966`],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {2.0700000000000003`, -0.5}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{2., -1.}, {
+          1.835559252816882, -0.49999999999999994`}, {2., 0.}}], 
+          0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox[
+            TemplateBox[{"\"ViewMatrix\"","\"-1\""},
+             "Superscript"],
+            BoxRotation->1.5707963267948966`],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {1.93, -0.5}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{2., -1.}, {2.5, -0.8355592528179372}, {
+          3., -1.}}], 0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox["\<\"ProjectionMatrix\"\>",
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {2.5, -0.9299999999999999}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{3., -1.}, {2.5, -1.1644407471830105`}, {
+          2., -1.}}], 0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox[
+            TemplateBox[{"\"ProjectionMatrix\"","\"-1\""},
+             "Superscript"],
+            BoxRotation->0.],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {2.5, -1.07}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         ArrowBox[BezierCurveBox[{{
+          0., -1.}, {-0.16444074718311646`, -0.5000000000000018}, {0., 0.}}], 
+          0.030239520958083826`], InsetBox[
+          StyleBox[
+           RotationBox[
+            TemplateBox[{"\"IndexMatrix\"","\"-1\""},
+             "Superscript"],
+            BoxRotation->1.5707963267948966`],
+           StripOnInput->False,
+           FontSize->12,
+           Background->GrayLevel[1]], {-0.07000000000000006, -0.5}, 
+          ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}}, 
+       {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 0.}, 0.1], InsetBox[
+          StyleBox["\<\"Data\"\>",
+           StripOnInput->False,
+           FontSize->12], {0., 0.},
+          BaseStyle->"Graphics"]}, {DiskBox[{1., 0.}, 0.1], InsetBox[
+          StyleBox["\<\"Model\"\>",
+           StripOnInput->False,
+           FontSize->12], {1., 0.},
+          BaseStyle->"Graphics"]}, {DiskBox[{2., 0.}, 0.1], InsetBox[
+          StyleBox["\<\"World\"\>",
+           StripOnInput->False,
+           FontSize->12], {2., 0.},
+          BaseStyle->"Graphics"]}, {DiskBox[{2., -1.}, 0.1], InsetBox[
+          StyleBox["\<\"View\"\>",
+           StripOnInput->False,
+           FontSize->12], {2., -1.},
+          BaseStyle->"Graphics"]}, {DiskBox[{3., -1.}, 0.1], InsetBox[
+          StyleBox["\<\"Clip\"\>",
+           StripOnInput->False,
+           FontSize->12], {3., -1.},
+          BaseStyle->"Graphics"]}, {DiskBox[{0., -1.}, 0.1], InsetBox[
+          StyleBox["\<\"Index\"\>",
+           StripOnInput->False,
+           FontSize->12], {0., -1.},
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->{
+   "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+  FrameTicks->None,
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImagePadding->15,
+  ImageSize->800,
+  Prolog->{
+    RGBColor[0.87, 0.94, 1], 
+    TagBox[
+     DiskBox[{1, 0}, {1.25, 0.25}], "Ellipse"], 
+    GrayLevel[0], 
+    InsetBox[
+     FormBox[
+      StyleBox["\"Spatial\"", 14, StripOnInput -> False], TraditionalForm], {
+     1, 0.17}], 
+    RGBColor[0.87, 0.94, 1], 
+    TagBox[
+     DiskBox[{0, -1}, {0.25, 0.25}], "Ellipse"], 
+    GrayLevel[0], 
+    InsetBox[
+     FormBox[
+      StyleBox["\"Structured\"", 14, StripOnInput -> False], 
+      TraditionalForm], {0, -1.17}], 
+    RGBColor[0.87, 0.94, 1], 
+    TagBox[
+     DiskBox[{2.5, -1.}, {0.7, 0.25}], "Ellipse"], 
+    GrayLevel[0], 
+    InsetBox[
+     FormBox[
+      StyleBox["\"Camera\"", 14, StripOnInput -> False], TraditionalForm], {
+     2.5, -0.83}]}]], "Output",
+ CellChangeTimes->{
+  3.627013735409196*^9, 3.6270137813504343`*^9, {3.627013865867491*^9, 
+   3.6270138836468267`*^9}, {3.6270139142608547`*^9, 3.627013965850531*^9}, {
+   3.627014114355007*^9, 3.627014122208253*^9}, 3.627014184119684*^9, {
+   3.627014221093494*^9, 3.6270142727320957`*^9}, 3.627014313681157*^9, {
+   3.627014344469396*^9, 3.627014385090255*^9}, {3.6270144450688543`*^9, 
+   3.6270145077178307`*^9}, 3.627019353054123*^9, 3.627020643818492*^9, {
+   3.627020980157036*^9, 3.627020994734041*^9}, 3.627022694516267*^9, {
+   3.62702992019387*^9, 3.627029949409534*^9}, 3.627029989656431*^9, 
+   3.627030044051139*^9, 3.627032101310817*^9, 3.627032559351583*^9, 
+   3.627041878936124*^9, 3.627103109637049*^9, 3.6271082247745113`*^9, 
+   3.627108313447378*^9, 3.6271266606535397`*^9, 3.6775574189238553`*^9, 
+   3.6775742437613335`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"g1", "=", 
+  RowBox[{"Grid", "[", 
+   RowBox[{
+    RowBox[{"spaces", "[", 
+     RowBox[{"[", 
+      RowBox[{"All", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "3", ",", "4"}], "}"}]}], "]"}], "]"}], ",", " ", 
+    RowBox[{"Dividers", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"False", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"False", ",", "1"}], "}"}]}], "}"}]}], ",", " ", 
+    RowBox[{"Alignment", "\[Rule]", "Left"}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"g2", "=", 
+  RowBox[{"Grid", "[", 
+   RowBox[{"transforms", ",", " ", 
+    RowBox[{"Dividers", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"False", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"False", ",", "1"}], "}"}]}], "}"}]}], ",", " ", 
+    RowBox[{"Alignment", "\[Rule]", "Left"}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.6775610987259607`*^9, 3.6775611717512627`*^9}, {
+  3.677561212336321*^9, 3.677561237808868*^9}}],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Space\"\>", "\<\"Description\"\>", "\<\"Range\"\>"},
+    {"\<\"Data\"\>", "\<\"raw data numbers\"\>", "\<\"generally (-inf, inf), \
+([0,1] for textures)\"\>"},
+    {"\<\"Model\"\>", "\<\"model space coordinates\"\>", "\<\"(data min, data \
+max)\"\>"},
+    {"\<\"World\"\>", "\<\"world space coordinates\"\>", "\<\"(-inf, \
+inf)\"\>"},
+    {"\<\"View\"\>", "\<\"view space coordinates\"\>", "\<\"(-inf, \
+inf)\"\>"},
+    {"\<\"Clip\"\>", "\<\"clip space coordinates\"\>", "\<\"[-1,1]\"\>"},
+    {"\<\"Index\"\>", "\<\"voxel index coordinates\"\>", "\<\"[0, number of \
+voxels)\"\>"}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxDividers->{"Columns" -> {{False}}, "Rows" -> {False, 1}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{
+  3.6775610720682955`*^9, {3.6775611023573236`*^9, 3.6775611725493426`*^9}, {
+   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247757733*^9}],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"From Space\"\>", "\<\"To Space\"\>", "\<\"Transform\"\>", \
+"\<\"Entity\"\>", "\<\"Member\"\>"},
+    {"\<\"Data\"\>", "\<\"Model\"\>", "\<\"ModelMatrix\"\>", "\<\"const \
+SpatialEntity<N>*\"\>", "\<\"entity_\"\>"},
+    {"\<\"Model\"\>", "\<\"World\"\>", "\<\"WorldMatrix\"\>", "\<\"const \
+SpatialEntity<N>*\"\>", "\<\"entity_\"\>"},
+    {"\<\"World\"\>", "\<\"View\"\>", "\<\"ViewMatrix\"\>", "\<\"const \
+CameraND<N>*\"\>", "\<\"camera_\"\>"},
+    {"\<\"View\"\>", "\<\"Clip\"\>", "\<\"ProjectionMatrix\"\>", "\<\"const \
+CameraND<N>*\"\>", "\<\"camera_\"\>"},
+    {"\<\"Data\"\>", "\<\"Index\"\>", "\<\"IndexMatrix\"\>", "\<\"const \
+StructuredGridEntity<N>*\"\>", "\<\"entity_\"\>"}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxDividers->{"Columns" -> {{False}}, "Rows" -> {False, 1}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{
+  3.6775610720682955`*^9, {3.6775611023573236`*^9, 3.6775611725493426`*^9}, {
+   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247761733*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"ExportString", "[", 
+  RowBox[{
+   RowBox[{"OutputForm", "[", "g1", "]"}], ",", "\"\<Text\>\""}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ExportString", "[", 
+  RowBox[{
+   RowBox[{"OutputForm", "[", "g2", "]"}], ",", "\"\<Text\>\""}], 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.6775593056466713`*^9, 3.677559355113617*^9}, {
+   3.6775606073518286`*^9, 3.677560689130006*^9}, {3.6775607943015213`*^9, 
+   3.677560794797571*^9}, {3.677560837841875*^9, 3.6775609108631763`*^9}, {
+   3.6775609431424046`*^9, 3.6775609600860987`*^9}, {3.677561037767866*^9, 
+   3.677561066479737*^9}, 3.677561191368224*^9, {3.67756125003309*^9, 
+   3.6775612559926863`*^9}}],
+
+Cell[BoxData["\<\"Space   Description               Range\\n\\nData    raw \
+data numbers          generally (-inf, inf), ([0,1] for textures)\\n\\nModel  \
+ model space coordinates   (data min, data max)\\n\\nWorld   world space \
+coordinates   (-inf, inf)\\n\\nView    view space coordinates    (-inf, \
+inf)\\n\\nClip    clip space coordinates    [-1,1]\\n\\nIndex   voxel index \
+coordinates   [0, number of voxels)\\n\"\>"], "Output",
+ CellChangeTimes->{{3.6775593147815847`*^9, 3.677559321156222*^9}, 
+   3.677559355754681*^9, {3.6775606091220055`*^9, 3.6775606895700493`*^9}, 
+   3.677560795727664*^9, 3.6775608407861695`*^9, {3.677560885138604*^9, 
+   3.6775609114232326`*^9}, {3.677560949848075*^9, 3.6775609607681665`*^9}, {
+   3.677561038341923*^9, 3.6775610743565245`*^9}, 3.6775611921683044`*^9, 
+   3.6775612564017267`*^9, 3.677574252507208*^9}],
+
+Cell[BoxData["\<\"From Space   To Space   Transform          Entity           \
+                Member\\n\\nData         Model      ModelMatrix        const \
+SpatialEntity<N>*          entity_\\n\\nModel        World      WorldMatrix   \
+     const SpatialEntity<N>*          entity_\\n\\nWorld        View       \
+ViewMatrix         const CameraND<N>*               camera_\\n\\nView         \
+Clip       ProjectionMatrix   const CameraND<N>*               \
+camera_\\n\\nData         Index      IndexMatrix        const \
+StructuredGridEntity<N>*   entity_\\n\"\>"], "Output",
+ CellChangeTimes->{{3.6775593147815847`*^9, 3.677559321156222*^9}, 
+   3.677559355754681*^9, {3.6775606091220055`*^9, 3.6775606895700493`*^9}, 
+   3.677560795727664*^9, 3.6775608407861695`*^9, {3.677560885138604*^9, 
+   3.6775609114232326`*^9}, {3.677560949848075*^9, 3.6775609607681665`*^9}, {
+   3.677561038341923*^9, 3.6775610743565245`*^9}, 3.6775611921683044`*^9, 
+   3.6775612564017267`*^9, 3.6775742525092077`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FindTransform", "[", 
+   RowBox[{"from_", ",", " ", "to_"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"path", ",", "trans"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"path", "=", 
+      RowBox[{"FindShortestPath", "[", 
+       RowBox[{"graph", ",", "from", ",", "to"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"trans", "=", 
+      RowBox[{
+       RowBox[{"EdgeList", "[", 
+        RowBox[{"PathGraph", "[", 
+         RowBox[{"path", ",", 
+          RowBox[{"DirectedEdges", "\[Rule]", "True"}]}], "]"}], "]"}], "/.", 
+       " ", "\[IndentingNewLine]", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"transforms", "[", 
+          RowBox[{"[", 
+           RowBox[{"2", ";;"}], "]"}], "]"}], "/.", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"f_", "?", "StringQ"}], ",", 
+            RowBox[{"t_", "?", "StringQ"}], ",", "transform_", ",", "x_", ",",
+             "y_"}], "}"}], "\[RuleDelayed]", 
+          RowBox[{"Sequence", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"f", " ", "\[DirectedEdge]", "t"}], "\[Rule]", 
+             "transform"}], ",", 
+            RowBox[{
+             RowBox[{"t", "\[DirectedEdge]", "f"}], "\[Rule]", 
+             RowBox[{"Inv", "[", "transform", "]"}]}]}], "]"}]}]}], ")"}]}]}],
+      ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+      "Apply", " ", "the", " ", "matrices", " ", "in", " ", "the", " ", 
+       "oposite", " ", "order"}], " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"Reverse", "[", "trans", "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{"Avoid", " ", "calculating", " ", "inverses", " ", 
+        RowBox[{"A", "^", 
+         RowBox[{"-", "1"}]}], "*", 
+        RowBox[{"B", "^", 
+         RowBox[{"-", "1"}]}]}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"B", "*", "B"}], ")"}], "^", 
+        RowBox[{"-", "1"}]}]}], " ", "*)"}], " ", "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"trans", "//.", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"x___", ",", 
+          RowBox[{"Inv", "[", "A_", "]"}], ",", 
+          RowBox[{"Inv", "[", "B_", "]"}], ",", "y___"}], "}"}], 
+        "\[RuleDelayed]", 
+        RowBox[{"{", 
+         RowBox[{"x", ",", 
+          RowBox[{"Inv", "[", 
+           RowBox[{"{", 
+            RowBox[{"B", ",", "A"}], "}"}], "]"}], ",", "y"}], "}"}]}]}]}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"Add", " ", "function", " ", "calls"}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"trans", "/.", 
+       RowBox[{
+        RowBox[{"x_", "?", "StringQ"}], ":>", 
+        RowBox[{"\"\<get\>\"", "<>", "x", "<>", "\"\<()\>\""}]}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"Apply", " ", "multipilcation"}], " ", "*)"}], " ", 
+     "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"trans", "//.", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"A_", "?", "StringQ"}], "}"}], "\[RuleDelayed]", "A"}], 
+         ",", " ", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"x___", ",", 
+            RowBox[{"A_", "?", "StringQ"}], ",", 
+            RowBox[{"B_", "?", "StringQ"}], ",", "y___"}], "}"}], 
+          "\[RuleDelayed]", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", 
+            RowBox[{"A", "<>", "\"\<*\>\"", "<>", "B"}], ",", "y"}], 
+           "}"}]}]}], "}"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"Call", " ", "inv"}], " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"trans", "/.", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Inv", "[", "x_", "]"}], "\[RuleDelayed]", 
+         RowBox[{"\"\<MatrixInvert(\>\"", "<>", "x", "<>", "\"\<)\>\""}]}], 
+        "}"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"Apply", " ", "multipilcation"}], " ", "*)"}], " ", 
+     "\[IndentingNewLine]", 
+     RowBox[{"trans", " ", "=", " ", 
+      RowBox[{"trans", "//.", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"A_", "?", "StringQ"}], "}"}], "\[RuleDelayed]", "A"}], 
+         ",", " ", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"x___", ",", 
+            RowBox[{"A_", "?", "StringQ"}], ",", 
+            RowBox[{"B_", "?", "StringQ"}], ",", "y___"}], "}"}], 
+          "\[RuleDelayed]", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", 
+            RowBox[{"A", "<>", "\"\<*\>\"", "<>", "B"}], ",", "y"}], 
+           "}"}]}]}], "}"}]}]}], ";", "\[IndentingNewLine]", "trans"}]}], " ",
+    "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.6267641696621647`*^9, 3.62676430450838*^9}, {
+  3.626764416752842*^9, 3.62676445821292*^9}, {3.626765319711173*^9, 
+  3.626765321374365*^9}, {3.6267654551802197`*^9, 3.626765657878249*^9}, {
+  3.626769164958419*^9, 3.626769228337826*^9}, {3.6267824733027143`*^9, 
+  3.626782546813094*^9}, {3.626782590364966*^9, 3.6267826131656322`*^9}, {
+  3.626782668992674*^9, 3.62678267238284*^9}, {3.6267827061813517`*^9, 
+  3.626782864930951*^9}, {3.626782996250383*^9, 3.6267831242401953`*^9}, {
+  3.626783181819662*^9, 3.6267831925092983`*^9}, {3.6270133789791393`*^9, 
+  3.627013443069194*^9}, {3.627014594125594*^9, 3.627014596104596*^9}, {
+  3.6270300585396957`*^9, 3.62703006142625*^9}, {3.627042611440069*^9, 
+  3.627042619781218*^9}, {3.627043342695414*^9, 3.627043347349929*^9}, {
+  3.6271083350715404`*^9, 3.6271083396149945`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TableForm", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"#", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], ",", 
+       RowBox[{"#", "[", 
+        RowBox[{"[", "2", "]"}], "]"}], ",", 
+       RowBox[{"FindTransform", "@@", "#"}]}], "}"}], "&"}], "/@", 
+    RowBox[{"Permutations", "[", 
+     RowBox[{
+      RowBox[{"spaces", "[", 
+       RowBox[{"[", 
+        RowBox[{
+         RowBox[{"2", ";;"}], ",", "1"}], "]"}], "]"}], ",", 
+      RowBox[{"{", "2", "}"}]}], "]"}]}], ",", 
+   RowBox[{"TableHeadings", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"None", ",", 
+      RowBox[{"{", 
+       RowBox[{"\"\<From\>\"", ",", "\"\<To\>\"", ",", "\"\<Operation\>\""}], 
+       "}"}]}], "}"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.626764538394209*^9, 3.6267645585836697`*^9}, 
+   3.626764589246735*^9, {3.626764744496954*^9, 3.62676476779539*^9}, {
+   3.626765041936873*^9, 3.6267650444035883`*^9}, {3.626782635286623*^9, 
+   3.6267826455951443`*^9}, {3.626783276498507*^9, 3.626783278451229*^9}, {
+   3.627014599704565*^9, 3.627014633364355*^9}, {3.627014783533242*^9, 
+   3.627014845953301*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      TagBox["\<\"From\"\>",
+       HoldForm], 
+      TagBox["\<\"To\"\>",
+       HoldForm], 
+      TagBox["\<\"Operation\"\>",
+       HoldForm]},
+     {"\<\"Data\"\>", "\<\"Model\"\>", "\<\"getModelMatrix()\"\>"},
+     {"\<\"Data\"\>", "\<\"World\"\>", "\<\"getWorldMatrix()*getModelMatrix()\
+\"\>"},
+     {"\<\"Data\"\>", "\<\"View\"\>", \
+"\<\"getViewMatrix()*getWorldMatrix()*getModelMatrix()\"\>"},
+     {"\<\"Data\"\>", "\<\"Clip\"\>", \
+"\<\"getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()\"\
+\>"},
+     {"\<\"Data\"\>", "\<\"Index\"\>", "\<\"getIndexMatrix()\"\>"},
+     {"\<\"Model\"\>", "\<\"Data\"\>", \
+"\<\"MatrixInvert(getModelMatrix())\"\>"},
+     {"\<\"Model\"\>", "\<\"World\"\>", "\<\"getWorldMatrix()\"\>"},
+     {"\<\"Model\"\>", "\<\"View\"\>", \
+"\<\"getViewMatrix()*getWorldMatrix()\"\>"},
+     {"\<\"Model\"\>", "\<\"Clip\"\>", \
+"\<\"getProjectionMatrix()*getViewMatrix()*getWorldMatrix()\"\>"},
+     {"\<\"Model\"\>", "\<\"Index\"\>", \
+"\<\"getIndexMatrix()*MatrixInvert(getModelMatrix())\"\>"},
+     {"\<\"World\"\>", "\<\"Data\"\>", \
+"\<\"MatrixInvert(getWorldMatrix()*getModelMatrix())\"\>"},
+     {"\<\"World\"\>", "\<\"Model\"\>", "\<\"MatrixInvert(getWorldMatrix())\"\
+\>"},
+     {"\<\"World\"\>", "\<\"View\"\>", "\<\"getViewMatrix()\"\>"},
+     {"\<\"World\"\>", "\<\"Clip\"\>", \
+"\<\"getProjectionMatrix()*getViewMatrix()\"\>"},
+     {"\<\"World\"\>", "\<\"Index\"\>", \
+"\<\"getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix())\"\>"},
+     {"\<\"View\"\>", "\<\"Data\"\>", \
+"\<\"MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix())\"\>"},
+     {"\<\"View\"\>", "\<\"Model\"\>", \
+"\<\"MatrixInvert(getViewMatrix()*getWorldMatrix())\"\>"},
+     {"\<\"View\"\>", "\<\"World\"\>", \
+"\<\"MatrixInvert(getViewMatrix())\"\>"},
+     {"\<\"View\"\>", "\<\"Clip\"\>", "\<\"getProjectionMatrix()\"\>"},
+     {"\<\"View\"\>", "\<\"Index\"\>", \
+"\<\"getIndexMatrix()*MatrixInvert(getViewMatrix()*getWorldMatrix()*\
+getModelMatrix())\"\>"},
+     {"\<\"Clip\"\>", "\<\"Data\"\>", \
+"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*\
+getModelMatrix())\"\>"},
+     {"\<\"Clip\"\>", "\<\"Model\"\>", \
+"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix())\"\>\
+"},
+     {"\<\"Clip\"\>", "\<\"World\"\>", \
+"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix())\"\>"},
+     {"\<\"Clip\"\>", "\<\"View\"\>", \
+"\<\"MatrixInvert(getProjectionMatrix())\"\>"},
+     {"\<\"Clip\"\>", "\<\"Index\"\>", \
+"\<\"getIndexMatrix()*MatrixInvert(getProjectionMatrix()*getViewMatrix()*\
+getWorldMatrix()*getModelMatrix())\"\>"},
+     {"\<\"Index\"\>", "\<\"Data\"\>", \
+"\<\"MatrixInvert(getIndexMatrix())\"\>"},
+     {"\<\"Index\"\>", "\<\"Model\"\>", \
+"\<\"getModelMatrix()*MatrixInvert(getIndexMatrix())\"\>"},
+     {"\<\"Index\"\>", "\<\"World\"\>", \
+"\<\"getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix())\"\>"},
+     {"\<\"Index\"\>", "\<\"View\"\>", \
+"\<\"getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(\
+getIndexMatrix())\"\>"},
+     {"\<\"Index\"\>", "\<\"Clip\"\>", \
+"\<\"getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*\
+MatrixInvert(getIndexMatrix())\"\>"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxDividers->{
+     "Columns" -> {{False}}, "ColumnsIndexed" -> {}, 
+      "Rows" -> {False, True, {False}, False}, "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[2.0999999999999996`]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   {None, OutputFormsDump`HeadedColumns}],
+  Function[BoxForm`e$, 
+   TableForm[
+   BoxForm`e$, 
+    TableHeadings -> {None, {"From", "To", "Operation"}}]]]], "Output",
+ CellChangeTimes->{
+  3.626764590829843*^9, {3.6267647480490313`*^9, 3.626764769564176*^9}, 
+   3.6267650448468657`*^9, 3.626765332902791*^9, {3.626765640908639*^9, 
+   3.6267656612940474`*^9}, 3.626769230744665*^9, 3.626782646253187*^9, {
+   3.626783158346345*^9, 3.62678319490903*^9}, 3.626783279058988*^9, {
+   3.62701460132333*^9, 3.627014634392804*^9}, 3.627014792507823*^9, {
+   3.627014832998201*^9, 3.627014846710843*^9}, 3.62701979229564*^9, 
+   3.627021034382331*^9, 3.627022702689829*^9, {3.627030045731987*^9, 
+   3.627030063157319*^9}, 3.627032103878377*^9, 3.6270325617518053`*^9, 
+   3.6270426251208963`*^9, 3.6270433497596827`*^9, 3.627103115859671*^9, 
+   3.627108342857319*^9, 3.6271266656965394`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ivwclass", "=", 
+   RowBox[{
+   "StringTemplate", "[", "\[IndentingNewLine]", 
+    "\"\</********************************************************************\
+*************\n *\n * Inviwo - Interactive Visualization Workshop\n *\n * \
+Copyright (c) 2012-2016 Inviwo Foundation\n * All rights reserved.\n *\n * \
+Redistribution and use in source and binary forms, with or without\n * \
+modification, are permitted provided that the following conditions are met:\n \
+*\n * 1. Redistributions of source code must retain the above copyright \
+notice, this\n * list of conditions and the following disclaimer.\n * 2. \
+Redistributions in binary form must reproduce the above copyright notice,\n * \
+this list of conditions and the following disclaimer in the documentation\n * \
+and/or other materials provided with the distribution.\n *\n * THIS SOFTWARE \
+IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \\\"AS IS\\\" AND\n * \
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\
+\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n \
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE \
+FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \
+CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF \
+SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS \
+INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN \
+CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) \
+ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF \
+THE POSSIBILITY OF SUCH DAMAGE.\n *\n \
+******************************************************************************\
+***/\n\n#ifndef IVW_COORDINATETRANSFORMER_H\n#define \
+IVW_COORDINATETRANSFORMER_H\n\n#include \
+<inviwo/core/common/inviwocoredefine.h>\n#include \
+<inviwo/core/common/inviwo.h>\n#include <inviwo/core/datastructures/camera.h>\
+\n\nnamespace inviwo {\n\n/**\n * This file is auto generated using \
+tools/codegen/coordinatetransforms.nb\n *\n * Space   Description             \
+  Range\n * \
+==============================================================================\
+=====\n * Data    raw data numbers          generally (-inf, inf), ([0,1] for \
+textures)\n * Model   model space coordinates   (data min, data max)\n * \
+World   world space coordinates   (-inf, inf)\n * View    view space \
+coordinates    (-inf, inf)\n * Clip    clip space coordinates    [-1,1]\n * \
+Index   voxel index coordinates   [0, number of voxels)\n * \n * From Space   \
+To Space   Transform          Entity                           Member\n * \
+==============================================================================\
+=====\n * Data         Model      ModelMatrix        const SpatialEntity<N>*  \
+        entity_\n * Model        World      WorldMatrix        const \
+SpatialEntity<N>*          entity_\n * World        View       ViewMatrix     \
+    const CameraND<N>*               camera_\n * View         Clip       \
+ProjectionMatrix   const CameraND<N>*               camera_\n * Data         \
+Index      IndexMatrix        const StructuredGridEntity<N>*   entity_\n *    \
+                                                                              \
+                                                                              \
+             \n *                                                             \
+                           \n *  \:250c\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\:2510                         \n *  \[VerticalLine]         \
+                 Spatial                          \[VerticalLine]             \
+            \n *  \[VerticalLine]               ModelM.               WorldM. \
+              \[VerticalLine]                         \n *  \[VerticalLine]   \
+\:250c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[FilledRightTriangle]\:250c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[FilledRightTriangle]\
+\:250c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510   \
+\[VerticalLine]                         \n *  \[VerticalLine]   \
+\[VerticalLine]        \[VerticalLine]           \[VerticalLine]        \
+\[VerticalLine]            \[VerticalLine]        \[VerticalLine]   \
+\[VerticalLine]                         \n *  \[VerticalLine]   \
+\[VerticalLine]  Data  \[VerticalLine]           \[VerticalLine] Model  \
+\[VerticalLine]            \[VerticalLine] World  \[VerticalLine]   \
+\[VerticalLine]                         \n *  \[VerticalLine]   \
+\[VerticalLine]        \[VerticalLine] ModelM.-1 \[VerticalLine]        \
+\[VerticalLine]  WorldM.-1 \[VerticalLine]        \[VerticalLine]   \
+\[VerticalLine]                         \n *  \[VerticalLine]   \:2514\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518\
+\[FilledLeftTriangle]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2514\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518\[FilledLeftTriangle]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2514\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518   \[VerticalLine]   \
+                      \n *  \[VerticalLine]   \[VerticalLine]        \
+\[FilledUpTriangle]                                 \[VerticalLine]        \
+\[FilledUpTriangle]   \[VerticalLine]                         \n *  \:2514\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:253c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]   \:253c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\:2518                         \n *      \[VerticalLine]      I \
+\[VerticalLine]                                 \[VerticalLine]      V \
+\[VerticalLine]                             \n *    I \[VerticalLine]      n \
+\[VerticalLine]                               V \[VerticalLine]      i \
+\[VerticalLine]                             \n *    n \[VerticalLine]      d \
+\[VerticalLine]                               i \[VerticalLine]      e \
+\[VerticalLine]                             \n *    d \[VerticalLine]      e \
+\[VerticalLine]                               e \[VerticalLine]      w \
+\[VerticalLine]                             \n *    e \[VerticalLine]      x \
+\[VerticalLine]                               w \[VerticalLine]      M \
+\[VerticalLine]                             \n *    x \[VerticalLine]      M \
+\[VerticalLine]                               M \[VerticalLine]      - \
+\[VerticalLine]                             \n *    M \[VerticalLine]      - \
+\[VerticalLine]                                 \[VerticalLine]      1 \
+\[VerticalLine]                             \n *      \[VerticalLine]      1 \
+\[VerticalLine]                                 \[VerticalLine]        \
+\[VerticalLine]                             \n *  \:250c\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\:2510                        \:250c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:253c\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\n *  \
+\[VerticalLine]   \[VerticalLine]        \[VerticalLine]    \[VerticalLine]   \
+                     \[VerticalLine]   \[VerticalLine]        \[VerticalLine] \
+                           \[VerticalLine]\n *  \[VerticalLine]   \
+\[FilledDownTriangle]        \[VerticalLine]    \[VerticalLine]               \
+         \[VerticalLine]   \[FilledDownTriangle]        \[VerticalLine]  \
+ProjectionM               \[VerticalLine]\n *  \[VerticalLine]   \:250c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510    \
+\[VerticalLine]                        \[VerticalLine]   \:250c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[FilledRightTriangle]\:250c\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510   \
+\[VerticalLine]\n *  \[VerticalLine]   \[VerticalLine]        \[VerticalLine] \
+   \[VerticalLine]                        \[VerticalLine]   \[VerticalLine]   \
+     \[VerticalLine]               \[VerticalLine]        \[VerticalLine]   \
+\[VerticalLine]\n *  \[VerticalLine]   \[VerticalLine] Index  \[VerticalLine] \
+   \[VerticalLine]                        \[VerticalLine]   \[VerticalLine]  \
+View  \[VerticalLine]               \[VerticalLine]  Clip  \[VerticalLine]   \
+\[VerticalLine]\n *  \[VerticalLine]   \[VerticalLine]        \[VerticalLine] \
+   \[VerticalLine]                        \[VerticalLine]   \[VerticalLine]   \
+     \[VerticalLine] ProjectionM-1 \[VerticalLine]        \[VerticalLine]   \
+\[VerticalLine]\n *  \[VerticalLine]   \:2514\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518    \[VerticalLine]  \
+                      \[VerticalLine]   \:2514\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518\[FilledLeftTriangle]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\:2514\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\:2518   \[VerticalLine]\n *  \
+\[VerticalLine]                 \[VerticalLine]                        \
+\[VerticalLine]                                         \[VerticalLine]\n *  \
+\[VerticalLine]   Structured    \[VerticalLine]                        \
+\[VerticalLine]                 Camera                  \[VerticalLine]\n *  \
+\:2514\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\:2518                        \:2514\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2518\n \
+*/\n\ntemplate <unsigned int N>\nclass SpatialEntity;\n\ntemplate <unsigned \
+int N>\nclass StructuredGridEntity;\n\nnamespace util {\n\nclass Camera2D {\n\
+public:\n    Camera2D() : view_(1.0f), projection_(1.0f) {}\n    const \
+Matrix<3, float>& getViewMatrix() const { return view_; }\n    const \
+Matrix<3, float>& getProjectionMatrix() const { return projection_; }\n\n\
+private:\n    Matrix<3, float> view_;\n    Matrix<3, float> projection_;\n};\n\
+\ntemplate <unsigned int N>\nstruct cameratype {};\n\ntemplate <>\nstruct \
+cameratype<2> {\n    typedef Camera2D type;\n};\n\ntemplate <>\nstruct \
+cameratype<3> {\n    typedef Camera type;\n};\n}\ntemplate <unsigned int N>\n\
+using CameraND = typename util::cameratype<N>::type;\n\nenum class \
+CoordinateSpace {\n    Data, Model, World, Index, Clip, View\n};\n\ntemplate \
+<class Elem, class Traits>\nstd::basic_ostream<Elem, Traits>& \
+operator<<(std::basic_ostream<Elem, Traits>& ss,\n                            \
+                 CoordinateSpace s) {\n    switch (s) {\n        case \
+CoordinateSpace::Data:\n            ss << \\\"Data\\\";\n            break;\n \
+       case CoordinateSpace::Model:\n            ss << \\\"Model\\\";\n       \
+     break;\n        case CoordinateSpace::World:\n            ss << \
+\\\"World\\\";\n            break;\n        case CoordinateSpace::Index:\n    \
+        ss << \\\"Index\\\";\n            break;\n        case \
+CoordinateSpace::Clip:\n            ss << \\\"Clip\\\";\n            break;\n \
+       case CoordinateSpace::View:\n            ss << \\\"View\\\";\n         \
+   break;\n    }\n    return ss;\n}\n\n`content`\n\n} // namespace\n\n#endif \
+// IVW_COORDINATETRANSFORMER_H\n\>\"", "\n", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.6775629781548853`*^9, 3.6775629887489443`*^9}, {
+   3.6775630200910783`*^9, 3.6775633486649323`*^9}, {3.6775688374297543`*^9, 
+   3.6775688861826286`*^9}, {3.677569736658668*^9, 3.67756979078008*^9}, {
+   3.677570570290023*^9, 3.677570604609454*^9}, 3.677571242088196*^9, 
+   3.677571289264913*^9, 3.6775726484278154`*^9, {3.6775728937593465`*^9, 
+   3.6775729012740974`*^9}, {3.6775742620881653`*^9, 
+   3.6775742949524517`*^9}, {3.6775757529472365`*^9, 3.677575757970739*^9}, {
+   3.677577076519581*^9, 3.677577105956524*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "ApplyTemplate", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"ApplyTemplate", "[", 
+     RowBox[{"t_", ",", "sel_", ",", 
+      RowBox[{"dict_:", 
+       RowBox[{"<|", "|>"}]}], ",", 
+      RowBox[{"alias_:", 
+       RowBox[{"{", "}"}]}]}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"keys", ",", "assoc", ",", "pairs"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"keys", " ", "=", " ", 
+        RowBox[{"t", "/.", 
+         RowBox[{
+          RowBox[{"TemplateObject", "[", 
+           RowBox[{"x_", ",", "___"}], "]"}], "\[RuleDelayed]", 
+          RowBox[{"Cases", "[", 
+           RowBox[{"x", ",", 
+            RowBox[{
+             RowBox[{"TemplateSlot", "[", "s_", "]"}], "\[RuleDelayed]", 
+             "s"}]}], "]"}]}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pairs", "=", 
+        RowBox[{"Permutations", "[", 
+         RowBox[{"sel", ",", 
+          RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"TemplateApply", "@", 
+        RowBox[{"TemplateSequence", "[", 
+         RowBox[{"t", ",", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"assoc", "=", 
+            RowBox[{"Table", "[", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"Join", "[", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"pair", "/.", 
+                 RowBox[{
+                  RowBox[{"{", 
+                   RowBox[{"from_", ",", "to_"}], "}"}], ":>", 
+                  RowBox[{"<|", " ", 
+                   RowBox[{"Map", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"#", "\[Rule]", 
+                    RowBox[{"spacedict", "@@", 
+                    RowBox[{"StringSplit", "[", 
+                    RowBox[{"#", ",", 
+                    RowBox[{
+                    RowBox[{"x", ":", 
+                    RowBox[{"(", 
+                    RowBox[{"\"\<from\>\"", "|", "\"\<to\>\""}], ")"}]}], 
+                    "\[RuleDelayed]", 
+                    RowBox[{"(", 
+                    RowBox[{"x", "/.", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"\"\<from\>\"", "\[Rule]", "from"}], ",", 
+                    RowBox[{"\"\<to\>\"", "\[Rule]", "to"}]}], "}"}]}], 
+                    ")"}]}]}], "]"}]}]}], "&"}], ",", "keys"}], "]"}], 
+                   "|>"}]}]}], ",", "\[IndentingNewLine]", 
+                RowBox[{"pair", "/.", 
+                 RowBox[{
+                  RowBox[{"{", 
+                   RowBox[{"from_", ",", "to_"}], "}"}], "\[RuleDelayed]", 
+                  RowBox[{"<|", 
+                   RowBox[{"\"\<implementation\>\"", "->", 
+                    RowBox[{"FindTransform", "[", 
+                    RowBox[{"from", ",", "to"}], "]"}]}], "|>"}]}]}], ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{"KeyDrop", "[", 
+                 RowBox[{"dict", ",", 
+                  RowBox[{"{", 
+                   RowBox[{"\"\<alias\>\"", ",", "\"\<selection\>\""}], 
+                   "}"}]}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{"pair", ",", "pairs"}], "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Union", "[", 
+            RowBox[{"assoc", ",", 
+             RowBox[{"Map", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"#", "/.", "alias"}], "&"}], ",", "assoc", ",", 
+               RowBox[{"{", "2", "}"}]}], "]"}]}], "]"}]}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformTemplate", " ", "=", " ", 
+    RowBox[{
+    "StringTemplate", "[", "\[IndentingNewLine]", 
+     "\"\<    /**\n     * Returns the matrix transformation mapping from \
+`fromDescription`\n     * to `toDescription`, i.e. from `fromRange` to \
+`toRange`\n     */\n    virtual const Matrix<N+1, float> \
+get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformTemplateSlim", " ", "=", " ", 
+    RowBox[{
+    "StringTemplate", "[", "\[IndentingNewLine]", 
+     "\"\<    virtual const Matrix<N+1, float> \
+get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"classTemplate", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+       "\"\<template<unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<class \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        RowBox[{"TemplateIf", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], "!=", 
+           "\"\<\[LongDash]\>\""}], ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\< : public \>\"", ",", 
+            RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], ",", 
+            "\"\<<N>\>\""}], "}"}]}], "]"}], ",", "\"\< {\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<public:\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<    virtual ~\>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<() = default;\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<    virtual \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>* clone() const = 0;\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<    /**\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<     * Returns the matrix transformation mapping from \\\"from\\\
+\" coordinates\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<     * to \\\"to\\\" coordinates\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<     */\\n\>\"", ",", 
+        "\[IndentingNewLine]", 
+        "\"\<    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, \
+CoordinateSpace to) const;\\n\>\"", ",", "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
+        "\"\<\\n\>\"", ",", "\[IndentingNewLine]", "\"\<};\>\""}], 
+       "\[IndentingNewLine]", "}"}], ",", 
+      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], "]"}]}], ";"}],
+   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformTemplateDecl", " ", "=", " ", 
+    RowBox[{
+    "StringTemplate", "[", "\[IndentingNewLine]", 
+     "\"\<    virtual const Matrix<N+1, float> \
+get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
+    ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"getterTemplateDecl", " ", "=", " ", 
+    RowBox[{
+    "StringTemplate", "[", "\[IndentingNewLine]", 
+     "\"\<    virtual const Matrix<N+1, float> get`transform`() const;\>\"", 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"getterTemplateImpl", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+       "\"\<template <unsigned int N>\\nconst Matrix<N+1, float> \>\"", ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>::get\>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<transform\>\"", "]"}], ",", 
+        "\"\<() const {\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<    return \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<member\>\"", "]"}], ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<op\>\"", "]"}], ",", "\"\<get\>\"", 
+        ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<transform\>\"", "]"}], ",", 
+        "\"\<();\\n\>\"", ",", "\[IndentingNewLine]", "\"\<}\>\""}], "}"}], 
+      ",", "\[IndentingNewLine]", 
+      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], "]"}]}], ";"}],
+   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformTemplateImpl", " ", "=", " ", 
+    RowBox[{"StringTemplate", "[", "\[IndentingNewLine]", 
+     RowBox[{"StringJoin", "[", 
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+       "\"\<template <unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<const Matrix<N+1, float> \
+`name`Impl<N>::get`fromSpace`To`toSpace`Matrix() const {\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<    return `implementation`;\\n\>\"", ",",
+         "\[IndentingNewLine]", "\"\<}\\n\>\""}], "}"}], 
+      "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"memberSetTemplateDecl", " ", "=", 
+   RowBox[{
+   "StringTemplate", "[", " ", 
+    "\"\<    void set`Member`(`type`& `member`);\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"memberSetTemplateImpl", " ", "=", 
+    RowBox[{
+    "StringTemplate", "[", " ", "\[IndentingNewLine]", 
+     "\"\<template <unsigned int N>\nvoid `name`Impl<N>::set`Member`(`type`& \
+`member`) {\n    `member`_ = &`member`;\n}\>\"", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"classTemplateImplDecl", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{
+      "\"\<template<unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<class \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       RowBox[{"TemplateIf", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], "!=", 
+          "\"\<\[LongDash]\>\""}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\"\< : public \>\"", ",", 
+           RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], ",", 
+           "\"\<<N>\>\""}], "}"}]}], "]"}], ",", "\"\< {\\n\>\"", ",", 
+       "\[IndentingNewLine]", "\"\<public:\\n\>\"", ",", 
+       "\[IndentingNewLine]", "\"\<    \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", "\"\<(\>\"", 
+       ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<constructorargs\>\"", "]"}], ",", 
+       "\"\<);\\n\>\"", ",", "\[IndentingNewLine]", "\"\<    \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<(const \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<<N>& rhs) = default;\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<    \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<<N>& operator=(const \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<<N>& that) = default;\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<    virtual \>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<<N>* clone() const;\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<    virtual ~\>\"", ",", 
+       RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+       "\"\<(){}\\n\\n\>\"", ",", "\[IndentingNewLine]", 
+       RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
+       "\"\<\\n\\n\>\"", ",", "\[IndentingNewLine]", "\"\<protected:\\n\>\"", 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"TemplateSlot", "[", "\"\<getters\>\"", "]"}], ",", 
+       "\"\<\\n\\n\>\"", ",", "\[IndentingNewLine]", "\"\<private:\\n\>\"", 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"TemplateSlot", "[", "\"\<members\>\"", "]"}], ",", 
+       "\"\<\\n\>\"", ",", "\[IndentingNewLine]", "\"\<};\\n\>\""}], "}"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"classTemplateImplImpl", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+       "\"\</*****************************************************************\
+****************\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\< *  Implementations\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\< *  \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\< ****************************************************************\
+*****************/\\n\>\"", ",", "\[IndentingNewLine]", "\"\<\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<template<unsigned int N>\\n\>\"", ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>::\>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", "\"\<(\>\"", 
+        ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<constructorargs\>\"", "]"}], ",", 
+        "\"\<)\\n\>\"", ",", "\[IndentingNewLine]", 
+        RowBox[{"TemplateIf", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], "!=", 
+           "\"\<\[LongDash]\>\""}], ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\<    : \>\"", ",", 
+            RowBox[{"TemplateSlot", "[", "\"\<base\>\"", "]"}], " ", ",", 
+            "\"\<<N>()\\n    , \>\""}], "}"}], ",", "\"\<    : \>\""}], "]"}],
+         ",", "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<initmember\>\"", "]"}], ",", 
+        "\"\< {}\\n\>\"", ",", "\[IndentingNewLine]", "\"\<\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<template<unsigned int N>\\n\>\"", ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>* \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>::clone() const {\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<    return new \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>(*this);\\n\>\"", ",", "\[IndentingNewLine]", "\"\<}\\n\>\"", 
+        ",", "\[IndentingNewLine]", "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<implementation\>\"", "]"}]}], 
+       "\[IndentingNewLine]", "}"}], ",", 
+      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], "]"}]}], ";"}],
+   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"spatial", " ", "=", " ", 
+   RowBox[{"<|", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+     "\"\<name\>\"", "\[Rule]", "\"\<SpatialCoordinateTransformer\>\""}], ",",
+      "\[IndentingNewLine]", 
+     RowBox[{"\"\<args\>\"", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"\"\<const SpatialEntity<N>\>\"", ",", "\"\<entity\>\""}], 
+        "}"}], "}"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"\"\<selection\>\"", "->", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Data\>\"", ",", "\"\<Model\>\"", ",", "\"\<World\>\""}], 
+       "}"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"\"\<alias\>\"", "\[Rule]", 
+      RowBox[{"{", "}"}]}]}], "\[IndentingNewLine]", "|>"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"structured", " ", "=", 
+   RowBox[{"<|", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+     "\"\<name\>\"", "\[Rule]", "\"\<StructuredCoordinateTransformer\>\""}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"\"\<base\>\"", "\[Rule]", 
+      RowBox[{"spatial", "[", "\"\<name\>\"", "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"\"\<args\>\"", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<const StructuredGridEntity<N>\>\"", ",", "\"\<entity\>\""}], 
+        "}"}], "}"}]}], ",", "\[IndentingNewLine]", " ", 
+     RowBox[{"\"\<selection\>\"", "->", " ", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Index\>\"", ",", "\"\<Data\>\"", ",", "\"\<Model\>\"", ",", 
+        "\"\<World\>\""}], "}"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"\"\<alias\>\"", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Data\>\"", "->", "\"\<Texture\>\""}], "}"}]}]}], 
+    "\[IndentingNewLine]", "|>"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"camera", "=", 
+   RowBox[{"<|", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+     "\"\<name\>\"", "\[Rule]", 
+      "\"\<SpatialCameraCoordinateTransformer\>\""}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"\"\<base\>\"", "\[Rule]", 
+      RowBox[{"spatial", "[", "\"\<name\>\"", "]"}]}], ",", " ", 
+     "\[IndentingNewLine]", 
+     RowBox[{"\"\<args\>\"", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"\"\<const SpatialEntity<N>\>\"", ",", "\"\<entity\>\""}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"\"\<const CameraND<N>\>\"", ",", "\"\<camera\>\""}], 
+         "}"}]}], "}"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"\"\<selection\>\"", "->", " ", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Data\>\"", ",", "\"\<Model\>\"", ",", "\"\<World\>\"", ",", 
+        "\"\<View\>\"", ",", "\"\<Clip\>\""}], "}"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"\"\<alias\>\"", "\[Rule]", 
+      RowBox[{"{", "}"}]}]}], "\[IndentingNewLine]", "|>"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"structuredcamera", "=", 
+    RowBox[{"<|", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+      "\"\<name\>\"", "\[Rule]", 
+       "\"\<StructuredCameraCoordinateTransformer\>\""}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"\"\<base\>\"", "->", 
+       RowBox[{"camera", "[", "\"\<name\>\"", "]"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"\"\<args\>\"", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<const StructuredGridEntity<N>\>\"", ",", "\"\<entity\>\""}], 
+          "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\"\<const CameraND<N>\>\"", ",", "\"\<camera\>\""}], 
+          "}"}]}], "}"}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"\"\<selection\>\"", "->", " ", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Index\>\"", ",", "\"\<Data\>\"", ",", "\"\<Model\>\"", ",", 
+         "\"\<World\>\"", ",", "\"\<View\>\"", ",", "\"\<Clip\>\""}], "}"}]}],
+       ",", "\[IndentingNewLine]", 
+      RowBox[{"\"\<alias\>\"", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{"\"\<Data\>\"", "->", "\"\<Texture\>\""}], "}"}]}]}], 
+     "\[IndentingNewLine]", "|>"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ClearAll", "[", "LowerCaseFirstLetter", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"LowerCaseFirstLetter", "[", "x_", "]"}], ":=", " ", 
+   RowBox[{
+    RowBox[{"ToLowerCase", "[", 
+     RowBox[{"StringTake", "[", 
+      RowBox[{"x", ",", "1"}], "]"}], "]"}], "<>", 
+    RowBox[{"StringTake", "[", 
+     RowBox[{"x", ",", 
+      RowBox[{"2", ";;"}]}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"UpperCaseFirstLetter", "[", "x_", "]"}], ":=", " ", 
+   RowBox[{
+    RowBox[{"ToUpperCase", "[", 
+     RowBox[{"StringTake", "[", 
+      RowBox[{"x", ",", "1"}], "]"}], "]"}], "<>", 
+    RowBox[{"StringTake", "[", 
+     RowBox[{"x", ",", 
+      RowBox[{"2", ";;"}]}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClearAll", "[", "getInvolvedTransforms", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"getInvolvedTransforms", "[", 
+     RowBox[{"transforms_", ",", "sel_", ",", 
+      RowBox[{"dict_:", 
+       RowBox[{"<|", "|>"}]}]}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"trans", ",", "pairs", ",", "members", ",", "entities"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"trans", "=", 
+        RowBox[{"<|", 
+         RowBox[{"transforms", "/.", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"f_", "?", "StringQ"}], ",", 
+             RowBox[{"t_", "?", "StringQ"}], ",", "m_", ",", "x_", ",", 
+             "y_"}], "}"}], "\[RuleDelayed]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"f", "\[DirectedEdge]", "t"}], "->", "m"}], "}"}]}]}], 
+         "|>"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"entities", " ", "=", " ", 
+        RowBox[{"<|", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "/.", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"f_", "?", "StringQ"}], ",", 
+               RowBox[{"t_", "?", "StringQ"}], ",", "m_", ",", "e_", ",", 
+               "mem_"}], "}"}], "\[RuleDelayed]", 
+             RowBox[{"{", 
+              RowBox[{"m", "\[Rule]", "e"}], "}"}]}]}], "&"}], "/@", 
+          "transforms"}], "|>"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"members", " ", "=", " ", 
+        RowBox[{"<|", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "/.", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"f_", "?", "StringQ"}], ",", 
+               RowBox[{"t_", "?", "StringQ"}], ",", "m_", ",", "e_", ",", 
+               "mem_"}], "}"}], "\[RuleDelayed]", 
+             RowBox[{"{", 
+              RowBox[{"m", "\[Rule]", "mem"}], "}"}]}]}], "&"}], "/@", 
+          "transforms"}], "|>"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pairs", "=", 
+        RowBox[{
+         RowBox[{"Permutations", "[", 
+          RowBox[{"sel", ",", 
+           RowBox[{"{", "2", "}"}]}], "]"}], "/.", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"f_", ",", "t_"}], "}"}], "\[RuleDelayed]", 
+          RowBox[{"f", "\[DirectedEdge]", "t"}]}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"trans", "/@", "pairs"}], "//.", 
+         RowBox[{
+          RowBox[{"Missing", "[", "___", "]"}], ":>", 
+          RowBox[{"Sequence", "[", "]"}]}]}], "/.", 
+        RowBox[{
+         RowBox[{"x_", "?", "StringQ"}], "\[RuleDelayed]", 
+         RowBox[{"Join", "[", 
+          RowBox[{
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<transform\>\"", "\[Rule]", "x"}], ",", 
+             RowBox[{"\"\<op\>\"", "\[Rule]", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"StringTake", "[", 
+                  RowBox[{
+                   RowBox[{"entities", "[", "x", "]"}], ",", 
+                   RowBox[{"-", "1"}]}], "]"}], "\[Equal]", "\"\<*\>\""}], 
+                ",", "\"\<->\>\"", ",", "\"\<.\>\""}], "]"}]}], ",", 
+             RowBox[{"\"\<member\>\"", "\[Rule]", 
+              RowBox[{"members", "[", "x", "]"}]}], ",", 
+             RowBox[{"\"\<entity\>\"", "\[Rule]", 
+              RowBox[{"entities", "[", "x", "]"}]}]}], "|>"}], ",", "dict"}], 
+          "]"}]}]}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"spacelist", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "spatial", ",", "structured", ",", "camera", ",", " ", 
+     "structuredcamera"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"impldict", " ", "=", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"<|", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"\"\<name\>\"", "\[Rule]", 
+         RowBox[{
+          RowBox[{"#", "[", "\"\<name\>\"", "]"}], "<>", "\"\<Impl\>\""}]}], 
+        ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<base\>\"", "\[Rule]", 
+         RowBox[{"#", "[", "\"\<name\>\"", "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"\"\<constructorargs\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"Riffle", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"#", "[", 
+                RowBox[{"[", "1", "]"}], "]"}], "<>", "\"\<& \>\"", "<>", " ", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "2", "]"}], "]"}]}], "&"}], "/@", 
+             RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], ",", "\"\<, \>\""}], 
+           "]"}], "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<members\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"Riffle", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"\"\<    \>\"", "<>", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "1", "]"}], "]"}], "<>", "\"\<* \>\"", " ", "<>", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "2", "]"}], "]"}], "<>", "\"\<_;\>\""}], " ", 
+              "&"}], "/@", 
+             RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], ",", "\"\<\\n\>\""}], 
+           "]"}], "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<initmember\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"Riffle", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"#", "[", 
+                RowBox[{"[", "2", "]"}], "]"}], "<>", "\"\<_{&\>\"", "<>", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "2", "]"}], "]"}], "<>", "\"\<}\>\""}], " ", 
+              "&"}], "/@", 
+             RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], ",", 
+            "\"\<\\n    , \>\""}], "]"}], "]"}]}], ",", "\[IndentingNewLine]",
+         "\[IndentingNewLine]", 
+        RowBox[{"\"\<getters\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "@", 
+          RowBox[{"TemplateApply", "@", 
+           RowBox[{"TemplateSequence", "[", 
+            RowBox[{"getterTemplateDecl", ",", "\[IndentingNewLine]", 
+             RowBox[{"getInvolvedTransforms", "[", 
+              RowBox[{
+               RowBox[{"transforms", "[", 
+                RowBox[{"[", 
+                 RowBox[{"2", ";;"}], "]"}], "]"}], ",", 
+               RowBox[{"#", "[", "\"\<selection\>\"", "]"}]}], "]"}], ",", 
+             RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}]}], 
+        ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<content\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"StringJoin", "@", 
+            RowBox[{"TemplateApply", "@", 
+             RowBox[{"TemplateSequence", "[", 
+              RowBox[{"memberSetTemplateDecl", ",", "\[IndentingNewLine]", 
+               RowBox[{"Map", "[", 
+                RowBox[{
+                 RowBox[{"Function", "[", 
+                  RowBox[{
+                   RowBox[{"{", "arg", "}"}], ",", 
+                   RowBox[{"<|", 
+                    RowBox[{
+                    RowBox[{"\"\<name\>\"", "\[Rule]", 
+                    RowBox[{"#", "[", "\"\<name\>\"", "]"}]}], ",", 
+                    RowBox[{"\"\<type\>\"", "\[Rule]", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}]}], ",", 
+                    RowBox[{"\"\<Member\>\"", "->", 
+                    RowBox[{"UpperCaseFirstLetter", "[", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}], "]"}]}], ",", 
+                    RowBox[{"\"\<member\>\"", "\[Rule]", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}]}]}], "|>"}]}], "]"}], ",", 
+                 
+                 RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], "]"}], ",", 
+               RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}], 
+           ",", "\[IndentingNewLine]", "\"\<\\n\\n\>\"", ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"StringJoin", "@", 
+            RowBox[{"ApplyTemplate", "[", 
+             RowBox[{"transformTemplateDecl", ",", 
+              RowBox[{"#", "[", "\"\<selection\>\"", "]"}], ",", 
+              RowBox[{"<|", "|>"}], ",", 
+              RowBox[{"#", "[", "\"\<alias\>\"", "]"}]}], "]"}]}]}], 
+          "\[IndentingNewLine]", "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<implementation\>\"", "\[Rule]", 
+         RowBox[{"StringJoin", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"StringJoin", "@", 
+            RowBox[{"TemplateApply", "@", 
+             RowBox[{"TemplateSequence", "[", 
+              RowBox[{"getterTemplateImpl", ",", "\[IndentingNewLine]", 
+               RowBox[{"getInvolvedTransforms", "[", 
+                RowBox[{
+                 RowBox[{"transforms", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"2", ";;"}], "]"}], "]"}], ",", 
+                 RowBox[{"#", "[", "\"\<selection\>\"", "]"}], ",", 
+                 RowBox[{"<|", 
+                  RowBox[{"\"\<name\>\"", "\[Rule]", 
+                   RowBox[{
+                    RowBox[{"#", "[", "\"\<name\>\"", "]"}], "<>", 
+                    "\"\<Impl\>\""}]}], "|>"}]}], "]"}], ",", 
+               RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}], 
+           ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           "\"\<\\n\\n\>\"", ",", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"StringJoin", "@", 
+            RowBox[{"TemplateApply", "@", 
+             RowBox[{"TemplateSequence", "[", 
+              RowBox[{"memberSetTemplateImpl", ",", "\[IndentingNewLine]", 
+               RowBox[{"Map", "[", 
+                RowBox[{
+                 RowBox[{"Function", "[", 
+                  RowBox[{
+                   RowBox[{"{", "arg", "}"}], ",", 
+                   RowBox[{"<|", 
+                    RowBox[{
+                    RowBox[{"\"\<name\>\"", "\[Rule]", 
+                    RowBox[{"#", "[", "\"\<name\>\"", "]"}]}], ",", 
+                    RowBox[{"\"\<type\>\"", "\[Rule]", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}]}], ",", 
+                    RowBox[{"\"\<Member\>\"", "->", 
+                    RowBox[{"UpperCaseFirstLetter", "[", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}], "]"}]}], ",", 
+                    RowBox[{"\"\<member\>\"", "\[Rule]", 
+                    RowBox[{"arg", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}]}]}], "|>"}]}], "]"}], ",", 
+                 
+                 RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], "]"}], ",", 
+               RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}], 
+           ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           "\"\<\\n\\n\>\"", ",", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"StringJoin", "@", 
+            RowBox[{"ApplyTemplate", "[", 
+             RowBox[{"transformTemplateImpl", ",", 
+              RowBox[{"#", "[", "\"\<selection\>\"", "]"}], ",", "#", ",", 
+              RowBox[{"#", "[", "\"\<alias\>\"", "]"}]}], "]"}]}]}], 
+          "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "|>"}], 
+      "&"}], "/@", "spacelist"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"basecode", " ", "=", " ", 
+    RowBox[{"StringJoin", "@", 
+     RowBox[{"TemplateApply", "@", 
+      RowBox[{"TemplateSequence", "[", 
+       RowBox[{"classTemplate", ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Join", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"<|", 
+             RowBox[{"\"\<content\>\"", "->", 
+              RowBox[{"StringJoin", "@", 
+               RowBox[{"ApplyTemplate", "[", 
+                RowBox[{"transformTemplate", ",", 
+                 RowBox[{"#", "[", "\"\<selection\>\"", "]"}], ",", 
+                 RowBox[{"<|", "|>"}], ",", 
+                 RowBox[{"#", "[", "\"\<alias\>\"", "]"}]}], "]"}]}]}], 
+             "|>"}]}], "]"}], "&"}], "/@", "\[IndentingNewLine]", 
+         "spacelist"}], ",", 
+        RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\\n\>\""}]}], "]"}]}]}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"classcode", "=", 
+   RowBox[{"StringJoin", "@", 
+    RowBox[{"TemplateApply", "@", 
+     RowBox[{"TemplateSequence", "[", 
+      RowBox[{"classTemplateImplDecl", ",", "impldict", ",", 
+       RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\\n\>\""}]}], "]"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"implcode", "=", 
+    RowBox[{"StringJoin", "@", 
+     RowBox[{"TemplateApply", "@", 
+      RowBox[{"TemplateSequence", "[", 
+       RowBox[{"classTemplateImplImpl", ",", "impldict", ",", 
+        RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\\n\>\""}]}], "]"}]}]}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"baseClassTemplateImpl", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+       "\"\<template<unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<Matrix<N + 1, float> \>\"", ",", 
+        RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
+        "\"\<<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {\
+\\n\>\"", ",", "\[IndentingNewLine]", "\"\<    switch (from) {\\n\>\"", ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
+        "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<        default:\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<            throw Exception(\\\"getMatrix is not available for \
+the given space: \\\" + toString(from), IvwContext);\\n\>\"", ",", 
+        "\[IndentingNewLine]", "\"\<    }\\n\>\"", ",", " ", 
+        "\[IndentingNewLine]", "\"\<}\\n\>\""}], "\[IndentingNewLine]", "}"}],
+       ",", 
+      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], "]"}]}], ";"}],
+   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"switchFromTemplate", " ", "=", " ", 
+   RowBox[{"TemplateObject", "[", 
+    RowBox[{
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{"\"\<        case CoordinateSpace::\>\"", ",", " ", 
+       RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], ",", 
+       "\"\<: \\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<            switch (to) {\\n\>\"", ",", "\[IndentingNewLine]", 
+       RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
+       "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<                default:\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<                    throw Exception(\\\"getMatrix is not \
+available for the given spaces: \\\" + \\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<                                    \
+toString(CoordinateSpace::\>\"", ",", " ", 
+       RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], " ", ",", 
+       "\"\<) + \\\" to \\\" + toString(to), IvwContext);\\n\>\"", ",", 
+       "\[IndentingNewLine]", "\"\<            }\>\""}], 
+      "\[IndentingNewLine]", "}"}], ",", 
+     RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+     RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"switchToTemplate", " ", "=", " ", 
+    RowBox[{"TemplateObject", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{"\"\<                case CoordinateSpace::\>\"", ",", " ", 
+        RowBox[{"TemplateSlot", "[", "\"\<toSpace\>\"", "]"}], ",", 
+        "\"\<: \\n\>\"", ",", "\[IndentingNewLine]", 
+        RowBox[{"TemplateIf", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], "==", " ", 
+           RowBox[{"TemplateSlot", "[", "\"\<toSpace\>\"", "]"}]}], ",", 
+          "\[IndentingNewLine]", 
+          "\"\<                    return Matrix<N + 1, float>(1.0f);\>\"", 
+          ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{"\"\<                    return get\>\"", ",", " ", 
+            RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], ",", 
+            "\"\<To\>\"", ",", " ", 
+            RowBox[{"TemplateSlot", "[", "\"\<toSpace\>\"", "]"}], ",", 
+            "\"\<Matrix();\>\""}], "}"}]}], "]"}]}], "\[IndentingNewLine]", 
+       "}"}], ",", 
+      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
+      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"baseimpl", " ", "=", " ", 
+    RowBox[{"StringJoin", "@", 
+     RowBox[{"TemplateApply", "@", 
+      RowBox[{"TemplateSequence", "[", 
+       RowBox[{"baseClassTemplateImpl", ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Function", "[", 
+          RowBox[{
+           RowBox[{"{", "space", "}"}], ",", 
+           RowBox[{"Join", "[", 
+            RowBox[{"space", ",", 
+             RowBox[{"<|", 
+              RowBox[{"\"\<content\>\"", "->", 
+               RowBox[{"StringJoin", "@", 
+                RowBox[{"TemplateApply", "@", 
+                 RowBox[{"TemplateSequence", "[", 
+                  RowBox[{"switchFromTemplate", ",", 
+                   RowBox[{"Map", "[", 
+                    RowBox[{
+                    RowBox[{"Function", "[", 
+                    RowBox[{
+                    RowBox[{"{", "from", "}"}], ",", 
+                    RowBox[{"<|", 
+                    RowBox[{
+                    RowBox[{"\"\<fromSpace\>\"", "\[Rule]", "from"}], ",", 
+                    " ", 
+                    RowBox[{
+                    "\"\<content\>\"", "\[Rule]", " ", "\[IndentingNewLine]", 
+                    
+                    RowBox[{"StringJoin", "@", 
+                    RowBox[{"TemplateApply", "@", 
+                    RowBox[{"TemplateSequence", "[", 
+                    RowBox[{"switchToTemplate", ",", " ", 
+                    RowBox[{"Map", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"<|", 
+                    RowBox[{
+                    RowBox[{"\"\<fromSpace\>\"", "\[Rule]", "from"}], ",", 
+                    " ", 
+                    RowBox[{"\"\<toSpace\>\"", "\[Rule]", "#"}]}], "|>"}], 
+                    "&"}], ",", " ", 
+                    RowBox[{"space", "[", "\"\<selection\>\"", "]"}]}], "]"}],
+                     ",", 
+                    RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], 
+                    "]"}]}]}]}]}], "\[IndentingNewLine]", "|>"}]}], "]"}], 
+                    ",", 
+                    RowBox[{"space", "[", "\"\<selection\>\"", "]"}]}], "]"}],
+                    ",", 
+                   RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], 
+                  "]"}]}]}]}], "|>"}]}], "]"}]}], "]"}], "/@", 
+         "\[IndentingNewLine]", "spacelist"}], ",", 
+        RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"baseimpl", " ", "=", " ", 
+    RowBox[{"StringJoin", "[", 
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{
+      "\"\<#include <warn/push>\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<#include <warn/ignore/switch-enum>\\n\>\"", ",", " ", 
+       "\[IndentingNewLine]", "baseimpl", ",", " ", "\[IndentingNewLine]", 
+       "\"\<#include <warn/pop>\\n\>\""}], "}"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"code", " ", "=", 
+   RowBox[{"StringJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "basecode", ",", "\"\<\\n\\n\>\"", ",", "baseimpl", ",", 
+      "\"\<\\n\\n\>\"", ",", "  ", "classcode", ",", "\"\<\\n\\n\>\"", ",", 
+      " ", "implcode"}], "}"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"text", " ", "=", " ", 
+   RowBox[{"ivwclass", "[", 
+    RowBox[{"<|", 
+     RowBox[{"\"\<content\>\"", "->", "code"}], "|>"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Export", "[", 
+  RowBox[{
+  "\"\<C:/Users/petst55/Work/Inviwo/coordinatetransformer.h\>\"", ",", "text",
+    ",", "\"\<Text\>\""}], "]"}]}], "Input",
+ CellChangeTimes->{{3.6267660046509743`*^9, 3.6267660075676317`*^9}, {
+   3.626766369428837*^9, 3.626766395963797*^9}, {3.626766427413505*^9, 
+   3.626766609405746*^9}, {3.62676702159552*^9, 3.626767068464396*^9}, {
+   3.626768163222369*^9, 3.626768207224104*^9}, {3.626768270260159*^9, 
+   3.62676834812737*^9}, {3.6267684391028337`*^9, 3.626768484649014*^9}, {
+   3.6267685286646767`*^9, 3.626768529544191*^9}, 3.626770478893516*^9, {
+   3.6267705146832952`*^9, 3.626770517671792*^9}, {3.6267752828598757`*^9, 
+   3.626775283983717*^9}, {3.626775367472471*^9, 3.626775444891464*^9}, {
+   3.6267755493715076`*^9, 3.62677566738382*^9}, {3.626775794085882*^9, 
+   3.626775794706813*^9}, {3.626775959888362*^9, 3.626775960859333*^9}, {
+   3.626776011315814*^9, 3.6267761216800947`*^9}, {3.6267761554768476`*^9, 
+   3.62677623423203*^9}, {3.626776270843101*^9, 3.626776305349497*^9}, {
+   3.626776385038519*^9, 3.626776469330926*^9}, {3.626776520565651*^9, 
+   3.6267765280944443`*^9}, {3.6267765697641783`*^9, 3.626776620862274*^9}, {
+   3.626776683457621*^9, 3.6267767800131493`*^9}, {3.6267769176788597`*^9, 
+   3.626776960668648*^9}, {3.6267778646447487`*^9, 3.626778001763661*^9}, {
+   3.626779122834834*^9, 3.626779126063925*^9}, 3.626779203644289*^9, {
+   3.6267792850018797`*^9, 3.6267793178882217`*^9}, {3.626779407982493*^9, 
+   3.6267794756280117`*^9}, {3.626779545236566*^9, 3.626779545828538*^9}, {
+   3.626780304178693*^9, 3.626780305957653*^9}, {3.626780376857086*^9, 
+   3.626780390417602*^9}, {3.626780492902812*^9, 3.626780494295762*^9}, {
+   3.62678065472843*^9, 3.6267808541693373`*^9}, {3.6267808907352667`*^9, 
+   3.626780902075902*^9}, {3.626781099246998*^9, 3.6267811201275463`*^9}, {
+   3.626781180347291*^9, 3.626781269137466*^9}, {3.626781355076787*^9, 
+   3.626781482779002*^9}, {3.626781520685899*^9, 3.626781653554914*^9}, {
+   3.6267817091776123`*^9, 3.6267818661748753`*^9}, {3.626781899935691*^9, 
+   3.6267819448550034`*^9}, {3.6267820054488707`*^9, 3.626782013151031*^9}, {
+   3.626782095502033*^9, 3.626782164221964*^9}, {3.62678229780647*^9, 
+   3.6267824175030413`*^9}, {3.6267833052785892`*^9, 
+   3.6267834204174957`*^9}, {3.626783514960806*^9, 3.626783559982476*^9}, {
+   3.6267836757107067`*^9, 3.6267837334602537`*^9}, {3.626784163879983*^9, 
+   3.6267841742631493`*^9}, {3.626784396493821*^9, 3.626784403176281*^9}, 
+   3.626784439772564*^9, {3.626784509474807*^9, 3.626784520194498*^9}, 
+   3.626784555350438*^9, {3.626784620919114*^9, 3.626784646271388*^9}, {
+   3.626785034846903*^9, 3.626785037006165*^9}, {3.627013143334758*^9, 
+   3.6270131775430393`*^9}, {3.6270133155131607`*^9, 3.627013323681767*^9}, 
+   3.627013908102827*^9, 3.627014894137258*^9, {3.6270155149697533`*^9, 
+   3.62701551520018*^9}, {3.627015611254759*^9, 3.627015619235374*^9}, {
+   3.627015686824293*^9, 3.627015718040592*^9}, {3.627015799902763*^9, 
+   3.6270158019741297`*^9}, {3.627015850281032*^9, 3.62701585290478*^9}, {
+   3.6270158834660673`*^9, 3.627015921245253*^9}, 3.627016032684297*^9, 
+   3.6270178136204147`*^9, {3.627017856502599*^9, 3.627017972830966*^9}, {
+   3.627018012545327*^9, 3.627018013224512*^9}, {3.627018237292554*^9, 
+   3.627018301655118*^9}, {3.6270183532014313`*^9, 3.627018362787257*^9}, {
+   3.627018400179702*^9, 3.6270184227004023`*^9}, {3.627018598487278*^9, 
+   3.62701860960679*^9}, 3.627018670460417*^9, {3.627018774713119*^9, 
+   3.627018809411086*^9}, {3.627018842677732*^9, 3.627018871181246*^9}, {
+   3.627018910725006*^9, 3.6270189161370277`*^9}, {3.6270189466816998`*^9, 
+   3.627018957585478*^9}, {3.627019018382031*^9, 3.627019067207779*^9}, {
+   3.62701911809306*^9, 3.627019119036664*^9}, {3.6270192648378773`*^9, 
+   3.627019265787148*^9}, 3.627019886800288*^9, {3.62702331472967*^9, 
+   3.627023321896617*^9}, {3.627023401973979*^9, 3.6270234352618637`*^9}, {
+   3.627023920705782*^9, 3.6270239714986277`*^9}, {3.6270244655468807`*^9, 
+   3.62702446594659*^9}, {3.627025069684168*^9, 3.627025147260263*^9}, {
+   3.627025235096108*^9, 3.627025372014471*^9}, {3.627025410023538*^9, 
+   3.627025435912027*^9}, {3.627025487179631*^9, 3.627025563599804*^9}, {
+   3.627025605091836*^9, 3.62702561425788*^9}, {3.627025649698594*^9, 
+   3.627025698334382*^9}, {3.6270257300877523`*^9, 3.627025824852374*^9}, 
+   3.627025873746726*^9, {3.627026183542845*^9, 3.6270261907946587`*^9}, {
+   3.627026290051876*^9, 3.62702664594913*^9}, {3.6270267527008753`*^9, 
+   3.627026766226482*^9}, {3.627026838114913*^9, 3.6270268549362993`*^9}, {
+   3.6270269296526527`*^9, 3.627026986036934*^9}, {3.627027039380575*^9, 
+   3.627027040872262*^9}, {3.6270271591829367`*^9, 3.627027248418385*^9}, {
+   3.627027283648829*^9, 3.627027336832283*^9}, {3.62702739163188*^9, 
+   3.627027412230802*^9}, {3.6270274781066837`*^9, 3.627027493223507*^9}, {
+   3.627027607690469*^9, 3.627027608506217*^9}, 3.627027640664159*^9, {
+   3.627027686708297*^9, 3.627027698482381*^9}, {3.627027737002694*^9, 
+   3.6270278562544737`*^9}, 3.627027915909609*^9, {3.6270279486990747`*^9, 
+   3.6270279755528097`*^9}, {3.627028016630571*^9, 3.627028023919129*^9}, {
+   3.627028068669655*^9, 3.627028135355863*^9}, {3.627028191224698*^9, 
+   3.6270281934228497`*^9}, {3.627028242788516*^9, 3.6270283477368383`*^9}, {
+   3.62702839282627*^9, 3.6270284849969273`*^9}, {3.627028522151052*^9, 
+   3.627028577954726*^9}, {3.627029372824277*^9, 3.627029375208273*^9}, 
+   3.6270295200216*^9, 3.627029563059833*^9, {3.62702960419158*^9, 
+   3.62702962300283*^9}, {3.627029773281962*^9, 3.6270297740641747`*^9}, {
+   3.627029819668847*^9, 3.6270298616610947`*^9}, {3.627030024671176*^9, 
+   3.627030024887557*^9}, {3.627030306843412*^9, 3.627030307292128*^9}, {
+   3.627031776572579*^9, 3.6270318743908253`*^9}, {3.627031911491984*^9, 
+   3.627031918666789*^9}, {3.627032287419264*^9, 3.6270323034135027`*^9}, 
+   3.627032362331455*^9, {3.627032605813695*^9, 3.627032606835964*^9}, {
+   3.627032770851933*^9, 3.627032773632332*^9}, {3.627032806723834*^9, 
+   3.627032807618822*^9}, {3.6270339624101067`*^9, 3.6270339767486057`*^9}, {
+   3.627034225855073*^9, 3.627034226235668*^9}, {3.627040244838047*^9, 
+   3.627040282286289*^9}, {3.627040342051484*^9, 3.627040343729596*^9}, {
+   3.627040395664111*^9, 3.627040396982757*^9}, {3.6270404724257174`*^9, 
+   3.627040476736227*^9}, {3.6270406340732393`*^9, 3.6270406346555767`*^9}, {
+   3.62704092224608*^9, 3.627040927507245*^9}, {3.62704173455205*^9, 
+   3.627041849649128*^9}, {3.627041902885161*^9, 3.6270419226870003`*^9}, {
+   3.6270419832321568`*^9, 3.6270419888981447`*^9}, {3.627042021507678*^9, 
+   3.6270421348304367`*^9}, {3.627042367583425*^9, 3.6270423985561237`*^9}, {
+   3.6271032322553096`*^9, 3.627103260474131*^9}, {3.627103313233407*^9, 
+   3.6271034886929507`*^9}, {3.6271035353176126`*^9, 3.6271035493070116`*^9}, 
+   3.627103623428423*^9, {3.627103661813261*^9, 3.62710367169825*^9}, {
+   3.627106708346884*^9, 3.627106740817131*^9}, {3.6271067781498632`*^9, 
+   3.627106778732922*^9}, {3.627106925498597*^9, 3.6271069843774843`*^9}, {
+   3.6271070163336797`*^9, 3.6271070404620924`*^9}, {3.6271070979778433`*^9, 
+   3.627107099621008*^9}, {3.627107136158661*^9, 3.6271071681048555`*^9}, {
+   3.627107213138358*^9, 3.6271073696690097`*^9}, {3.6271074563416758`*^9, 
+   3.627107578105851*^9}, {3.6271077396360025`*^9, 3.6271077543934784`*^9}, {
+   3.627108372133246*^9, 3.627108386748708*^9}, {3.6271084590749397`*^9, 
+   3.627108461513183*^9}, {3.627108583731404*^9, 3.6271085880508356`*^9}, {
+   3.6271087037014*^9, 3.6271087454205713`*^9}, {3.6271088842944574`*^9, 
+   3.6271089176207895`*^9}, {3.6271091229153166`*^9, 3.627109345018525*^9}, {
+   3.6271093766156845`*^9, 3.627109377544777*^9}, {3.6271094791729393`*^9, 
+   3.6271094794689684`*^9}, {3.6271190058895154`*^9, 
+   3.6271190322611523`*^9}, {3.627119069861912*^9, 3.627119092969222*^9}, {
+   3.6271191759475193`*^9, 3.627119177624687*^9}, {3.6271203516130743`*^9, 
+   3.627120360531966*^9}, {3.6271203977426867`*^9, 3.6271204611440268`*^9}, {
+   3.6271205094898605`*^9, 3.627120515258437*^9}, {3.6271205930202127`*^9, 
+   3.6271207106689763`*^9}, {3.627120747988708*^9, 3.627120779303839*^9}, {
+   3.6271208095988684`*^9, 3.627120973062213*^9}, {3.6271213377636795`*^9, 
+   3.6271213493388367`*^9}, {3.627121401630066*^9, 3.627121464822384*^9}, {
+   3.627121495231425*^9, 3.627121528495751*^9}, {3.6271221287315407`*^9, 
+   3.6271221317455235`*^9}, {3.6271221649283075`*^9, 
+   3.6271221693488827`*^9}, {3.627124377654539*^9, 3.6271243902475395`*^9}, {
+   3.6271249187715397`*^9, 3.6271249788825397`*^9}, {3.6271250146425395`*^9, 
+   3.6271250220185394`*^9}, {3.627125766100539*^9, 3.6271257744025393`*^9}, {
+   3.6271260066895394`*^9, 3.6271260652125397`*^9}, {3.6271262337235394`*^9, 
+   3.6271262341445394`*^9}, {3.6271262947565393`*^9, 
+   3.6271262997405396`*^9}, {3.627126393510539*^9, 3.6271264294615393`*^9}, 
+   3.6271264696585393`*^9, {3.6271307320705395`*^9, 3.6271307346655397`*^9}, {
+   3.677561689432026*^9, 3.677561700744157*^9}, {3.6775618279008713`*^9, 
+   3.6775618539764786`*^9}, {3.6775619158516655`*^9, 3.6775619183169117`*^9}, 
+   3.677562135381616*^9, 3.6775622844095173`*^9, {3.67756234593967*^9, 
+   3.6775623628733635`*^9}, {3.6775624251565905`*^9, 
+   3.6775624592960043`*^9}, {3.677562784053477*^9, 3.677562794336505*^9}, {
+   3.6775693916211677`*^9, 3.6775694086608715`*^9}, {3.6775694658075857`*^9, 
+   3.677569583886392*^9}, {3.6775696344844513`*^9, 3.677569638398843*^9}, {
+   3.6775703126522617`*^9, 3.6775703183398304`*^9}, {3.677570509777972*^9, 
+   3.6775705177217665`*^9}, {3.67757078548254*^9, 3.6775707870196934`*^9}, {
+   3.6775727745674286`*^9, 3.6775727763986115`*^9}, 3.677572856856656*^9, {
+   3.677573011864156*^9, 3.677573038539823*^9}, {3.677573378757841*^9, 
+   3.6775734098799534`*^9}, {3.677573696423605*^9, 3.6775736969196544`*^9}, {
+   3.6775744309720526`*^9, 3.677574435088464*^9}, {3.6775745222691813`*^9, 
+   3.6775745886518188`*^9}, {3.6775747049874516`*^9, 3.67757471987494*^9}, 
+   3.6775748680297537`*^9, {3.677575034290378*^9, 3.677575113830331*^9}, 
+   3.6775752106940165`*^9, {3.6775753243083773`*^9, 3.6775754044223876`*^9}, {
+   3.677575444904435*^9, 3.677575450470992*^9}, {3.677575740412983*^9, 
+   3.6775757432552676`*^9}, {3.6775770126021895`*^9, 3.6775770129272223`*^9}}],
+
+Cell[BoxData["\<\"C:/Users/petst55/Work/Inviwo/coordinatetransformer.h\"\>"], \
+"Output",
+ CellChangeTimes->{
+  3.6775694106940746`*^9, 3.6775695536233664`*^9, 3.6775695866796713`*^9, 
+   3.6775696744794507`*^9, 3.6775698016351647`*^9, 3.677570522729267*^9, 
+   3.677570678543847*^9, 3.6775707910110927`*^9, 3.6775713000639925`*^9, 
+   3.677572780284*^9, {3.677572884674438*^9, 3.677572904376408*^9}, 
+   3.6775730487158403`*^9, 3.6775743035823145`*^9, 3.6775744384187965`*^9, 
+   3.677574590446998*^9, 3.6775747234322953`*^9, 3.677574870232974*^9, 
+   3.677575212540201*^9, 3.6775754166466103`*^9, 3.6775754515751023`*^9, 
+   3.6775757828722286`*^9}]
+}, Open  ]]
+},
+WindowSize->{1920, 1038},
+WindowMargins->{{Automatic, 1912}, {-38, Automatic}},
+FrontEndVersion->"10.0 for Microsoft Windows (64-bit) (July 1, 2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 305, 7, 31, "Input"],
+Cell[CellGroupData[{
+Cell[888, 31, 10860, 266, 734, "Input"],
+Cell[11751, 299, 10000, 235, 375, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21788, 539, 948, 26, 52, "Input"],
+Cell[22739, 567, 1036, 22, 118, "Output"],
+Cell[23778, 591, 1141, 22, 103, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24956, 618, 682, 14, 52, "Input"],
+Cell[25641, 634, 859, 11, 292, "Output"],
+Cell[26503, 647, 1001, 13, 252, "Output"]
+}, Open  ]],
+Cell[27519, 663, 5850, 143, 372, "Input"],
+Cell[CellGroupData[{
+Cell[33394, 810, 1166, 30, 31, "Input"],
+Cell[34563, 842, 4733, 101, 478, "Output"]
+}, Open  ]],
+Cell[39311, 946, 17227, 238, 3276, "Input"],
+Cell[CellGroupData[{
+Cell[56563, 1188, 50881, 1052, 4652, "Input"],
+Cell[107447, 2242, 651, 10, 31, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
