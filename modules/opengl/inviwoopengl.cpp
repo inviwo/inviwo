@@ -32,37 +32,74 @@
 
 namespace inviwo {
 
-void LogGLError(const char* fileName, const char* functionName, int lineNumber) {
-    GLenum err = glGetError();
-
-    if (err != GL_NO_ERROR) {
-        std::ostringstream errorMessage;
-#ifdef GLEW_NO_GLU
-        std::string errorString = "";
-        switch (err) {
-            case GL_INVALID_OPERATION:
-                errorString = "INVALID_OPERATION";
-                break;
-            case GL_INVALID_ENUM:
-                errorString = "INVALID_ENUM";
-                break;
-            case GL_INVALID_VALUE:
-                errorString = "INVALID_VALUE";
-                break;
-            case GL_OUT_OF_MEMORY:
-                errorString = "OUT_OF_MEMORY";
-                break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION:
-                errorString = "INVALID_FRAMEBUFFER_OPERATION";
-                break;
-        }
-        errorMessage << (!errorString.empty() ? errorString.c_str() : "undefined");
-#else
-        const GLubyte* errorString = gluErrorString(err);
-        errorMessage << (errorString ? (const char*)errorString : "undefined");
-#endif
-        inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
-                                          fileName, functionName, lineNumber, errorMessage.str());
+std::string getGLErrorString(GLenum err) {
+    if (err == GL_NO_ERROR) {
+        return "No error";
     }
+    std::ostringstream errorMessage;
+#ifdef GLEW_NO_GLU
+    std::string errorString = "";
+    switch (err) {
+        case GL_INVALID_ENUM:
+            errorString =
+                "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument. "
+                "The offending command is ignored and has no other side effect than to set the "
+                "error flag.";
+            break;
+        case GL_INVALID_VALUE:
+            errorString =
+                "INVALID_VALUE: A numeric argument is out of range. The offending command is "
+                "ignored and has no other side effect than to set the error flag.";
+            break;
+        case GL_INVALID_OPERATION:
+            errorString =
+                "INVALID_OPERATION: The specified operation is not allowed in the current state. "
+                "The offending command is ignored and has no other side effect than to set the "
+                "error flag.";
+            break;
+        case GL_STACK_OVERFLOW:
+            errorString =
+                "GL_STACK_OVERFLOW: This command would cause a stack overflow. The offending "
+                "command is ignored and has no other side effect than to set the error flag." break;
+        case GL_STACK_UNDERFLOW:
+            errorString =
+                "GL_STACK_UNDERFLOW: This command would cause a stack underflow. The offending "
+                "command is ignored and has no other side effect than to set the error flag." break;
+        case GL_OUT_OF_MEMORY:
+            errorString =
+                "OUT_OF_MEMORY: There is not enough memory left to execute the command. The state "
+                "of the GL is undefined, except for the state of the error flags, after this error "
+                "is recorded.";
+            break;
+        case:
+        GL_TABLE_TOO_LARGE:
+            errorString =
+                "GL_TABLE_TOO_LARGE: The specified table exceeds the implementation's maximum "
+                "supported table size. The offending command is ignored and has no other side "
+                "effect than to set the error flag.";
+            break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            errorString = "INVALID_FRAMEBUFFER_OPERATION";
+            break;
+    }
+    errorMessage << (!errorString.empty() ? errorString.c_str() : "undefined");
+#else
+    const GLubyte* errorString = gluErrorString(err);
+    errorMessage << (errorString ? (const char*)errorString : "undefined");
+#endif
+    return errorMessage.str();
 }
+
+void LogGLError(const char* fileName, const char* functionName, int lineNumber) {
+	GLuint maxErrors = 255;
+	GLenum err;
+	// There might be several errors, call glGetError in a loop:
+	// https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
+	while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
+		inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
+			fileName, functionName, lineNumber,
+			getGLErrorString(err));
+	}
+}
+
 }

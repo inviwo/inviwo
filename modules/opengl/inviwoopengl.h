@@ -55,7 +55,18 @@
 
 namespace inviwo {
 
-IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName, int lineNumber);
+/** \brief Returns a readable interpreation of the OpenGL error.
+ *
+ * @param err OpenGL error enum, GLenum err = glGetError();
+ * @return Returns "No error" if err == GL_NO_ERROR, otherwise the name of the error.
+ */
+IVW_MODULE_OPENGL_API std::string getGLErrorString(GLenum err);
+
+/**
+ * Log the last OpenGL error if there has been an error, i.e. glGetError() != GL_NO_ERROR.
+ */
+IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName,
+                                      int lineNumber);
 
 #if defined(IVW_DEBUG)
 #define LGL_ERROR inviwo::LogGLError(__FILE__, __FUNCTION__, __LINE__)

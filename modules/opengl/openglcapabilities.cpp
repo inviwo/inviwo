@@ -241,6 +241,14 @@ void OpenGLCapabilities::initializeGLEW() {
         GLenum glewError = glewInit();
         if (GLEW_OK == glewError) {
             const GLubyte* glversion = glGetString(GL_VERSION);
+            if (glversion == 0) {
+                // There was an error retrieving the version. Executing further OpenGl calls may
+                // crash the application
+                std::stringstream ss;
+                ss << "Initialized GLEW but failed to retrieve OpenGL Version, glError"
+                   << getGLErrorString(glGetError());
+                throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
+            }
             glVersionStr_ = std::string(
                 (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
             glVersion_ = parseAndRetrieveVersion(glVersionStr_);
