@@ -1,13 +1,14 @@
 project(GLEW)
 
-set(GLEW_MAJOR_VERSION 1)
-set(GLEW_MINOR_VERSION 12)
+set(GLEW_MAJOR_VERSION 2)
+set(GLEW_MINOR_VERSION 0)
 set(GLEW_PATCH_VERSION 0)
 set(GLEW_VERSION ${GLEW_MAJOR_VERSION}.${GLEW_MINOR_VERSION}.${GLEW_PATCH_VERSION})
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/GL/eglew.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GL/glew.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GL/glxew.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GL/wglew.h

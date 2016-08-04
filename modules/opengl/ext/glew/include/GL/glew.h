@@ -263,6 +263,9 @@ typedef _W64 int ptrdiff_t;
 #define GLEWAPIENTRY
 #endif
 
+#define GLEW_VAR_EXPORT GLEWAPI
+#define GLEW_FUN_EXPORT GLEWAPI
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -2434,6 +2437,8 @@ typedef void (GLAPIENTRY * PFNGLMINSAMPLESHADINGPROC) (GLclampf value);
 #ifndef GL_VERSION_4_2
 #define GL_VERSION_4_2 1
 
+#define GL_TRANSFORM_FEEDBACK_PAUSED 0x8E23
+#define GL_TRANSFORM_FEEDBACK_ACTIVE 0x8E24
 #define GL_COMPRESSED_RGBA_BPTC_UNORM 0x8E8C
 #define GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM 0x8E8D
 #define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT 0x8E8E
@@ -2475,9 +2480,17 @@ typedef void (GLAPIENTRY * PFNGLMINSAMPLESHADINGPROC) (GLclampf value);
 #ifndef GL_VERSION_4_5
 #define GL_VERSION_4_5 1
 
+#define GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT 0x00000004
+
 typedef GLenum (GLAPIENTRY * PFNGLGETGRAPHICSRESETSTATUSPROC) (void);
+typedef void (GLAPIENTRY * PFNGLGETNCOMPRESSEDTEXIMAGEPROC) (GLenum target, GLint lod, GLsizei bufSize, GLvoid *pixels);
+typedef void (GLAPIENTRY * PFNGLGETNTEXIMAGEPROC) (GLenum tex, GLint level, GLenum format, GLenum type, GLsizei bufSize, GLvoid *pixels);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMDVPROC) (GLuint program, GLint location, GLsizei bufSize, GLdouble *params);
 
 #define glGetGraphicsResetStatus GLEW_GET_FUN(__glewGetGraphicsResetStatus)
+#define glGetnCompressedTexImage GLEW_GET_FUN(__glewGetnCompressedTexImage)
+#define glGetnTexImage GLEW_GET_FUN(__glewGetnTexImage)
+#define glGetnUniformdv GLEW_GET_FUN(__glewGetnUniformdv)
 
 #define GLEW_VERSION_4_5 GLEW_GET_VAR(__GLEW_VERSION_4_5)
 
@@ -2808,6 +2821,15 @@ typedef void (GLAPIENTRY * PFNGLSETMULTISAMPLEFVAMDPROC) (GLenum pname, GLuint i
 #define GLEW_AMD_shader_atomic_counter_ops GLEW_GET_VAR(__GLEW_AMD_shader_atomic_counter_ops)
 
 #endif /* GL_AMD_shader_atomic_counter_ops */
+
+/* ---------------- GL_AMD_shader_explicit_vertex_parameter ---------------- */
+
+#ifndef GL_AMD_shader_explicit_vertex_parameter
+#define GL_AMD_shader_explicit_vertex_parameter 1
+
+#define GLEW_AMD_shader_explicit_vertex_parameter GLEW_GET_VAR(__GLEW_AMD_shader_explicit_vertex_parameter)
+
+#endif /* GL_AMD_shader_explicit_vertex_parameter */
 
 /* ---------------------- GL_AMD_shader_stencil_export --------------------- */
 
@@ -3514,6 +3536,23 @@ typedef void (GLAPIENTRY * PFNGLMEMORYBARRIERBYREGIONPROC) (GLbitfield barriers)
 
 #endif /* GL_ARB_ES3_1_compatibility */
 
+/* ----------------------- GL_ARB_ES3_2_compatibility ---------------------- */
+
+#ifndef GL_ARB_ES3_2_compatibility
+#define GL_ARB_ES3_2_compatibility 1
+
+#define GL_PRIMITIVE_BOUNDING_BOX_ARB 0x92BE
+#define GL_MULTISAMPLE_LINE_WIDTH_RANGE_ARB 0x9381
+#define GL_MULTISAMPLE_LINE_WIDTH_GRANULARITY_ARB 0x9382
+
+typedef void (GLAPIENTRY * PFNGLPRIMITIVEBOUNDINGBOXARBPROC) (GLfloat minX, GLfloat minY, GLfloat minZ, GLfloat minW, GLfloat maxX, GLfloat maxY, GLfloat maxZ, GLfloat maxW);
+
+#define glPrimitiveBoundingBoxARB GLEW_GET_FUN(__glewPrimitiveBoundingBoxARB)
+
+#define GLEW_ARB_ES3_2_compatibility GLEW_GET_VAR(__GLEW_ARB_ES3_2_compatibility)
+
+#endif /* GL_ARB_ES3_2_compatibility */
+
 /* ------------------------ GL_ARB_ES3_compatibility ----------------------- */
 
 #ifndef GL_ARB_ES3_compatibility
@@ -3990,15 +4029,14 @@ typedef GLuint (GLAPIENTRY * PFNGLGETDEBUGMESSAGELOGARBPROC) (GLuint count, GLsi
 
 #define GL_TEXTURE_TARGET 0x1006
 #define GL_QUERY_TARGET 0x82EA
-#define GL_TEXTURE_BINDING 0x82EB
 
 typedef void (GLAPIENTRY * PFNGLBINDTEXTUREUNITPROC) (GLuint unit, GLuint texture);
 typedef void (GLAPIENTRY * PFNGLBLITNAMEDFRAMEBUFFERPROC) (GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 typedef GLenum (GLAPIENTRY * PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC) (GLuint framebuffer, GLenum target);
 typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERDATAPROC) (GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const void *data);
 typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERSUBDATAPROC) (GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const void *data);
-typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERFIPROC) (GLuint framebuffer, GLenum buffer, GLfloat depth, GLint stencil);
-typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERFVPROC) (GLuint framebuffer, GLenum buffer, GLint drawbuffer, const GLfloat* value);
+typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERFIPROC) (GLuint framebuffer, GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
+typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERFVPROC) (GLuint framebuffer, GLenum buffer, GLint drawbuffer, GLfloat* value);
 typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERIVPROC) (GLuint framebuffer, GLenum buffer, GLint drawbuffer, const GLint* value);
 typedef void (GLAPIENTRY * PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC) (GLuint framebuffer, GLenum buffer, GLint drawbuffer, const GLuint* value);
 typedef void (GLAPIENTRY * PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC) (GLuint texture, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const void *data);
@@ -4386,6 +4424,15 @@ typedef void (GLAPIENTRY * PFNGLDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum t
 
 #endif /* GL_ARB_fragment_shader */
 
+/* -------------------- GL_ARB_fragment_shader_interlock ------------------- */
+
+#ifndef GL_ARB_fragment_shader_interlock
+#define GL_ARB_fragment_shader_interlock 1
+
+#define GLEW_ARB_fragment_shader_interlock GLEW_GET_VAR(__GLEW_ARB_fragment_shader_interlock)
+
+#endif /* GL_ARB_fragment_shader_interlock */
+
 /* ------------------- GL_ARB_framebuffer_no_attachments ------------------- */
 
 #ifndef GL_ARB_framebuffer_no_attachments
@@ -4628,6 +4675,22 @@ typedef void (GLAPIENTRY * PFNGLGETTEXTURESUBIMAGEPROC) (GLuint texture, GLint l
 
 #endif /* GL_ARB_get_texture_sub_image */
 
+/* ---------------------------- GL_ARB_gl_spirv ---------------------------- */
+
+#ifndef GL_ARB_gl_spirv
+#define GL_ARB_gl_spirv 1
+
+#define GL_SHADER_BINARY_FORMAT_SPIR_V_ARB 0x9551
+#define GL_SPIR_V_BINARY_ARB 0x9552
+
+typedef void (GLAPIENTRY * PFNGLSPECIALIZESHADERARBPROC) (GLuint shader, const GLchar* pEntryPoint, GLuint numSpecializationConstants, const GLuint* pConstantIndex, const GLuint* pConstantValue);
+
+#define glSpecializeShaderARB GLEW_GET_FUN(__glewSpecializeShaderARB)
+
+#define GLEW_ARB_gl_spirv GLEW_GET_VAR(__GLEW_ARB_gl_spirv)
+
+#endif /* GL_ARB_gl_spirv */
+
 /* --------------------------- GL_ARB_gpu_shader5 -------------------------- */
 
 #ifndef GL_ARB_gpu_shader5
@@ -4703,6 +4766,98 @@ typedef void (GLAPIENTRY * PFNGLUNIFORMMATRIX4X3DVPROC) (GLint location, GLsizei
 #define GLEW_ARB_gpu_shader_fp64 GLEW_GET_VAR(__GLEW_ARB_gpu_shader_fp64)
 
 #endif /* GL_ARB_gpu_shader_fp64 */
+
+/* ------------------------ GL_ARB_gpu_shader_int64 ------------------------ */
+
+#ifndef GL_ARB_gpu_shader_int64
+#define GL_ARB_gpu_shader_int64 1
+
+#define GL_INT64_ARB 0x140E
+#define GL_UNSIGNED_INT64_ARB 0x140F
+#define GL_INT64_VEC2_ARB 0x8FE9
+#define GL_INT64_VEC3_ARB 0x8FEA
+#define GL_INT64_VEC4_ARB 0x8FEB
+#define GL_UNSIGNED_INT64_VEC2_ARB 0x8FF5
+#define GL_UNSIGNED_INT64_VEC3_ARB 0x8FF6
+#define GL_UNSIGNED_INT64_VEC4_ARB 0x8FF7
+
+typedef void (GLAPIENTRY * PFNGLGETUNIFORMI64VARBPROC) (GLuint program, GLint location, GLint64* params);
+typedef void (GLAPIENTRY * PFNGLGETUNIFORMUI64VARBPROC) (GLuint program, GLint location, GLuint64* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMI64VARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLint64* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMUI64VARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLuint64* params);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1I64ARBPROC) (GLuint program, GLint location, GLint64 x);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1I64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1UI64ARBPROC) (GLuint program, GLint location, GLuint64 x);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1UI64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM2I64ARBPROC) (GLuint program, GLint location, GLint64 x, GLint64 y);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM2I64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM2UI64ARBPROC) (GLuint program, GLint location, GLuint64 x, GLuint64 y);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM2UI64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3I64ARBPROC) (GLuint program, GLint location, GLint64 x, GLint64 y, GLint64 z);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3I64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3UI64ARBPROC) (GLuint program, GLint location, GLuint64 x, GLuint64 y, GLuint64 z);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3UI64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4I64ARBPROC) (GLuint program, GLint location, GLint64 x, GLint64 y, GLint64 z, GLint64 w);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4I64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4UI64ARBPROC) (GLuint program, GLint location, GLuint64 x, GLuint64 y, GLuint64 z, GLuint64 w);
+typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4UI64VARBPROC) (GLuint program, GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM1I64ARBPROC) (GLint location, GLint64 x);
+typedef void (GLAPIENTRY * PFNGLUNIFORM1I64VARBPROC) (GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM1UI64ARBPROC) (GLint location, GLuint64 x);
+typedef void (GLAPIENTRY * PFNGLUNIFORM1UI64VARBPROC) (GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM2I64ARBPROC) (GLint location, GLint64 x, GLint64 y);
+typedef void (GLAPIENTRY * PFNGLUNIFORM2I64VARBPROC) (GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM2UI64ARBPROC) (GLint location, GLuint64 x, GLuint64 y);
+typedef void (GLAPIENTRY * PFNGLUNIFORM2UI64VARBPROC) (GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM3I64ARBPROC) (GLint location, GLint64 x, GLint64 y, GLint64 z);
+typedef void (GLAPIENTRY * PFNGLUNIFORM3I64VARBPROC) (GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM3UI64ARBPROC) (GLint location, GLuint64 x, GLuint64 y, GLuint64 z);
+typedef void (GLAPIENTRY * PFNGLUNIFORM3UI64VARBPROC) (GLint location, GLsizei count, const GLuint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM4I64ARBPROC) (GLint location, GLint64 x, GLint64 y, GLint64 z, GLint64 w);
+typedef void (GLAPIENTRY * PFNGLUNIFORM4I64VARBPROC) (GLint location, GLsizei count, const GLint64* value);
+typedef void (GLAPIENTRY * PFNGLUNIFORM4UI64ARBPROC) (GLint location, GLuint64 x, GLuint64 y, GLuint64 z, GLuint64 w);
+typedef void (GLAPIENTRY * PFNGLUNIFORM4UI64VARBPROC) (GLint location, GLsizei count, const GLuint64* value);
+
+#define glGetUniformi64vARB GLEW_GET_FUN(__glewGetUniformi64vARB)
+#define glGetUniformui64vARB GLEW_GET_FUN(__glewGetUniformui64vARB)
+#define glGetnUniformi64vARB GLEW_GET_FUN(__glewGetnUniformi64vARB)
+#define glGetnUniformui64vARB GLEW_GET_FUN(__glewGetnUniformui64vARB)
+#define glProgramUniform1i64ARB GLEW_GET_FUN(__glewProgramUniform1i64ARB)
+#define glProgramUniform1i64vARB GLEW_GET_FUN(__glewProgramUniform1i64vARB)
+#define glProgramUniform1ui64ARB GLEW_GET_FUN(__glewProgramUniform1ui64ARB)
+#define glProgramUniform1ui64vARB GLEW_GET_FUN(__glewProgramUniform1ui64vARB)
+#define glProgramUniform2i64ARB GLEW_GET_FUN(__glewProgramUniform2i64ARB)
+#define glProgramUniform2i64vARB GLEW_GET_FUN(__glewProgramUniform2i64vARB)
+#define glProgramUniform2ui64ARB GLEW_GET_FUN(__glewProgramUniform2ui64ARB)
+#define glProgramUniform2ui64vARB GLEW_GET_FUN(__glewProgramUniform2ui64vARB)
+#define glProgramUniform3i64ARB GLEW_GET_FUN(__glewProgramUniform3i64ARB)
+#define glProgramUniform3i64vARB GLEW_GET_FUN(__glewProgramUniform3i64vARB)
+#define glProgramUniform3ui64ARB GLEW_GET_FUN(__glewProgramUniform3ui64ARB)
+#define glProgramUniform3ui64vARB GLEW_GET_FUN(__glewProgramUniform3ui64vARB)
+#define glProgramUniform4i64ARB GLEW_GET_FUN(__glewProgramUniform4i64ARB)
+#define glProgramUniform4i64vARB GLEW_GET_FUN(__glewProgramUniform4i64vARB)
+#define glProgramUniform4ui64ARB GLEW_GET_FUN(__glewProgramUniform4ui64ARB)
+#define glProgramUniform4ui64vARB GLEW_GET_FUN(__glewProgramUniform4ui64vARB)
+#define glUniform1i64ARB GLEW_GET_FUN(__glewUniform1i64ARB)
+#define glUniform1i64vARB GLEW_GET_FUN(__glewUniform1i64vARB)
+#define glUniform1ui64ARB GLEW_GET_FUN(__glewUniform1ui64ARB)
+#define glUniform1ui64vARB GLEW_GET_FUN(__glewUniform1ui64vARB)
+#define glUniform2i64ARB GLEW_GET_FUN(__glewUniform2i64ARB)
+#define glUniform2i64vARB GLEW_GET_FUN(__glewUniform2i64vARB)
+#define glUniform2ui64ARB GLEW_GET_FUN(__glewUniform2ui64ARB)
+#define glUniform2ui64vARB GLEW_GET_FUN(__glewUniform2ui64vARB)
+#define glUniform3i64ARB GLEW_GET_FUN(__glewUniform3i64ARB)
+#define glUniform3i64vARB GLEW_GET_FUN(__glewUniform3i64vARB)
+#define glUniform3ui64ARB GLEW_GET_FUN(__glewUniform3ui64ARB)
+#define glUniform3ui64vARB GLEW_GET_FUN(__glewUniform3ui64vARB)
+#define glUniform4i64ARB GLEW_GET_FUN(__glewUniform4i64ARB)
+#define glUniform4i64vARB GLEW_GET_FUN(__glewUniform4i64vARB)
+#define glUniform4ui64ARB GLEW_GET_FUN(__glewUniform4ui64ARB)
+#define glUniform4ui64vARB GLEW_GET_FUN(__glewUniform4ui64vARB)
+
+#define GLEW_ARB_gpu_shader_int64 GLEW_GET_VAR(__GLEW_ARB_gpu_shader_int64)
+
+#endif /* GL_ARB_gpu_shader_int64 */
 
 /* ------------------------ GL_ARB_half_float_pixel ------------------------ */
 
@@ -5352,6 +5507,22 @@ typedef GLboolean (GLAPIENTRY * PFNGLISQUERYARBPROC) (GLuint id);
 
 #endif /* GL_ARB_occlusion_query2 */
 
+/* --------------------- GL_ARB_parallel_shader_compile -------------------- */
+
+#ifndef GL_ARB_parallel_shader_compile
+#define GL_ARB_parallel_shader_compile 1
+
+#define GL_MAX_SHADER_COMPILER_THREADS_ARB 0x91B0
+#define GL_COMPLETION_STATUS_ARB 0x91B1
+
+typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSARBPROC) (GLuint count);
+
+#define glMaxShaderCompilerThreadsARB GLEW_GET_FUN(__glewMaxShaderCompilerThreadsARB)
+
+#define GLEW_ARB_parallel_shader_compile GLEW_GET_VAR(__GLEW_ARB_parallel_shader_compile)
+
+#endif /* GL_ARB_parallel_shader_compile */
+
 /* -------------------- GL_ARB_pipeline_statistics_query ------------------- */
 
 #ifndef GL_ARB_pipeline_statistics_query
@@ -5418,6 +5589,15 @@ typedef void (GLAPIENTRY * PFNGLPOINTPARAMETERFVARBPROC) (GLenum pname, const GL
 #define GLEW_ARB_point_sprite GLEW_GET_VAR(__GLEW_ARB_point_sprite)
 
 #endif /* GL_ARB_point_sprite */
+
+/* ----------------------- GL_ARB_post_depth_coverage ---------------------- */
+
+#ifndef GL_ARB_post_depth_coverage
+#define GL_ARB_post_depth_coverage 1
+
+#define GLEW_ARB_post_depth_coverage GLEW_GET_VAR(__GLEW_ARB_post_depth_coverage)
+
+#endif /* GL_ARB_post_depth_coverage */
 
 /* --------------------- GL_ARB_program_interface_query -------------------- */
 
@@ -5607,6 +5787,30 @@ typedef void (GLAPIENTRY * PFNGLREADNPIXELSARBPROC) (GLint x, GLint y, GLsizei w
 #define GLEW_ARB_robustness_share_group_isolation GLEW_GET_VAR(__GLEW_ARB_robustness_share_group_isolation)
 
 #endif /* GL_ARB_robustness_share_group_isolation */
+
+/* ------------------------ GL_ARB_sample_locations ------------------------ */
+
+#ifndef GL_ARB_sample_locations
+#define GL_ARB_sample_locations 1
+
+#define GL_SAMPLE_LOCATION_ARB 0x8E50
+#define GL_SAMPLE_LOCATION_SUBPIXEL_BITS_ARB 0x933D
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_WIDTH_ARB 0x933E
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_HEIGHT_ARB 0x933F
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_TABLE_SIZE_ARB 0x9340
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_ARB 0x9341
+#define GL_FRAMEBUFFER_PROGRAMMABLE_SAMPLE_LOCATIONS_ARB 0x9342
+#define GL_FRAMEBUFFER_SAMPLE_LOCATION_PIXEL_GRID_ARB 0x9343
+
+typedef void (GLAPIENTRY * PFNGLFRAMEBUFFERSAMPLELOCATIONSFVARBPROC) (GLenum target, GLuint start, GLsizei count, const GLfloat* v);
+typedef void (GLAPIENTRY * PFNGLNAMEDFRAMEBUFFERSAMPLELOCATIONSFVARBPROC) (GLuint framebuffer, GLuint start, GLsizei count, const GLfloat* v);
+
+#define glFramebufferSampleLocationsfvARB GLEW_GET_FUN(__glewFramebufferSampleLocationsfvARB)
+#define glNamedFramebufferSampleLocationsfvARB GLEW_GET_FUN(__glewNamedFramebufferSampleLocationsfvARB)
+
+#define GLEW_ARB_sample_locations GLEW_GET_VAR(__GLEW_ARB_sample_locations)
+
+#endif /* GL_ARB_sample_locations */
 
 /* ------------------------- GL_ARB_sample_shading ------------------------- */
 
@@ -5828,6 +6032,15 @@ typedef void (GLAPIENTRY * PFNGLVALIDATEPROGRAMPIPELINEPROC) (GLuint pipeline);
 
 #endif /* GL_ARB_separate_shader_objects */
 
+/* -------------------- GL_ARB_shader_atomic_counter_ops ------------------- */
+
+#ifndef GL_ARB_shader_atomic_counter_ops
+#define GL_ARB_shader_atomic_counter_ops 1
+
+#define GLEW_ARB_shader_atomic_counter_ops GLEW_GET_VAR(__GLEW_ARB_shader_atomic_counter_ops)
+
+#endif /* GL_ARB_shader_atomic_counter_ops */
+
 /* --------------------- GL_ARB_shader_atomic_counters --------------------- */
 
 #ifndef GL_ARB_shader_atomic_counters
@@ -5871,6 +6084,15 @@ typedef void (GLAPIENTRY * PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC) (GLuint prog
 
 #endif /* GL_ARB_shader_atomic_counters */
 
+/* -------------------------- GL_ARB_shader_ballot ------------------------- */
+
+#ifndef GL_ARB_shader_ballot
+#define GL_ARB_shader_ballot 1
+
+#define GLEW_ARB_shader_ballot GLEW_GET_VAR(__GLEW_ARB_shader_ballot)
+
+#endif /* GL_ARB_shader_ballot */
+
 /* ----------------------- GL_ARB_shader_bit_encoding ---------------------- */
 
 #ifndef GL_ARB_shader_bit_encoding
@@ -5879,6 +6101,15 @@ typedef void (GLAPIENTRY * PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC) (GLuint prog
 #define GLEW_ARB_shader_bit_encoding GLEW_GET_VAR(__GLEW_ARB_shader_bit_encoding)
 
 #endif /* GL_ARB_shader_bit_encoding */
+
+/* -------------------------- GL_ARB_shader_clock -------------------------- */
+
+#ifndef GL_ARB_shader_clock
+#define GL_ARB_shader_clock 1
+
+#define GLEW_ARB_shader_clock GLEW_GET_VAR(__GLEW_ARB_shader_clock)
+
+#endif /* GL_ARB_shader_clock */
 
 /* --------------------- GL_ARB_shader_draw_parameters --------------------- */
 
@@ -6217,6 +6448,15 @@ typedef void (GLAPIENTRY * PFNGLUNIFORMSUBROUTINESUIVPROC) (GLenum shadertype, G
 
 #endif /* GL_ARB_shader_texture_lod */
 
+/* ------------------- GL_ARB_shader_viewport_layer_array ------------------ */
+
+#ifndef GL_ARB_shader_viewport_layer_array
+#define GL_ARB_shader_viewport_layer_array 1
+
+#define GLEW_ARB_shader_viewport_layer_array GLEW_GET_VAR(__GLEW_ARB_shader_viewport_layer_array)
+
+#endif /* GL_ARB_shader_viewport_layer_array */
+
 /* ---------------------- GL_ARB_shading_language_100 ---------------------- */
 
 #ifndef GL_ARB_shading_language_100
@@ -6340,6 +6580,24 @@ typedef void (GLAPIENTRY * PFNGLTEXTUREPAGECOMMITMENTEXTPROC) (GLuint texture, G
 
 #endif /* GL_ARB_sparse_texture */
 
+/* ------------------------- GL_ARB_sparse_texture2 ------------------------ */
+
+#ifndef GL_ARB_sparse_texture2
+#define GL_ARB_sparse_texture2 1
+
+#define GLEW_ARB_sparse_texture2 GLEW_GET_VAR(__GLEW_ARB_sparse_texture2)
+
+#endif /* GL_ARB_sparse_texture2 */
+
+/* ---------------------- GL_ARB_sparse_texture_clamp ---------------------- */
+
+#ifndef GL_ARB_sparse_texture_clamp
+#define GL_ARB_sparse_texture_clamp 1
+
+#define GLEW_ARB_sparse_texture_clamp GLEW_GET_VAR(__GLEW_ARB_sparse_texture_clamp)
+
+#endif /* GL_ARB_sparse_texture_clamp */
+
 /* ------------------------ GL_ARB_stencil_texturing ----------------------- */
 
 #ifndef GL_ARB_stencil_texturing
@@ -6370,7 +6628,7 @@ typedef void (GLAPIENTRY * PFNGLTEXTUREPAGECOMMITMENTEXTPROC) (GLuint texture, G
 #define GL_TIMEOUT_EXPIRED 0x911B
 #define GL_CONDITION_SATISFIED 0x911C
 #define GL_WAIT_FAILED 0x911D
-#define GL_TIMEOUT_IGNORED 0xFFFFFFFFFFFFFFFF
+#define GL_TIMEOUT_IGNORED 0xFFFFFFFFFFFFFFFFull
 
 typedef GLenum (GLAPIENTRY * PFNGLCLIENTWAITSYNCPROC) (GLsync GLsync,GLbitfield flags,GLuint64 timeout);
 typedef void (GLAPIENTRY * PFNGLDELETESYNCPROC) (GLsync GLsync);
@@ -6676,6 +6934,18 @@ typedef void (GLAPIENTRY * PFNGLGETCOMPRESSEDTEXIMAGEARBPROC) (GLenum target, GL
 #define GLEW_ARB_texture_env_dot3 GLEW_GET_VAR(__GLEW_ARB_texture_env_dot3)
 
 #endif /* GL_ARB_texture_env_dot3 */
+
+/* ---------------------- GL_ARB_texture_filter_minmax --------------------- */
+
+#ifndef GL_ARB_texture_filter_minmax
+#define GL_ARB_texture_filter_minmax 1
+
+#define GL_TEXTURE_REDUCTION_MODE_ARB 0x9366
+#define GL_WEIGHTED_AVERAGE_ARB 0x9367
+
+#define GLEW_ARB_texture_filter_minmax GLEW_GET_VAR(__GLEW_ARB_texture_filter_minmax)
+
+#endif /* GL_ARB_texture_filter_minmax */
 
 /* -------------------------- GL_ARB_texture_float ------------------------- */
 
@@ -7121,7 +7391,7 @@ typedef void (GLAPIENTRY * PFNGLMULTTRANSPOSEMATRIXFARBPROC) (GLfloat m[16]);
 #define GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER 0x8A44
 #define GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER 0x8A45
 #define GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER 0x8A46
-#define GL_INVALID_INDEX 0xFFFFFFFF
+#define GL_INVALID_INDEX 0xFFFFFFFFu
 
 typedef void (GLAPIENTRY * PFNGLBINDBUFFERBASEPROC) (GLenum target, GLuint index, GLuint buffer);
 typedef void (GLAPIENTRY * PFNGLBINDBUFFERRANGEPROC) (GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
@@ -8377,6 +8647,18 @@ typedef void (GLAPIENTRY * PFNGLVERTEXSTREAM4SVATIPROC) (GLenum stream, const GL
 #define GLEW_ATI_vertex_streams GLEW_GET_VAR(__GLEW_ATI_vertex_streams)
 
 #endif /* GL_ATI_vertex_streams */
+
+/* ---------------- GL_EGL_NV_robustness_video_memory_purge ---------------- */
+
+#ifndef GL_EGL_NV_robustness_video_memory_purge
+#define GL_EGL_NV_robustness_video_memory_purge 1
+
+#define GL_EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x334C
+#define GL_PURGED_CONTEXT_RESET_NV 0x92BB
+
+#define GLEW_EGL_NV_robustness_video_memory_purge GLEW_GET_VAR(__GLEW_EGL_NV_robustness_video_memory_purge)
+
+#endif /* GL_EGL_NV_robustness_video_memory_purge */
 
 /* --------------------------- GL_EXT_422_pixels --------------------------- */
 
@@ -11355,6 +11637,26 @@ typedef void (GLAPIENTRY * PFNGLVERTEXWEIGHTFVEXTPROC) (GLfloat* weight);
 
 #endif /* GL_EXT_vertex_weighting */
 
+/* ------------------------ GL_EXT_window_rectangles ----------------------- */
+
+#ifndef GL_EXT_window_rectangles
+#define GL_EXT_window_rectangles 1
+
+#define GL_INCLUSIVE_EXT 0x8F10
+#define GL_EXCLUSIVE_EXT 0x8F11
+#define GL_WINDOW_RECTANGLE_EXT 0x8F12
+#define GL_WINDOW_RECTANGLE_MODE_EXT 0x8F13
+#define GL_MAX_WINDOW_RECTANGLES_EXT 0x8F14
+#define GL_NUM_WINDOW_RECTANGLES_EXT 0x8F15
+
+typedef void (GLAPIENTRY * PFNGLWINDOWRECTANGLESEXTPROC) (GLenum mode, GLsizei count, const GLint box[]);
+
+#define glWindowRectanglesEXT GLEW_GET_FUN(__glewWindowRectanglesEXT)
+
+#define GLEW_EXT_window_rectangles GLEW_GET_VAR(__GLEW_EXT_window_rectangles)
+
+#endif /* GL_EXT_window_rectangles */
+
 /* ------------------------- GL_EXT_x11_sync_object ------------------------ */
 
 #ifndef GL_EXT_x11_sync_object
@@ -11579,6 +11881,17 @@ typedef void (GLAPIENTRY * PFNGLVERTEXPOINTERLISTIBMPROC) (GLint size, GLenum ty
 
 #endif /* GL_INGR_interlace_read */
 
+/* ------------------ GL_INTEL_conservative_rasterization ------------------ */
+
+#ifndef GL_INTEL_conservative_rasterization
+#define GL_INTEL_conservative_rasterization 1
+
+#define GL_CONSERVATIVE_RASTERIZATION_INTEL 0x83FE
+
+#define GLEW_INTEL_conservative_rasterization GLEW_GET_VAR(__GLEW_INTEL_conservative_rasterization)
+
+#endif /* GL_INTEL_conservative_rasterization */
+
 /* ------------------- GL_INTEL_fragment_shader_ordering ------------------- */
 
 #ifndef GL_INTEL_fragment_shader_ordering
@@ -11587,6 +11900,15 @@ typedef void (GLAPIENTRY * PFNGLVERTEXPOINTERLISTIBMPROC) (GLint size, GLenum ty
 #define GLEW_INTEL_fragment_shader_ordering GLEW_GET_VAR(__GLEW_INTEL_fragment_shader_ordering)
 
 #endif /* GL_INTEL_fragment_shader_ordering */
+
+/* ----------------------- GL_INTEL_framebuffer_CMAA ----------------------- */
+
+#ifndef GL_INTEL_framebuffer_CMAA
+#define GL_INTEL_framebuffer_CMAA 1
+
+#define GLEW_INTEL_framebuffer_CMAA GLEW_GET_VAR(__GLEW_INTEL_framebuffer_CMAA)
+
+#endif /* GL_INTEL_framebuffer_CMAA */
 
 /* -------------------------- GL_INTEL_map_texture ------------------------- */
 
@@ -11827,6 +12149,17 @@ typedef void (GLAPIENTRY * PFNGLPUSHDEBUGGROUPPROC) (GLenum source, GLuint id, G
 
 #endif /* GL_KHR_debug */
 
+/* ---------------------------- GL_KHR_no_error ---------------------------- */
+
+#ifndef GL_KHR_no_error
+#define GL_KHR_no_error 1
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
+#define GLEW_KHR_no_error GLEW_GET_VAR(__GLEW_KHR_no_error)
+
+#endif /* GL_KHR_no_error */
+
 /* ------------------ GL_KHR_robust_buffer_access_behavior ----------------- */
 
 #ifndef GL_KHR_robust_buffer_access_behavior
@@ -11940,6 +12273,15 @@ typedef void (GLAPIENTRY * PFNGLREADNPIXELSPROC) (GLint x, GLint y, GLsizei widt
 
 #endif /* GL_KHR_texture_compression_astc_ldr */
 
+/* --------------- GL_KHR_texture_compression_astc_sliced_3d --------------- */
+
+#ifndef GL_KHR_texture_compression_astc_sliced_3d
+#define GL_KHR_texture_compression_astc_sliced_3d 1
+
+#define GLEW_KHR_texture_compression_astc_sliced_3d GLEW_GET_VAR(__GLEW_KHR_texture_compression_astc_sliced_3d)
+
+#endif /* GL_KHR_texture_compression_astc_sliced_3d */
+
 /* -------------------------- GL_KTX_buffer_region ------------------------- */
 
 #ifndef GL_KTX_buffer_region
@@ -12005,6 +12347,15 @@ typedef void (GLAPIENTRY * PFNGLRESIZEBUFFERSMESAPROC) (void);
 #define GLEW_MESA_resize_buffers GLEW_GET_VAR(__GLEW_MESA_resize_buffers)
 
 #endif /* GL_MESA_resize_buffers */
+
+/* -------------------- GL_MESA_shader_integer_functions ------------------- */
+
+#ifndef GL_MESA_shader_integer_functions
+#define GL_MESA_shader_integer_functions 1
+
+#define GLEW_MESA_shader_integer_functions GLEW_GET_VAR(__GLEW_MESA_shader_integer_functions)
+
+#endif /* GL_MESA_shader_integer_functions */
 
 /* --------------------------- GL_MESA_window_pos -------------------------- */
 
@@ -12078,6 +12429,15 @@ typedef void (GLAPIENTRY * PFNGLWINDOWPOS4SVMESAPROC) (const GLshort* p);
 
 #endif /* GL_MESA_ycbcr_texture */
 
+/* ----------- GL_NVX_blend_equation_advanced_multi_draw_buffers ----------- */
+
+#ifndef GL_NVX_blend_equation_advanced_multi_draw_buffers
+#define GL_NVX_blend_equation_advanced_multi_draw_buffers 1
+
+#define GLEW_NVX_blend_equation_advanced_multi_draw_buffers GLEW_GET_VAR(__GLEW_NVX_blend_equation_advanced_multi_draw_buffers)
+
+#endif /* GL_NVX_blend_equation_advanced_multi_draw_buffers */
+
 /* ----------------------- GL_NVX_conditional_render ----------------------- */
 
 #ifndef GL_NVX_conditional_render
@@ -12107,6 +12467,26 @@ typedef void (GLAPIENTRY * PFNGLENDCONDITIONALRENDERNVXPROC) (void);
 #define GLEW_NVX_gpu_memory_info GLEW_GET_VAR(__GLEW_NVX_gpu_memory_info)
 
 #endif /* GL_NVX_gpu_memory_info */
+
+/* ---------------------- GL_NVX_linked_gpu_multicast ---------------------- */
+
+#ifndef GL_NVX_linked_gpu_multicast
+#define GL_NVX_linked_gpu_multicast 1
+
+#define GL_LGPU_SEPARATE_STORAGE_BIT_NVX 0x0800
+#define GL_MAX_LGPU_GPUS_NVX 0x92BA
+
+typedef void (GLAPIENTRY * PFNGLLGPUCOPYIMAGESUBDATANVXPROC) (GLuint sourceGpu, GLbitfield destinationGpuMask, GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srxY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei width, GLsizei height, GLsizei depth);
+typedef void (GLAPIENTRY * PFNGLLGPUINTERLOCKNVXPROC) (void);
+typedef void (GLAPIENTRY * PFNGLLGPUNAMEDBUFFERSUBDATANVXPROC) (GLbitfield gpuMask, GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
+
+#define glLGPUCopyImageSubDataNVX GLEW_GET_FUN(__glewLGPUCopyImageSubDataNVX)
+#define glLGPUInterlockNVX GLEW_GET_FUN(__glewLGPUInterlockNVX)
+#define glLGPUNamedBufferSubDataNVX GLEW_GET_FUN(__glewLGPUNamedBufferSubDataNVX)
+
+#define GLEW_NVX_linked_gpu_multicast GLEW_GET_VAR(__GLEW_NVX_linked_gpu_multicast)
+
+#endif /* GL_NVX_linked_gpu_multicast */
 
 /* ------------------- GL_NV_bindless_multi_draw_indirect ------------------ */
 
@@ -12259,6 +12639,88 @@ typedef void (GLAPIENTRY * PFNGLBLENDPARAMETERINVPROC) (GLenum pname, GLint valu
 
 #endif /* GL_NV_blend_square */
 
+/* ----------------------- GL_NV_clip_space_w_scaling ---------------------- */
+
+#ifndef GL_NV_clip_space_w_scaling
+#define GL_NV_clip_space_w_scaling 1
+
+#define GL_VIEWPORT_POSITION_W_SCALE_NV 0x937C
+#define GL_VIEWPORT_POSITION_W_SCALE_X_COEFF_NV 0x937D
+#define GL_VIEWPORT_POSITION_W_SCALE_Y_COEFF_NV 0x937E
+
+typedef void (GLAPIENTRY * PFNGLVIEWPORTPOSITIONWSCALENVPROC) (GLuint index, GLfloat xcoeff, GLfloat ycoeff);
+
+#define glViewportPositionWScaleNV GLEW_GET_FUN(__glewViewportPositionWScaleNV)
+
+#define GLEW_NV_clip_space_w_scaling GLEW_GET_VAR(__GLEW_NV_clip_space_w_scaling)
+
+#endif /* GL_NV_clip_space_w_scaling */
+
+/* --------------------------- GL_NV_command_list -------------------------- */
+
+#ifndef GL_NV_command_list
+#define GL_NV_command_list 1
+
+#define GL_TERMINATE_SEQUENCE_COMMAND_NV 0x0000
+#define GL_NOP_COMMAND_NV 0x0001
+#define GL_DRAW_ELEMENTS_COMMAND_NV 0x0002
+#define GL_DRAW_ARRAYS_COMMAND_NV 0x0003
+#define GL_DRAW_ELEMENTS_STRIP_COMMAND_NV 0x0004
+#define GL_DRAW_ARRAYS_STRIP_COMMAND_NV 0x0005
+#define GL_DRAW_ELEMENTS_INSTANCED_COMMAND_NV 0x0006
+#define GL_DRAW_ARRAYS_INSTANCED_COMMAND_NV 0x0007
+#define GL_ELEMENT_ADDRESS_COMMAND_NV 0x0008
+#define GL_ATTRIBUTE_ADDRESS_COMMAND_NV 0x0009
+#define GL_UNIFORM_ADDRESS_COMMAND_NV 0x000a
+#define GL_BLEND_COLOR_COMMAND_NV 0x000b
+#define GL_STENCIL_REF_COMMAND_NV 0x000c
+#define GL_LINE_WIDTH_COMMAND_NV 0x000d
+#define GL_POLYGON_OFFSET_COMMAND_NV 0x000e
+#define GL_ALPHA_REF_COMMAND_NV 0x000f
+#define GL_VIEWPORT_COMMAND_NV 0x0010
+#define GL_SCISSOR_COMMAND_NV 0x0011
+#define GL_FRONT_FACE_COMMAND_NV 0x0012
+
+typedef void (GLAPIENTRY * PFNGLCALLCOMMANDLISTNVPROC) (GLuint list);
+typedef void (GLAPIENTRY * PFNGLCOMMANDLISTSEGMENTSNVPROC) (GLuint list, GLuint segments);
+typedef void (GLAPIENTRY * PFNGLCOMPILECOMMANDLISTNVPROC) (GLuint list);
+typedef void (GLAPIENTRY * PFNGLCREATECOMMANDLISTSNVPROC) (GLsizei n, GLuint* lists);
+typedef void (GLAPIENTRY * PFNGLCREATESTATESNVPROC) (GLsizei n, GLuint* states);
+typedef void (GLAPIENTRY * PFNGLDELETECOMMANDLISTSNVPROC) (GLsizei n, const GLuint* lists);
+typedef void (GLAPIENTRY * PFNGLDELETESTATESNVPROC) (GLsizei n, const GLuint* states);
+typedef void (GLAPIENTRY * PFNGLDRAWCOMMANDSADDRESSNVPROC) (GLenum primitiveMode, const GLuint64* indirects, const GLsizei* sizes, GLuint count);
+typedef void (GLAPIENTRY * PFNGLDRAWCOMMANDSNVPROC) (GLenum primitiveMode, GLuint buffer, const GLintptr* indirects, const GLsizei* sizes, GLuint count);
+typedef void (GLAPIENTRY * PFNGLDRAWCOMMANDSSTATESADDRESSNVPROC) (const GLuint64* indirects, const GLsizei* sizes, const GLuint* states, const GLuint* fbos, GLuint count);
+typedef void (GLAPIENTRY * PFNGLDRAWCOMMANDSSTATESNVPROC) (GLuint buffer, const GLintptr* indirects, const GLsizei* sizes, const GLuint* states, const GLuint* fbos, GLuint count);
+typedef GLuint (GLAPIENTRY * PFNGLGETCOMMANDHEADERNVPROC) (GLenum tokenID, GLuint size);
+typedef GLushort (GLAPIENTRY * PFNGLGETSTAGEINDEXNVPROC) (GLenum shadertype);
+typedef GLboolean (GLAPIENTRY * PFNGLISCOMMANDLISTNVPROC) (GLuint list);
+typedef GLboolean (GLAPIENTRY * PFNGLISSTATENVPROC) (GLuint state);
+typedef void (GLAPIENTRY * PFNGLLISTDRAWCOMMANDSSTATESCLIENTNVPROC) (GLuint list, GLuint segment, const void** indirects, const GLsizei* sizes, const GLuint* states, const GLuint* fbos, GLuint count);
+typedef void (GLAPIENTRY * PFNGLSTATECAPTURENVPROC) (GLuint state, GLenum mode);
+
+#define glCallCommandListNV GLEW_GET_FUN(__glewCallCommandListNV)
+#define glCommandListSegmentsNV GLEW_GET_FUN(__glewCommandListSegmentsNV)
+#define glCompileCommandListNV GLEW_GET_FUN(__glewCompileCommandListNV)
+#define glCreateCommandListsNV GLEW_GET_FUN(__glewCreateCommandListsNV)
+#define glCreateStatesNV GLEW_GET_FUN(__glewCreateStatesNV)
+#define glDeleteCommandListsNV GLEW_GET_FUN(__glewDeleteCommandListsNV)
+#define glDeleteStatesNV GLEW_GET_FUN(__glewDeleteStatesNV)
+#define glDrawCommandsAddressNV GLEW_GET_FUN(__glewDrawCommandsAddressNV)
+#define glDrawCommandsNV GLEW_GET_FUN(__glewDrawCommandsNV)
+#define glDrawCommandsStatesAddressNV GLEW_GET_FUN(__glewDrawCommandsStatesAddressNV)
+#define glDrawCommandsStatesNV GLEW_GET_FUN(__glewDrawCommandsStatesNV)
+#define glGetCommandHeaderNV GLEW_GET_FUN(__glewGetCommandHeaderNV)
+#define glGetStageIndexNV GLEW_GET_FUN(__glewGetStageIndexNV)
+#define glIsCommandListNV GLEW_GET_FUN(__glewIsCommandListNV)
+#define glIsStateNV GLEW_GET_FUN(__glewIsStateNV)
+#define glListDrawCommandsStatesClientNV GLEW_GET_FUN(__glewListDrawCommandsStatesClientNV)
+#define glStateCaptureNV GLEW_GET_FUN(__glewStateCaptureNV)
+
+#define GLEW_NV_command_list GLEW_GET_VAR(__GLEW_NV_command_list)
+
+#endif /* GL_NV_command_list */
+
 /* ------------------------- GL_NV_compute_program5 ------------------------ */
 
 #ifndef GL_NV_compute_program5
@@ -12308,6 +12770,40 @@ typedef void (GLAPIENTRY * PFNGLSUBPIXELPRECISIONBIASNVPROC) (GLuint xbits, GLui
 #define GLEW_NV_conservative_raster GLEW_GET_VAR(__GLEW_NV_conservative_raster)
 
 #endif /* GL_NV_conservative_raster */
+
+/* -------------------- GL_NV_conservative_raster_dilate ------------------- */
+
+#ifndef GL_NV_conservative_raster_dilate
+#define GL_NV_conservative_raster_dilate 1
+
+#define GL_CONSERVATIVE_RASTER_DILATE_NV 0x9379
+#define GL_CONSERVATIVE_RASTER_DILATE_RANGE_NV 0x937A
+#define GL_CONSERVATIVE_RASTER_DILATE_GRANULARITY_NV 0x937B
+
+typedef void (GLAPIENTRY * PFNGLCONSERVATIVERASTERPARAMETERFNVPROC) (GLenum pname, GLfloat value);
+
+#define glConservativeRasterParameterfNV GLEW_GET_FUN(__glewConservativeRasterParameterfNV)
+
+#define GLEW_NV_conservative_raster_dilate GLEW_GET_VAR(__GLEW_NV_conservative_raster_dilate)
+
+#endif /* GL_NV_conservative_raster_dilate */
+
+/* -------------- GL_NV_conservative_raster_pre_snap_triangles ------------- */
+
+#ifndef GL_NV_conservative_raster_pre_snap_triangles
+#define GL_NV_conservative_raster_pre_snap_triangles 1
+
+#define GL_CONSERVATIVE_RASTER_MODE_NV 0x954D
+#define GL_CONSERVATIVE_RASTER_MODE_POST_SNAP_NV 0x954E
+#define GL_CONSERVATIVE_RASTER_MODE_PRE_SNAP_TRIANGLES_NV 0x954F
+
+typedef void (GLAPIENTRY * PFNGLCONSERVATIVERASTERPARAMETERINVPROC) (GLenum pname, GLint param);
+
+#define glConservativeRasterParameteriNV GLEW_GET_FUN(__glewConservativeRasterParameteriNV)
+
+#define GLEW_NV_conservative_raster_pre_snap_triangles GLEW_GET_VAR(__GLEW_NV_conservative_raster_pre_snap_triangles)
+
+#endif /* GL_NV_conservative_raster_pre_snap_triangles */
 
 /* ----------------------- GL_NV_copy_depth_to_color ----------------------- */
 
@@ -12406,6 +12902,29 @@ typedef void (GLAPIENTRY * PFNGLDRAWTEXTURENVPROC) (GLuint texture, GLuint sampl
 #define GLEW_NV_draw_texture GLEW_GET_VAR(__GLEW_NV_draw_texture)
 
 #endif /* GL_NV_draw_texture */
+
+/* ------------------------ GL_NV_draw_vulkan_image ------------------------ */
+
+#ifndef GL_NV_draw_vulkan_image
+#define GL_NV_draw_vulkan_image 1
+
+typedef void (APIENTRY *GLVULKANPROCNV)(void);
+
+typedef void (GLAPIENTRY * PFNGLDRAWVKIMAGENVPROC) (GLuint64 vkImage, GLuint sampler, GLfloat x0, GLfloat y0, GLfloat x1, GLfloat y1, GLfloat z, GLfloat s0, GLfloat t0, GLfloat s1, GLfloat t1);
+typedef GLVULKANPROCNV (GLAPIENTRY * PFNGLGETVKPROCADDRNVPROC) (const GLchar* name);
+typedef void (GLAPIENTRY * PFNGLSIGNALVKFENCENVPROC) (GLuint64 vkFence);
+typedef void (GLAPIENTRY * PFNGLSIGNALVKSEMAPHORENVPROC) (GLuint64 vkSemaphore);
+typedef void (GLAPIENTRY * PFNGLWAITVKSEMAPHORENVPROC) (GLuint64 vkSemaphore);
+
+#define glDrawVkImageNV GLEW_GET_FUN(__glewDrawVkImageNV)
+#define glGetVkProcAddrNV GLEW_GET_FUN(__glewGetVkProcAddrNV)
+#define glSignalVkFenceNV GLEW_GET_FUN(__glewSignalVkFenceNV)
+#define glSignalVkSemaphoreNV GLEW_GET_FUN(__glewSignalVkSemaphoreNV)
+#define glWaitVkSemaphoreNV GLEW_GET_FUN(__glewWaitVkSemaphoreNV)
+
+#define GLEW_NV_draw_vulkan_image GLEW_GET_VAR(__GLEW_NV_draw_vulkan_image)
+
+#endif /* GL_NV_draw_vulkan_image */
 
 /* ---------------------------- GL_NV_evaluators --------------------------- */
 
@@ -12731,6 +13250,47 @@ typedef void (GLAPIENTRY * PFNGLPROGRAMVERTEXLIMITNVPROC) (GLenum target, GLint 
 #define GLEW_NV_geometry_shader_passthrough GLEW_GET_VAR(__GLEW_NV_geometry_shader_passthrough)
 
 #endif /* GL_NV_geometry_shader_passthrough */
+
+/* -------------------------- GL_NV_gpu_multicast -------------------------- */
+
+#ifndef GL_NV_gpu_multicast
+#define GL_NV_gpu_multicast 1
+
+#define GL_PER_GPU_STORAGE_BIT_NV 0x0800
+#define GL_MULTICAST_GPUS_NV 0x92BA
+#define GL_PER_GPU_STORAGE_NV 0x9548
+#define GL_MULTICAST_PROGRAMMABLE_SAMPLE_LOCATION_NV 0x9549
+#define GL_RENDER_GPU_MASK_NV 0x9558
+
+typedef void (GLAPIENTRY * PFNGLMULTICASTBARRIERNVPROC) (void);
+typedef void (GLAPIENTRY * PFNGLMULTICASTBLITFRAMEBUFFERNVPROC) (GLuint srcGpu, GLuint dstGpu, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+typedef void (GLAPIENTRY * PFNGLMULTICASTBUFFERSUBDATANVPROC) (GLbitfield gpuMask, GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
+typedef void (GLAPIENTRY * PFNGLMULTICASTCOPYBUFFERSUBDATANVPROC) (GLuint readGpu, GLbitfield writeGpuMask, GLuint readBuffer, GLuint writeBuffer, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+typedef void (GLAPIENTRY * PFNGLMULTICASTCOPYIMAGESUBDATANVPROC) (GLuint srcGpu, GLbitfield dstGpuMask, GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srxY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+typedef void (GLAPIENTRY * PFNGLMULTICASTFRAMEBUFFERSAMPLELOCATIONSFVNVPROC) (GLuint gpu, GLuint framebuffer, GLuint start, GLsizei count, const GLfloat* v);
+typedef void (GLAPIENTRY * PFNGLMULTICASTGETQUERYOBJECTI64VNVPROC) (GLuint gpu, GLuint id, GLenum pname, GLint64* params);
+typedef void (GLAPIENTRY * PFNGLMULTICASTGETQUERYOBJECTIVNVPROC) (GLuint gpu, GLuint id, GLenum pname, GLint* params);
+typedef void (GLAPIENTRY * PFNGLMULTICASTGETQUERYOBJECTUI64VNVPROC) (GLuint gpu, GLuint id, GLenum pname, GLuint64* params);
+typedef void (GLAPIENTRY * PFNGLMULTICASTGETQUERYOBJECTUIVNVPROC) (GLuint gpu, GLuint id, GLenum pname, GLuint* params);
+typedef void (GLAPIENTRY * PFNGLMULTICASTWAITSYNCNVPROC) (GLuint signalGpu, GLbitfield waitGpuMask);
+typedef void (GLAPIENTRY * PFNGLRENDERGPUMASKNVPROC) (GLbitfield mask);
+
+#define glMulticastBarrierNV GLEW_GET_FUN(__glewMulticastBarrierNV)
+#define glMulticastBlitFramebufferNV GLEW_GET_FUN(__glewMulticastBlitFramebufferNV)
+#define glMulticastBufferSubDataNV GLEW_GET_FUN(__glewMulticastBufferSubDataNV)
+#define glMulticastCopyBufferSubDataNV GLEW_GET_FUN(__glewMulticastCopyBufferSubDataNV)
+#define glMulticastCopyImageSubDataNV GLEW_GET_FUN(__glewMulticastCopyImageSubDataNV)
+#define glMulticastFramebufferSampleLocationsfvNV GLEW_GET_FUN(__glewMulticastFramebufferSampleLocationsfvNV)
+#define glMulticastGetQueryObjecti64vNV GLEW_GET_FUN(__glewMulticastGetQueryObjecti64vNV)
+#define glMulticastGetQueryObjectivNV GLEW_GET_FUN(__glewMulticastGetQueryObjectivNV)
+#define glMulticastGetQueryObjectui64vNV GLEW_GET_FUN(__glewMulticastGetQueryObjectui64vNV)
+#define glMulticastGetQueryObjectuivNV GLEW_GET_FUN(__glewMulticastGetQueryObjectuivNV)
+#define glMulticastWaitSyncNV GLEW_GET_FUN(__glewMulticastWaitSyncNV)
+#define glRenderGpuMaskNV GLEW_GET_FUN(__glewRenderGpuMaskNV)
+
+#define GLEW_NV_gpu_multicast GLEW_GET_VAR(__GLEW_NV_gpu_multicast)
+
+#endif /* GL_NV_gpu_multicast */
 
 /* --------------------------- GL_NV_gpu_program4 -------------------------- */
 
@@ -13646,6 +14206,18 @@ typedef void (GLAPIENTRY * PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC) (GLenum stage
 
 #endif /* GL_NV_register_combiners2 */
 
+/* ------------------ GL_NV_robustness_video_memory_purge ------------------ */
+
+#ifndef GL_NV_robustness_video_memory_purge
+#define GL_NV_robustness_video_memory_purge 1
+
+#define GL_EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x334C
+#define GL_PURGED_CONTEXT_RESET_NV 0x92BB
+
+#define GLEW_NV_robustness_video_memory_purge GLEW_GET_VAR(__GLEW_NV_robustness_video_memory_purge)
+
+#endif /* GL_NV_robustness_video_memory_purge */
+
 /* ------------------------- GL_NV_sample_locations ------------------------ */
 
 #ifndef GL_NV_sample_locations
@@ -13696,6 +14268,15 @@ typedef void (GLAPIENTRY * PFNGLNAMEDFRAMEBUFFERSAMPLELOCATIONSFVNVPROC) (GLuint
 #define GLEW_NV_shader_atomic_float GLEW_GET_VAR(__GLEW_NV_shader_atomic_float)
 
 #endif /* GL_NV_shader_atomic_float */
+
+/* ---------------------- GL_NV_shader_atomic_float64 ---------------------- */
+
+#ifndef GL_NV_shader_atomic_float64
+#define GL_NV_shader_atomic_float64 1
+
+#define GLEW_NV_shader_atomic_float64 GLEW_GET_VAR(__GLEW_NV_shader_atomic_float64)
+
+#endif /* GL_NV_shader_atomic_float64 */
 
 /* -------------------- GL_NV_shader_atomic_fp16_vector -------------------- */
 
@@ -13786,6 +14367,15 @@ typedef void (GLAPIENTRY * PFNGLUNIFORMUI64VNVPROC) (GLint location, GLsizei cou
 #define GLEW_NV_shader_thread_shuffle GLEW_GET_VAR(__GLEW_NV_shader_thread_shuffle)
 
 #endif /* GL_NV_shader_thread_shuffle */
+
+/* ---------------------- GL_NV_stereo_view_rendering ---------------------- */
+
+#ifndef GL_NV_stereo_view_rendering
+#define GL_NV_stereo_view_rendering 1
+
+#define GLEW_NV_stereo_view_rendering GLEW_GET_VAR(__GLEW_NV_stereo_view_rendering)
+
+#endif /* GL_NV_stereo_view_rendering */
 
 /* ---------------------- GL_NV_tessellation_program5 ---------------------- */
 
@@ -14697,6 +15287,32 @@ typedef void (GLAPIENTRY * PFNGLVIDEOCAPTURESTREAMPARAMETERIVNVPROC) (GLuint vid
 
 #endif /* GL_NV_viewport_array2 */
 
+/* ------------------------- GL_NV_viewport_swizzle ------------------------ */
+
+#ifndef GL_NV_viewport_swizzle
+#define GL_NV_viewport_swizzle 1
+
+#define GL_VIEWPORT_SWIZZLE_POSITIVE_X_NV 0x9350
+#define GL_VIEWPORT_SWIZZLE_NEGATIVE_X_NV 0x9351
+#define GL_VIEWPORT_SWIZZLE_POSITIVE_Y_NV 0x9352
+#define GL_VIEWPORT_SWIZZLE_NEGATIVE_Y_NV 0x9353
+#define GL_VIEWPORT_SWIZZLE_POSITIVE_Z_NV 0x9354
+#define GL_VIEWPORT_SWIZZLE_NEGATIVE_Z_NV 0x9355
+#define GL_VIEWPORT_SWIZZLE_POSITIVE_W_NV 0x9356
+#define GL_VIEWPORT_SWIZZLE_NEGATIVE_W_NV 0x9357
+#define GL_VIEWPORT_SWIZZLE_X_NV 0x9358
+#define GL_VIEWPORT_SWIZZLE_Y_NV 0x9359
+#define GL_VIEWPORT_SWIZZLE_Z_NV 0x935A
+#define GL_VIEWPORT_SWIZZLE_W_NV 0x935B
+
+typedef void (GLAPIENTRY * PFNGLVIEWPORTSWIZZLENVPROC) (GLuint index, GLenum swizzlex, GLenum swizzley, GLenum swizzlez, GLenum swizzlew);
+
+#define glViewportSwizzleNV GLEW_GET_FUN(__glewViewportSwizzleNV)
+
+#define GLEW_NV_viewport_swizzle GLEW_GET_VAR(__GLEW_NV_viewport_swizzle)
+
+#endif /* GL_NV_viewport_swizzle */
+
 /* ------------------------ GL_OES_byte_coordinates ------------------------ */
 
 #ifndef GL_OES_byte_coordinates
@@ -14800,6 +15416,33 @@ typedef void (GLAPIENTRY * PFNGLORTHOFOESPROC) (GLfloat l, GLfloat r, GLfloat b,
 #define GLEW_OML_subsample GLEW_GET_VAR(__GLEW_OML_subsample)
 
 #endif /* GL_OML_subsample */
+
+/* ---------------------------- GL_OVR_multiview --------------------------- */
+
+#ifndef GL_OVR_multiview
+#define GL_OVR_multiview 1
+
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR 0x9630
+#define GL_MAX_VIEWS_OVR 0x9631
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR 0x9632
+#define GL_FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR 0x9633
+
+typedef void (GLAPIENTRY * PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC) (GLenum target, GLenum attachment, GLuint texture, GLint level, GLint baseViewIndex, GLsizei numViews);
+
+#define glFramebufferTextureMultiviewOVR GLEW_GET_FUN(__glewFramebufferTextureMultiviewOVR)
+
+#define GLEW_OVR_multiview GLEW_GET_VAR(__GLEW_OVR_multiview)
+
+#endif /* GL_OVR_multiview */
+
+/* --------------------------- GL_OVR_multiview2 --------------------------- */
+
+#ifndef GL_OVR_multiview2
+#define GL_OVR_multiview2 1
+
+#define GLEW_OVR_multiview2 GLEW_GET_VAR(__GLEW_OVR_multiview2)
+
+#endif /* GL_OVR_multiview2 */
 
 /* --------------------------- GL_PGI_misc_hints --------------------------- */
 
@@ -15426,10 +16069,6 @@ typedef void (GLAPIENTRY * PFNGLFLUSHRASTERSGIXPROC) (void);
 
 #ifndef GL_SGIX_fog_texture
 #define GL_SGIX_fog_texture 1
-
-#define GL_FOG_PATCHY_FACTOR_SGIX 0
-#define GL_FRAGMENT_FOG_SGIX 0
-#define GL_TEXTURE_FOG_SGIX 0
 
 typedef void (GLAPIENTRY * PFNGLTEXTUREFOGSGIXPROC) (GLenum pname);
 
@@ -16100,22 +16739,7 @@ typedef void (GLAPIENTRY * PFNGLADDSWAPHINTRECTWINPROC) (GLint x, GLint y, GLsiz
 
 /* ------------------------------------------------------------------------- */
 
-#if defined(GLEW_MX) && defined(_WIN32)
-#define GLEW_FUN_EXPORT
-#else
-#define GLEW_FUN_EXPORT GLEWAPI
-#endif /* GLEW_MX */
 
-#if defined(GLEW_MX)
-#define GLEW_VAR_EXPORT
-#else
-#define GLEW_VAR_EXPORT GLEWAPI
-#endif /* GLEW_MX */
-
-#if defined(GLEW_MX) && defined(_WIN32)
-struct GLEWContextStruct
-{
-#endif /* GLEW_MX */
 
 GLEW_FUN_EXPORT PFNGLCOPYTEXSUBIMAGE3DPROC __glewCopyTexSubImage3D;
 GLEW_FUN_EXPORT PFNGLDRAWRANGEELEMENTSPROC __glewDrawRangeElements;
@@ -16412,6 +17036,9 @@ GLEW_FUN_EXPORT PFNGLBLENDFUNCIPROC __glewBlendFunci;
 GLEW_FUN_EXPORT PFNGLMINSAMPLESHADINGPROC __glewMinSampleShading;
 
 GLEW_FUN_EXPORT PFNGLGETGRAPHICSRESETSTATUSPROC __glewGetGraphicsResetStatus;
+GLEW_FUN_EXPORT PFNGLGETNCOMPRESSEDTEXIMAGEPROC __glewGetnCompressedTexImage;
+GLEW_FUN_EXPORT PFNGLGETNTEXIMAGEPROC __glewGetnTexImage;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMDVPROC __glewGetnUniformdv;
 
 GLEW_FUN_EXPORT PFNGLTBUFFERMASK3DFXPROC __glewTbufferMask3DFX;
 
@@ -16529,6 +17156,8 @@ GLEW_FUN_EXPORT PFNGLRELEASESHADERCOMPILERPROC __glewReleaseShaderCompiler;
 GLEW_FUN_EXPORT PFNGLSHADERBINARYPROC __glewShaderBinary;
 
 GLEW_FUN_EXPORT PFNGLMEMORYBARRIERBYREGIONPROC __glewMemoryBarrierByRegion;
+
+GLEW_FUN_EXPORT PFNGLPRIMITIVEBOUNDINGBOXARBPROC __glewPrimitiveBoundingBoxARB;
 
 GLEW_FUN_EXPORT PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC __glewDrawArraysInstancedBaseInstance;
 GLEW_FUN_EXPORT PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC __glewDrawElementsInstancedBaseInstance;
@@ -16736,6 +17365,8 @@ GLEW_FUN_EXPORT PFNGLPROGRAMPARAMETERIPROC __glewProgramParameteri;
 GLEW_FUN_EXPORT PFNGLGETCOMPRESSEDTEXTURESUBIMAGEPROC __glewGetCompressedTextureSubImage;
 GLEW_FUN_EXPORT PFNGLGETTEXTURESUBIMAGEPROC __glewGetTextureSubImage;
 
+GLEW_FUN_EXPORT PFNGLSPECIALIZESHADERARBPROC __glewSpecializeShaderARB;
+
 GLEW_FUN_EXPORT PFNGLGETUNIFORMDVPROC __glewGetUniformdv;
 GLEW_FUN_EXPORT PFNGLUNIFORM1DPROC __glewUniform1d;
 GLEW_FUN_EXPORT PFNGLUNIFORM1DVPROC __glewUniform1dv;
@@ -16754,6 +17385,43 @@ GLEW_FUN_EXPORT PFNGLUNIFORMMATRIX3X4DVPROC __glewUniformMatrix3x4dv;
 GLEW_FUN_EXPORT PFNGLUNIFORMMATRIX4DVPROC __glewUniformMatrix4dv;
 GLEW_FUN_EXPORT PFNGLUNIFORMMATRIX4X2DVPROC __glewUniformMatrix4x2dv;
 GLEW_FUN_EXPORT PFNGLUNIFORMMATRIX4X3DVPROC __glewUniformMatrix4x3dv;
+
+GLEW_FUN_EXPORT PFNGLGETUNIFORMI64VARBPROC __glewGetUniformi64vARB;
+GLEW_FUN_EXPORT PFNGLGETUNIFORMUI64VARBPROC __glewGetUniformui64vARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMI64VARBPROC __glewGetnUniformi64vARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMUI64VARBPROC __glewGetnUniformui64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM1I64ARBPROC __glewProgramUniform1i64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM1I64VARBPROC __glewProgramUniform1i64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM1UI64ARBPROC __glewProgramUniform1ui64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM1UI64VARBPROC __glewProgramUniform1ui64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM2I64ARBPROC __glewProgramUniform2i64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM2I64VARBPROC __glewProgramUniform2i64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM2UI64ARBPROC __glewProgramUniform2ui64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM2UI64VARBPROC __glewProgramUniform2ui64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM3I64ARBPROC __glewProgramUniform3i64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM3I64VARBPROC __glewProgramUniform3i64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM3UI64ARBPROC __glewProgramUniform3ui64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM3UI64VARBPROC __glewProgramUniform3ui64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM4I64ARBPROC __glewProgramUniform4i64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM4I64VARBPROC __glewProgramUniform4i64vARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM4UI64ARBPROC __glewProgramUniform4ui64ARB;
+GLEW_FUN_EXPORT PFNGLPROGRAMUNIFORM4UI64VARBPROC __glewProgramUniform4ui64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM1I64ARBPROC __glewUniform1i64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM1I64VARBPROC __glewUniform1i64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM1UI64ARBPROC __glewUniform1ui64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM1UI64VARBPROC __glewUniform1ui64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM2I64ARBPROC __glewUniform2i64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM2I64VARBPROC __glewUniform2i64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM2UI64ARBPROC __glewUniform2ui64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM2UI64VARBPROC __glewUniform2ui64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM3I64ARBPROC __glewUniform3i64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM3I64VARBPROC __glewUniform3i64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM3UI64ARBPROC __glewUniform3ui64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM3UI64VARBPROC __glewUniform3ui64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM4I64ARBPROC __glewUniform4i64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM4I64VARBPROC __glewUniform4i64vARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM4UI64ARBPROC __glewUniform4ui64ARB;
+GLEW_FUN_EXPORT PFNGLUNIFORM4UI64VARBPROC __glewUniform4ui64vARB;
 
 GLEW_FUN_EXPORT PFNGLCOLORSUBTABLEPROC __glewColorSubTable;
 GLEW_FUN_EXPORT PFNGLCOLORTABLEPROC __glewColorTable;
@@ -16871,6 +17539,8 @@ GLEW_FUN_EXPORT PFNGLGETQUERYOBJECTUIVARBPROC __glewGetQueryObjectuivARB;
 GLEW_FUN_EXPORT PFNGLGETQUERYIVARBPROC __glewGetQueryivARB;
 GLEW_FUN_EXPORT PFNGLISQUERYARBPROC __glewIsQueryARB;
 
+GLEW_FUN_EXPORT PFNGLMAXSHADERCOMPILERTHREADSARBPROC __glewMaxShaderCompilerThreadsARB;
+
 GLEW_FUN_EXPORT PFNGLPOINTPARAMETERFARBPROC __glewPointParameterfARB;
 GLEW_FUN_EXPORT PFNGLPOINTPARAMETERFVARBPROC __glewPointParameterfvARB;
 
@@ -16903,6 +17573,9 @@ GLEW_FUN_EXPORT PFNGLGETNUNIFORMFVARBPROC __glewGetnUniformfvARB;
 GLEW_FUN_EXPORT PFNGLGETNUNIFORMIVARBPROC __glewGetnUniformivARB;
 GLEW_FUN_EXPORT PFNGLGETNUNIFORMUIVARBPROC __glewGetnUniformuivARB;
 GLEW_FUN_EXPORT PFNGLREADNPIXELSARBPROC __glewReadnPixelsARB;
+
+GLEW_FUN_EXPORT PFNGLFRAMEBUFFERSAMPLELOCATIONSFVARBPROC __glewFramebufferSampleLocationsfvARB;
+GLEW_FUN_EXPORT PFNGLNAMEDFRAMEBUFFERSAMPLELOCATIONSFVARBPROC __glewNamedFramebufferSampleLocationsfvARB;
 
 GLEW_FUN_EXPORT PFNGLMINSAMPLESHADINGARBPROC __glewMinSampleShadingARB;
 
@@ -17970,6 +18643,8 @@ GLEW_FUN_EXPORT PFNGLVERTEXWEIGHTPOINTEREXTPROC __glewVertexWeightPointerEXT;
 GLEW_FUN_EXPORT PFNGLVERTEXWEIGHTFEXTPROC __glewVertexWeightfEXT;
 GLEW_FUN_EXPORT PFNGLVERTEXWEIGHTFVEXTPROC __glewVertexWeightfvEXT;
 
+GLEW_FUN_EXPORT PFNGLWINDOWRECTANGLESEXTPROC __glewWindowRectanglesEXT;
+
 GLEW_FUN_EXPORT PFNGLIMPORTSYNCEXTPROC __glewImportSyncEXT;
 
 GLEW_FUN_EXPORT PFNGLFRAMETERMINATORGREMEDYPROC __glewFrameTerminatorGREMEDY;
@@ -18072,6 +18747,10 @@ GLEW_FUN_EXPORT PFNGLWINDOWPOS4SVMESAPROC __glewWindowPos4svMESA;
 GLEW_FUN_EXPORT PFNGLBEGINCONDITIONALRENDERNVXPROC __glewBeginConditionalRenderNVX;
 GLEW_FUN_EXPORT PFNGLENDCONDITIONALRENDERNVXPROC __glewEndConditionalRenderNVX;
 
+GLEW_FUN_EXPORT PFNGLLGPUCOPYIMAGESUBDATANVXPROC __glewLGPUCopyImageSubDataNVX;
+GLEW_FUN_EXPORT PFNGLLGPUINTERLOCKNVXPROC __glewLGPUInterlockNVX;
+GLEW_FUN_EXPORT PFNGLLGPUNAMEDBUFFERSUBDATANVXPROC __glewLGPUNamedBufferSubDataNVX;
+
 GLEW_FUN_EXPORT PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSNVPROC __glewMultiDrawArraysIndirectBindlessNV;
 GLEW_FUN_EXPORT PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSNVPROC __glewMultiDrawElementsIndirectBindlessNV;
 
@@ -18095,10 +18774,34 @@ GLEW_FUN_EXPORT PFNGLUNIFORMHANDLEUI64VNVPROC __glewUniformHandleui64vNV;
 GLEW_FUN_EXPORT PFNGLBLENDBARRIERNVPROC __glewBlendBarrierNV;
 GLEW_FUN_EXPORT PFNGLBLENDPARAMETERINVPROC __glewBlendParameteriNV;
 
+GLEW_FUN_EXPORT PFNGLVIEWPORTPOSITIONWSCALENVPROC __glewViewportPositionWScaleNV;
+
+GLEW_FUN_EXPORT PFNGLCALLCOMMANDLISTNVPROC __glewCallCommandListNV;
+GLEW_FUN_EXPORT PFNGLCOMMANDLISTSEGMENTSNVPROC __glewCommandListSegmentsNV;
+GLEW_FUN_EXPORT PFNGLCOMPILECOMMANDLISTNVPROC __glewCompileCommandListNV;
+GLEW_FUN_EXPORT PFNGLCREATECOMMANDLISTSNVPROC __glewCreateCommandListsNV;
+GLEW_FUN_EXPORT PFNGLCREATESTATESNVPROC __glewCreateStatesNV;
+GLEW_FUN_EXPORT PFNGLDELETECOMMANDLISTSNVPROC __glewDeleteCommandListsNV;
+GLEW_FUN_EXPORT PFNGLDELETESTATESNVPROC __glewDeleteStatesNV;
+GLEW_FUN_EXPORT PFNGLDRAWCOMMANDSADDRESSNVPROC __glewDrawCommandsAddressNV;
+GLEW_FUN_EXPORT PFNGLDRAWCOMMANDSNVPROC __glewDrawCommandsNV;
+GLEW_FUN_EXPORT PFNGLDRAWCOMMANDSSTATESADDRESSNVPROC __glewDrawCommandsStatesAddressNV;
+GLEW_FUN_EXPORT PFNGLDRAWCOMMANDSSTATESNVPROC __glewDrawCommandsStatesNV;
+GLEW_FUN_EXPORT PFNGLGETCOMMANDHEADERNVPROC __glewGetCommandHeaderNV;
+GLEW_FUN_EXPORT PFNGLGETSTAGEINDEXNVPROC __glewGetStageIndexNV;
+GLEW_FUN_EXPORT PFNGLISCOMMANDLISTNVPROC __glewIsCommandListNV;
+GLEW_FUN_EXPORT PFNGLISSTATENVPROC __glewIsStateNV;
+GLEW_FUN_EXPORT PFNGLLISTDRAWCOMMANDSSTATESCLIENTNVPROC __glewListDrawCommandsStatesClientNV;
+GLEW_FUN_EXPORT PFNGLSTATECAPTURENVPROC __glewStateCaptureNV;
+
 GLEW_FUN_EXPORT PFNGLBEGINCONDITIONALRENDERNVPROC __glewBeginConditionalRenderNV;
 GLEW_FUN_EXPORT PFNGLENDCONDITIONALRENDERNVPROC __glewEndConditionalRenderNV;
 
 GLEW_FUN_EXPORT PFNGLSUBPIXELPRECISIONBIASNVPROC __glewSubpixelPrecisionBiasNV;
+
+GLEW_FUN_EXPORT PFNGLCONSERVATIVERASTERPARAMETERFNVPROC __glewConservativeRasterParameterfNV;
+
+GLEW_FUN_EXPORT PFNGLCONSERVATIVERASTERPARAMETERINVPROC __glewConservativeRasterParameteriNV;
 
 GLEW_FUN_EXPORT PFNGLCOPYIMAGESUBDATANVPROC __glewCopyImageSubDataNV;
 
@@ -18107,6 +18810,12 @@ GLEW_FUN_EXPORT PFNGLDEPTHBOUNDSDNVPROC __glewDepthBoundsdNV;
 GLEW_FUN_EXPORT PFNGLDEPTHRANGEDNVPROC __glewDepthRangedNV;
 
 GLEW_FUN_EXPORT PFNGLDRAWTEXTURENVPROC __glewDrawTextureNV;
+
+GLEW_FUN_EXPORT PFNGLDRAWVKIMAGENVPROC __glewDrawVkImageNV;
+GLEW_FUN_EXPORT PFNGLGETVKPROCADDRNVPROC __glewGetVkProcAddrNV;
+GLEW_FUN_EXPORT PFNGLSIGNALVKFENCENVPROC __glewSignalVkFenceNV;
+GLEW_FUN_EXPORT PFNGLSIGNALVKSEMAPHORENVPROC __glewSignalVkSemaphoreNV;
+GLEW_FUN_EXPORT PFNGLWAITVKSEMAPHORENVPROC __glewWaitVkSemaphoreNV;
 
 GLEW_FUN_EXPORT PFNGLEVALMAPSNVPROC __glewEvalMapsNV;
 GLEW_FUN_EXPORT PFNGLGETMAPATTRIBPARAMETERFVNVPROC __glewGetMapAttribParameterfvNV;
@@ -18142,6 +18851,19 @@ GLEW_FUN_EXPORT PFNGLPROGRAMNAMEDPARAMETER4FVNVPROC __glewProgramNamedParameter4
 GLEW_FUN_EXPORT PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC __glewRenderbufferStorageMultisampleCoverageNV;
 
 GLEW_FUN_EXPORT PFNGLPROGRAMVERTEXLIMITNVPROC __glewProgramVertexLimitNV;
+
+GLEW_FUN_EXPORT PFNGLMULTICASTBARRIERNVPROC __glewMulticastBarrierNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTBLITFRAMEBUFFERNVPROC __glewMulticastBlitFramebufferNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTBUFFERSUBDATANVPROC __glewMulticastBufferSubDataNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTCOPYBUFFERSUBDATANVPROC __glewMulticastCopyBufferSubDataNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTCOPYIMAGESUBDATANVPROC __glewMulticastCopyImageSubDataNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTFRAMEBUFFERSAMPLELOCATIONSFVNVPROC __glewMulticastFramebufferSampleLocationsfvNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTGETQUERYOBJECTI64VNVPROC __glewMulticastGetQueryObjecti64vNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTGETQUERYOBJECTIVNVPROC __glewMulticastGetQueryObjectivNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTGETQUERYOBJECTUI64VNVPROC __glewMulticastGetQueryObjectui64vNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTGETQUERYOBJECTUIVNVPROC __glewMulticastGetQueryObjectuivNV;
+GLEW_FUN_EXPORT PFNGLMULTICASTWAITSYNCNVPROC __glewMulticastWaitSyncNV;
+GLEW_FUN_EXPORT PFNGLRENDERGPUMASKNVPROC __glewRenderGpuMaskNV;
 
 GLEW_FUN_EXPORT PFNGLPROGRAMENVPARAMETERI4INVPROC __glewProgramEnvParameterI4iNV;
 GLEW_FUN_EXPORT PFNGLPROGRAMENVPARAMETERI4IVNVPROC __glewProgramEnvParameterI4ivNV;
@@ -18521,12 +19243,16 @@ GLEW_FUN_EXPORT PFNGLVIDEOCAPTURESTREAMPARAMETERDVNVPROC __glewVideoCaptureStrea
 GLEW_FUN_EXPORT PFNGLVIDEOCAPTURESTREAMPARAMETERFVNVPROC __glewVideoCaptureStreamParameterfvNV;
 GLEW_FUN_EXPORT PFNGLVIDEOCAPTURESTREAMPARAMETERIVNVPROC __glewVideoCaptureStreamParameterivNV;
 
+GLEW_FUN_EXPORT PFNGLVIEWPORTSWIZZLENVPROC __glewViewportSwizzleNV;
+
 GLEW_FUN_EXPORT PFNGLCLEARDEPTHFOESPROC __glewClearDepthfOES;
 GLEW_FUN_EXPORT PFNGLCLIPPLANEFOESPROC __glewClipPlanefOES;
 GLEW_FUN_EXPORT PFNGLDEPTHRANGEFOESPROC __glewDepthRangefOES;
 GLEW_FUN_EXPORT PFNGLFRUSTUMFOESPROC __glewFrustumfOES;
 GLEW_FUN_EXPORT PFNGLGETCLIPPLANEFOESPROC __glewGetClipPlanefOES;
 GLEW_FUN_EXPORT PFNGLORTHOFOESPROC __glewOrthofOES;
+
+GLEW_FUN_EXPORT PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC __glewFramebufferTextureMultiviewOVR;
 
 GLEW_FUN_EXPORT PFNGLALPHAFUNCXPROC __glewAlphaFuncx;
 GLEW_FUN_EXPORT PFNGLCLEARCOLORXPROC __glewClearColorx;
@@ -18714,12 +19440,6 @@ GLEW_FUN_EXPORT PFNGLTEXCOORD4FVERTEX4FSUNPROC __glewTexCoord4fVertex4fSUN;
 GLEW_FUN_EXPORT PFNGLTEXCOORD4FVERTEX4FVSUNPROC __glewTexCoord4fVertex4fvSUN;
 
 GLEW_FUN_EXPORT PFNGLADDSWAPHINTRECTWINPROC __glewAddSwapHintRectWIN;
-
-#if defined(GLEW_MX) && !defined(_WIN32)
-struct GLEWContextStruct
-{
-#endif /* GLEW_MX */
-
 GLEW_VAR_EXPORT GLboolean __GLEW_VERSION_1_1;
 GLEW_VAR_EXPORT GLboolean __GLEW_VERSION_1_2;
 GLEW_VAR_EXPORT GLboolean __GLEW_VERSION_1_2_1;
@@ -18758,6 +19478,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_AMD_query_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_sample_positions;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_seamless_cubemap_per_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_atomic_counter_ops;
+GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_explicit_vertex_parameter;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_stencil_export;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_stencil_value_export;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_trinary_minmax;
@@ -18800,6 +19521,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_APPLE_vertex_program_evaluators;
 GLEW_VAR_EXPORT GLboolean __GLEW_APPLE_ycbcr_422;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_ES2_compatibility;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_ES3_1_compatibility;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_ES3_2_compatibility;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_ES3_compatibility;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_arrays_of_arrays;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_base_instance;
@@ -18839,14 +19561,17 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_fragment_layer_viewport;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_fragment_program;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_fragment_program_shadow;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_fragment_shader;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_fragment_shader_interlock;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_framebuffer_no_attachments;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_framebuffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_framebuffer_sRGB;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_geometry_shader4;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_get_program_binary;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_get_texture_sub_image;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_gl_spirv;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_gpu_shader5;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_gpu_shader_fp64;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_gpu_shader_int64;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_half_float_pixel;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_half_float_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_imaging;
@@ -18864,10 +19589,12 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multisample;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multitexture;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_occlusion_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_occlusion_query2;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_parallel_shader_compile;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pipeline_statistics_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pixel_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_point_parameters;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_point_sprite;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_post_depth_coverage;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_program_interface_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_query_buffer_object;
@@ -18875,13 +19602,17 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robust_buffer_access_behavior;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness_application_isolation;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness_share_group_isolation;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_locations;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_shading;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sampler_objects;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cube_map;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cubemap_per_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_separate_shader_objects;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_atomic_counter_ops;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_atomic_counters;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_ballot;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_bit_encoding;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_clock;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_draw_parameters;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_group_vote;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_image_load_store;
@@ -18893,6 +19624,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_storage_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_subroutine;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_texture_image_samples;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_texture_lod;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_viewport_layer_array;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shading_language_100;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shading_language_420pack;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shading_language_include;
@@ -18901,6 +19633,8 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shadow;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shadow_ambient;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sparse_buffer;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sparse_texture;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sparse_texture2;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sparse_texture_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_stencil_texturing;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sync;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_tessellation_shader;
@@ -18918,6 +19652,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_env_add;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_env_combine;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_env_crossbar;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_env_dot3;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_filter_minmax;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_gather;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_mirror_clamp_to_edge;
@@ -18974,6 +19709,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ATI_texture_mirror_once;
 GLEW_VAR_EXPORT GLboolean __GLEW_ATI_vertex_array_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ATI_vertex_attrib_array_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ATI_vertex_streams;
+GLEW_VAR_EXPORT GLboolean __GLEW_EGL_NV_robustness_video_memory_purge;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_422_pixels;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_Cg_shader;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_abgr;
@@ -19081,6 +19817,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_vertex_array_bgra;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_vertex_attrib_64bit;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_vertex_shader;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_vertex_weighting;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_window_rectangles;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_x11_sync_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_GREMEDY_frame_terminator;
 GLEW_VAR_EXPORT GLboolean __GLEW_GREMEDY_string_marker;
@@ -19096,7 +19833,9 @@ GLEW_VAR_EXPORT GLboolean __GLEW_IBM_texture_mirrored_repeat;
 GLEW_VAR_EXPORT GLboolean __GLEW_IBM_vertex_array_lists;
 GLEW_VAR_EXPORT GLboolean __GLEW_INGR_color_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_INGR_interlace_read;
+GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_fragment_shader_ordering;
+GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_framebuffer_CMAA;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_map_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_parallel_arrays;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_performance_query;
@@ -19105,27 +19844,36 @@ GLEW_VAR_EXPORT GLboolean __GLEW_KHR_blend_equation_advanced;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_blend_equation_advanced_coherent;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_context_flush_control;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
+GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_robust_buffer_access_behavior;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_texture_compression_astc_hdr;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_texture_compression_astc_ldr;
+GLEW_VAR_EXPORT GLboolean __GLEW_KHR_texture_compression_astc_sliced_3d;
 GLEW_VAR_EXPORT GLboolean __GLEW_KTX_buffer_region;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESAX_texture_stack;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESA_pack_invert;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESA_resize_buffers;
+GLEW_VAR_EXPORT GLboolean __GLEW_MESA_shader_integer_functions;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESA_window_pos;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESA_ycbcr_texture;
+GLEW_VAR_EXPORT GLboolean __GLEW_NVX_blend_equation_advanced_multi_draw_buffers;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_conditional_render;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;
+GLEW_VAR_EXPORT GLboolean __GLEW_NVX_linked_gpu_multicast;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_bindless_multi_draw_indirect;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_bindless_multi_draw_indirect_count;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_bindless_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_blend_equation_advanced;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_blend_equation_advanced_coherent;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_blend_square;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_clip_space_w_scaling;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_command_list;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_compute_program5;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_conditional_render;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_conservative_raster;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_conservative_raster_dilate;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_conservative_raster_pre_snap_triangles;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_depth_to_color;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_deep_texture3D;
@@ -19133,6 +19881,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_NV_depth_buffer_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_depth_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_depth_range_unclamped;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_draw_texture;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_draw_vulkan_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_evaluators;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_explicit_multisample;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_fence;
@@ -19150,6 +19899,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_NV_framebuffer_multisample_coverage;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_geometry_program4;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_geometry_shader4;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_geometry_shader_passthrough;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_multicast;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_program4;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_program5;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_program5_mem_extended;
@@ -19172,16 +19922,19 @@ GLEW_VAR_EXPORT GLboolean __GLEW_NV_present_video;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_primitive_restart;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_register_combiners;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_register_combiners2;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_robustness_video_memory_purge;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_sample_locations;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_sample_mask_override_coverage;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_atomic_counters;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_atomic_float;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_atomic_float64;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_atomic_fp16_vector;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_atomic_int64;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_buffer_load;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_storage_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_thread_group;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_shader_thread_shuffle;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_stereo_view_rendering;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_tessellation_program5;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_texgen_emboss;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_texgen_reflection;
@@ -19210,6 +19963,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_NV_vertex_program3;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_vertex_program4;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_video_capture;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_viewport_array2;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_viewport_swizzle;
 GLEW_VAR_EXPORT GLboolean __GLEW_OES_byte_coordinates;
 GLEW_VAR_EXPORT GLboolean __GLEW_OES_compressed_paletted_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_OES_read_format;
@@ -19217,6 +19971,8 @@ GLEW_VAR_EXPORT GLboolean __GLEW_OES_single_precision;
 GLEW_VAR_EXPORT GLboolean __GLEW_OML_interlace;
 GLEW_VAR_EXPORT GLboolean __GLEW_OML_resample;
 GLEW_VAR_EXPORT GLboolean __GLEW_OML_subsample;
+GLEW_VAR_EXPORT GLboolean __GLEW_OVR_multiview;
+GLEW_VAR_EXPORT GLboolean __GLEW_OVR_multiview2;
 GLEW_VAR_EXPORT GLboolean __GLEW_PGI_misc_hints;
 GLEW_VAR_EXPORT GLboolean __GLEW_PGI_vertex_hints;
 GLEW_VAR_EXPORT GLboolean __GLEW_REGAL_ES1_0_compatibility;
@@ -19288,11 +20044,6 @@ GLEW_VAR_EXPORT GLboolean __GLEW_SUN_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_WIN_phong_shading;
 GLEW_VAR_EXPORT GLboolean __GLEW_WIN_specular_fog;
 GLEW_VAR_EXPORT GLboolean __GLEW_WIN_swap_hint;
-
-#ifdef GLEW_MX
-}; /* GLEWContextStruct */
-#endif /* GLEW_MX */
-
 /* ------------------------------------------------------------------------- */
 
 /* error codes */
@@ -19308,34 +20059,29 @@ GLEW_VAR_EXPORT GLboolean __GLEW_WIN_swap_hint;
 #define GLEW_VERSION_MINOR 3
 #define GLEW_VERSION_MICRO 4
 
+/* ------------------------------------------------------------------------- */
+
+/* GLEW version info */
+
+/*
+VERSION 2.0.0
+VERSION_MAJOR 2
+VERSION_MINOR 0
+VERSION_MICRO 0
+*/
+
 /* API */
-#ifdef GLEW_MX
-
-typedef struct GLEWContextStruct GLEWContext;
-GLEWAPI GLenum GLEWAPIENTRY glewContextInit (GLEWContext *ctx);
-GLEWAPI GLboolean GLEWAPIENTRY glewContextIsSupported (const GLEWContext *ctx, const char *name);
-
-#define glewInit() glewContextInit(glewGetContext())
-#define glewIsSupported(x) glewContextIsSupported(glewGetContext(), x)
-#define glewIsExtensionSupported(x) glewIsSupported(x)
-
-#define GLEW_GET_VAR(x) (*(const GLboolean*)&(glewGetContext()->x))
-#ifdef _WIN32
-#  define GLEW_GET_FUN(x) glewGetContext()->x
-#else
-#  define GLEW_GET_FUN(x) x
-#endif
-
-#else /* GLEW_MX */
-
 GLEWAPI GLenum GLEWAPIENTRY glewInit (void);
 GLEWAPI GLboolean GLEWAPIENTRY glewIsSupported (const char *name);
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
+#ifndef GLEW_GET_VAR
 #define GLEW_GET_VAR(x) (*(const GLboolean*)&x)
-#define GLEW_GET_FUN(x) x
+#endif
 
-#endif /* GLEW_MX */
+#ifndef GLEW_GET_FUN
+#define GLEW_GET_FUN(x) x
+#endif
 
 GLEWAPI GLboolean glewExperimental;
 GLEWAPI GLboolean GLEWAPIENTRY glewGetExtension (const char *name);
