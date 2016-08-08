@@ -87,6 +87,8 @@ public:
     BoolProperty abufferWriteABufferInfoToFile_;
     FloatVec4Property bgColor_;
     size_t sharedPoolSize_;
+
+	int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
 };
 
 class IVW_MODULE_ABUFFERGL_API Inviwo_ABufferGL4 {

@@ -46,8 +46,6 @@ namespace inviwo {
 
 static int ABUFFER_RGBA_DATA_TYPE_SIZE = sizeof(Abuffer_RGBA_Type);
 static int ABUFFER_EXT_DATA_TYPE_SIZE = sizeof(Abuffer_ExtDataType);
-#define ABUFFER_PAGE_SIZE glm::pow(2, settings_.abufferPageSize_.get())
-#define ABUFFER_SIZE settings_.abufferLocalMemorySize_.get()
 
 PropertyClassIdentifier(ABufferGLCompositeProperty, "org.inviwo.ABufferGLCompositeProperty");
 
@@ -122,7 +120,7 @@ Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
     , resolveABufferShader_("abufferresolve.hglsl")
     , resetABufferShader_("abufferreset.hglsl")
     , settings_("abuffer-settings-property", "ABuffer Settings") {
-    settings_.sharedPoolSize_ = dim_.x * dim_.y * ABUFFER_PAGE_SIZE * 40;
+    settings_.sharedPoolSize_ = dim_.x * dim_.y * settings_.getSquaredPageSize() * 40;
 }
 
 Inviwo_ABufferGL4::~Inviwo_ABufferGL4() {
@@ -152,7 +150,7 @@ bool Inviwo_ABufferGL4::aBuffer_isMemoryReallocationRequired(ivec2 currentPortDi
 
 bool Inviwo_ABufferGL4::abuffer_isMemoryPoolExpansionRequired() {
     if (globalAtomicCounterBuffer_ && globalAtomicsBufferId_) {
-        glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue() * ABUFFER_PAGE_SIZE;
+        glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue() * settings_.getSquaredPageSize();
         if (fabs(float(settings_.sharedPoolSize_ - totalABuffUsed)) <
             float(settings_.sharedPoolSize_ * .30f)) {
             return true;
@@ -384,7 +382,7 @@ void Inviwo_ABufferGL4::abuffer_addUniforms(Shader* shader) {
 }
 
 void Inviwo_ABufferGL4::aBuffer_incrementSharedPoolSize() {
-    glm::uint newSize = dim_.x * dim_.y * ABUFFER_PAGE_SIZE;
+    glm::uint newSize = dim_.x * dim_.y * settings_.getSquaredPageSize();
     settings_.sharedPoolSize_ += newSize;
     LogWarn("Incrementing Shared Pool Size (Upper Bound)")
 }
@@ -399,7 +397,7 @@ void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {
     ivec2 dim = dim_;
     // defaults
     // LogInfo("ABUFFER_DATA_TYPE_SIZE << " << toString(ABUFFER_DATA_TYPE_SIZE))
-    fragObj->addShaderDefine("ABUFFER_SIZE", toString(ABUFFER_SIZE));
+    fragObj->addShaderDefine("ABUFFER_SIZE", toString(settings_.abufferLocalMemorySize_.get()));
     fragObj->addShaderDefine("ABUFFER_RGBA_DATA_TYPE_SIZE", toString(ABUFFER_RGBA_DATA_TYPE_SIZE));
     fragObj->addShaderDefine("ABUFFER_EXT_DATA_TYPE_SIZE", toString(ABUFFER_EXT_DATA_TYPE_SIZE));
     fragObj->addShaderDefine("ABUFFER_DATA_PER_NODE", toString(ABUFFER_DATA_PER_NODE));
@@ -417,7 +415,7 @@ void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {
     fragObj->addShaderDefine("SHAREDPOOL_USE_TEXTURES", toString(0));     //( always 0)
     fragObj->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", toString(1)); //( always 1)
 
-    fragObj->addShaderDefine("ABUFFER_PAGE_SIZE", toString(ABUFFER_PAGE_SIZE));
+    fragObj->addShaderDefine("ABUFFER_PAGE_SIZE", toString(settings_.getSquaredPageSize()));
     fragObj->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", toString(0));
     // LogInfo("Default shader defines added")
     shader->build();
@@ -572,7 +570,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
             glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue();
 
             ss << "Atomic Counter Usage : used-counter = " << totalABuffUsed
-               << " max-counter = " << settings_.sharedPoolSize_ / ABUFFER_PAGE_SIZE << std::endl;
+               << " max-counter = " << settings_.sharedPoolSize_ / settings_.getSquaredPageSize() << std::endl;
 
             ss << std::endl;
             ss << " ------------------------------------ " << std::endl;
@@ -585,27 +583,27 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                 if (fragCountVal) {
                     int totalCount = 0;
                     for (size_t i = 0; i < pageIndices.size(); i++) {
-                        size_t offset = ABUFFER_PAGE_SIZE;
+                        size_t offset = settings_.getSquaredPageSize();
                         if (i == 0) {
-                            offset = fragCountVal % ABUFFER_PAGE_SIZE;
-                            if (offset == 0) offset = ABUFFER_PAGE_SIZE;
+                            offset = fragCountVal % settings_.getSquaredPageSize();
+                            if (offset == 0) offset = settings_.getSquaredPageSize();
                         }
 
-                        glm::uint dataSize = ABUFFER_PAGE_SIZE * ABUFFER_RGBA_DATA_TYPE_SIZE;
+                        glm::uint dataSize = settings_.getSquaredPageSize() * ABUFFER_RGBA_DATA_TYPE_SIZE;
                         glBindBuffer(GL_TEXTURE_BUFFER, shared_RGBA_DataListBuffID_);
-                        Abuffer_RGBA_Type* rgbData = new Abuffer_RGBA_Type[ABUFFER_PAGE_SIZE];
+                        Abuffer_RGBA_Type* rgbData = new Abuffer_RGBA_Type[settings_.getSquaredPageSize()];
                         glm::uint startOffset_rgb =
-                            (pageIndices[i] * ABUFFER_PAGE_SIZE) * ABUFFER_RGBA_DATA_TYPE_SIZE;
+                            (pageIndices[i] * settings_.getSquaredPageSize()) * ABUFFER_RGBA_DATA_TYPE_SIZE;
                         void* gldata_RGBA = glMapBufferRange(GL_TEXTURE_BUFFER, startOffset_rgb,
                                                              dataSize, GL_MAP_READ_BIT);
                         memcpy(rgbData, gldata_RGBA, dataSize);
                         glUnmapBuffer(GL_TEXTURE_BUFFER);
 
                         glBindBuffer(GL_TEXTURE_BUFFER, shared_Ext_DataListBuffID_);
-                        Abuffer_ExtDataType* extData = new Abuffer_ExtDataType[ABUFFER_PAGE_SIZE];
-                        dataSize = ABUFFER_PAGE_SIZE * ABUFFER_EXT_DATA_TYPE_SIZE;
+                        Abuffer_ExtDataType* extData = new Abuffer_ExtDataType[settings_.getSquaredPageSize()];
+                        dataSize = settings_.getSquaredPageSize() * ABUFFER_EXT_DATA_TYPE_SIZE;
                         glm::uint startOffset_ext =
-                            (pageIndices[i] * ABUFFER_PAGE_SIZE) * ABUFFER_EXT_DATA_TYPE_SIZE;
+                            (pageIndices[i] * settings_.getSquaredPageSize()) * ABUFFER_EXT_DATA_TYPE_SIZE;
                         void* gldata_EXT = glMapBufferRange(GL_TEXTURE_BUFFER, startOffset_ext,
                                                             dataSize, GL_MAP_READ_BIT);
                         memcpy(extData, gldata_EXT, dataSize);
@@ -703,8 +701,8 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
         pUpper = *std::max_element(allFragmentPageCounts.begin(), allFragmentPageCounts.end());
     }
 
-    LogWarn("Tex Min Page per pixel " << pLower * ABUFFER_PAGE_SIZE);
-    LogWarn("Tex Max Page per pixel " << pUpper * ABUFFER_PAGE_SIZE);
+    LogWarn("Tex Min Page per pixel " << pLower * settings_.getSquaredPageSize());
+    LogWarn("Tex Max Page per pixel " << pUpper * settings_.getSquaredPageSize());
     LogWarn(" ------------------------------------ ");
 
     if (!allFragmentPageCounts.size()) return;
