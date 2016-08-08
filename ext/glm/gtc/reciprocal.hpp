@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -11,6 +11,10 @@
 /// 
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
 /// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -35,8 +39,7 @@
 /// <glm/gtc/reciprocal.hpp> need to be included to use these features.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTC_reciprocal
-#define GLM_GTC_reciprocal
+#pragma once
 
 // Dependencies
 #include "../detail/setup.hpp"
@@ -50,84 +53,82 @@ namespace glm
 	/// @addtogroup gtc_reciprocal
 	/// @{
 
-	/// Secant function. 
+	/// Secant function.
 	/// hypotenuse / adjacent or 1 / cos(x)
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType sec(genType const & angle);
+	template <typename genType>
+	GLM_FUNC_DECL genType sec(genType angle);
 
-	/// Cosecant function. 
+	/// Cosecant function.
 	/// hypotenuse / opposite or 1 / sin(x)
 	/// 
 	/// @see gtc_reciprocal
 	template <typename genType> 
-	GLM_FUNC_DECL genType csc(genType const & angle);
+	GLM_FUNC_DECL genType csc(genType angle);
 		
-	/// Cotangent function. 
+	/// Cotangent function.
 	/// adjacent / opposite or 1 / tan(x)
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType cot(genType const & angle);
+	template <typename genType>
+	GLM_FUNC_DECL genType cot(genType angle);
 
-	/// Inverse secant function. 
+	/// Inverse secant function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType asec(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType asec(genType x);
 
-	/// Inverse cosecant function. 
+	/// Inverse cosecant function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType acsc(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType acsc(genType x);
 		
-	/// Inverse cotangent function. 
+	/// Inverse cotangent function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType acot(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType acot(genType x);
 
-	/// Secant hyperbolic function. 
+	/// Secant hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType sech(genType const & angle);
+	template <typename genType>
+	GLM_FUNC_DECL genType sech(genType angle);
 
-	/// Cosecant hyperbolic function. 
+	/// Cosecant hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType csch(genType const & angle);
+	template <typename genType>
+	GLM_FUNC_DECL genType csch(genType angle);
 		
-	/// Cotangent hyperbolic function. 
+	/// Cotangent hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType coth(genType const & angle);
+	template <typename genType>
+	GLM_FUNC_DECL genType coth(genType angle);
 
-	/// Inverse secant hyperbolic function. 
+	/// Inverse secant hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType asech(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType asech(genType x);
 
-	/// Inverse cosecant hyperbolic function. 
+	/// Inverse cosecant hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType acsch(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType acsch(genType x);
 		
-	/// Inverse cotangent hyperbolic function. 
+	/// Inverse cotangent hyperbolic function.
 	/// 
 	/// @see gtc_reciprocal
-	template <typename genType> 
-	GLM_FUNC_DECL genType acoth(genType const & x);
+	template <typename genType>
+	GLM_FUNC_DECL genType acoth(genType x);
 
 	/// @}
 }//namespace glm
 
 #include "reciprocal.inl"
-
-#endif//GLM_GTC_reciprocal

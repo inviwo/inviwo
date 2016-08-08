@@ -77,7 +77,7 @@ private:
     ImageInport inport_;
     ImageOutport outport_;
 
-    IntSize2Property coordinates_;
+    UInt64Vec2Property coordinates_;
     std::vector<DoubleVec4Property> pixelValues_;
     std::vector<FloatVec4Property> pixelValuesNormalized_;
     DoubleVec4Property pickingValue_;

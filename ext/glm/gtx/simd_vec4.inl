@@ -11,7 +11,7 @@ namespace glm{
 namespace detail{
 
 template <int Value>
-struct mask
+struct shuffle_mask
 {
 	enum{value = Value};
 };
@@ -19,18 +19,22 @@ struct mask
 //////////////////////////////////////
 // Implicit basic constructors
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD()
-#ifdef GLM_SIMD_ENABLE_DEFAULT_INIT
-    : Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
-#endif
-{}
+#if !GLM_HAS_DEFAULTED_FUNCTIONS || !defined(GLM_FORCE_NO_CTOR_INIT)
+	GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD()
+#		ifdef GLM_FORCE_NO_CTOR_INIT
+			: Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
+#		endif
+	{}
+#endif//!GLM_HAS_DEFAULTED_FUNCTIONS
+
+#if !GLM_HAS_DEFAULTED_FUNCTIONS
+	GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(fvec4SIMD const & v) :
+		Data(v.Data)
+	{}
+#endif//!GLM_HAS_DEFAULTED_FUNCTIONS
 
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(__m128 const & Data) :
 	Data(Data)
-{}
-
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(fvec4SIMD const & v) :
-	Data(v.Data)
 {}
 
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec4 const & v) :
@@ -92,11 +96,13 @@ GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v1, vec2 const & v2) :
 //////////////////////////////////////
 // Unary arithmetic operators
 
-GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::operator=(fvec4SIMD const & v)
-{
-	this->Data = v.Data;
-	return *this;
-}
+#if !GLM_HAS_DEFAULTED_FUNCTIONS
+	GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::operator=(fvec4SIMD const & v)
+	{
+		this->Data = v.Data;
+		return *this;
+	}
+#endif//!GLM_HAS_DEFAULTED_FUNCTIONS
 
 GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::operator+=(float const & s)
 {
@@ -166,7 +172,7 @@ GLM_FUNC_QUALIFIER fvec4SIMD fvec4SIMD::swizzle() const
 {
 	__m128 Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
 	return fvec4SIMD(Data);
 }
 
@@ -175,7 +181,7 @@ GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::swizzle()
 {
 	this->Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
 	return *this;
 }
 

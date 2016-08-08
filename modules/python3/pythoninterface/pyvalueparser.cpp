@@ -126,7 +126,7 @@ bool PyValueParser::setProperty(Property* p, PyObject* args) {
     }
 else if (className == "org.inviwo.Size_tProperty") {
      if (is<size_t>(args)) {
-         static_cast<IntSizeTProperty*>(p)->set(parse<size_t>(args));
+         static_cast<UInt64Property*>(p)->set(parse<size_t>(args));
      }
      else {
          auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
@@ -167,9 +167,9 @@ else if (className == "org.inviwo.Size_tProperty") {
             return false;
         }
     }
-    else if (className == IntSize2Property::CLASS_IDENTIFIER) {
+    else if (className == UInt64Vec2Property::CLASS_IDENTIFIER) {
         if (is<size2_t>(args)) {
-            static_cast<IntSize2Property*>(p)->set(parse<size2_t>(args));
+            static_cast<UInt64Vec2Property*>(p)->set(parse<size2_t>(args));
         }
         else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
@@ -179,9 +179,9 @@ else if (className == "org.inviwo.Size_tProperty") {
             return false;
         }
     }
-    else if (className == IntSize3Property::CLASS_IDENTIFIER) {
+    else if (className == UInt64Vec3Property::CLASS_IDENTIFIER) {
         if (is<size3_t>(args)) {
-            static_cast<IntSize3Property*>(p)->set(parse<size3_t>(args));
+            static_cast<UInt64Vec3Property*>(p)->set(parse<size3_t>(args));
         }
         else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
@@ -191,9 +191,9 @@ else if (className == "org.inviwo.Size_tProperty") {
             return false;
         }
     }
-    else if (className == IntSize4Property::CLASS_IDENTIFIER) {
+    else if (className == UInt64Vec4Property::CLASS_IDENTIFIER) {
         if (is<size4_t>(args)) {
-            static_cast<IntSize4Property*>(p)->set(parse<size4_t>(args));
+            static_cast<UInt64Vec4Property*>(p)->set(parse<size4_t>(args));
         }
         else {
             auto tt = dynamic_cast<PyTypeObject*>(args->ob_type);
@@ -471,16 +471,16 @@ PyObject* PyValueParser::getProperty(Property* p) {
     CAST_DO_STUFF(FloatProperty, p);
     CAST_DO_STUFF(DoubleProperty, p);
     CAST_DO_STUFF(IntProperty, p);
-    CAST_DO_STUFF(IntSizeTProperty, p);
+    CAST_DO_STUFF(UInt64Property, p);
     CAST_DO_STUFF(StringProperty, p);
     CAST_DO_STUFF(FileProperty, p);
     CAST_DO_STUFF(DirectoryProperty, p);
     CAST_DO_STUFF(IntVec2Property, p);
     CAST_DO_STUFF(IntVec3Property, p);
     CAST_DO_STUFF(IntVec4Property, p);
-    CAST_DO_STUFF(IntSize2Property, p);
-    CAST_DO_STUFF(IntSize3Property, p);
-    CAST_DO_STUFF(IntSize4Property, p);
+    CAST_DO_STUFF(UInt64Vec2Property, p);
+    CAST_DO_STUFF(UInt64Vec3Property, p);
+    CAST_DO_STUFF(UInt64Vec4Property, p);
     CAST_DO_STUFF(FloatVec2Property, p);
     CAST_DO_STUFF(FloatVec3Property, p);
     CAST_DO_STUFF(FloatVec4Property, p);

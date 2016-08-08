@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2012 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,66 +24,47 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ///
-/// @ref gtx_vector_access
-/// @file glm/gtx/vector_access.hpp
-/// @date 2006-01-16 / 2011-06-07
+/// @ref gtx_matrix_decompose
+/// @file glm/gtx/matrix_decompose.hpp
+/// @date 2014-08-29 / 2014-08-29
 /// @author Christophe Riccio
-///
+/// 
 /// @see core (dependence)
 ///
-/// @defgroup gtx_vector_access GLM_GTX_vector_access
+/// @defgroup gtx_matrix_decompose GLM_GTX_matrix_decompose
 /// @ingroup gtx
 /// 
-/// @brief Function to set values to vectors
+/// @brief Decomposes a model matrix to translations, rotation and scale components
 /// 
-/// <glm/gtx/vector_access.hpp> need to be included to use these functionalities.
+/// <glm/gtx/matrix_decompose.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_vector_access
-#define GLM_GTX_vector_access GLM_VERSION
+#pragma once
 
-// Dependency:
-#include "../glm.hpp"
+// Dependencies
+#include "../mat4x4.hpp"
+#include "../vec3.hpp"
+#include "../vec4.hpp"
+#include "../gtc/quaternion.hpp"
+#include "../gtc/matrix_transform.hpp"
 
-#if(defined(GLM_MESSAGES) && !defined(glm_ext))
-#	pragma message("GLM: GLM_GTX_vector_access extension included")
+#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
+#	pragma message("GLM: GLM_GTX_matrix_decompose extension included")
 #endif
 
 namespace glm
 {
-	/// @addtogroup gtx_vector_access
+	/// @addtogroup gtx_matrix_decompose
 	/// @{
 
-	//! Set values to a 2 components vector.
-	//! From GLM_GTX_vector_access extension.
-    template <typename valType> 
-	void set(
-		detail::tvec2<valType> & v, 
-		valType const & x, 
-		valType const & y);
-
-	//! Set values to a 3 components vector.
-	//! From GLM_GTX_vector_access extension.
-    template <typename valType> 
-	void set(
-		detail::tvec3<valType> & v, 
-		valType const & x, 
-		valType const & y, 
-		valType const & z);
-
-	//! Set values to a 4 components vector.
-	//! From GLM_GTX_vector_access extension.
-    template <typename valType> 
-	void set(
-		detail::tvec4<valType> & v, 
-		valType const & x, 
-		valType const & y, 
-		valType const & z, 
-		valType const & w);
+	/// Decomposes a model matrix to translations, rotation and scale components 
+	/// @see gtx_matrix_decompose
+	template <typename T, precision P>
+	GLM_FUNC_DECL bool decompose(
+		tmat4x4<T, P> const & modelMatrix,
+		tvec3<T, P> & scale, tquat<T, P> & orientation, tvec3<T, P> & translation, tvec3<T, P> & skew, tvec4<T, P> & perspective);
 
 	/// @}
 }//namespace glm
 
-#include "vector_access.inl"
-
-#endif//GLM_GTX_vector_access
+#include "matrix_decompose.inl"

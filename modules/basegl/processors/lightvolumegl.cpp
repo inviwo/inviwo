@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/light/directionallight.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
+#include <cmath>
 
 namespace inviwo {
 
@@ -473,7 +474,7 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
     secondClosest->permutedLightDirection = secondClosest->axisPermutationLight * tmpLightDir;
 
     //Calculate the blending factor
-    blendingFactor_ = static_cast<float>(1.f-(2.f*glm::acos<float>(closestVal)/M_PI));
+    blendingFactor_ = static_cast<float>(1.f-(2.f*std::acos(closestVal)/M_PI));
     //LogInfo("Blending Factor: " << blendingFactor_);
 
     calculatedOnes_ = true;

@@ -59,10 +59,10 @@ public:
     void updateVolume(Volume& volume);
 
     // Read only used to show information
-    IntSize3Property dimensions_;
+    UInt64Vec3Property dimensions_;
     StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
+    UInt64Property channels_;
+    UInt64Property numVoxels_;
 
     // read / write
     DoubleMinMaxProperty dataRange_;

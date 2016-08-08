@@ -48,10 +48,10 @@ namespace inviwo {
  * intersection along the ray if intersecting.
  */
 template <typename T, glm::precision P>
-std::pair<bool, T> rayPlaneIntersection(const glm::detail::tvec3<T, P>& planePos,
-                                        const glm::detail::tvec3<T, P>& planeNormal,
-                                        const glm::detail::tvec3<T, P>& origin,
-                                        const glm::detail::tvec3<T, P>& direction, const T t0,
+std::pair<bool, T> rayPlaneIntersection(const glm::tvec3<T, P>& planePos,
+                                        const glm::tvec3<T, P>& planeNormal,
+                                        const glm::tvec3<T, P>& origin,
+                                        const glm::tvec3<T, P>& direction, const T t0,
                                         const T t1) {
     // http://en.wikipedia.org/wiki/Line-plane_intersection
     // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/

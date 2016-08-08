@@ -6,32 +6,32 @@ registersOrdinal = [];
 
 def createRegisterScalar(props):
     for src in props:
-        registersToString.append("registerPropertyConverter(ScalarToStringConverter<%s>);" % (src))
+        registersToString.append("registerPropertyConverter(util::make_unique<ScalarToStringConverter<%s>>());" % (src))
         for dst in props:
             if src != dst:
                 typedefs.append("typedef OrdinalPropertyConverter<%s, %s> %sTo%sConverter;" % (src , dst,src , dst))
-                registersOrdinal.append("registerPropertyConverter(%sTo%sConverter);" % (src , dst))
+                registersOrdinal.append("registerPropertyConverter(util::make_unique<%sTo%sConverter>());" % (src , dst))
 
 
 def createRegisterVector(props):
     for src in props:
-        registersToString.append("registerPropertyConverter(VectorToStringConverter<%s>);" % (src))
+        registersToString.append("registerPropertyConverter(util::make_unique<VectorToStringConverter<%s>>());" % (src))
         for dst in props:
             if src != dst:
                 typedefs.append("typedef OrdinalPropertyConverter<%s, %s> %sTo%sConverter;" % (src , dst,src , dst))
-                registersOrdinal.append("registerPropertyConverter(%sTo%sConverter);" % (src , dst))
+                registersOrdinal.append("registerPropertyConverter(util::make_unique<%sTo%sConverter>());" % (src , dst))
 
 
 
-saclar_properties = ["FloatProperty","IntProperty","Int64Property","DoubleProperty"];
-vec2_properties = ["FloatVec2Property","DoubleVec2Property","IntVec2Property"];
-vec3_properties = ["FloatVec3Property","DoubleVec3Property","IntVec3Property"];
-vec4_properties = ["FloatVec4Property","DoubleVec4Property","IntVec4Property"];
+scalar_properties = ["FloatProperty","IntProperty","Int64Property", "UInt64Property", "DoubleProperty"];
+vec2_properties = ["FloatVec2Property","DoubleVec2Property","IntVec2Property", "UInt64Vec2Property"];
+vec3_properties = ["FloatVec3Property","DoubleVec3Property","IntVec3Property", "UInt64Vec3Property"];
+vec4_properties = ["FloatVec4Property","DoubleVec4Property","IntVec4Property", "UInt64Vec4Property"];
 
 mat4_properties = [""]
 
 
-createRegisterScalar(saclar_properties);
+createRegisterScalar(scalar_properties);
 createRegisterVector(vec2_properties);
 createRegisterVector(vec3_properties);
 createRegisterVector(vec4_properties);

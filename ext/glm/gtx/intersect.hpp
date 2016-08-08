@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -11,6 +11,10 @@
 /// 
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
 /// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -36,12 +40,15 @@
 /// <glm/gtx/intersect.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_intersect
-#define GLM_GTX_intersect
+#pragma once
 
 // Dependency:
+#include <cfloat>
+#include <limits>
 #include "../glm.hpp"
+#include "../geometric.hpp"
 #include "../gtx/closest_point.hpp"
+#include "../gtx/vector_query.hpp"
 
 #if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_closest_point extension included")
@@ -52,7 +59,7 @@ namespace glm
 	/// @addtogroup gtx_intersect
 	/// @{
 
-	//! Compute the intersection of a ray and a triangle.
+	//! Compute the intersection of a ray and a plane.
 	//! Ray direction and plane normal must be unit length.
 	//! From GLM_GTX_intersect extension.
 	template <typename genType>
@@ -107,5 +114,3 @@ namespace glm
 }//namespace glm
 
 #include "intersect.inl"
-
-#endif//GLM_GTX_intersect

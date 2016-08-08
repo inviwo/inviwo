@@ -273,7 +273,7 @@ public:
 
     virtual ~TemplateMinMaxPropertySettingsWidgetQt() {}
 
-    typedef glm::detail::tvec2<T, glm::defaultp> V;
+    typedef glm::tvec2<T, glm::defaultp> V;
 
     virtual void generateWidget() {
         connect(&btnApply_, SIGNAL(clicked()), this, SLOT(apply()));

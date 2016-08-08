@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/type_mat4x4.inl
+/// @file glm/detail/type_mat4x4.inl
 /// @date 2005-01-27 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
@@ -30,68 +34,93 @@ namespace glm{
 namespace detail
 {
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER GLM_CONSTEXPR length_t tmat4x4<T, P>::length() const
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> compute_inverse(tmat4x4<T, P> const & m)
 	{
-		return 4;
-	}
+		T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+		T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+		T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
 
-	//////////////////////////////////////
-	// Accesses
+		T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+		T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+		T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type &
-	tmat4x4<T, P>::operator[]
-	(
-		length_t i
-	)
-	{
-		assert(i < this->length());
-		return this->value[i];
-	}
+		T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+		T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+		T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type const &
-	tmat4x4<T, P>::operator[]
-	(
-		length_t i
-	) const
-	{
-		assert(i < this->length());
-		return this->value[i];
-	}
+		T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+		T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+		T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
 
-	//////////////////////////////////////////////////////////////
-	// Constructors
+		T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+		T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+		T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4()
-	{
-		T Zero(0);
-		T One(1);
-		this->value[0] = col_type(One, Zero, Zero, Zero);
-		this->value[1] = col_type(Zero, One, Zero, Zero);
-		this->value[2] = col_type(Zero, Zero, One, Zero);
-		this->value[3] = col_type(Zero, Zero, Zero, One);
+		T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+		T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+		T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+		tvec4<T, P> Fac0(Coef00, Coef00, Coef02, Coef03);
+		tvec4<T, P> Fac1(Coef04, Coef04, Coef06, Coef07);
+		tvec4<T, P> Fac2(Coef08, Coef08, Coef10, Coef11);
+		tvec4<T, P> Fac3(Coef12, Coef12, Coef14, Coef15);
+		tvec4<T, P> Fac4(Coef16, Coef16, Coef18, Coef19);
+		tvec4<T, P> Fac5(Coef20, Coef20, Coef22, Coef23);
+
+		tvec4<T, P> Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+		tvec4<T, P> Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+		tvec4<T, P> Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+		tvec4<T, P> Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+		tvec4<T, P> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+		tvec4<T, P> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+		tvec4<T, P> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+		tvec4<T, P> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+		tvec4<T, P> SignA(+1, -1, +1, -1);
+		tvec4<T, P> SignB(-1, +1, -1, +1);
+		tmat4x4<T, P> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+
+		tvec4<T, P> Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+		tvec4<T, P> Dot0(m[0] * Row0);
+		T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+		T OneOverDeterminant = static_cast<T>(1) / Dot1;
+
+		return Inverse * OneOverDeterminant;
 	}
-	
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat4x4<T, P> const & m
-	)
-	{
-		this->value[0] = m[0];
-		this->value[1] = m[1];
-		this->value[2] = m[2];
-		this->value[3] = m[3];
-	}
+}//namespace detail
+
+	// -- Constructors --
+
+#	if !GLM_HAS_DEFAULTED_FUNCTIONS || !defined(GLM_FORCE_NO_CTOR_INIT)
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4()
+		{
+#			ifndef GLM_FORCE_NO_CTOR_INIT 
+				this->value[0] = col_type(1, 0, 0, 0);
+				this->value[1] = col_type(0, 1, 0, 0);
+				this->value[2] = col_type(0, 0, 1, 0);
+				this->value[3] = col_type(0, 0, 0, 1);
+#			endif
+		}
+#	endif
+
+#	if !GLM_HAS_DEFAULTED_FUNCTIONS
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat4x4<T, P> const & m)
+		{
+			this->value[0] = m[0];
+			this->value[1] = m[1];
+			this->value[2] = m[2];
+			this->value[3] = m[3];
+		}
+#	endif//!GLM_HAS_DEFAULTED_FUNCTIONS
 
 	template <typename T, precision P>
 	template <precision Q>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat4x4<T, Q> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat4x4<T, Q> const & m)
 	{
 		this->value[0] = m[0];
 		this->value[1] = m[1];
@@ -100,23 +129,16 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		ctor
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(ctor)
 	{}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		T const & s
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(T const & s)
 	{
-		value_type const Zero(0);
-		this->value[0] = col_type(s, Zero, Zero, Zero);
-		this->value[1] = col_type(Zero, s, Zero, Zero);
-		this->value[2] = col_type(Zero, Zero, s, Zero);
-		this->value[3] = col_type(Zero, Zero, Zero, s);
+		this->value[0] = col_type(s, 0, 0, 0);
+		this->value[1] = col_type(0, s, 0, 0);
+		this->value[2] = col_type(0, 0, s, 0);
+		this->value[3] = col_type(0, 0, 0, s);
 	}
 
 	template <typename T, precision P>
@@ -162,8 +184,8 @@ namespace detail
 		this->value[3] = col_type(m[3]);
 	}
 
-	//////////////////////////////////////
-	// Conversion constructors
+	// -- Conversions --
+
 	template <typename T, precision P> 
 	template <
 		typename X1, typename Y1, typename Z1, typename W1,
@@ -225,128 +247,143 @@ namespace detail
 		this->value[3] = col_type(v4);
 	}
 
-	//////////////////////////////////////
-	// Matrix convertion constructors
+	// -- Matrix conversions --
+
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat2x2<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat2x2<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], detail::tvec2<T, P>(0));
-		this->value[1] = col_type(m[1], detail::tvec2<T, P>(0));
-		this->value[2] = col_type(static_cast<T>(0));
-		this->value[3] = col_type(static_cast<T>(0), value_type(0), value_type(0), value_type(1));
+		this->value[0] = col_type(m[0], 0, 0);
+		this->value[1] = col_type(m[1], 0, 0);
+		this->value[2] = col_type(0, 0, 1, 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat3x3<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat3x3<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], value_type(0));
-		this->value[1] = col_type(m[1], value_type(0));
-		this->value[2] = col_type(m[2], value_type(0));
-		this->value[3] = col_type(static_cast<T>(0), value_type(0), value_type(0), value_type(1));
+		this->value[0] = col_type(m[0], 0);
+		this->value[1] = col_type(m[1], 0);
+		this->value[2] = col_type(m[2], 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat2x3<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat2x3<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], value_type(0));
-		this->value[1] = col_type(m[1], value_type(0));
-		this->value[2] = col_type(static_cast<T>(0));
-		this->value[3] = col_type(static_cast<T>(0), value_type(0), value_type(0), value_type(1));
+		this->value[0] = col_type(m[0], 0);
+		this->value[1] = col_type(m[1], 0);
+		this->value[2] = col_type(0, 0, 1, 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat3x2<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat3x2<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], detail::tvec2<T, P>(0));
-		this->value[1] = col_type(m[1], detail::tvec2<T, P>(0));
-		this->value[2] = col_type(m[2], detail::tvec2<T, P>(0));
-		this->value[3] = col_type(static_cast<T>(0), value_type(0), value_type(0), value_type(1));
+		this->value[0] = col_type(m[0], 0, 0);
+		this->value[1] = col_type(m[1], 0, 0);
+		this->value[2] = col_type(m[2], 1, 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat2x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat2x4<T, P> const & m)
 	{
 		this->value[0] = m[0];
 		this->value[1] = m[1];
-		this->value[2] = col_type(T(0));
-		this->value[3] = col_type(T(0), T(0), T(0), T(1));
+		this->value[2] = col_type(0, 0, 1, 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat4x2<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat4x2<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], detail::tvec2<T, P>(0));
-		this->value[1] = col_type(m[1], detail::tvec2<T, P>(0));
-		this->value[2] = col_type(T(0));
-		this->value[3] = col_type(T(0), T(0), T(0), T(1));
+		this->value[0] = col_type(m[0], 0, 0);
+		this->value[1] = col_type(m[1], 0, 0);
+		this->value[2] = col_type(0, 0, 1, 0);
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat3x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat3x4<T, P> const & m)
 	{
 		this->value[0] = m[0];
 		this->value[1] = m[1];
 		this->value[2] = m[2];
-		this->value[3] = col_type(T(0), T(0), T(0), T(1));
+		this->value[3] = col_type(0, 0, 0, 1);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4
-	(
-		tmat4x3<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>::tmat4x4(tmat4x3<T, P> const & m)
 	{
-		this->value[0] = col_type(m[0], T(0));
-		this->value[1] = col_type(m[1], T(0));
-		this->value[2] = col_type(m[2], T(0));
-		this->value[3] = col_type(m[3], T(1));
+		this->value[0] = col_type(m[0], 0);
+		this->value[1] = col_type(m[1], 0);
+		this->value[2] = col_type(m[2], 0);
+		this->value[3] = col_type(m[3], 1);
 	}
 
-	//////////////////////////////////////////////////////////////
-	// Operators
+	// -- Accesses --
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator=
-	(
-		tmat4x4<T, P> const & m
-	)
-	{
-		//memcpy could be faster
-		//memcpy(&this->value, &m.value, 16 * sizeof(valType));
-		this->value[0] = m[0];
-		this->value[1] = m[1];
-		this->value[2] = m[2];
-		this->value[3] = m[3];
-		return *this;
-	}
+#	ifdef GLM_FORCE_SIZE_FUNC
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR typename tmat4x4<T, P>::size_type tmat4x4<T, P>::size() const
+		{
+			return 4;
+		}
+
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type & tmat4x4<T, P>::operator[](typename tmat4x4<T, P>::size_type i)
+		{
+			assert(i < this->size());
+			return this->value[i];
+		}
+
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type const & tmat4x4<T, P>::operator[](typename tmat4x4<T, P>::size_type i) const
+		{
+			assert(i < this->size());
+			return this->value[i];
+		}
+#	else
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR typename tmat4x4<T, P>::length_type tmat4x4<T, P>::length() const
+		{
+			return 4;
+		}
+
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type & tmat4x4<T, P>::operator[](typename tmat4x4<T, P>::length_type i)
+		{
+			assert(i < this->length());
+			return this->value[i];
+		}
+
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type const & tmat4x4<T, P>::operator[](typename tmat4x4<T, P>::length_type i) const
+		{
+			assert(i < this->length());
+			return this->value[i];
+		}
+#	endif//GLM_FORCE_SIZE_FUNC
+
+	// -- Unary arithmetic operators --
+
+#	if !GLM_HAS_DEFAULTED_FUNCTIONS
+		template <typename T, precision P>
+		GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator=(tmat4x4<T, P> const & m)
+		{
+			//memcpy could be faster
+			//memcpy(&this->value, &m.value, 16 * sizeof(valType));
+			this->value[0] = m[0];
+			this->value[1] = m[1];
+			this->value[2] = m[2];
+			this->value[3] = m[3];
+			return *this;
+		}
+#	endif//!GLM_HAS_DEFAULTED_FUNCTIONS
 
 	template <typename T, precision P> 
 	template <typename U> 
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator=
-	(
-		tmat4x4<U, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator=(tmat4x4<U, P> const & m)
 	{
 		//memcpy could be faster
 		//memcpy(&this->value, &m.value, 16 * sizeof(valType));
@@ -359,7 +396,7 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator+= (U s)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator+=(U s)
 	{
 		this->value[0] += s;
 		this->value[1] += s;
@@ -370,7 +407,7 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator+= (tmat4x4<U, P> const & m)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P>& tmat4x4<T, P>::operator+=(tmat4x4<U, P> const & m)
 	{
 		this->value[0] += m[0];
 		this->value[1] += m[1];
@@ -381,7 +418,7 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator-= (U s)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator-=(U s)
 	{
 		this->value[0] -= s;
 		this->value[1] -= s;
@@ -392,7 +429,7 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator-= (tmat4x4<U, P> const & m)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator-=(tmat4x4<U, P> const & m)
 	{
 		this->value[0] -= m[0];
 		this->value[1] -= m[1];
@@ -403,7 +440,7 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator*= (U s)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator*=(U s)
 	{
 		this->value[0] *= s;
 		this->value[1] *= s;
@@ -414,14 +451,14 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator*= (tmat4x4<U, P> const & m)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator*=(tmat4x4<U, P> const & m)
 	{
 		return (*this = *this * m);
 	}
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator/= (U s)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator/=(U s)
 	{
 		this->value[0] /= s;
 		this->value[1] /= s;
@@ -432,13 +469,15 @@ namespace detail
 
 	template <typename T, precision P>
 	template <typename U>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator/= (tmat4x4<U, P> const & m)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator/=(tmat4x4<U, P> const & m)
 	{
-		return (*this = *this * detail::compute_inverse<detail::tmat4x4, T, P>::call(m));
+		return (*this = *this * detail::compute_inverse<T, P>(m));
 	}
 
+	// -- Increment and decrement operators --
+
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator++ ()
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator++()
 	{
 		++this->value[0];
 		++this->value[1];
@@ -448,7 +487,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator-- ()
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> & tmat4x4<T, P>::operator--()
 	{
 		--this->value[0];
 		--this->value[1];
@@ -473,74 +512,28 @@ namespace detail
 		return Result;
 	}
 
+	// -- Unary constant operators --
+
 	template <typename T, precision P>
-	struct compute_inverse<detail::tmat4x4, T, P>
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+(tmat4x4<T, P> const & m)
 	{
-		static detail::tmat4x4<T, P> call(detail::tmat4x4<T, P> const & m)
-		{
-			T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
-			T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
-			T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+		return m;
+	}
 
-			T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
-			T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
-			T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
-
-			T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
-			T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
-			T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
-
-			T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
-			T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
-			T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
-
-			T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
-			T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
-			T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
-
-			T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
-			T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
-			T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
-
-			detail::tvec4<T, P> Fac0(Coef00, Coef00, Coef02, Coef03);
-			detail::tvec4<T, P> Fac1(Coef04, Coef04, Coef06, Coef07);
-			detail::tvec4<T, P> Fac2(Coef08, Coef08, Coef10, Coef11);
-			detail::tvec4<T, P> Fac3(Coef12, Coef12, Coef14, Coef15);
-			detail::tvec4<T, P> Fac4(Coef16, Coef16, Coef18, Coef19);
-			detail::tvec4<T, P> Fac5(Coef20, Coef20, Coef22, Coef23);
-
-			detail::tvec4<T, P> Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
-			detail::tvec4<T, P> Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
-			detail::tvec4<T, P> Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
-			detail::tvec4<T, P> Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
-
-			detail::tvec4<T, P> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
-			detail::tvec4<T, P> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
-			detail::tvec4<T, P> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
-			detail::tvec4<T, P> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
-
-			detail::tvec4<T, P> SignA(+1, -1, +1, -1);
-			detail::tvec4<T, P> SignB(-1, +1, -1, +1);
-			detail::tmat4x4<T, P> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
-
-			detail::tvec4<T, P> Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
-
-			detail::tvec4<T, P> Dot0(m[0] * Row0);
-			T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
-
-			T OneOverDeterminant = static_cast<T>(1) / Dot1;
-
-			return Inverse * OneOverDeterminant;
-		}
-	};
-
-	// Binary operators
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+
-	(
-		tmat4x4<T, P> const & m,
-		T const & s
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-(tmat4x4<T, P> const & m)
+	{
+		return tmat4x4<T, P>(
+			-m[0],
+			-m[1],
+			-m[2],
+			-m[3]);
+	}
+
+	// -- Binary arithmetic operators --
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+(tmat4x4<T, P> const & m, T const & s)
 	{
 		return tmat4x4<T, P>(
 			m[0] + s,
@@ -550,11 +543,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+
-	(
-		T const & s,
-		tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+(T const & s, tmat4x4<T, P> const & m)
 	{
 		return tmat4x4<T, P>(
 			m[0] + s,
@@ -564,11 +553,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator+(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		return tmat4x4<T, P>(
 			m1[0] + m2[0],
@@ -578,11 +563,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-
-	(
-		tmat4x4<T, P> const & m,
-		T const & s
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-(tmat4x4<T, P> const & m, T const & s)
 	{
 		return tmat4x4<T, P>(
 			m[0] - s,
@@ -592,11 +573,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-
-	(
-		T const & s,
-		tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-(T const & s, tmat4x4<T, P> const & m)
 	{
 		return tmat4x4<T, P>(
 			s - m[0],
@@ -606,11 +583,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator-(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		return tmat4x4<T, P>(
 			m1[0] - m2[0],
@@ -620,11 +593,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*
-	(
-		tmat4x4<T, P> const & m,
-		T const  & s
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*(tmat4x4<T, P> const & m, T const  & s)
 	{
 		return tmat4x4<T, P>(
 			m[0] * s,
@@ -634,11 +603,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*
-	(
-		T const & s,
-		tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*(T const & s, tmat4x4<T, P> const & m)
 	{
 		return tmat4x4<T, P>(
 			m[0] * s,
@@ -710,11 +675,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat2x4<T, P> operator*
-	(
-		tmat4x4<T, P> const & m1,
-		tmat2x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat2x4<T, P> operator*(tmat4x4<T, P> const & m1, tmat2x4<T, P> const & m2)
 	{
 		return tmat2x4<T, P>(
 			m1[0][0] * m2[0][0] + m1[1][0] * m2[0][1] + m1[2][0] * m2[0][2] + m1[3][0] * m2[0][3],
@@ -728,11 +689,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat3x4<T, P> operator*
-	(
-		tmat4x4<T, P> const & m1,
-		tmat3x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat3x4<T, P> operator*(tmat4x4<T, P> const & m1, tmat3x4<T, P> const & m2)
 	{
 		return tmat3x4<T, P>(
 			m1[0][0] * m2[0][0] + m1[1][0] * m2[0][1] + m1[2][0] * m2[0][2] + m1[3][0] * m2[0][3],
@@ -750,11 +707,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator*(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		typename tmat4x4<T, P>::col_type const SrcA0 = m1[0];
 		typename tmat4x4<T, P>::col_type const SrcA1 = m1[1];
@@ -766,7 +719,7 @@ namespace detail
 		typename tmat4x4<T, P>::col_type const SrcB2 = m2[2];
 		typename tmat4x4<T, P>::col_type const SrcB3 = m2[3];
 
-		tmat4x4<T, P> Result(tmat4x4<T, P>::_null);
+		tmat4x4<T, P> Result(uninitialize);
 		Result[0] = SrcA0 * SrcB0[0] + SrcA1 * SrcB0[1] + SrcA2 * SrcB0[2] + SrcA3 * SrcB0[3];
 		Result[1] = SrcA0 * SrcB1[0] + SrcA1 * SrcB1[1] + SrcA2 * SrcB1[2] + SrcA3 * SrcB1[3];
 		Result[2] = SrcA0 * SrcB2[0] + SrcA1 * SrcB2[1] + SrcA2 * SrcB2[2] + SrcA3 * SrcB2[3];
@@ -775,11 +728,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/
-	(
-		tmat4x4<T, P> const & m,
-		T const & s
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/(tmat4x4<T, P> const & m, T const & s)
 	{
 		return tmat4x4<T, P>(
 			m[0] / s,
@@ -789,11 +738,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/
-	(
-		T const & s,
-		tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/(T const & s,	tmat4x4<T, P> const & m)
 	{
 		return tmat4x4<T, P>(
 			s / m[0],
@@ -803,100 +748,35 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type operator/
-	(
-		tmat4x4<T, P> const & m,
-		typename tmat4x4<T, P>::row_type const & v
-	)
+	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::col_type operator/(tmat4x4<T, P> const & m, typename tmat4x4<T, P>::row_type const & v)
 	{
-		return detail::compute_inverse<detail::tmat4x4, T, P>::call(m) * v;
+		return detail::compute_inverse<T, P>(m) * v;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::row_type operator/
-	(
-		typename tmat4x4<T, P>::col_type const & v,
-		tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER typename tmat4x4<T, P>::row_type operator/(typename tmat4x4<T, P>::col_type const & v, tmat4x4<T, P> const & m)
 	{
-		return v * detail::compute_inverse<detail::tmat4x4, T, P>::call(m);
+		return v * detail::compute_inverse<T, P>(m);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> operator/(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		tmat4x4<T, P> m1_copy(m1);
 		return m1_copy /= m2;
 	}
 
-	// Unary constant operators
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> const operator-
-	(
-		tmat4x4<T, P> const & m
-	)
-	{
-		return tmat4x4<T, P>(
-			-m[0],
-			-m[1],
-			-m[2],
-			-m[3]);
-	}
-
-	template <typename T, precision P> 
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> const operator++
-	(
-		tmat4x4<T, P> const & m,
-		int
-	)
-	{
-		return tmat4x4<T, P>(
-			m[0] + static_cast<T>(1),
-			m[1] + static_cast<T>(1),
-			m[2] + static_cast<T>(1),
-			m[3] + static_cast<T>(1));
-	}
+	// -- Boolean operators --
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x4<T, P> const operator--
-	(
-		tmat4x4<T, P> const & m,
-		int
-	)
-	{
-		return tmat4x4<T, P>(
-			m[0] - static_cast<T>(1),
-			m[1] - static_cast<T>(1),
-			m[2] - static_cast<T>(1),
-			m[3] - static_cast<T>(1));
-	}
-
-	//////////////////////////////////////
-	// Boolean operators
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER bool operator==
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER bool operator==(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		return (m1[0] == m2[0]) && (m1[1] == m2[1]) && (m1[2] == m2[2]) && (m1[3] == m2[3]);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER bool operator!=
-	(
-		tmat4x4<T, P> const & m1,
-		tmat4x4<T, P> const & m2
-	)
+	GLM_FUNC_QUALIFIER bool operator!=(tmat4x4<T, P> const & m1, tmat4x4<T, P> const & m2)
 	{
 		return (m1[0] != m2[0]) || (m1[1] != m2[1]) || (m1[2] != m2[2]) || (m1[3] != m2[3]);
 	}
-
-} //namespace detail
-} //namespace glm
+}//namespace glm

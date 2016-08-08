@@ -174,7 +174,7 @@ public:
     virtual void updateFromSpinBoxMin(double val) override;
     virtual void updateFromSpinBoxMax(double val) override;
 
-    typedef glm::detail::tvec2<T, glm::defaultp> V;
+    typedef glm::tvec2<T, glm::defaultp> V;
     
 protected:
     virtual int transformIncrementToSpinnerDecimals() {

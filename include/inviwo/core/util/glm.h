@@ -56,6 +56,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
+#include <glm/detail/type_vec.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
 
@@ -96,6 +97,10 @@ typedef glm::size2_t size2_t;
 typedef glm::size3_t size3_t;
 typedef glm::size4_t size4_t;
 
+typedef glm::tvec2<glm::uint64> u64vec2;
+typedef glm::tvec3<glm::uint64> u64vec3;
+typedef glm::tvec4<glm::uint64> u64vec4;
+
 namespace util {
 
 template <typename T>
@@ -115,31 +120,31 @@ template <>
 struct rank<half_float::half> : public std::integral_constant<std::size_t, 0> {};
 
 template <typename T, glm::precision P>
-struct rank<glm::detail::tvec2<T, P>> : public std::integral_constant<std::size_t, 1> {};
+struct rank<glm::tvec2<T, P>> : public std::integral_constant<std::size_t, 1> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tvec3<T, P>> : public std::integral_constant<std::size_t, 1> {};
+struct rank<glm::tvec3<T, P>> : public std::integral_constant<std::size_t, 1> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tvec4<T, P>> : public std::integral_constant<std::size_t, 1> {};
+struct rank<glm::tvec4<T, P>> : public std::integral_constant<std::size_t, 1> {};
 
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat2x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat2x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat3x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat3x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat4x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat4x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
 
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat2x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat2x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat2x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat2x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat3x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat3x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat3x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat3x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat4x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat4x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct rank<glm::detail::tmat4x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
+struct rank<glm::tmat4x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
 
 
 template <typename T, unsigned N = 0>
@@ -149,51 +154,51 @@ template <typename T, unsigned N>
 struct extent<const T, N> : public extent<T,N> {};
 
 template <typename T, glm::precision P>
-struct extent<glm::detail::tvec2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tvec2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tvec3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tvec3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tvec4<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tvec4<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
 
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat2x2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat3x3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x4<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat4x4<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
 
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat2x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat3x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat4x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
 
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x3<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat2x3<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x4<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat2x4<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x2<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat3x2<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x4<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat3x4<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x2<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat4x2<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x3<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat4x3<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
 
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat2x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat2x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat2x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat3x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat3x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+struct extent<glm::tmat3x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
+struct extent<glm::tmat4x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
-struct extent<glm::detail::tmat4x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
+struct extent<glm::tmat4x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
 
 
 template <typename T, int N>
@@ -240,22 +245,22 @@ template <typename T, glm::precision P>
 struct glmtype<T, 1, 1, P> { typedef T type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 1, P> { typedef glm::detail::tvec2<T,P> type; };
+struct glmtype<T, 2, 1, P> { typedef glm::tvec2<T,P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 1, P> { typedef glm::detail::tvec3<T,P> type; };
+struct glmtype<T, 3, 1, P> { typedef glm::tvec3<T,P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 1, P> { typedef glm::detail::tvec4<T,P> type; };
+struct glmtype<T, 4, 1, P> { typedef glm::tvec4<T,P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 2, P> { typedef glm::detail::tmat2x2<T,P> type; };
+struct glmtype<T, 2, 2, P> { typedef glm::tmat2x2<T,P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 3, P> { typedef glm::detail::tmat3x3<T,P> type; };
+struct glmtype<T, 3, 3, P> { typedef glm::tmat3x3<T,P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 4, P> { typedef glm::detail::tmat4x4<T,P> type; };
+struct glmtype<T, 4, 4, P> { typedef glm::tmat4x4<T,P> type; };
 
 template <typename T, typename U>
 struct same_extent { typedef U type; };
@@ -682,15 +687,15 @@ Matrix<N, T> MatrixInvert(const Matrix<N, T>& m) {
     return glm::inverse(m);
 }
 template <typename T>
-Matrix<4, T> MatrixInvert(const glm::detail::tmat4x4<T, glm::defaultp>& m) {
+Matrix<4, T> MatrixInvert(const glm::tmat4x4<T, glm::defaultp>& m) {
     return glm::inverse(m);
 }
 template <typename T>
-Matrix<3, T> MatrixInvert(const glm::detail::tmat3x3<T, glm::defaultp>& m) {
+Matrix<3, T> MatrixInvert(const glm::tmat3x3<T, glm::defaultp>& m) {
     return glm::inverse(m);
 }
 template <typename T>
-Matrix<2, T> MatrixInvert(const glm::detail::tmat2x2<T, glm::defaultp>& m) {
+Matrix<2, T> MatrixInvert(const glm::tmat2x2<T, glm::defaultp>& m) {
     return glm::inverse(m);
 }
 
@@ -737,8 +742,8 @@ namespace glm {
 
 #define VECTORIZE2_MAT(func)                                                        \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x) { \
-        return detail::tmat2x2<T, P>(                                               \
+    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x) { \
+        return tmat2x2<T, P>(                                               \
             func(x[0][0]), func(x[1][0]),                                           \
             func(x[0][1]), func(x[1][1])                                            \
             );                                                                      \
@@ -746,8 +751,8 @@ namespace glm {
 
 #define VECTORIZE3_MAT(func)                                                          \
     template <typename T, precision P>                                                \
-    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x) {   \
-        return detail::tmat3x3<T, P>(                                                 \
+    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x) {   \
+        return tmat3x3<T, P>(                                                 \
             func(x[0][0]), func(x[1][0]), func(x[2][0]),                              \
             func(x[0][1]), func(x[1][1]), func(x[2][1]),                              \
             func(x[0][2]), func(x[1][2]), func(x[2][2])                               \
@@ -756,8 +761,8 @@ namespace glm {
 
 #define VECTORIZE4_MAT(func)                                                        \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x) { \
-        return detail::tmat4x4<T, P>(                                               \
+    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x) { \
+        return tmat4x4<T, P>(                                               \
             func(x[0][0]), func(x[1][0]), func(x[2][0]), func(x[3][0]),             \
             func(x[0][1]), func(x[1][1]), func(x[2][1]), func(x[3][1]),             \
             func(x[0][2]), func(x[1][2]), func(x[2][2]), func(x[3][2]),             \
@@ -774,9 +779,9 @@ namespace glm {
 
 #define VECTORIZE2_MAT_SCA(func)                                                    \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
+    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x,   \
                                                   T const& y) {                     \
-        return detail::tmat2x2<T, P>(                                               \
+        return tmat2x2<T, P>(                                               \
             func(x[0][0], y), func(x[1][0], y),                                     \
             func(x[0][1], y), func(x[1][1], y)                                      \
             );                                                                      \
@@ -784,9 +789,9 @@ namespace glm {
 
 #define VECTORIZE3_MAT_SCA(func)                                                    \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x,   \
+    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x,   \
                                                   T const& y) {                     \
-        return detail::tmat3x3<T, P>(                                               \
+        return tmat3x3<T, P>(                                               \
             func(x[0][0], y), func(x[1][0], y), func(x[2][0], y),                   \
             func(x[0][1], y), func(x[1][1], y), func(x[2][1], y),                   \
             func(x[0][2], y), func(x[1][2], y), func(x[2][2], y)                    \
@@ -795,9 +800,9 @@ namespace glm {
 
 #define VECTORIZE4_MAT_SCA(func)                                                    \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x,   \
+    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x,   \
                                                   T const& y) {                     \
-        return detail::tmat4x4<T, P>(                                               \
+        return tmat4x4<T, P>(                                               \
             func(x[0][0], y), func(x[1][0], y), func(x[2][0], y), func(x[3][0], y), \
             func(x[0][1], y), func(x[1][1], y), func(x[2][1], y), func(x[3][1], y), \
             func(x[0][2], y), func(x[1][2], y), func(x[2][2], y), func(x[3][2], y), \
@@ -813,9 +818,9 @@ namespace glm {
 
 #define VECTORIZE2_MAT_MAT(func)                                                    \
     template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
-                                                  detail::tmat2x2<T, P> const& y) { \
-        return detail::tmat2x2<T, P>(                                               \
+    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x,   \
+                                                  tmat2x2<T, P> const& y) { \
+        return tmat2x2<T, P>(                                               \
             func(x[0][0], y[0][0]), func(x[1][0], y[1][0]),                         \
             func(x[0][1], y[0][1]), func(x[1][1], y[1][1])                          \
             );                                                                      \
@@ -823,9 +828,9 @@ namespace glm {
 
 #define VECTORIZE3_MAT_MAT(func)                                                      \
     template <typename T, precision P>                                                \
-    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x,     \
-                                                  detail::tmat3x3<T, P> const& y) {   \
-        return detail::tmat3x3<T, P>(                                                 \
+    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x,     \
+                                                  tmat3x3<T, P> const& y) {   \
+        return tmat3x3<T, P>(                                                 \
             func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]),   \
             func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]),   \
             func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2])    \
@@ -834,9 +839,9 @@ namespace glm {
 
 #define VECTORIZE4_MAT_MAT(func)                                                                            \
     template <typename T, precision P>                                                                      \
-    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x,                           \
-                                                  detail::tmat4x4<T, P> const& y) {                         \
-        return detail::tmat4x4<T, P>(                                                                       \
+    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x,                           \
+                                                  tmat4x4<T, P> const& y) {                         \
+        return tmat4x4<T, P>(                                                                       \
             func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]), func(x[3][0], y[3][0]), \
             func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]), func(x[3][1], y[3][1]), \
             func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2]), func(x[3][2], y[3][2]), \

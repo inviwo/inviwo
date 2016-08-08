@@ -101,11 +101,11 @@ public:
     virtual size_t getNumberOfBytes() const = 0;
 
     template <typename T>
-    static T posToIndex(const glm::detail::tvec3<T, glm::defaultp>& pos,
-                        const glm::detail::tvec3<T, glm::defaultp>& dim);
+    static T posToIndex(const glm::tvec3<T, glm::defaultp>& pos,
+                        const glm::tvec3<T, glm::defaultp>& dim);
     template <typename T>
-    static T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
-                                const glm::detail::tvec3<T, glm::defaultp>& dim);
+    static T periodicPosToIndex(const glm::tvec3<T, glm::defaultp>& posIn,
+                                const glm::tvec3<T, glm::defaultp>& dim);
 
     virtual std::type_index getTypeIndex() const override final;
 };
@@ -116,15 +116,15 @@ struct representation_traits<Volume, kind::RAM> {
 };
 
 template <typename T>
-T VolumeRAM::posToIndex(const glm::detail::tvec3<T, glm::defaultp>& pos,
-                        const glm::detail::tvec3<T, glm::defaultp>& dim) {
+T VolumeRAM::posToIndex(const glm::tvec3<T, glm::defaultp>& pos,
+                        const glm::tvec3<T, glm::defaultp>& dim) {
     return pos.x + (pos.y * dim.x) + (pos.z * dim.x * dim.y);
 }
 
 template <typename T>
-T VolumeRAM::periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
-                                const glm::detail::tvec3<T, glm::defaultp>& dim) {
-    glm::detail::tvec3<T, glm::defaultp> pos = posIn % dim;
+T VolumeRAM::periodicPosToIndex(const glm::tvec3<T, glm::defaultp>& posIn,
+                                const glm::tvec3<T, glm::defaultp>& dim) {
+    glm::tvec3<T, glm::defaultp> pos = posIn % dim;
     return pos.x + (pos.y * dim.x) + (pos.z * dim.x * dim.y);
 }
 

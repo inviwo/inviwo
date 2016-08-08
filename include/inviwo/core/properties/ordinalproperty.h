@@ -92,7 +92,11 @@ private:
 // Scalar properties
 using FloatProperty = OrdinalProperty<float>;
 using IntProperty = OrdinalProperty<int>;
-using IntSizeTProperty = OrdinalProperty<size_t>;
+// Note: Always use 64-bits for size_t to
+// ensure correct serialization/deserialization
+// on different platforms
+using SizeTProperty = OrdinalProperty<glm::uint64>;
+using UInt64Property = OrdinalProperty<glm::uint64>; 
 using Int64Property = OrdinalProperty<glm::i64>;
 using DoubleProperty = OrdinalProperty<double>;
 
@@ -109,9 +113,9 @@ using IntVec2Property = OrdinalProperty<ivec2>;
 using IntVec3Property = OrdinalProperty<ivec3>;
 using IntVec4Property = OrdinalProperty<ivec4>;
 
-using IntSize2Property = OrdinalProperty<size2_t>;
-using IntSize3Property = OrdinalProperty<size3_t>;
-using IntSize4Property = OrdinalProperty<size4_t>;
+using UInt64Vec2Property = OrdinalProperty<u64vec2>;
+using UInt64Vec3Property = OrdinalProperty<u64vec3>;
+using UInt64Vec4Property = OrdinalProperty<u64vec4>;
 
 // Matrix properties
 using FloatMat2Property = OrdinalProperty<mat2>;

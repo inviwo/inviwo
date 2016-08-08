@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
+#include <cmath>
 
 namespace inviwo {
 
@@ -51,8 +52,8 @@ public:
     virtual vec3 getPower() const {
         return getIntensity() * 2.f * static_cast<float>(M_PI) *
                (1.f -
-                5.f * (glm::cos<float>(glm::radians(coneRadiusAngle_)) +
-                       glm::cos<float>(glm::radians(coneFallOffAngle_))));
+                5.f * (std::cos(glm::radians(coneRadiusAngle_)) +
+                       std::cos(glm::radians(coneFallOffAngle_))));
     }
 
     LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_CONE; }
@@ -118,7 +119,7 @@ public:
      *
      * @return Value for checking full visibility (inside cone angle against the light source.
      */
-    float getFullVisbilityValue() const { return glm::cos<float>(glm::radians(coneRadiusAngle_)); }
+    float getFullVisbilityValue() const { return std::cos(glm::radians(coneRadiusAngle_)); }
 
     /**
      * Get value for checking partial visibility (inside cone + falloff angle) against the light
@@ -128,7 +129,7 @@ public:
      *source.
      */
     float getPartialVisbilityValue() const {
-        return glm::cos<float>(glm::radians(coneRadiusAngle_ + coneFallOffAngle_));
+        return std::cos(glm::radians(coneRadiusAngle_ + coneFallOffAngle_));
     }
 
 protected:

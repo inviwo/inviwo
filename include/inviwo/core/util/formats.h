@@ -379,7 +379,7 @@ typedef DataFormat<glm::u64>  DataUInt64;
 /*---------------Vec2 Formats--------------------*/
 
 // Floats
-typedef glm::detail::tvec2<half_float::half, glm::defaultp> f16vec2;
+typedef glm::tvec2<half_float::half, glm::defaultp> f16vec2;
 typedef DataFormat<f16vec2> DataVec2Float16;
 typedef DataFormat<glm::f32vec2> DataVec2Float32;
 typedef DataFormat<glm::f64vec2> DataVec2Float64;
@@ -399,7 +399,7 @@ typedef DataFormat<glm::u64vec2> DataVec2UInt64;
 /*---------------Vec3 Formats--------------------*/
 
 // Floats
-typedef glm::detail::tvec3<half_float::half, glm::defaultp> f16vec3;
+typedef glm::tvec3<half_float::half, glm::defaultp> f16vec3;
 typedef DataFormat<f16vec3> DataVec3Float16;
 typedef DataFormat<glm::f32vec3> DataVec3Float32;
 typedef DataFormat<glm::f64vec3> DataVec3Float64;
@@ -419,7 +419,7 @@ typedef DataFormat<glm::u64vec3> DataVec3UInt64;
 /*---------------Vec4 Value Formats------------------*/
 
 // Floats
-typedef glm::detail::tvec4<half_float::half, glm::defaultp> f16vec4;
+typedef glm::tvec4<half_float::half, glm::defaultp> f16vec4;
 typedef DataFormat<f16vec4> DataVec4Float16;
 typedef DataFormat<glm::f32vec4> DataVec4Float32;
 typedef DataFormat<glm::f64vec4> DataVec4Float64;

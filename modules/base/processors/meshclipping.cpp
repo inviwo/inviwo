@@ -872,8 +872,7 @@ Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
     for (auto& elem : outputIndexList) LogInfo("Vertex indices: " << elem);
 
     for (size_t i=0; i<outputList.size(); ++i)
-        LogInfo("Output verts, " << i << ": ("+glm::to_string(outputList.at(i)[0])+", "+glm::to_string(outputList.at(i)[1])+", "+glm::to_string(
-                    outputList.at(i)[2])+")");
+        LogInfo("Output verts, " << i << ": ("+glm::to_string(outputList.at(i)) + ")");
 
     LogInfo("Size of clipped verts vector:" << clippedVertInd.size());
 

@@ -43,9 +43,9 @@ namespace inviwo {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public TemplateProperty<glm::detail::tvec2<T, glm::defaultp> > {
+class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp> > {
 public:
-    typedef glm::detail::tvec2<T, glm::defaultp> range_type;
+    typedef glm::tvec2<T, glm::defaultp> range_type;
     InviwoPropertyInfo();
 
     MinMaxProperty(std::string identifier, std::string displayName,
@@ -180,7 +180,7 @@ T inviwo::MinMaxProperty<T>::getMinSeparation() const {
 }
 
 template <typename T>
-glm::detail::tvec2<T, glm::defaultp> MinMaxProperty<T>::getRange() const {
+glm::tvec2<T, glm::defaultp> MinMaxProperty<T>::getRange() const {
     return range_;
 }
 

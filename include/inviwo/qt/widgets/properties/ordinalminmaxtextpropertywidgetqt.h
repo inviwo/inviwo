@@ -90,7 +90,7 @@ public:
     virtual void updateFromMin() override;
     virtual void updateFromMax() override;
 
-    typedef glm::detail::tvec2<T, glm::defaultp> V;
+    typedef glm::tvec2<T, glm::defaultp> V;
     
 protected:
     virtual void makeEditorWidgets() override;
