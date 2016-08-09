@@ -235,6 +235,10 @@ void FrameBufferObject::detachTexture(GLenum attachmentID) {
         hasDepthAttachment_ = false;
     else if (attachmentID == GL_STENCIL_ATTACHMENT)
         hasStencilAttachment_ = false;
+	else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
+		hasDepthAttachment_ = false;
+		hasStencilAttachment_ = false;
+	}
     else {
         // keep internal state consistent and remove color attachment from draw buffers
         util::erase_remove(drawBuffers_, attachmentID);
@@ -342,6 +346,10 @@ void FrameBufferObject::performAttachTexture(GLenum attachmentID) {
         hasDepthAttachment_ = true;
     else if (attachmentID == GL_STENCIL_ATTACHMENT)
         hasStencilAttachment_ = true;
+	else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
+		hasDepthAttachment_ = true;
+		hasStencilAttachment_ = true;
+	}
     else {
         // check for valid attachmentID
         if ((attachmentID < colorAttachmentEnums_[0]) ||
@@ -436,7 +444,7 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber, int a
 }
 
 int FrameBufferObject::getAttachmentLocation(GLenum attachmentID) const {
-    if ((attachmentID == GL_DEPTH_ATTACHMENT) || (attachmentID == GL_STENCIL_ATTACHMENT)) return 0;
+    if ((attachmentID == GL_DEPTH_ATTACHMENT) || (attachmentID == GL_STENCIL_ATTACHMENT) || (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT)) return 0;
 
     std::vector<GLenum>::const_iterator it = drawBuffers_.begin();
     while (it != drawBuffers_.end()) {
