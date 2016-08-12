@@ -1,11 +1,9 @@
 ## Inviwo - Interactive Visualization Workshop
-#### Jenkins [![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Inviwo-default)](http://130.236.145.152:8080/job/Inviwo-default/)  Regression [![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Regression)](http://130.236.145.152:8080/job/Regression/)
-<!-- Shield needs access to repository/jenkins in order to work
-[![Jenkins tests](https://img.shields.io/jenkins/t/http/130.236.145.152:8080/Regression.svg?maxAge=2592000)](http://130.236.145.152:8080/job/Regression/)-->
-<!--[![GitHub release](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/releases)-->
-<!---[![license](https://img.shields.io/github/license/inviwo/inviwo.svg?maxAge=2592000)]()-->
-<!---[![Codecov](https://img.shields.io/codecov/c/github/inviwo/inviwo.svg?maxAge=2592000)]()-->
 
+[![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Inviwo-default)](http://130.236.145.152:8080/job/Inviwo-default/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
+[![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
+<!-- We need to create a regression badge before showing it
+Regression [![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Regression)](http://130.236.145.152:8080/job/Regression/) -->
 Inviwo is a software framework for rapid visualization prototyping.
 
 Package releases and information is available at www.inviwo.org
