@@ -102,11 +102,14 @@ void CubeProxyGeometry::process() {
     auto dims = inport_.getData()->getDimensions();
 
     if (clippingEnabled_.get()) {
+
+        vec3 clipRange(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax());
+
         vec3 clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
         vec3 clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
 
-        vec3 min(clipMin / vec3(dims));
-        vec3 clipextent((clipMax - clipMin) / vec3(dims));
+        vec3 min(clipMin / clipRange);
+        vec3 clipextent((clipMax - clipMin) / clipRange);
 
         origin = origin + e1 * min.x + e2 * min.y + e3 * min.z;
         e1 *= clipextent.x;
@@ -136,6 +139,25 @@ void CubeProxyGeometry::process() {
 void CubeProxyGeometry::onVolumeChange() {
     // Update to the new dimensions.
     auto dims = inport_.getData()->getDimensions();
+    
+    if (inport_.getData()->getMetaData<BoolMetaData>("brickedVolume", false)) {
+        // adjust dimensions for bricked volumes
+
+        // volume dimensions refer only to the size of the index volume, multiply it by brick dimension
+        auto brickDim = inport_.getData()->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1));
+        dims *= size3_t(brickDim);
+    }
+    // re-adjust slider ranges by considering margins
+    // the clip range should not cover the area within the margins
+    if (inport_.getData()->getMetaData<BoolMetaData>("marginsEnabled", false)) {
+        // volume has margins enabled
+        // adjust start and end texture coordinate accordingly
+        auto marginsBottomLeft = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
+        auto marginsTopRight = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
+        
+        dims = size3_t(vec3(dims) * (vec3(1.0f) - (marginsBottomLeft + marginsTopRight)));
+    }
+
     if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
         NetworkLock lock(this);
 
