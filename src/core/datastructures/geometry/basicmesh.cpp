@@ -34,6 +34,7 @@
 #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
+#include <memory>
 
 namespace inviwo {
 BasicMesh::BasicMesh() : Mesh() {
@@ -48,7 +49,28 @@ BasicMesh::BasicMesh() : Mesh() {
     addBuffer(BufferType::NormalAttrib, normals_);      // pos 3
 }
 
-BasicMesh* BasicMesh::clone() const { return new BasicMesh(*this); }
+BasicMesh::BasicMesh(const BasicMesh& rhs) : Mesh(rhs) {
+    vertices_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[0].second);
+    texCoords_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[1].second);
+    colors_ = std::static_pointer_cast<Buffer<vec4>>(buffers_[2].second);
+    normals_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[3].second);
+}
+
+
+BasicMesh& BasicMesh::operator=(const BasicMesh& that) {
+    if (this != &that) {
+        Mesh::operator=(that);
+        vertices_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[0].second);
+        texCoords_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[1].second);
+        colors_ = std::static_pointer_cast<Buffer<vec4>>(buffers_[2].second);
+        normals_ = std::static_pointer_cast<Buffer<vec3>>(buffers_[3].second);
+    }
+    return *this;
+}
+
+BasicMesh* BasicMesh::clone() const {
+    return new BasicMesh(*this); 
+}
 
 uint32_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
     getEditableVerticesRAM()->add(pos);

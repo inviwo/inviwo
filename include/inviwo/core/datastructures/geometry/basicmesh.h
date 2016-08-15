@@ -44,8 +44,8 @@ namespace inviwo {
 class IVW_CORE_API BasicMesh : public Mesh {
 public:
     BasicMesh();
-    BasicMesh(const BasicMesh& rhs) = default;
-    BasicMesh& operator=(const BasicMesh& that) = default;
+    BasicMesh(const BasicMesh& rhs);
+    BasicMesh& operator=(const BasicMesh& that);
     virtual BasicMesh* clone() const override;
     virtual ~BasicMesh() = default;
 
