@@ -52,9 +52,6 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
         } else if (dynamic_cast<SelectionEvent*>(event)) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
-        } else if (dynamic_cast<RemoveEvent*>(event)) {
-            manager_->remove(brushingEvent->getSource());
-            event->markAsUsed();
         }
     }
     Processor::invokeEvent(event);

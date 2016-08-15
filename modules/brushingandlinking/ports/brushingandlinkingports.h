@@ -45,7 +45,7 @@ class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport
     : public DataInport<BrushingAndLinkingManager> {
 public:
     BrushingAndLinkingInport(std::string identifier);
-    virtual ~BrushingAndLinkingInport();
+    virtual ~BrushingAndLinkingInport() = default;
 
     void sendFilterEvent(const std::unordered_set<size_t> &indices);
 

@@ -41,11 +41,6 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     });
 }
 
-BrushingAndLinkingInport::~BrushingAndLinkingInport() {
-    //RemoveEvent event(this);
-    //getProcessor()->propagateEvent(&event, nullptr);
-}
-
 void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);

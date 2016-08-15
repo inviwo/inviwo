@@ -63,20 +63,6 @@ private:
     const std::unordered_set<size_t>& indices_;
 };
 
-class IVW_MODULE_BRUSHINGANDLINKING_API RemoveEvent : public BrushingAndLinkingEvent {
-public:
-    RemoveEvent(const BrushingAndLinkingInport* src)
-        : BrushingAndLinkingEvent(src, std::unordered_set<size_t>()) {}
-    virtual ~RemoveEvent() = default;
-
-    virtual BrushingAndLinkingEvent* clone() const override;
-
-    virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.RemoveEvent");
-    }
-};
-
 }  // namespace
 
 #endif // IVW_BRUSHINGANDLINKINGEVENT_H

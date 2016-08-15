@@ -60,7 +60,7 @@ void IndexList::update() {
 
     using T = std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>::value_type;
     util::map_erase_remove_if(indicesBySource_, [](const T & p) {
-        return !p.first->isConnected();
+        return !p.first->isConnected() || p.second.empty(); //remove if port is disconnected or if the set is empty
     });
 
     for (auto p : indicesBySource_) {

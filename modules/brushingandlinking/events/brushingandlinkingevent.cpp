@@ -49,12 +49,5 @@ uint64_t BrushingAndLinkingEvent::hash() const {
     return chash();
 }
 
-BrushingAndLinkingEvent* RemoveEvent::clone() const {
-    return new RemoveEvent(*this);
-}
-
-uint64_t RemoveEvent::hash() const {
-    return chash();
-}
 
 }  // namespace
