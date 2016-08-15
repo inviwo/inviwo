@@ -256,7 +256,7 @@ public:
     };
 
     struct Span_t {};
-    static constexpr Span_t span{};
+    /*static constexpr*/ Span_t span{};
 
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                  const std::unordered_map<std::string, std::string>& attributes = {});
