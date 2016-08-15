@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 
 namespace inviwo {
 class BrushingAndLinkingInport;
@@ -44,7 +45,8 @@ class BrushingAndLinkingProcessor;
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
 public:
-    BrushingAndLinkingManager(BrushingAndLinkingProcessor* p);
+    BrushingAndLinkingManager(Processor* p,
+                              InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
 
     size_t getNumberOfSelected() const;

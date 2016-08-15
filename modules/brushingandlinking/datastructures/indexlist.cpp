@@ -69,4 +69,9 @@ void IndexList::update() {
     onUpdate_.invoke();
 }
 
+void IndexList::clear() {
+    indices_.clear();
+    update();
+}
+
 }  // namespace

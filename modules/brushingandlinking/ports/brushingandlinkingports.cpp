@@ -42,8 +42,8 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
 }
 
 BrushingAndLinkingInport::~BrushingAndLinkingInport() {
-    RemoveEvent event(this);
-    getProcessor()->propagateEvent(&event, nullptr);
+    //RemoveEvent event(this);
+    //getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {

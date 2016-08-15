@@ -29,16 +29,23 @@
 
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingProcessor* p) {
-    p->getOutport().onDisconnect([=]() {
-        selected_.update();
-        filtered_.update();
-    });
-    callback1_ = selected_.onChange([p]() { p->invalidate(InvalidationLevel::InvalidOutput); });
-    callback2_ = filtered_.onChange([p]() { p->invalidate(InvalidationLevel::InvalidOutput); });
+BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p, InvalidationLevel validationLevel) {
+    auto outPorts = p->getOutports();
+    for (auto& op : outPorts) {
+        if (dynamic_cast<BrushingAndLinkingOutport*>(op)) {
+            op->onDisconnect([=]() {
+                selected_.update();
+                filtered_.update();
+            });
+        }
+    }
+    callback1_ = selected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    callback2_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}

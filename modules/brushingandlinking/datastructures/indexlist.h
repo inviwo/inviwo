@@ -52,6 +52,7 @@ public:
     std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
 
     void update();
+    void clear();
     const std::unordered_set<size_t> &getIndices() const {
         return indices_;
     }
