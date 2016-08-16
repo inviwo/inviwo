@@ -53,9 +53,12 @@ BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
 
 BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     if (this != &that) {
-        bind();
-        clear();
-        unbind();
+        if (id_ != 0) {
+            // avoid creating the vertex array if is not already initialized
+            bind();
+            clear();
+            unbind();
+        }
         attachedBuffers_ = that.attachedBuffers_;
     }
     return *this;

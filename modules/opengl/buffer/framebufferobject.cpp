@@ -240,8 +240,20 @@ void FrameBufferObject::detachTexture(GLenum attachmentID) {
 		hasStencilAttachment_ = false;
 	}
     else {
+        // check for valid attachmentID
+        if ((attachmentID < colorAttachmentEnums_[0]) ||
+            (attachmentID > colorAttachmentEnums_[0] + maxColorattachments_ - 1)) {
+            LogError("Attachments ID " << attachmentID
+                     << " exceeds maximum amount of color attachments");
+            return;
+        }
+        // check whether given ID is already attached
+
         // keep internal state consistent and remove color attachment from draw buffers
         util::erase_remove(drawBuffers_, attachmentID);
+
+        // set attachment state to unused
+        buffersInUse_[attachmentID - colorAttachmentEnums_[0]] = false;
     }
 
     glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, 0, 0);
