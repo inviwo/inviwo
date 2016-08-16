@@ -256,7 +256,16 @@ public:
     };
 
     struct Span_t {};
-    /*static constexpr*/ Span_t span{};
+#if _MSC_FULL_VER < 190023918 // Visual Studio 2015 Update 2
+    // constexpr is not supported before VS 2015 Update 3.
+    // Github issues 1315 and 1319
+    // TODO: What are the implications of not using constexpr here?
+    Span_t span{};
+#else 
+    // Use constexpr with other compilers
+    static constexpr Span_t span{};
+#endif
+    
 
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                  const std::unordered_map<std::string, std::string>& attributes = {});
