@@ -247,6 +247,11 @@ void TransferFunction::deserialize(Deserializer& d) {
     invalidate();
 }
 
+
+vec4 TransferFunction::sample(double v) const {
+    return sample(static_cast<float>(v));
+}
+
 vec4 TransferFunction::sample(float v) const {
     if (v < 0) {
         return points_.front()->getRGBA();
@@ -269,6 +274,7 @@ vec4 TransferFunction::sample(float v) const {
     float x = (v - (*it)->getPos().x) / ((*next)->getPos().x - (*it)->getPos().x);
     return Interpolation<vec4, float>::linear((*it)->getRGBA(), (*next)->getRGBA(), x);
 }
+
 
 const Layer* TransferFunction::getData() const {
     if (invalidData_) {
