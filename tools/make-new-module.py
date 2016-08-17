@@ -52,7 +52,7 @@ def make_module(ivwpath, path, name, verbose, dummy):
 			 "desc" : "Folder for non code stuff"
 		}, 
 		{
-			"path" : ["data", "image"], 
+			"path" : ["data", "images"], 
 		 	"desc" : "Image resources"
 		}, 
 		{
