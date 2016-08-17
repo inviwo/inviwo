@@ -49,6 +49,13 @@ public:
     virtual BasicMesh* clone() const override;
     virtual ~BasicMesh() = default;
 
+    /**
+     * Adds a new vertex to the Mesh, returns the index of the new vertex
+     * @param pos position of the new vertex
+     * @param normal normal at the new vertex
+     * @param texCoord texture coordinates at the new vertex
+     * @param color color (RGBA) at the new vertex
+     */
     uint32_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
 
     // add a list of verties: {{pos, normal, tex, color}, ...}
