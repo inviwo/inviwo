@@ -96,22 +96,25 @@ public:
      * @param itemKey vector item key
      */
     template <typename T>
-    void deserialize(const std::string& key, std::vector<T*>& sVector, const std::string& itemKey);
+    void deserialize(const std::string& key, std::vector<T*>& sVector,
+                     const std::string& itemKey = "item");
 
     template <typename T, typename C>
-    void deserialize(const std::string& key, std::vector<T*>& sVector, const std::string& itemKey,
-                     C identifier);
+    void deserialize(const std::string& key, std::vector<T*>& sVector,
+                     const std::string& itemKey, C identifier);
 
     template <typename T>
-    void deserialize(const std::string& key, std::vector<T>& sVector, const std::string& itemKey);
+    void deserialize(const std::string& key, std::vector<T>& sVector,
+                     const std::string& itemKey = "item");
 
     template <typename T>
     void deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
-                     const std::string& itemKey);
+                     const std::string& itemKey = "item");
 
     template <typename T>
-    void deserialize(const std::string& key, std::list<T>& sContainer, const std::string& itemKeyr);
-    
+    void deserialize(const std::string& key, std::list<T>& sContainer,
+                     const std::string& itemKey = "item");
+
     /**
      * \brief  Deserialize a map
      *
@@ -154,20 +157,19 @@ public:
      * @param comparisionAttribute forced comparison attribute.
      */
     template <typename K, typename V, typename C, typename A>
-    void deserialize(const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
+    void deserialize(const std::string& key, std::map<K, V, C, A>& sMap,
+                     const std::string& itemKey = "item",
                      const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
 
     template <typename K, typename V, typename C, typename A>
     void deserialize(const std::string& key, std::map<K, V*, C, A>& sMap,
-                     const std::string& itemKey,
+                     const std::string& itemKey = "item",
                      const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
 
     template <typename K, typename V, typename C, typename A>
     void deserialize(const std::string& key, std::map<K, std::unique_ptr<V>, C, A>& sMap,
-                     const std::string& itemKey,
+                     const std::string& itemKey = "item",
                      const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
-
-
 
     template <typename T, typename K>
     void deserialize(const std::string& key, ContainerWrapper<T, K>& container);

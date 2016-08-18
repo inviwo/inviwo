@@ -78,19 +78,19 @@ public:
     // std containers
     template <typename T>
     void serialize(const std::string& key, const std::vector<T>& sVector,
-                   const std::string& itemKey);
+                   const std::string& itemKey = "item");
 
     template <typename T>
     void serialize(const std::string& key, const std::list<T>& container,
-                   const std::string& itemKey);
+                   const std::string& itemKey = "item");
 
     template <typename K, typename V, typename C, typename A>
     void serialize(const std::string& key, const std::map<K, V, C, A>& map,
-                   const std::string& itemKey);
+                   const std::string& itemKey = "item");
     
     template <typename K, typename V, typename H, typename C, typename A>
     void serialize(const std::string& key, const std::unordered_map<K, V, H, C, A>& map,
-                   const std::string& itemKey);
+                   const std::string& itemKey = "item");
 
     // Specializations for chars
     void serialize(const std::string& key, const signed char& data,
