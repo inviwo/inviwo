@@ -29,7 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/qt/widgets/properties/MultiFilePropertyWidgetQt.h>
+#include <inviwo/qt/widgets/properties/multifilepropertywidgetqt.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/properties/propertyowner.h>
 
