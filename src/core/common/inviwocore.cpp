@@ -78,6 +78,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
@@ -247,6 +248,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<DoubleVec3Property>();
     registerProperty<DoubleVec4Property>();
     registerProperty<FileProperty>();
+    registerProperty<MultiFileProperty>();
     registerProperty<FloatMat2Property>();
     registerProperty<FloatMat3Property>();
     registerProperty<FloatMat4Property>();

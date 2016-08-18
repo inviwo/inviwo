@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
+#include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -53,6 +54,7 @@
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/imageeditorwidgetqt.h>
 #include <inviwo/qt/widgets/properties/lightpropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/multifilepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/optionpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/ordinalminmaxpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h>
@@ -80,6 +82,7 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
+    registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
     registerPropertyWidget<FloatMat2PropertyWidgetQt, FloatMat2Property>("Default");
     registerPropertyWidget<FloatMat3PropertyWidgetQt, FloatMat3Property>("Default");

@@ -31,24 +31,25 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/compositepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/eventpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/filepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/htmleditorwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/htmllistwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/imageeditorwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/lightpropertywidgetqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/multifilepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/optionpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalminmaxpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/propertysettingswidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/propertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/stringpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/stringpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/syntaxhighlighter.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/texteditorwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditorview.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctionpropertydialog.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertyselectiontreewidget.h
 )
 
@@ -105,6 +106,7 @@ set(SOURCE_FILES
     properties/htmllistwidgetqt.cpp
     properties/imageeditorwidgetqt.cpp
     properties/lightpropertywidgetqt.cpp
+    properties/multifilepropertywidgetqt.cpp
     properties/optionpropertywidgetqt.cpp
     properties/ordinalminmaxpropertywidgetqt.cpp
     properties/ordinalminmaxtextpropertywidgetqt.cpp
@@ -112,8 +114,8 @@ set(SOURCE_FILES
     properties/propertysettingswidgetqt.cpp
     properties/propertywidgetqt.cpp
     properties/pythonsyntaxhighlighter.cpp
-    properties/stringpropertywidgetqt.cpp
     properties/stringmultilinepropertywidgetqt.cpp
+    properties/stringpropertywidgetqt.cpp
     properties/syntaxhighlighter.cpp
     properties/texteditorwidgetqt.cpp
     properties/transferfunctioncontrolpointconnection.cpp

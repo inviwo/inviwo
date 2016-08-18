@@ -29,7 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/MultiFilePropertyWidgetQt.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/properties/propertyowner.h>
 
@@ -48,13 +48,13 @@
 
 namespace inviwo {
 
-FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
+MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property)
     : PropertyWidgetQt(property), property_(property) {
     generateWidget();
     updateFromProperty();
 }
 
-void FilePropertyWidgetQt::generateWidget() {
+void MultiFilePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
@@ -77,7 +77,7 @@ void FilePropertyWidgetQt::generateWidget() {
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        ivwAssert(lineEdit_->getPath() == property_->get(), "FilePropertyWidgetQt: paths not equal after canceling edit");
+        ivwAssert(lineEdit_->getPath() == property_->get().front(), "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
     });
 #endif // IVW_DEBUG
 
@@ -90,9 +90,9 @@ void FilePropertyWidgetQt::generateWidget() {
     revealButton->setIcon(QIcon(":/icons/reveal.png"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
-        auto dir = filesystem::directoryExists(property_->get())
-                       ? property_->get()
-                       : filesystem::getFileDirectory(property_->get());
+        auto dir = filesystem::directoryExists(property_->get().front())
+                       ? property_->get().front()
+                       : filesystem::getFileDirectory(property_->get().front());
 
         QDesktopServices::openUrl(
             QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
@@ -109,8 +109,8 @@ void FilePropertyWidgetQt::generateWidget() {
     hLayout->addWidget(widget);
 }
 
-void FilePropertyWidgetQt::setPropertyValue() {
-    std::string path{ property_->get() };
+void MultiFilePropertyWidgetQt::setPropertyValue() {
+    std::string path{ property_->get().front() };
 
     if (!path.empty()) {
         if (filesystem::directoryExists(path)) {  // if a folder is selected
@@ -172,14 +172,17 @@ void FilePropertyWidgetQt::setPropertyValue() {
     }
 
     if (importFileDialog.exec()) {
-        QString p = importFileDialog.selectedFiles().at(0);
-        property_->set(p.toStdString());
+        std::vector<std::string> filenames;
+        for (auto item : importFileDialog.selectedFiles()) {
+            filenames.push_back(item.toStdString());
+        }
+        property_->set(filenames);
     }
 
     updateFromProperty();
 }
 
-void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
+void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     auto data = drop->mimeData();
     if (data->hasUrls()) {
         if(data->urls().size()>0) {
@@ -191,7 +194,7 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     }
 }
 
-void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
+void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
     switch (property_->getAcceptMode()) {
         case FileProperty::AcceptMode::Save: {
             event->ignore();
@@ -238,18 +241,18 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 
-void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
+void MultiFilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
     if(event->mimeData()->hasUrls()) event->accept();
     else event->ignore();
 }
 
-bool FilePropertyWidgetQt::requestFile() {
+bool MultiFilePropertyWidgetQt::requestFile() {
    setPropertyValue();
    return !property_->get().empty();
 }
 
-void FilePropertyWidgetQt::updateFromProperty() {
-    lineEdit_->setPath(property_->get());
+void MultiFilePropertyWidgetQt::updateFromProperty() {
+    lineEdit_->setPath(property_->get().front());
 }
 
 }  // namespace inviwo

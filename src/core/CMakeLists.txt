@@ -108,23 +108,23 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumewriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h    
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h  
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serialization.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializationexception.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializebase.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializeconstants.h    
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializebase.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializeconstants.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkconditions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h   
+    ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/containermetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatafactory.h
@@ -186,9 +186,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h    
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
@@ -367,9 +368,9 @@ set(SOURCE_FILES
     io/datawriter.cpp
     io/datawriterfactory.cpp
     io/datvolumereader.cpp
-    io/datvolumewriter.cpp 
-    io/ivfvolumereader.cpp 
-    io/ivfvolumewriter.cpp  
+    io/datvolumewriter.cpp
+    io/ivfvolumereader.cpp
+    io/ivfvolumewriter.cpp
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
     io/serialization/deserializer.cpp
@@ -379,9 +380,9 @@ set(SOURCE_FILES
     io/serialization/serializeconstants.cpp
     io/serialization/serializer.cpp
     io/serialization/versionconverter.cpp
-    io/textfilereader.cpp   
-    links/linkconditions.cpp    
-    links/linkevaluator.cpp      
+    io/textfilereader.cpp
+    links/linkconditions.cpp
+    links/linkevaluator.cpp
     links/propertylink.cpp
     metadata/metadata.cpp
     metadata/metadatafactory.cpp
@@ -427,10 +428,11 @@ set(SOURCE_FILES
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp
     properties/compositepropertyobserver.cpp
-    properties/directoryproperty.cpp    
+    properties/directoryproperty.cpp
     properties/eventproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
+    properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
@@ -475,12 +477,12 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
-    util/observer.cpp    
+    util/observer.cpp
     util/raiiutils.cpp
     util/rendercontext.cpp
-    util/settings/linksettings.cpp    
-    util/settings/settings.cpp    
-    util/settings/systemsettings.cpp    
+    util/settings/linksettings.cpp
+    util/settings/settings.cpp
+    util/settings/systemsettings.cpp
     util/shuntingyard.cpp
     util/singleton.cpp
     util/spatial4dsampler.cpp
