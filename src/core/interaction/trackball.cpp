@@ -585,7 +585,7 @@ void Trackball::touchGesture(Event* event) {
         auto direction = zoomToWorldPos - getLookFrom();
         zoom *= glm::length(direction);
         direction = glm::normalize(direction);
-        zoom = getBoundedZoom(getLookFrom(), getLookTo(), zoom);
+        zoom = getBoundedZoom(getLookFrom(), getLookTo(), static_cast<float>(zoom));
         vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom) * (direction);
         // LogInfo("New lookFrom: " << newLookFrom << " Direction: " << direction << " Zoom: " <<
         // zoom);
