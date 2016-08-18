@@ -43,8 +43,7 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
     : QFileDialog(parent, QString::fromStdString(title))
     , pathType_(QString::fromStdString(pathType))
     , currentPath_() {
-    setCurrentDirectory(path);
-
+    setCurrentFile(path);
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
     sidebarURLs_ << QUrl::fromLocalFile(
@@ -64,13 +63,46 @@ void InviwoFileDialog::useNativeDialog(const bool &use) {
 }
 
 void InviwoFileDialog::setCurrentDirectory(const std::string &path) {
+    std::string fileName;
+
     if (!path.empty()) {
         currentPath_ = QString::fromStdString(path);
     } else {
         // use default path based on pathType
         currentPath_ = getPreviousPath(pathType_);
     }
+    // use the full path, regardless of it potentially containing a file name
+    // This will handle the case correctly when the path only contains directories.
     QFileDialog::setDirectory(currentPath_);
+
+    // if the given path points to a file, select it when the dialog is opened
+    if (!fileName.empty()) {
+        //auto filePath = currentPath_.toStdString() + '/' + fileName;
+        if (filesystem::fileExists(currentPath_.toStdString())) {
+            QFileDialog::selectFile(currentPath_);
+        }
+    }
+}
+
+void InviwoFileDialog::setCurrentFile(const std::string &filename) {
+    std::string path;
+    bool fileExists = false;
+    if (!filename.empty()) {
+        if (filesystem::directoryExists(filename)) {
+            // given file name is a path
+            path = filename;
+        }
+        else {
+            // if a file is selected, extract the folder path for the dialog
+            path = filesystem::getFileDirectory(filename);
+            fileExists = filesystem::fileExists(filename);
+        }
+    }
+
+    setCurrentDirectory(path);
+    if (fileExists) {
+        QFileDialog::selectFile(QString::fromStdString(filename));
+    }
 }
 
 void InviwoFileDialog::addExtension(const FileExtension &fileExt) {

@@ -66,6 +66,19 @@ public:
 
     void useNativeDialog(const bool &use = true);
 
+    /**
+     * \brief sets the current directory of the file dialog to the parent directory of the given
+     *   file name or, if it is referring to a directory, to the given path. The file will be 
+     *   selected when the dialog is shown.
+     *
+     * @param filename  path and name of the file (can be either a file name or directory name including the full path)
+     */
+    void setCurrentFile(const std::string &filename);
+    /** 
+     * \brief set the current directory of the file dialog 
+     * 
+     * @param path  given path, must not contain a file name
+     */
     void setCurrentDirectory(const std::string &path);
 
     FileExtension getSelectedFileExtension() const;
