@@ -136,7 +136,7 @@ unsigned int ProcessMaterials(const IFC::IfcRepresentationItem& item, Conversion
 {
 	if (conv.materials.empty()) {
 		aiString name;
-		std::auto_ptr<aiMaterial> mat(new aiMaterial());
+		std::unique_ptr<aiMaterial> mat(new aiMaterial());
 
 		name.Set("<IFCDefault>");
 		mat->AddProperty(&name,AI_MATKEY_NAME);
@@ -159,7 +159,7 @@ unsigned int ProcessMaterials(const IFC::IfcRepresentationItem& item, Conversion
 							IFCImporter::LogWarn("ignoring surface side marker on IFC::IfcSurfaceStyle: " + side);
 						}
 
-						std::auto_ptr<aiMaterial> mat(new aiMaterial());
+						std::unique_ptr<aiMaterial> mat(new aiMaterial());
 
 						FillMaterial(mat.get(),surf,conv);
 
