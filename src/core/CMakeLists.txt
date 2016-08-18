@@ -472,6 +472,7 @@ set(SOURCE_FILES
     util/formatconversion.cpp
     util/formats.cpp
     util/imagecache.cpp
+    util/imageramutils.cpp
     util/imagesampler.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp

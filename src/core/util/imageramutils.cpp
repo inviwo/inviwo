@@ -27,37 +27,33 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAMUTILS_H
-#define IVW_IMAGERAMUTILS_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-
-#include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/imageramutils.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-    namespace util {
+namespace util {
 
-        template <typename C>
-        void forEachPixel(const LayerRAM &v, C callback){
-            const auto &dims = v.getDimensions();
-            size2_t pos;
-            for (pos.y = 0; pos.y < dims.y; pos.y++) {
-                for (pos.x = 0; pos.x < dims.x; pos.x++) {
-                    callback(pos);
-                }
-            }
-        }
+std::shared_ptr<Image> readImageFromDisk(std::string filename) {
+    auto app = InviwoApplication::getPtr();
+    auto factory = app->getDataReaderFactory();
+    auto ext = filesystem::getFileExtension(filename);
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
+        auto outLayer = reader->readData(filename);
+        auto ram = outLayer->getRepresentation<LayerRAM>();
+        outLayer->setDataFormat(ram->getDataFormat());
 
-        IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
-
-
+        auto img = std::make_shared<Image>(outLayer);
+        img->getRepresentation<ImageRAM>();
+        return img;
+    } else {
+        LogErrorCustom("util::readImageFromDisk", "Failed to read handle image");
+        return nullptr;
     }
+}
+}
 
-} // namespace
-
-#endif // IVW_IMAGERAMUTILS_H
-
+}  // namespace
