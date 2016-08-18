@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-enum class IVW_CORE_API PropertySerializationMode { Default = 0, All, None };
+enum class PropertySerializationMode { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {

@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-enum class IVW_MODULE_ASSIMP_API AssimpLogLevel : int {
+enum class AssimpLogLevel : int {
     None,
     Error,
     Warn,

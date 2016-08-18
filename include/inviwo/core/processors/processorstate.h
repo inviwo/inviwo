@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-enum class IVW_CORE_API CodeState {
+enum class CodeState {
     Broken,
     Experimental,
     Stable

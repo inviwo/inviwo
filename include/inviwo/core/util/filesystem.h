@@ -67,7 +67,7 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
 IVW_CORE_API bool directoryExists(const std::string& path);
 
 
-enum class IVW_CORE_API ListMode {
+enum class ListMode {
     Files,
     Directories,
     FilesAndDirectories,
