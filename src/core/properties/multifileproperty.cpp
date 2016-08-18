@@ -249,18 +249,35 @@ Document MultiFileProperty::getDescription() const {
     Document doc = TemplateProperty<std::vector<std::string> >::getDescription();
     auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
 
+
+    std::ostringstream stream;
+    //std::copy(value_.value.begin(), value_.value.end(),
+    //          std::ostream_iterator<std::string>(stream, "<br/>"));
+    std::string currentPath = "";
+    // compile compact list of selected files, binning all files of the same directory
+    for (auto elem : value_.value) {
+        auto dir = filesystem::getFileDirectory(elem);
+        auto filename = filesystem::getFileNameWithExtension(elem);
+        if (dir != currentPath) {
+            currentPath = dir;
+            stream << "<b>" << dir << "</b><br/>";
+        }
+        stream << filename << "<br/>";
+    }
+    std::string files = stream.str();
+
     utildoc::TableBuilder tb(table);
     switch (fileMode_) {
         case FileProperty::FileMode::AnyFile:
         case FileProperty::FileMode::ExistingFile:
         case FileProperty::FileMode::ExistingFiles: {
-            tb(H("File"), value_.value);
+            tb(H("Files"), files);
             break;
         }
 
         case FileProperty::FileMode::Directory:
         case FileProperty::FileMode::DirectoryOnly: {
-            tb(H("Directory"), value_.value);
+            tb(H("Directories"), files);
             break;
         }
     }

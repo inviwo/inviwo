@@ -77,7 +77,7 @@ void MultiFilePropertyWidgetQt::generateWidget() {
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        ivwAssert(lineEdit_->getPath() == property_->get().front(), "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
+        ivwAssert(lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""), "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
     });
 #endif // IVW_DEBUG
 
@@ -90,9 +90,10 @@ void MultiFilePropertyWidgetQt::generateWidget() {
     revealButton->setIcon(QIcon(":/icons/reveal.png"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
-        auto dir = filesystem::directoryExists(property_->get().front())
-                       ? property_->get().front()
-                       : filesystem::getFileDirectory(property_->get().front());
+        auto fileName = (!property_->get().empty() ? property_->get().front() : "");
+        auto dir = filesystem::directoryExists(fileName)
+                       ? fileName
+                       : filesystem::getFileDirectory(fileName);
 
         QDesktopServices::openUrl(
             QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
@@ -110,7 +111,7 @@ void MultiFilePropertyWidgetQt::generateWidget() {
 }
 
 void MultiFilePropertyWidgetQt::setPropertyValue() {
-    std::string fileName{property_->get().front()};
+    std::string fileName = (!property_->get().empty() ? property_->get().front() : "");
 
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
@@ -240,7 +241,12 @@ bool MultiFilePropertyWidgetQt::requestFile() {
 }
 
 void MultiFilePropertyWidgetQt::updateFromProperty() {
-    lineEdit_->setPath(property_->get().front());
+    if (!property_->get().empty()) {
+        lineEdit_->setPath(property_->get().front());
+    }
+    else {
+        lineEdit_->setPath("");
+    }
 }
 
 }  // namespace inviwo
