@@ -256,9 +256,6 @@ if(WIN32 AND MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
 
-    # Disable deprecation warnings for standard C functions
-    add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
     # set iterator debug level (default=2)
