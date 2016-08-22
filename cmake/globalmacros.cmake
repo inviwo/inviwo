@@ -1050,3 +1050,18 @@ macro(ivw_compile_optimize)
         cotire(${_projectName})
     endif()
 endmacro()
+
+#--------------------------------------------------------------------
+# Suppres all compiler warnings
+macro(ivw_suppress_compiler_warnings target)
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS -w)
+    elseif(APPLE)
+        set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+    elseif(WIN32)
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS /W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /IGNORE:4006)
+    endif()
+endmacro()
+
+
+

@@ -1,10 +1,6 @@
 ivw_project( assimp )
 
-#--------------------------------------------------------------------
-# Supress warnings
-if(WIN32)
-add_definitions( "/W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /IGNORE:4006" )
-endif()
+
 #--------------------------------------------------------------------
 
 # Define here the needed parameters
@@ -296,7 +292,6 @@ ADD_SUBDIRECTORY( code/ )
 # Creates VS folder structure
 ivw_define_standard_definitions(assimp assimp)
 ivw_folder(assimp ext)
-if(APPLE)
-  #Ignore warnings in external packages
-  set_target_properties(assimp PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-endif(APPLE)
+
+ivw_suppress_compiler_warnings(assimp)
+

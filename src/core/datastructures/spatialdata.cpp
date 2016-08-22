@@ -31,8 +31,8 @@
 
 namespace inviwo {
  
-template class IVW_CORE_API SpatialEntity<2>;
-template class IVW_CORE_API SpatialEntity<3>;
+template class SpatialEntity<2>;
+template class SpatialEntity<3>;
  
  
 } // namespace

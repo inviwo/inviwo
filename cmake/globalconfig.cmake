@@ -368,10 +368,10 @@ endif(IVW_PROFILING)
 
 #--------------------------------------------------------------------
 # Precompile headers
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
-else()
+if(WIN32)
     option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
+else()
+    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/utilities/clean_library_list.cmake)
