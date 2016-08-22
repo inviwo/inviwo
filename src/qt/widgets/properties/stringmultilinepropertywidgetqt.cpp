@@ -94,7 +94,7 @@ void StringMultilinePropertyWidgetQt::updateFromProperty() {
 MultilineTextEdit::MultilineTextEdit(QWidget *parent)
     : QPlainTextEdit(parent), minLineCount_(2), maxLineCount_(10), showContextMenu_(false) {
     QFontMetrics fontMetric(font());
-    lineHeight_ = fontMetric.lineSpacing() * 1.5;
+    lineHeight_ = static_cast<int>( fontMetric.lineSpacing() * 1.5);
 
     // enable focus switch by tab (leaving the editor and committing the changes)
     setTabChangesFocus(true);
