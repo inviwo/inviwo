@@ -1,8 +1,5 @@
 add_subdirectory(ext/nifticlib-2.0.0)
 
-ivw_suppress_compiler_warnings(niftiio)
-ivw_suppress_compiler_warnings(znz)
-
 
 set(NIFTI_INCLUDE_DIR ${NIFTILIB_SOURCE_DIR} ${ZNZLIB_SOURCE_DIR} PARENT_SCOPE)
 set(NIFTI_INCLUDE_DIR ${NIFTILIB_SOURCE_DIR} ${ZNZLIB_SOURCE_DIR})
