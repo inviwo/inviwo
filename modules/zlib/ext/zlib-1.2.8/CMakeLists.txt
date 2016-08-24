@@ -189,9 +189,11 @@ if (BUILD_SHARED_LIBS)
 	set_target_properties(zlib PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
 	set_target_properties(zlib PROPERTIES SOVERSION 1)
 	ivw_folder(zlib ext)
+    ivw_suppress_compiler_warnings(zlib)
 else()
 	add_library(zlibstatic STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 	ivw_folder(zlibstatic ext)
+    ivw_suppress_compiler_warnings(zlibstatic)
 endif()
 
 

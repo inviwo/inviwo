@@ -515,7 +515,7 @@ function(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
     elseif(MSVC)
         set_property(TARGET ${project_name} APPEND_STRING PROPERTY 
-            COMPILE_FLAGS " /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
+            COMPILE_FLAGS "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
         # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
         # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
         # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled
@@ -1050,3 +1050,19 @@ macro(ivw_compile_optimize)
         cotire(${_projectName})
     endif()
 endmacro()
+
+#--------------------------------------------------------------------
+# Suppres all compiler warnings
+macro(ivw_suppress_compiler_warnings target)
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS -w)
+    elseif(APPLE)
+        set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+    elseif(WIN32)
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/W0")
+        set_target_properties(${target} PROPERTIES LINK_FLAGS "/IGNORE:4006")
+    endif()
+endmacro()
+
+
+

@@ -9,12 +9,6 @@ if(WIN32)
     ## headers on win32. Otherwise we get clashes 
     ## between winsock2.h and winsock.h
     add_definitions(-DWIN32_LEAN_AND_MEAN)
-
-    # force the correct version for the redist manifest
-    #add_definitions(-D_BIND_TO_CURRENT_MFC_VERSION=1 -D_BIND_TO_CURRENT_CRT_VERSION=1)
-    
-    #disable useless warning
-    add_definitions( "/wd4013 /wd4018 /wd4244 /wd4267 /wd4293 /wd4307 /wd4996 /nologo /wd4311" )
 endif()
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -126,8 +120,5 @@ ivw_folder(sigar ext)
 ivw_set_cpack_name(core)
 ivw_make_package(Sigar sigar)
 
-if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
-  #Ignore warnings in external packages
-  set_target_properties(sigar PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+ivw_suppress_compiler_warnings(sigar)
 
