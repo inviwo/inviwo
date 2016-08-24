@@ -42,3 +42,4 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
 endif()
 
 ivw_folder(niftiio ext/nifti)
+ivw_suppress_compiler_warnings(niftiio ext/nifti)

@@ -41,4 +41,5 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
 endif()
 
 ivw_folder(znz ext/nifti)
+ivw_suppress_compiler_warnings(znz)
 
