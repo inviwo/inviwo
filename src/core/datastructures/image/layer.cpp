@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -92,6 +93,25 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
 }
 
 LayerType Layer::getLayerType() const { return layerType_; }
+
+std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(const std::string & fileExtension) const {
+    if (auto writer = std::shared_ptr<DataWriterType<Layer>>(
+        InviwoApplication::getPtr()->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
+            fileExtension))) {
+        try {
+            return writer->writeDataToBuffer(this, fileExtension);
+        }
+        catch (DataWriterException const& e) {
+            LogError(e.getMessage());
+        }
+    }
+    else {
+        LogError("Could not find a writer for the specified file extension (\"" 
+                 << fileExtension << "\")");
+    }
+
+    return std::unique_ptr<std::vector<unsigned char>>();
+}
 
 std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const {
     return createLayerRAM(getDimensions(), getLayerType(), getDataFormat());

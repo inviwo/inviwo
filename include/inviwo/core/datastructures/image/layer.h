@@ -69,6 +69,15 @@ public:
 
     LayerType getLayerType() const;
 
+    /** 
+     * \brief encode the layer contents to a buffer considering the requested image format
+     * 
+     * @param fileExtension   file extension of the requested image format
+     * @return encoded layer contents as std::vector
+     */
+    std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(const std::string& fileExtension) const;
+
+
 protected:
     virtual std::shared_ptr<LayerRepresentation> createDefaultRepresentation() const override;
 

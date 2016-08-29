@@ -216,8 +216,12 @@ void CanvasProcessor::saveImageLayer() {
 }
 
 void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
-    if (auto layer = getSelectedLayer()) {
-        if (auto writer = getWriter(filesystem::getFileExtension(snapshotPath))) {
+    if (auto layer = getVisibleLayer()) {
+        const auto ext = filesystem::getFileExtension(snapshotPath);
+        if (auto writer = std::shared_ptr<DataWriterType<Layer>>(
+                InviwoApplication::getPtr()
+                    ->getDataWriterFactory()
+                    ->getWriterForTypeAndExtension<Layer>(ext))) {
             try {
                 writer->setOverwrite(true);
                 writer->writeData(layer, snapshotPath);
@@ -226,14 +230,15 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
                 LogError(e.getMessage());
             }
         } else {
-            LogError("Error: Could not find a writer for the specified extension and data type");
+            LogError("Could not find a writer for the specified file extension (\""
+                     << ext << "\")");
         }
     } else {
-        LogError("Error: Could not find a layer to write out");
+        LogError("Could not find visible layer");
     }
 }
 
-const Layer* CanvasProcessor::getSelectedLayer() const {
+const Layer* CanvasProcessor::getVisibleLayer() const {
     if (auto image = inport_.getData()) {
         if (visibleLayer_.get() == LayerType::Color) {
             return image->getColorLayer(colorLayer_.get());
@@ -245,56 +250,13 @@ const Layer* CanvasProcessor::getSelectedLayer() const {
     }
 }
 
-std::shared_ptr<DataWriterType<Layer>> CanvasProcessor::getWriter(
-    const std::string& fileExtension) const {
-    return std::shared_ptr<DataWriterType<Layer>>(
-        getNetwork()->getApplication()->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
-            fileExtension));
-}
-
-std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getLayerAsCodedBuffer(
-    LayerType layerType, std::string& type, size_t idx) {
-    if (!inport_.hasData()) return nullptr;
-    auto image = inport_.getData();
-    
-    if (auto layer = image->getLayer(layerType, idx)) {
-        if (auto writer = getWriter(type)) {
-            try {
-                return writer->writeDataToBuffer(layer, type);
-            } catch (DataWriterException const& e) {
-                LogError(e.getMessage());
-            }
-        } else {
-            LogError("Error: Could not find a writer for the specified data type");
-        }
-    } else {
-        LogError("Error: Could not find layer to write");
+std::shared_ptr<const Image> CanvasProcessor::getImage() const {
+    if (inport_.hasData()) {
+        return inport_.getData();
     }
-
-    return nullptr;
-}
-
-std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getColorLayerAsCodedBuffer(
-    std::string& type, size_t idx) {
-    return getLayerAsCodedBuffer(LayerType::Color, type, idx);
-}
-
-std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getDepthLayerAsCodedBuffer(
-    std::string& type) {
-    return getLayerAsCodedBuffer(LayerType::Depth, type);
-}
-
-std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getPickingLayerAsCodedBuffer(
-    std::string& type) {
-    return getLayerAsCodedBuffer(LayerType::Picking, type);
-}
-
-std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getVisibleLayerAsCodedBuffer(
-    std::string& type) {
-    if (visibleLayer_.get() == LayerType::Color) {
-        return getColorLayerAsCodedBuffer(type, colorLayer_.get());
+    else {
+        return nullptr;
     }
-    return getLayerAsCodedBuffer(visibleLayer_.get(), type);
 }
 
 void CanvasProcessor::process() {

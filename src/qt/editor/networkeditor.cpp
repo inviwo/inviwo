@@ -323,9 +323,9 @@ void NetworkEditor::removePortInspector(Outport* port) {
     }
 }
 
-std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorImage(
-    Outport* outport, std::string& type) {
-    std::unique_ptr<std::vector<unsigned char>> data;
+std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(
+    Outport* outport) {
+    std::shared_ptr<const Image> image;
 
     try {
         auto factory = mainwindow_->getInviwoApplication()->getPortInspectorFactory();
@@ -368,7 +368,9 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 canvasProcessor->setCanvasSize(ivec2(size, size));
             }  // Network will unlock and evaluate here.
 
-            data = canvasProcessor->getVisibleLayerAsCodedBuffer(type);
+            // clone the image since removing the port inspector processors from the network 
+            // will cause a re-evaluation and thus resize this image to 8x8 pixel
+            image.reset(canvasProcessor->getImage()->clone());
 
             // remove the network...
             NetworkLock lock(network_);
@@ -382,7 +384,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
     } catch (...) {
         util::log(IvwContext, "Problem using port inspector", LogLevel::Error);
     }
-    return data;
+    return image;
 }
 
 bool NetworkEditor::isModified() const { return modified_; }

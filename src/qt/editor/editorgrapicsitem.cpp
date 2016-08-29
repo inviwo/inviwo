@@ -110,21 +110,13 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (!inspector && !portinfo) return;
 
-    std::unique_ptr<std::vector<unsigned char>> data;
-    size_t size = static_cast<size_t>(settings->portInspectorSize_.get());
+    size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     auto t = doc.append("html").append("body").append("table");
     
-    std::string imageType = "png";
-
-    if (inspector) {
-        if (auto outport = dynamic_cast<Outport*>(port)) {
-            data = getNetworkEditor()->renderPortInspectorImage(outport, imageType);
-        }
-    }
 
     if (portinfo) {
         auto pi = t.append("tr").append("td");
@@ -133,38 +125,73 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
         tb(H("Identifier"), port->getIdentifier());
     }
 
-    if (data) {
-        QByteArray byteArray;
+    if (inspector) {
+        const std::string imageType = "raw";
 
-        if (imageType != "png") {
-            QImage::Format format = QImage::Format_Invalid;
-            if (data->size() == size * size) {
-                format = QImage::Format_Indexed8;
-            } else if (data->size() == size * size * 3) {
-                format = QImage::Format_RGB888;
-            } else if (data->size() == size * size * 4) {
-                #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-                format = QImage::Format_RGBA8888;
-                #else
-                format = QImage::Format_RGB888;
-                #endif
+        if (auto outport = dynamic_cast<Outport*>(port)) {
+            if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
+
+                bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr);
+
+                std::vector<const Layer *> layers;
+                if (isImagePort) {
+                    // register all color layers
+                    for (std::size_t i=0; i < image->getNumberOfColorLayers(); ++i) {
+                        layers.push_back(image->getColorLayer(i));
+                    }
+                    // register picking layer
+                    layers.push_back(image->getPickingLayer());
+                    // register depth layer
+                    layers.push_back(image->getDepthLayer());
+                }
+                else {
+                    // outport is not an ImageOutport, show only first color layer
+                    layers.push_back(image->getColorLayer(0));
+                }
+
+                // add all layer images into the same row
+                auto tableCell = t.append("tr").append("td");
+                for (auto layer : layers) {
+                    auto data = layer->getAsCodedBuffer(imageType);
+                    QByteArray byteArray;
+
+                    if (imageType == "png") {
+                        // input buffer is already stored as png 
+                        byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
+                                             static_cast<unsigned int>(data->size()));
+                    }
+                    else if (imageType == "raw") {
+                        // do manual conversion from raw to png via QImage
+                        QImage::Format format = QImage::Format_Invalid;
+                        if (data->size() == portInspectorSize * portInspectorSize) {
+                            format = QImage::Format_Grayscale8;
+                        }
+                        else if (data->size() == portInspectorSize * portInspectorSize * 3) {
+                            format = QImage::Format_RGB888;
+                        }
+                        else if (data->size() == portInspectorSize * portInspectorSize * 4) {
+                            format = QImage::Format_RGBA8888;
+                        }
+
+                        QImage image(reinterpret_cast<const unsigned char*>(&(data->front())),
+                                     static_cast<int>(portInspectorSize), static_cast<int>(portInspectorSize), format);
+                        QBuffer buffer(&byteArray);
+                        image.save(&buffer, "PNG");
+                    }
+                    else {
+                        throw Exception("Support for image type not yet implemented", IvwContext);
+                    }
+                    
+                    tableCell.append(
+                        "img", "",
+                        { {"width", std::to_string(portInspectorSize)},
+                         {"height", std::to_string(portInspectorSize)},
+                         {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())} });
+                }
             }
-
-            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())),
-                         static_cast<int>(size), static_cast<int>(size), format);
-            QBuffer buffer(&byteArray);
-            image.save(&buffer, "PNG");
-        } else {
-            byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
-                                 static_cast<unsigned int>(data->size()));
         }
-
-        t.append("tr").append("td").append(
-            "img", "",
-            {{"width", std::to_string(size)},
-             {"height", std::to_string(size)},
-             {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
     }
+
 
     if (portinfo) {
         t.append("tr").append("td", port->getContentInfo());

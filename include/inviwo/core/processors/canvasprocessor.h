@@ -66,15 +66,10 @@ public:
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath);
-    std::unique_ptr<std::vector<unsigned char>> getLayerAsCodedBuffer(LayerType layerType,
-                                                                      std::string& type,
-                                                                      size_t idx = 0);
-    std::unique_ptr<std::vector<unsigned char>> getColorLayerAsCodedBuffer(std::string& type,
-                                                                           size_t idx = 0);
-    std::unique_ptr<std::vector<unsigned char>> getDepthLayerAsCodedBuffer(std::string& type);
-    std::unique_ptr<std::vector<unsigned char>> getPickingLayerAsCodedBuffer(std::string& type);
-    std::unique_ptr<std::vector<unsigned char>> getVisibleLayerAsCodedBuffer(std::string& type);
+    const Layer* getVisibleLayer() const;
 
+    std::shared_ptr<const Image> getImage() const;
+    
     void triggerQueuedEvaluation();
     virtual bool isReady() const override;
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
@@ -105,7 +100,6 @@ protected:
     EventProperty fullscreen_;
 
 private:
-    const Layer* getSelectedLayer() const;
     std::shared_ptr<DataWriterType<Layer>> getWriter(const std::string& fileExtension) const;
 
     void sizeChanged();

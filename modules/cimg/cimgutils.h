@@ -74,7 +74,7 @@ namespace cimgutil {
     * @param inputImage specifies the image that is to be saved.
     **/
     IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
-        std::string& fileType, const Layer* inputImage);
+        const std::string& fileType, const Layer* inputImage);
 
     /**
      * \brief Rescales Layer of given image data

@@ -333,11 +333,14 @@ void saveLayer(const std::string& filePath, const Layer* inputLayer) {
     inputLayer->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
 }
 
-std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string& fileType,
-                                                                         const Layer* inputLayer) {
-    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();  
-    fileType = "raw";  // Can only produce raw output
+std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& fileType,
+                                                              const Layer* inputLayer) {
+    if (fileType != "raw") {
+        throw DataWriterException("CImage: cimgutil::saveLayerToBuffer() only supports \"raw\" format.",
+                                  IvwContextCustom("cimgutil::saveLayerToBuffer()"));
+    }
 
+    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();  
     CImgNormalizedLayerDispatcher disp;
     return inputLayer->getDataFormat()->dispatch(disp, inputLayerRam);
 }

@@ -74,6 +74,21 @@ public:
      */
     void setDimensions(size2_t dimensions);
 
+
+    /** 
+     * \brief encode the requested layer contents to a buffer considering the given image extension
+     *
+     * @param fileExtension   file extension of the requested image format
+     * @return encoded layer contents as std::vector
+     */
+    std::unique_ptr<std::vector<unsigned char>> getLayerAsCodedBuffer(LayerType layerType,
+                                                                      const std::string& fileExtension,
+                                                                      size_t idx = 0) const;
+    std::unique_ptr<std::vector<unsigned char>> getColorLayerAsCodedBuffer(const std::string& fileExtension,
+                                                                           size_t idx = 0) const;
+    std::unique_ptr<std::vector<unsigned char>> getDepthLayerAsCodedBuffer(const std::string& fileExtension) const;
+    std::unique_ptr<std::vector<unsigned char>> getPickingLayerAsCodedBuffer(const std::string& fileExtension) const;
+
     /**
      * Copy and resize the representation of this onto the representations of target.
      * Does not change the dimensions of target.

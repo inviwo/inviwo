@@ -52,7 +52,7 @@ public:
 
     virtual void writeData(const Layer* data, const std::string filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Layer* data, std::string& type) const override;
+        const Layer* data, const std::string& fileExtension) const override;
     virtual bool writeDataToRepresentation(const DataRepresentation* src,
                                            DataRepresentation* dst) const override;
 };

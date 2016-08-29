@@ -195,6 +195,34 @@ void Image::setDimensions(size2_t dimensions) {
     if (pickingLayer_) pickingLayer_->setDimensions(dimensions);
 }
 
+std::unique_ptr<std::vector<unsigned char>> Image::getLayerAsCodedBuffer(
+    LayerType layerType, const std::string& fileExtension, size_t idx) const {
+
+    if (auto layer = this->getLayer(layerType, idx)) {
+        return layer->getAsCodedBuffer(fileExtension);
+    }
+    else {
+        LogError("Requested layer does not exist");
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<std::vector<unsigned char>> Image::getColorLayerAsCodedBuffer(
+    const std::string& fileExtension, size_t idx) const {
+    return getLayerAsCodedBuffer(LayerType::Color, fileExtension, idx);
+}
+
+std::unique_ptr<std::vector<unsigned char>> Image::getDepthLayerAsCodedBuffer(
+    const std::string& fileExtension) const {
+    return getLayerAsCodedBuffer(LayerType::Depth, fileExtension);
+}
+
+std::unique_ptr<std::vector<unsigned char>> Image::getPickingLayerAsCodedBuffer(
+    const std::string& fileExtension) const {
+    return getLayerAsCodedBuffer(LayerType::Picking, fileExtension);
+}
+
 void Image::copyRepresentationsTo(Image* targetImage) const {
     auto& targets = targetImage->representations_;
 
