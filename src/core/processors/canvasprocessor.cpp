@@ -35,6 +35,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 
