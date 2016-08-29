@@ -13,7 +13,7 @@ for i in range(0, steps):
    r = (2 * 3.14 * i) / (steps-1)
    x = d*math.sin(r)
    z = -d*math.cos(r)
-   inviwo.setPropertyValue("EntryExitPoints.camera",((x*scale,3*scale,z*scale),(0,0,0),(0,1,0)))
+   inviwo.setPropertyValue("Entry Exit Points.camera",((x*scale,3*scale,z*scale),(0,0,0),(0,1,0)))
    inviwo_utils.update() # Needed for canvas to update
 
 
