@@ -32,6 +32,8 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterfactory.h>
 
 namespace inviwo {
 
