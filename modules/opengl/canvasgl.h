@@ -116,7 +116,7 @@ private:
     std::unique_ptr<Shader> noiseShader_;
 
     size_t channels_;
-    size_t previousRenderedLayerIdx_;
+    size_t activeRenderLayerIdx_;
 };
 
 }  // namespace

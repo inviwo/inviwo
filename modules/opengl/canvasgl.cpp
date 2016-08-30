@@ -50,7 +50,7 @@ CanvasGL::CanvasGL(size2_t dimensions)
     , textureShader_(nullptr)
     , noiseShader_(nullptr)
     , channels_(0)
-    , previousRenderedLayerIdx_(0) {}
+    , activeRenderLayerIdx_(0) {}
 
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
@@ -75,6 +75,7 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
         } else {
             checkChannels(image_->getDataFormat()->getComponents());
         }
+        activeRenderLayerIdx_ = (imageGL_->getLayerGL(layerType_, idx) != nullptr) ? idx : 0;
 
         // Faster async download of textures sampled on interaction
         if (imageGL_->getDepthLayerGL()) imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
@@ -94,10 +95,9 @@ void CanvasGL::resize(size2_t size) {
     Canvas::resize(size);
 }
 
-void CanvasGL::update() { renderLayer(previousRenderedLayerIdx_); }
+void CanvasGL::update() { renderLayer(activeRenderLayerIdx_); }
 
 void CanvasGL::renderLayer(size_t idx) {
-    previousRenderedLayerIdx_ = idx;
     if (imageGL_) {
         if (auto layerGL = imageGL_->getLayerGL(layerType_, idx)) {
             TextureUnit textureUnit;
