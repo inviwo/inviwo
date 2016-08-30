@@ -154,7 +154,6 @@ void MeshRenderProcessorGL::initializeResources() { addCommonShaderDefines(shade
 void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     // shading defines
     utilgl::addShaderDefines(shader, lightingProperty_);
-    int layerID = 0;
 
     if (overrideColorBuffer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
@@ -164,11 +163,12 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
 
     if (colorLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
-        layerID++;
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
     }
 
+    // first two layers (color and picking) are reserved, but picking buffer will be removed since it is not drawn to
+    int layerID = 1;
     if (texCoordLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
         shader.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
@@ -193,10 +193,18 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
         shader.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
-    for (std::size_t i = outport_.getData()->getNumberOfColorLayers();
-         i < static_cast<std::size_t>(layerID); i++) {
-        outport_.getEditableData()->addColorLayer(
-            std::shared_ptr<Layer>(outport_.getData()->getColorLayer(0)->clone()));
+    // get a hold of the current output data
+    auto prevData = outport_.getData();
+    auto numLayers = static_cast<std::size_t>(layerID);
+    if (prevData->getNumberOfColorLayers() != numLayers) {
+        // create new image with matching number of layers
+        auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
+        // update number of layers
+        for (auto i = image->getNumberOfColorLayers(); i < numLayers; ++i) {
+            image->addColorLayer(std::shared_ptr<Layer>(image->getColorLayer(0)->clone()));
+        }
+
+        outport_.setData(image);
     }
 
     shader.build();
