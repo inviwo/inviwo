@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -41,14 +42,14 @@ ImageGL::ImageGL()
     , frameBufferObject_()
     , shader_("standard.vert", "img_copy.frag", false)
     , colorLayerCopyCount_(0)
-    , singleChanelCopy_(false) {}
+    , singleChannelCopy_(false) {}
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
     , shader_("standard.vert", "img_copy.frag", false)
     , colorLayerCopyCount_(0)
-    , singleChanelCopy_(false) {}
+    , singleChannelCopy_(false) {}
 
 ImageGL::~ImageGL() {
     LGL_ERROR;
@@ -150,7 +151,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
 
     // Set shader to copy all color layers
-    if (!shader_.isReady() || singleChanelCopy_ != singleChannel ||
+    if (!shader_.isReady() || singleChannelCopy_ != singleChannel ||
         colorLayerCopyCount_ != colorLayersGL_.size()) {
         std::stringstream ssUniform;
         for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
@@ -186,7 +187,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         }
 
         colorLayerCopyCount_ = colorLayersGL_.size();
-        singleChanelCopy_ = singleChannel;
+        singleChannelCopy_ = singleChannel;
 
         shader_.build();
     }
@@ -200,11 +201,23 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         source->getPickingLayerGL()->bindTexture(pickingUnit.getEnum());
     }
     TextureUnitContainer additionalColorUnits;
-    for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
     for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
         TextureUnit unit;
         source->getColorLayerGL(i)->bindTexture(unit.getEnum());
         additionalColorUnits.push_back(std::move(unit));
+    }
+
+    // ensure that target has at least same number of color layers
+    if (target->colorLayersGL_.size() < this->colorLayersGL_.size()) {
+        if (auto targetImage = target->getOwner()) {
+            // TODO: what image format should be used for new layers?
+            // reuse first color layer for now
+            std::size_t delta = this->colorLayersGL_.size() - target->colorLayersGL_.size();
+            for (std::size_t i=0; i < delta; ++i) {
+                targetImage->addColorLayer(std::shared_ptr<Layer>(targetImage->getColorLayer(0)->clone()));
+            }
+            target->update(true);
+        }
     }
 
     // Render to FBO, with correct scaling
@@ -367,7 +380,7 @@ const LayerGL* ImageGL::getDepthLayerGL() const { return depthLayerGL_; }
 const LayerGL* ImageGL::getPickingLayerGL() const { return pickingLayerGL_; }
 
 void ImageGL::updateExistingLayers() const {
-    auto owner = static_cast<const Image*>(this->getOwner());
+    auto owner = this->getOwner();
 
     for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
         owner->getColorLayer(i)->getRepresentation<LayerGL>();
@@ -429,6 +442,13 @@ void ImageGL::update(bool editable) {
 
 void ImageGL::renderImagePlaneRect() const {
     utilgl::singleDrawImagePlaneRect();
+}
+
+
+Image* ImageGL::getOwner() { return static_cast<Image*>(ImageRepresentation::getOwner()); }
+
+const Image* ImageGL::getOwner() const {
+    return static_cast<const Image*>(ImageRepresentation::getOwner());
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }

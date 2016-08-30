@@ -42,6 +42,7 @@
 namespace inviwo {
 
 class Shader;
+class Image;
 
 /**
  * \ingroup datastructures	
@@ -86,6 +87,9 @@ public:
     void renderImagePlaneRect() const;
     virtual std::type_index getTypeIndex() const override final;
 
+    virtual Image* getOwner() override;
+    virtual const Image* getOwner() const override;
+
 protected:
     virtual void update(bool editable) override;
 
@@ -98,7 +102,7 @@ private:
     GLenum pickingAttachmentID_;
     mutable Shader shader_;
     mutable size_t colorLayerCopyCount_;
-    mutable bool singleChanelCopy_;
+    mutable bool singleChannelCopy_;
 
     GLboolean prevDepthTest_;
     GLboolean prevDepthMask_;
