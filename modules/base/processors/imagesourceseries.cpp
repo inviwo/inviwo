@@ -81,6 +81,7 @@ void ImageSourceSeries::process() {
     if (imageFilePattern_.isModified()) {
         // check all matching files whether they have a supported file extension, 
         // i.e. a data reader exists
+        fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
         util::erase_remove_if(fileList_,
                               [this](std::string& file) { return !isValidImageFile(file); });
@@ -145,7 +146,8 @@ void ImageSourceSeries::onFindFiles() {
                         << ").");
         }
         else {
-            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\".");
+            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\" in " 
+                     << imageFilePattern_.getFilePatternPath() << ".");
         }
     }
     updateProperties();

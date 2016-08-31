@@ -61,7 +61,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="1261" y="412" />
+                    <position x="1245" y="360" />
                     <dimensions x="512" y="512" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -78,11 +78,15 @@
                 <Property type="org.inviwo.FilePatternProperty" identifier="imageFilePattern">
                     <Properties>
                         <Property type="org.inviwo.MultiFileProperty" identifier="pattern">
-                            <absolutePath>
-                                <files content="E:/projects/inviwo/inviwo-dev/tests/images/*" />
-                            </absolutePath>
-                            <workspaceRelativePath content="../../../../../tests/images////*" />
-                            <ivwdataRelativePath content="../tests/images/*" />
+                            <value>
+                                <item content="E:/projects/inviwo/inviwo-dev/tests/images/*" />
+                            </value>
+                            <workspaceRelativePath>
+                                <files content="../../../../../tests/images" />
+                            </workspaceRelativePath>
+                            <ivwdataRelativePath>
+                                <files content="../tests/images" />
+                            </ivwdataRelativePath>
                             <nameFilter>
                                 <filter>
                                     <extension content="*" />
@@ -138,7 +142,6 @@
                         </Property>
                     </Properties>
                     <collapsed content="0" />
-                    <directory content="../../../../../tests/////images" />
                 </Property>
                 <Property type="org.inviwo.ButtonProperty" identifier="findFiles" />
                 <Property type="org.inviwo.IntProperty" identifier="currentImageIndex">
