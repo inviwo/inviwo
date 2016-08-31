@@ -186,6 +186,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/filepatternproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
@@ -431,6 +432,7 @@ set(SOURCE_FILES
     properties/directoryproperty.cpp
     properties/eventproperty.cpp
     properties/fileproperty.cpp
+    properties/filepatternproperty.cpp
     properties/imageeditorproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
