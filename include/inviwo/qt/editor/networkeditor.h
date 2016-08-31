@@ -67,6 +67,7 @@ class LinkConnectionGraphicsItem;
 class LinkConnectionDragGraphicsItem;
 class LinkDialog;
 class InviwoMainWindow;
+class Image;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added

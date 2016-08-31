@@ -28,11 +28,14 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
-#include <inviwo/core/ports/port.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
