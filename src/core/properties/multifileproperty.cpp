@@ -96,35 +96,40 @@ void MultiFileProperty::serialize(Serializer& s) const {
     several version to have a higher success rate when moving stuff around. 
     
     Saved path versions:
-     1) Absolute
+     1) Absolute (equivalent to this->get())
      2) Relative workspace
      3) Relative filesystem::getPath(PathType::Data)
 
     */
-    Property::serialize(s);
+    TemplateProperty<std::vector<std::string>>::serialize(s);
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
-    
-    const auto absolutePaths = get();
-    std::string workspaceRelativePath;
-    std::string ivwdataRelativePath;
 
-    if (!absolutePaths.empty() && !absolutePaths.front().empty()) {
-        // store workspace path and relative path only for first file
-        auto path = absolutePaths.front();
-        auto workspacePath = filesystem::getFileDirectory(s.getFileName());
-        if (!workspacePath.empty() && filesystem::sameDrive(workspacePath, path)) {
-            workspaceRelativePath = filesystem::getRelativePath(workspacePath, path);
+    const auto workspacePath = filesystem::getFileDirectory(s.getFileName());
+    const auto ivwdataPath = filesystem::getPath(PathType::Data);
+
+    // save absolute and relative paths for each file pattern
+    std::vector<std::string> workspaceRelativePaths; // paths relative to workspace directory
+    std::vector<std::string> ivwdataRelativePaths; // paths relative to Inviwo data
+    for (auto item : this->get()) {
+        const auto basePath = filesystem::getFileDirectory(item);
+
+        std::string workspaceRelative;
+        std::string ivwdataRelative;
+        if (!basePath.empty()) {
+            if (!workspacePath.empty() && filesystem::sameDrive(workspacePath, basePath)) {
+                workspaceRelative = filesystem::getRelativePath(workspacePath, basePath);
+            }
+            if (!ivwdataPath.empty() && filesystem::sameDrive(ivwdataPath, basePath)) {
+                ivwdataRelative = filesystem::getRelativePath(ivwdataPath, basePath);
+            }
         }
-        auto ivwdataPath = filesystem::getPath(PathType::Data);
-        if (!ivwdataPath.empty() && filesystem::sameDrive(ivwdataPath, path)) {
-            ivwdataRelativePath = filesystem::getRelativePath(ivwdataPath, path);
-        }
+        workspaceRelativePaths.push_back(workspaceRelative);
+        ivwdataRelativePaths.push_back(ivwdataRelative);
     }
-
-    s.serialize("absolutePath", absolutePaths, "files");
-    s.serialize("workspaceRelativePath", workspaceRelativePath);
-    s.serialize("ivwdataRelativePath", ivwdataRelativePath);
+    
+    s.serialize("workspaceRelativePath", workspaceRelativePaths, "files");
+    s.serialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
 
     s.serialize("nameFilter", nameFilters_, "filter");
     s.serialize("acceptMode", acceptMode_);
@@ -132,48 +137,52 @@ void MultiFileProperty::serialize(Serializer& s) const {
 }
 
 void MultiFileProperty::deserialize(Deserializer& d) {
-    Property::deserialize(d);
+    TemplateProperty<std::vector<std::string>>::deserialize(d);
 
-    std::vector<std::string> absolutePaths;
-    std::string workspaceRelativePath;
-    std::string ivwdataRelativePath;
-    std::string oldWorkspacePath;
+    std::vector<std::string> absolutePaths = this->get();
+    std::vector<std::string> workspaceRelativePaths; // paths relative to workspace directory
+    std::vector<std::string> ivwdataRelativePaths; // paths relative to Inviwo data
+    
+    d.deserialize("workspaceRelativePath", workspaceRelativePaths, "files");
+    d.deserialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
+    
+    // check whether all path lists have the same number of entries
+    if ((absolutePaths.size() == workspaceRelativePaths.size())
+        && (absolutePaths.size() == ivwdataRelativePaths.size())) {
 
-    d.deserialize("absolutePath", absolutePaths, "files");
-    d.deserialize("workspaceRelativePath", workspaceRelativePath);
-    d.deserialize("ivwdataRelativePath", ivwdataRelativePath);
-    d.deserialize("url", oldWorkspacePath);
-    
-    
-    if (!oldWorkspacePath.empty()) { // fall-back if the old value "url" is used 
-        if (filesystem::isAbsolutePath(oldWorkspacePath)) {
-            if (absolutePaths.empty()) {   // only use url if "absolutePath" is not set
-                absolutePaths.push_back(oldWorkspacePath);
+        const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
+        const auto ivwdataPath = filesystem::getPath(PathType::Data);
+
+        bool modified = false;
+        for (std::size_t i = 0; i < absolutePaths.size(); ++i) {
+            const auto basePath = filesystem::getFileDirectory(absolutePaths[i]);
+            const auto pattern = filesystem::getFileNameWithExtension(absolutePaths[i]);
+
+            if (!basePath.empty() && filesystem::fileExists(basePath)) {
+                continue;
+            } 
+            else if (!workspaceRelativePaths[i].empty()) {
+                const auto path =
+                    filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]);
+                if (filesystem::fileExists(path)) {
+                    absolutePaths[i] = path + "/" + pattern;
+                    modified = true;
+                }
+            } 
+            else if (!ivwdataRelativePaths[i].empty()) {
+                const auto path =
+                    filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]);
+                if (filesystem::fileExists(path)) {
+                    absolutePaths[i] = path + "/" + pattern;
+                    modified = true;
+                }
             }
         }
-        else {
-            if (workspaceRelativePath.empty()) { // on use url if "workspaceRelativePath" is not set
-                workspaceRelativePath = oldWorkspacePath;
-            }
+
+        if (modified) {
+            // propagate changes back to property
+            this->set(absolutePaths);
         }
-    }
-
-    const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
-    const auto ivwdataPath = filesystem::getPath(PathType::Data);
-
-    const auto workspaceBasedPath =
-        filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePath);
-    const auto ivwdataBasedPath =
-        filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePath);
-
-    if (!absolutePaths.empty() && filesystem::fileExists(absolutePaths.front())) {
-        set(absolutePaths);
-    } else if (!workspaceRelativePath.empty() && filesystem::fileExists(workspaceBasedPath)) {
-        set(workspaceBasedPath);
-    } else if (!ivwdataRelativePath.empty() && filesystem::fileExists(ivwdataBasedPath)) {
-        set(ivwdataBasedPath);
-    } else {
-        set(absolutePaths);
     }
 
     try {

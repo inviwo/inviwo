@@ -261,47 +261,6 @@ std::string FilePatternProperty::guessFilePattern() const {
     return "";
 }
 
-void FilePatternProperty::serialize(Serializer& s) const {
-    CompositeProperty::serialize(s);
-    std::string basePath = filesystem::getFileDirectory(s.getFileName());
-    if (basePath.empty()) {
-        basePath = filesystem::getPath(PathType::Data);
-    }
-
-    std::string absoluteFilePath = getFilePatternPath();
-    
-    std::string serializePath;
-
-    if (!absoluteFilePath.empty() && filesystem::sameDrive(basePath, absoluteFilePath))
-        serializePath = filesystem::getRelativePath(basePath, absoluteFilePath);
-    else
-        serializePath = absoluteFilePath;
-
-    s.serialize("directory", serializePath);
-}
-
-void FilePatternProperty::deserialize(Deserializer& d) {
-    Property::OnChangeBlocker blocking(*this);
-
-    CompositeProperty::deserialize(d);
-
-    std::string serializePath = "_#_#_#_"; // initial value used to detect modification by deserialization
-    d.deserialize("directory", serializePath);
-
-    if (serializePath != "_#_#_#_") {
-        if (!filesystem::isAbsolutePath(serializePath) && !serializePath.empty()) {
-            std::string basePath = filesystem::getFileDirectory(d.getFileName());
-
-            if (basePath.empty()) {
-                basePath = filesystem::getPath(PathType::Data);
-            }
-        }
-        else {
-            //filePath_.set(serializePath);
-        }
-    }
-}
-
 void FilePatternProperty::addNameFilter(std::string filter) {
     pattern_.addNameFilter(filter);
 }

@@ -94,9 +94,6 @@ public:
     void addNameFilter(FileExtension filter);
     void addNameFilters(const std::vector<FileExtension>& filters);
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
 protected:
     void updateFileList();
     void sort();
