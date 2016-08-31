@@ -476,20 +476,22 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     const std::string fileName(getFileNameWithExtension(absolutePath));
     
     // path as string tokens
-    const auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
+    auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
     auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
-    if (absolutePathTokens.size() < basePathTokens.size()){
-        absolutePathTokens.resize(basePathTokens.size());
-    }
 
-    auto start = std::mismatch(basePathTokens.begin(), basePathTokens.end(),
-                               absolutePathTokens.begin());
+    // need to make sure that basePathTokens has at least the size of absolutePathTokens,
+    // otherwise the behavior of std::mismatch is not defined.
+    if (basePathTokens.size() < absolutePathTokens.size()){
+        basePathTokens.resize(absolutePathTokens.size());
+    }
+    auto start = std::mismatch(absolutePathTokens.begin(), absolutePathTokens.end(),
+                               basePathTokens.begin(), basePathTokens.end());
 
     // add one ".." for each unique folder in basePathTokens
-    std::vector<std::string> relativePath(std::distance(start.first, basePathTokens.end()), "..");
+    std::vector<std::string> relativePath(std::distance(start.second, basePathTokens.end()), "..");
 
     // add append the unique folders in absolutePathTokens
-    std::copy(start.second, absolutePathTokens.end(), std::back_inserter(relativePath));
+    std::copy(start.first, absolutePathTokens.end(), std::back_inserter(relativePath));
 
     if (!fileName.empty()) {
         relativePath.push_back(fileName);
