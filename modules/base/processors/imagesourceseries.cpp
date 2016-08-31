@@ -51,102 +51,115 @@ ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
-    , imageFileDirectory_("imageFileDirectory", "Image file directory", "",
-                          filesystem::getPath(PathType::Images, "/images"))
-    , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
-    , imageFileName_("imageFileName", "Image file name") {
+    , imageFilePattern_("imageFilePattern", "File Pattern", filesystem::getPath(PathType::Images, "/*"), "")
+    , currentImageIndex_("currentImageIndex", "Image Index", 1, 1, 1, 1)
+    , imageFileName_("imageFileName", "Image File Name")
+    , ready_(false) {
+    
+
     addPort(outport_);
-    addProperty(imageFileDirectory_);
+    addProperty(imageFilePattern_);
     addProperty(findFilesButton_);
     addProperty(currentImageIndex_);
     addProperty(imageFileName_);
 
     validExtensions_ =
         InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    imageFilePattern_.addNameFilters(validExtensions_);
 
-    imageFileDirectory_.onChange([&]() { onFindFiles(); });
+    imageFilePattern_.onChange([&]() { onFindFiles(); });
     findFilesButton_.onChange([&]() { onFindFiles(); });
-
+    
     imageFileName_.setReadOnly(true);
 
     onFindFiles();
 }
 
-void ImageSourceSeries::onFindFiles() {
-    std::string path{imageFileDirectory_.get()};
-    if (!path.empty()) {
-        std::vector<std::string> files = filesystem::getDirectoryContents(path);
-
-        fileList_.clear();
-        for (std::size_t i = 0; i < files.size(); i++) {
-            if (isValidImageFile(files[i])) {
-                std::string fileName = filesystem::getFileNameWithExtension(files[i]);
-                fileList_.push_back(fileName);
-            }
-        }
-        if (fileList_.empty()) {
-            LogWarn("No images found in \"" << imageFileDirectory_.get() << "\"");
-        }
-    }
-
-    updateProperties();
-}
-
-/**
- * Creates a ImageDisk representation if there isn't an object already defined.
- **/
 void ImageSourceSeries::process() {
     if (fileList_.empty()) return;
 
-    std::string basePath{imageFileDirectory_.get()};
-    long currentIndex = currentImageIndex_.get() - 1;
-    if ((currentIndex < 0) || (currentIndex >= static_cast<long>(fileList_.size()))) {
+    if (imageFilePattern_.isModified()) {
+        // check all matching files whether they have a supported file extension, 
+        // i.e. a data reader exists
+        const auto numElems = fileList_.size();
+        util::erase_remove_if(fileList_,
+                              [this](std::string& file) { return !isValidImageFile(file); });
+        if (numElems != fileList_.size()) {
+            // number of valid files has changed, need to update properties
+            updateProperties();
+            return;
+        }
+    }
+
+    if (currentImageIndex_.isModified()) {
+        updateFileName();
+    }
+
+    // sanity check for valid index
+    const auto index = currentImageIndex_.get() - 1;
+    if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
         LogError("Invalid image index. Exceeded number of files.");
         return;
     }
 
-    std::string currentFileName{basePath + "/" + fileList_[currentIndex]};
-    imageFileName_.set(fileList_[currentIndex]);
+    const std::string currentFileName = fileList_[index];
+    const std::string ext = filesystem::getFileExtension(currentFileName);
 
-    std::string fileExtension = filesystem::getFileExtension(currentFileName);
     auto factory = getNetwork()->getApplication()->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(fileExtension)) {
-        try {
-            auto outLayer = reader->readData(currentFileName);
-            // Call getRepresentation here to force read a ram representation.
-            // Otherwise the default image size, i.e. 256x265, will be reported
-            // until you do the conversion. Since the LayerDisk does not have any metadata.
-            auto ram = outLayer->getRepresentation<LayerRAM>();
-            // Hack needs to set format here since LayerDisk does not have a format.
-            outLayer->setDataFormat(ram->getDataFormat());
+    auto reader = factory->getReaderForTypeAndExtension<Layer>(ext);
 
-            auto outImage = std::make_shared<Image>(outLayer);
-            outImage->getRepresentation<ImageRAM>();
+    // there should always be a reader since we asked the reader for valid extensions
+    ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
 
-            outport_.setData(outImage);
-        } catch (DataReaderException const& e) {
-            util::log(e.getContext(),
-                      "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(),
-                      LogLevel::Error);
-        }
-    } else {
-        LogWarn("Could not find a data reader for file: " << currentFileName);
-        // remove file from list
-        fileList_.erase(fileList_.begin() + currentIndex);
-        // adjust index property
-        updateProperties();
+    try {
+        auto layer = reader->readData(currentFileName);
+        // Call getRepresentation here to force read a ram representation.
+        // Otherwise the default image size, i.e. 256x256, will be reported
+        // until you do the conversion. Since the LayerDisk does not have any metadata.
+        auto ram = layer->getRepresentation<LayerRAM>();
+        // Hack needs to set format here since LayerDisk does not have a format.
+        layer->setDataFormat(ram->getDataFormat());
+
+        auto outImage = std::make_shared<Image>(layer);
+        outImage->getRepresentation<ImageRAM>();
+
+        outport_.setData(outImage);
+    } catch (DataReaderException const& e) {
+        LogError(e.getMessage());
     }
 }
 
+bool ImageSourceSeries::isReady() const {
+    return ready_;
+}
+
+void ImageSourceSeries::onFindFiles() {
+    // this processor will only be ready if at least one matching file exists
+    fileList_ = imageFilePattern_.getFileList();
+    if (fileList_.empty() && !imageFilePattern_.getFilePattern().empty()) {
+        if (imageFilePattern_.hasOutOfRangeMatches()) {
+            LogError("All matching files are outside the specified range (\""
+                        << imageFilePattern_.getFilePattern() << "\", "
+                        << imageFilePattern_.getMinRange() << " - "
+                        << imageFilePattern_.getMaxRange()
+                        << ").");
+        }
+        else {
+            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\".");
+        }
+    }
+    updateProperties();
+}
+
 void ImageSourceSeries::updateProperties() {
-    currentImageIndex_.setReadOnly(fileList_.empty());
+    ready_ = !fileList_.empty();
 
-    if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get()))
+    currentImageIndex_.setReadOnly(fileList_.size() <= 1);
+
+    if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get())) {
         currentImageIndex_.set(1);
-
-    // clamp the number of files since setting the maximum to 0 will reset the min value to 0
-    int numFiles = std::max(static_cast<const int>(fileList_.size()), 1);
-    currentImageIndex_.setMaxValue(numFiles);
+    }
+    currentImageIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
     updateFileName();
 }
 

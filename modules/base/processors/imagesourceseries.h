@@ -35,7 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
@@ -46,17 +46,17 @@ class FileExtension;
 /** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}
  * ![](org.inviwo.ImageSourceSeries.png?classIdentifier=org.inviwo.ImageSourceSeries)
  *
- * Loads a series of images from a directory
- * 
- * 
+ * Provides functionality to pick a single image from a list of files matching a pattern or
+ * selection.
+ *
  * ### Outports
  *   * __image.outport__ Selected image
- * 
+ *
  * ### Properties
- *   * __Image file name__ Name of the selected file, (readonly).
- *   * __Image file directory__ Directory with images.
- *   * __Image index__ Selected image index.
- *   * __Update File List__ Reload the list of images.
+ *   * __File Pattern__ Pattern used for multi-file matching including path
+ *   * __Image Index__  Index of selected image file
+ *   * __Image File Name__  Name of the selected file (read-only)
+ *   * __Update File List__ Reload the list of matching images
  *
  */
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
@@ -69,6 +69,8 @@ public:
 
     virtual void process() override;
 
+    virtual bool isReady() const override;
+
 protected:
     virtual void onFindFiles();
     bool isValidImageFile(std::string);
@@ -78,12 +80,15 @@ protected:
 private:
     ImageOutport outport_;
     ButtonProperty findFilesButton_;
-    DirectoryProperty imageFileDirectory_;
+
+    FilePatternProperty imageFilePattern_;
     IntProperty currentImageIndex_;
     StringProperty imageFileName_;
 
     std::vector<FileExtension> validExtensions_;
     std::vector<std::string> fileList_;
+    
+    bool ready_; //!< flag for isReady state depending on existing file matching the pattern
 };
 
 } // namespace
