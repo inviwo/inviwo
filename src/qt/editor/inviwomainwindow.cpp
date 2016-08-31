@@ -91,6 +91,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
+    // make sure, tooltips are always shown (this includes prot inspectors as well)
+    this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+
     networkEditor_ = std::make_shared<NetworkEditor>(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = std::make_shared<ConsoleWidget>(this);
