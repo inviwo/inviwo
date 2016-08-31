@@ -87,9 +87,6 @@ public:
     void renderImagePlaneRect() const;
     virtual std::type_index getTypeIndex() const override final;
 
-    virtual Image* getOwner() override;
-    virtual const Image* getOwner() const override;
-
 protected:
     virtual void update(bool editable) override;
 

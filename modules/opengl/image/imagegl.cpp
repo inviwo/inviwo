@@ -209,7 +209,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
 
     // ensure that target has at least same number of color layers
     if (target->colorLayersGL_.size() < this->colorLayersGL_.size()) {
-        if (auto targetImage = target->getOwner()) {
+        if (auto targetImage = static_cast<Image*>(target->getOwner())) {
             // TODO: what image format should be used for new layers?
             // reuse first color layer for now
             std::size_t delta = this->colorLayersGL_.size() - target->colorLayersGL_.size();
@@ -380,7 +380,7 @@ const LayerGL* ImageGL::getDepthLayerGL() const { return depthLayerGL_; }
 const LayerGL* ImageGL::getPickingLayerGL() const { return pickingLayerGL_; }
 
 void ImageGL::updateExistingLayers() const {
-    auto owner = this->getOwner();
+    auto owner = static_cast<const Image*>(this->getOwner());
 
     for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
         owner->getColorLayer(i)->getRepresentation<LayerGL>();
@@ -442,13 +442,6 @@ void ImageGL::update(bool editable) {
 
 void ImageGL::renderImagePlaneRect() const {
     utilgl::singleDrawImagePlaneRect();
-}
-
-
-Image* ImageGL::getOwner() { return static_cast<Image*>(ImageRepresentation::getOwner()); }
-
-const Image* ImageGL::getOwner() const {
-    return static_cast<const Image*>(ImageRepresentation::getOwner());
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
