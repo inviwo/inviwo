@@ -60,16 +60,42 @@ public:
  *
  * \brief The base class for all data objects.
  *
- *  It is responsible for holding the DateRepresentations
- *  and the format of the data.
+ * Data is a handle class and, by it self does not have any data, it only stores metadata, and a
+ * list of representations. The representations is were the actually data is stored. A Volume can
+ * have a set of different representations, for example a VolumeRAM representation and a VolumeGL
+ * representation. At any time at least one of the representations should be in a valid state. When
+ * ever we want to access the data of a volume we will ask the volume for a representation of some
+ * kind, and the handle is then responsible to try and provide that to us. If the requested
+ * representation is valid the handle can just return the that representation. If not, it will have
+ * to find a valid representation and try to either create the representation we wanted from the
+ * valid representation, if there was no representation of the kind we asked for around. Or if there
+ * is a invalid representation around, update that representation with the valid representation. 
  *
- *  Requirements:
+ * Call getRepresentation to retrieve the data:
+ * \code{.cpp}
+ *      // Create a Buffer with a BufferRAM representation
+ *      auto buffer = util::makeBuffer<vec2>(
+ *      { {0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f} });
+ *      // Retrieve a read-only representation of the data
+ *      auto bufferRAM = buffer.getRepresentation<BufferRAM>();
+ *      // The data will be transferred to the GPU if not already there.
+ *      auto bufferGL = buffer.getRepresentation<BufferGL>();
+ * \endcode
+ *
+ * Requirements:
  *      1. Copy constructor for deep copy
  *      2. Assignment operator for deep copy
  *      3. Clone pattern
  *
- *  1 and 2 are needed to be a vaild member type of std::vector.
- *  3 is needed for the factory pattern, 3 should be implemented using 1.
+ * 1 and 2 are needed to be a vaild member type of std::vector.
+ * 3 is needed for the factory pattern, 3 should be implemented using 1.
+ *
+ *
+ *
+ * @note Do not use the same representation in different Data objects.
+ * This can cause inconsistencies since the Data objects cannot know if
+ * another one has edited the representation.
+ * @see Representation and RepresentationConverter
  */
 template <class Repr>
 class Data : public BaseData {
@@ -84,25 +110,44 @@ public:
     /**
      * Get a representation of type T. If there already is a valid representation of type T, just
      * return it, if it's invalid use the last valid representation to update it so it will be
-     * valid. It there is no represenation of type T, create it from the last valid representation.
-     * If there are no representations create a default represenation and from that create a
+     * valid. It there is no representation of type T, create it from the last valid representation.
+     * If there are no representations create a default representation and from that create a
      * representation of type T.
      */
     template <typename T>
     const T* getRepresentation() const;
 
     /**
-     * Get a editable representation. This will invalidate all other representations.
+     * Get an editable representation. This will invalidate all other representations.
      * They will now have to be updated from this one before use.
      * @see getRepresentation and invalidateAllOther
      */
     template <typename T>
     T* getEditableRepresentation();
 
+    /**
+    * Check if a specific representation type exists.
+    * Example:
+    * \code{.cpp}
+    *     hasRepresentation<BufferRAM>();
+    * \endcode
+    * @return true if existing, false otherwise.
+    */
     template <typename T>
     bool hasRepresentation() const;
 
+    /**
+     * Check if the Data object has any representation.
+     * @return true if any representation exist, false otherwise.
+     */
     bool hasRepresentations() const;
+
+    /**
+    * Add the representation and set it as last valid.
+    * The owner of the representation will be set to this object.
+    * @note A representation can only be added to one Data object.
+    * @param representation The representation to add
+    */
     void addRepresentation(std::shared_ptr<Repr> representation);
 
     /**
@@ -111,10 +156,18 @@ public:
      * @param representation The representation to remove
      */
     void removeRepresentation(const Repr* representation);
+
+    /**
+     * Remove all other representations.
+     * This will delete all representations except the one passed in.
+     * @param representation The representation to keep
+     */
     void removeOtherRepresentations(const Repr* representation);
+    /**
+     * Delete all representations.
+     */
     void clearRepresentations();
-    
-    
+
     /**
      * This call will make all other representations invalid. You need to call this function if
      * you are modifying a representation directly without calling getEditableRepresentation.
@@ -123,7 +176,11 @@ public:
      */
     void invalidateAllOther(const Repr* repr);
 
-    // DataFormat
+    /**
+    * Set the format of the data.
+    * @see DataFormatBase
+    * @param format The format of the data.
+    */
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
 
