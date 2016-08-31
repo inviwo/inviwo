@@ -123,6 +123,12 @@ void Background::process() {
     } else {
         utilgl::activateTarget(outport_, ImageType::ColorOnly);
     }
+
+    // TODO: activateTargetAndCopySource activates all color layers, but only the 
+    //       first source layer is sampled (see issue #1338).
+    // ensure that only the first layer is written
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
     shader_.activate();
     TextureUnitContainer units;
     if (inport_.hasData()) utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);

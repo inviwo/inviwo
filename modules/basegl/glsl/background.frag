@@ -53,8 +53,11 @@ void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 srcColor = SRC_COLOR;
     vec4 backgroundColor = BACKGROUND_STYLE_FUNCTION;
-    vec4 resultColor;
-    resultColor.rgb = srcColor.rgb + backgroundColor.rgb * backgroundColor.a * (1.0 - srcColor.a);
-    resultColor.a = srcColor.a + backgroundColor.a * (1.0 - srcColor.a);
+
+    // pre-multiplied alpha for background color
+    backgroundColor.rgb *= backgroundColor.a;
+
+    vec4 resultColor = srcColor + backgroundColor * (1.0 - srcColor.a);
+
     FragData0 = resultColor;
 }
