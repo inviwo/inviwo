@@ -43,7 +43,6 @@ http://prideout.net/blog/?p=61
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
 
 namespace inviwo {
 
@@ -92,8 +91,27 @@ TubeRendering::TubeRendering()
     
 void TubeRendering::process() {
     if (!drawer_) {
-        auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-        drawer_ =factory->create(mesh_.getData().get());
+        indexBuffersToRender_.clear();
+        size_t nonAdjLineStrips = 0;
+        
+        size_t idx = 0;
+        for (auto ib : mesh_.getData()->getIndexBuffers()) {
+            if (ib.first.dt == DrawType::Lines && ib.first.ct == ConnectivityType::StripAdjacency) {
+                indexBuffersToRender_.push_back(idx);
+            }
+            else {
+                nonAdjLineStrips++;
+            }
+            idx++;
+        }
+        if (nonAdjLineStrips) {
+            LogWarn(
+                "Tube renderer only support rendering of lines strips with adjacency information. "
+                "Ignoring "
+                << nonAdjLineStrips << " index buffers of incompatible type");
+            LogInfo("Number of lines strips with adjacency index buffers: " << indexBuffersToRender_.size());
+        }
+        drawer_ = util::make_unique<MeshDrawerGL>(mesh_.getData().get());
     }
     if (!drawer_) return;
 
@@ -114,7 +132,12 @@ void TubeRendering::process() {
   //  utilgl::PolygonModeState polygon(GL_LINE, 1, 1);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
 
-    drawer_->draw();
+    auto drawObj = drawer_->getDrawObject();
+    //drawer_->draw();
+    for (const auto &idx : indexBuffersToRender_) {
+        drawObj.draw(idx);
+    }
+
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();

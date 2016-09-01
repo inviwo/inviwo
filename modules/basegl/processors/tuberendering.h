@@ -42,7 +42,7 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 
 namespace inviwo {
-    class MeshDrawer;
+    class MeshDrawerGL;
 /** \docpage{<classIdentifier>, TubeRendering}
  * Explanation of how to use the processor.
  *
@@ -79,7 +79,8 @@ protected:
 
     Shader shader_;
 
-    std::unique_ptr<MeshDrawer> drawer_;
+    std::unique_ptr<MeshDrawerGL> drawer_;
+    std::vector<size_t> indexBuffersToRender_;
 };
 
 } // namespace
