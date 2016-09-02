@@ -169,6 +169,10 @@ PixelValue::PixelValue()
             pixelValuesNormalized_[i].setVisible(i < numCh);
         }
     });
+
+    for (auto &p : getProperties()) {
+        p->setSerializationMode(PropertySerializationMode::None);
+    }
 }
 
 void PixelValue::process() { outport_.setData(inport_.getData()); }
@@ -180,7 +184,7 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
         auto numCh = img->getNumberOfColorLayers();
         auto p = mouseEvent->posNormalized();
         if (glm::any(glm::lessThan(p, dvec2(0, 0))) || glm::any(glm::greaterThan(p, dvec2(1, 1)))) {
-            LogError("How often can this happen");
+            //This can happen a lot when having a image layout
             return;
         }
         size2_t pos = static_cast<size2_t>(p * dvec2(dims));
