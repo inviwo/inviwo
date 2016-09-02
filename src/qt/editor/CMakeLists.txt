@@ -106,6 +106,8 @@ foreach(qtarget Qt5Sql Qt5Network)
 endforeach()
 
 ivw_add_dependencies(InviwoQtWidgets)
+## add buildinfo module as library dependency
+ivw_add_dependency_libraries("inviwo-module-buildinfo")
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
@@ -115,25 +117,3 @@ ivw_compile_optimize_inviwo_core()
 # Make package (for other projects to find)
 ivw_set_cpack_name(qt_editor)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
-
-#--------------------------------------------------------------------
-# Generate build info
-
-# make a clean help script
-set(build_info_script_list
-    "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
-    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.h"
-    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
-    "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
-)
-string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
-file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
-
-# add a target to generate the header file a build time
-add_custom_target("inviwo-buildinfo"
-    COMMAND ${CMAKE_COMMAND} -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
-    WORKING_DIRECTORY ${OUTPUT_DIR}
-    COMMENT "Generating inviwo build info"
-    VERBATIM
-)
-add_dependencies("inviwo-qteditor" "inviwo-buildinfo")

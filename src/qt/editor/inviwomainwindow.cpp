@@ -46,8 +46,9 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 
+#include <modules/buildinfo/buildinfo.h>
+
 #include <inviwomodulespaths.h>
-#include <inviwo_buildinfo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -982,7 +983,7 @@ void InviwoMainWindow::showAboutBox() {
 
               << "<b>Inviwo v" << IVW_VERSION << "</b><br>\n"
               << "Interactive Visualization Workshop<br>\n"
-              << "&copy; 2012-" << buildinfo::year << " The Inviwo Foundation<br>\n"
+              << "&copy; 2012-" << buildinfo::getBuildTimeYear() << " The Inviwo Foundation<br>\n"
               << "<a href='http://www.inviwo.org/' style='color: #AAAAAA;'>"
               << "http://www.inviwo.org/</a>\n"
               << "<p>Inviwo is a rapid prototyping environment for interactive "
@@ -997,16 +998,12 @@ void InviwoMainWindow::showAboutBox() {
               << "Hans-Christian Helltegen, Viktor Axelsson</p>\n"
 
               << "<p><b>Build Date: </b>\n"
-              << buildinfo::year << "-" << std::setfill('0') << std::setw(2) << buildinfo::month
-              << "-" << std::setfill('0') << std::setw(2) << buildinfo::day << " "
-              << std::setfill('0') << std::setw(2) << buildinfo::hour << ":" << std::setfill('0')
-              << std::setw(2) << buildinfo::minute << ":" << std::setfill('0') << std::setw(2)
-              << buildinfo::second
+              << buildinfo::getBuildDateString()
               << "</p>\n";
 
     aboutText << "<p><b>Repos:</b>\n"
               << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
-    for (const auto& item : buildinfo::githashes) {
+    for (const auto& item : buildinfo::getGitHashes()) {
         aboutText << "<tr><td style='padding-right:8px;'>" << item.first
                   << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
     }
