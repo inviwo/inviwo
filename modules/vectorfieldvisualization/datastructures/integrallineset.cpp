@@ -56,4 +56,10 @@ void IntegralLineSet::push_back(IntegralLine &line) {
     lines_.push_back(line);
 }
 
+void IntegralLineSet::push_back(IntegralLine &line, size_t idx)
+{
+    line.setIndex(idx);
+    lines_.push_back(line);
+}
+
 }  // namespace

@@ -62,6 +62,7 @@ public:
     IntegralLine& at(size_t idx);
     const IntegralLine& at(size_t idx) const;
     void push_back(IntegralLine &line);
+    void push_back(IntegralLine &line,size_t idx);
 
 private:
     std::vector<IntegralLine> lines_;
