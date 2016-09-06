@@ -82,6 +82,8 @@ public:
     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) = 0;
 
     static inline size_t posToIndex(const size2_t& pos, const size2_t& dim) {
+        ivwAssert((pos.x < dim.x) && (pos.y < dim.y),
+                  "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
         return pos.x + (pos.y * dim.x);
     }
 
