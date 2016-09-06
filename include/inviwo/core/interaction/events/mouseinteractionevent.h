@@ -41,7 +41,7 @@ class IVW_CORE_API MouseInteractionEvent : public InteractionEvent {
 public:
     MouseInteractionEvent(MouseButtons buttonState = MouseButtons(flags::empty),
                           KeyModifiers modifiers = KeyModifiers(flags::empty),
-                          dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
+                          dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(1),
                           double depth = 1.0);
 
     MouseInteractionEvent(const MouseInteractionEvent& rhs) = default;

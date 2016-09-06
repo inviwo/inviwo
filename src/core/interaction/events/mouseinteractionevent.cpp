@@ -43,9 +43,9 @@ MouseButtons MouseInteractionEvent::buttonState() const { return buttonState_; }
 
 void MouseInteractionEvent::setButtonState(MouseButtons buttonState) { buttonState_ = buttonState; }
 
-dvec2 MouseInteractionEvent::pos() const { return position_ * dvec2(canvasSize_); }
+dvec2 MouseInteractionEvent::pos() const { return position_ * dvec2(canvasSize_ - uvec2(1)); }
 
-void MouseInteractionEvent::setPos(dvec2 pos) { position_ = pos / dvec2(canvasSize_); }
+void MouseInteractionEvent::setPos(dvec2 pos) { position_ = pos / dvec2(canvasSize_ - uvec2(1)); }
 
 uvec2 MouseInteractionEvent::canvasSize() const { return canvasSize_; }
 
@@ -59,9 +59,9 @@ dvec3 MouseInteractionEvent::ndc() const {
     return dvec3(2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_);
 }
 
-double MouseInteractionEvent::x() const { return position_.x * canvasSize_.x; }
+double MouseInteractionEvent::x() const { return position_.x * (canvasSize_.x - 1); }
 
-double MouseInteractionEvent::y() const { return position_.y * canvasSize_.y; }
+double MouseInteractionEvent::y() const { return position_.y * (canvasSize_.y - 1); }
 
 double MouseInteractionEvent::depth() const { return depth_; }
 
