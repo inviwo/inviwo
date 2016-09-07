@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
