@@ -95,14 +95,20 @@ VolumeSliceGL::VolumeSliceGL()
                         InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer Function", TransferFunction(), &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
+    , sampleQuery_("sampleQuery", "Sampling Query", false)
+    , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f))
+    , volumeSample_("volumeSample", "Sample Output", vec4(0.0f))
     , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
                       [this](Event* e) { eventShiftSlice(e); },
                       util::make_unique<WheelEventMatcher>())
-    
+
     , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
                       MouseButton::Left, MouseState::Press | MouseState::Move)
+    , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker", 
+                            [this](Event* e) { eventUpdateMousePos(e); },
+                            MouseButton::None, MouseState::Move)
     
     , stepSliceUp_( "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
           IvwKey::W, KeyState::Press)
@@ -220,6 +226,24 @@ VolumeSliceGL::VolumeSliceGL()
     tfGroup_.addProperty(tfAlphaOffset_);
     addProperty(tfGroup_);
 
+    sampleQuery_.onChange([&]() {
+        if (!sampleQuery_.isChecked()) {
+            normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+            volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+        }
+    });
+
+    normalizedSample_.setSemantics(PropertySemantics::Text);
+    normalizedSample_.setReadOnly(true);
+    normalizedSample_.setCurrentStateAsDefault();
+    volumeSample_.setSemantics(PropertySemantics::Text);
+    volumeSample_.setReadOnly(true);
+    volumeSample_.setCurrentStateAsDefault();
+
+    sampleQuery_.addProperty(normalizedSample_);
+    sampleQuery_.addProperty(volumeSample_);
+    addProperty(sampleQuery_);
+
     worldPosition_.setReadOnly(true);
     addProperty(worldPosition_);
 
@@ -232,6 +256,10 @@ VolumeSliceGL::VolumeSliceGL()
     addProperty(stepSliceUp_);
     addProperty(stepSliceDown_);
     addProperty(mouseSetMarker_);
+
+    mousePositionTracker_.setVisible(false);
+    mousePositionTracker_.setCurrentStateAsDefault();
+    addProperty(mousePositionTracker_);
 
     gestureShiftSlice_.setVisible(false);
     gestureShiftSlice_.setCurrentStateAsDefault();
@@ -528,11 +556,25 @@ void VolumeSliceGL::shiftSlice(int shift) {
 void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
     if (!posPicking_.get()) return;  // position mode not enabled
 
-    pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) * glm::translate(vec3(-0.5f, -0.5f, 0.0f)) *
-               vec4(pos, 0.0f, 1.0f));
+    vec3 planePos = convertScreenPosToVolume(pos);
 
-    if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
-        pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
+    invalidateMesh();
+    planePosition_.set(vec3(planePos));
+}
+
+vec2 VolumeSliceGL::getScreenPosFromVolPos() {
+    vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
+    return pos;
+}
+
+vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2 &screenPos, bool clamp) const {
+    vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) * glm::translate(vec3(-0.5f, -0.5f, 0.0f)) *
+                    vec4(screenPos, 0.0f, 1.0f));
+
+    if (clamp) {
+        if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
+            pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
+        }
     }
 
     vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
@@ -540,15 +582,10 @@ void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
     newpos.y = pos.y;
     newpos = sliceRotation_ * newpos;
 
-    newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
-
-    invalidateMesh();
-    planePosition_.set(vec3(newpos));
-}
-
-vec2 VolumeSliceGL::getScreenPosFromVolPos() {
-    vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
-    return pos;
+    if (clamp) {
+        newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
+    }
+    return vec3(newpos);
 }
 
 void VolumeSliceGL::updateMaxSliceNumber() {
@@ -588,7 +625,7 @@ void VolumeSliceGL::eventShiftSlice(Event* event) {
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
     auto mouseEvent = static_cast<MouseEvent*>(event);
-    setVolPosFromScreenPos(static_cast<vec2>(mouseEvent->posNormalized()));
+    setVolPosFromScreenPos(vec2(mouseEvent->posNormalized()));
     event->markAsUsed();
 }
 
@@ -613,6 +650,41 @@ void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
         shiftSlice(-1);
         event->markAsUsed();
     }
+}
+
+void VolumeSliceGL::eventUpdateMousePos(Event* event) {
+    if (!sampleQuery_.isChecked())
+        return;
+
+    if (!inport_.hasData()) {
+        return;
+    }
+
+    auto volume = inport_.getData();
+    auto mouseEvent = static_cast<MouseEvent*>(event);
+
+    auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
+    // convert normalized volume position to voxel coords
+    const mat4 textureToIndex(
+        volume->getCoordinateTransformer().getTextureToIndexMatrix());
+    const vec4 texturePos(volPos, 1.0);
+    ivec3 indexPos(ivec3(textureToIndex * texturePos));
+
+    const ivec3 volDim(volume->getDimensions());
+
+    bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim))
+        || glm::any(glm::lessThan(indexPos, ivec3(0)));
+    if (outOfBounds) {
+        normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+        volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+    }
+    else {
+        // sample input volume at given index position
+        const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
+        volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+    }
+    event->markAsUsed();
 }
 
 void VolumeSliceGL::sliceChange() {

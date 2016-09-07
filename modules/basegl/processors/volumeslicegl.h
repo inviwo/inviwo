@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
@@ -126,11 +127,14 @@ protected:
     void setVolPosFromScreenPos(vec2 pos);
     vec2 getScreenPosFromVolPos();
 
+    vec3 convertScreenPosToVolume(const vec2 &screenPos, bool clamp = true) const;
+    
     void invalidateMesh();
 
     void sliceChange();
     void positionChange();
     void rotationModeChange();
+
 
 private:
     void eventShiftSlice(Event*);
@@ -138,6 +142,7 @@ private:
     void eventStepSliceUp(Event*);
     void eventStepSliceDown(Event*);
     void eventGestureShiftSlice(Event*);
+    void eventUpdateMousePos(Event*);
 
     VolumeInport inport_;
     ImageOutport outport_;
@@ -173,10 +178,15 @@ private:
     TransferFunctionProperty transferFunction_;
     FloatProperty tfAlphaOffset_;
 
+    BoolCompositeProperty sampleQuery_;
+    FloatVec4Property normalizedSample_;
+    FloatVec4Property volumeSample_;
+
     BoolProperty handleInteractionEvents_;
 
     EventProperty mouseShiftSlice_;
     EventProperty mouseSetMarker_;
+    EventProperty mousePositionTracker_;
 
     EventProperty stepSliceUp_;
     EventProperty stepSliceDown_;
