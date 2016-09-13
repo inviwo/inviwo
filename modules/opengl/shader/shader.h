@@ -94,6 +94,9 @@ public:
     template <typename T>
     void setUniform(const std::string &name, const T& value) const;
 
+    template <typename T>
+    void setUniform(const std::string &name, std::size_t len, const T* value) const;
+
     void setUniformWarningLevel(UniformWarning level);
 
     // Callback when the shader is reloaded. A reload can for example be triggered by a file change.
@@ -137,11 +140,16 @@ private:
     std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
 };
 
-
 template <typename T>
 void Shader::setUniform(const std::string &name, const T& value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, value);
+}
+
+template <typename T>
+void Shader::setUniform(const std::string &name, std::size_t len, const T* value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) utilgl::UniformSetter<T>::set(location, static_cast<GLsizei>(len), value);
 }
 
 }  // namespace
