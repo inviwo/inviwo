@@ -44,10 +44,10 @@
 namespace inviwo {
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
-    : QWidget(dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow())
+    : QWidget(dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr()) ? dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow() : nullptr)
     , CanvasProcessorWidget(p)
     , canvas_(nullptr) {
-    
+
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_OpaquePaintEvent);
