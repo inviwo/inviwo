@@ -47,7 +47,7 @@ template <class DelimT, class charT = char, class traits = std::char_traits<char
 class ostream_joiner : public std::iterator<std::output_iterator_tag, void, void, void, void> {
     std::basic_ostream<charT, traits> *os;
     std::basic_string<charT> delimiter;
-    bool first_element = true;
+    bool need_delimiter = false;
 
 public:
     using char_type = charT;
@@ -59,9 +59,10 @@ public:
 
     template <typename T>
     ostream_joiner<DelimT, charT, traits> &operator=(const T &item) {
-        if (!first_element) *os << delimiter;
-        first_element = false;
+        if (need_delimiter) *os << delimiter;
+        auto pos = os->tellp();
         *os << item;
+        need_delimiter = (os->tellp() != pos); // don't add delimiter if there were no output
         return *this;
     }
 
