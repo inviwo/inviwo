@@ -39,7 +39,7 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
-    , play_("playSequence", "Play Sequence", false)
+    , play_("playSequence", "Play Sequence", false, InvalidationLevel::Valid)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)
     , playPause_("playPause", "Play / Pause",
                  [this](Event* e) { play_.set(!play_.get()); }, IvwKey::P, KeyState::Press)

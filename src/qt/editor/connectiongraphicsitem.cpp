@@ -62,7 +62,7 @@ CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3
     resetBorderColors();
 }
 
-CurveGraphicsItem::~CurveGraphicsItem() {}
+CurveGraphicsItem::~CurveGraphicsItem() = default;
 
 QPainterPath CurveGraphicsItem::obtainCurvePath() const {
     if (useMidPoint_) {
@@ -253,6 +253,21 @@ QPointF ConnectionGraphicsItem::getEndPoint() const {
 
 void ConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showPortInfo(e, getOutport());
+}
+
+QVariant ConnectionGraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value) {
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+    switch (change) {
+        case QGraphicsItem::ItemSelectedHasChanged:
+            inport_->update();
+            outport_->update();
+            break;
+        default:
+            break;
+    }
+#include <warn/pop>
+    return QGraphicsItem::itemChange(change, value);
 }
 
 }  // namespace

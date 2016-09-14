@@ -121,7 +121,7 @@ template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     if (!port || port->getProcessor() == getProcessor()) return false;
 
-    // Check for cicular depends.
+    // Check for circular depends.
     auto pd = util::getPredecessors(port->getProcessor());
     if (pd.find(getProcessor()) != pd.end()) return false;
 

@@ -36,6 +36,7 @@
 #include <warn/ignore/all>
 #include <QEvent>
 #include <QPointF>
+#include <QColor>
 #include <warn/pop>
 
 namespace inviwo {
@@ -43,6 +44,21 @@ namespace inviwo {
 class Port;
 class ConnectionGraphicsItem;
 class ProcessorGraphicsItem;
+class ProcessorPortGraphicsItem;
+
+class IVW_QTEDITOR_API ProcessorPortConnectionIndicator : public EditorGraphicsItem {
+public:
+    ProcessorPortConnectionIndicator(ProcessorPortGraphicsItem* parent, bool up, QColor color);
+    virtual ~ProcessorPortConnectionIndicator() = default;
+
+protected:
+    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+
+private:
+    ProcessorPortGraphicsItem* portConnectionItem_;
+    bool up_;
+    QColor color_;
+};
 
 class IVW_QTEDITOR_API ProcessorPortGraphicsItem : public EditorGraphicsItem {
 public:
@@ -67,6 +83,7 @@ protected:
 private:
     virtual void updateConnectionPositions() = 0;
     ProcessorGraphicsItem* processor_;
+    ProcessorPortConnectionIndicator* connectionIndicator_;
     Port* port_;
     float size_;
     float lineWidth_;
@@ -76,7 +93,7 @@ private:
 class IVW_QTEDITOR_API ProcessorInportGraphicsItem : public ProcessorPortGraphicsItem {
 public:
     ProcessorInportGraphicsItem(ProcessorGraphicsItem* parent, const QPointF& pos, Inport* port);
-    virtual ~ProcessorInportGraphicsItem() {}
+    virtual ~ProcessorInportGraphicsItem() = default;
     Inport* getPort();
 
     // override for qgraphicsitem_cast (refer qt documentation)
@@ -97,7 +114,7 @@ private:
 class IVW_QTEDITOR_API ProcessorOutportGraphicsItem : public ProcessorPortGraphicsItem {
 public:
     ProcessorOutportGraphicsItem(ProcessorGraphicsItem* parent, const QPointF& pos, Outport* port);
-    virtual ~ProcessorOutportGraphicsItem() {}
+    virtual ~ProcessorOutportGraphicsItem() = default;
 
     Outport* getPort();
     // override for qgraphicsitem_cast (refer qt documentation)
@@ -112,6 +129,7 @@ private:
     virtual void updateConnectionPositions();
     Outport* port_;
 };
+
 
 }  // namespace
 

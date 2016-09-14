@@ -71,8 +71,7 @@ std::string getGLErrorString(GLenum err) {
                 "of the GL is undefined, except for the state of the error flags, after this error "
                 "is recorded.";
             break;
-        case:
-        GL_TABLE_TOO_LARGE:
+        case GL_TABLE_TOO_LARGE:
             errorString =
                 "GL_TABLE_TOO_LARGE: The specified table exceeds the implementation's maximum "
                 "supported table size. The offending command is ignored and has no other side "
@@ -82,24 +81,24 @@ std::string getGLErrorString(GLenum err) {
             errorString = "INVALID_FRAMEBUFFER_OPERATION";
             break;
     }
-    errorMessage << (!errorString.empty() ? errorString.c_str() : "undefined");
+    errorMessage << (!errorString.empty() ? errorString.c_str() : "undefined error");
 #else
     const GLubyte* errorString = gluErrorString(err);
-    errorMessage << (errorString ? (const char*)errorString : "undefined");
+    errorMessage << (errorString ? (const char*)errorString : "undefined error");
 #endif
     return errorMessage.str();
 }
 
 void LogGLError(const char* fileName, const char* functionName, int lineNumber) {
-	GLuint maxErrors = 255;
-	GLenum err;
-	// There might be several errors, call glGetError in a loop:
-	// https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
-	while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
-		inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
-			fileName, functionName, lineNumber,
-			getGLErrorString(err));
-	}
+    GLuint maxErrors = 255;
+    GLenum err;
+    // There might be several errors, call glGetError in a loop:
+    // https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
+    while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
+        inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
+            fileName, functionName, lineNumber,
+            getGLErrorString(err));
+    }
 }
 
 }

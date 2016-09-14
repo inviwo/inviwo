@@ -102,6 +102,8 @@ protected:
 
     void updateWidgets();
 
+    enum class PortType {In, Out};
+    QPointF portPosition(PortType type, size_t index);
     void addInport(Inport *port);
     void addOutport(Outport *port);
     void removeInport(Inport *port);
@@ -128,10 +130,6 @@ private:
 
     static const float roundedCorners_;
     static const int labelHeight_;
-    static const QPointF inportPos_;
-    static const QPointF outportPos_;
-    static const QPointF inportDelta_;
-    static const QPointF outportDelta_;
 
     #if IVW_PROFILING 
     size_t processCount_;

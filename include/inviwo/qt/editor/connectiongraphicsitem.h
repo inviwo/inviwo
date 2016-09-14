@@ -156,6 +156,8 @@ public:
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e);
 
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
 private:
     ProcessorInportGraphicsItem* inport_;
     PortConnection connection_;

@@ -66,10 +66,6 @@ namespace inviwo {
 const QSizeF ProcessorGraphicsItem::size_ = {150.f, 50.f};
 const float ProcessorGraphicsItem::roundedCorners_ = 9.0f;
 const int ProcessorGraphicsItem::labelHeight_ = 8;
-const QPointF ProcessorGraphicsItem::inportPos_ = { 12.5f, 4.5f };
-const QPointF ProcessorGraphicsItem::inportDelta_ = { 12.5f, 0.0f };
-const QPointF ProcessorGraphicsItem::outportPos_ = { 12.5f, -4.5f };
-const QPointF ProcessorGraphicsItem::outportDelta_ = { 12.5f, 0.0f };
 
 int pointSizeToPixelSize(const int pointSize) {
     // compute pixel size for fonts by assuming 96 dpi as basis
@@ -144,8 +140,6 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         progressBarOwner->getProgressBar().ActivityIndicator::addObserver(statusItem_);
     }
         
-    
-    
     if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)){
         activityInd->getActivityIndicator().addObserver(statusItem_);
     }
@@ -163,14 +157,24 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
 }
 
+QPointF ProcessorGraphicsItem::portPosition(PortType type, size_t index) {
+    const QPointF offset = {12.5f, (type == PortType::In ? 1.0f : -1.0f) * 4.5f};
+    const QPointF delta = {12.5f, 0.0f};
+    const QPointF rowDelta = {0.0f, (type == PortType::In ? -1.0f : 1.0f) * 12.5f};
+    const size_t portsPerRow = 10;
 
-void ProcessorGraphicsItem::addInport(Inport *port) {
-    auto pos = rect().topLeft() + inportPos_ + inportDelta_ * static_cast<qreal>(inportItems_.size());
+    return (type == PortType::In ? rect().topLeft() : rect().bottomLeft()) + offset +
+           rowDelta * static_cast<qreal>(index / portsPerRow) +
+           delta * static_cast<qreal>(index % portsPerRow);
+}
+
+void ProcessorGraphicsItem::addInport(Inport* port) {
+    auto pos = portPosition(PortType::In, inportItems_.size());
     inportItems_[port] = new ProcessorInportGraphicsItem(this, pos, port);
 }
 
-void ProcessorGraphicsItem::addOutport(Outport *port){
-    auto pos = rect().bottomLeft() + outportPos_ + outportDelta_* static_cast<qreal>(outportItems_.size());
+void ProcessorGraphicsItem::addOutport(Outport* port) {
+    auto pos = portPosition(PortType::Out, outportItems_.size());
     outportItems_[port] = new ProcessorOutportGraphicsItem(this, pos, port);
 }
 
@@ -180,10 +184,10 @@ void ProcessorGraphicsItem::removeInport(Inport* port) {
 
     size_t count = 0;
     for (auto& item : inportItems_) {
-        auto pos = rect().topLeft() + inportPos_ + inportDelta_ * static_cast<qreal>(count);
-        item.second->setPos(pos);
+        item.second->setPos(portPosition(PortType::In, count));
         count++;
     }
+    update();
 }
 
 void ProcessorGraphicsItem::removeOutport(Outport* port) {
@@ -191,10 +195,10 @@ void ProcessorGraphicsItem::removeOutport(Outport* port) {
     outportItems_.erase(port);
     size_t count = 0;
     for (auto& item : outportItems_) {
-        auto pos = rect().bottomLeft() + outportPos_ + outportDelta_ * static_cast<qreal>(count);
-        item.second->setPos(pos);
+        item.second->setPos(portPosition(PortType::Out, count));
         count++;
     }
+    update();
 }
 
 void ProcessorGraphicsItem::onProcessorMetaDataPositionChange() {
@@ -224,7 +228,7 @@ ProcessorOutportGraphicsItem* ProcessorGraphicsItem::getOutportGraphicsItem(Outp
     return outportItems_[port];
 }
 
-ProcessorGraphicsItem::~ProcessorGraphicsItem() {}
+ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
 inviwo::Processor* ProcessorGraphicsItem::getProcessor() const {
     return processor_;

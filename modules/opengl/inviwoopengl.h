@@ -55,7 +55,7 @@
 
 namespace inviwo {
 
-/** \brief Returns a readable interpreation of the OpenGL error.
+/** \brief Returns a readable interpretation of the OpenGL error.
  *
  * @param err OpenGL error enum, GLenum err = glGetError();
  * @return Returns "No error" if err == GL_NO_ERROR, otherwise the name of the error.

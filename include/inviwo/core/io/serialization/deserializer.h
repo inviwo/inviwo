@@ -898,13 +898,15 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
             } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Could not create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    "Error trying to create " + error.toString(0) + ". Reason: " + e.getMessage(),
                     e.getContext(), key, type_attr, error[0].identifier, keyNode);
             }
             if (!data) {
                 NodeDebugger error(keyNode);
-                throw SerializationException("Could not create " + error.toString(0), IvwContext,
-                                             key, type_attr, error[0].identifier, keyNode);
+                throw SerializationException(
+                    "Could not create " + error.toString(0) + ". Reason: \"" + type_attr +
+                        "\"Not found in factory",
+                    IvwContext, key, type_attr, error[0].identifier, keyNode);
             }
 
         } else {
@@ -913,13 +915,15 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
             } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Could not create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    "Error trying to create " + error.toString(0) + ". Reason: " + e.getMessage(),
                     e.getContext(), key, type_attr, error[0].identifier, keyNode);
             }
             if (!data) {
                 NodeDebugger error(keyNode);
-                throw SerializationException("Could not create " + error.toString(0), IvwContext,
-                                             key, type_attr, error[0].identifier, keyNode);
+                throw SerializationException("Could not create " + error.toString(0) +
+                                                 ". Reason: No default constructor found",
+                                             IvwContext, key, type_attr, error[0].identifier,
+                                             keyNode);
             }
         }
     }

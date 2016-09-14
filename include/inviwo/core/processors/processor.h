@@ -202,7 +202,7 @@ public:
     virtual void initializeResources() {}
 
     Port* getPort(const std::string& identifier) const;
-    Inport* getInport(const std::string& identifier) const;
+    Inport* getInport(const std::string& identifier) const; 
     Outport* getOutport(const std::string& identifier) const;
 
     const std::vector<Inport*>& getInports() const;

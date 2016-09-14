@@ -54,7 +54,7 @@ EditorGraphicsItem::EditorGraphicsItem() : QGraphicsRectItem() {}
 
 EditorGraphicsItem::EditorGraphicsItem(QGraphicsItem* parent) : QGraphicsRectItem(parent) {}
 
-EditorGraphicsItem::~EditorGraphicsItem() {}
+EditorGraphicsItem::~EditorGraphicsItem() = default;
 
 QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
     if (scene() != nullptr                                  // the focus item belongs to a scene
