@@ -23,10 +23,10 @@ def createRegisterVector(props):
 
 
 
-scalar_properties = ["FloatProperty","IntProperty","Int64Property", "UInt64Property", "DoubleProperty"];
-vec2_properties = ["FloatVec2Property","DoubleVec2Property","IntVec2Property", "UInt64Vec2Property"];
-vec3_properties = ["FloatVec3Property","DoubleVec3Property","IntVec3Property", "UInt64Vec3Property"];
-vec4_properties = ["FloatVec4Property","DoubleVec4Property","IntVec4Property", "UInt64Vec4Property"];
+scalar_properties = ["FloatProperty","IntProperty","Int64Property", "IntSizeTProperty", "DoubleProperty"];
+vec2_properties = ["FloatVec2Property","DoubleVec2Property","IntVec2Property", "IntSize2Property"];
+vec3_properties = ["FloatVec3Property","DoubleVec3Property","IntVec3Property", "IntSize3Property"];
+vec4_properties = ["FloatVec4Property","DoubleVec4Property","IntVec4Property", "IntSize4Property"];
 
 mat4_properties = [""]
 

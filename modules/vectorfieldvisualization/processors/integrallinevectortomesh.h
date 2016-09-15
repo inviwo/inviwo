@@ -81,7 +81,7 @@ private:
 
     BoolProperty ignoreBrushingList_;
 
-    UInt64Property stride_;
+    IntSizeTProperty stride_;
 
     BoolCompositeProperty timeBasedFiltering_;
     FloatMinMaxProperty minMaxT_;

@@ -99,7 +99,6 @@ void CubeProxyGeometry::process() {
     glm::vec4 c1(t1, 0.0f);
     glm::vec4 c2(t2, 0.0f);
     glm::vec4 c3(t3, 0.0f);
-    auto dims = inport_.getData()->getDimensions();
 
     if (clippingEnabled_.get()) {
 

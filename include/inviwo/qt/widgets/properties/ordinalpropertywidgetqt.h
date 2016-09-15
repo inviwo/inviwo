@@ -364,14 +364,14 @@ typedef OrdinalPropertyWidgetQt<double, dvec3> DoubleVec3PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<double, dvec4> DoubleVec4PropertyWidgetQt;
 
 typedef OrdinalPropertyWidgetQt<int, int> IntPropertyWidgetQt;
-typedef OrdinalPropertyWidgetQt<size_t, size_t> UInt64PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size_t> IntSizeTPropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec2> IntVec2PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec3> IntVec3PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec4> IntVec4PropertyWidgetQt;
 
-typedef OrdinalPropertyWidgetQt<size_t, size2_t> UInt64Vec2PropertyWidgetQt;
-typedef OrdinalPropertyWidgetQt<size_t, size3_t> UInt64Vec3PropertyWidgetQt;
-typedef OrdinalPropertyWidgetQt<size_t, size4_t> UInt64Vec4PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size2_t> IntSize2PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size3_t> IntSize3PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size4_t> IntSize4PropertyWidgetQt;
 
 typedef OrdinalPropertyWidgetQt<float, mat2> FloatMat2PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<float, mat3> FloatMat3PropertyWidgetQt;

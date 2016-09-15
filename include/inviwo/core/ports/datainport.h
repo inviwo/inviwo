@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/data.h>
@@ -43,9 +44,6 @@
 #include <iterator>
 
 namespace inviwo {
-
-template <typename T>
-class DataOutport;
 
 /**
  * \ingroup ports

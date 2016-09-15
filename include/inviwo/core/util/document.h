@@ -103,7 +103,7 @@ public:
 
         static PathComponent end();
 
-        ElemVec::const_iterator operator()(const ElemVec& elements) const;;
+        ElemVec::const_iterator operator()(const ElemVec& elements) const;
 
         template <class Elem, class Traits>
         friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
@@ -147,7 +147,7 @@ public:
         Element* elem_;
     };
 
-    Document();;
+    Document();
     Document(const Document&) = delete;
     Document& operator=(const Document&) = delete;
     Document(Document&&) = default;

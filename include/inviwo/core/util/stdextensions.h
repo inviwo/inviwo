@@ -312,19 +312,19 @@ auto map_find_or_null(T& cont, const V& elem, Callable f)
 }
 
 template <typename T, typename UnaryPredicate>
-bool all_of(T& cont, UnaryPredicate pred) {
+bool all_of(const T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
     return std::all_of(begin(cont), end(cont), pred);
 }
 template <typename T, typename UnaryPredicate>
-bool any_of(T& cont, UnaryPredicate pred) {
+bool any_of(const T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
     return std::any_of(begin(cont), end(cont), pred);
 }
 template <typename T, typename UnaryPredicate>
-bool none_of(T& cont, UnaryPredicate pred) {
+bool none_of(const T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
     return std::none_of(begin(cont), end(cont), pred);

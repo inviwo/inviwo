@@ -678,6 +678,11 @@ DEFAULTVALUES(uvec2, uvec2(2, 1), "UIntVec2", uvec2(0), uvec2(0), uvec2(10), uve
 DEFAULTVALUES(uvec3, uvec2(3, 1), "UIntVec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
 DEFAULTVALUES(uvec4, uvec2(4, 1), "UIntVec4", uvec4(0), uvec4(0), uvec4(10), uvec4(1))
 
+//DEFAULTVALUES(glm::uint64, uvec2(1,1), "UInt64", 0, 0, 100, 1)
+//DEFAULTVALUES(u64vec2, uvec2(2, 1), "UInt64Vec2", uvec2(0), uvec2(0), uvec2(10), uvec2(1))
+//DEFAULTVALUES(u64vec3, uvec2(3, 1), "UInt64Vec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
+//DEFAULTVALUES(u64vec4, uvec2(4, 1), "UInt64Vec4", uvec4(0), uvec4(0), uvec4(10), uvec4(1))
+
 #if !defined(ENVIRONMENT32)
 DEFAULTVALUES(size_t, uvec2(1, 1), "Size_t", 0, 0, 100, 1)
 DEFAULTVALUES(size2_t, uvec2(2, 1), "IntSize2", size2_t(0), size2_t(0), size2_t(10), size2_t(1))

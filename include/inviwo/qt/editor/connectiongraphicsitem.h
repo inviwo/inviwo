@@ -110,14 +110,14 @@ public:
     ~ConnectionDragGraphicsItem();
 
     // Override
-    virtual QPointF getStartPoint() const;
+    virtual QPointF getStartPoint() const override;
 
     void reactToPortHover(ProcessorInportGraphicsItem* inport);
     ProcessorOutportGraphicsItem* getOutportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ConnectionDragGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
 protected:
     ProcessorOutportGraphicsItem* outport_;
@@ -149,12 +149,12 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ConnectionGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
     // Override
-    virtual QPointF getEndPoint() const;
+    virtual QPointF getEndPoint() const override;
 
-    virtual void showToolTip(QGraphicsSceneHelpEvent* e);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 

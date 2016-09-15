@@ -43,26 +43,28 @@ namespace inviwo {
  * \ingroup properties
  * A property representing a Gaussian function
  */
-template<typename T>
-class GaussianProperty : public CompositeProperty { 
+template <typename T>
+class GaussianProperty : public CompositeProperty {
 public:
-    GaussianProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default) 
+    GaussianProperty(const std::string &identifier, const std::string &displayName,
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                     PropertySemantics semantics = PropertySemantics::Default)
         : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-        , height_("height_","Height",1.0)
-        , sigma_("sigma","Sigma",1.0)
-        , center_("center","Center",T(0),T(-1),T(1))
-    {
+        , height_("height_", "Height", 1.0)
+        , sigma_("sigma", "Sigma", 1.0)
+        , center_("center", "Center", T(0), T(-1), T(1)) {
         addProperty(height_);
         addProperty(sigma_);
         addProperty(center_);
     }
-    virtual ~GaussianProperty(){}
+    virtual ~GaussianProperty() {}
 
-    virtual double evaluate(const T &inV)const{
+    virtual double evaluate(const T &inV) const {
         T v = inV - center_.get();
-        return height_.get() * std::exp(-glm::pow<double>(static_cast<double>(glm::distance(center_.get() , v)),2.0)/glm::pow<double>(2.0*sigma_.get(),2.0));
+        return height_.get() *
+               std::exp(
+                   -glm::pow(static_cast<double>(glm::distance(center_.get(), v)), 2.0) /
+                   glm::pow(2.0 * sigma_.get(), 2.0));
     }
 
     DoubleProperty height_;
@@ -71,9 +73,7 @@ public:
     OrdinalProperty<T> center_;
 
 private:
-
 };
-
 
 class IVW_MODULE_BASE_API Gaussian1DProperty : public GaussianProperty<double>{
 public:

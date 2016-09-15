@@ -165,7 +165,6 @@ void OverlayProperty::updateViewport() {
     absoluteSize_.set(tmp);
 
     // consider anchor position
-    vec2 anchor(anchorPos_.get());
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     pos.x -= shift.x;
     // negate y axis

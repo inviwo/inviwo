@@ -70,7 +70,7 @@ public:
 private:
     ImageInport image_;
     MeshOutport mesh_;
-    UInt64Property channel_;
+    IntSizeTProperty channel_;
     DoubleProperty isoValue_;
     FloatVec4Property color_;
 };

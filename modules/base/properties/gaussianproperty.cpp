@@ -38,35 +38,35 @@ namespace inviwo {
 PropertyClassIdentifier(Gaussian1DProperty, "org.inviwo.Gaussian1DProperty");
 PropertyClassIdentifier(Gaussian2DProperty, "org.inviwo.Gaussian2DProperty");
 
-Gaussian1DProperty::Gaussian1DProperty(
-    const std::string &identifier, const std::string &displayName,
-    InvalidationLevel invalidationLevel , PropertySemantics semantics )
-    : GaussianProperty<double>(identifier, displayName, invalidationLevel,
-                               semantics) {}
+Gaussian1DProperty::Gaussian1DProperty(const std::string &identifier,
+                                       const std::string &displayName,
+                                       InvalidationLevel invalidationLevel,
+                                       PropertySemantics semantics)
+    : GaussianProperty<double>(identifier, displayName, invalidationLevel, semantics) {}
 
 Gaussian1DProperty::~Gaussian1DProperty() {}
 
 double Gaussian1DProperty::evaluate(const double &inV) const {
-  double v = inV - center_.get();
-  double x = v * v;
-  double s = 2.0 * M_PI * glm::pow<double>(sigma_.get(), 2.0);
-  return (height_.get() / 1.0) * std::exp(-(x) / s);
+    double v = inV - center_.get();
+    double x = v * v;
+    double s = 2.0 * M_PI * glm::pow(sigma_.get(), 2.0);
+    return (height_.get() / 1.0) * std::exp(-(x) / s);
 }
 
-Gaussian2DProperty::Gaussian2DProperty(
-    const std::string &identifier, const std::string &displayName,
-    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : GaussianProperty<dvec2>(identifier, displayName, invalidationLevel,
-                              semantics) {}
+Gaussian2DProperty::Gaussian2DProperty(const std::string &identifier,
+                                       const std::string &displayName,
+                                       InvalidationLevel invalidationLevel,
+                                       PropertySemantics semantics)
+    : GaussianProperty<dvec2>(identifier, displayName, invalidationLevel, semantics) {}
 
 Gaussian2DProperty::~Gaussian2DProperty() {}
 
 double Gaussian2DProperty::evaluate(const dvec2 &inV) const {
-  dvec2 v = inV - center_.get();
-  double x = v.x * v.x;
-  double y = v.y * v.y;
-  double s = 2.0 * M_PI * glm::pow<double>(sigma_.get(), 2.0);
-  return (height_.get() / (1.0)) * std::exp(-(x + y) / s);
+    dvec2 v = inV - center_.get();
+    double x = v.x * v.x;
+    double y = v.y * v.y;
+    double s = 2.0 * M_PI * glm::pow(sigma_.get(), 2.0);
+    return (height_.get() / (1.0)) * std::exp(-(x + y) / s);
 }
 
 } // namespace

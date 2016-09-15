@@ -68,7 +68,7 @@ public:
 
     void addConnection(ConnectionGraphicsItem* connection);
     void removeConnection(ConnectionGraphicsItem* connection);
-    std::vector<ConnectionGraphicsItem*> getConnections();
+    std::vector<ConnectionGraphicsItem*>& getConnections();
     ProcessorGraphicsItem* getProcessor();
     virtual void showToolTip(QGraphicsSceneHelpEvent* e);
 

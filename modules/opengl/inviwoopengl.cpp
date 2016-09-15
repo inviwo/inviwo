@@ -60,11 +60,13 @@ std::string getGLErrorString(GLenum err) {
         case GL_STACK_OVERFLOW:
             errorString =
                 "GL_STACK_OVERFLOW: This command would cause a stack overflow. The offending "
-                "command is ignored and has no other side effect than to set the error flag." break;
+                "command is ignored and has no other side effect than to set the error flag.";
+            break;
         case GL_STACK_UNDERFLOW:
             errorString =
                 "GL_STACK_UNDERFLOW: This command would cause a stack underflow. The offending "
-                "command is ignored and has no other side effect than to set the error flag." break;
+                "command is ignored and has no other side effect than to set the error flag.";
+            break;
         case GL_OUT_OF_MEMORY:
             errorString =
                 "OUT_OF_MEMORY: There is not enough memory left to execute the command. The state "

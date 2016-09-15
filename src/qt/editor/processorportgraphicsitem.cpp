@@ -121,7 +121,7 @@ QVariant ProcessorPortGraphicsItem::itemChange(GraphicsItemChange change, const 
     return EditorGraphicsItem::itemChange(change, value);
 }
 
-std::vector<ConnectionGraphicsItem*> ProcessorPortGraphicsItem::getConnections() {
+std::vector<ConnectionGraphicsItem*>& ProcessorPortGraphicsItem::getConnections() {
     return connections_;
 }
 

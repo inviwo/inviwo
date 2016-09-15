@@ -176,10 +176,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                             format = QImage::Format_RGBA8888;
                         }
 
-                        QImage image(reinterpret_cast<const unsigned char*>(&(data->front())),
+                        QImage qImage(reinterpret_cast<const unsigned char*>(&(data->front())),
                                      static_cast<int>(portInspectorSize), static_cast<int>(portInspectorSize), format);
                         QBuffer buffer(&byteArray);
-                        image.save(&buffer, "PNG");
+                        qImage.save(&buffer, "PNG");
                     }
                     else {
                         throw Exception("Support for image type not yet implemented", IvwContext);

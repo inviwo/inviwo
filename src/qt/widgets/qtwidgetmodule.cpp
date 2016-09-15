@@ -124,20 +124,20 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerPropertyWidget<IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty>("Text");
     registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Default");
     registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Text");
-    registerPropertyWidget<UInt64PropertyWidgetQt, UInt64Property>("Default");
-    registerPropertyWidget<UInt64PropertyWidgetQt, UInt64Property>("Text");
+    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Default");
+    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Text");
     registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Default");
     registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Text");
     registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Default");
     registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Text");
     registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Default");
     registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Text");
-    registerPropertyWidget<UInt64Vec2PropertyWidgetQt, UInt64Vec2Property>("Default");
-    registerPropertyWidget<UInt64Vec2PropertyWidgetQt, UInt64Vec2Property>("Text");
-    registerPropertyWidget<UInt64Vec3PropertyWidgetQt, UInt64Vec3Property>("Default");
-    registerPropertyWidget<UInt64Vec3PropertyWidgetQt, UInt64Vec3Property>("Text");
-    registerPropertyWidget<UInt64Vec4PropertyWidgetQt, UInt64Vec4Property>("Default");
-    registerPropertyWidget<UInt64Vec4PropertyWidgetQt, UInt64Vec4Property>("Text");
+    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Default");
+    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Text");
+    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Default");
+    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Text");
+    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Default");
+    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Text");
     registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Default");
     registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Text");
 
