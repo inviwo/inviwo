@@ -67,6 +67,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glformats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.cpp

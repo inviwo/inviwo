@@ -31,6 +31,7 @@
 #define IVW_EXCEPTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <iostream>
 #include <string>
 #include <functional>

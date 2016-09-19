@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/glformats.h>
 #include <modules/opengl/texture/textureobserver.h>
 
 namespace inviwo {

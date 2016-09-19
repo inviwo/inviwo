@@ -30,13 +30,16 @@
 #include "volumegl.h"
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/glformats.h>
 #include <algorithm>
 
 namespace inviwo {
 
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture)
-    : VolumeRepresentation(format), dimensions_(dimensions)
-    , volumeTexture_(std::make_shared<Texture3D>(dimensions_, getGLFormats()->getGLFormat(format->getId()), GL_LINEAR)) {
+    : VolumeRepresentation(format)
+    , dimensions_(dimensions)
+    , volumeTexture_(
+          std::make_shared<Texture3D>(dimensions_, GLFormats::get(format->getId()), GL_LINEAR)) {
     if (initializeTexture) {
         volumeTexture_->initialize(nullptr);
     }

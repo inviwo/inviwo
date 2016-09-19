@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/glformats.h>
 #include <modules/opengl/buffer/bufferobjectobserver.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 

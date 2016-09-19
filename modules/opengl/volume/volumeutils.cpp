@@ -78,7 +78,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     dvec2 dataRange = volume.dataMap_.dataRange;
     DataMapper defaultRange(volume.getDataFormat());
 
-    double typescale = 1.0 - getGLFormats()->getGLFormat(volume.getDataFormat()->getId()).scaling;
+    double typescale = 1.0 - GLFormats::get(volume.getDataFormat()->getId()).scaling;
     defaultRange.dataRange = defaultRange.dataRange * typescale;
 
     double scalingFactor = 1.0;
@@ -91,7 +91,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
-    switch (getGLFormats()->getGLFormat(volume.getDataFormat()->getId()).normalization) {
+    switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
         case GLFormats::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;

@@ -33,6 +33,8 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 
+#include <vector>
+
 namespace inviwo {
 
 class BufferObject;

@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglexception.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/uniformutils.h>

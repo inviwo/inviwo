@@ -29,6 +29,7 @@
 
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/logcentral.h>
+#include <sstream>
 
 namespace inviwo {
 

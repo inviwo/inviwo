@@ -29,7 +29,7 @@
 
 #ifndef IVW_INVIWOOPENGL_H
 #define IVW_INVIWOOPENGL_H
-#include <inviwo/core/common/inviwo.h>
+
 #include <modules/opengl/openglmoduledefine.h>
 
 #ifdef WIN32
@@ -48,10 +48,7 @@
 //#include <modules/opengl/ext/glew/include/GL/glxew.h>
 #endif
 
-#include <iostream>
-#include <sstream>
-
-#include "glformats.h"
+#include <string>
 
 namespace inviwo {
 

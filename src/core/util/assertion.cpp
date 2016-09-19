@@ -28,13 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/assertion.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <sstream>
 
 #ifndef WIN32
 #include <signal.h>
 #endif
+
+namespace inviwo {
 
 #if defined(IVW_DEBUG)
 
@@ -52,4 +51,9 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
     exit(-1);
 }
 
+#else
+void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
+                  std::string message) {}
 #endif  // _DEBUG
+
+}  // namespace

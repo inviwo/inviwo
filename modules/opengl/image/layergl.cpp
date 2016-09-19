@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/glformats.h>
 #include <modules/opengl/texture/texture.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -39,7 +40,7 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
                  std::shared_ptr<Texture2D> tex)
     : LayerRepresentation(dimensions, type, format), texture_(tex) {
     if (!texture_) {
-        GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
+        auto glFormat = GLFormats::get(getDataFormatId());
 
         if (getLayerType() == LayerType::Depth) {
             texture_ = std::make_shared<Texture2D>(getDimensions(), GL_DEPTH_COMPONENT,
