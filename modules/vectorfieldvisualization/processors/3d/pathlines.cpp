@@ -136,7 +136,6 @@ void PathLines::process() {
     float maxVelocity = 0;
     PathLineTracer tracer(sampler, pathLineProperties_);
    
-    size_t i = 0;
     bool hasColors = colors_.hasData();
 
     bool warnOnce = true;
@@ -144,6 +143,7 @@ void PathLines::process() {
 
     auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
+    size_t startID = 0;
     for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
         for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
@@ -151,10 +151,12 @@ void PathLines::process() {
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
-            if (size == 0) continue;
-            #pragma omp critical
-            lines->push_back(line);
+            if (size != 0) {  
+                #pragma omp critical
+                lines->push_back(line,startID + j);
+            };
         }
+        startID += seeds->size();
     }
 
     for (auto &line : *lines) {
@@ -171,17 +173,16 @@ void PathLines::process() {
 
         vec4 c;
         if (hasColors) {
-            if (i >= colors_.getData()->size()) {
+            if (line.getIndex() >= colors_.getData()->size()) {
                 if (warnOnce2) {
                     warnOnce2 = false;
                     LogWarn("The vector of colors is smaller then the vector of seed points");
                 }
             }
             else {
-                c = colors_.getData()->at(i);
+                c = colors_.getData()->at(line.getIndex());
             }
         }
-        i++;
 
         for (size_t ii = 0; ii < size; ii++) {
             vec3 pos(*position);
