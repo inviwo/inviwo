@@ -101,9 +101,11 @@ void MultiFileProperty::serialize(Serializer& s) const {
      3) Relative filesystem::getPath(PathType::Data)
 
     */
-    TemplateProperty<std::vector<std::string>>::serialize(s);
+    Property::serialize(s);
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
+
+    value_.serialize(s, this->serializationMode_);
 
     const auto workspacePath = filesystem::getFileDirectory(s.getFileName());
     const auto ivwdataPath = filesystem::getPath(PathType::Data);
@@ -137,15 +139,16 @@ void MultiFileProperty::serialize(Serializer& s) const {
 }
 
 void MultiFileProperty::deserialize(Deserializer& d) {
-    TemplateProperty<std::vector<std::string>>::deserialize(d);
+    Property::deserialize(d);
+    bool modified = value_.deserialize(d, this->serializationMode_);
 
     std::vector<std::string> absolutePaths = this->get();
     std::vector<std::string> workspaceRelativePaths; // paths relative to workspace directory
     std::vector<std::string> ivwdataRelativePaths; // paths relative to Inviwo data
-    
+
     d.deserialize("workspaceRelativePath", workspaceRelativePaths, "files");
     d.deserialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
-    
+
     // check whether all path lists have the same number of entries
     if ((absolutePaths.size() == workspaceRelativePaths.size())
         && (absolutePaths.size() == ivwdataRelativePaths.size())) {
@@ -153,35 +156,34 @@ void MultiFileProperty::deserialize(Deserializer& d) {
         const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
         const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
-        bool modified = false;
+        bool modifiedPath = false;
         for (std::size_t i = 0; i < absolutePaths.size(); ++i) {
             const auto basePath = filesystem::getFileDirectory(absolutePaths[i]);
             const auto pattern = filesystem::getFileNameWithExtension(absolutePaths[i]);
 
             if (!basePath.empty() && filesystem::fileExists(basePath)) {
                 continue;
-            } 
+            }
             else if (!workspaceRelativePaths[i].empty()) {
-                const auto path =
-                    filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]);
+                const auto path = filesystem::cleanupPath(filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]));
                 if (filesystem::fileExists(path)) {
                     absolutePaths[i] = path + "/" + pattern;
-                    modified = true;
+                    modifiedPath = true;
                 }
-            } 
+            }
             else if (!ivwdataRelativePaths[i].empty()) {
-                const auto path =
-                    filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]);
+                const auto path = filesystem::cleanupPath(filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]));
                 if (filesystem::fileExists(path)) {
                     absolutePaths[i] = path + "/" + pattern;
-                    modified = true;
+                    modifiedPath = true;
                 }
             }
         }
 
-        if (modified) {
+        if (modifiedPath) {
             // propagate changes back to property
             this->set(absolutePaths);
+            modified = true;
         }
     }
 
@@ -194,8 +196,12 @@ void MultiFileProperty::deserialize(Deserializer& d) {
         int fileMode = static_cast<int>(fileMode_);
         d.deserialize("fileMode", fileMode);
         fileMode_ = static_cast<FileProperty::FileMode>(fileMode);
-    } catch (SerializationException& e) {
+    }
+    catch (SerializationException& e) {
         LogInfo("Problem deserializing file Property: " << e.getMessage());
+    }
+    if (modified) {
+        this->propertyModified();
     }
 }
 

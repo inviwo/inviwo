@@ -71,8 +71,6 @@ ImageSourceSeries::ImageSourceSeries()
     findFilesButton_.onChange([&]() { onFindFiles(); });
     
     imageFileName_.setReadOnly(true);
-
-    onFindFiles();
 }
 
 void ImageSourceSeries::process() {
