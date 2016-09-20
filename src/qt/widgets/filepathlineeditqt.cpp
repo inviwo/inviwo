@@ -153,8 +153,23 @@ void FilePathLineEditQt::updateContents() {
 
 void FilePathLineEditQt::updateIcon() {
     // update visibility of warning icon
-    bool visible = !filesystem::fileExists(path_);
+
+    bool hasWildcard = (path_.find_first_of("*?#", 0) != std::string::npos);
+    bool visible = true;
+    QString tooltip;
+    if (hasWildcard) {
+        // check, if the parent directory is valid
+        visible = !filesystem::fileExists(filesystem::getFileDirectory(path_));
+        tooltip = "Invalid Path";
+    }
+    else {
+        // no wildcards, check for file existence
+        visible = !filesystem::fileExists(path_);
+        tooltip = "Invalid File: Could not locate file";
+    }
+
     warningLabel_->setVisible(visible);
+    warningLabel_->setToolTip(tooltip);
     // make sure there is no text flowing into the warning label
     this->setStyleSheet(QString("QLineEdit:enabled { padding-right: %1; }").arg(visible ? warningLabel_->width() + 2 : 0));
 }
