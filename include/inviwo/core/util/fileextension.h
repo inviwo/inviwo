@@ -54,9 +54,12 @@ public:
     static FileExtension createFileExtensionFromString(const std::string &str);
     std::string toString() const;
 
+    bool empty() const;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    static FileExtension all();
 
     std::string extension_; ///< File extension in lower case letters.
     std::string description_;
@@ -65,6 +68,18 @@ public:
 };
 
 bool operator==(const FileExtension&, const FileExtension&);
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, const FileExtension& ext) {
+    ss << ext.description_ << " ";
+    // consider the special case when the extension is empty, i.e. the file selector is '*'
+    if (ext.extension_.empty() || ext.extension_ == "*") {
+        ss << "(*)";
+    } else {
+        ss << "(*." << ext.extension_ << ")";
+    }
+    return ss;
+}
 
 } // namespace
 

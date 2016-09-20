@@ -134,6 +134,9 @@ void InviwoFileDialog::filterSelectionChanged(const QString &filter) {
 }
 
 FileExtension InviwoFileDialog::getSelectedFileExtension() const { return selectedFilter_; }
+void InviwoFileDialog::setSelectedExtenstion(const FileExtension& ext) {
+    selectedFilter_ = ext;
+}
 
 FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) {
     // try to find matching filter in extension map
@@ -161,13 +164,20 @@ int InviwoFileDialog::exec() {
     QFileDialog::setNameFilters(extensions_);
     QFileDialog::setSidebarUrls(sidebarURLs_);
     // use filter used for this path type last time
-    QString filter{getPreviousExtension(pathType_)};
+    if (selectedFilter_.empty()) {
+        QString filter{getPreviousExtension(pathType_)};
 
-    if (extensions_.contains(filter)) {
-        QFileDialog::selectNameFilter(filter);
+        if (extensions_.contains(filter)) {
+            QFileDialog::selectNameFilter(filter);
+        }
+        // initialize selected filter
+        selectedFilter_ = getMatchingFileExtension(filter);
+    } else {
+        auto filter = QString::fromStdString(selectedFilter_.toString());
+        if (extensions_.contains(filter)) {
+            QFileDialog::selectNameFilter(filter);
+        }
     }
-    // initialize selected filter
-    selectedFilter_ = getMatchingFileExtension(filter);
 
     if (!currentPath_.isEmpty()) {
         QFileDialog::setDirectory(currentPath_);

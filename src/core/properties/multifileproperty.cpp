@@ -43,7 +43,7 @@ MultiFileProperty::MultiFileProperty(std::string identifier, std::string display
     , acceptMode_(FileProperty::AcceptMode::Open)
     , fileMode_(FileProperty::FileMode::ExistingFiles)
     , contentType_(contentType) {
-    addNameFilter(FileExtension("*", "All Files"));
+    addNameFilter(FileExtension::all());
 }
 
 MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs  )

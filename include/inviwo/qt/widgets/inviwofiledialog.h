@@ -82,6 +82,7 @@ public:
     void setCurrentDirectory(const std::string &path);
 
     FileExtension getSelectedFileExtension() const;
+    void setSelectedExtenstion(const FileExtension& ext);
 
     virtual int exec() override;
 

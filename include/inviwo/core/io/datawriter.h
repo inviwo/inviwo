@@ -49,13 +49,12 @@ public:
  * \ingroup dataio
  */
 class IVW_CORE_API DataWriter {
-
 public:
     DataWriter();
     DataWriter(const DataWriter& rhs);
     DataWriter& operator=(const DataWriter& that);
     virtual DataWriter* clone() const = 0;
-    virtual ~DataWriter() {};
+    virtual ~DataWriter() = default;
 
     const std::vector<FileExtension>& getExtensions() const;
     void addExtension(FileExtension ext);
@@ -68,9 +67,7 @@ protected:
 
 private:
     std::vector<FileExtension> extensions_;
-
 };
-
 
 /**
  * \ingroup dataio
@@ -78,26 +75,22 @@ private:
 template <typename T>
 class DataWriterType : public DataWriter {
 public:
-    DataWriterType() : DataWriter() {};
-    DataWriterType(const DataWriterType& rhs) : DataWriter(rhs) {};
-    DataWriterType& operator=(const DataWriterType& that) {
-        if (this != &that)
-            DataWriter::operator=(that);
-
-        return *this;
-    };
+    DataWriterType() = default;
+    DataWriterType(const DataWriterType& rhs) = default;
+    DataWriterType& operator=(const DataWriterType& that) = default;
     virtual DataWriterType* clone() const = 0;
-    virtual ~DataWriterType() {};
+    virtual ~DataWriterType() = default;
 
     virtual void writeData(const T* data, const std::string filePath) const = 0;
-    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(const T* data, const std::string& fileExtension) const {
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+        const T* data, const std::string& fileExtension) const {
         return nullptr;
     }
-    virtual bool writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const {
+    virtual bool writeDataToRepresentation(const DataRepresentation* src,
+                                           DataRepresentation* dst) const {
         return false;
     }
 };
-
 
 } // namespace
 

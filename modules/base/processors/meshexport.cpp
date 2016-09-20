@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,47 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEEXPORT_H
-#define IVW_VOLUMEEXPORT_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/base/processors/dataexport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/processors/meshexport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExport, Volume Export}
- * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
- *
- * Export volumes
- * 
- * ### Inports
- *   * __Volume__ Volume to export
- *
- * ### Properties
- *   * __Volume file name__ File to export to
- *   * __Export Volume__ Button to execute export
- *   * __Overwrite__ Should existing files be overwritten
- *
- */
-class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
-public:
-    VolumeExport() = default;
-    virtual ~VolumeExport() = default;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual const Volume* getData() override;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshExport::processorInfo_{
+    "org.inviwo.MeshExport",  // Class identifier
+    "Mesh Export",            // Display name
+    "Data Output",            // Category
+    CodeState::Stable,        // Code state
+    Tags::CPU,                // Tags
 };
+const ProcessorInfo MeshExport::getProcessorInfo() const {
+    return processorInfo_;
+}
+
+const Mesh* MeshExport::getData() {
+    return port_.getData().get();
+}
 
 } // namespace
 
-#endif // IVW_VOLUMEEXPORT_H

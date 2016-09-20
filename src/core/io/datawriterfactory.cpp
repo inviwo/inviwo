@@ -37,8 +37,7 @@ namespace inviwo {
 
 bool DataWriterFactory::registerObject(DataWriter* writer) {
     for (auto& ext : writer->getExtensions()) {
-        auto lext = toLower(ext.extension_);
-        util::insert_unique(map_, lext, writer);
+        util::insert_unique(map_, ext, writer);
     }
     return true;
 }
@@ -51,10 +50,29 @@ bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
 }
 
 std::unique_ptr<DataWriter> DataWriterFactory::create(const std::string& key) const {
+    auto lkey = toLower(key);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == toLower(lkey)) {
+            return std::unique_ptr<DataWriter>(elem.second->clone());
+        }
+    }
+    return nullptr;
+}
+
+std::unique_ptr<DataWriter> DataWriterFactory::create(const FileExtension& key) const {
     return std::unique_ptr<DataWriter>(
         util::map_find_or_null(map_, key, [](DataWriter* o) { return o->clone(); }));
 }
 
-bool DataWriterFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }
+bool DataWriterFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }
+
+bool DataWriterFactory::hasKey(const std::string& key) const {
+    auto lkey = toLower(key);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == toLower(lkey)) return true;
+    }
+    return false;
+}
+
 
 }  // namespace

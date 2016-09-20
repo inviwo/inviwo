@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,47 +24,55 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEEXPORT_H
-#define IVW_VOLUMEEXPORT_H
+#include <modules/base/io/stlwriter.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/base/processors/dataexport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <fstream>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExport, Volume Export}
- * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
- *
- * Export volumes
- * 
- * ### Inports
- *   * __Volume__ Volume to export
- *
- * ### Properties
- *   * __Volume file name__ File to export to
- *   * __Export Volume__ Button to execute export
- *   * __Overwrite__ Should existing files be overwritten
- *
- */
-class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
-public:
-    VolumeExport() = default;
-    virtual ~VolumeExport() = default;
+StlWriter::StlWriter() : DataWriterType<Mesh>() {
+    addExtension(FileExtension("std","ASCII stl file format"));
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual const Volume* getData() override;
-};
+StlWriter* StlWriter::clone() const {
+    return new StlWriter(*this);
+}
+
+void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
+    std::ofstream f(filePath.c_str());
+    
+    f << "solid inviwo stl file\n";
+    
+    auto model = data->getModelMatrix();
+    auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
+    
+    std::shared_ptr<BufferBase> posBuffer;
+    
+    for (const auto& buf : data->getBuffers()) {
+        if(buf.first.type == BufferType::PositionAttrib) {
+            posBuffer = buf.second;
+            break;
+        }
+    }
+    
+    if(!posBuffer) return;
+    
+    auto ram = posBuffer->getRepresentation<BufferRAM>();
+    
+    for (const auto& inds : data->getIndexBuffers()) {
+        auto buffer = inds.second->getRAMRepresentation();
+        for (const auto& i : *buffer->getDataContainer()) {
+            
+        
+        }
+    }
+
+    
+}
 
 } // namespace
 
-#endif // IVW_VOLUMEEXPORT_H

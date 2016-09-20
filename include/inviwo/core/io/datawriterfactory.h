@@ -40,30 +40,37 @@ namespace inviwo {
 
 template <typename T>
 class DataWriterType;
-class IVW_CORE_API DataWriterFactory : public Factory<DataWriter> {
+
+class IVW_CORE_API DataWriterFactory : public Factory<DataWriter, const FileExtension&> {
 public:
-    using Map = std::unordered_map<std::string, DataWriter*>;
+    using Map = std::unordered_map<FileExtension, DataWriter*>;
     DataWriterFactory() = default;
     virtual ~DataWriterFactory() = default;
 
     bool registerObject(DataWriter* reader);
     bool unRegisterObject(DataWriter* reader);
+
+    virtual std::unique_ptr<DataWriter> create(const std::string& key) const;
+    virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
     
-    virtual std::unique_ptr<DataWriter> create(const std::string& key) const override;
-    virtual bool hasKey(const std::string& key) const override;
+    virtual bool hasKey(const std::string& key) const;
+    virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType();
 
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const std::string& ext);
+    
+    template <typename T>
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
 
 protected:
     Map map_;
 };
 
 template <typename T>
-inline std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
+std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
     std::vector<FileExtension> ext;
 
     for (auto& writer : map_) {
@@ -77,17 +84,30 @@ inline std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
 }
 
 template <typename T>
-inline std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
+std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
     const std::string& ext) {
-    auto it = map_.find(toLower(ext));
-
-    if (it != map_.end()) {
-        if (auto r = dynamic_cast<DataWriterType<T>*>(it->second)) {
-            return std::unique_ptr<DataWriterType<T>>(r->clone());
+    auto lkey = toLower(ext);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == lkey) {
+            if (auto r = dynamic_cast<DataWriterType<T>*>(elem.second)) {
+                return std::unique_ptr<DataWriterType<T>>(r->clone());
+            }
         }
     }
 
     return std::unique_ptr<DataWriterType<T>>();
+}
+
+template <typename T>
+std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
+    const FileExtension& ext) {
+    return util::map_find_or_null(map_, ext, [](DataWriter* o) {
+        if (auto r = dynamic_cast<DataWriterType<T>*>(o)) {
+            return std::unique_ptr<DataWriterType<T>>(r->clone());
+        } else {
+            return std::unique_ptr<DataWriterType<T>>();
+        }
+    });
 }
 
 }  // namespace

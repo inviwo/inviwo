@@ -35,8 +35,8 @@
 namespace inviwo {
 
 FileExtension::FileExtension()
-    : extension_("txt")
-    , description_("Textfile") {};
+    : extension_()
+    , description_() {};
 
 FileExtension::FileExtension(std::string extension, std::string description)
     : extension_(toLower(extension)) // Make sure that the extension is given in lower case 
@@ -86,15 +86,11 @@ FileExtension FileExtension::createFileExtensionFromString(const std::string &st
 
 std::string FileExtension::toString() const {
     std::stringstream ss;
-    ss << description_ << " ";
-    // consider the special case when the extension is empty, i.e. the file selector is '*'
-    if (extension_.empty() || extension_ == "*") {
-        ss << "(*)";
-    } else {
-        ss << "(*." << extension_ << ")";
-    }
+    ss << *this;
     return ss.str();
 }
+
+bool FileExtension::empty() const { return extension_.empty() && description_.empty(); }
 
 void FileExtension::serialize(Serializer& s) const {
     s.serialize("extension", extension_);
@@ -110,6 +106,9 @@ bool operator==(const FileExtension& rhs, const FileExtension& lhs) {
     return rhs.extension_ == lhs.extension_ && rhs.description_ == lhs.description_;
 }
 
+FileExtension FileExtension::all() {
+    return FileExtension("*", "All Files");
+}
 
 } // namespace
 

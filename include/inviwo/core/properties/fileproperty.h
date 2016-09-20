@@ -76,8 +76,8 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
-    FileProperty(const FileProperty& rhs);
-    FileProperty& operator=(const FileProperty& that);
+    FileProperty(const FileProperty& rhs) = default;
+    FileProperty& operator=(const FileProperty& that) = default;
     FileProperty& operator=(const std::string& value);
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;
@@ -102,6 +102,9 @@ public:
 
     void setContentType(const std::string& contentType);
     std::string getContentType() const;
+    
+    const FileExtension& getSelectedExtension() const;
+    void setSelectedExtension(const FileExtension& ext);
 
     /**
      *	Request a file from the user through the use of a widget.
@@ -112,6 +115,7 @@ public:
 
 private:
     std::vector<FileExtension> nameFilters_;
+    FileExtension selectedExtension_;
     AcceptMode acceptMode_;
     FileMode fileMode_;
     std::string contentType_;

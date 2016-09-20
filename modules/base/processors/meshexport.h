@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,44 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEEXPORT_H
-#define IVW_VOLUMEEXPORT_H
+#ifndef IVW_MESHEXPORT_H
+#define IVW_MESHEXPORT_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/base/processors/dataexport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExport, Volume Export}
- * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
- *
- * Export volumes
+/** \docpage{org.inviwo.MeshExport, Mesh Export}
+ * ![](org.inviwo.MeshExport.png?classIdentifier=org.inviwo.MeshExport)
  * 
+ * Export meshes
+ *
  * ### Inports
- *   * __Volume__ Volume to export
+ *   * __Mesh__ Mesh to export.
+ *
  *
  * ### Properties
- *   * __Volume file name__ File to export to
- *   * __Export Volume__ Button to execute export
+ *   * __Mesh file name__ File to export to
+ *   * __Export__ Button to execute export
  *   * __Overwrite__ Should existing files be overwritten
- *
  */
-class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
+class IVW_MODULE_BASE_API MeshExport : public DataExport<Mesh, MeshInport> {
 public:
-    VolumeExport() = default;
-    virtual ~VolumeExport() = default;
-
+    MeshExport() = default;
+    virtual ~MeshExport() = default;
+    
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual const Volume* getData() override;
+    
+    virtual const Mesh* getData() override;
 };
 
 } // namespace
 
-#endif // IVW_VOLUMEEXPORT_H
+#endif // IVW_MESHEXPORT_H
+
