@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "distancetransformram.h"
+#include "modules/base/algorithm/volume/volumeminmax.h"
 
 namespace inviwo {
 
@@ -107,13 +108,16 @@ void DistanceTransformRAM::process() {
             volDist_->copyMetaDataFrom(*srcVolume);
             outport_.setData(volDist_);
         }
-        distTransformDirty_ = true;
+
+        
     }
 
     if (!dirty_ && distTransformDirty_) {
         // progressBar_.resetProgress();
         // progressBar_.show();
 
+        volDist_->dataMap_.dataRange = volDist_->dataMap_.valueRange = dvec2(DataUInt16::min(), DataUInt16::max());
+        distTransformDirty_ = true;
         updateOutport();
 
         // progressBar_.finishProgress();
@@ -151,6 +155,9 @@ DataFormatIdMacro(UInt64)
     }
 #include <warn/pop>
     distTransformDirty_ = false;
+
+    auto minMax = util::volumeMinMax(vol);
+    volDist_->dataMap_.dataRange = volDist_->dataMap_.valueRange = dvec2(minMax.first.x, minMax.second.x);
 }
 
 void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }

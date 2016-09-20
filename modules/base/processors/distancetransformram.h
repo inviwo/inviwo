@@ -279,28 +279,28 @@ void DistanceTransformRAM::computeDistanceTransform() {
     LogInfo("z finished. " << clock.getElapsedSeconds() << " sec");
     totalTime += clock.getElapsedSeconds();
         
-    if (std::abs(resultDistScale_.get() - 1.0f) > glm::epsilon<float>()) {
-        // scale data
-        clock.start();
-        std::size_t volSize = dataDim.x * dataDim.y * dataDim.z;
-        float scale = resultDistScale_.get();
-        if (resultSquaredDist_.get()) {
+
+    // scale data
+    clock.start();
+    std::size_t volSize = dataDim.x * dataDim.y * dataDim.z;
+    float scale = resultDistScale_.get();
+    if (resultSquaredDist_.get()) {
 #pragma omp parallel for
-            for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
-                data[i] = static_cast<T>(data[i] * scale);
-            }
+        for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
+            data[i] = static_cast<T>(data[i] * scale);
         }
-        else {
-            // update data to regular distances by applying the square root
-#pragma omp parallel for
-            for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
-                data[i] = static_cast<T>(std::sqrt(static_cast<float>(data[i])) * scale);
-            }
-        }
-        clock.tick();
-        LogInfo("normalization done. " << clock.getElapsedSeconds() << " sec");
-        totalTime += clock.getElapsedSeconds();
     }
+    else {
+        // update data to regular distances by applying the square root
+#pragma omp parallel for
+        for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
+            data[i] = static_cast<T>(std::sqrt(static_cast<float>(data[i])) * scale);
+        }
+    }
+    clock.tick();
+    LogInfo("normalization done. " << clock.getElapsedSeconds() << " sec");
+    totalTime += clock.getElapsedSeconds();
+
 
     LogInfo("Total Time: " << totalTime);
 #include <warn/pop>
