@@ -35,6 +35,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/image/imagegl.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <cctype>
 

@@ -102,7 +102,7 @@ public:
 
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
-                                                      std::is_floating_point<T>::value ||
+                                                      util::is_floating_point<T>::value ||
                                                       util::is_string<T>::value,
                                                   int>::type = 0>
     void serialize(const std::string& key, const T& data,
@@ -222,7 +222,7 @@ inline void Serializer::serialize(const std::string& key, const T* const& data) 
 
 // integers, reals, strings
 template <typename T,
-          typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
+          typename std::enable_if<std::is_integral<T>::value || util::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
 void Serializer::serialize(const std::string& key, const T& data,

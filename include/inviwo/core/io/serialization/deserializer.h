@@ -40,6 +40,7 @@
 
 #include <type_traits>
 #include <list>
+#include <istream>
 
 namespace inviwo {
 
@@ -182,9 +183,9 @@ public:
     void deserialize(const std::string& key, unsigned char& data,
                      const SerializationTarget& target = SerializationTarget::Node);
 
-    // integers, reals, strings
+    // integers, strings, reals
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
-                                                      std::is_floating_point<T>::value ||
+                                                      util::is_floating_point<T>::value ||
                                                       util::is_string<T>::value,
                                                   int>::type = 0>
     void deserialize(const std::string& key, T& data,
@@ -214,7 +215,7 @@ public:
     void deserialize(const std::string& key, Serializable& sObj);
     /**
      * \brief  Deserialize pointer data of type T, which is of type
-     *         serializeble object or primitive data
+     *         serializable object or primitive data
      */
     template <class T>
     void deserialize(const std::string& key, T*& data);
@@ -245,6 +246,15 @@ public:
     friend class ContainerWrapper;
 
 private:
+
+    // integers, strings
+    template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
+    void getSafeValue(const std::string& key, T& data);
+
+    // reals
+    template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
+    void getSafeValue(const std::string& key, T& data);
+
     void registerFactories(InviwoApplication* app);
 
     void storeReferences(TxElement* node);
@@ -547,23 +557,84 @@ T& DeserializationErrorHandle<T>::getHandler() {
 }
 
 
-// integers, reals, strings
+template <typename T>
+struct ParseWrapper {
+    ParseWrapper(T& val) : value(val) {}
+    T& value;
+};
+
+template <class Elem, class Traits, typename T>
+std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& is,
+                                             ParseWrapper<T>& wrapper) {
+    auto sp = is.tellg();  // Save position
+    if (is >> wrapper.value) return is;
+
+    // Handle parse errors
+    if (is.rdstate() != std::ios_base::failbit) return is;
+
+    is.clear();
+    is.seekg(sp);  // restore position
+
+    std::string tmp;
+    if (is >> tmp) {
+        if (tmp == "inf")
+            wrapper.value = std::numeric_limits<T>::infinity();
+        else if (tmp == "-inf")
+            wrapper.value = -std::numeric_limits<T>::infinity();
+        else if (tmp == "nan")
+            wrapper.value = std::numeric_limits<T>::quiet_NaN();
+        else if (tmp == "-nan" || tmp == "-nan(ind)")
+            wrapper.value = -std::numeric_limits<T>::quiet_NaN();
+        else
+            is.setstate(std::ios_base::failbit);
+
+        throw SerializationException("Error deserializing value: \"" + tmp + "\"",
+                                     IvwContextCustom("Deserialization"));
+    }
+
+    return is;
+}
+
+// integers, strings
+template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type>
+void Deserializer::getSafeValue(const std::string& key, T& data) {
+    rootElement_->GetAttribute(key, &data, false);
+}
+
+// reals specialization for reals to handled inf/nan values
+template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type>
+void Deserializer::getSafeValue(const std::string& key, T& data) {
+    ParseWrapper<T> wrapper(data);
+    try {
+        rootElement_->GetAttribute(key, &wrapper, false);
+    } catch (SerializationException& e) {
+        NodeDebugger nd(rootElement_);
+        throw SerializationException(e.getMessage() + ". At " + nd.getDescription(),
+                                     e.getContext());
+    }
+}
+
+// integers, strings, reals
 template <typename T,
-          typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
+          typename std::enable_if<std::is_integral<T>::value || util::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
 void Deserializer::deserialize(const std::string& key, T& data, const SerializationTarget& target) {
-    if (target == SerializationTarget::Attribute) {
-        rootElement_->GetAttribute(key, &data, false);
-    } else {
-        if (NodeSwitch ns{*this, key}) {
-            rootElement_->GetAttribute(SerializeConstants::ContentAttribute, &data, false);
-            return;
+    try {
+        if (target == SerializationTarget::Attribute) {
+            getSafeValue(key, data);
+        } else {
+            if (NodeSwitch ns{*this, key}) {
+                getSafeValue(SerializeConstants::ContentAttribute, data);
+                return;
+            }
+            if (NodeSwitch ns{*this, key, true}) {
+                getSafeValue(SerializeConstants::ContentAttribute, data);
+                return;
+            }
         }
-        if (NodeSwitch ns{*this, key, true}) {
-            rootElement_->GetAttribute(SerializeConstants::ContentAttribute, &data, false);
-            return;
-        }
+    } catch (...) {
+        handleError(IvwContext);
     }
 }
 
@@ -591,7 +662,11 @@ template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int
 void Deserializer::deserialize(const std::string& key, Vec& data) {
     if (NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-            rootElement_->GetAttribute(SerializeConstants::VectorAttributes[i], &data[i], false);
+            try {
+                getSafeValue(SerializeConstants::VectorAttributes[i], data[i]);
+            } catch (...) {
+                handleError(IvwContext);
+            }
         }
     }
 }

@@ -63,11 +63,10 @@ public:
 
     std::string extension_; ///< File extension in lower case letters.
     std::string description_;
-
-    friend bool operator==(const FileExtension&, const FileExtension&);
 };
 
-bool operator==(const FileExtension&, const FileExtension&);
+IVW_CORE_API bool operator==(const FileExtension&, const FileExtension&);
+IVW_CORE_API bool operator!=(const FileExtension&, const FileExtension&);
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, const FileExtension& ext) {

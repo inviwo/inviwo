@@ -105,6 +105,9 @@ void FileExtension::deserialize(Deserializer& d) {
 bool operator==(const FileExtension& rhs, const FileExtension& lhs) {
     return rhs.extension_ == lhs.extension_ && rhs.description_ == lhs.description_;
 }
+bool operator!=(const FileExtension& rhs, const FileExtension& lhs) {
+    return !(rhs==lhs);
+}
 
 FileExtension FileExtension::all() {
     return FileExtension("*", "All Files");
