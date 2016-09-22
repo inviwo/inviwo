@@ -27,6 +27,7 @@ StreamLines::StreamLines()
     , seedPoints_("seedpoints")
     , volume_("vectorvolume")
     , linesStripsMesh_("linesStripsMesh_")
+    , lines_("lines")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
@@ -37,6 +38,7 @@ StreamLines::StreamLines()
     addPort(seedPoints_);
     addPort(linesStripsMesh_);
     addPort(volume_);
+    addPort(lines_);
 
     maxVelocity_.setReadOnly(true);
 
@@ -80,14 +82,34 @@ void StreamLines::process() {
     float maxVelocity = 0;
 
 
-    StreamLineTracer tracer(  sampler, streamLineProperties_);
+    StreamLineTracer tracer(sampler, streamLineProperties_);
+    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
 
     std::vector<BasicMesh::Vertex> vertices;
 
+    size_t startID = 0;
     for (const auto &seeds : seedPoints_) {
-        for (auto &p : (*seeds)) {
+#pragma omp parallel for
+        for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
+            auto p = seeds->at(j);
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(P.xyz());
+            auto size = line.getPositions().size();
+            if (size != 0) {
+#pragma omp critical
+                lines->push_back(line, startID + j);
+            };
+        }
+        startID += seeds->size();
+    }
+
+
+
+    for (auto &line : *lines) {
+    /*for (const auto &seeds : seedPoints_) {
+        for (auto &p : (*seeds)) {*/
+            //vec4 P = m * vec4(p, 1.0f);
+            //auto line = tracer.traceFrom(P.xyz());
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
@@ -118,12 +140,14 @@ void StreamLines::process() {
             }
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));
         }
-    }
+    //}
 
     mesh->addVertices(vertices);
 
-    linesStripsMesh_.setData(mesh);
     maxVelocity_.set(toString(maxVelocity));
+    
+    linesStripsMesh_.setData(mesh);
+    lines_.setData(lines);
 }
 
 }  // namespace
