@@ -31,6 +31,7 @@
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
+#include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
@@ -49,6 +50,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
     registerProcessor<SeedPointGenerator>();
+    registerProcessor<SeedPointsFromMask>();
 
     registerProcessor<StreamLines>();
     registerProcessor<PathLines>();
