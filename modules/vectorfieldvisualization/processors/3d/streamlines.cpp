@@ -31,7 +31,9 @@ StreamLines::StreamLines()
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
-    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid) {
+    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
+    , useOpenMP_("useOpenMP","Use OpenMP",true)
+{
     
 
     addPort(sampler_);
@@ -44,6 +46,7 @@ StreamLines::StreamLines()
 
     addProperty(streamLineProperties_);
 
+    addProperty(useOpenMP_);
     addProperty(tf_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
@@ -87,30 +90,41 @@ void StreamLines::process() {
 
     std::vector<BasicMesh::Vertex> vertices;
 
-    size_t startID = 0;
-    for (const auto &seeds : seedPoints_) {
+    if (useOpenMP_) {
+        size_t startID = 0;
+        for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
-        for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
-            auto p = seeds->at(j);
-            vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(P.xyz());
-            auto size = line.getPositions().size();
-            if (size != 0) {
+            for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
+                auto p = seeds->at(j);
+                vec4 P = m * vec4(p, 1.0f);
+                auto line = tracer.traceFrom(P.xyz());
+                auto size = line.getPositions().size();
+                if (size != 0) {
 #pragma omp critical
-                lines->push_back(line, startID + j);
-            };
+                    lines->push_back(line, startID + j);
+                };
+            }
+            startID += seeds->size();
         }
-        startID += seeds->size();
+    }
+    else {
+        size_t startID = 0;
+        for (const auto &seeds : seedPoints_) {
+            for(const auto &p : *seeds.get()){
+                vec4 P = m * vec4(p, 1.0f);
+                auto line = tracer.traceFrom(P.xyz());
+                auto size = line.getPositions().size();
+                if (size != 0) {
+                    lines->push_back(line, startID);
+                }
+                startID++;
+            }
+        }
     }
 
 
 
     for (auto &line : *lines) {
-    /*for (const auto &seeds : seedPoints_) {
-        for (auto &p : (*seeds)) {*/
-            //vec4 P = m * vec4(p, 1.0f);
-            //auto line = tracer.traceFrom(P.xyz());
-
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
 

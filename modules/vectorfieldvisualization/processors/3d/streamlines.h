@@ -80,6 +80,8 @@ protected:
     TransferFunctionProperty tf_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
+
+    BoolProperty useOpenMP_;
 };
 
 }  // namespace
