@@ -630,9 +630,9 @@ macro(ivw_create_module)
     set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
-
+    remove_duplicates(IVW_UNIQUE_MOD_FILES ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
     # Create library
-    add_library(${${mod}_target} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
+    add_library(${${mod}_target} ${IVW_UNIQUE_MOD_FILES})
     
     # Define standard properties
     ivw_define_standard_definitions(${${mod}_opt} ${${mod}_target})
@@ -1017,9 +1017,15 @@ macro(ivw_cotire_ignore)
         set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
     
-    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH $IVW_COTIRE_EXCLUDES})
+    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH ${IVW_COTIRE_EXCLUDES})
     list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
-
+    
+    if (WIN32)
+        # prevent definition of min and max macros through inclusion of Windows.h
+        add_definitions("-DNOMINMAX")
+        add_definitions("-DWIN32_LEAN_AND_MEAN")
+    endif()
+    
     set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
 endmacro()
 

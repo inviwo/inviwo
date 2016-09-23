@@ -389,13 +389,6 @@ mark_as_advanced(
 # Exclude stuff from cotire
 set(IVW_COTIRE_EXCLUDES
     "${IVW_EXTENSIONS_DIR}/warn"
-    "${IVW_MODULE_DIR}/unittests/ext"
 )
-
-if(WIN32 AND MSVC AND DEFINED MSVC_ACRO)
-    list(APPEND IVW_COTIRE_EXCLUDES 
-        "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thread"
-        "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thr/xthread")
-endif()
 
 

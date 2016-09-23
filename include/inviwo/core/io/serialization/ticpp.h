@@ -34,7 +34,10 @@
 #  define TIXML_USE_TICPP
 #endif
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <ticpp/ticpp.h>
+#include <warn/pop>
 
 namespace inviwo {
 

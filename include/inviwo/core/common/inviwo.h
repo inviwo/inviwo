@@ -34,15 +34,8 @@
 // Visual studio https://msdn.microsoft.com/en-us/library/23k5d385.aspx
 // List of all warnings messages and id for clang http://fuckingclangwarnings.com
 
-#define NOMINMAX
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
 // Define a debug flag for inviwo called IVW_DEBUG
-#ifdef __clang__ // Clang sets NDEBUG when not debugging
+#if defined(__clang__) || defined(__GNUC__) // sets NDEBUG when not debugging
     #ifndef NDEBUG
         #ifndef IVW_DEBUG
             #define IVW_DEBUG

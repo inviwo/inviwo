@@ -40,6 +40,8 @@
 #include <cctype> // isdigit()
 
 #ifdef WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
 #include <direct.h>
@@ -507,7 +509,7 @@ std::string getCanonicalPath(const std::string& url) {
     urlWStr.assign(url.begin(), url.end());
     std::string result{ url };
 
-    TCHAR buffer[buffSize + 1];
+    WCHAR buffer[buffSize + 1];
 
     DWORD retVal = GetFullPathName(urlWStr.c_str(), buffSize, buffer, nullptr);
     if (retVal == 0) {

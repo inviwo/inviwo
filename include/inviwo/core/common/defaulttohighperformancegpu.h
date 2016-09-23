@@ -46,8 +46,11 @@
 // http://stackoverflow.com/questions/17458803/amd-equivalent-to-nvoptimusenablement
 // Select the high performance GPU as long as no profile exists 
 // that assigns the application to another GPU.
+
+// unsigned long == DWORD, so we don't have to include windows.h for the DWORD define.
+
 extern "C" {
-    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 

@@ -29,18 +29,24 @@
 
 #include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/exception.h>
+
+#ifdef WIN32
+#define NOMINMAX // tinydir.h includes windows.h... 
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <ext/tinydir/tinydir.h>
 #include <algorithm>
 #include <cerrno>
 
+// http://stackoverflow.com/questions/7256436/forward-declarations-of-unnamed-struct
+struct tinydir_dir_hack : tinydir_dir {};
+
 namespace inviwo {
 
-TinyDirInterface::TinyDirInterface() 
-    : isOpen_(false)
-    , mode_(ListMode::FilesOnly)
-    , path_() 
-{
+TinyDirInterface::TinyDirInterface() : isOpen_(false), mode_(ListMode::FilesOnly), path_() {
     // initialize tinydir struct
-    memset(&resource_, 0, sizeof(tinydir_dir));
+    resource_ = std::make_unique<tinydir_dir_hack>();
+    memset(resource_.get(), 0, sizeof(tinydir_dir_hack));
 }
 
 TinyDirInterface::~TinyDirInterface() {
@@ -55,7 +61,7 @@ bool TinyDirInterface::open(const std::string &path) {
         return false;
 
     path_ = path;
-    int errCode = tinydir_open(&resource_, path_.c_str());
+    int errCode = tinydir_open(resource_.get(), path_.c_str());
     isOpen_ = (errCode == 0);
 
     return isOpen_;
@@ -64,7 +70,7 @@ bool TinyDirInterface::open(const std::string &path) {
 void TinyDirInterface::close() {
     if (isOpen_) {
         path_ = std::string();
-        tinydir_close(&resource_);
+        tinydir_close(resource_.get());
         isOpen_ = false;
     }
 }
@@ -83,7 +89,7 @@ bool TinyDirInterface::isOpen() const {
 }
 
 bool TinyDirInterface::isNextEntryAvailable() const {
-    return (isOpen_ && resource_.has_next);
+    return (isOpen_ && resource_->has_next);
 }
 
 std::string TinyDirInterface::getNextEntry() {
@@ -139,14 +145,14 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
 
     std::string str{};
     bool foundEntry = false;
-    while (resource_.has_next && !foundEntry) {
+    while (resource_->has_next && !foundEntry) {
         // query next entry
         tinydir_file file;
-        int errnum = tinydir_readfile(&resource_, &file);
+        int errnum = tinydir_readfile(resource_.get(), &file);
         if (errnum != 0) {
             // cannot access entry
             std::string errMsg{ "Cannot access entry in \"" };
-            errMsg.append(resource_.path);
+            errMsg.append(resource_->path);
             errMsg.append("\": ");
             errMsg.append(strerror(errnum));
 
@@ -159,10 +165,10 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
         if (foundEntry) {
             str = (includeBasePath ? file.path : file.name);
         }
-        tinydir_next(&resource_);
+        tinydir_next(resource_.get());
     }
     // close resource if no more entries are available
-    if (!resource_.has_next) {
+    if (!resource_->has_next) {
         close();
     }
     return str;

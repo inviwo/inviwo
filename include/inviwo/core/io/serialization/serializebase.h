@@ -30,21 +30,12 @@
 #ifndef IVW_SERIALIZE_BASE_H
 #define IVW_SERIALIZE_BASE_H
 
-#pragma warning(push)
-#pragma warning(disable: 4263)
 #include <inviwo/core/io/serialization/ticpp.h>
-#pragma warning(pop)
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/factory.h>
 #include <map>
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 
 // include glm
 #include <inviwo/core/util/glm.h>

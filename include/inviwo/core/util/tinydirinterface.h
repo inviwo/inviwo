@@ -31,11 +31,12 @@
 #define IVW_TINYDIR_INTERFACE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <ext/tinydir/tinydir.h>
 #include <functional>
 #include <string>
 #include <vector>
+#include <memory>
 
+struct tinydir_dir_hack;
 
 namespace inviwo {
 
@@ -159,7 +160,7 @@ private:
     bool isOpen_;
     ListMode mode_;
     std::string path_;
-    tinydir_dir resource_;
+    std::unique_ptr<tinydir_dir_hack> resource_;
 };
 
 }; // namespace inviwo

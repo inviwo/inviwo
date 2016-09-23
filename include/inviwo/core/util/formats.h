@@ -360,7 +360,8 @@ public:
 /*---------------Single Value Formats------------------*/
 
 // Floats
-typedef DataFormat<half_float::half> DataFloat16;
+typedef half_float::half f16;
+typedef DataFormat<f16> DataFloat16;
 typedef DataFormat<glm::f32> DataFloat32;
 typedef DataFormat<glm::f64> DataFloat64;
 

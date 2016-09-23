@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined(_WIN32) | defined(WIN32) | defined(WINDOWS) | defined(_WINDOWS)   
     //windows dll defines
-    #include <windows.h>
+    //#include <windows.h> // Remove this not sure why it is in here /Peter
     
     // define BUILD_TICPP_DLL when building TiCPP dll.
     #ifdef BUILD_TICPP_DLL
