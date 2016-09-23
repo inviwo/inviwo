@@ -73,6 +73,7 @@ protected:
     FloatProperty stepLength_;
     BoolProperty normalizeVectors_;
     BoolProperty intensityMapping_;
+    BoolProperty useRK4_;
 
     Shader shader_;
 

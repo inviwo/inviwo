@@ -34,49 +34,66 @@ uniform int samples;
 uniform float stepLength;
 uniform bool normalizeVectors;
 uniform bool intensityMapping;
+uniform bool useRK4;
 
 in vec3 texCoord_;
 
+
+vec2 euler(vec2 posF ){
+    vec2 V0 = texture(vectorFieldColor, posF).rg;
+    if(normalizeVectors){
+        V0 = normalize(V0);
+    }
+    return V0;
+
+}
+ 
+vec2 rk4(vec2 p0 , float stepsize) {
+    vec2 V0 = euler(p0);
+    
+    vec2 p1 = p0 + V0 * stepsize/2;
+    vec2 V1 = euler(p1);
+    
+    vec2 p2 = p0 + V1 * stepsize/2;
+    vec2 V2 = euler(p2);
+
+    vec2 p3 = p0 + V2 * stepsize;
+    vec2 V3 = euler(p3);
+
+
+    return (V0 + 2*(V1+V2) + V3) / 6.0;
+}
+
+void traverse(inout  float v , inout int c,vec2 posF , float stepSize,int steps){
+    for(int i = 0;i<steps;i++){
+        vec2 V0;
+        if(useRK4){
+            V0 = rk4(posF,stepSize);
+        }else{
+            V0 = euler(posF);
+        }
+        posF += V0 * stepSize;
+
+        if(posF.x < 0 ) break;
+        if(posF.y < 0 ) break;
+
+        if(posF.x > 1 ) break;
+        if(posF.y > 1 ) break;
+
+        v += texture(noiseTextureColor, posF.xy).r;
+        c += 1;
+    }
+}
+
+
+
+
 void main() {
 	float v = texture(noiseTextureColor, texCoord_.xy).r;
-	vec2 posF;
-	posF = texCoord_.xy;
+
 	int c = 1;
-	for(int i = 0;i<samples/2;i++){
-		vec2 V0 = texture(vectorFieldColor, posF).rg;
-		if(normalizeVectors){
-			V0 = normalize(V0);
-		}
-		posF += V0 * stepLength;
-
-        if(posF.x < 0 ) break;
-        if(posF.y < 0 ) break;
-
-        if(posF.x > 1 ) break;
-        if(posF.y > 1 ) break;
-
-		v += texture(noiseTextureColor, posF.xy).r;
-		c += 1;
-	}
-    
-	posF = texCoord_.xy;
-	for(int i = 0;i<samples/2;i++){
-
-		vec2 V0 = texture(vectorFieldColor, posF).rg;
-		if(normalizeVectors){
-			V0 = normalize(V0);
-		}
-		posF -= V0 * stepLength;
-
-        if(posF.x < 0 ) break;
-        if(posF.y < 0 ) break;
-
-        if(posF.x > 1 ) break;
-        if(posF.y > 1 ) break;
-
-		v += texture(noiseTextureColor, posF.xy).r;
-		c += 1;
-	}
+	traverse(v,c,texCoord_.xy , stepLength , samples / 2);
+    traverse(v,c,texCoord_.xy , -stepLength , samples / 2);
 
 	v /= c;
 
