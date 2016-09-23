@@ -57,6 +57,7 @@ LIC2D::LIC2D()
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
     , shader_("lic2d.frag")
+    , useRK4_("useRK4","Use Runge-Kutta4",true)
 {
     addPort(vectorField_);
     addPort(noiseTexture_);
@@ -66,6 +67,7 @@ LIC2D::LIC2D()
     addProperty(stepLength_);
     addProperty(normalizeVectors_);
     addProperty(intensityMapping_);
+    addProperty(useRK4_);
 
 
     shader_.onReload([this]() {invalidate(InvalidationLevel::InvalidOutput); });
@@ -79,7 +81,7 @@ void LIC2D::process() {
     utilgl::bindAndSetUniforms(shader_, units, vectorField_, ImageType::ColorOnly);
     utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
 
-    utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_, intensityMapping_);
+    utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_, intensityMapping_,useRK4_);
     
 
     utilgl::singleDrawImagePlaneRect();
