@@ -14,6 +14,7 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
@@ -71,14 +72,16 @@ protected:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
     SeedPointsInport seedPoints_;
     VolumeInport volume_;
-
     MeshOutport linesStripsMesh_;
+    IntegralLineSetOutport lines_;
 
     StreamLineProperties streamLineProperties_;
 
     TransferFunctionProperty tf_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
+
+    BoolProperty useOpenMP_;
 };
 
 }  // namespace
