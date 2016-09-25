@@ -41,6 +41,11 @@ MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
 }
 
 void MeshDrawerGL::draw() {
+    if (meshToDraw_->getNumberOfBuffers() == 0) {
+        // empty mesh, do nothing
+        return;
+    }
+
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
     utilgl::Enable<MeshGL> enable(meshGL);
 
