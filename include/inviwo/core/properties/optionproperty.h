@@ -659,12 +659,13 @@ Document BaseTemplateOptionProperty<T>::getDescription() const {
 
     Document doc = BaseOptionProperty::getDescription();
 
-    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
-    utildoc::TableBuilder tb(table);
-    tb(H("Selected Index"), selectedIndex_);
-    tb(H("Selected Name"), options_[selectedIndex_].name_);
-    tb(H("Selected Value"), options_[selectedIndex_].value_);
-
+    if (options_.size() > 0) {
+        auto table = doc.get({ P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}}) });
+        utildoc::TableBuilder tb(table);
+        tb(H("Selected Index"), selectedIndex_);
+        tb(H("Selected Name"), options_[selectedIndex_].name_);
+        tb(H("Selected Value"), options_[selectedIndex_].value_);
+    }
     return doc;
 }
 
