@@ -481,12 +481,11 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
     auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
 
-    // need to make sure that basePathTokens has at least the size of absolutePathTokens,
-    // otherwise the behavior of std::mismatch is not defined.
+    auto sizediff = 0;
     if (basePathTokens.size() < absolutePathTokens.size()){
-        basePathTokens.resize(absolutePathTokens.size());
+        sizediff = absolutePathTokens.size() - basePathTokens.size();
     }
-    auto start = std::mismatch(absolutePathTokens.begin(), absolutePathTokens.end(),
+    auto start = std::mismatch(absolutePathTokens.begin(), absolutePathTokens.end()- sizediff,
                                basePathTokens.begin(), basePathTokens.end());
 
     // add one ".." for each unique folder in basePathTokens
