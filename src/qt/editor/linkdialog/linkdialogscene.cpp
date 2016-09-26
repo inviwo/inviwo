@@ -225,7 +225,7 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
             getSceneGraphicsItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
         QMenu menu;
         QAction* deleteAction = menu.addAction("Delete");
-        QAction* biDirectionAction = menu.addAction("BiDirectional");
+        QAction* biDirectionAction = menu.addAction("Bi Directional");
         biDirectionAction->setCheckable(true);
         QAction* switchDirection = menu.addAction("Switch Direction");
 
