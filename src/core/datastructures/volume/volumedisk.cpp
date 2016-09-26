@@ -37,20 +37,7 @@ VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format)
 VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format)
     : VolumeRepresentation(format), DiskRepresentation(srcFile), dimensions_(dimensions) {}
 
-VolumeDisk::VolumeDisk(const VolumeDisk& rhs)
-    : VolumeRepresentation(rhs), DiskRepresentation(rhs) {}
-
-VolumeDisk& VolumeDisk::operator=(const VolumeDisk& that) {
-    if (this != &that) {
-        VolumeRepresentation::operator=(that);
-        DiskRepresentation::operator=(that);
-    }
-    return *this;
-}
-
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
-
-VolumeDisk::~VolumeDisk() {}
 
 std::type_index VolumeDisk::getTypeIndex() const {
     return std::type_index(typeid(VolumeDisk));

@@ -46,10 +46,10 @@ public:
                const DataFormatBase* format = DataUInt8::get());
     VolumeDisk(std::string url, size3_t dimensions = size3_t(128, 128, 128),
                const DataFormatBase* format = DataUInt8::get());
-    VolumeDisk(const VolumeDisk& rhs);
-    VolumeDisk& operator=(const VolumeDisk& that);
+    VolumeDisk(const VolumeDisk& rhs) = default;
+    VolumeDisk& operator=(const VolumeDisk& that) = default;
     virtual VolumeDisk* clone() const override;
-    virtual ~VolumeDisk();
+    virtual ~VolumeDisk() = default;
 
     virtual std::type_index getTypeIndex() const override final;
 
