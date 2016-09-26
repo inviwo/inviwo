@@ -58,7 +58,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
         vec3(0.0f, 1.0f, 0.0f), &inport_)
     , centerViewOnGeometry_("centerView", "Center view on geometry")
     , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
