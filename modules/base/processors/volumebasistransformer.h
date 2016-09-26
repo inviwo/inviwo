@@ -76,9 +76,11 @@ template <typename T>
 class IVW_MODULE_BASE_API BasisTransform : public Processor {
 public:
     BasisTransform();
-    ~BasisTransform();
+    virtual ~BasisTransform() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
+    
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual void process() override;
@@ -89,6 +91,7 @@ private:
     DataOutport<T> outport_;
 
     BasisProperty basis_;
+    bool deserialized_ = false;
 };
 
 template <typename T>
@@ -125,7 +128,7 @@ struct ProcessorTraits<BasisTransform<Volume>> {
 };
 
 template <typename T>
-inviwo::BasisTransform<T>::BasisTransform()
+BasisTransform<T>::BasisTransform()
     : Processor(), inport_("inport"), outport_("outport"), basis_("basis", "Basis") {
     addPort(inport_);
     addPort(outport_);
@@ -133,14 +136,18 @@ inviwo::BasisTransform<T>::BasisTransform()
 }
 
 template <typename T>
-inviwo::BasisTransform<T>::~BasisTransform() {}
+void BasisTransform<T>::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    deserialized_ = true;
+}
 
 template <typename T>
-void inviwo::BasisTransform<T>::process() {
+void BasisTransform<T>::process() {
     if (inport_.hasData()) {
         if (inport_.isChanged()) {
             data_.reset(inport_.getData()->clone());
-            basis_.updateForNewEntity(*data_);
+            basis_.updateForNewEntity(*data_, deserialized_);
+            deserialized_ = false;
             outport_.setData(data_);
         }
         basis_.updateEntity(*data_);
