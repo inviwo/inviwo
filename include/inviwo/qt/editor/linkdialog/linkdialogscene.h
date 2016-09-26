@@ -107,7 +107,7 @@ protected:
 
     void removePropertyLink(DialogConnectionGraphicsItem* propertyLink);
 
-    void cleanupAfterRemoveLink(DialogConnectionGraphicsItem* propertyLink);
+    void updateAll();
 
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
 

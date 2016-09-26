@@ -352,7 +352,7 @@ void LinkDialogGraphicsScene::removePropertyLink(DialogConnectionGraphicsItem* p
     network_->removeLink(end, start);
 }
 
-void LinkDialogGraphicsScene::cleanupAfterRemoveLink(DialogConnectionGraphicsItem* propertyLink) {
+void LinkDialogGraphicsScene::updateAll() {
     for (auto& elem : connections_) elem->updateConnectionDrawing();
     update();
 }
@@ -387,7 +387,7 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
 void LinkDialogGraphicsScene::switchPropertyLinkDirection(
     DialogConnectionGraphicsItem* propertyLink) {
     if (!propertyLink->isBidirectional()) {
-        auto& link = propertyLink->getPropertyLink();
+        const auto link = propertyLink->getPropertyLink();
         network_->removeLink(link.getSource(), link.getDestination());
         network_->addLink(link.getDestination(), link.getSource());
     }
@@ -422,8 +422,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
 
     cItem->show();
 
-    for (auto& elem : connections_) elem->updateConnectionDrawing();
-    update();
+    updateAll();
 
     return cItem;
 }
@@ -443,7 +442,7 @@ void LinkDialogGraphicsScene::removePropertyLinkRepresentation(const PropertyLin
         LinkDialogPropertyGraphicsItem* end = cItem->getEndProperty();
 
         removeItem(cItem);
-        cleanupAfterRemoveLink(cItem);
+        updateAll();
         delete cItem;
 
         start->prepareGeometryChange();
