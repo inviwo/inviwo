@@ -73,6 +73,37 @@ TEST(filesystemTest, fileDirectoryTest) {
 }
 
 TEST(filesystemTest, relativePathTest) {
+
+    const std::string a = "/a/b/c/d";
+    const std::string b = "/a/b/c/d/e/f";
+    const std::string c = "/a/b";
+    const std::string d = "/a/b/c/d/p/q";
+
+
+    auto AB = filesystem::getRelativePath(a, b);
+    EXPECT_STREQ("e/f", AB.c_str());
+
+    auto AC = filesystem::getRelativePath(a, c);
+    EXPECT_STREQ("../../../b", AC.c_str());
+
+    auto BA = filesystem::getRelativePath(b, a);
+    EXPECT_STREQ("../../../d", BA.c_str());
+
+    auto BC = filesystem::getRelativePath(b, c);
+    EXPECT_STREQ("../../../../../b", BC.c_str());
+
+    auto CA = filesystem::getRelativePath(c, a);
+    EXPECT_STREQ("c/d", CA.c_str());
+
+    auto CB = filesystem::getRelativePath(c, b);
+    EXPECT_STREQ("c/d/e/f", CB.c_str());
+
+    auto DA = filesystem::getRelativePath(d, a);
+    EXPECT_STREQ("../../../d", DA.c_str());
+
+    auto AD = filesystem::getRelativePath(a, d);
+    EXPECT_STREQ("p/q", AD.c_str());
+
     EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
 }
@@ -92,5 +123,6 @@ TEST(filesystemTest, pathCleanupTest) {
     EXPECT_STREQ("\"C:/test/file.txt",
                  filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
 }
+
 
 }
