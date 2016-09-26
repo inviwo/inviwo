@@ -349,6 +349,8 @@ void CameraProperty::inportChanged() {
 
     VolumeInport* volumeInport = dynamic_cast<VolumeInport*>(inport_);
     MeshInport* meshInport = dynamic_cast<MeshInport*>(inport_);
+    MeshMultiInport* meshMultiInport = dynamic_cast<MeshMultiInport*>(inport_);
+    MeshFlatMultiInport* meshFlatMultiInport = dynamic_cast<MeshFlatMultiInport*>(inport_);
 
     // using SpatialEntity since Geometry is not derived from data
     const SpatialEntity<3>* data = nullptr;
@@ -358,14 +360,16 @@ void CameraProperty::inportChanged() {
     } else if (meshInport) {
         data = meshInport->getData().get();
     }
+    else if (meshMultiInport) {
+        data = meshMultiInport->getData().get();
+    }
+    else if (meshFlatMultiInport) {
+        data = meshFlatMultiInport->getData().get();
+    }
 
     if (data_ == nullptr && prevDataToWorldMatrix_ == mat4(0.0f)) {  // first time only
-        if (volumeInport && volumeInport->hasData()) {
-            prevDataToWorldMatrix_ =
-                volumeInport->getData()->getCoordinateTransformer().getDataToWorldMatrix();
-        } else if (meshInport && meshInport->hasData()) {
-            prevDataToWorldMatrix_ =
-                meshInport->getData()->getCoordinateTransformer().getDataToWorldMatrix();
+        if (data) {
+            prevDataToWorldMatrix_ = data->getCoordinateTransformer().getDataToWorldMatrix();
         }
     } else if (data && data_ != data) {
         adjustCameraToData(prevDataToWorldMatrix_,
