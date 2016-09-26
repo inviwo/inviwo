@@ -76,6 +76,8 @@ VolumeBoundingBox::VolumeBoundingBox()
 void VolumeBoundingBox::process() {
     auto mesh = BasicMesh::boundingBoxAdjacency(volume_.getData()->getModelMatrix(), color_);
     
+    mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
+
     auto a = showBackFace_.get();
     auto b = showFrontFace_.get();
     auto c = showRightFace_.get();
