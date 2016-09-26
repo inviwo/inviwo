@@ -251,11 +251,11 @@ void Property::deserialize(Deserializer& d) {
         if (old != identifier_) notifyObserversOnSetIdentifier(identifier_);
     }
 
-    if (displayName_.deserialize(d)) notifyObserversOnSetDisplayName(displayName_);
-    if (semantics_.deserialize(d)) notifyObserversOnSetSemantics(semantics_);
-    if (usageMode_.deserialize(d)) notifyObserversOnSetUsageMode(usageMode_);
-    if (visible_.deserialize(d)) notifyObserversOnSetVisible(visible_);
-    if (readOnly_.deserialize(d)) notifyObserversOnSetReadOnly(readOnly_);
+    if (displayName_.deserialize(d, serializationMode_)) notifyObserversOnSetDisplayName(displayName_);
+    if (semantics_.deserialize(d, serializationMode_)) notifyObserversOnSetSemantics(semantics_);
+    if (usageMode_.deserialize(d, serializationMode_)) notifyObserversOnSetUsageMode(usageMode_);
+    if (visible_.deserialize(d, serializationMode_)) notifyObserversOnSetVisible(visible_);
+    if (readOnly_.deserialize(d, serializationMode_)) notifyObserversOnSetReadOnly(readOnly_);
 
     MetaDataOwner::deserialize(d);
 }
