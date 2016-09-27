@@ -187,7 +187,7 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
             //This can happen a lot when having a image layout
             return;
         }
-        size2_t pos = static_cast<size2_t>(p * dvec2(dims));
+        size2_t pos = static_cast<size2_t>(p * dvec2(dims - size2_t(1)));
         coordinates_.set(pos);
         for (size_t i = 0; i < numCh; i++) {
             auto v = img->getColorLayer(i)->getRepresentation<LayerRAM>()->getAsDVec4(pos);
