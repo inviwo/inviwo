@@ -91,7 +91,27 @@ void ImageMixer::process() {
     if (inport0_.isChanged() || inport1_.isChanged()) {
         auto format0 = inport0_.getData()->getDataFormat();
         auto format1 = inport1_.getData()->getDataFormat();
-        auto format = format0->getSize() > format1->getSize() ? format0 : format1;
+
+        // combine format0 and format1, preferring the larger type with respect to
+        // precision (size in bit), number of components, and float over unsigned over signed
+        auto precision0 = format0->getSize() * 8 / format0->getComponents();
+        auto precision1 = format1->getSize() * 8 / format1->getComponents();
+        auto nf0 = format0->getNumericType();
+        auto nf1 = format1->getNumericType();
+
+        NumericType numericType;
+        if ((nf0 == NumericType::Float) || (nf1 == NumericType::Float)) {
+            numericType = NumericType::Float;
+        }
+        else if ((nf0 == NumericType::UnsignedInteger) || (nf1 == NumericType::UnsignedInteger)) {
+            numericType = NumericType::UnsignedInteger;
+        }
+        else {
+            numericType = NumericType::SignedInteger;
+        }
+
+        auto format = DataFormatBase::get(numericType, std::max(format0->getComponents(), format1->getComponents()),
+                            std::max(precision0, precision1));
         if (format != outport_.getData()->getDataFormat()) {
             auto dimensions = outport_.getData()->getDimensions();
             auto img = std::make_shared<Image>(dimensions, format);
