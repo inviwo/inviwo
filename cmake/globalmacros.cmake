@@ -158,6 +158,33 @@ function(ivw_private_generate_module_registration_file modules_var)
 
         list(APPEND headers ${header})
         list(APPEND functions ${factory_object})
+        
+        string(TOUPPER ${${mod}_class} u_module)
+        set(create_module_object
+            "    #ifdef REG_${mod}\n"
+            "    IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
+            "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+            "        \"${${mod}_class}\",\n"
+            "        \"${${mod}_description}\",\n" 
+            "        ${module_depends_vector}\n" 
+            "        )\n"
+            "    }__SEMICOLON__\n"
+            "    #endif\n"
+            "\n"
+        )
+        join(";" "" create_module_object ${create_module_object})
+        set(module_header ${header})
+        # undo encoding of linebreaks and semicolon in the module description read from file
+        # linebreaks are replaced with '\n"'
+        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" create_module_object "${create_module_object}")
+        string(REPLACE "__SEMICOLON__" ";" create_module_object "${create_module_object}")
+
+        string(REPLACE ":" ";" MODULE_DEFINE_HEADER "${module_header}")   
+        string(REPLACE ":" ";" CREATE_MODULE_FUNCTION "${create_module_object}")
+
+        configure_file(${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/modulesharedlibrary.cpp @ONLY)
+
     endforeach()
 
     join(";" "" headers ${headers})
