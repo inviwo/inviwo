@@ -1,9 +1,9 @@
 // Automatically generated file do not change!
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-@MODULE_HEADERS@
+#include <windows.h>
 
 namespace inviwo {
-
+typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
 
@@ -31,7 +31,7 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
                 FreeLibrary(hGetProcIDDLL);
             }
             else {
-                f_getModule moduleFunc = (f_getModule)GetProcAddress(hGetProcIDDLL, "getModule");
+                f_getModule moduleFunc = (f_getModule)GetProcAddress(hGetProcIDDLL, "createModule");
                 if (!moduleFunc) {
                     //std::cout << "could not locate the function" << std::endl;
                     FreeLibrary(hGetProcIDDLL);
