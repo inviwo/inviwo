@@ -56,7 +56,11 @@ ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
-ivw_add_dependency_directories(${package_list})
+set(${core_dependencies} InviwoQtEditor)
+list(APPEND core_dependencies InviwoQtEditor)
+list(APPEND core_dependencies InviwoCore)
+list(APPEND core_dependencies InviwoQtWidgets)
+ivw_add_dependency_directories(${core_dependencies})
 
 set(RES_FILES "")
 if(WIN32)
@@ -148,7 +152,7 @@ endif()
 
 #--------------------------------------------------------------------
 # Add dependencies
-ivw_add_dependencies(${package_list})
+ivw_add_dependencies(${core_dependencies})
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
