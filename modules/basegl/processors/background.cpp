@@ -119,6 +119,15 @@ void Background::initializeResources() {
 void Background::process() {
     if (inport_.hasData() != hadData_) initializeResources();
     if (inport_.hasData()) {
+
+        //Check data format, make sure we always have 4 channels 
+        auto inDataFromat = inport_.getData()->getDataFormat();
+        auto format = DataFormatBase::get(inDataFromat->getNumericType(), 4, inDataFromat->getSize() * 8 / inDataFromat->getComponents());
+
+        if (outport_.getData()->getDataFormat() != format) {
+            outport_.setData(std::make_shared<Image>(outport_.getDimensions(), format));
+        }
+
         utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     } else {
         utilgl::activateTarget(outport_, ImageType::ColorOnly);
