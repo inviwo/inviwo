@@ -397,7 +397,10 @@ function(ivw_register_modules retval)
             endforeach()
         endif()
     endforeach()
-
+    
+    # Generate module registration file
+    ivw_private_generate_module_registration_file(sorted_modules)
+    
     # Add enabled modules in sorted order
     set(ivw_module_classes "")
     set(ivw_module_names "")
@@ -424,8 +427,7 @@ function(ivw_register_modules retval)
     # Save list of modules
     set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
 
-    # Generate module registration file
-    ivw_private_generate_module_registration_file(sorted_modules)
+
 
     # Save information for python tools.
     ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
