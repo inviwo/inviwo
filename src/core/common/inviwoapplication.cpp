@@ -144,11 +144,72 @@ InviwoApplication::~InviwoApplication() {
     ResourceManager::getPtr()->clearAllResources();
 }
 
+void topologicalSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& graph,
+                      std::unordered_set<std::string>& explored, std::string i,
+                      std::vector<std::string>& sorted, size_t& t) {
+    auto it =
+        std::find_if(std::begin(graph), std::end(graph),
+                     [&](const std::unique_ptr<InviwoModuleFactoryObject>& a) {
+                        // Lower case comparison
+                         return a->name_.size() == i.size() &&
+                                equal(i.cbegin(), i.cend(), a->name_.cbegin(),
+                                      [](std::string::value_type l1, std::string::value_type r1) {
+                                          return ::tolower(l1) == ::tolower(r1);
+                                      });
+                     });
+    if (it == std::end(graph)) {
+        // This dependency has not been loaded
+        return;
+    }
+    auto nodeName = (*it)->name_;
+    std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
+    explored.insert(nodeName);
+
+    for (const auto& dependency : (*it)->depends_) {
+        auto lowerCaseDependency = dependency;
+        std::transform(lowerCaseDependency.begin(), lowerCaseDependency.end(),
+                       lowerCaseDependency.begin(), ::tolower);
+        if (explored.find(lowerCaseDependency) == explored.end()) {
+            topologicalSort(graph, explored, lowerCaseDependency, sorted, t);
+        }
+    }
+
+    --t;
+    sorted[t] = i;
+
+    return;
+}
 void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     printApplicationInfo();
 
     // Create and register other modules
     modulesFactoryObjects_ = regModuleFunc();
+    // Topological sort to make sure that we load modules in correct order
+    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+    std::unordered_set<std::string> explored;
+    auto t = modulesFactoryObjects_.size();
+    std::vector<std::string> sorted(modulesFactoryObjects_.size());
+    for (const auto& module : modulesFactoryObjects_) {
+        auto lowerCaseName = module->name_;
+        std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(),
+                       ::tolower);
+        if (explored.find(lowerCaseName) == explored.end()) {
+            topologicalSort(modulesFactoryObjects_, explored, lowerCaseName, sorted, t);
+        }
+    }
+    // Sort modules according to dependency graph
+    std::sort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_),
+              [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
+                  const std::unique_ptr<InviwoModuleFactoryObject>& b) {
+                  auto lowerCaseNameA = a->name_;
+                  std::transform(lowerCaseNameA.begin(), lowerCaseNameA.end(),
+                                 lowerCaseNameA.begin(), ::tolower);
+                  auto lowerCaseNameB = b->name_;
+                  std::transform(lowerCaseNameB.begin(), lowerCaseNameB.end(),
+                                 lowerCaseNameB.begin(), ::tolower);
+                  return std::find(std::begin(sorted), std::end(sorted), lowerCaseNameA) >
+                         std::find(std::begin(sorted), std::end(sorted), lowerCaseNameB);
+              });
 
     std::vector<std::string> failed;
     auto checkdepends = [&](const std::vector<std::string>& deps) {
