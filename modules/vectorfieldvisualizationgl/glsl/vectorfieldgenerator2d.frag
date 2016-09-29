@@ -47,12 +47,8 @@ vec4 getPos(){
 
 void main() {
     vec4 pos = getPos();
-
     vec4 value = vec4(0,0,0,1);
     value.x = X_VALUE(pos.x,pos.y);
     value.y = Y_VALUE(pos.x,pos.y);
-    value.z = 0;
-    value.w = length(value.xy);
-
     FragData0 = value;
 }
