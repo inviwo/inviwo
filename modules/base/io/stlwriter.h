@@ -47,7 +47,7 @@ public:
     StlWriter();
     StlWriter(const StlWriter&) = default;
     StlWriter& operator=(const StlWriter&) = default;
-    virtual StlWriter* clone() const;
+    virtual StlWriter* clone() const override;
     virtual ~StlWriter() = default;
     
     virtual void writeData(const Mesh* data, const std::string filePath) const override;

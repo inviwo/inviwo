@@ -78,6 +78,8 @@
 #include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/meshexport.h>
 
+#include <modules/base/io/stlwriter.h>
+
 namespace inviwo {
 
 using BasisTransformMesh = BasisTransform<Mesh>;
@@ -142,6 +144,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerPort<DataOutport<LightSource>>("LightSourceOutport");
     registerPort<BufferInport>("BufferInport");
     registerPort<BufferOutport>("BufferOutport");
+    
+    registerDataWriter(util::make_unique<StlWriter>());
 }
 
 int BaseModule::getVersion() const {

@@ -175,11 +175,27 @@ struct All : std::true_type {};
 template <typename Format>
 struct Floats : std::integral_constant<bool, Format::numtype == NumericType::Float> {};
 template <typename Format>
+struct Float2s
+    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 2> {};
+template <typename Format>
+struct Float3s
+    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 3> {};
+template <typename Format>
+struct Float4s
+    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 4> {};
+
+template <typename Format>
 struct Integers : std::integral_constant<bool, Format::numtype != NumericType::Float> {};
 template <typename Format>
 struct Vecs : std::integral_constant<bool, Format::comp >= 2> {};
 template <typename Format>
 struct Scalars : std::integral_constant<bool, Format::comp == 1> {};
+template <typename Format>
+struct Vec2s : std::integral_constant<bool, Format::comp == 2> {};
+template <typename Format>
+struct Vec3s : std::integral_constant<bool, Format::comp == 3> {};
+template <typename Format>
+struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
 
 } // namespace filter
 

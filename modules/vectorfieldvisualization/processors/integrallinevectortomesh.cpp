@@ -192,7 +192,7 @@ void IntegralLineVectorToMesh::process() {
         auto indexBuffer =
             mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
 
-        indexBuffer->getDataContainer()->reserve(size + 2);
+        indexBuffer->getDataContainer().reserve(size + 2);
 
         vec4 c(1, 1, 1, 1);
 
