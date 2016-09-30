@@ -431,8 +431,8 @@ set(SOURCE_FILES
     properties/compositepropertyobserver.cpp
     properties/directoryproperty.cpp
     properties/eventproperty.cpp
-    properties/fileproperty.cpp
     properties/filepatternproperty.cpp
+    properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
@@ -518,6 +518,7 @@ ivw_add_pch_path(${PCH_PATH_FILES})
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/commandlineparser-test.cpp
+    tests/unittests/dispatch-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/serialize-container-test.cpp
