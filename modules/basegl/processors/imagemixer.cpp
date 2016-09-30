@@ -52,7 +52,7 @@ ImageMixer::ImageMixer()
     , outport_("outport")
     , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
-    , clamp_("clamp","Clamp values to zero and one",false)
+    , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
     , shader_("img_mix.frag", false) {
     
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

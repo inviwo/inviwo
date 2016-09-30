@@ -54,7 +54,7 @@ const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const {
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()
-    , vectorField_("vectorField", DataVec4Float32::get(), false)
+    , vectorField_("vectorField", DataVec2Float32::get(), false)
     , size_("size", "Volume size", ivec2(700, 700), ivec2(1, 1), ivec2(1024, 1024))
     , seeds_("seeds", "Number of seeds", 9, 1, 100)
     , shape_("shape", "Shape Parameter", 1.2f, 0.0001f, 10.0f, 0.0001f)
@@ -108,10 +108,10 @@ void RBFVectorFieldGenerator2D::process() {
     xx = solverX.solve(bx);
     xy = solverY.solve(by);
 
-    auto img = std::make_shared<Image>(size_.get(), DataVec4Float32::get());
+    auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
 
-    vec4 *data =
-        static_cast<vec4 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
+    auto data =
+        static_cast<vec2 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
 
     int i = 0;
     for (int y = 0; y < size_.get().y; y++) {
@@ -121,7 +121,7 @@ void RBFVectorFieldGenerator2D::process() {
             p *= 2;
             p -= 1;
 
-            vec3 v(0, 0, 0);
+            vec2 v(0, 0);
             int s = 0;
             for (; s < seeds_.get(); s++) {
                 double r = glm::distance(p, samples_[s].first);
@@ -129,7 +129,7 @@ void RBFVectorFieldGenerator2D::process() {
                 v.x += static_cast<float>(xx(s) * w);
                 v.y += static_cast<float>(xy(s) * w);
             }
-            data[i++] = vec4(v, 1.0f);
+            data[i++] = v;
         }
     }
     vectorField_.setData(img);

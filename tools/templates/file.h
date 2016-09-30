@@ -43,7 +43,7 @@ namespace inviwo {
 class <api> <name> { 
 public:
     <name>();
-    virtual ~<name>();
+    virtual ~<name>() = default;
 };
 
 } // namespace

@@ -35,9 +35,5 @@ namespace inviwo {
     
 }
 
-<name>::~<name>()  {
-    
-}
-
 } // namespace
 

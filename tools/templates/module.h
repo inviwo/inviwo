@@ -38,6 +38,7 @@ namespace inviwo {
 class IVW_MODULE_<uname>_API <name>Module : public InviwoModule {
 public:
     <name>Module(InviwoApplication* app);
+    virtual ~<name>Module() = default;
 };
 
 } // namespace
