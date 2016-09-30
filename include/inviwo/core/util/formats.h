@@ -33,6 +33,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/exception.h>
+
 #include <limits>
 #include <string>
 
@@ -122,31 +124,37 @@ enum class NumericType {
     SignedInteger
 };
 
+class IVW_CORE_API DataFormatException : public Exception {
+public:
+    DataFormatException(const std::string& message = "",
+                        ExceptionContext context = ExceptionContext());
+    virtual ~DataFormatException() throw() = default;
+};
+
 class IVW_CORE_API DataFormatBase {
 public:
-    DataFormatBase();
-    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min, double lowest,
-                   NumericType nt, std::string s);
-    virtual ~DataFormatBase();
+    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
+                   double lowest, NumericType nt, const std::string& s);
+    virtual ~DataFormatBase() = default;
 
     static const DataFormatBase* get();
     static const DataFormatBase* get(DataFormatId id);
-    static const DataFormatBase* get(std::string name);
-    static const DataFormatBase* get(NumericType type, size_t components,
-                                     size_t precision);
+    static const DataFormatBase* get(const std::string& name);
+    static const DataFormatBase* get(NumericType type, size_t components, size_t precision);
 
-    static void cleanDataFormatBases();
-
-    static size_t size() { return 0; }
-    static size_t components() { return 0; }
-    static NumericType numericType() {
-        return NumericType::NotSpecialized;
-    }
-    static std::string str() { return "Error, type specialization not implemented"; }
-    static DataFormatId id() { return DataFormatId::NotSpecialized; }
-
+    // Runtime interface
+    /**
+     *	Returns the size of the format in bytes. For all components.
+     */
     size_t getSize() const;
+    /**
+     *	Returns the number of components in the format, 1 to 4.
+     */
     size_t getComponents() const;
+    /**
+     *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
+     */
+    size_t getPrecision() const;
 
     NumericType getNumericType() const;
     double getMax() const;
@@ -155,6 +163,7 @@ public:
     const char* getString() const;
     DataFormatId getId() const;
 
+    // Converter functions
     virtual double valueToDouble(void*) const;
     virtual dvec2 valueToVec2Double(void*) const;
     virtual dvec3 valueToVec3Double(void*) const;
@@ -178,9 +187,11 @@ public:
     template <typename T, typename... Args>
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
+    // Clean up
+    static void cleanDataFormatBases();
+
 protected:
     static DataFormatBase* instance_[static_cast<size_t>(DataFormatId::NumberOfFormats)];
-    static DataFormatBase* getNonConst(DataFormatId id) { return instance_[static_cast<size_t>(id)]; }
 
     DataFormatId formatId_;
     size_t components_;
@@ -190,171 +201,380 @@ protected:
     double min_;
     double lowest_;
 
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     std::string formatStr_;
-    #include <warn/pop>
+#include <warn/pop>
 };
 
 template <typename T>
-class IVW_CORE_API DataFormat : public DataFormatBase {
+class DataFormat : public DataFormatBase {
 public:
-    typedef T type;
-    typedef T primitive;
+    DataFormat();
+    virtual ~DataFormat() = default;
+
+    using type = T;
+    using primitive = T;
     static const size_t comp = 1;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
 
-    DataFormat()
-        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble() , lowestToDouble(), numericType(),
-                         str()) {}
+    // Static interface
+    static constexpr DataFormatId id();
+    static const DataFormat<T>* get();
 
-    virtual ~DataFormat() {}
+    /**
+     *	Returns the size of the format in bytes. For all components.
+     */
+    static constexpr size_t size();
+    /**
+     *	Returns the number of components in the format, 1 to 4.
+     */
+    static constexpr size_t components();
+    /**
+     *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
+     */
+    static constexpr size_t precision();
+    static constexpr NumericType numericType();
+    
+    static constexpr T max();
+    static constexpr T min();
+    static constexpr T lowest();
+    static double maxToDouble();
+    static double minToDouble();
+    static double lowestToDouble();
+    static std::string str();
 
-    static const DataFormat<T>* get() {
-        DataFormatBase* d = DataFormatBase::getNonConst(id());
-        if (!d) {
-            d = new DataFormat<T>();
-            instance_[static_cast<size_t>(id())] = d;
-        }
-        return static_cast<DataFormat<T>*>(d);
-    }
+    // Converter functions
+    virtual double valueToDouble(void* val) const;
+    virtual dvec2 valueToVec2Double(void* val) const;
+    virtual dvec3 valueToVec3Double(void* val) const;
+    virtual dvec4 valueToVec4Double(void* val) const;
 
-    static size_t size() { return typesize; }
-    static size_t components() { return comp; }
-    static NumericType numericType() {
-        return NumericType::NotSpecialized;
-    }
+    virtual double valueToNormalizedDouble(void* val) const;
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const;
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const;
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const;
 
-    static T max() { return std::numeric_limits<T>::max(); }
-    static T min() { return std::numeric_limits<T>::min(); }
-    static T lowest() { return std::numeric_limits<T>::lowest(); }
-
-    static double maxToDouble() { return static_cast<double>(max()); }
-    static double minToDouble() { return static_cast<double>(min()); }
-    static double lowestToDouble() { return static_cast<double>(lowest()); }
-
-    static std::string str() { return DataFormatBase::str(); }
-    static DataFormatId id() { return DataFormatBase::id(); }
-
-    virtual double valueToDouble(void* val) const {
-        return util::glm_convert<double>(*static_cast<type*>(val));
-    }
-    virtual dvec2 valueToVec2Double(void* val) const {
-        return util::glm_convert<dvec2>(*static_cast<type*>(val));
-    }
-    virtual dvec3 valueToVec3Double(void* val) const {
-        return util::glm_convert<dvec3>(*static_cast<type*>(val));
-    }
-    virtual dvec4 valueToVec4Double(void* val) const {
-        return util::glm_convert<dvec4>(*static_cast<type*>(val));
-    }
-
-    virtual double valueToNormalizedDouble(void* val) const {
-        return util::glm_convert_normalized<double>(*static_cast<type*>(val));
-    }
-    virtual dvec2 valueToNormalizedVec2Double(void* val) const {
-        return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
-    }
-    virtual dvec3 valueToNormalizedVec3Double(void* val) const {
-        return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
-    }
-    virtual dvec4 valueToNormalizedVec4Double(void* val) const {
-        return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
-    }
-
-    virtual void doubleToValue(double in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec2DoubleToValue(dvec2 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec3DoubleToValue(dvec3 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec4DoubleToValue(dvec4 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
+    virtual void doubleToValue(double in, void* out) const;
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const;
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const;
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const;
 };
 
 template <typename T, template <typename, glm::precision> class G>
 class DataFormat<G<T, glm::defaultp>> : public DataFormatBase {
 public:
-    typedef G<T, glm::defaultp> type;
-    typedef T primitive;
+    DataFormat();
+    virtual ~DataFormat() = default;
+
+    using type = G<T, glm::defaultp>;
+    using primitive = T;
     static const size_t comp = util::extent<type, 0>::value;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
 
-    DataFormat()
-        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(), numericType(),
-                         str()) {}
+    // Static interface
+    static constexpr DataFormatId id();
+    static const DataFormat<type>* get();
+    
+    /**
+     *	Returns the size of the format in bytes. For all components.
+     */
+    static constexpr size_t size();
+    /**
+     *	Returns the number of components in the format, 1 to 4.
+     */
+    static constexpr size_t components();
+    /**
+     *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
+     */
+    static constexpr size_t precision();
+    static constexpr NumericType numericType();
 
-    virtual ~DataFormat() {}
+    static constexpr type max();
+    static constexpr type min();
+    static constexpr type lowest();
+    static double maxToDouble();
+    static double minToDouble();
+    static double lowestToDouble();
+    static std::string str();
 
-    static const DataFormat<type>* get() {
-        DataFormatBase* d = DataFormatBase::getNonConst(id());
-        if (!d) {
-            d = new DataFormat<type>();
-            instance_[static_cast<size_t>(id())] = d;
-        }
-        return static_cast<DataFormat<type>*>(d);
-    }
+    // Converter functions
+    virtual double valueToDouble(void* val) const;
+    virtual dvec2 valueToVec2Double(void* val) const;
+    virtual dvec3 valueToVec3Double(void* val) const;
+    virtual dvec4 valueToVec4Double(void* val) const;
 
-    static size_t size() { return typesize; }
-    static size_t components() { return comp; }
-    static NumericType numericType() { return DataFormat<T>::numericType(); }
+    virtual double valueToNormalizedDouble(void* val) const;
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const;
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const;
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const;
 
-    static type max() { return type(DataFormat<T>::max()); }
-    static type min() { return type(DataFormat<T>::min()); }
-    static type lowest() { return type(DataFormat<T>::lowest()); }
-
-    static double maxToDouble() { return static_cast<double>(DataFormat<T>::max()); }
-    static double minToDouble() { return static_cast<double>(DataFormat<T>::min()); }
-    static double lowestToDouble() { return static_cast<double>(DataFormat<T>::lowest()); }
-
-    static std::string str() { return "Vec" + toString(comp) + DataFormat<T>::str(); }
-    static DataFormatId id() { return DataFormat<T>::id(); }
-
-    virtual double valueToDouble(void* val) const {
-        return util::glm_convert<double>(*static_cast<type*>(val));
-    }
-    virtual dvec2 valueToVec2Double(void* val) const {
-        return util::glm_convert<dvec2>(*static_cast<type*>(val));
-    }
-    virtual dvec3 valueToVec3Double(void* val) const {
-        return util::glm_convert<dvec3>(*static_cast<type*>(val));
-    }
-    virtual dvec4 valueToVec4Double(void* val) const {
-        return util::glm_convert<dvec4>(*static_cast<type*>(val));
-    }
-
-    virtual double valueToNormalizedDouble(void* val) const {
-        return util::glm_convert_normalized<double>(*static_cast<type*>(val));
-    }
-    virtual dvec2 valueToNormalizedVec2Double(void* val) const {
-        return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
-    }
-    virtual dvec3 valueToNormalizedVec3Double(void* val) const {
-        return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
-    }
-    virtual dvec4 valueToNormalizedVec4Double(void* val) const {
-        return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
-    }
-
-    virtual void doubleToValue(double in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec2DoubleToValue(dvec2 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec3DoubleToValue(dvec3 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
-    virtual void vec4DoubleToValue(dvec4 in, void* out) const {
-        *static_cast<type*>(out) = util::glm_convert<type>(in);
-    }
+    virtual void doubleToValue(double in, void* out) const;
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const;
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const;
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const;
 };
+
+// Template implementations for DataFormat<T>
+
+template <typename T>
+const DataFormat<T>* DataFormat<T>::get() {
+    auto d = instance_[static_cast<size_t>(id())];
+    if (!d) {
+        d = new DataFormat<T>();
+        instance_[static_cast<size_t>(id())] = d;
+    }
+    return static_cast<DataFormat<T>*>(d);
+}
+
+template <typename T>
+void DataFormat<T>::vec4DoubleToValue(dvec4 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+
+template <typename T>
+void DataFormat<T>::vec3DoubleToValue(dvec3 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+
+template <typename T>
+void DataFormat<T>::vec2DoubleToValue(dvec2 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+
+template <typename T>
+void DataFormat<T>::doubleToValue(double in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+
+template <typename T>
+dvec4 DataFormat<T>::valueToNormalizedVec4Double(void* val) const {
+    return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
+}
+
+template <typename T>
+dvec3 DataFormat<T>::valueToNormalizedVec3Double(void* val) const {
+    return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
+}
+
+template <typename T>
+dvec2 DataFormat<T>::valueToNormalizedVec2Double(void* val) const {
+    return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
+}
+
+template <typename T>
+double DataFormat<T>::valueToNormalizedDouble(void* val) const {
+    return util::glm_convert_normalized<double>(*static_cast<type*>(val));
+}
+
+template <typename T>
+dvec4 DataFormat<T>::valueToVec4Double(void* val) const {
+    return util::glm_convert<dvec4>(*static_cast<type*>(val));
+}
+
+template <typename T>
+dvec3 DataFormat<T>::valueToVec3Double(void* val) const {
+    return util::glm_convert<dvec3>(*static_cast<type*>(val));
+}
+
+template <typename T>
+dvec2 DataFormat<T>::valueToVec2Double(void* val) const {
+    return util::glm_convert<dvec2>(*static_cast<type*>(val));
+}
+
+template <typename T>
+double DataFormat<T>::valueToDouble(void* val) const {
+    return util::glm_convert<double>(*static_cast<type*>(val));
+}
+
+template <typename T>
+constexpr DataFormatId DataFormat<T>::id() {
+     throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
+}
+
+template <typename T>
+std::string DataFormat<T>::str() {
+    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
+}
+
+template <typename T>
+double DataFormat<T>::lowestToDouble() {
+    return static_cast<double>(lowest());
+}
+
+template <typename T>
+double DataFormat<T>::minToDouble() {
+    return static_cast<double>(min());
+}
+
+template <typename T>
+double DataFormat<T>::maxToDouble() {
+    return static_cast<double>(max());
+}
+
+template <typename T>
+constexpr T DataFormat<T>::lowest() {
+    return std::numeric_limits<T>::lowest();
+}
+
+template <typename T>
+constexpr T DataFormat<T>::min() {
+    return std::numeric_limits<T>::min();
+}
+
+template <typename T>
+constexpr T DataFormat<T>::max() {
+    return std::numeric_limits<T>::max();
+}
+
+template <typename T>
+constexpr NumericType DataFormat<T>::numericType() {
+    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::components() {
+    return comp;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::size() {
+    return typesize;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::precision() {
+    return size() / components() * 8;
+}
+
+template <typename T>
+DataFormat<T>::DataFormat()
+    : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
+                     numericType(), str()) {}
+
+// Template implementations for DataFormat<G<T, glm::defaultp>>
+
+template <typename T, template <typename, glm::precision> class G>
+DataFormat<G<T, glm::defaultp>>::DataFormat()
+    : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
+                     numericType(), str()) {}
+
+
+template <typename T, template <typename, glm::precision> class G>
+auto DataFormat<G<T, glm::defaultp>>::get() -> const DataFormat<type>* {
+    auto d = instance_[static_cast<size_t>(id())];
+    if (!d) {
+        d = new DataFormat<type>();
+        instance_[static_cast<size_t>(id())] = d;
+    }
+    return static_cast<DataFormat<type>*>(d);
+}
+
+template <typename T, template <typename, glm::precision> class G>
+constexpr size_t DataFormat<G<T, glm::defaultp>>::size() {
+    return typesize;
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr size_t DataFormat<G<T, glm::defaultp>>::components() {
+    return comp;
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr size_t DataFormat<G<T, glm::defaultp>>::precision() {
+    return size() / components() * 8;
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr NumericType DataFormat<G<T, glm::defaultp>>::numericType() {
+    return DataFormat<T>::numericType();
+}
+
+template <typename T, template <typename, glm::precision> class G>
+constexpr auto DataFormat<G<T, glm::defaultp>>::max() -> type {
+    return type(DataFormat<T>::max());
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr auto DataFormat<G<T, glm::defaultp>>::min() -> type {
+    return type(DataFormat<T>::min());
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr auto DataFormat<G<T, glm::defaultp>>::lowest() -> type{
+    return type(DataFormat<T>::lowest());
+}
+
+template <typename T, template <typename, glm::precision> class G>
+double DataFormat<G<T, glm::defaultp>>::maxToDouble() {
+    return static_cast<double>(DataFormat<T>::max());
+}
+template <typename T, template <typename, glm::precision> class G>
+double DataFormat<G<T, glm::defaultp>>::minToDouble() {
+    return static_cast<double>(DataFormat<T>::min());
+}
+template <typename T, template <typename, glm::precision> class G>
+double DataFormat<G<T, glm::defaultp>>::lowestToDouble() {
+    return static_cast<double>(DataFormat<T>::lowest());
+}
+
+template <typename T, template <typename, glm::precision> class G>
+std::string DataFormat<G<T, glm::defaultp>>::str() {
+    return "Vec" + toString(comp) + DataFormat<T>::str();
+}
+template <typename T, template <typename, glm::precision> class G>
+constexpr DataFormatId DataFormat<G<T, glm::defaultp>>::id() {
+    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
+}
+
+template <typename T, template <typename, glm::precision> class G>
+double DataFormat<G<T, glm::defaultp>>::valueToDouble(void* val) const {
+    return util::glm_convert<double>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec2 DataFormat<G<T, glm::defaultp>>::valueToVec2Double(void* val) const {
+    return util::glm_convert<dvec2>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec3 DataFormat<G<T, glm::defaultp>>::valueToVec3Double(void* val) const {
+    return util::glm_convert<dvec3>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec4 DataFormat<G<T, glm::defaultp>>::valueToVec4Double(void* val) const {
+    return util::glm_convert<dvec4>(*static_cast<type*>(val));
+}
+
+template <typename T, template <typename, glm::precision> class G>
+double DataFormat<G<T, glm::defaultp>>::valueToNormalizedDouble(void* val) const {
+    return util::glm_convert_normalized<double>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec2 DataFormat<G<T, glm::defaultp>>::valueToNormalizedVec2Double(void* val) const {
+    return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec3 DataFormat<G<T, glm::defaultp>>::valueToNormalizedVec3Double(void* val) const {
+    return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
+}
+template <typename T, template <typename, glm::precision> class G>
+dvec4 DataFormat<G<T, glm::defaultp>>::valueToNormalizedVec4Double(void* val) const {
+    return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
+}
+
+template <typename T, template <typename, glm::precision> class G>
+void DataFormat<G<T, glm::defaultp>>::doubleToValue(double in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+template <typename T, template <typename, glm::precision> class G>
+void DataFormat<G<T, glm::defaultp>>::vec2DoubleToValue(dvec2 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+template <typename T, template <typename, glm::precision> class G>
+void DataFormat<G<T, glm::defaultp>>::vec3DoubleToValue(dvec3 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+template <typename T, template <typename, glm::precision> class G>
+void DataFormat<G<T, glm::defaultp>>::vec4DoubleToValue(dvec4 in, void* out) const {
+    *static_cast<type*>(out) = util::glm_convert<type>(in);
+}
+
 
 
 /*---------------Single Value Formats------------------*/
@@ -441,37 +661,37 @@ typedef DataFormat<glm::u64vec4> DataVec4UInt64;
 /*---------------Single Value Formats------------------*/
 
 // Bit Specializations
-template<> inline size_t DataFloat16::size() { return DataFloat32::size(); }
+template<> constexpr  size_t DataFloat16::size() { return DataFloat32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
-template<> inline DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
-template<> inline DataFormatId DataFloat64::id() { return DataFormatId::Float64; }
+template<> constexpr DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
+template<> constexpr DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
+template<> constexpr DataFormatId DataFloat64::id() { return DataFormatId::Float64; }
 
-template<> inline DataFormatId DataInt8::id()  { return DataFormatId::Int8; }
-template<> inline DataFormatId DataInt16::id() { return DataFormatId::Int16; }
-template<> inline DataFormatId DataInt32::id() { return DataFormatId::Int32; }
-template<> inline DataFormatId DataInt64::id() { return DataFormatId::Int64; }
+template<> constexpr DataFormatId DataInt8::id()  { return DataFormatId::Int8; }
+template<> constexpr DataFormatId DataInt16::id() { return DataFormatId::Int16; }
+template<> constexpr DataFormatId DataInt32::id() { return DataFormatId::Int32; }
+template<> constexpr DataFormatId DataInt64::id() { return DataFormatId::Int64; }
 
-template<> inline DataFormatId DataUInt8::id()  { return DataFormatId::UInt8; }
-template<> inline DataFormatId DataUInt16::id() { return DataFormatId::UInt16; }
-template<> inline DataFormatId DataUInt32::id() { return DataFormatId::UInt32; }
-template<> inline DataFormatId DataUInt64::id() { return DataFormatId::UInt64; }
+template<> constexpr DataFormatId DataUInt8::id()  { return DataFormatId::UInt8; }
+template<> constexpr DataFormatId DataUInt16::id() { return DataFormatId::UInt16; }
+template<> constexpr DataFormatId DataUInt32::id() { return DataFormatId::UInt32; }
+template<> constexpr DataFormatId DataUInt64::id() { return DataFormatId::UInt64; }
 
 // Numeric type Specializations
-template<> inline NumericType DataFloat16::numericType() { return NumericType::Float; }
-template<> inline NumericType DataFloat32::numericType() { return NumericType::Float; }
-template<> inline NumericType DataFloat64::numericType() { return NumericType::Float; }
+template<> constexpr NumericType DataFloat16::numericType() { return NumericType::Float; }
+template<> constexpr NumericType DataFloat32::numericType() { return NumericType::Float; }
+template<> constexpr NumericType DataFloat64::numericType() { return NumericType::Float; }
 
-template<> inline NumericType DataInt8::numericType()  { return NumericType::SignedInteger; }
-template<> inline NumericType DataInt16::numericType() { return NumericType::SignedInteger; }
-template<> inline NumericType DataInt32::numericType() { return NumericType::SignedInteger; }
-template<> inline NumericType DataInt64::numericType() { return NumericType::SignedInteger; }
+template<> constexpr NumericType DataInt8::numericType()  { return NumericType::SignedInteger; }
+template<> constexpr NumericType DataInt16::numericType() { return NumericType::SignedInteger; }
+template<> constexpr NumericType DataInt32::numericType() { return NumericType::SignedInteger; }
+template<> constexpr NumericType DataInt64::numericType() { return NumericType::SignedInteger; }
 
-template<> inline NumericType DataUInt8::numericType()  { return NumericType::UnsignedInteger; }
-template<> inline NumericType DataUInt16::numericType() { return NumericType::UnsignedInteger; }
-template<> inline NumericType DataUInt32::numericType() { return NumericType::UnsignedInteger; }
-template<> inline NumericType DataUInt64::numericType() { return NumericType::UnsignedInteger; }
+template<> constexpr NumericType DataUInt8::numericType()  { return NumericType::UnsignedInteger; }
+template<> constexpr NumericType DataUInt16::numericType() { return NumericType::UnsignedInteger; }
+template<> constexpr NumericType DataUInt32::numericType() { return NumericType::UnsignedInteger; }
+template<> constexpr NumericType DataUInt64::numericType() { return NumericType::UnsignedInteger; }
 
 // String Function Specializations
 template<> inline std::string DataFloat16::str() { return "FLOAT16"; }
@@ -492,65 +712,65 @@ template<> inline std::string DataUInt64::str() { return "UINT64"; }
 /*---------------Vec2 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec2Float16::size() { return DataVec2Float32::size(); }
+template<> constexpr size_t DataVec2Float16::size() { return DataVec2Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
-template<> inline DataFormatId DataVec2Float32::id() { return DataFormatId::Vec2Float32; }
-template<> inline DataFormatId DataVec2Float64::id() { return DataFormatId::Vec2Float64; }
+template<> constexpr DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
+template<> constexpr DataFormatId DataVec2Float32::id() { return DataFormatId::Vec2Float32; }
+template<> constexpr DataFormatId DataVec2Float64::id() { return DataFormatId::Vec2Float64; }
 
-template<> inline DataFormatId DataVec2Int8::id() { return DataFormatId::Vec2Int8; }
-template<> inline DataFormatId DataVec2Int16::id() { return DataFormatId::Vec2Int16; }
-template<> inline DataFormatId DataVec2Int32::id() { return DataFormatId::Vec2Int32; }
-template<> inline DataFormatId DataVec2Int64::id() { return DataFormatId::Vec2Int64; }
+template<> constexpr DataFormatId DataVec2Int8::id() { return DataFormatId::Vec2Int8; }
+template<> constexpr DataFormatId DataVec2Int16::id() { return DataFormatId::Vec2Int16; }
+template<> constexpr DataFormatId DataVec2Int32::id() { return DataFormatId::Vec2Int32; }
+template<> constexpr DataFormatId DataVec2Int64::id() { return DataFormatId::Vec2Int64; }
 
-template<> inline DataFormatId DataVec2UInt8::id() { return DataFormatId::Vec2UInt8; }
-template<> inline DataFormatId DataVec2UInt16::id() { return DataFormatId::Vec2UInt16; }
-template<> inline DataFormatId DataVec2UInt32::id() { return DataFormatId::Vec2UInt32; }
-template<> inline DataFormatId DataVec2UInt64::id() { return DataFormatId::Vec2UInt64; }
+template<> constexpr DataFormatId DataVec2UInt8::id() { return DataFormatId::Vec2UInt8; }
+template<> constexpr DataFormatId DataVec2UInt16::id() { return DataFormatId::Vec2UInt16; }
+template<> constexpr DataFormatId DataVec2UInt32::id() { return DataFormatId::Vec2UInt32; }
+template<> constexpr DataFormatId DataVec2UInt64::id() { return DataFormatId::Vec2UInt64; }
 
 
 /*---------------Vec3 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec3Float16::size() { return DataVec3Float32::size(); }
+template<> constexpr size_t DataVec3Float16::size() { return DataVec3Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
-template<> inline DataFormatId DataVec3Float32::id() { return DataFormatId::Vec3Float32; }
-template<> inline DataFormatId DataVec3Float64::id() { return DataFormatId::Vec3Float64; }
+template<> constexpr DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
+template<> constexpr DataFormatId DataVec3Float32::id() { return DataFormatId::Vec3Float32; }
+template<> constexpr DataFormatId DataVec3Float64::id() { return DataFormatId::Vec3Float64; }
 
-template<> inline DataFormatId DataVec3Int8::id() { return DataFormatId::Vec3Int8; }
-template<> inline DataFormatId DataVec3Int16::id() { return DataFormatId::Vec3Int16; }
-template<> inline DataFormatId DataVec3Int32::id() { return DataFormatId::Vec3Int32; }
-template<> inline DataFormatId DataVec3Int64::id() { return DataFormatId::Vec3Int64; }
+template<> constexpr DataFormatId DataVec3Int8::id() { return DataFormatId::Vec3Int8; }
+template<> constexpr DataFormatId DataVec3Int16::id() { return DataFormatId::Vec3Int16; }
+template<> constexpr DataFormatId DataVec3Int32::id() { return DataFormatId::Vec3Int32; }
+template<> constexpr DataFormatId DataVec3Int64::id() { return DataFormatId::Vec3Int64; }
 
-template<> inline DataFormatId DataVec3UInt8::id() { return DataFormatId::Vec3UInt8; }
-template<> inline DataFormatId DataVec3UInt16::id() { return DataFormatId::Vec3UInt16; }
-template<> inline DataFormatId DataVec3UInt32::id() { return DataFormatId::Vec3UInt32; }
-template<> inline DataFormatId DataVec3UInt64::id() { return DataFormatId::Vec3UInt64; }
+template<> constexpr DataFormatId DataVec3UInt8::id() { return DataFormatId::Vec3UInt8; }
+template<> constexpr DataFormatId DataVec3UInt16::id() { return DataFormatId::Vec3UInt16; }
+template<> constexpr DataFormatId DataVec3UInt32::id() { return DataFormatId::Vec3UInt32; }
+template<> constexpr DataFormatId DataVec3UInt64::id() { return DataFormatId::Vec3UInt64; }
 
 
 
 /*---------------Vec4 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec4Float16::size() { return DataVec4Float32::size(); }
+template<> constexpr size_t DataVec4Float16::size() { return DataVec4Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
-template<> inline DataFormatId DataVec4Float32::id() { return DataFormatId::Vec4Float32; }
-template<> inline DataFormatId DataVec4Float64::id() { return DataFormatId::Vec4Float64; }
+template<> constexpr DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
+template<> constexpr DataFormatId DataVec4Float32::id() { return DataFormatId::Vec4Float32; }
+template<> constexpr DataFormatId DataVec4Float64::id() { return DataFormatId::Vec4Float64; }
 
-template<> inline DataFormatId DataVec4Int8::id() { return DataFormatId::Vec4Int8; }
-template<> inline DataFormatId DataVec4Int16::id() { return DataFormatId::Vec4Int16; }
-template<> inline DataFormatId DataVec4Int32::id() { return DataFormatId::Vec4Int32; }
-template<> inline DataFormatId DataVec4Int64::id() { return DataFormatId::Vec4Int64; }
+template<> constexpr DataFormatId DataVec4Int8::id() { return DataFormatId::Vec4Int8; }
+template<> constexpr DataFormatId DataVec4Int16::id() { return DataFormatId::Vec4Int16; }
+template<> constexpr DataFormatId DataVec4Int32::id() { return DataFormatId::Vec4Int32; }
+template<> constexpr DataFormatId DataVec4Int64::id() { return DataFormatId::Vec4Int64; }
 
-template<> inline DataFormatId DataVec4UInt8::id() { return DataFormatId::Vec4UInt8; }
-template<> inline DataFormatId DataVec4UInt16::id() { return DataFormatId::Vec4UInt16; }
-template<> inline DataFormatId DataVec4UInt32::id() { return DataFormatId::Vec4UInt32; }
-template<> inline DataFormatId DataVec4UInt64::id() { return DataFormatId::Vec4UInt64; }
+template<> constexpr DataFormatId DataVec4UInt8::id() { return DataFormatId::Vec4UInt8; }
+template<> constexpr DataFormatId DataVec4UInt16::id() { return DataFormatId::Vec4UInt16; }
+template<> constexpr DataFormatId DataVec4UInt32::id() { return DataFormatId::Vec4UInt32; }
+template<> constexpr DataFormatId DataVec4UInt64::id() { return DataFormatId::Vec4UInt64; }
 
 
 template <typename T, typename... Args>

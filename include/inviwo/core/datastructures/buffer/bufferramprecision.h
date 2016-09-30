@@ -42,6 +42,9 @@ namespace inviwo {
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
 public:
+    using type = T;
+    static const BufferTarget target = Target;
+
     BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);

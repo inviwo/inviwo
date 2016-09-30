@@ -41,8 +41,8 @@ namespace inviwo {
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
-    BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
-              BufferUsage usage = BufferUsage::Static, BufferTarget target = BufferTarget::Data);
+    BufferRAM(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
+              BufferTarget target = BufferTarget::Data);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
     virtual BufferRAM* clone() const override = 0;
