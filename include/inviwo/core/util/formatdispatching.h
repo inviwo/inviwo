@@ -94,7 +94,11 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
                 IvwContextCustom("Dispatching"));
 
         if (id == Format::id()) {
+            #ifdef _WIN32 // TODO: remove win fix when VS does the right thing...
+            return (obj.operator()<Result, Format>(std::forward<Args>(args)...));
+            #else
             return (obj.template operator()<Result, Format>(std::forward<Args>(args)...));
+            #endif
         } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
             return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
                 id, std::forward<Callable>(obj), std::forward<Args>(args)...);
@@ -169,13 +173,13 @@ namespace filter {
 template <typename Format>
 struct All : std::true_type {};
 template <typename Format>
-struct Floats : std::integral_constant<bool, Format::numericType() == NumericType::Float> {};
+struct Floats : std::integral_constant<bool, Format::numtype == NumericType::Float> {};
 template <typename Format>
-struct Integers : std::integral_constant<bool, Format::numericType() != NumericType::Float> {};
+struct Integers : std::integral_constant<bool, Format::numtype != NumericType::Float> {};
 template <typename Format>
-struct Vecs : std::integral_constant<bool, Format::components() >= 2> {};
+struct Vecs : std::integral_constant<bool, Format::comp >= 2> {};
 template <typename Format>
-struct Scalars : std::integral_constant<bool, Format::components() == 1> {};
+struct Scalars : std::integral_constant<bool, Format::comp == 1> {};
 
 } // namespace filter
 

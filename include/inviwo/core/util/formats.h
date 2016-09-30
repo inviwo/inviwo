@@ -38,6 +38,7 @@
 #include <limits>
 #include <string>
 #include <array>
+#include <memory>
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -124,6 +125,18 @@ enum class NumericType {
     UnsignedInteger,
     SignedInteger
 };
+
+namespace util {
+
+template <typename T>
+constexpr NumericType getNumericType() {
+    return (std::is_floating_point<T>::value
+                ? NumericType::Float
+                : (std::is_signed<T>::value ? NumericType::SignedInteger
+                                            : NumericType::UnsignedInteger));
+}
+
+}  // namespace util
 
 class IVW_CORE_API DataFormatException : public Exception {
 public:
@@ -217,6 +230,7 @@ public:
     static const size_t comp = 1;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
+    static const NumericType numtype = util::getNumericType<primitive>();  
 
     // Static interface
     static constexpr DataFormatId id();
@@ -234,7 +248,7 @@ public:
      *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
      */
     static constexpr size_t precision();
-    static constexpr NumericType numericType();
+    static constexpr NumericType numericType(); 
     
     static constexpr T max();
     static constexpr T min();
@@ -272,6 +286,7 @@ public:
     static const size_t comp = util::extent<type, 0>::value;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
+    static const NumericType numtype = util::getNumericType<primitive>();  
 
     // Static interface
     static constexpr DataFormatId id();
@@ -290,7 +305,6 @@ public:
      */
     static constexpr size_t precision();
     static constexpr NumericType numericType();
-
     static constexpr type max();
     static constexpr type min();
     static constexpr type lowest();
@@ -323,11 +337,48 @@ DataFormat<T>::DataFormat()
     : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
                      numericType(), str()) {}
 
+template <typename T> 
+constexpr DataFormatId DataFormat<T>::id() { 
+    return DataFormatId::NotSpecialized; 
+}
+
 template <typename T>
 const DataFormat<T>* DataFormat<T>::get() {
     auto& d = instance_[static_cast<size_t>(id())];
     if (!d) d = std::make_unique<DataFormat<T>>();
     return static_cast<DataFormat<T>*>(d.get());
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::components() {
+    return comp;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::size() {
+    return typesize;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::precision() {
+    return size() / components() * 8;
+}
+
+template <typename T>
+constexpr NumericType DataFormat<T>::numericType() {
+    return numtype;
+}
+
+template <typename T>
+std::string DataFormat<T>::str() {
+    switch (numtype) {
+        case NumericType::Float: return "FLOAT" + toString(precision());
+        case NumericType::SignedInteger: return "INT" + toString(precision());
+        case NumericType::UnsignedInteger: return "UINT" + toString(precision());
+        case NumericType::NotSpecialized:
+        default:
+            throw DataFormatException("Invalid format", IvwContextCustom("DataForrmat"));
+    }
 }
 
 template <typename T>
@@ -358,22 +409,6 @@ constexpr T DataFormat<T>::min() {
 template <typename T>
 constexpr T DataFormat<T>::max() {
     return std::numeric_limits<T>::max();
-}
-
-
-template <typename T>
-constexpr size_t DataFormat<T>::components() {
-    return comp;
-}
-
-template <typename T>
-constexpr size_t DataFormat<T>::size() {
-    return typesize;
-}
-
-template <typename T>
-constexpr size_t DataFormat<T>::precision() {
-    return size() / components() * 8;
 }
 
 template <typename T>
@@ -445,6 +480,11 @@ DataFormat<G<T, glm::defaultp>>::DataFormat()
 
 
 template <typename T, template <typename, glm::precision> class G>
+constexpr DataFormatId DataFormat<G<T, glm::defaultp>>::id() {
+    return DataFormatId::NotSpecialized;
+}
+
+template <typename T, template <typename, glm::precision> class G>
 auto DataFormat<G<T, glm::defaultp>>::get() -> const DataFormat<type>* {
     auto& d = instance_[static_cast<size_t>(id())];
     if (!d) d = std::make_unique<DataFormat<type>>();
@@ -466,6 +506,11 @@ constexpr size_t DataFormat<G<T, glm::defaultp>>::precision() {
 template <typename T, template <typename, glm::precision> class G>
 constexpr NumericType DataFormat<G<T, glm::defaultp>>::numericType() {
     return DataFormat<T>::numericType();
+}
+
+template <typename T, template <typename, glm::precision> class G>
+std::string DataFormat<G<T, glm::defaultp>>::str() {
+    return "Vec" + toString(comp) + DataFormat<T>::str();
 }
 
 template <typename T, template <typename, glm::precision> class G>
@@ -492,11 +537,6 @@ constexpr double DataFormat<G<T, glm::defaultp>>::minToDouble() {
 template <typename T, template <typename, glm::precision> class G>
 constexpr double DataFormat<G<T, glm::defaultp>>::lowestToDouble() {
     return static_cast<double>(DataFormat<T>::lowest());
-}
-
-template <typename T, template <typename, glm::precision> class G>
-std::string DataFormat<G<T, glm::defaultp>>::str() {
-    return "Vec" + toString(comp) + DataFormat<T>::str();
 }
 
 template <typename T, template <typename, glm::precision> class G>
@@ -652,36 +692,6 @@ template<> constexpr DataFormatId DataUInt8::id()  { return DataFormatId::UInt8;
 template<> constexpr DataFormatId DataUInt16::id() { return DataFormatId::UInt16; }
 template<> constexpr DataFormatId DataUInt32::id() { return DataFormatId::UInt32; }
 template<> constexpr DataFormatId DataUInt64::id() { return DataFormatId::UInt64; }
-
-// Numeric type Specializations
-template<> constexpr NumericType DataFloat16::numericType() { return NumericType::Float; }
-template<> constexpr NumericType DataFloat32::numericType() { return NumericType::Float; }
-template<> constexpr NumericType DataFloat64::numericType() { return NumericType::Float; }
-
-template<> constexpr NumericType DataInt8::numericType()  { return NumericType::SignedInteger; }
-template<> constexpr NumericType DataInt16::numericType() { return NumericType::SignedInteger; }
-template<> constexpr NumericType DataInt32::numericType() { return NumericType::SignedInteger; }
-template<> constexpr NumericType DataInt64::numericType() { return NumericType::SignedInteger; }
-
-template<> constexpr NumericType DataUInt8::numericType()  { return NumericType::UnsignedInteger; }
-template<> constexpr NumericType DataUInt16::numericType() { return NumericType::UnsignedInteger; }
-template<> constexpr NumericType DataUInt32::numericType() { return NumericType::UnsignedInteger; }
-template<> constexpr NumericType DataUInt64::numericType() { return NumericType::UnsignedInteger; }
-
-// String Function Specializations
-template<> inline std::string DataFloat16::str() { return "FLOAT16"; }
-template<> inline std::string DataFloat32::str() { return "FLOAT32"; }
-template<> inline std::string DataFloat64::str() { return "FLOAT64"; }
-
-template<> inline std::string DataInt8::str() { return "INT8"; }
-template<> inline std::string DataInt16::str() { return "INT16"; }
-template<> inline std::string DataInt32::str() { return "INT32"; }
-template<> inline std::string DataInt64::str() { return "INT64"; }
-
-template<> inline std::string DataUInt8::str() { return "UINT8"; }
-template<> inline std::string DataUInt16::str() { return "UINT16"; }
-template<> inline std::string DataUInt32::str() { return "UINT32"; }
-template<> inline std::string DataUInt64::str() { return "UINT64"; }
 
 
 /*---------------Vec2 Formats--------------------*/

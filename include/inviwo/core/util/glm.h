@@ -102,7 +102,7 @@ typedef glm::tvec3<glm::uint64> u64vec3;
 typedef glm::tvec4<glm::uint64> u64vec4;
 
 namespace util {
-		
+        
 template <typename T>
 struct is_floating_point : public std::is_floating_point<T> {};
 
