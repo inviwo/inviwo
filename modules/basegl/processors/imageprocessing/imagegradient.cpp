@@ -37,7 +37,7 @@ const ProcessorInfo ImageGradient::processorInfo_{
     "Image Gradient",                // Display name
     "Image Operation",              // Category
     CodeState::Stable,  // Code state
-    Tags::None,               // Tags
+    Tags::GL,               // Tags
 };
 const ProcessorInfo ImageGradient::getProcessorInfo() const {
     return processorInfo_;
@@ -45,7 +45,9 @@ const ProcessorInfo ImageGradient::getProcessorInfo() const {
 
 ImageGradient::ImageGradient()
     : ImageGLProcessor("imagegradient.frag")
-    , channel_("channel", "Channel") {
+    , channel_("channel", "Channel")
+    , renormalization_("renormalization", "Renormalization", true)
+{
     dataFormat_ = DataVec2Float32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
@@ -66,10 +68,12 @@ ImageGradient::ImageGradient()
     });
 
     addProperty(channel_);
+    addProperty(renormalization_);
 }
 
 void ImageGradient::preProcess(TextureUnitContainer &cont) {
     shader_.setUniform("channel", channel_.getSelectedValue());
+    shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 
 } // namespace
