@@ -481,7 +481,7 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
     auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
 
-    auto sizediff = 0;
+    size_t sizediff = 0;
     if (basePathTokens.size() < absolutePathTokens.size()){
         sizediff = absolutePathTokens.size() - basePathTokens.size();
     }
