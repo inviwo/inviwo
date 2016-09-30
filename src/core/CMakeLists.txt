@@ -185,8 +185,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositepropertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/filepatternproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
@@ -243,6 +243,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
@@ -472,6 +473,7 @@ set(SOURCE_FILES
     util/fileobserver.cpp
     util/filesystem.cpp
     util/formatconversion.cpp
+    util/formatdispatching.cpp
     util/formats.cpp
     util/imagecache.cpp
     util/imageramutils.cpp

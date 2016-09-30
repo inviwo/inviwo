@@ -33,153 +33,12 @@
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/exception.h>
-
+#include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-#include <iostream>
 
 namespace inviwo {
-
-namespace dispatching {
-
-class DispatchException : public Exception {
-public:
-    DispatchException(const std::string &message = "",
-                      ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
-    virtual ~DispatchException() throw() = default;
-};
-
-template <typename, typename>
-struct Cons;
-
-template <typename T, typename... Args>
-struct Cons<T, std::tuple<Args...>> {
-    using type = std::tuple<T, Args...>;
-};
-
-template <template <class> class Predicate, typename...>
-struct filter;
-
-template <template <class> class Predicate>
-struct filter<Predicate> {
-    using type = std::tuple<>;
-};
-
-template <template <class> class Predicate, typename Head, typename... Tail>
-struct filter<Predicate, Head, Tail...> {
-    using type = typename std::conditional<
-        Predicate<Head>::value,
-        typename Cons<Head, typename filter<Predicate, Tail...>::type>::type,
-        typename filter<Predicate, Tail...>::type>::type;
-};
-
-template <template <class> class Predicate, typename... Args>
-struct filter<Predicate, std::tuple<Args...>> {
-    using type = typename filter<Predicate, Args...>::type;
-};
-
-template <typename Result, int B, int E, typename... Args>
-struct DispatchHelper {};
-
-template <typename Result, int B, int E, typename... Formats>
-struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
-    static const int M = (B + E) / 2;
-    using Format = typename std::tuple_element<M, std::tuple<Formats...>>::type;
-
-    template <typename Callable, typename... Args>
-    static Result dispatch(DataFormatId id, Callable &&obj, Args &&... args) {
-        if (B > E)
-            throw DispatchException(
-                "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
-                IvwContextCustom("Dispatching"));
-
-        if (id == Format::id()) {
-            return (obj.operator()<Result, Format>(std::forward<Args>(args)...));
-        } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
-            return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        } else {
-            return DispatchHelper<Result, M + 1, E, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        }
-    }
-};
-
-template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
-    // Has to be in order of increasing id
-    using Formats = std::tuple< 
-        DataFloat16,
-        DataFloat32,
-        DataFloat64,
-        DataInt8,
-        DataInt16,
-        DataInt32,
-        DataInt64,
-        DataUInt8,
-        DataUInt16,
-        DataUInt32,
-        DataUInt64,
-        DataVec2Float16,
-        DataVec2Float32,
-        DataVec2Float64,
-        DataVec2Int8,
-        DataVec2Int16,
-        DataVec2Int32,
-        DataVec2Int64,
-        DataVec2UInt8,
-        DataVec2UInt16,
-        DataVec2UInt32,
-        DataVec2UInt64,
-        DataVec3Float16,
-        DataVec3Float32,
-        DataVec3Float64,
-        DataVec3Int8,
-        DataVec3Int16,
-        DataVec3Int32,
-        DataVec3Int64,
-        DataVec3UInt8,
-        DataVec3UInt16,
-        DataVec3UInt32,
-        DataVec3UInt64,
-        DataVec4Float16,
-        DataVec4Float32,
-        DataVec4Float64,
-        DataVec4Int8,
-        DataVec4Int16,
-        DataVec4Int32,
-        DataVec4Int64,
-        DataVec4UInt8,
-        DataVec4UInt16,
-        DataVec4UInt32,
-        DataVec4UInt64
-    >;
-
-    using FilteredFormats = typename filter<Predicate, Formats>::type;
-
-    return DispatchHelper<Result, 0, std::tuple_size<FilteredFormats>::value - 1,
-                          FilteredFormats>::dispatch(format, std::forward<Callable>(obj),
-                                                     std::forward<Args>(args)...);
-}
-
-template <typename Format>
-struct All : std::true_type {};
-template <typename Format>
-struct Floats : std::integral_constant<bool, Format::numericType() == NumericType::Float> {};
-template <typename Format>
-struct Integers : std::integral_constant<bool, Format::numericType() != NumericType::Float> {};
-template <typename Format>
-struct Vecs : std::integral_constant<bool, Format::components() >= 2> {};
-template <typename Format>
-struct Scalars : std::integral_constant<bool, Format::components() == 1> {};
-
-
-}  // namespace dispatching
 
 struct RamDispatcher {
     template <typename Result, typename Format, typename Callable, typename... Args>
@@ -189,41 +48,91 @@ struct RamDispatcher {
             std::forward<Args>(args)...);
     }
 };
-template <typename Result, template <class> class Predicate = dispatching::All, typename Callable,
-    typename... Args>
-    Result dispatch(BufferRAM *bufferram, Callable &&obj, Args... args) {
+template <typename Result, template <class> class Predicate = dispatching::filter::All,
+          typename Callable, typename... Args>
+Result dispatch(BufferRAM *bufferram, Callable &&obj, Args... args) {
     RamDispatcher disp;
     return dispatching::dispatch<Result, Predicate>(bufferram->getDataFormatId(), disp,
                                                     std::forward<Callable>(obj), bufferram,
                                                     std::forward<Args>(args)...);
 }
 
-template <NumericType NT, size_t comp>
-struct bar {
-    NumericType nt() const {return NT;}
-};
+using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
+template <template <class> class Predicate>
+res_t test(DataFormatId id) {
+    auto buf = createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
+
+    return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
+        using BT = typename std::decay<decltype(*b)>::type;
+        using DT = typename BT::type;
+        return {DataFormat<DT>::id(), DataFormat<DT>::numericType(), DataFormat<DT>::components(),
+                DataFormat<DT>::precision()};
+    });
+}
 
 TEST(DispatchTests, Test1) {
-    bar<DataFloat16::numericType(), DataFloat16::components()> b;
-    auto nt = b.nt();
-
-
-
-    auto buff =
-        createBufferRAM(10, DataVec3Float32::get(), BufferUsage::Static, BufferTarget::Data);
-
-    auto res = dispatch<size_t, dispatching::All>(buff.get(),
-                            [](auto i, size_t j) {
-                                std::cout << typeid(i).name() << "\n";
-                                return j + i->getSize();
-                            },
-                            4);
-
-    //int res = dispatch<int, All>(40, c, [](auto i) {return i * 2;}, 2);
-
-    EXPECT_EQ(14, res);
+    auto res = test<dispatching::filter::Vecs>(DataFormatId::Vec3Float32);
+    
+    EXPECT_EQ(DataFormatId::Vec3Float32, std::get<0>(res));
+    EXPECT_EQ(NumericType::Float, std::get<1>(res));
+    EXPECT_EQ(3,  std::get<2>(res));
+    EXPECT_EQ(32, std::get<3>(res));
 }
+
+TEST(DispatchTests, Test2) {
+    auto res = test<dispatching::filter::Integers>(DataFormatId::Vec3Int32);
+    
+    EXPECT_EQ(DataFormatId::Vec3Int32, std::get<0>(res));
+    EXPECT_EQ(NumericType::SignedInteger, std::get<1>(res));
+    EXPECT_EQ(3,  std::get<2>(res));
+    EXPECT_EQ(32, std::get<3>(res));
+}
+
+TEST(DispatchTests, ThrowTest1) {
+    EXPECT_THROW(test<dispatching::filter::Integers>(DataFormatId::Vec3Float32),
+                 dispatching::DispatchException);
+}
+TEST(DispatchTests, ThrowTest2) {
+    EXPECT_THROW(test<dispatching::filter::Floats>(DataFormatId::Vec3Int32),
+                 dispatching::DispatchException);
+}
+
+TEST(DispatchTests, InstantiationTest1) {
+    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32),
+                               BufferUsage::Static, BufferTarget::Data);
+
+    auto res = dispatch<float, dispatching::filter::Scalars>(buf.get(), [](auto b) {
+        using BT = typename std::decay<decltype(*b)>::type;
+        using DT = typename BT::type;
+
+        DT v1{0};
+        DT v2{1};
+        
+        auto min = std::min(v1,v2);
+        return min;
+    });
+    EXPECT_EQ(0.0f, res);
+}
+
+
+TEST(DispatchTests, InstantiationTest2) {
+    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Vec3Float32),
+                               BufferUsage::Static, BufferTarget::Data);
+
+    auto res = dispatch<float, dispatching::filter::Vecs>(buf.get(), [](auto b) {
+        using BT = typename std::decay<decltype(*b)>::type;
+        using DT = typename BT::type;
+        using VT = typename DT::value_type;
+        DT v1{0};
+        DT v2{1};
+        
+        auto min = glm::min(v1,v2);
+        return min[0];
+    });
+    EXPECT_EQ(0.0f, res);
+}
+
 
 
 } // namespace inviwo
