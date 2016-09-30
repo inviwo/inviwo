@@ -37,6 +37,7 @@
 
 #include <limits>
 #include <string>
+#include <array>
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -187,11 +188,9 @@ public:
     template <typename T, typename... Args>
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
-    // Clean up
-    static void cleanDataFormatBases();
-
 protected:
-    static DataFormatBase* instance_[static_cast<size_t>(DataFormatId::NumberOfFormats)];
+    static std::array<std::unique_ptr<DataFormatBase>,
+                      static_cast<size_t>(DataFormatId::NumberOfFormats)> instance_;
 
     DataFormatId formatId_;
     size_t components_;
@@ -240,9 +239,9 @@ public:
     static constexpr T max();
     static constexpr T min();
     static constexpr T lowest();
-    static double maxToDouble();
-    static double minToDouble();
-    static double lowestToDouble();
+    static constexpr double maxToDouble();
+    static constexpr double minToDouble();
+    static constexpr double lowestToDouble();
     static std::string str();
 
     // Converter functions
@@ -295,9 +294,9 @@ public:
     static constexpr type max();
     static constexpr type min();
     static constexpr type lowest();
-    static double maxToDouble();
-    static double minToDouble();
-    static double lowestToDouble();
+    static constexpr double maxToDouble();
+    static constexpr double minToDouble();
+    static constexpr double lowestToDouble();
     static std::string str();
 
     // Converter functions
@@ -320,13 +319,61 @@ public:
 // Template implementations for DataFormat<T>
 
 template <typename T>
+DataFormat<T>::DataFormat()
+    : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
+                     numericType(), str()) {}
+
+template <typename T>
 const DataFormat<T>* DataFormat<T>::get() {
-    auto d = instance_[static_cast<size_t>(id())];
-    if (!d) {
-        d = new DataFormat<T>();
-        instance_[static_cast<size_t>(id())] = d;
-    }
-    return static_cast<DataFormat<T>*>(d);
+    auto& d = instance_[static_cast<size_t>(id())];
+    if (!d) d = std::make_unique<DataFormat<T>>();
+    return static_cast<DataFormat<T>*>(d.get());
+}
+
+template <typename T>
+constexpr double DataFormat<T>::lowestToDouble() {
+    return static_cast<double>(lowest());
+}
+
+template <typename T>
+constexpr double DataFormat<T>::minToDouble() {
+    return static_cast<double>(min());
+}
+
+template <typename T>
+constexpr double DataFormat<T>::maxToDouble() {
+    return static_cast<double>(max());
+}
+
+template <typename T>
+constexpr T DataFormat<T>::lowest() {
+    return std::numeric_limits<T>::lowest();
+}
+
+template <typename T>
+constexpr T DataFormat<T>::min() {
+    return std::numeric_limits<T>::min();
+}
+
+template <typename T>
+constexpr T DataFormat<T>::max() {
+    return std::numeric_limits<T>::max();
+}
+
+
+template <typename T>
+constexpr size_t DataFormat<T>::components() {
+    return comp;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::size() {
+    return typesize;
+}
+
+template <typename T>
+constexpr size_t DataFormat<T>::precision() {
+    return size() / components() * 8;
 }
 
 template <typename T>
@@ -389,71 +436,6 @@ double DataFormat<T>::valueToDouble(void* val) const {
     return util::glm_convert<double>(*static_cast<type*>(val));
 }
 
-template <typename T>
-constexpr DataFormatId DataFormat<T>::id() {
-     throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
-}
-
-template <typename T>
-std::string DataFormat<T>::str() {
-    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
-}
-
-template <typename T>
-double DataFormat<T>::lowestToDouble() {
-    return static_cast<double>(lowest());
-}
-
-template <typename T>
-double DataFormat<T>::minToDouble() {
-    return static_cast<double>(min());
-}
-
-template <typename T>
-double DataFormat<T>::maxToDouble() {
-    return static_cast<double>(max());
-}
-
-template <typename T>
-constexpr T DataFormat<T>::lowest() {
-    return std::numeric_limits<T>::lowest();
-}
-
-template <typename T>
-constexpr T DataFormat<T>::min() {
-    return std::numeric_limits<T>::min();
-}
-
-template <typename T>
-constexpr T DataFormat<T>::max() {
-    return std::numeric_limits<T>::max();
-}
-
-template <typename T>
-constexpr NumericType DataFormat<T>::numericType() {
-    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
-}
-
-template <typename T>
-constexpr size_t DataFormat<T>::components() {
-    return comp;
-}
-
-template <typename T>
-constexpr size_t DataFormat<T>::size() {
-    return typesize;
-}
-
-template <typename T>
-constexpr size_t DataFormat<T>::precision() {
-    return size() / components() * 8;
-}
-
-template <typename T>
-DataFormat<T>::DataFormat()
-    : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
-                     numericType(), str()) {}
-
 // Template implementations for DataFormat<G<T, glm::defaultp>>
 
 template <typename T, template <typename, glm::precision> class G>
@@ -464,12 +446,9 @@ DataFormat<G<T, glm::defaultp>>::DataFormat()
 
 template <typename T, template <typename, glm::precision> class G>
 auto DataFormat<G<T, glm::defaultp>>::get() -> const DataFormat<type>* {
-    auto d = instance_[static_cast<size_t>(id())];
-    if (!d) {
-        d = new DataFormat<type>();
-        instance_[static_cast<size_t>(id())] = d;
-    }
-    return static_cast<DataFormat<type>*>(d);
+    auto& d = instance_[static_cast<size_t>(id())];
+    if (!d) d = std::make_unique<DataFormat<type>>();
+    return static_cast<DataFormat<type>*>(d.get());
 }
 
 template <typename T, template <typename, glm::precision> class G>
@@ -503,25 +482,21 @@ constexpr auto DataFormat<G<T, glm::defaultp>>::lowest() -> type{
 }
 
 template <typename T, template <typename, glm::precision> class G>
-double DataFormat<G<T, glm::defaultp>>::maxToDouble() {
+constexpr double DataFormat<G<T, glm::defaultp>>::maxToDouble() {
     return static_cast<double>(DataFormat<T>::max());
 }
 template <typename T, template <typename, glm::precision> class G>
-double DataFormat<G<T, glm::defaultp>>::minToDouble() {
+constexpr double DataFormat<G<T, glm::defaultp>>::minToDouble() {
     return static_cast<double>(DataFormat<T>::min());
 }
 template <typename T, template <typename, glm::precision> class G>
-double DataFormat<G<T, glm::defaultp>>::lowestToDouble() {
+constexpr double DataFormat<G<T, glm::defaultp>>::lowestToDouble() {
     return static_cast<double>(DataFormat<T>::lowest());
 }
 
 template <typename T, template <typename, glm::precision> class G>
 std::string DataFormat<G<T, glm::defaultp>>::str() {
     return "Vec" + toString(comp) + DataFormat<T>::str();
-}
-template <typename T, template <typename, glm::precision> class G>
-constexpr DataFormatId DataFormat<G<T, glm::defaultp>>::id() {
-    throw DataFormatException("Missing specialization", IvwContextCustom("DataFormatBase"));
 }
 
 template <typename T, template <typename, glm::precision> class G>
@@ -898,11 +873,6 @@ DEFAULTVALUES(unsigned int, uvec2(1, 1), "UInt", 0, 0, 100, 1)
 DEFAULTVALUES(uvec2, uvec2(2, 1), "UIntVec2", uvec2(0), uvec2(0), uvec2(10), uvec2(1))
 DEFAULTVALUES(uvec3, uvec2(3, 1), "UIntVec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
 DEFAULTVALUES(uvec4, uvec2(4, 1), "UIntVec4", uvec4(0), uvec4(0), uvec4(10), uvec4(1))
-
-//DEFAULTVALUES(glm::uint64, uvec2(1,1), "UInt64", 0, 0, 100, 1)
-//DEFAULTVALUES(u64vec2, uvec2(2, 1), "UInt64Vec2", uvec2(0), uvec2(0), uvec2(10), uvec2(1))
-//DEFAULTVALUES(u64vec3, uvec2(3, 1), "UInt64Vec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
-//DEFAULTVALUES(u64vec4, uvec2(4, 1), "UInt64Vec4", uvec4(0), uvec4(0), uvec4(10), uvec4(1))
 
 #if !defined(ENVIRONMENT32)
 DEFAULTVALUES(size_t, uvec2(1, 1), "Size_t", 0, 0, 100, 1)

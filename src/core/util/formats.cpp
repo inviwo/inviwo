@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-DataFormatBase* DataFormatBase::instance_[] = {nullptr};
+std::array<std::unique_ptr<DataFormatBase>, static_cast<size_t>(DataFormatId::NumberOfFormats)>
+    DataFormatBase::instance_ = {nullptr};
 
 DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
                                double lowest, NumericType nt, const std::string& s)
@@ -46,10 +47,11 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
 
 const DataFormatBase* DataFormatBase::get() {
     if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
-        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] = new DataFormatBase(
-            DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0, NumericType::NotSpecialized, "");
+        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] =
+            std::make_unique<DataFormatBase>(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
+                                             NumericType::NotSpecialized, "");
 
-    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)];
+    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)].get();
 }
 
 const DataFormatBase* DataFormatBase::get(DataFormatId id) {
@@ -63,7 +65,7 @@ const DataFormatBase* DataFormatBase::get(DataFormatId id) {
                 throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
         }
     }
-    return instance_[static_cast<size_t>(id)];
+    return instance_[static_cast<size_t>(id)].get();
 }
 
 const DataFormatBase* DataFormatBase::get(const std::string& name) {
@@ -238,15 +240,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
             break;
     }
     return nullptr;
-}
-
-void DataFormatBase::cleanDataFormatBases() {
-    for (auto& elem : instance_) {
-        if (elem) {
-            delete elem;
-            elem = nullptr;
-        }
-    }
 }
 
 double DataFormatBase::valueToDouble(void*) const {

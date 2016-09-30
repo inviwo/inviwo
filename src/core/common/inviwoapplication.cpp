@@ -65,7 +65,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
-    , clearDataFormats_{[]() { DataFormatBase::cleanDataFormatBases(); }}
     , clearAllSingeltons_{[this]() { cleanupSingletons(); }}
 
     , cameraFactory_{util::make_unique<CameraFactory>()}
