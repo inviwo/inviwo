@@ -48,10 +48,11 @@ namespace inviwo {
  *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __outputImage__ Binary output image
+ *   * __outputImage__ Resulting gradient
  *
  * ### Properties
  *   * __Channel__ Selects the channel used for the gradient computation 
+ *   * __Renormalization__ Re-normalize results by taking the grid spacing into account
  */
 
 

@@ -37,8 +37,8 @@ uniform int channel = 0;
 uniform int renormalization_ = 1;
 
 void main() {
-    const vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
-    const vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
+    vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
+    vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
 
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
     vec2 gradient;
