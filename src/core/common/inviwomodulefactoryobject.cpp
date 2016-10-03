@@ -28,13 +28,16 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
-InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name,
-                                                     const std::string& description,
-                                                     std::vector<std::string> depends)
-    : name_(name), description_(description), depends_(depends) {}
+InviwoModuleFactoryObject::InviwoModuleFactoryObject(
+    const std::string& name, const std::string& version, const std::string& description, const std::string& inviwoCoreVersion, 
+    std::vector<std::string> dependencies, std::vector<std::string> dependenciesVersion)
+    : name_(name), version_(version), description_(description), inviwoCoreVersion_(inviwoCoreVersion), depends_(dependencies), dependenciesVersion_(dependenciesVersion) {
+    ivwAssert(depends_.size() == dependenciesVersion_.size(), "Each module dependency must have a version");
+}
 
 InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
     

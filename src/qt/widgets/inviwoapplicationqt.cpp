@@ -167,8 +167,9 @@ void InviwoApplicationQt::registerModules(RegisterModuleFunc regModuleFunc) {
         auto modules = regModuleFunc();
 
         // Since QtWidgets are not a module we have to register it our self
+        auto QtWidgetModuleVersion = "1.0.0";
         modules.emplace_back(new InviwoModuleFactoryObjectTemplate<QtWidgetModule>(
-            "QtWidgetModule", "Module with Qt implementation of all propertywidgets etc.", {}));
+            "QtWidgetModule", QtWidgetModuleVersion, "Module with Qt implementation of all propertywidgets etc.", IVW_VERSION, {}, {}));
 
         return modules;
     };

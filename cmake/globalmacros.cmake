@@ -160,13 +160,17 @@ function(ivw_private_generate_module_registration_file modules_var)
         list(APPEND functions ${factory_object})
         
         string(TOUPPER ${${mod}_class} u_module)
+		list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
         set(create_module_object
             "    //#ifdef REG_${mod}\n"
             "    IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
             "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            "        \"${${mod}_class}\",\n"
-            "        \"${${mod}_description}\",\n" 
-            "        ${module_depends_vector}\n" 
+            "        \"${${mod}_class}\",// Module name \n"
+			"        \"${${mod}_version}\",// Module version\n"
+            "        \"${${mod}_description}\", // Description\n" 
+			"        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
+            "        ${module_depends_vector}, // Dependencies\n" 
+			"        ${module_depends_version_vector} // Version number of dependencies\n" 
             "        )__SEMICOLON__\n"
             "    }\n"
             "    //#endif\n"
@@ -274,6 +278,8 @@ function(ivw_register_modules retval)
                 ivw_dir_to_module_taget_name(target ${dir}) # OpenGL -> inviwo-module-opengl
                 # Get the classname with the right casing
                 ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+				# Get module version
+				ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
                 list(APPEND modules ${mod})
                 set("${mod}_dir"    "${dir}"                CACHE INTERNAL "Module dir")
                 set("${mod}_base"   "${module_path}"        CACHE INTERNAL "Module base")
@@ -282,6 +288,7 @@ function(ivw_register_modules retval)
                 set("${mod}_target" "${target}"             CACHE INTERNAL "Module target")
                 set("${mod}_class"  "${name}"               CACHE INTERNAL "Module class")
                 set("${mod}_name"   "Inviwo${name}Module"   CACHE INTERNAL "Module name")
+				set("${mod}_version" "${version}"           CACHE INTERNAL "Module version")
 
                 # Check of there is a depends.cmake
                 # Defines dependencies, aliases
@@ -378,6 +385,26 @@ function(ivw_register_modules retval)
             endif()
         endforeach()
         set("${mod}_ivw_dependencies" ${ivw_dependencies} CACHE INTERNAL "Module inviwo module dependencies")
+    endforeach()
+	
+	# Add module versions dependencies
+    foreach(mod ${modules})
+        set(dependencies_version "")
+        foreach(dependency ${${mod}_dependencies})
+		    ivw_mod_name_to_mod_dep(dep ${dependency})
+            list(FIND modules ${dep} found)
+            if(NOT ${found} EQUAL -1)
+			    list(GET modules ${found} module)
+				# ivw_message("${${mod}_class}: ${dependency} version ${${module}_version}")
+                list(APPEND dependencies_version ${${module}_version})
+            else()
+				# Dependency was not found, not an inviwo module...
+				# TODO: How do we deal with these types of dependencies?
+				# ivw_message("${${mod}_class}: ${dependency} dependency not found")
+                # list(APPEND dependencies_version "1.0.0")
+            endif()
+        endforeach()
+        set("${mod}_dependenciesversion" ${dependencies_version} CACHE INTERNAL "Module dependency versions")
     endforeach()
 
     # Sort modules by dependencies

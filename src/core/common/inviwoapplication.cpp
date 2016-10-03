@@ -220,8 +220,75 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
         return failed.end();
     };
 
+    auto checkVersionCompability = [](const std::string referenceVersion, const std::string toCompare) {
+        istringstream refSS(referenceVersion);
+        std::string refMajor, refMinor, refPatch;
+        std::getline(refSS, refMajor, '.'); std::getline(refSS, refMinor, '.'); std::getline(refSS, refPatch, '.');
+        istringstream toCompSS(toCompare);
+        std::string toCompMajor, toCompMinor, toCompPatch;
+        std::getline(toCompSS, toCompMajor, '.');
+        std::getline(toCompSS, toCompMinor, '.');
+        std::getline(toCompSS, toCompPatch, '.');
+        // Major and minor versions need to be the same.
+        if (refMajor != toCompMajor || refMinor != toCompMinor) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+
+    auto checkDepencyVersion = [&](const std::string& dep, const std::string& depVersions) {
+        std::map<std::string, std::string> incorrectDepencencyVersions;
+        auto lowerCaseDep = dep;
+        std::transform(lowerCaseDep.begin(), lowerCaseDep.end(),
+            lowerCaseDep.begin(), ::tolower);
+        // Find module
+        auto it = util::find_if(modulesFactoryObjects_, [&](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
+            auto lowerCaseNameA = module->name_;
+            std::transform(lowerCaseNameA.begin(), lowerCaseNameA.end(),
+                lowerCaseNameA.begin(), ::tolower);
+            return lowerCaseNameA == lowerCaseDep;
+        });
+        // Check if dependent module is of correct version
+        if (it != modulesFactoryObjects_.end() && checkVersionCompability((*it)->version_, depVersions)) {
+            return true;
+        }
+        else {
+            return false;
+        };
+    };
+
+
     for (auto& moduleObj : modulesFactoryObjects_) {
         postProgress("Loading module: " + moduleObj->name_);
+        // Make sure that the module supports the current inviwo core version
+        if (checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion_ + ", current version is " + IVW_VERSION);
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+            continue;
+        }
+        // Check if dependency modules have correct versions.
+        // Note that the module version only need to be increased 
+        // when changing and the inviwo core version has not changed
+        // since we are ensuring the they must be built for the 
+        // same core version. 
+        auto versionIt = moduleObj->dependenciesVersion_.cbegin();
+        auto anyIncorrectDependencyVersions = false;
+        std::stringstream dependencyVersionError;
+        for (auto dep = moduleObj->depends_.cbegin();
+            dep != moduleObj->depends_.end(); ++dep, ++versionIt) {
+            if (!checkDepencyVersion(*dep, *versionIt)) {                
+                dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but another version was loaded" << std::endl;
+            };
+        }
+        if (dependencyVersionError.str().size() > 0) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: " + dependencyVersionError.str());
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+            continue;
+        }
         try {
             auto it = checkdepends(moduleObj->depends_);
             if (it == failed.end()) {
