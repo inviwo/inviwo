@@ -124,7 +124,7 @@ struct port_traits<std::vector<T*, Alloc>> {
     static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<T*, Alloc>* data) {
         return "Vector of size " + toString(data->size()) +
-               (!data->empty()
+               (!data->empty() && data->front()
                     ? "<br/>with pointers to:<br/>" + port_traits<T>::data_info(data->front())
                     : " ");
     }
@@ -137,7 +137,7 @@ struct port_traits<std::vector<std::unique_ptr<T, D>, A>> {
     static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<std::unique_ptr<T, D>, A>* data) {
         return "Vector of size " + toString(data->size()) +
-               (!data->empty()
+               (!data->empty() && data->front()
                     ? "<br/>with unique pointers to:<br/> " +
                           port_traits<T>::data_info(data->front().get())
                     : " ");
@@ -151,7 +151,7 @@ struct port_traits<std::vector<std::shared_ptr<T>, A>> {
     static uvec3 color_code() { return glm::min(uvec3(30, 30, 30) + port_traits<T>::color_code(), uvec3(255)); }
     static std::string data_info(const std::vector<std::shared_ptr<T>, A>* data) {
         return "Vector of size " + toString(data->size()) +
-               (!data->empty()
+               (!data->empty() && data->front()
                     ? "<br/>with shared pointers to:<br/> " +
                           port_traits<T>::data_info(data->front().get())
                     : " ");

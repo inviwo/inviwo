@@ -272,8 +272,8 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
                     dynamic_cast<const Vec3BufferRAM*>(buff.second->getRepresentation<BufferRAM>());
 
                 if (posbuff) {
-                    const std::vector<vec3>* pos = posbuff->getDataContainer();
-                    for (const auto& p : *pos) {
+                    const auto& pos = posbuff->getDataContainer();
+                    for (const auto& p : pos) {
                         minPos = glm::min(minPos, p);
                         maxPos = glm::max(maxPos, p);
                     }
@@ -301,7 +301,7 @@ void MeshRenderProcessorGL::setNearFarPlane() {
 
     auto pos = posBuffer->getDataContainer();
 
-    if (pos->empty()) return;
+    if (pos.empty()) return;
 
     float nearDist, farDist;
     nearDist = std::numeric_limits<float>::infinity();
@@ -310,7 +310,7 @@ void MeshRenderProcessorGL::setNearFarPlane() {
     vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() *
                    vec4(camera_.getLookFrom(), 1.0))
                       .xyz();
-    for (auto& po : *pos) {
+    for (auto& po : pos) {
         auto d = glm::distance2(po, camPos);
         if (d < nearDist) {
             nearDist = d;

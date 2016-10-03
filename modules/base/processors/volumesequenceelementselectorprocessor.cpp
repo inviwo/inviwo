@@ -34,7 +34,7 @@ namespace inviwo {
 const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
     "org.inviwo.TimeStepSelector",       // Class identifier
     "Volume Sequence Element Selector",  // Display name
-    "Volume Operation",                  // Category
+    "Data Selector",                     // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
 };

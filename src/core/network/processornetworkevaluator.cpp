@@ -132,8 +132,11 @@ void ProcessorNetworkEvaluator::evaluate() {
                 } catch (...) {
                     exceptionHandler_(IvwContext);
                 }
-                // set processor as valid
-                processor->setValid();
+
+                // Set processor as valid only if we still are ready. 
+                // Callbacks might have made our inports invalid, if so abort
+                // the evaluation by not setting the processor valid.
+                if (processor->isReady()) processor->setValid();
 
                 processor->notifyObserversFinishedProcess(processor);
 

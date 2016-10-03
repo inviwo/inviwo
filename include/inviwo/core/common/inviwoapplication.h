@@ -213,7 +213,6 @@ protected:
 
     InteractionStateManager interactionState_;
 
-    util::OnScopeExit clearDataFormats_;
     util::OnScopeExit clearAllSingeltons_;
 
     // Factories

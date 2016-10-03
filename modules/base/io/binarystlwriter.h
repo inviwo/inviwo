@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STLWRITER_H
-#define IVW_STLWRITER_H
+#ifndef IVW_BINARYSTLWRITER_H
+#define IVW_BINARYSTLWRITER_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,18 +39,17 @@
 
 namespace inviwo {
 
-
 /**
- * \class StlWriter
- * \brief Export Meshes in the STL format
+ * \class BinarySTLWriter
+ * \brief Export Meshes in the binary STL format
  */
-class IVW_MODULE_BASE_API StlWriter : public DataWriterType<Mesh> {
+class IVW_MODULE_BASE_API BinarySTLWriter : public DataWriterType<Mesh> {
 public:
-    StlWriter();
-    StlWriter(const StlWriter&) = default;
-    StlWriter& operator=(const StlWriter&) = default;
-    virtual StlWriter* clone() const override;
-    virtual ~StlWriter() = default;
+    BinarySTLWriter();
+    BinarySTLWriter(const BinarySTLWriter&) = default;
+    BinarySTLWriter& operator=(const BinarySTLWriter&) = default;
+    virtual BinarySTLWriter* clone() const override;
+    virtual ~BinarySTLWriter() = default;
 
     virtual void writeData(const Mesh* data, const std::string filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
@@ -60,7 +59,9 @@ private:
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
+
+
 } // namespace
 
-#endif // IVW_STLWRITER_H
+#endif // IVW_BINARYSTLWRITER_H
 

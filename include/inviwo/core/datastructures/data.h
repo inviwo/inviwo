@@ -100,7 +100,6 @@ public:
 template <class Repr>
 class Data : public BaseData {
 public:
-    Data();
     Data(const DataFormatBase*);
     Data(const Data<Repr>& rhs);
     Data<Repr>& operator=(const Data<Repr>& rhs);
@@ -196,10 +195,6 @@ protected:
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
     const DataFormatBase* dataFormatBase_;
 };
-
-template <class Repr>
-Data<Repr>::Data()
-    : BaseData(), lastValidRepresentation_(), dataFormatBase_(DataFormatBase::get()) {}
 
 template <class Repr>
 Data<Repr>::Data(const DataFormatBase* format)

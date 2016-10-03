@@ -31,47 +31,57 @@
 
 namespace inviwo {
 
-DataFormatBase* DataFormatBase::instance_[] = {nullptr};
+std::array<std::unique_ptr<DataFormatBase>, static_cast<size_t>(DataFormatId::NumberOfFormats)>
+    DataFormatBase::instance_ = {nullptr};
 
-DataFormatBase::DataFormatBase() : formatId_(id()), components_(components()), size_(size()), formatStr_("") {}
-
-DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min, double lowest,
-                               NumericType nt, std::string s)
-    : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), lowest_(lowest), formatStr_(s) {}
-
-DataFormatBase::~DataFormatBase() {}
+DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
+                               double lowest, NumericType nt, const std::string& s)
+    : formatId_(t)
+    , components_(c)
+    , size_(size)
+    , numericType_(nt)
+    , max_(max)
+    , min_(min)
+    , lowest_(lowest)
+    , formatStr_(s) {}
 
 const DataFormatBase* DataFormatBase::get() {
     if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
-        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] = new DataFormatBase();
+        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] =
+            std::make_unique<DataFormatBase>(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
+                                             NumericType::NotSpecialized, "");
 
-    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)];
+    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)].get();
 }
 
 const DataFormatBase* DataFormatBase::get(DataFormatId id) {
-    if (!instance_[static_cast<size_t>(id)]){
-        if (id == DataFormatId::NotSpecialized) return DataFormatBase::get();
-#define DataFormatIdMacro(i) else if(id == DataFormatId::i) return Data##i::get();
+    if (!instance_[static_cast<size_t>(id)]) {
+        switch(id) {
+#define DataFormatIdMacro(i) case DataFormatId::i: return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
+            case DataFormatId::NotSpecialized:
+            case DataFormatId::NumberOfFormats:
+            default:
+                throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
+        }
     }
-
-    return instance_[static_cast<size_t>(id)];
+    return instance_[static_cast<size_t>(id)].get();
 }
 
-const DataFormatBase* DataFormatBase::get(std::string name) {
-    name = toLower(name);
-    if (name == "") return DataFormatBase::get();
-#define DataFormatIdMacro(i) else if(name == toLower(#i)) return Data##i::get();
+const DataFormatBase* DataFormatBase::get(const std::string& name) {
+    auto lname = toLower(name);
+    if (lname == "uchar") return DataUInt8::get();
+    else if (lname == "char") return DataInt8::get();
+    else if (lname == "ushort") return DataUInt16::get();
+    else if (lname == "short") return DataInt16::get();
+    else if (lname == "uint") return DataUInt32::get();
+    else if (lname == "int") return DataInt32::get();
+    else if (lname == "float") return DataFloat32::get();
+    else if (lname == "double") return DataFloat64::get();
+#define DataFormatIdMacro(i) else if(lname == toLower(#i)) return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
-    else if (name == "uchar") return DataUInt8::get();
-    else if (name == "char") return DataInt8::get();
-    else if (name == "ushort") return DataUInt16::get();
-    else if (name == "short") return DataInt16::get();
-    else if (name == "uint") return DataUInt32::get();
-    else if (name == "int") return DataInt32::get();
-    else if (name == "float") return DataFloat32::get();
-    else if (name == "double") return DataFloat64::get();
-    else return DataFormatBase::get();
+
+    throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
 }
 
 const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
@@ -232,15 +242,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
     return nullptr;
 }
 
-void DataFormatBase::cleanDataFormatBases() {
-    for (auto& elem : instance_) {
-        if (elem) {
-            delete elem;
-            elem = nullptr;
-        }
-    }
-}
-
 double DataFormatBase::valueToDouble(void*) const {
     return 0.0;
 }
@@ -301,6 +302,10 @@ size_t DataFormatBase::getComponents() const {
     return components_;
 }
 
+size_t DataFormatBase::getPrecision() const {
+    return size_ / components_ * 8;
+}
+
 double DataFormatBase::getMax() const {
     return max_;
 }
@@ -320,5 +325,8 @@ const char* DataFormatBase::getString() const {
 DataFormatId DataFormatBase::getId() const {
     return formatId_;
 }
+
+DataFormatException::DataFormatException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 } // namespace

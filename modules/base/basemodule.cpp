@@ -50,6 +50,7 @@
 #include <modules/base/processors/surfaceextraction.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/imagesequenceelementselectorprocessor.h>
+#include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
@@ -77,6 +78,10 @@
 #include <modules/base/processors/volumecurlcpuprocessor.h>
 #include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/meshexport.h>
+
+#include <modules/base/io/stlwriter.h>
+#include <modules/base/io/binarystlwriter.h>
+#include <modules/base/io/wavefrontwriter.h>
 
 namespace inviwo {
 
@@ -118,7 +123,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceSource>();
     registerProcessor<VolumeSequenceElementSelectorProcessor>();
     registerProcessor<ImageSequenceElementSelectorProcessor>();
-
+    registerProcessor<MeshSequenceElementSelectorProcessor>();
+    
     registerProcessor<VolumeBoundingBox>();
     registerProcessor<SingleVoxel>();
 
@@ -142,6 +148,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerPort<DataOutport<LightSource>>("LightSourceOutport");
     registerPort<BufferInport>("BufferInport");
     registerPort<BufferOutport>("BufferOutport");
+    
+    registerDataWriter(util::make_unique<StlWriter>());
+    registerDataWriter(util::make_unique<BinarySTLWriter>());
+    registerDataWriter(util::make_unique<WaveFrontWriter>());
 }
 
 int BaseModule::getVersion() const {

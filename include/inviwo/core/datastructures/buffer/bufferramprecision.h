@@ -42,11 +42,14 @@ namespace inviwo {
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
 public:
+    using type = T;
+    static const BufferTarget target = Target;
+
     BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
-    BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs);
-    BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that);
+    BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs) = default;
+    BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that) = default;
     virtual ~BufferRAMPrecision() = default;
     virtual BufferRAMPrecision<T, Target>* clone() const override;
 
@@ -55,8 +58,8 @@ public:
 
     virtual void* getData() override;
     virtual const void* getData() const override;
-    std::vector<T>* getDataContainer();
-    const std::vector<T>* getDataContainer() const;
+    std::vector<T>& getDataContainer();
+    const std::vector<T>& getDataContainer() const;
 
     virtual double getAsDouble(const size_t& pos) const override;
     virtual dvec2 getAsDVec2(const size_t& pos) const override;
@@ -81,6 +84,7 @@ public:
     void add(const T& item);
     void add(std::initializer_list<T> data);
     void append(const std::vector<T>* data);
+    void append(const std::vector<T>& data);
 
     T& operator[](size_t i);
     const T& operator[](size_t i) const;
@@ -92,7 +96,7 @@ public:
     void clear();
 
 private:
-    std::unique_ptr<std::vector<T>> data_;
+    std::vector<T> data_;
 };
 
 using FloatBufferRAM = BufferRAMPrecision<float>;
@@ -104,12 +108,12 @@ using IndexBufferRAM = BufferRAMPrecision<std::uint32_t, BufferTarget::Index>;
 
 template <typename T, BufferTarget Target>
 const T& inviwo::BufferRAMPrecision<T, Target>::operator[](size_t i) const {
-    return (*data_)[i];
+    return data_[i];
 }
 
 template <typename T, BufferTarget Target>
 T& inviwo::BufferRAMPrecision<T, Target>::operator[](size_t i) {
-    return (*data_)[i];
+    return data_[i];
 }
 
 template <typename T, BufferTarget Target>
@@ -118,29 +122,12 @@ BufferRAMPrecision<T, Target>::BufferRAMPrecision(BufferUsage usage)
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>::BufferRAMPrecision(size_t size, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(new std::vector<T>(size)) {}
+    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(size) {}
 
 template <typename T, BufferTarget Target>
 inviwo::BufferRAMPrecision<T, Target>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
     : BufferRAM(DataFormat<T>::get(), usage, Target)
-    , data_(util::make_unique<std::vector<T>>(std::move(data))) {}
-
-template <typename T, BufferTarget Target>
-BufferRAMPrecision<T, Target>::BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs)
-    : BufferRAM(rhs), data_(new std::vector<T>(rhs.data_->size())) {
-    *data_ = *(rhs.data_);
-}
-
-template <typename T, BufferTarget Target>
-BufferRAMPrecision<T, Target>& inviwo::BufferRAMPrecision<T, Target>::operator=(const BufferRAMPrecision<T, Target>& that) {
-    if (this != &that) {
-        BufferRAM::operator=(that);
-        auto data = util::make_unique<std::vector<T>>(that.data_->size());
-        *data = *(that.data_);
-        std::swap(data, data_);
-    }
-    return *this;
-}
+    , data_(std::move(data)) {}
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>* BufferRAMPrecision<T, Target>::clone() const {
@@ -149,149 +136,154 @@ BufferRAMPrecision<T, Target>* BufferRAMPrecision<T, Target>::clone() const {
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setSize(size_t size) {
-    return data_->resize(size);
+    return data_.resize(size);
 }
 
 template <typename T, BufferTarget Target>
 size_t BufferRAMPrecision<T, Target>::getSize() const {
-    return data_->size();
+    return data_.size();
 }
 
 template <typename T, BufferTarget Target>
 void* BufferRAMPrecision<T, Target>::getData() {
-    return (data_->empty() ? nullptr : data_->data());
+    return (data_.empty() ? nullptr : data_.data());
 }
 
 template <typename T, BufferTarget Target>
 const void* BufferRAMPrecision<T, Target>::getData() const {
-    return (data_->empty() ? nullptr : data_->data());
+    return (data_.empty() ? nullptr : data_.data());
 }
 
 template <typename T, BufferTarget Target>
-std::vector<T>* inviwo::BufferRAMPrecision<T, Target>::getDataContainer() {
-    return data_.get();
+std::vector<T>& inviwo::BufferRAMPrecision<T, Target>::getDataContainer() {
+    return data_;
 }
 
 template <typename T, BufferTarget Target>
-const std::vector<T>* BufferRAMPrecision<T, Target>::getDataContainer() const {
-    return data_.get();
+const std::vector<T>& BufferRAMPrecision<T, Target>::getDataContainer() const {
+    return data_;
 }
 
 template <typename T, BufferTarget Target>
 double BufferRAMPrecision<T, Target>::getAsDouble(const size_t& pos) const {
-    return util::glm_convert<double>((*data_)[pos]);
+    return util::glm_convert<double>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec2 BufferRAMPrecision<T, Target>::getAsDVec2(const size_t& pos) const {
-    return util::glm_convert<dvec2>((*data_)[pos]);
+    return util::glm_convert<dvec2>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec3 BufferRAMPrecision<T, Target>::getAsDVec3(const size_t& pos) const {
-    return util::glm_convert<dvec3>((*data_)[pos]);
+    return util::glm_convert<dvec3>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec4 BufferRAMPrecision<T, Target>::getAsDVec4(const size_t& pos) const {
-    return util::glm_convert<dvec4>((*data_)[pos]);
+    return util::glm_convert<dvec4>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromDouble(const size_t& pos, double val) {
-    (*data_)[pos] = util::glm_convert<T>(val);
+    data_[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromDVec2(const size_t& pos, dvec2 val) {
-    (*data_)[pos] = util::glm_convert<T>(val);
+    data_[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromDVec3(const size_t& pos, dvec3 val) {
-    (*data_)[pos] = util::glm_convert<T>(val);
+    data_[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromDVec4(const size_t& pos, dvec4 val) {
-    (*data_)[pos] = util::glm_convert<T>(val);
+    data_[pos] = util::glm_convert<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 double BufferRAMPrecision<T, Target>::getAsNormalizedDouble(const size_t& pos) const {
-    return util::glm_convert_normalized<double>((*data_)[pos]);
+    return util::glm_convert_normalized<double>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec2 BufferRAMPrecision<T, Target>::getAsNormalizedDVec2(const size_t& pos) const {
-    return util::glm_convert_normalized<dvec2>((*data_)[pos]);
+    return util::glm_convert_normalized<dvec2>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec3 BufferRAMPrecision<T, Target>::getAsNormalizedDVec3(const size_t& pos) const {
-    return util::glm_convert_normalized<dvec3>((*data_)[pos]);
+    return util::glm_convert_normalized<dvec3>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 dvec4 BufferRAMPrecision<T, Target>::getAsNormalizedDVec4(const size_t& pos) const {
-    return util::glm_convert_normalized<dvec4>((*data_)[pos]);
+    return util::glm_convert_normalized<dvec4>(data_[pos]);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromNormalizedDouble(const size_t& pos, double val) {
-    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+    data_[pos] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromNormalizedDVec2(const size_t& pos, dvec2 val) {
-    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+    data_[pos] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromNormalizedDVec3(const size_t& pos, dvec3 val) {
-    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+    data_[pos] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::setFromNormalizedDVec4(const size_t& pos, dvec4 val) {
-    (*data_)[pos] = util::glm_convert_normalized<T>(val);
+    data_[pos] = util::glm_convert_normalized<T>(val);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::add(const T& item) {
-    data_->push_back(item);
+    data_.push_back(item);
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::add(std::initializer_list<T> data) {
     for (auto& elem : data) {
-        data_->push_back(elem);
+        data_.push_back(elem);
     }
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::append(const std::vector<T>* data) {
-    data_->insert(data_->end(), data->begin(), data->end());
+    data_.insert(data_.end(), data->begin(), data->end());
+}
+
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::append(const std::vector<T>& data) {
+    data_.insert(data_.end(), data.begin(), data.end());
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::set(size_t index, const T& item) {
-    data_->at(index) = item;
+    data_[index] = item;
 }
 
 template <typename T, BufferTarget Target>
 T BufferRAMPrecision<T, Target>::get(size_t index) const {
-    return data_->at(index);
+    return data_[index];
 }
 
 template <typename T, BufferTarget Target>
 T& BufferRAMPrecision<T, Target>::get(size_t index) {
-    return data_->at(index);
+    return data_[index];
 }
 
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::clear() {
-    data_->clear();
+    data_.clear();
 }
 
 }  // namespace

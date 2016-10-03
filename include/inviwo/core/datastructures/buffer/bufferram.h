@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/formatdispatching.h>
 
 namespace inviwo {
 
@@ -41,8 +42,8 @@ namespace inviwo {
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
-    BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
-              BufferUsage usage = BufferUsage::Static, BufferTarget target = BufferTarget::Data);
+    BufferRAM(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
+              BufferTarget target = BufferTarget::Data);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
     virtual BufferRAM* clone() const override = 0;
@@ -74,7 +75,68 @@ public:
     virtual void setFromNormalizedDVec4(const size_t& pos, dvec4 val) = 0;
 
     virtual std::type_index getTypeIndex() const override final;
+
+    template <typename Result, template <class> class Predicate = dispatching::filter::All,
+              typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) -> Result;
+
+    template <typename Result, template <class> class Predicate = dispatching::filter::All,
+              typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 };
+
+template <typename T, BufferTarget Target>
+class BufferRAMPrecision;
+
+struct BufferRamDispatcher {
+    template <typename Result, typename Format, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
+        switch (bufferram->getBufferTarget()) {
+            case BufferTarget::Data:
+                return obj(
+                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(
+                        bufferram),
+                    std::forward<Args>(args)...);
+            case BufferTarget::Index:
+                return obj(
+                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Index>*>(
+                        bufferram),
+                    std::forward<Args>(args)...);
+        }
+    }
+};
+
+struct BufferRamConstDispatcher {
+    template <typename Result, typename Format, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, const BufferRAM* bufferram, Args... args) {
+        switch (bufferram->getBufferTarget()) {
+            case BufferTarget::Data:
+                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
+                                                                BufferTarget::Data>*>(bufferram),
+                           std::forward<Args>(args)...);
+            case BufferTarget::Index:
+                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
+                                                                BufferTarget::Index>*>(bufferram),
+                           std::forward<Args>(args)...);
+        }
+    }
+};
+
+template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
+    BufferRamDispatcher dispatcher;
+    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
+                                                    std::forward<Callable>(callable), this,
+                                                    std::forward<Args>(args)...);
+}
+
+template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+auto BufferRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
+    BufferRamConstDispatcher dispatcher;
+    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
+                                                    std::forward<Callable>(callable), this,
+                                                    std::forward<Args>(args)...);
+}
 
 /**
  * Factory for buffers.
@@ -87,17 +149,16 @@ public:
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
-                                                        BufferUsage usage, BufferTarget target = BufferTarget::Data);
+                                                        BufferUsage usage,
+                                                        BufferTarget target = BufferTarget::Data);
 
-template <typename T, BufferTarget Target>
-class BufferRAMPrecision;
 
 template <BufferUsage U = BufferUsage::Static, typename T = vec3, BufferTarget Target = BufferTarget::Data>
 std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> data) {
     return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), DataFormat<T>::get(), U);
 }
 
-struct BufferRamDispatcher {
+struct BufferRamCreationDispatcher {
     using type = std::shared_ptr<BufferRAM>;
     template <class T>
     std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage, BufferTarget target) {

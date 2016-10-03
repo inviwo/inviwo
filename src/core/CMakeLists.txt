@@ -185,8 +185,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositepropertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/filepatternproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
@@ -243,6 +243,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
@@ -431,8 +432,8 @@ set(SOURCE_FILES
     properties/compositepropertyobserver.cpp
     properties/directoryproperty.cpp
     properties/eventproperty.cpp
-    properties/fileproperty.cpp
     properties/filepatternproperty.cpp
+    properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
@@ -472,6 +473,7 @@ set(SOURCE_FILES
     util/fileobserver.cpp
     util/filesystem.cpp
     util/formatconversion.cpp
+    util/formatdispatching.cpp
     util/formats.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
@@ -518,6 +520,7 @@ ivw_add_pch_path(${PCH_PATH_FILES})
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/commandlineparser-test.cpp
+    tests/unittests/dispatch-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/serialize-container-test.cpp

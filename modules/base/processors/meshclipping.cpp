@@ -155,35 +155,40 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed(){
     planeNormal_.set(glm::normalize(camera_.getLookTo() - camera_.getLookFrom()));
 
     // Calculate new plane point by finding the closest geometry point to the camera
+
     auto geom = inport_.getData();
-    const std::vector<vec3>* vertexList;
-    const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(geom.get());
-    if (simpleInputMesh) {
-        vertexList = simpleInputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
-    }
-    else {
-        const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(geom.get());
-        if (basicInputMesh) {
-            vertexList = basicInputMesh->getVertices()->getRAMRepresentation()->getDataContainer();
-        }
-        else {
-            LogError("Unsupported mesh type, only simple and basic meshes are supported");
-            return;
-        }
+    
+    auto it = util::find_if(geom->getBuffers(), [](const auto& buf) {
+        return buf.first.type == BufferType::PositionAttrib;
+    });
+    if (it == geom->getBuffers().end()) {
+        LogError("Unsupported mesh, no buffers with the Position Atrribute found");
+        return;
     }
 
-    float minDist = glm::distance(camera_.getLookFrom(), vertexList->at(0));
-    vec3 closestVertex = vertexList->at(0);
-    for (unsigned int t = 1; t < vertexList->size(); ++t) {
-        // Calculate distance to camera
-        float dist = glm::distance(camera_.getLookFrom(), vertexList->at(t));
-        if (dist < minDist){
-            minDist = dist;
-            closestVertex = vertexList->at(t);
-        }
-    }
+    const auto ram = it->second->getRepresentation<BufferRAM>();
 
-    planePoint_.set(closestVertex);
+    if (ram && ram->getDataFormat()->getComponents() == 3) {
+        ram->dispatch<void, dispatching::filter::Float3s>([&](auto pb) -> void {
+            const auto& vertexList = pb->getDataContainer();
+
+            auto closestVertex = vertexList[0];
+            decltype(closestVertex) lookFrom{camera_.getLookFrom()};
+            auto minDist = glm::distance(lookFrom, closestVertex);
+            
+            for (const auto& vertex : vertexList) {
+                // Calculate distance to camera
+                auto dist = glm::distance(lookFrom, vertex);
+                if (dist < minDist){
+                    minDist = dist;
+                    closestVertex = vertex;
+                }
+            }
+            planePoint_.set(closestVertex);
+        });
+    } else {
+        LogError("Unsupported mesh, only 3D meshes supported");
+    }
 }
 
 // Convert degrees to radians
@@ -330,19 +335,19 @@ Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane)
     
     const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(in);
     if (simpleInputMesh) {
-        vertexList = simpleInputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
-        texcoordlist = simpleInputMesh->getTexCoordList()->getRAMRepresentation()->getDataContainer();
-        colorList = simpleInputMesh->getColorList()->getRAMRepresentation()->getDataContainer();
-        triangleList = simpleInputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
+        vertexList = &simpleInputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
+        texcoordlist = &simpleInputMesh->getTexCoordList()->getRAMRepresentation()->getDataContainer();
+        colorList = &simpleInputMesh->getColorList()->getRAMRepresentation()->getDataContainer();
+        triangleList = &simpleInputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
         indexAttrInfo = simpleInputMesh->getIndexMeshInfo(0).ct;
     } else {
         // TODO do clipping in all the index list now we only consider the first one 
         const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(in);
         if(basicInputMesh) {
-            vertexList = basicInputMesh->getVertices()->getRAMRepresentation()->getDataContainer();
-            texcoordlist = basicInputMesh->getTexCoords()->getRAMRepresentation()->getDataContainer();
-            colorList = basicInputMesh->getColors()->getRAMRepresentation()->getDataContainer();
-            triangleList = basicInputMesh->getIndexBuffers()[0].second->getRAMRepresentation()->getDataContainer();
+            vertexList = &basicInputMesh->getVertices()->getRAMRepresentation()->getDataContainer();
+            texcoordlist = &basicInputMesh->getTexCoords()->getRAMRepresentation()->getDataContainer();
+            colorList = &basicInputMesh->getColors()->getRAMRepresentation()->getDataContainer();
+            triangleList = &basicInputMesh->getIndexBuffers()[0].second->getRAMRepresentation()->getDataContainer();
             indexAttrInfo = basicInputMesh->getIndexBuffers()[0].first.ct;
         } else {
             LogError("Unsupported mesh type, only simeple and basic meshes are supported");
@@ -747,8 +752,8 @@ Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
         -   Use correct outputEdgeList to create a correctly sorted triangle strip list
     */
     //LogInfo("Fetching vertex- and triangle lists.");
-    const std::vector<vec3>* inputList = inputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
-    const std::vector<unsigned int>* triangleList = inputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
+    const std::vector<vec3>* inputList = &inputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
+    const std::vector<unsigned int>* triangleList = &inputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
     std::vector<EdgeIndex> edgeList = triangleListtoEdgeList(triangleList);
     std::vector<unsigned int> clippedVertInd;
     // For each clip plane, do:

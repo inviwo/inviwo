@@ -50,7 +50,7 @@ template <typename T, typename OutportType = DataOutport<T>>
 class VectorElementSelectorProcessor : public Processor {
 public:
     VectorElementSelectorProcessor();
-    virtual ~VectorElementSelectorProcessor(){};
+    virtual ~VectorElementSelectorProcessor() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override = 0;
 
