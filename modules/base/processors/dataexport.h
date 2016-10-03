@@ -109,22 +109,24 @@ void DataExport<DataType, PortType>::exportData() {
         }
 
         if (!writer) {
-            LogError("Error: Cound not find a writer for the specified extension and data type");
+            LogProcessorError(
+                "Error: Cound not find a writer for the specified extension and data type");
             return;
         }
 
         try {
             writer->setOverwrite(overwrite_.get());
             writer->writeData(data, file_.get());
-            LogInfo("Data exported to disk: " << file_.get());
+            util::log(IvwContext, "Data exported to disk: " + file_.get(), LogLevel::Info,
+                      LogAudience::User);
         } catch (DataWriterException const& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
 
     } else if (file_.get().empty()) {
-        LogWarn("Error: Please specify a file to write to");
+        LogProcessorWarn("Error: Please specify a file to write to");
     } else if (!data) {
-        LogWarn("Error: Please connect a port to export");
+        LogProcessorWarn("Error: Please connect a port to export");
     }
 }
 

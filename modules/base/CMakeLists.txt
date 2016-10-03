@@ -16,7 +16,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datasource.h
@@ -33,6 +35,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
@@ -80,7 +83,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
@@ -95,6 +100,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp

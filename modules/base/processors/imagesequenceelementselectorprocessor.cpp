@@ -34,7 +34,7 @@ namespace inviwo {
 const ProcessorInfo ImageSequenceElementSelectorProcessor::processorInfo_{
     "org.inviwo.ImageTimeStepSelector",  // Class identifier
     "Image Sequence Element Selector",   // Display name
-    "Image Operation",                   // Category
+    "Data Selector",                   // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
 };

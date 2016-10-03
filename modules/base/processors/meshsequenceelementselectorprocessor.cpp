@@ -27,40 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STLWRITER_H
-#define IVW_STLWRITER_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-
-#include <ostream>
+#include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 
 namespace inviwo {
 
-
-/**
- * \class StlWriter
- * \brief Export Meshes in the STL format
- */
-class IVW_MODULE_BASE_API StlWriter : public DataWriterType<Mesh> {
-public:
-    StlWriter();
-    StlWriter(const StlWriter&) = default;
-    StlWriter& operator=(const StlWriter&) = default;
-    virtual StlWriter* clone() const override;
-    virtual ~StlWriter() = default;
-
-    virtual void writeData(const Mesh* data, const std::string filePath) const override;
-    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Mesh* data, const std::string& fileExtension) const override;
-
-private:
-    void writeData(const Mesh* data, std::ostream& os) const;
+const ProcessorInfo MeshSequenceElementSelectorProcessor::processorInfo_{
+    "org.inviwo.MeshTimeStepSelector",  // Class identifier
+    "Mesh Sequence Element Selector",   // Display name
+    "Data Selector",                    // Category
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
 };
+const ProcessorInfo MeshSequenceElementSelectorProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
+MeshSequenceElementSelectorProcessor::MeshSequenceElementSelectorProcessor()
+    : VectorElementSelectorProcessor<Mesh, MeshOutport>() {
+    timeStep_.index_.autoLinkToProperty<MeshSequenceElementSelectorProcessor>(
+        "timeStep.selectedSequenceIndex");
+}
 
 } // namespace
-
-#endif // IVW_STLWRITER_H
 

@@ -27,40 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STLWRITER_H
-#define IVW_STLWRITER_H
+#ifndef IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H
+#define IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
+#include <modules/base/processors/vectorelementselectorprocessor.h>
 
-#include <ostream>
 
 namespace inviwo {
 
-
-/**
- * \class StlWriter
- * \brief Export Meshes in the STL format
+/** \docpage{org.inviwo.MeshTimeStepSelector, Mesh Sequence Element Selector}
+ * ![](org.inviwo.MeshTimeStepSelector.png?classIdentifier=org.inviwo.MeshTimeStepSelector)
+ *
+ * Select a specific volume out of a sequence of meshs
+ *
+ * ### Inport
+ *   * __inport__ Sequence of meshs
+ * ### Outport
+ *   * __outport__ Selected mesh
+ *
+ * ### Properties
+ *   * __Step__ The mesh sequence index to extract
  */
-class IVW_MODULE_BASE_API StlWriter : public DataWriterType<Mesh> {
+
+class IVW_MODULE_BASE_API MeshSequenceElementSelectorProcessor
+    : public VectorElementSelectorProcessor<Mesh, MeshOutport> {
 public:
-    StlWriter();
-    StlWriter(const StlWriter&) = default;
-    StlWriter& operator=(const StlWriter&) = default;
-    virtual StlWriter* clone() const override;
-    virtual ~StlWriter() = default;
+    MeshSequenceElementSelectorProcessor();
+    virtual ~MeshSequenceElementSelectorProcessor() = default;
 
-    virtual void writeData(const Mesh* data, const std::string filePath) const override;
-    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Mesh* data, const std::string& fileExtension) const override;
-
-private:
-    void writeData(const Mesh* data, std::ostream& os) const;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 };
 
 } // namespace
 
-#endif // IVW_STLWRITER_H
+#endif // IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H
 

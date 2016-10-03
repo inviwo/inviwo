@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/io/stlwriter.h>
+#include <modules/base/io/binarystlwriter.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 
@@ -36,31 +36,32 @@
 
 namespace inviwo {
 
-StlWriter::StlWriter() : DataWriterType<Mesh>() {
-    addExtension(FileExtension("stl","STL ASCII file format"));
+
+BinarySTLWriter::BinarySTLWriter() : DataWriterType<Mesh>() {
+    addExtension(FileExtension("stl","STL Binary file format"));
 }
 
-StlWriter* StlWriter::clone() const {
-    return new StlWriter(*this);
+BinarySTLWriter* BinarySTLWriter::clone() const {
+    return new BinarySTLWriter(*this);
 }
 
-void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
+void BinarySTLWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
         throw DataWriterException("File already exists: " + filePath, IvwContext);
     }
-    std::ofstream f(filePath, std::ios_base::out);
+    std::ofstream f(filePath, std::ios_base::out | std::ios_base::binary);
     writeData(data, f);
 }
 
-std::unique_ptr<std::vector<unsigned char>> StlWriter::writeDataToBuffer(
+std::unique_ptr<std::vector<unsigned char>> BinarySTLWriter::writeDataToBuffer(
     const Mesh* data, const std::string& fileExtension) const {
-    std::stringstream ss;
+    std::stringstream ss(std::ios_base::binary);
     writeData(data, ss);
     auto stringdata = ss.str();
     return util::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 
-void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
+void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     auto pit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
@@ -81,8 +82,6 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     const auto model = data->getModelMatrix();
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
     
-    
-    
     const auto proj = [&](const auto& d1) {
         using GT = typename std::decay<decltype(d1)>::type;
         using T = typename GT::value_type;
@@ -91,12 +90,12 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     };
 
     auto vertexprinter =
-        posRam->dispatch<std::function<void(std::ostream&, size_t)>, dispatching::filter::Vec3s>(
-            [&](auto pb) -> std::function<void(std::ostream&, size_t)> {
-                return [&proj, pb](std::ostream& fs, size_t i) {
+        posRam->dispatch<std::function<void(std::vector<vec3>&, size_t)>, dispatching::filter::Vec3s>(
+            [&](auto pb) -> std::function<void(std::vector<vec3>&, size_t)> {
+                return [&proj, pb](std::vector<vec3>& faces, size_t i) {
                     auto& pos = *pb;
                     const auto v = proj(pos[i]);
-                    fs << v.x << " " << v.y << " " << v.z << "\n";
+                    faces.push_back(static_cast<vec3>(v));
                 };
             });
 
@@ -108,41 +107,37 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
             if (const auto normRam = nit->second->getRepresentation<BufferRAM>()) {
                 if (normRam->getDataFormat()->getComponents() == 3) {
                     return normRam
-                        ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,
+                        ->dispatch<std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>,
                                    dispatching::filter::Vec3s>(
-                            [&](auto nb)
-                                -> std::function<void(std::ostream & fs, size_t, size_t, size_t)> {
-                                return [&modelNormal, nb](std::ostream& fs, size_t i1,
-                                                              size_t i2, size_t i3) {
+                            [&](auto nb) -> std::function<void(std::vector<vec3> & normals, size_t,
+                                                               size_t, size_t)> {
+                                return [&modelNormal, nb](std::vector<vec3>& normals, size_t i1,
+                                                          size_t i2, size_t i3) {
                                     auto& norm = *nb;
                                     const auto n1 = modelNormal * norm[i1];
                                     const auto n2 = modelNormal * norm[i2];
                                     const auto n3 = modelNormal * norm[i3];
                                     const auto n = glm::normalize(n1 + n2 + n3);
-                                    fs << n.x << " " << n.y << " " << n.z << "\n";
+                                    normals.push_back(static_cast<vec3>(n));
                                 };
                             });
                 }
             }
         }
-        return std::function<void(std::ostream&, size_t, size_t, size_t)>(
-            [&f](std::ostream& fs, size_t i1, size_t i2, size_t i3) -> void {
-                fs << "0.0 0.0 0.0\n";
+        return std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>(
+            [&f](std::vector<vec3>& normals, size_t i1, size_t i2, size_t i3) -> void {
+                normals.emplace_back(0.0);
             });
     }();
 
+    std::vector<vec3> floatdata;
     const auto triangle = [&](const auto& i1, const auto& i2, const auto& i3) {
-        f << "facet normal "; normalprinter(f, i1, i2, i3);
-        f << "    outer loop\n";
-        f << "        vertex "; vertexprinter(f, i1);
-        f << "        vertex "; vertexprinter(f, i2);
-        f << "        vertex "; vertexprinter(f, i3);
-        f << "    endloop\n";
-        f << "endfacet\n";
+        normalprinter(floatdata, i1, i2, i3);
+        vertexprinter(floatdata, i1);
+        vertexprinter(floatdata, i2);
+        vertexprinter(floatdata, i3);
     };
-
-    f << "solid inviwo stl file\n";
-
+    
     for (const auto& inds : data->getIndexBuffers()) {
 
         if (inds.first.dt != DrawType::Triangles) {
@@ -192,8 +187,19 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
                 break;
         }
     }
-
-    f << "endsolid inviwo stl file\n";
+    
+    std::uint16_t attrib {0};
+    std::array<char, 80> header = {0};
+    f.write(header.data(), header.size());
+    std::uint32_t size = floatdata.size() / 4;
+    f.write(reinterpret_cast<char*>(&size), sizeof(size));
+    for (size_t i = 0; i < floatdata.size() - 4u; i += 4) {
+        f.write(reinterpret_cast<char*>(&floatdata[i+0]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i+1]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i+2]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i+3]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&attrib), sizeof(attrib));
+    }
 }
 
 } // namespace
