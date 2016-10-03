@@ -48,6 +48,8 @@
 #include <Shlobj.h>
 #elif defined(__APPLE__)
 #include <CoreServices/CoreServices.h>
+#include <libproc.h> // proc_pidpath
+#include <unistd.h>
 #else
 #include <unistd.h>
 #endif
@@ -71,6 +73,42 @@ std::string getWorkingDirectory() {
 
 #endif
     return std::string(workingDir);
+}
+
+std::string getExecutablePath() {
+    // http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
+    auto pathSize = FILENAME_MAX;
+    std::unique_ptr<char> executablePath(new char[pathSize]);
+#ifdef WIN32
+    auto size = GetModuleFileNameA(nullptr, executablePath.get(), pathSize);
+    while (size == pathSize) {
+        // Buffer is too small, enlarge
+        pathSize *= 2;
+        executablePath = std::unique_ptr<char>(new char[pathSize]);
+        if (executablePath.get() == nullptr) break;
+        size = GetModuleFileNameA(nullptr, executablePath.get(), pathSize);
+    }
+#elif __APPLE__
+    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
+    auto pathSize = PROC_PIDPATHINFO_MAXSIZE;
+    executablePath = std::unique_ptr<char>(new char[pathSize]);
+    auto pid = getpid();
+    if (proc_pidpath(pid, executablePath.get(), pathSize) <= 0) {
+        // Error retrieving path
+        return "";
+    };
+#else // Linux
+    auto size = ::readlink("/proc/self/exe", executablePath.get(), pathSize - 1);
+    if (size != -1) {
+        // readlink does not append a NUL character to the path
+        executablePath[size] = '\0';
+    }
+    else {
+        // Error retrieving path
+        return "";
+    }
+#endif
+    return std::string(executablePath.get());
 }
 
 bool fileExists(const std::string& filePath) {

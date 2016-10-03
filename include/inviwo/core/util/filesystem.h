@@ -50,6 +50,12 @@ namespace filesystem {
 IVW_CORE_API std::string getWorkingDirectory();
 
 /**
+ * Get full/path/to/executable running the application.
+ * @return Full path to the executable if successfull, empty string otherwise.
+ */
+IVW_CORE_API std::string getExecutablePath();
+
+/**
  * \brief Check if a file exists.
  * @see directoryExists for directories
  * @param std::string fileName The path to the file
