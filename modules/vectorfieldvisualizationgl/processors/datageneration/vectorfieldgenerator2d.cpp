@@ -50,7 +50,7 @@ const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const {
 
     VectorFieldGenerator2D::VectorFieldGenerator2D()
         : Processor()
-        , outport_("outport", DataVec4Float32::get(),false)
+        , outport_("outport", DataVec2Float32::get(),false)
         , shader_("vectorfieldgenerator2d.frag", false)
         , fbo_()
         , size_("size", "Volume size", ivec2(16), ivec2(1), ivec2(1024))
@@ -83,7 +83,7 @@ void VectorFieldGenerator2D::initializeResources() {
 
 void VectorFieldGenerator2D::process() {
 
-    image_ = std::make_shared<Image>(size_.get(), DataVec4Float32::get());
+    image_ = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
 
     utilgl::activateAndClearTarget(*(image_.get()), ImageType::ColorOnly);
 
@@ -96,9 +96,6 @@ void VectorFieldGenerator2D::process() {
     utilgl::deactivateCurrentTarget();
 
     outport_.setData(image_);
-
-   /* auto ram = image_->getEditableRepresentation<ImageRAM>();
-    auto i = 0;*/
 }
 
 } // namespace

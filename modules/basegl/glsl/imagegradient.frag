@@ -34,9 +34,11 @@ uniform ImageParameters outportParameters_;
 uniform sampler2D inport_;
 uniform int channel = 0;
 
+uniform int renormalization_ = 1;
+
 void main() {
- 	const vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
- 	const vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
+    vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
+    vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
 
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
     vec2 gradient;
@@ -44,5 +46,8 @@ void main() {
     gradient.x = (texture(inport_,texCoords + dx )[channel] - texture(inport_,texCoords - dx )[channel]) * 0.5;
     gradient.y = (texture(inport_,texCoords + dy )[channel] - texture(inport_,texCoords - dy )[channel]) * 0.5;
 
-    FragData0 = vec4(gradient / outportParameters_.reciprocalDimensions.x, 0, 1); 
+    if (renormalization_  > 0) {
+        gradient /= outportParameters_.reciprocalDimensions.x;
+    }
+    FragData0 = vec4(gradient, 0, 1); 
 }
