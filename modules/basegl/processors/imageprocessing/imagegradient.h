@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
@@ -47,10 +48,11 @@ namespace inviwo {
  *   * __inputImage__ Input image
  *
  * ### Outports
- *   * __outputImage__ Binary output image
+ *   * __outputImage__ Resulting gradient
  *
  * ### Properties
  *   * __Channel__ Selects the channel used for the gradient computation 
+ *   * __Renormalization__ Re-normalize results by taking the grid spacing into account
  */
 
 
@@ -71,6 +73,7 @@ protected:
 
 private:
     OptionPropertyInt channel_;
+    BoolProperty renormalization_;
 };
 
 } // namespace

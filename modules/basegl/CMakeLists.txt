@@ -115,6 +115,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_binary.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_findedges.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_gamma.frag
