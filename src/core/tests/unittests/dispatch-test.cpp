@@ -66,7 +66,7 @@ res_t test(DataFormatId id) {
     return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
-        return {DataFormat<DT>::id(), DataFormat<DT>::numericType(), DataFormat<DT>::components(),
+        return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(), DataFormat<DT>::components(),
                 DataFormat<DT>::precision()};
     });
 }
