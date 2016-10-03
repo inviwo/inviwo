@@ -42,12 +42,14 @@ IVW_CORE_API void ivwAssertion(const char* fileName, const char* functionName, l
 }  // namespace
 
 #if defined(IVW_DEBUG)
-#define ivwAssert(condition, message)                                                 \
-    {                                                                                 \
-        std::ostringstream stream__;                                                  \
-        stream__ << message;                                                          \
-        if (!(bool(condition)))                                                       \
-            inviwo::ivwAssertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str())); \
+#define ivwAssert(condition, message)                                                  \
+    {                                                                                  \
+                                                                                       \
+        if (!(bool(condition))){                                                       \
+            std::ostringstream stream__;                                               \
+            stream__ << message;                                                       \
+            inviwo::ivwAssertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str()));  \
+        }                                                                              \
     }
 #else
 #define ivwAssert(condition, message)
