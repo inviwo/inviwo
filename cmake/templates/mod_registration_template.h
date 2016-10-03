@@ -6,16 +6,8 @@ namespace inviwo {
 typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-
-    std::string subfolder;
-#if WIN32
-# ifdef _DEBUG
-    subfolder = "/../../bin/Debug";
-# else
-    subfolder = "/../../bin/Release";
-# endif
-#endif
-    auto files = filesystem::getDirectoryContents(filesystem::getWorkingDirectory() + subfolder, filesystem::ListMode::Files);
+    
+    auto files = filesystem::getDirectoryContents(filesystem::getFileDirectory(filesystem::getExecutablePath()), filesystem::ListMode::Files);
 #if WIN32
     std::string libraryType = "dll";
 #else
