@@ -58,7 +58,7 @@ class DataInport : public Inport, public InportIterable<T, Flat> {
 public:
     using type = T;
     DataInport(std::string identifier);
-    virtual ~DataInport();
+    virtual ~DataInport() = default;
 
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
@@ -85,9 +85,6 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string identifier)
     : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
-
-template <typename T, size_t N, bool Flat>
-DataInport<T, N, Flat>::~DataInport() {}
 
 template <typename T, size_t N, bool Flat>
 std::string inviwo::DataInport<T, N, Flat>::getClassIdentifier() const {

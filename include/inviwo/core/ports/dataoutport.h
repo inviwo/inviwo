@@ -48,7 +48,7 @@ class DataOutport : public Outport, public OutportIterableImpl<T> {
 public:
     using type = T;
     DataOutport(std::string identifier);
-    virtual ~DataOutport();
+    virtual ~DataOutport() = default;
 
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
@@ -77,9 +77,6 @@ DataOutport<T>::DataOutport(std::string identifier)
     : Outport(identifier)
     , OutportIterableImpl<T>(this)
     , data_() {}
-
-template <typename T>
-DataOutport<T>::~DataOutport() {}
 
 template <typename T>
 std::string inviwo::DataOutport<T>::getClassIdentifier() const {
