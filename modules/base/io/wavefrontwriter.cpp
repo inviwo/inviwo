@@ -113,7 +113,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
                     });
                 } else if (texRam->getDataFormat()->getComponents() == 2) {
                     hasTextures = true;
-                    texRam->dispatch<void, dispatching::filter::Vec3s>([&](auto pb) {
+                    texRam->dispatch<void, dispatching::filter::Vec2s>([&](auto pb) {
                         for (const auto& elem : pb->getDataContainer()) {
                             const auto v = elem;
                             f << "vt " << v.x << " " << v.y << "\n";

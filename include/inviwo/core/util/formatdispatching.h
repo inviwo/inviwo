@@ -40,6 +40,9 @@ namespace inviwo {
 
 namespace dispatching {
 
+/**
+ *	Exception thrown but the dispatcher when a format can't be found.
+ */
 class IVW_CORE_API DispatchException : public Exception {
 public:
     DispatchException(const std::string &message = "",
@@ -49,6 +52,9 @@ public:
 
 namespace detail {
 
+/**
+ * Helper class to add types to a tuple.
+ */
 template <typename, typename>
 struct Cons;
 
@@ -57,6 +63,9 @@ struct Cons<T, std::tuple<Args...>> {
     using type = std::tuple<T, Args...>;
 };
 
+/**
+ *	Helper class to filter a list ot types based on a predicate
+ */
 template <template <class> class Predicate, typename...>
 struct Filter;
 
@@ -78,6 +87,11 @@ struct Filter<Predicate, std::tuple<Args...>> {
     using type = typename Filter<Predicate, Args...>::type;
 };
 
+
+/**
+ * Helper class to find the matching DataFormatId amoung a sorted list of types.
+ * Does a binary search in the type list.
+ */
 template <typename Result, int B, int E, typename... Args>
 struct DispatchHelper {};
 
@@ -111,6 +125,24 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
 
 } // namespace detail
 
+
+/**
+ * Function for dispatching a DataFormat based on the DataFormatId. 
+ * The matching DataFormat is found using binary search in the type list.
+ *
+ * # Template arguments:
+ *  * __Result__ the return type of the lambda.
+ *  * __Predicate__ A type that is used to filter the list of types to consider in the
+ *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
+ *
+ * @param callable This should be a struct with a generic call operator taking two template 
+ * arguments the result type and DataFormat type. The callable will be called with the supplied 
+ * arguments (`args`).
+ * @param args Any arguments that should be passed on to the lambda.
+ *
+ * @throws dispatching::DispatchException in the case that the format of the buffer is not in
+ * the list of formats after the filtering.
+ */
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
     // Has to be in order of increasing id
@@ -168,32 +200,85 @@ auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
                                                      std::forward<Args>(args)...);
 }
 
+/**
+ *	Namespace with standard DataFormat type filters.
+ */
 namespace filter {
 
+/**
+ *	Default filters matches all types.
+ */
 template <typename Format>
 struct All : std::true_type {};
+
+/**
+ *	Matches all floating point types. float, double, half, vec2, dvec3,...
+ */
 template <typename Format>
 struct Floats : std::integral_constant<bool, Format::numtype == NumericType::Float> {};
+
+/**
+ *	Matches all floating point scalar types.
+ */
+template <typename Format>
+struct Float1s
+    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 1> {};
+/**
+ *	Matches all floating point glm vectors types of length 2.
+ */
+
 template <typename Format>
 struct Float2s
     : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 2> {};
+
+/**
+ *	Matches all floating point glm vectors types of length 3.
+ */
 template <typename Format>
 struct Float3s
     : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 3> {};
+
+/**
+ *	Matches all floating point glm vectors types of length 4.
+ */
 template <typename Format>
 struct Float4s
     : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 4> {};
 
+/**
+ *	Matches all integer types, i.e. int, ivec2, uvec3...
+ */
 template <typename Format>
 struct Integers : std::integral_constant<bool, Format::numtype != NumericType::Float> {};
-template <typename Format>
-struct Vecs : std::integral_constant<bool, Format::comp >= 2> {};
+
+
+/**
+ *	Matches all scalar types, i.e. int, char, long... 
+ */
 template <typename Format>
 struct Scalars : std::integral_constant<bool, Format::comp == 1> {};
+
+/**
+ *	Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
+ */
+template <typename Format>
+struct Vecs : std::integral_constant<bool, Format::comp >= 2> {};
+
+/**
+ * Matches all glm vector types of length 2.
+ */
 template <typename Format>
 struct Vec2s : std::integral_constant<bool, Format::comp == 2> {};
+
+/**
+ * Matches all glm vector types of length 3.
+ */
 template <typename Format>
 struct Vec3s : std::integral_constant<bool, Format::comp == 3> {};
+
+/**
+ * Matches all glm vector types of length 4.
+ */
 template <typename Format>
 struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
 
