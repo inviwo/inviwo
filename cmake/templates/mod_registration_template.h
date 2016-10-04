@@ -10,9 +10,12 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
     auto files = filesystem::getDirectoryContents(filesystem::getFileDirectory(filesystem::getExecutablePath()), filesystem::ListMode::Files);
 #if WIN32
     std::string libraryType = "dll";
+    // Prevent error mode dialogs from displaying.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
 #else
     std::string libraryType = "so";
 #endif
+
     for (const auto& filePath : files) {
         if (filesystem::getFileExtension(filePath) == libraryType) {
             HINSTANCE hGetProcIDDLL = LoadLibraryA(filePath.c_str());
