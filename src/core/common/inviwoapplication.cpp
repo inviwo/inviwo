@@ -150,24 +150,16 @@ void topologicalSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& gr
         std::find_if(std::begin(graph), std::end(graph),
                      [&](const std::unique_ptr<InviwoModuleFactoryObject>& a) {
                         // Lower case comparison
-                         return a->name_.size() == i.size() &&
-                                equal(i.cbegin(), i.cend(), a->name_.cbegin(),
-                                      [](std::string::value_type l1, std::string::value_type r1) {
-                                          return ::tolower(l1) == ::tolower(r1);
-                                      });
+                         return toLower(a->name_) == toLower(i);
                      });
     if (it == std::end(graph)) {
         // This dependency has not been loaded
         return;
     }
-    auto nodeName = (*it)->name_;
-    std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
-    explored.insert(nodeName);
+    explored.insert(toLower((*it)->name_));
 
     for (const auto& dependency : (*it)->depends_) {
-        auto lowerCaseDependency = dependency;
-        std::transform(lowerCaseDependency.begin(), lowerCaseDependency.end(),
-                       lowerCaseDependency.begin(), ::tolower);
+        auto lowerCaseDependency = toLower(dependency);
         if (explored.find(lowerCaseDependency) == explored.end()) {
             topologicalSort(graph, explored, lowerCaseDependency, sorted, t);
         }
@@ -189,9 +181,7 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     auto t = modulesFactoryObjects_.size();
     std::vector<std::string> sorted(modulesFactoryObjects_.size());
     for (const auto& module : modulesFactoryObjects_) {
-        auto lowerCaseName = module->name_;
-        std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(),
-                       ::tolower);
+        auto lowerCaseName = toLower(module->name_); 
         if (explored.find(lowerCaseName) == explored.end()) {
             topologicalSort(modulesFactoryObjects_, explored, lowerCaseName, sorted, t);
         }
@@ -200,14 +190,8 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     std::sort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_),
               [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
                   const std::unique_ptr<InviwoModuleFactoryObject>& b) {
-                  auto lowerCaseNameA = a->name_;
-                  std::transform(lowerCaseNameA.begin(), lowerCaseNameA.end(),
-                                 lowerCaseNameA.begin(), ::tolower);
-                  auto lowerCaseNameB = b->name_;
-                  std::transform(lowerCaseNameB.begin(), lowerCaseNameB.end(),
-                                 lowerCaseNameB.begin(), ::tolower);
-                  return std::find(std::begin(sorted), std::end(sorted), lowerCaseNameA) >
-                         std::find(std::begin(sorted), std::end(sorted), lowerCaseNameB);
+                  return std::find(std::begin(sorted), std::end(sorted), toLower(a->name_)) >
+                         std::find(std::begin(sorted), std::end(sorted), toLower(b->name_));
               });
 
     std::vector<std::string> failed;
@@ -239,15 +223,10 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
 
     auto checkDepencyVersion = [&](const std::string& dep, const std::string& depVersions) {
         std::map<std::string, std::string> incorrectDepencencyVersions;
-        auto lowerCaseDep = dep;
-        std::transform(lowerCaseDep.begin(), lowerCaseDep.end(),
-            lowerCaseDep.begin(), ::tolower);
+        auto lowerCaseDep = toLower(dep);
         // Find module
         auto it = util::find_if(modulesFactoryObjects_, [&](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
-            auto lowerCaseNameA = module->name_;
-            std::transform(lowerCaseNameA.begin(), lowerCaseNameA.end(),
-                lowerCaseNameA.begin(), ::tolower);
-            return lowerCaseNameA == lowerCaseDep;
+            return toLower(module->name_) == lowerCaseDep;
         });
         // Check if dependent module is of correct version
         if (it != modulesFactoryObjects_.end() && checkVersionCompability((*it)->version_, depVersions)) {
@@ -262,7 +241,7 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     for (auto& moduleObj : modulesFactoryObjects_) {
         postProgress("Loading module: " + moduleObj->name_);
         // Make sure that the module supports the current inviwo core version
-        if (checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
+        if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
             LogError("Failed to register module: " + moduleObj->name_);
             LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion_ + ", current version is " + IVW_VERSION);
             util::push_back_unique(failed, toLower(moduleObj->name_));
