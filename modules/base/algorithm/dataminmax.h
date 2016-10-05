@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class VolumeRam;
+class VolumeRAM;
 class LayerRAM;
 class BufferRAM;
 
