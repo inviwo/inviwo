@@ -35,12 +35,12 @@
 
 namespace inviwo {
 
-class VolumeRam;
+class VolumeRAM;
 
 namespace util {
 
 IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeSubSample(const VolumeRAM* in,
-                                                                  size3_t factors);
+                                                               size3_t factors);
 
 }  // namespace
 

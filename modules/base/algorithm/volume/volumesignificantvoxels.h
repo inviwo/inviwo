@@ -31,6 +31,7 @@
 #define IVW_VOLUMESIGNIFICANTVOXELS_H
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <modules/base/algorithm/algorithmoptions.h>
 
 namespace inviwo {
