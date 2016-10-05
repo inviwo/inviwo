@@ -32,47 +32,11 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+
 
 namespace inviwo {
-namespace util {
-namespace detail {
 
-struct VolumeMinMaxDispatcher {
-    using type = std::pair<dvec4, dvec4>;
 
-    template <typename T>
-    std::pair<dvec4, dvec4> dispatch(const VolumeRAM* volume) {
-        using dataType = typename T::type;
-        using primitive = typename T::primitive;
-        auto data = static_cast<const dataType*>(volume->getData());
-        auto df = volume->getDataFormat();
-
-#include <warn/push>
-#include <warn/ignore/conversion>  // Visual Studio 2015 complains about type conversion despite static_cast
-        dataType minV(static_cast<primitive>(df->getMax()));
-        dataType maxV(static_cast<primitive>(df->getLowest()));
-#include <warn/pop>
-
-        const auto dim = volume->getDimensions();
-        const auto size = dim.x * dim.y * dim.z;
-        for (size_t i = 0; i < size; i++) {
-            auto v = data[i];
-
-            if (util::all(v != v + dataType(1))) {
-                minV = glm::min(minV, v);
-                maxV = glm::max(maxV, v);
-            }
-        }
-
-        return {util::glm_convert<dvec4>(minV), util::glm_convert<dvec4>(maxV)};
-    }
-};
-}  // namespace
-
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const VolumeRAM* volume);
-
-}  // namespace
 
 }  // namespace
 

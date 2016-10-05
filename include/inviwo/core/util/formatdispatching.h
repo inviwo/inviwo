@@ -35,6 +35,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <tuple>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -285,6 +286,40 @@ struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
 } // namespace filter
 
 } // namespace dispatching
+
+
+namespace util {
+
+/**
+ * Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable.
+ * Example usage:
+ * ```{.cpp}
+ * VolumeRam* volumeram = ...; // of some glm vector type.
+ * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
+ *     using VolumeType = util::PrecsionType<decltype(vr)>;
+ *     ....
+ * ```
+ * VolumeType will then be for example VolumeRamPrecision<vec3>
+ */
+template <typename T>
+using PrecsionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
+
+/**
+ * Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable.
+ * Example usage:
+ * ```{.cpp}
+ * VolumeRam* volumeram = ...; // of some glm vector type.
+ * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
+ *     using ValueType = util::PrecsionValueType<decltype(vr)>;
+ *     ....
+ * ```
+ * ValueType will then be for example vec3
+ */
+template <typename T>
+using PrecsionValueType = typename PrecsionType<T>::type;
+
+}  // namespace util
+
 
 } // namespace inviwo
 

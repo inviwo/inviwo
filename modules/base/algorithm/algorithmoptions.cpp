@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/volume/volumeminmax.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <modules/base/algorithm/algorithmoptions.h>
 
 namespace inviwo {
 
 
+} // namespace
 
-}  // namespace

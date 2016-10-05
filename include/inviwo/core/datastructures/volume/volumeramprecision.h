@@ -43,12 +43,17 @@ namespace inviwo {
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
+    using type = T;
+
     VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128));
     VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128));
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
+
+    T* getDataTyped();
+    const T* getDataTyped() const;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -116,16 +121,6 @@ IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimension
                                                         const DataFormatBase* format,
                                                         void* dataPtr = nullptr);
 
-struct VolumeRamDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(void* dataPtr, const size3_t& dimensions) {
-        typedef typename T::type F;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions);
-    }
-};
-
-
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions)
     : VolumeRAM(DataFormat<T>::get())
@@ -172,6 +167,16 @@ VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
 template <typename T>
 VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
     return new VolumeRAMPrecision<T>(*this);
+}
+
+template <typename T>
+const T* inviwo::VolumeRAMPrecision<T>::getDataTyped() const {
+    return data_.get();
+}
+
+template <typename T>
+T* inviwo::VolumeRAMPrecision<T>::getDataTyped() {
+    return data_.get();
 }
 
 template <typename T>

@@ -34,17 +34,15 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
-
 namespace inviwo {
 
-    namespace util {
+namespace util {
 
-        IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
+IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
 
+}  // namespace
 
-    }
-
-} // namespace
+}  // namespace
 
 #endif // IVW_VOLUMECURL_H
 

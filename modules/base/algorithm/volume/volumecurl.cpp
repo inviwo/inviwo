@@ -42,34 +42,36 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
 
     newVolume->dataMap_ = volume->dataMap_;
 
-    auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
-    auto a = m * vec4(0, 0, 0, 1);
-    auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
-    auto spacing = b - a;
+    const auto a = m * vec4(0, 0, 0, 1);
+    const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
+    const auto spacing = b - a;
 
-    vec3 ox = vec3(spacing.x, 0, 0);
-    vec3 oy = vec3(0, spacing.y, 0);
-    vec3 oz = vec3(0, 0, spacing.z);
+    const vec3 ox(spacing.x, 0, 0);
+    const vec3 oy(0, spacing.y, 0);
+    const vec3 oz(0, 0, spacing.z);
 
     VolumeDoubleSampler<4> sampler(volume);
-    auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+    const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
 
     util::IndexMapper3D index(volume->getDimensions());
     auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
-            float minV = std::numeric_limits<float>::max(), maxV = std::numeric_limits<float>::lowest();
+    float minV = std::numeric_limits<float>::max();
+    float maxV = std::numeric_limits<float>::lowest();
 
-    std::function<void(const size3_t&)> func = [&](const size3_t& pos) {
-        vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
+    auto func = [&](const size3_t& pos) {
+        const vec3 world =
+            (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
-        auto Fx =
+        const auto Fx =
             (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) /
             (2.0 * spacing.x);
-        auto Fy =
+        const auto Fy =
             (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace)) /
             (2.0 * spacing.y);
-        auto Fz =
+        const auto Fz =
             (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) /
             (2.0 * spacing.z);
 
@@ -78,22 +80,17 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
         c.y = static_cast<float>(Fz.x - Fx.z);
         c.z = static_cast<float>(Fx.y - Fy.x);
 
-                minV = std::min(minV, c.x);
-                minV = std::min(minV, c.y);
-                minV = std::min(minV, c.z);
-                maxV = std::max(maxV, c.x);
-                maxV = std::max(maxV, c.y);
-                maxV = std::max(maxV, c.z);
+        minV = std::min({minV, c.x, c.y, c.z});
+        maxV = std::max({maxV, c.x, c.y, c.z});
 
         data[index(pos)] = c;
     };
 
     util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
 
-            auto range = std::max(std::abs(minV), std::abs(maxV));
-            newVolume->dataMap_.dataRange = dvec2(-range, range);
-            newVolume->dataMap_.valueRange = dvec2(minV, maxV);
-
+    auto range = std::max(std::abs(minV), std::abs(maxV));
+    newVolume->dataMap_.dataRange = dvec2(-range, range);
+    newVolume->dataMap_.valueRange = dvec2(minV, maxV);
 
     return newVolume;
 }

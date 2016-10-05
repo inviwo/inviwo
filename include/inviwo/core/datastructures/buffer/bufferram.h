@@ -63,7 +63,6 @@ public:
     virtual void setFromDVec3(const size_t& pos, dvec3 val) = 0;
     virtual void setFromDVec4(const size_t& pos, dvec4 val) = 0;
 
-
     virtual double getAsNormalizedDouble(const size_t& pos) const = 0;
     virtual dvec2 getAsNormalizedDVec2(const size_t& pos) const = 0;
     virtual dvec3 getAsNormalizedDVec3(const size_t& pos) const = 0;
@@ -87,8 +86,8 @@ public:
      * ```{.cpp}
      * BufferRam* bufferram = ...; // of some glm vector type.
      * auto count = bufferram->dispatch<size_t, dispatching::filter::Vecs>([](auto brprecision) {
-     *     using BufferType = typename std::decay<decltype(brprecision)>::type;
-     *     using ValueType = typename BufferType::value_type;
+     *     using BufferType = util::PrecsionType<decltype(brprecision)>;
+     *     using ValueType = util::PrecsionValueType<decltype(brprecision)>;
      *     
      *     std::vector<ValueType>& data = brprecision->getDataContainer();
      *     return std::count_if(data.begin(), data.end(), [](auto x){return x > ValueType{0};});
@@ -109,7 +108,7 @@ public:
      *  * __Vecs__ Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
      *  * __VecNs__ Matches all glm vector types of length N. N = 2,3,4.
      *  * __FloatNs__ Matches all floating point glm vector types of length N. N = 2,3,4.
-
+     *
      * @param callable This should be a generic lambda or a struct with a generic call operator.
      * it will be called with the specific BufferRamPresision<T> as the first argument and any
      * additional arguments (`args`) appended to that.
@@ -133,6 +132,7 @@ public:
 template <typename T, BufferTarget Target>
 class BufferRAMPrecision;
 
+namespace detail {
 struct BufferRamDispatcher {
     template <typename Result, typename Format, typename Callable, typename... Args>
     Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
@@ -166,10 +166,11 @@ struct BufferRamConstDispatcher {
         }
     }
 };
+}
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
-    BufferRamDispatcher dispatcher;
+    detail::BufferRamDispatcher dispatcher;
     return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
                                                     std::forward<Callable>(callable), this,
                                                     std::forward<Args>(args)...);
@@ -177,7 +178,7 @@ auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
-    BufferRamConstDispatcher dispatcher;
+    detail::BufferRamConstDispatcher dispatcher;
     return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
                                                     std::forward<Callable>(callable), this,
                                                     std::forward<Args>(args)...);
@@ -197,26 +198,12 @@ IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataF
                                                         BufferUsage usage,
                                                         BufferTarget target = BufferTarget::Data);
 
-
-template <BufferUsage U = BufferUsage::Static, typename T = vec3, BufferTarget Target = BufferTarget::Data>
+template <BufferUsage U = BufferUsage::Static, typename T = vec3,
+          BufferTarget Target = BufferTarget::Data>
 std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> data) {
-    return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), DataFormat<T>::get(), U);
+    return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), DataFormat<T>::get(),
+                                                           U);
 }
-
-struct BufferRamCreationDispatcher {
-    using type = std::shared_ptr<BufferRAM>;
-    template <class T>
-    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
-        typedef typename T::type F;
-        switch (target) {
-        case BufferTarget::Index:
-            return std::make_shared<BufferRAMPrecision<F, BufferTarget::Index>>(size, usage);
-        case BufferTarget::Data:
-        default:
-            return std::make_shared<BufferRAMPrecision<F, BufferTarget::Data>>(size, usage);
-        }
-    }
-};
 
 }  // namespace
 

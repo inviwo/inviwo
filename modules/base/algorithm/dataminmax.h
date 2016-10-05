@@ -27,11 +27,47 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/volume/volumeminmax.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#ifndef IVW_DATAMINMAX_H
+#define IVW_DATAMINMAX_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/base/algorithm/algorithmoptions.h>
 
 namespace inviwo {
 
+class VolumeRam;
+class LayerRAM;
+class BufferRAM;
 
+class Volume;
+class Layer;
+class BufferBase;
+
+namespace util {
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(
+    const VolumeRAM* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
+    const LayerRAM* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
+    const BufferRAM* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(
+    const Volume* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
+    const Layer* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
+    const BufferBase* buffer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
 }  // namespace
+
+} // namespace
+
+#endif // IVW_DATAMINMAX_H
+

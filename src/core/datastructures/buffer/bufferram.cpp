@@ -37,6 +37,21 @@ BufferRAM::BufferRAM(const DataFormatBase* format, BufferUsage usage, BufferTarg
 
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
 
+struct BufferRamCreationDispatcher {
+    using type = std::shared_ptr<BufferRAM>;
+    template <class T>
+    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
+        typedef typename T::type F;
+        switch (target) {
+            case BufferTarget::Index:
+                return std::make_shared<BufferRAMPrecision<F, BufferTarget::Index>>(size, usage);
+            case BufferTarget::Data:
+            default:
+                return std::make_shared<BufferRAMPrecision<F, BufferTarget::Data>>(size, usage);
+        }
+    }
+};
+
 std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
                                            BufferUsage usage, BufferTarget target) {
 

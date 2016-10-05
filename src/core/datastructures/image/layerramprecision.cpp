@@ -31,9 +31,18 @@
 
 namespace inviwo {
 
+struct LayerRAMCreationDispatcher {
+    using type = std::shared_ptr<LayerRAM>;
+    template <class T>
+    std::shared_ptr<LayerRAM> dispatch(const size2_t& dimensions, LayerType type) {
+        using F = typename T::type;
+        return std::make_shared<LayerRAMPrecision<F>>(dimensions, type);
+    }
+};
+
 std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
                                          const DataFormatBase* format) {
-    LayerRAMDispatcher disp;
+    LayerRAMCreationDispatcher disp;
     return format->dispatch(disp, dimensions, type);
 }
 

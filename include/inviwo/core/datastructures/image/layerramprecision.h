@@ -40,12 +40,17 @@ namespace inviwo {
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
+    using type = T;
+
     LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
     LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
-    virtual ~LayerRAMPrecision();
+    virtual ~LayerRAMPrecision() = default;
+
+    T* getDataTyped();
+    const T* getDataTyped() const;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -81,6 +86,7 @@ private:
     std::unique_ptr<T[]> data_;
 };
 
+
 /**
  * Factory for layers.
  * Creates an LayerRAM with data type specified by format.
@@ -92,15 +98,6 @@ private:
  */
 IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
                                       const DataFormatBase* format);
-
-struct IVW_CORE_API LayerRAMDispatcher {
-    using type = std::shared_ptr<LayerRAM>;
-    template <class T>
-    std::shared_ptr<LayerRAM> dispatch(const size2_t& dimensions, LayerType type) {
-        using F = typename T::type;
-        return std::make_shared<LayerRAMPrecision<F>>(dimensions, type);
-    }
-};
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type)
@@ -139,7 +136,15 @@ LayerRAMPrecision<T>* LayerRAMPrecision<T>::clone() const {
 }
 
 template <typename T>
-LayerRAMPrecision<T>::~LayerRAMPrecision(){};
+T* inviwo::LayerRAMPrecision<T>::getDataTyped() {
+    return data_.get();
+}
+
+
+template <typename T>
+const T* inviwo::LayerRAMPrecision<T>::getDataTyped() const {
+    return data_.get();
+}
 
 template <typename T>
 void* LayerRAMPrecision<T>::getData() {

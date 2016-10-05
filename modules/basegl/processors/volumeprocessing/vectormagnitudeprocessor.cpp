@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "vectormagnitudeprocessor.h"
-#include <modules/base/algorithm/volume/volumeminmax.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
@@ -61,7 +61,8 @@ void VectorMagnitudeProcessor::preProcess(TextureUnitContainer &cont) {
 
 void VectorMagnitudeProcessor::postProcess() {
 
-    auto minMax = util::volumeMinMax(volume_->getRepresentation<VolumeRAM>());
+    auto minMax =
+        util::volumeMinMax(volume_->getRepresentation<VolumeRAM>(), IgnoreSpecialValues::Yes);
     double minV, maxV;
     minV = minMax.first.x;
     maxV = minMax.second.x;
