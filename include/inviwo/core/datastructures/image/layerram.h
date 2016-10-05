@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/formatdispatching.h>
 
 namespace inviwo {
 

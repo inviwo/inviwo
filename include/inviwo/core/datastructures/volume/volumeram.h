@@ -32,9 +32,10 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/formatdispatching.h>
 
 namespace inviwo {
 
@@ -44,10 +45,10 @@ namespace inviwo {
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
     VolumeRAM(const DataFormatBase* format);
-    VolumeRAM(const VolumeRAM& rhs);
-    VolumeRAM& operator=(const VolumeRAM& that);
+    VolumeRAM(const VolumeRAM& rhs) = default;
+    VolumeRAM& operator=(const VolumeRAM& that) = default:
     virtual VolumeRAM* clone() const override = 0;
-    virtual ~VolumeRAM();
+    virtual ~VolumeRAM() = default;
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
@@ -164,6 +165,8 @@ public:
               typename Callable, typename... Args>
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 };
+
+class Volume;
 
 template <>
 struct representation_traits<Volume, kind::RAM> {
