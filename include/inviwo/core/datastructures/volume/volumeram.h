@@ -46,7 +46,7 @@ class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
     VolumeRAM(const DataFormatBase* format);
     VolumeRAM(const VolumeRAM& rhs) = default;
-    VolumeRAM& operator=(const VolumeRAM& that) = default:
+    VolumeRAM& operator=(const VolumeRAM& that) = default;
     virtual VolumeRAM* clone() const override = 0;
     virtual ~VolumeRAM() = default;
 
