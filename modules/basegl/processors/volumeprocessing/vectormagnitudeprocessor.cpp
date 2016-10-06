@@ -28,7 +28,9 @@
  *********************************************************************************/
 
 #include "vectormagnitudeprocessor.h"
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <modules/base/algorithm/dataminmax.h>
+
 
 namespace inviwo {
 const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
@@ -43,8 +45,7 @@ const ProcessorInfo VectorMagnitudeProcessor::getProcessorInfo() const {
 }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
-    : VolumeGLProcessor("vectormagnitudeprocessor.frag")
-{
+    : VolumeGLProcessor("vectormagnitudeprocessor.frag") {
     this->dataFormat_ = DataFloat32::get();
 }
 

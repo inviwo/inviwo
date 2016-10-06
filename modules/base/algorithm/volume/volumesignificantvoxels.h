@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class VolumeRam;
+class VolumeRAM;
 
 namespace util {
 

@@ -31,6 +31,7 @@
 #define IVW_VOLUMERAMSUBSAMPLE_H
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/util/glm.h>
 #include <memory>
 
 namespace inviwo {

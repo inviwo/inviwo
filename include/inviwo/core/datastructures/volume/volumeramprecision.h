@@ -34,11 +34,12 @@
 #include <inviwo/core/datastructures/volume/volumeramhistogram.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
@@ -73,7 +74,8 @@ public:
                                               size3_t sampleRate = size3_t(1)) override;
     virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
                                                     size3_t sampleRate = size3_t(1)) const override;
-    virtual void calculateHistograms(size_t bins, size3_t sampleRate, const bool& stop) const override;
+    virtual void calculateHistograms(size_t bins, size3_t sampleRate,
+                                     const bool& stop) const override;
 
     virtual double getAsDouble(const size3_t& pos) const override;
     virtual dvec2 getAsDVec2(const size3_t& pos) const override;
@@ -97,7 +99,6 @@ public:
 
     void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset, const size3_t& subSize,
                              const size3_t& subOffset) override;
-
 
     virtual size_t getNumberOfBytes() const override;
 

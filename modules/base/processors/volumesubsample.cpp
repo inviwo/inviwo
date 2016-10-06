@@ -30,6 +30,7 @@
 #include "volumesubsample.h"
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
 
