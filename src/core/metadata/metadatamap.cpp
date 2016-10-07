@@ -32,84 +32,69 @@
 
 namespace inviwo {
 
-MetaDataMap::MetaDataMap() {}
-
 MetaDataMap::MetaDataMap(const MetaDataMap& inMap) {
     for (const auto& elem : inMap.metaData_) {
         if (elem.second) {
-            metaData_[elem.first] = elem.second->clone();
+            metaData_[elem.first] = std::unique_ptr<MetaData>(elem.second->clone());
         }
     }
 }
 
-MetaDataMap::~MetaDataMap() {
-    removeAll();
-}
-
-MetaDataMap* MetaDataMap::clone() const {
-    return new MetaDataMap(*this);
-}
-
-void MetaDataMap::add(const std::string &key, MetaData* metaData) {
-    remove(key);
-    metaData_[key] = metaData;
+MetaData* MetaDataMap::add(const std::string &key, MetaData* metaData) {
+    metaData_[key] = std::unique_ptr<MetaData>(metaData);
+    return metaData;
 }
 
 void MetaDataMap::remove(const std::string &key) {
-    iterator it = metaData_.find(key);
-
-    if (it != metaData_.end() && it->second) {
-        delete it->second;
-        metaData_.erase(it);
-    }
+    metaData_.erase(key);
 }
 
 void MetaDataMap::removeAll() {
-    for (cIterator cIt = metaData_.begin(); cIt!=metaData_.end(); ++cIt)
-        delete cIt->second;
-
     metaData_.clear();
 }
 
 void MetaDataMap::rename(const std::string &newKey, const std::string &oldKey) {
-    MetaData* data = get(oldKey);
-
-    if (data) {
+    auto it = metaData_.find(oldKey);
+    if (it != metaData_.end()) {
+        metaData_[newKey] = std::move(it->second);
         metaData_.erase(oldKey);
-        add(newKey, data);
     }
 }
 
 std::vector<std::string> MetaDataMap::getKeys() const {
     std::vector<std::string> keys;
-
-    for (const auto& elem : metaData_) keys.push_back(elem.first);
-
+    keys.reserve(metaData_.size());
+    for (const auto& elem : metaData_) keys.emplace_back(elem.first);
     return keys;
 }
 
 MetaData* MetaDataMap::get(const std::string &key) {
-    cIterator it = metaData_.find(key);
-
+    auto it = metaData_.find(key);
     if (it!=metaData_.end())
-        return it->second;
+        return it->second.get();
     return nullptr;
 }
 
 const MetaData* MetaDataMap::get(const std::string &key) const {
-    cIterator it = metaData_.find(key);
-
-    if (it!=metaData_.end())
-        return const_cast<const MetaData*>(it->second);
-
+    auto it = metaData_.find(key);
+    if (it!=metaData_.end()) {
+        return it->second.get();
+    }
     return nullptr;
 }
 
+bool MetaDataMap::empty() const {
+    return metaData_.empty();
+}
+
 MetaDataMap& MetaDataMap::operator=(const MetaDataMap& map) {
-    removeAll();
+    if (this != &map) {
+        removeAll();
 
-    for (const auto& elem : map.metaData_) metaData_[elem.first] = elem.second->clone();
-
+        for (const auto& elem : map.metaData_) {
+            metaData_[elem.first] = std::unique_ptr<MetaData>(elem.second->clone());
+        }
+    }
     return *this;
 }
 
@@ -122,19 +107,14 @@ void MetaDataMap::deserialize(Deserializer& d) {
 }
 
 bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
-    typedef std::map<std::string, MetaData*>::const_iterator cIterator;
 
     if (lhs.metaData_.size() != rhs.metaData_.size()) {
         return false;
     }
     for (const auto& _cIt : lhs.metaData_) {
-        cIterator elem = rhs.metaData_.find(_cIt.first);
-        if (elem == rhs.metaData_.end()) {
-            return false;
-        }
-        if (*(elem->second) != *(_cIt.second)) {
-            return false;
-        }
+        auto elem = rhs.metaData_.find(_cIt.first);
+        if (elem == rhs.metaData_.end()) return false; 
+        if (*(elem->second) != *(_cIt.second)) return false;
     }
     return true;
 }

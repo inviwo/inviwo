@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/metadatamap.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 /** \brief Holds metadata and access functionality for set/get
@@ -44,18 +45,15 @@ namespace inviwo {
 class IVW_CORE_API MetaDataOwner {
 
 public:
-    MetaDataOwner();
-    MetaDataOwner(const MetaDataOwner& rhs);
-    MetaDataOwner& operator=(const MetaDataOwner& rhs);
-    virtual MetaDataOwner* clone() const;
-    virtual ~MetaDataOwner();
+    MetaDataOwner() = default;
+    MetaDataOwner(const MetaDataOwner& rhs) = default;
+    MetaDataOwner& operator=(const MetaDataOwner& rhs) = default;
+    virtual ~MetaDataOwner() = default;
 
     // copy the meta data from src to *this
     void copyMetaDataFrom(const MetaDataOwner& src);
     // copy the meta data from *this to dst
     void copyMetaDataTo(MetaDataOwner &dst);
-
-
 
     //MetaData
     template<typename T>
@@ -66,8 +64,11 @@ public:
     template<typename T, typename U>
     U getMetaData(const std::string &key, U val) const;
     template<typename T>
-    T* getMetaData(const std::string &key) const;
-    MetaDataMap* getMetaDataMap() const { return metaData_; }
+    T* getMetaData(const std::string &key);
+    template<typename T>
+    const T* getMetaData(const std::string &key) const;
+    MetaDataMap* getMetaDataMap();
+    const MetaDataMap* getMetaDataMap() const;
 
     template<typename T>
     bool hasMetaData(const std::string &key) const;
@@ -76,75 +77,57 @@ public:
     virtual void deserialize(Deserializer& d);
 
 protected:
-    MetaDataMap* metaData_;
+    MetaDataMap metaData_;
 };
 
 
 template<typename T>
 T* MetaDataOwner::createMetaData(const std::string &key) {
-    T* metaData = dynamic_cast<T*>(metaData_->get(key));
-
-    if (!metaData) {
-        metaData = new T();
-        metaData_->add(key, metaData);
+    if (T* metaData = dynamic_cast<T*>(metaData_.get(key))) {
+        return metaData;
+    } else {
+        return metaData_.add(key, util::make_unique<T>());
     }
-    return metaData;
 }
 
-template<typename T, typename U>
-void MetaDataOwner::setMetaData(const std::string &key, U value) {
-    MetaData* baseMetaData = metaData_->get(key);
-    T* derivedMetaData = 0;
-
-    if (baseMetaData) {
-        derivedMetaData = dynamic_cast<T*>(baseMetaData);
-
-        //if not an instance of valid meta data, forcefully replace with valid one
-        if (!derivedMetaData) {
-            metaData_->remove(key);
-            derivedMetaData = new T();
-            metaData_->add(key, derivedMetaData);
+template <typename T, typename U>
+void MetaDataOwner::setMetaData(const std::string& key, U value) {
+    if (MetaData* baseMetaData = metaData_.get(key)) {
+        if (auto derivedMetaData = dynamic_cast<T*>(baseMetaData)) {
+            derivedMetaData->set(value);
+            return;
         }
-
-        derivedMetaData->set(value);
     }
-    else {
-        derivedMetaData = new T();
-        metaData_->add(key, derivedMetaData);
-        derivedMetaData->set(value);
-    }
+    metaData_.add(key, util::make_unique<T>())->set(value);
 }
 
 //param val is required to deduce the template argument
 template<typename T, typename U>
 U MetaDataOwner::getMetaData(const std::string &key, U val) const {
-    const MetaData* baseMetadata = metaData_->get(key);
-
-    if (baseMetadata) {
-        const T* derivedMetaData = dynamic_cast<const T*>(baseMetadata);
-
-        if (derivedMetaData)
+    if (const MetaData* baseMetadata = metaData_.get(key)) {
+        if (auto derivedMetaData = dynamic_cast<const T*>(baseMetadata))
             return derivedMetaData->get();
     }
-
     return val;
 }
 
 template<typename T>
-T* MetaDataOwner::getMetaData(const std::string &key) const {
-    return dynamic_cast<T*>(metaData_->get(key));
+const T* MetaDataOwner::getMetaData(const std::string &key) const {
+    return dynamic_cast<const T*>(metaData_.get(key));
 }
 
 
 template<typename T>
+T* MetaDataOwner::getMetaData(const std::string &key) {
+    return dynamic_cast<T*>(metaData_.get(key));
+}
+
+template<typename T>
 bool MetaDataOwner::hasMetaData(const std::string &key) const {
-    const MetaData* baseMetadata = metaData_->get(key);
-
-    if (baseMetadata) {
-        const T* derivedMetaData = dynamic_cast<const T*>(baseMetadata);
-
-        if (derivedMetaData)
+    if (const MetaData* baseMetadata = metaData_.get(key)) {
+        if (const T* derivedMetaData = dynamic_cast<const T*>(baseMetadata)) {
             return true;
+        }
     }
 
     return false;

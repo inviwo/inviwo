@@ -100,7 +100,7 @@ public:
              PropertySemantics semantics = PropertySemantics::Default);
     Property(const Property& rhs);
     Property& operator=(const Property& that);
-    virtual Property* clone() const override;
+    virtual Property* clone() const;
     virtual ~Property() = default;
 
     /**
