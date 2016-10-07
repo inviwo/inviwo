@@ -55,7 +55,7 @@ template <typename T>
 class EdgeDataFormat : public Edge<T> {
 public:
     EdgeDataFormat() : Edge<T>() {
-        DataFormat<T>::get()->doubleToValue(0.0, &this->v1);
+        this->v1 = util::glm_convert<T>(0.0);
         this->v2 = this->v1;
     }
 
