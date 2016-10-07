@@ -147,9 +147,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
-    TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
-    TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
-    // virtual TemplateOptionProperty<T>* clone() const = 0;
+    TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) = default;
+    TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that) = default;
+    virtual TemplateOptionProperty<T>* clone() const override;
     virtual ~TemplateOptionProperty() = default;
 
     /**
@@ -261,53 +261,25 @@ using OptionPropertyFloatOption = OptionPropertyOption<float>;
 using OptionPropertyDoubleOption = OptionPropertyOption<double>;
 using OptionPropertyStringOption = OptionPropertyOption<std::string>;
 
-
-
 template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier,
-                                                          std::string displayName,
-                                                          InvalidationLevel invalidationLevel,
-                                                          PropertySemantics semantics)
+TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
+                                                  InvalidationLevel invalidationLevel,
+                                                  PropertySemantics semantics)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedIndex_(0)
     , defaultSelectedIndex_(0) {}
 
 template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(
-    std::string identifier, std::string displayName, std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
-    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
-    PropertySemantics semantics /*= PropertySemantics::Default*/)
+TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
+                                                  std::vector<OptionPropertyOption<T>> options,
+                                                  size_t selectedIndex,
+                                                  InvalidationLevel invalidationLevel,
+                                                  PropertySemantics semantics)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
-    , selectedIndex_(std::min(selectedIndex, options.size()-1))
+    , selectedIndex_(std::min(selectedIndex, options.size() - 1))
     , options_(options)
     , defaultSelectedIndex_(selectedIndex_)
     , defaultOptions_(options_) {}
-
-template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(
-    const TemplateOptionProperty<T>& rhs)
-    : BaseOptionProperty(rhs)
-    , selectedIndex_(rhs.selectedIndex_)
-    , options_(rhs.options_)
-    , defaultSelectedIndex_(rhs.defaultSelectedIndex_)
-    , defaultOptions_(rhs.defaultOptions_) {}
-
-template <typename T>
-TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
-    const TemplateOptionProperty<T>& that) {
-    if (this != &that) {
-        BaseOptionProperty::operator=(that);
-        selectedIndex_ = that.selectedIndex_;
-        defaultSelectedIndex_ = that.defaultSelectedIndex_;
-        options_.clear();
-        options_.insert(options_.end(), that.options_.begin(), that.options_.end());
-        defaultOptions_.clear();
-        defaultOptions_.insert(defaultOptions_.end(), that.defaultOptions_.begin(),
-                               that.defaultOptions_.end());
-    }
-    return *this;
-}
-
 
 template <typename T>
 void TemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
@@ -608,10 +580,10 @@ Document TemplateOptionProperty<T>::getDescription() const {
     return doc;
 }
 
-// template <typename T>
-// TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
-//     return new TemplateOptionProperty<T>(*this);
-// }
+template <typename T>
+TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
+    return new TemplateOptionProperty<T>(*this);
+}
 
 }  // namespace inviwo
 

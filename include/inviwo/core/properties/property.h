@@ -98,9 +98,7 @@ public:
     Property(const std::string& identifier = "", const std::string& displayName = "",
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
-    Property(const Property& rhs);
-    Property& operator=(const Property& that);
-    virtual Property* clone() const;
+    virtual Property* clone() const = 0;
     virtual ~Property() = default;
 
     /**
@@ -222,6 +220,9 @@ public:
     };
 
 protected:
+    Property(const Property& rhs);
+    Property& operator=(const Property& that);
+
     void notifyAboutChange();
 
     CallBackList onChangeCallback_;

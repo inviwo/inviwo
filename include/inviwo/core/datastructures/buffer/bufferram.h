@@ -137,14 +137,15 @@ struct BufferRamDispatcher {
     template <typename Result, typename Format, typename Callable, typename... Args>
     Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
         switch (bufferram->getBufferTarget()) {
-            case BufferTarget::Data:
-                return obj(
-                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(
-                        bufferram),
-                    std::forward<Args>(args)...);
             case BufferTarget::Index:
                 return obj(
                     static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Index>*>(
+                        bufferram),
+                    std::forward<Args>(args)...);
+            case BufferTarget::Data:
+            default:
+                return obj(
+                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(
                         bufferram),
                     std::forward<Args>(args)...);
         }
@@ -155,13 +156,15 @@ struct BufferRamConstDispatcher {
     template <typename Result, typename Format, typename Callable, typename... Args>
     Result operator()(Callable&& obj, const BufferRAM* bufferram, Args... args) {
         switch (bufferram->getBufferTarget()) {
-            case BufferTarget::Data:
-                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
-                                                                BufferTarget::Data>*>(bufferram),
-                           std::forward<Args>(args)...);
             case BufferTarget::Index:
                 return obj(static_cast<const BufferRAMPrecision<typename Format::type,
                                                                 BufferTarget::Index>*>(bufferram),
+                           std::forward<Args>(args)...);
+
+            case BufferTarget::Data:
+            default:
+                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
+                                                                BufferTarget::Data>*>(bufferram),
                            std::forward<Args>(args)...);
         }
     }

@@ -44,24 +44,9 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
     , collapsed_(false)
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
 
-CompositeProperty::CompositeProperty(const CompositeProperty& rhs)
-    : Property(rhs), PropertyOwner(rhs), collapsed_(rhs.collapsed_) {}
-
-CompositeProperty& CompositeProperty::operator=(const CompositeProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-        PropertyOwner::operator=(that);
-        collapsed_ = that.collapsed_;
-        subPropertyInvalidationLevel_ = that.subPropertyInvalidationLevel_;
-    }
-    return *this;
-}
-
 CompositeProperty* CompositeProperty::clone() const {
     return new CompositeProperty(*this);
 }
-
-CompositeProperty::~CompositeProperty() {}
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::CLASS_IDENTIFIER;

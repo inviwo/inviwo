@@ -25,7 +25,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/buildinfo-test.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/tests/buildinfo-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

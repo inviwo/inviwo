@@ -93,10 +93,6 @@ Property& Property::operator=(const Property& that) {
     return *this;
 }
 
-Property* Property::clone() const {
-    return nullptr; // See ticket #642 //make abstract...
-}
-
 std::string Property::getIdentifier() const {
     return identifier_;
 }
