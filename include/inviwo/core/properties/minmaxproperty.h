@@ -55,12 +55,12 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    MinMaxProperty(const MinMaxProperty& rhs);
-    MinMaxProperty& operator=(const MinMaxProperty& that);
+    MinMaxProperty(const MinMaxProperty& rhs) = default;
+    MinMaxProperty& operator=(const MinMaxProperty& that) = default;
     MinMaxProperty& operator=(const range_type& value);
 
-    virtual MinMaxProperty* clone() const override;
-    virtual ~MinMaxProperty();
+    virtual MinMaxProperty<T>* clone() const override;
+    virtual ~MinMaxProperty() = default;
 
     T getRangeMin() const;
     T getRangeMax() const;
@@ -103,11 +103,13 @@ private:
     ValueWrapper<T> minSeparation_;
 };
 
-typedef MinMaxProperty<float> FloatMinMaxProperty;
-typedef MinMaxProperty<double> DoubleMinMaxProperty;
-typedef MinMaxProperty<int> IntMinMaxProperty;
+using FloatMinMaxProperty = MinMaxProperty<float>;
+using DoubleMinMaxProperty = MinMaxProperty<double>;
+using IntMinMaxProperty = MinMaxProperty<int>;
 
-template <typename T> PropertyClassIdentifier(MinMaxProperty<T>, "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty" );
+template <typename T>
+PropertyClassIdentifier(MinMaxProperty<T>,
+                        "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty");
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayName, T valueMin,
@@ -126,25 +128,6 @@ MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayNam
 }
 
 template <typename T>
-MinMaxProperty<T>::MinMaxProperty(const MinMaxProperty<T>& rhs)
-    : TemplateProperty<range_type>(rhs)  
-    , range_(rhs.range_)
-    , increment_(rhs.increment_)
-    , minSeparation_(rhs.minSeparation_) {
- }
-
-template <typename T>
-MinMaxProperty<T>& MinMaxProperty<T>::operator=(const MinMaxProperty<T>& that) {
-    if (this != &that) {
-        TemplateProperty<range_type>::operator=(that);
-        range_ = that.range_;
-        increment_ = that.increment_;
-        minSeparation_ = that.minSeparation_;
-    }
-    return *this;
-}
-
-template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::operator=(const range_type& value) {
     TemplateProperty<range_type >::operator=(value);
     return *this;
@@ -154,10 +137,6 @@ template <typename T>
 MinMaxProperty<T>* MinMaxProperty<T>::clone() const {
     return new MinMaxProperty<T>(*this);
 }
-
-template <typename T>
-MinMaxProperty<T>::~MinMaxProperty() {}
-
 
 template <typename T>
 T MinMaxProperty<T>::getRangeMin() const {
