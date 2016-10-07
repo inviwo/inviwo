@@ -133,6 +133,10 @@ public:
     template <class T>
     void serialize(const std::string& key, const T* const& data);
 
+    // unique_ptr to something of the above.
+    template <class T>
+    void serialize(const std::string& key, const std::unique_ptr<T>& data);
+
 protected:
     friend class NodeSwitch;
 };
@@ -201,6 +205,11 @@ void Serializer::serialize(const std::string& key, const std::unordered_map<K, V
         rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
                                                              item.first);
     }
+}
+
+template <class T>
+void Serializer::serialize(const std::string& key, const std::unique_ptr<T>& data) {
+    serialize(key, data.get());
 }
 
 template <class T>
