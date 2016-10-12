@@ -30,6 +30,8 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/assertion.h>
 
+
+
 namespace inviwo {
 
 SharedLibrary::SharedLibrary(std::string filePath)
@@ -79,6 +81,62 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
 
 InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
     
+}
+
+
+void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
+    // Serialize network
+    std::stringbuf buf;
+    std::ostream stream(&buf);
+    Serializer xmlSerializer("");
+    InviwoApplication* app = InviwoApplication::getPtr();
+    try {
+
+        InviwoApplication::getPtr()->getProcessorNetwork()->serialize(xmlSerializer);
+        xmlSerializer.writeFile(stream);
+    }
+    catch (SerializationException& exception) {
+        util::log(exception.getContext(),
+            "Unable to save network due to " + exception.getMessage(),
+            LogLevel::Error);
+        return;
+    }
+    // Unregister dependent modules
+    auto moduleFactories = app->getModuleFactoryObjects();
+    auto toDeregister = app->findDependentModules(toLower(observedModule_->name_));
+    std::vector<InviwoModuleFactoryObject*> dependentModuleFactories;
+    //
+    for (auto m : toDeregister) {
+        auto it = std::find_if(std::begin(moduleFactories), std::end(moduleFactories), [&](auto moduleFactory) {
+            return toLower(m) == toLower(moduleFactory->name_);
+        });
+        if (it != std::end(moduleFactories)) {
+            dependentModuleFactories.push_back(it->get());
+        }
+    }
+
+    // Unregister module
+    for (auto m : toDeregister) {
+        app->unregisterModule(toLower(m));
+    }
+    app->unregisterModule(toLower(observedModule_->name_));
+    // Unload so/dll
+    std::map<InviwoModuleFactoryObject*, std::string> dependentModuleLibPaths;
+    for (auto mod : dependentModuleFactories) {
+        dependentModuleLibPaths[mod] = mod->library_->getFilePath();
+        mod->library_ = nullptr;
+    }
+    std::string modPath = observedModule_->library_->getFilePath();
+    observedModule_->library_ = nullptr;
+    // Load so/dll
+    for (auto mod : dependentModuleLibPaths) {
+        mod.first->library_ = std::unique_ptr<SharedLibrary>(new SharedLibrary(mod.second));
+    }
+    observedModule_->library_ = std::unique_ptr<SharedLibrary>(new SharedLibrary(modPath));
+    // Register modules
+
+    // De-serialize network
+
 }
 
 } // namespace

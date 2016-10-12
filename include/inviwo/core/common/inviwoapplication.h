@@ -77,7 +77,7 @@ class Settings;
 class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
-
+class ModuleLibraryObserver; // Observer for module dll/so files
 
 
 /**
@@ -123,6 +123,7 @@ public:
                         const bool& createFolder = false);
 
     void registerModule(std::unique_ptr<InviwoModule> module);
+    void unregisterModule(std::string module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
@@ -186,13 +187,14 @@ public:
 
     InteractionStateManager& getInteractionStateManager();
 
+    std::vector<std::string> findDependentModules(std::string module) const;
 protected:
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();
     virtual void resizePool(size_t newSize);
 
-    std::vector<std::string> findDependentModules(std::string module) const;
+
 
     struct Queue {
         // Task queue
@@ -343,6 +345,8 @@ inline RepresentationConverterFactory* InviwoApplication::getRepresentationConve
 inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() const {
     return processorWidgetFactory_.get();
 }
+
+
 
 }  // namespace
 

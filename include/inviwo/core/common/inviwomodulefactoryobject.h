@@ -33,7 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
 
+#include <inviwo/core/util/fileobserver.h>
 #if WIN32
 #include <windows.h>
 #else
@@ -97,6 +99,17 @@ inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
     const std::string& name, const std::string& version, const std::string& description, const std::string& inviwoCoreVersion,
     std::vector<std::string> dependencies, std::vector<std::string> dependenciesVersion)
     : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies, dependenciesVersion) {}
+
+class IVW_CORE_API ModuleLibraryObserver : public FileObserver {
+
+public:
+    ModuleLibraryObserver() = default;
+    virtual ~ModuleLibraryObserver() = default;
+
+    virtual void fileChanged(const std::string& fileName);
+
+    InviwoModuleFactoryObject* observedModule_;
+};
 
 }  // namespace
 

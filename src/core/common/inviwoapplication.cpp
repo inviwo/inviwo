@@ -324,6 +324,15 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
 void InviwoApplication::registerModule(std::unique_ptr<InviwoModule> module) {
     modules_.push_back(std::move(module));
 }
+void InviwoApplication::unregisterModule(std::string module) {
+    auto it = std::find_if(std::begin(modules_), std::end(modules_), [&](const auto& m) {
+        return toLower(m->getIdentifier()) == module;
+    });
+    if (it != std::end(modules_)) {
+        modules_.erase(it);
+    }
+}
+
 
 const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
     return modules_;
@@ -480,5 +489,7 @@ void InviwoApplication::playSound(Message soundID) {
 InteractionStateManager& InviwoApplication::getInteractionStateManager() {
     return interactionState_;
 }
+
+
 
 }  // namespace
