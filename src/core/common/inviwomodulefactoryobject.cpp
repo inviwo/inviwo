@@ -32,6 +32,44 @@
 
 namespace inviwo {
 
+SharedLibrary::SharedLibrary(std::string filePath)
+    : filePath_(filePath)
+#ifdef WIN32
+    , handle_(nullptr)
+#else 
+    , handle_(nullptr)
+#endif
+{
+#if WIN32
+    handle_ = LoadLibraryA(filePath_.c_str());
+    if (!handle_) {
+        throw Exception("Failed to load library: " + filePath);
+    }
+#else 
+    handle_ = dlopen(name, RTLD_NOW | RTLD_GLOBAL);
+    if (!handle_) {
+        throw Exception("Failed to load library: " + filePath);
+    }
+#endif
+
+}
+SharedLibrary::~SharedLibrary() {
+#if WIN32
+    FreeLibrary(handle_);
+#else 
+    dlclose(handle_);
+#endif
+}
+
+void* SharedLibrary::findSymbol(std::string name) {
+#if WIN32
+    return GetProcAddress(handle_, "createModule");
+#else 
+    return dlsym(handle_, name);
+#endif
+}
+
+
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     const std::string& name, const std::string& version, const std::string& description, const std::string& inviwoCoreVersion, 
     std::vector<std::string> dependencies, std::vector<std::string> dependenciesVersion)

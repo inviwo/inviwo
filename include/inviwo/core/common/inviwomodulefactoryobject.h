@@ -34,10 +34,32 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#if WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 namespace inviwo {
 
 class InviwoModule;
 class InviwoApplication;
+
+class IVW_CORE_API SharedLibrary {
+public:
+    SharedLibrary(std::string filePath);
+    virtual ~SharedLibrary();
+
+    std::string getFilePath() { return filePath_; }
+
+    virtual void* findSymbol(std::string name);
+private:
+    std::string filePath_;
+#if WIN32
+    HINSTANCE handle_;
+#else
+    void* handle_
+#endif
+};
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
@@ -54,6 +76,7 @@ public:
     const std::string inviwoCoreVersion_; // Supported inviwo core version (Major.Minor.Patch)
     const std::vector<std::string> depends_; // Module dependencies
     const std::vector<std::string> dependenciesVersion_; // Major.Minor.Patch version of dependencies
+    std::unique_ptr<SharedLibrary> library_;
     
 };
 

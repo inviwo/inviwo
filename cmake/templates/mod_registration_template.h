@@ -18,22 +18,13 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
 
     for (const auto& filePath : files) {
         if (filesystem::getFileExtension(filePath) == libraryType) {
-            HINSTANCE hGetProcIDDLL = LoadLibraryA(filePath.c_str());
-
-            if (!hGetProcIDDLL) {
-                //std::cout << "could not load the dynamic library" << std::endl;
-                //return EXIT_FAILURE;
-                FreeLibrary(hGetProcIDDLL);
-            }
-            else {
-                f_getModule moduleFunc = (f_getModule)GetProcAddress(hGetProcIDDLL, "createModule");
-                if (!moduleFunc) {
-                    //std::cout << "could not locate the function" << std::endl;
-                    FreeLibrary(hGetProcIDDLL);
-                }
-                else {
-                    modules.emplace_back(moduleFunc());
-                }
+            try {
+                std::unique_ptr<SharedLibrary> sharedLib = new SharedLibrary(filePath);
+                f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
+                modules.emplace_back(moduleFunc());
+                modules.back()->library_ = std::move(sharedLib);
+            } catch (Exception ex) {
+                LogError(ex.message());
             }
         }
     }
