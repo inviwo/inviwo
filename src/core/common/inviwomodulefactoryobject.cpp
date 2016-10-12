@@ -36,11 +36,6 @@ namespace inviwo {
 
 SharedLibrary::SharedLibrary(std::string filePath)
     : filePath_(filePath)
-#ifdef WIN32
-    , handle_(nullptr)
-#else 
-    , handle_(nullptr)
-#endif
 {
 #if WIN32
     handle_ = LoadLibraryA(filePath_.c_str());
@@ -85,6 +80,7 @@ InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
 
 
 void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
+    /*
     // Serialize network
     std::stringbuf buf;
     std::ostream stream(&buf);
@@ -136,7 +132,7 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
     // Register modules
 
     // De-serialize network
-
+    */
 }
 
 } // namespace

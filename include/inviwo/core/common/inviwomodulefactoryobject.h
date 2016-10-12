@@ -57,9 +57,9 @@ public:
 private:
     std::string filePath_;
 #if WIN32
-    HINSTANCE handle_;
+    HINSTANCE handle_ = nullptr;
 #else
-    void* handle_
+    void* handle_ = nullptr;
 #endif
 };
 
@@ -78,7 +78,7 @@ public:
     const std::string inviwoCoreVersion_; // Supported inviwo core version (Major.Minor.Patch)
     const std::vector<std::string> depends_; // Module dependencies
     const std::vector<std::string> dependenciesVersion_; // Major.Minor.Patch version of dependencies
-    std::unique_ptr<SharedLibrary> library_;
+    //std::unique_ptr<SharedLibrary> library_;
     
 };
 

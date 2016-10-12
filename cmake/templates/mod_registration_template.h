@@ -1,6 +1,5 @@
 // Automatically generated file do not change!
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <windows.h>
 
 namespace inviwo {
 typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
@@ -19,10 +18,10 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
     for (const auto& filePath : files) {
         if (filesystem::getFileExtension(filePath) == libraryType) {
             try {
-                std::unique_ptr<SharedLibrary> sharedLib = new SharedLibrary(filePath);
+                std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(filePath));
                 f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
                 modules.emplace_back(moduleFunc());
-                modules.back()->library_ = std::move(sharedLib);
+                //modules.back()->library_ = std::move(sharedLib);
             } catch (Exception ex) {
                 LogError(ex.message());
             }
