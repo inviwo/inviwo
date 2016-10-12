@@ -47,6 +47,7 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 
 namespace inviwo {
