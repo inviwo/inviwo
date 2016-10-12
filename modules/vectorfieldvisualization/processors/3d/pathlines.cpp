@@ -131,7 +131,7 @@ void PathLines::process() {
 
     auto m = pathLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
-    ImageSampler tf(tf_.get().getData());
+
 
     float maxVelocity = 0;
     PathLineTracer tracer(sampler, pathLineProperties_);
@@ -196,7 +196,7 @@ void PathLines::process() {
             switch (coloringMethod_.get())
             {
             case ColoringMethod::Timestamp:
-                c = vec4(tf.sample(dvec2(t, 0.0)));
+                c = tf_.get().sample(t);
                 break;
             case ColoringMethod::ColorPort:
                 if (hasColors) {
@@ -209,7 +209,7 @@ void PathLines::process() {
                     }
                 }
             case ColoringMethod::Velocity:
-                c = vec4(tf.sample(dvec2(d, 0.0)));
+                c = tf_.get().sample(d);
             default:
                 break;
             }
