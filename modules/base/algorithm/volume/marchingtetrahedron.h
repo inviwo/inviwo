@@ -108,7 +108,11 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     dz = 1.0f / (dim.z - 1);
     double v[8];
     glm::vec3 p[8];
+    auto volSize = dim.x*dim.y*dim.z;
 
+    indexBuffer->getDataContainer().reserve(volSize * 6);
+    positions.reserve(volSize * 6);
+    normals.reserve(volSize * 6);
     const static size_t tetras[6][4] = {{0, 1, 3, 5}, {1, 2, 3, 5}, {2, 3, 5, 6},
                                         {0, 3, 4, 5}, {7, 4, 3, 5}, {7, 6, 5, 3}};
 
@@ -166,10 +170,15 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     }
 
     ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
+    std::vector<BasicMesh::Vertex> vertices;
+    vertices.reserve(positions.size());
+
     for (auto pit = positions.begin(), nit = normals.begin(); pit != positions.end();
          ++pit, ++nit) {
-        mesh->addVertex(*pit, glm::normalize(*nit), *pit, color);
+        vertices.push_back(  {*pit, glm::normalize(*nit), *pit, color} );
     }
+
+    mesh->addVertices(vertices);
 
     if (progressCallback) progressCallback(1.0f);
 
