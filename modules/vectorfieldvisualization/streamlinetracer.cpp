@@ -140,7 +140,7 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
     auto h2 = h / 2;
 
     auto normalize = [](dvec3 k) {
-        auto l = glm::length2(k);
+        auto l = glm::length(k);
         if (l == 0) {
             return k;
         }
