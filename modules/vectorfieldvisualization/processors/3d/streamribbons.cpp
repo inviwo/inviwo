@@ -131,7 +131,6 @@ void StreamRibbons::process() {
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             auto line = tracer.traceFrom(P.xyz());
 
             auto position = line.getPositions().begin();
@@ -139,7 +138,9 @@ void StreamRibbons::process() {
             auto vorticity = line.getMetaData("vorticity").begin();
 
             auto size = line.getPositions().size();
-
+            if (size <= 1) continue;
+            auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
+            indexBuffer->getDataContainer().reserve(size);
 
 
             vec4 c;

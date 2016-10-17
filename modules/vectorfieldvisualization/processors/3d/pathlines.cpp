@@ -147,11 +147,11 @@ void PathLines::process() {
     for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
         for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
-            auto p = seeds->at(j);
+            const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
-            if (size != 0) {  
+            if (size>1) {  
                 #pragma omp critical
                 lines->push_back(line,startID + j);
             };
@@ -161,7 +161,7 @@ void PathLines::process() {
 
     for (auto &line : *lines) {
         auto size = line.getPositions().size();
-        if (size == 0) continue;
+        if (size <= 1) continue;
 
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData("velocity").begin();
