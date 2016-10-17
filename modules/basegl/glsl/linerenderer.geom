@@ -175,6 +175,7 @@ void main(void) {
 
     vec2 depth = vec2(gl_in[1].gl_Position.z / gl_in[1].gl_Position.w,
                       gl_in[2].gl_Position.z / gl_in[2].gl_Position.w);
+    float slopeDepth = (depth.y - depth.x) / segmentLength_;
 
     // avoid sharp corners by cutting them off
     // corner between previous segment and current one
@@ -207,11 +208,13 @@ void main(void) {
         texCoord.y = projectedDistance(p1, p2, leftBottom);
     }
 
+    vec2 vertexDepth = slopeDepth * texCoord + depth.x;
+
     objectLength_ = texCoord.x/segmentLength_ * lineLength;
-    emit(vec4(leftTop, depth.x, 1.0), vec2(texCoord.x, w), vertexColor_[1], ndcToWorldFactor);
+    emit(vec4(leftTop, vertexDepth.x, 1.0), vec2(texCoord.x, w), vertexColor_[1], ndcToWorldFactor);
     
     objectLength_ = texCoord.y/segmentLength_ * lineLength;
-    emit(vec4(leftBottom, depth.x, 1.0), vec2(texCoord.y, -w), vertexColor_[1], ndcToWorldFactor);
+    emit(vec4(leftBottom, vertexDepth.y, 1.0), vec2(texCoord.y, -w), vertexColor_[1], ndcToWorldFactor);
 
 
     vec2 rightTop, rightBottom;
@@ -228,11 +231,13 @@ void main(void) {
         texCoord.y = projectedDistance(p1, p2, rightBottom);
     }
 
+    vertexDepth = slopeDepth * texCoord + depth.x;
+
     objectLength_ = texCoord.x/segmentLength_ * lineLength;
-    emit(vec4(rightTop, depth.y, 1.0), vec2(texCoord.x, w), vertexColor_[2], ndcToWorldFactor);
+    emit(vec4(rightTop, vertexDepth.x, 1.0), vec2(texCoord.x, w), vertexColor_[2], ndcToWorldFactor);
 
     objectLength_ = texCoord.y/segmentLength_ * lineLength;
-    emit(vec4(rightBottom, depth.y, 1.0), vec2(texCoord.y, -w), vertexColor_[2], ndcToWorldFactor);
+    emit(vec4(rightBottom, vertexDepth.y, 1.0), vec2(texCoord.y, -w), vertexColor_[2], ndcToWorldFactor);
 
     EndPrimitive();
 #endif
