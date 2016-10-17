@@ -59,6 +59,9 @@ public:
 
     size_t size() const;
 
+    IntegralLine& operator[](size_t idx);
+    const IntegralLine& operator[](size_t idx) const;
+
     IntegralLine& at(size_t idx);
     const IntegralLine& at(size_t idx) const;
     void push_back(IntegralLine &line);
