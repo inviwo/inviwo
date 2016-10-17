@@ -825,7 +825,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
         onNetworkEditorFileChanged(fileName);
         saveWindowState();
     } else {
-        setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
     }
@@ -897,7 +897,7 @@ void InviwoMainWindow::openExampleWorkspace() {
         }
         // reset workspace title in every case, we don't want to overwrite the
         // existing example workspace
-        setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
     }
