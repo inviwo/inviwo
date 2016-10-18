@@ -77,7 +77,7 @@ void CompositeProperty::set(const Property* srcProperty) {
 
 void CompositeProperty::set(const CompositeProperty* src) {
     NetworkLock lock(this);
-    auto subProperties = src->getProperties();
+    const auto& subProperties = src->getProperties();
     if (subProperties.size() == this->properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {
             this->properties_[i]->set(subProperties[i]);

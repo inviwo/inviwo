@@ -66,9 +66,7 @@ public:
     CameraProperty(const CameraProperty& rhs);
     CameraProperty& operator=(const CameraProperty& that);
 
-    // virtual operator Camera&() { return value_; }; // Do not allow user to get
-    // non-const reference since no notification mechanism exist.
-    virtual operator const Camera&() const;
+    operator const Camera&() const;
 
     virtual CameraProperty* clone() const override;
     virtual ~CameraProperty() = default;
@@ -110,7 +108,6 @@ public:
 
     /**
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
-     *
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
@@ -118,9 +115,8 @@ public:
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
-    *
     * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
-    *perspective division.
+    * perspective division.
     * @return Clip space position
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
@@ -156,23 +152,21 @@ public:
 
 private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
-
     void updatePropertyFromValue();
+
     OptionPropertyString cameraType_;
+
     // These properties enable linking of individual
     // camera properties but requires them to be synced
     // with the camera
-
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;
-
     FloatProperty aspectRatio_;
     FloatProperty nearPlane_;
     FloatProperty farPlane_;
 
     EventProperty mouseChangeFocusPoint_;
-
     BoolProperty adjustCameraOnDataChange_;
 
     std::unique_ptr<Camera> camera_;
