@@ -533,6 +533,7 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
+
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
 # Define Build Type if not empty
@@ -592,3 +593,35 @@ ivw_make_package(InviwoCore inviwo-core)
 if(IVW_UNITTESTS)
     ivw_make_unittest_target("inviwo-core" "")
 endif()
+
+
+#--------------------------------------------------------------------
+# Generate build info - the build info will be updated during every compilation
+
+# make a clean help script
+set(build_info_script_list
+    "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
+    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.h"
+    "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.ini"
+    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
+    "    inviwo_buildinfo.ini"
+    "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
+)
+string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
+file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
+
+# Custom target for updating the build information (this target is always out-of-date)
+add_custom_target(inviwo-buildinfo-header ALL
+    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
+    WORKING_DIRECTORY ${OUTPUT_DIR}
+    COMMENT "Generating inviwo build info (buildinfo)"
+    VERBATIM
+)
+
+option(IVW_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
+if(IVW_EMBED_BUILDINFO)
+    add_dependencies("inviwo-core" "inviwo-buildinfo-header")
+    target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
+endif()
+#--------------------------------------------------------------------

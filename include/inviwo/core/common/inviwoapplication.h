@@ -109,7 +109,9 @@ public:
      */
     std::string getBasePath() const;
 
-    std::string getDisplayName() const;
+    const std::string& getDisplayName() const;
+
+    const std::string& getBinaryPath() const;
 
     /**
      * Get basePath + pathType + suffix.
@@ -205,6 +207,7 @@ protected:
     };
 
     std::string displayName_;
+    std::string binaryPath_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;

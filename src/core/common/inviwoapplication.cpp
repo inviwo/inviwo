@@ -56,11 +56,14 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/systemcapabilities.h>
+#include <inviwo/core/util/vectoroperations.h>
 
 namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
+    , binaryPath_(filesystem::getFileDirectory(argv[0]))
     , progressCallback_()
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
@@ -87,7 +90,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , clearModules_([&]() {
         ResourceManager::getPtr()->clearAllResources();
         // Need to clear the modules in reverse order since the might depend on each other.
-        // The destuction order of vector is undefined.
+        // The destruction order of vector is undefined.
         for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
             it->reset();
         }
@@ -253,7 +256,14 @@ CommandLineParser& InviwoApplication::getCommandLineParser() {
 }
 
 void InviwoApplication::printApplicationInfo() {
+    auto caps = this->getModuleByType<InviwoCore>()->getCapabilities();
+    
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
+    if (auto syscap = getTypeFromVector<SystemCapabilities>(caps)) {
+        if (syscap->getBuildTimeYear() != 0) {
+            LogInfoCustom("InviwoInfo", "Build Date: " << syscap->getBuildDateString());
+        }
+    }
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
     std::string config = "";
 #ifdef CMAKE_GENERATOR
@@ -276,7 +286,9 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
     queue_.postEnqueue = std::move(func);
 }
 
-std::string InviwoApplication::getDisplayName() const { return displayName_; }
+const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
+
+const std::string& InviwoApplication::getBinaryPath() const { return binaryPath_; }
 
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
     moudleCallbackActions_.emplace_back(callbackAction);
