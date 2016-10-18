@@ -126,7 +126,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
         }
         return std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>(
             [&f](std::vector<vec3>& normals, size_t i1, size_t i2, size_t i3) -> void {
-                normals.emplace_back(0.0);
+                normals.emplace_back(0.0f);
             });
     }();
 
