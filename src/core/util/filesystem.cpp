@@ -70,7 +70,7 @@ std::string getWorkingDirectory() {
     if (!getcwd(workingDir, sizeof(workingDir))) return "";
 
 #endif
-    return std::string(workingDir);
+    return cleanupPath(std::string(workingDir));
 }
 
 bool fileExists(const std::string& filePath) {
@@ -237,7 +237,7 @@ bool wildcardStringMatchDigits(const std::string &pattern, const std::string &st
 
 std::string getParentFolderPath(const std::string& basePath, const std::string& parentFolder) {
     size_t pos = basePath.length();
-    std::string fileDirectory = basePath;
+    std::string fileDirectory = cleanupPath(basePath);
 
     do {
         fileDirectory = fileDirectory.substr(0, pos);
@@ -245,7 +245,7 @@ std::string getParentFolderPath(const std::string& basePath, const std::string& 
         bool exists = directoryExists(moduleDirectory);
 
         if (exists) return fileDirectory;
-    } while ((pos = fileDirectory.find_last_of("\\/")) != std::string::npos);
+    } while ((pos = fileDirectory.rfind('/')) != std::string::npos);
 
     return basePath;
 }
@@ -355,7 +355,7 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, c
 }
 
 void createDirectoryRecursively(std::string path) {
-    replaceInString(path, "\\", "/");
+    path = cleanupPath(path);
     std::vector<std::string> v = splitString(path, '/');
 
     std::string pathPart;
@@ -437,16 +437,18 @@ std::string addBasePath(const std::string& url) {
 }
 
 std::string getFileDirectory(const std::string& url) {
-    size_t pos = url.find_last_of("\\/");
+    std::string path = cleanupPath(url);
+    size_t pos = path.rfind('/');
     if (pos == std::string::npos) return "";
-    std::string fileDirectory = url.substr(0, pos);
+    std::string fileDirectory = path.substr(0, pos);
     return fileDirectory;
 }
 
 std::string getFileNameWithExtension(const std::string& url) {
-    size_t pos = url.find_last_of("\\/") + 1;
+    std::string path = cleanupPath(url);
+    size_t pos = path.rfind("/") + 1;
     // This relies on the fact that std::string::npos + 1 = 0
-    std::string fileNameWithExtension = url.substr(pos, url.length());
+    std::string fileNameWithExtension = path.substr(pos, path.length());
     return fileNameWithExtension;
 }
 
@@ -459,7 +461,7 @@ std::string getFileNameWithoutExtension(const std::string& url) {
 
 std::string getFileExtension(const std::string& url) {
     std::string filename = getFileNameWithExtension(url);
-    size_t pos = filename.rfind(".");
+    size_t pos = filename.rfind('.');
 
     if (pos == std::string::npos) return "";
 
@@ -468,18 +470,18 @@ std::string getFileExtension(const std::string& url) {
 }
 
 std::string replaceFileExtension(const std::string& url, const std::string& newFileExtension) {
-    size_t pos = url.find_last_of(".") + 1;
+    size_t pos = url.rfind('.') + 1;
     std::string newUrl = url.substr(0, pos) + newFileExtension;
     return newUrl;
 }
 
 std::string getRelativePath(const std::string& basePath, const std::string& absolutePath) {
-    const std::string absPath(getFileDirectory(absolutePath));
-    const std::string fileName(getFileNameWithExtension(absolutePath));
+    const std::string absPath(getFileDirectory(cleanupPath(absolutePath)));
+    const std::string fileName(getFileNameWithExtension(cleanupPath(absolutePath)));
     
     // path as string tokens
-    auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
-    auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
+    auto basePathTokens = splitString(basePath, '/');
+    auto absolutePathTokens = splitString(absPath, '/');
 
     size_t sizediff = 0;
     if (basePathTokens.size() < absolutePathTokens.size()){
