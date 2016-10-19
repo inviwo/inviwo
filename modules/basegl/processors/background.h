@@ -74,6 +74,11 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     
+    enum class BlendMode {
+        BackToFront,
+        AlphaMixing
+    };
+
     Background();
     virtual ~Background();
 
@@ -93,6 +98,9 @@ private:
     FloatVec4Property color2_;
     IntVec2Property checkerBoardSize_;
     ButtonProperty switchColors_;
+
+    TemplateOptionProperty<BlendMode> blendMode_;
+
     Shader shader_;
     bool hadData_;
 };

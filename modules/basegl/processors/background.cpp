@@ -56,6 +56,7 @@ Background::Background()
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
+    , blendMode_("blendMode","Blend mode" , InvalidationLevel::InvalidResources)
     , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);
@@ -72,6 +73,12 @@ Background::Background()
     addProperty(color2_);
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
+    addProperty(blendMode_);
+
+    blendMode_.addOption("backtofront", "Back To Front", BlendMode::BackToFront);
+    blendMode_.addOption("alphamixing", "Alpha Mixing", BlendMode::AlphaMixing);
+
+
     switchColors_.onChange(this, &Background::switchColors);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -116,6 +123,20 @@ void Background::initializeResources() {
         shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0.0,0.0,0.0,0.0)");
         hadData_ = false;
     }
+
+    std::string blendMode = "";
+    switch (blendMode_.get()) {
+        case BlendMode::BackToFront:
+            blendMode = "srcColor + backgroundColor * (1.0 - srcColor.a)";
+            break;
+        case BlendMode::AlphaMixing:
+            blendMode = "srcColor*srcColor.a + backgroundColor * (1.0 - srcColor.a)";
+            break;
+        default:
+            break;
+    }
+
+    shader_.getFragmentShaderObject()->addShaderDefine("BLEND(srcColor,dstColor)" , blendMode);
 
     shader_.build();
 }

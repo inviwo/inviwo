@@ -62,7 +62,5 @@ void main() {
     // pre-multiplied alpha for background color
     backgroundColor.rgb *= backgroundColor.a;
 
-    vec4 resultColor = srcColor + backgroundColor * (1.0 - srcColor.a);
-
-    FragData0 = resultColor;
+    FragData0 = BLEND(srcColor,backgroundColor);
 }
