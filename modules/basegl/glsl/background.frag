@@ -45,7 +45,12 @@ vec4 checkerBoard(vec2 texCoords) {
             (((a + 1) % 2)*(b % 2) + (a % 2)*((b + 1) % 2)) * color2;
 }
 
-vec4 linearGradient(vec2 texCoords) {
+vec4 linearGradientHorizontal(vec2 texCoords) {
+    return texCoords.x * color1 + (1.0 - texCoords.x) * color2;
+}
+
+
+vec4 linearGradientVertical(vec2 texCoords) {
     return texCoords.y * color1 + (1.0 - texCoords.y) * color2;
 }
 

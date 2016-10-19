@@ -60,9 +60,10 @@ Background::Background()
     addPort(inport_);
     addPort(outport_);
     inport_.setOptional(true);
-    backgroundStyle_.addOption("linearGradient", "Linear gradient", 0);
-    backgroundStyle_.addOption("uniformColor", "Uniform color", 1);
-    backgroundStyle_.addOption("checkerBoard", "Checker board", 2);
+    backgroundStyle_.addOption("linearGradientVertical", "Linear gradient (Vertical)", 0);
+    backgroundStyle_.addOption("linearGradientHorizontal", "Linear gradient (Horizontal)", 1);
+    backgroundStyle_.addOption("uniformColor", "Uniform color", 2);
+    backgroundStyle_.addOption("checkerBoard", "Checker board", 3);
     backgroundStyle_.setCurrentStateAsDefault();
     addProperty(backgroundStyle_);
     color1_.setSemantics(PropertySemantics::Color);
@@ -89,14 +90,17 @@ void Background::initializeResources() {
 
     switch (backgroundStyle_.get()) {
         case 0:  // linear gradient
-            shaderDefine = "linearGradient(texCoords)";
+            shaderDefine = "linearGradientVertical(texCoords)";
+            break;
+        case 1:  // linear gradient
+            shaderDefine = "linearGradientHorizontal(texCoords)";
             break;
 
-        case 1:  // uniform color
+        case 2:  // uniform color
             shaderDefine = "color1";
             break;
 
-        case 2:  // checker board
+        case 3:  // checker board
             shaderDefine = "checkerBoard(texCoords)";
             checkerBoardSize_.setVisible(true);
             break;
