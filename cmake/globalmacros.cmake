@@ -32,10 +32,7 @@
 # Creates a CMake projects
 # Defines:  (example project_name = OpenGL)
 # _projectName -> OpenGL
-# _allIncludes -> ""
-# _allIncludeDirs -> ""
 # _allLibsDir -> ""
-# _allLibs -> ""
 # _allDefinitions -> ""
 # _allLinkFlags -> ""
 # _allPchDirs -> ""
@@ -44,10 +41,7 @@
 macro(ivw_project project_name)
     project(${project_name})
     set(_projectName ${project_name})
-    set(_allIncludes "")
-    set(_allIncludeDirs "")
     set(_allLibsDir "")
-    set(_allLibs "")
     set(_allDefinitions "")
     set(_allLinkFlags "")
     set(_allPchDirs "")
@@ -624,18 +618,14 @@ macro(ivw_create_module)
     ivw_define_standard_properties(${${mod}_target})
     
     # Add dependencies
-    set(tmpProjectName ${_projectName})
-    set(_projectName ${${mod}_target})
-    ivw_add_dependency_libraries(${_preModuleDependencies})
-    ivw_add_dependencies(InviwoCore)
-    # Add dependencies from depends.cmake
-    ivw_add_dependencies(${${mod}_dependencies})
+    target_link_libraries(${${mod}_target} ${_preModuleDependencies})
+
+    # Add dependencies from depends.cmake and InviwoCore
+    ivw_add_dependencies_on_target(${${mod}_target} InviwoCore ${${mod}_dependencies})
 
     # Optimize compilation with pre-compilied headers based on inviwo-core
-    ivw_compile_optimize_inviwo_core()
-    
-    set(_projectName ${tmpProjectName})
-       
+    ivw_compile_optimize_inviwo_core_on_target(${${mod}_target})
+           
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} ${${mod}_target})
 
@@ -651,47 +641,42 @@ macro(ivw_make_package package_name project_name)
     ivw_private_install_package(${project_name})
 
     list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
+
+    # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES
-            optimized ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}.lib
-            debug ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
+        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
     else()
-       set(PROJECT_LIBRARIES
-           optimized ${project_name}
-           debug ${project_name}${CMAKE_DEBUG_POSTFIX})
+       set(PROJECT_LIBRARIES ${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
-    list(APPEND _allLibs ${PROJECT_LIBRARIES})
-  
-    ivw_debug_message("Make package: ${project_name}")
     
-    ivw_print_list(_allLibs)
-    get_target_property(mypubliclibs ${project_name} INTERFACE_LINK_LIBRARIES)
-    ivw_print_list(mypubliclibs)
+    get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)
+    if(NOT ivw_allLibs)
+        set(ivw_allLibs "")
+    endif()
+    list(APPEND ivw_allLibs ${PROJECT_LIBRARIES})
+    remove_duplicates(ivw_unique_allLibs ${ivw_allLibs})
+    set(ivw_allLibs ${ivw_unique_allLibs})
 
-    ivw_print_list(_allIncludeDirs)
-    get_target_property(pubincdirs ${project_name} INCLUDE_DIRECTORIES)
-    ivw_print_list(pubincdirs)
+    # Set up inlude directories 
+    # Should only INTERFACE_INCLUDE_DIRECTORIES but we can't since we use include_directories...
+    get_target_property(ivw_allIncDirs ${project_name} INCLUDE_DIRECTORIES)
+    if(NOT ivw_allIncDirs)
+        set(ivw_allIncDirs "")
+    endif()
+    get_target_property(ivw_allInterfaceIncDirs ${project_name} INTERFACE_INCLUDE_DIRECTORIES)
+    if(ivw_allInterfaceIncDirs)
+        list(APPEND ivw_allIncDirs ${ivw_allInterfaceIncDirs})
+    endif()
+    remove_duplicates(ivw_unique_allIncDirs ${ivw_allIncDirs})
+    set(ivw_allIncDirs ${ivw_unique_allIncDirs})
 
-    ivw_print_list(_allDefinitions)
-    get_target_property(mydefs ${project_name} COMPILE_DEFINITIONS)
-    ivw_print_list(mydefs)
-
-    get_target_property(myopts ${project_name} COMPILE_OPTIONS)
-    ivw_print_list(myopts)
-
-    remove_duplicates(uniqueIncludes ${_allIncludes})
-    remove_duplicates(uniqueIncludeDirs ${_allIncludeDirs})
     remove_duplicates(uniqueLibsDir ${_allLibsDir})
-    clean_library_list(_allLibs)
     remove_duplicates(uniqueDefs ${_allDefinitions})
     remove_duplicates(uniqueLinkFlags ${_allLinkFlags})
     
     string(TOUPPER ${package_name} u_package_name)
     set(package_name ${u_package_name})
-    set(_allIncludes ${uniqueIncludes})             #BLÄ
-    set(_allIncludeDirs ${uniqueIncludeDirs})       # INCLUDE_DIRECTORIES
-    set(_allLibsDir ${uniqueLibsDir})               # BLÄ should not use, only has inviwo/lib anyway
-    set(_allLibs ${_allLibs})                       # INTERFACE_LINK_LIBRARIES
+    set(_allLibsDir ${uniqueLibsDir})
     set(_allDefinitions ${uniqueDefs})
     set(_allLinkFlags ${uniqueLinkFlags})
     set(_project_name ${project_name})
@@ -751,10 +736,7 @@ endfunction()
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_include_directories)
-      # Set includes
-      include_directories("${ARGN}")
-      # Append includes to project list
-      list(APPEND _allIncludeDirs ${ARGN})
+    include_directories(${ARGN})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -795,20 +777,6 @@ macro(ivw_add_dependency_directories)
 endmacro()
 
 #--------------------------------------------------------------------
-# internal function call by ivw_create_module
-# call add_dependency_libs_to_module instead before, ivw_crete_module
-# Adds dependancy and includes package variables to the project
-macro(ivw_add_dependency_libraries)
-    if(${ARGC} GREATER 0)
-        set(uniqueNewLibs ${ARGN})
-        remove_library_list(uniqueNewLibs "${ARGN}" ${_allLibs})
-        set(${ARGN} ${uniqueNewLibs})
-        target_link_libraries(${_projectName} ${ARGN})
-        list (APPEND _allLibs ${ARGN})
-    endif()
-endmacro()
-
-#--------------------------------------------------------------------
 # Adds dependency and includes package variables to the project
 # 
 # Defines: for example the OpenGL module
@@ -821,30 +789,21 @@ endmacro()
 # INVIWOOPENGLMODULE_USE_FILE=
 # 
 # Appends to globals:
-# _allIncludes
 # _allLibsDir
-# _allLibs
 # _allDefinitions
 # _allLinkFlags
-# _allIncludeDirs
 # 
 macro(ivw_add_dependencies)
-    ivw_debug_message("Link: ${_projectName}")
+    ivw_add_dependencies_on_target(${_projectName} ${ARGN})
+endmacro()
 
+macro(ivw_add_dependencies_on_target target)
     foreach (package ${ARGN})
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
 
         ivw_find_package_name(${package} u_package)
- 
-        # Set includes and append to list
-        if(DEFINED ${u_package}_USE_FILE)
-            if(NOT "${${u_package}_USE_FILE}" STREQUAL "")
-                include(${${u_package}_USE_FILE})
-                list(APPEND _allIncludes \"${${u_package}_USE_FILE}\")
-            endif()
-        endif()
-           
+        
         # Append library directories to project list
         set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
         remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
@@ -867,11 +826,6 @@ macro(ivw_add_dependencies)
             endif()
         endif()
       
-        set(uniqueNewLibs ${${u_package}_LIBRARIES})
-        remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
-        set(${u_package}_LIBRARIES ${uniqueNewLibs})
-        list (APPEND _allLibs ${${u_package}_LIBRARIES})
-        
         # Append definitions to project list
         set(uniqueNewDefs ${${u_package}_DEFINITIONS})
         remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
@@ -886,11 +840,13 @@ macro(ivw_add_dependencies)
             list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
         endif()
     
-        # Set includes and append to list
-        include_directories(${${u_package}_INCLUDE_DIR})
-        list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIR})
-        include_directories(${${u_package}_INCLUDE_DIRS})
-        list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIRS})
+        # Set includes and append to list (Only add new include dirs)
+        get_target_property(ivw_already_added_incdirs ${target} INCLUDE_DIRECTORIES)
+        if(NOT ivw_already_added_incdirs)
+            set(ivw_already_added_incdirs "")
+        endif()
+        remove_from_list(ivw_new_incdirs "${${u_package}_INCLUDE_DIR};${${u_package}_INCLUDE_DIRS}" ${ivw_already_added_incdirs})
+        target_include_directories(${target} PUBLIC ${ivw_new_incdirs})
 
         # Set directory links
         link_directories(${${u_package}_LIBRARY_DIRS})
@@ -903,16 +859,20 @@ macro(ivw_add_dependencies)
             if(NOT DEFINED ${u_package}_PROJECT)
                 set(${u_package}_PROJECT ${package})
             endif()
-            add_dependencies(${_projectName} ${${u_package}_PROJECT})
+            add_dependencies(${target} ${${u_package}_PROJECT})
         endif(BUILD_${u_package})
       
-        # Link library
-        ivw_print_list(${u_package}_LIBRARIES)
-        target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
+        # Link library (Only link new libs)
+        get_target_property(ivw_already_added_libs ${target} LINK_LIBRARIES)
+        if(NOT ivw_already_added_libs)
+            set(ivw_already_added_libs "")
+        endif()
+        remove_from_list(ivw_new_libs "${${u_package}_LIBRARIES}" ${ivw_already_added_libs})
+        target_link_libraries(${target} ${ivw_new_libs})
       
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-            set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
+            set_properties(TARGET ${target} APPEND_STRING PROPERTIES LINK_FLAGS " ${${u_package}_LINK_FLAGS}")
         endif()
       
         # Qt5
@@ -929,7 +889,7 @@ macro(ivw_add_dependencies)
         endforeach()
         remove_duplicates(uniqueQt5DependLibs ${Qt5DependLibs})
         foreach (uniqueQt5Lib ${uniqueQt5DependLibs})
-           qt5_use_modules(${_projectName} ${uniqueQt5Lib})
+           qt5_use_modules(${target} ${uniqueQt5Lib})
         endforeach()
     endforeach()
 endmacro()
@@ -1016,7 +976,10 @@ endmacro()
 #--------------------------------------------------------------------
 # Set header ignore paths for cotire
 macro(ivw_cotire_ignore)
-    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${_projectName} COTIRE_PREFIX_HEADER_IGNORE_PATH)
+    ivw_cotire_ignore_on_target(${_projectName})
+endmacro()
+macro(ivw_cotire_ignore_on_target target)
+    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
     if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
         set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
@@ -1030,34 +993,41 @@ macro(ivw_cotire_ignore)
         add_definitions("-DWIN32_LEAN_AND_MEAN")
     endif()
     
-    set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
+    set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
 endmacro()
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers from inviwo core
 macro(ivw_compile_optimize_inviwo_core)
+    ivw_compile_optimize_inviwo_core_on_target(${_projectName})
+endmacro()
+
+macro(ivw_compile_optimize_inviwo_core_on_target target)
     if(PRECOMPILED_HEADERS)
         if(_pchDisabledForThisModule)
-            set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+            set_target_properties(${target} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
         endif()
 
-        ivw_cotire_ignore()
-        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
+        ivw_cotire_ignore_on_target(${target})
+        set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
-        set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
-        cotire(${_projectName})
+        set_target_properties(${target} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
+        cotire(${target})
     endif()
 endmacro()
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers
 macro(ivw_compile_optimize)
+    ivw_compile_optimize_on_target(${_projectName})
+endmacro()
+macro(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
-        ivw_cotire_ignore()
-        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
+        ivw_cotire_ignore_on_target(${target})
+        set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
-        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
-        cotire(${_projectName})
+        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
+        cotire(${target})
     endif()
 endmacro()
 

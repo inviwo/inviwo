@@ -579,7 +579,7 @@ endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)
-   ivw_add_dependency_libraries( ${CORESERVICES_LIBRARY} )
+   target_link_libraries(inviwo-core ${CORESERVICES_LIBRARY})
 endif (APPLE)
 
 #Optimize compiliation with PCH etc

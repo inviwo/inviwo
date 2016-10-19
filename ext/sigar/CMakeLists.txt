@@ -103,7 +103,7 @@ set(SIGAR_SRC ${SIGAR_SRC}
 add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
 
 if(WIN32)
-    ivw_add_dependency_libraries(ws2_32 netapi32 version)
+    target_link_libraries(sigar PRIVATE ws2_32 netapi32 version)
 endif(WIN32)
 
 if(SIGAR_LINK_FLAGS)
