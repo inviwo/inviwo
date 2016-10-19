@@ -255,17 +255,7 @@ public:
             : Wrapper(std::forward<T>(data)) {}
     };
 
-    struct Span_t {};
-#if _MSC_FULL_VER < 190023918 // Visual Studio 2015 Update 2
-    // constexpr is not supported before VS 2015 Update 3.
-    // Github issues 1315 and 1319
-    // TODO: What are the implications of not using constexpr here?
-    Span_t span{};
-#else 
-    // Use constexpr with other compilers
-    static constexpr Span_t span{};
-#endif
-    
+    struct Span_t {};  
 
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                  const std::unordered_map<std::string, std::string>& attributes = {});
