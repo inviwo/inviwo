@@ -56,25 +56,5 @@ ivw_folder(GLEW ext)
 
 #--------------------------------------------------------------------
 # Add to package
-if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-    if(WIN32)
-       install(TARGETS GLEW
-                RUNTIME DESTINATION bin
-                COMPONENT modules)
-    elseif(APPLE)
-        install(TARGETS GLEW
-                RUNTIME DESTINATION bin
-                BUNDLE DESTINATION .
-                ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                COMPONENT modules)
+ivw_default_install_targets(GLEW)
 
-    else()
-        install(TARGETS GLEW
-                RUNTIME DESTINATION bin
-                BUNDLE DESTINATION bin
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib
-                COMPONENT modules)
-    endif()
-endif()

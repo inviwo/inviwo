@@ -663,3 +663,32 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
 endfunction()
 
+
+#--------------------------------------------------------------------
+# A helper funtion to install targets
+function(ivw_default_install_targets)
+    # package the zlib lib
+    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
+        if(WIN32)
+           install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    COMPONENT modules)
+        else(APPLE)
+            install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION .
+                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+                    COMPONENT modules)
+        
+        else()
+            install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION bin
+                    ARCHIVE DESTINATION lib
+                    LIBRARY DESTINATION lib
+                    COMPONENT modules)
+        endif()
+    endif()
+endfunction()
+
