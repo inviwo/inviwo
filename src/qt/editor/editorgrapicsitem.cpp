@@ -125,7 +125,13 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
         auto pi = t.append("tr").append("td");
         pi.append("b", port->getClassIdentifier(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(pi, P::end());
+        if (auto inport = dynamic_cast<const Inport*>(port)) {
+            if (inport->isOptional()) {
+                tb(H("Optional Port"));
+            }
+        }
         tb(H("Identifier"), port->getIdentifier());
+        
     }
 
     if (inspector) {
