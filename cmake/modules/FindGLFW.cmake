@@ -13,11 +13,17 @@ if(NOT GLFW_FOUND)
     mark_as_advanced(FORCE  GLFW_LIBRARY )
     
     if(WIN32 AND BUILD_SHARED_LIBS)
-        list(APPEND GLFW_LIBRARIES optimized ${IVW_LIBRARY_DIR}/Release/${GLFW_LIBRARY}3.lib debug ${IVW_LIBRARY_DIR}/Debug/${GLFW_LIBRARY}3${CMAKE_DEBUG_POSTFIX}.lib)
+        list(APPEND GLFW_LIBRARIES 
+            optimized ${IVW_LIBRARY_DIR}/$<CONFIG>/${GLFW_LIBRARY}3.lib 
+            debug ${IVW_LIBRARY_DIR}/$<CONFIG>/${GLFW_LIBRARY}3${CMAKE_DEBUG_POSTFIX}.lib)
     elseif(WIN32)
-        list(APPEND GLFW_LIBRARIES optimized ${GLFW_LIBRARY}3 debug ${GLFW_LIBRARY}3${CMAKE_DEBUG_POSTFIX})
+        list(APPEND GLFW_LIBRARIES 
+            optimized ${GLFW_LIBRARY}3 
+            debug ${GLFW_LIBRARY}3${CMAKE_DEBUG_POSTFIX})
     else()
-        list(APPEND GLFW_LIBRARIES optimized ${GLFW_LIBRARY} debug ${GLFW_LIBRARY}${CMAKE_DEBUG_POSTFIX})
+        list(APPEND GLFW_LIBRARIES 
+            optimized ${GLFW_LIBRARY} 
+            debug ${GLFW_LIBRARY}${CMAKE_DEBUG_POSTFIX})
     endif()
     
 endif(NOT GLFW_FOUND)

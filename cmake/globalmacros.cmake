@@ -529,21 +529,6 @@ function(ivw_define_standard_properties project_name)
 endfunction()
 
 #--------------------------------------------------------------------
-# Specify console as target
-function(ivw_vs_executable_setup project_name)
-    if(WIN32)
-      if(MSVC)
-         set_target_properties(${project_name} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
-         set_target_properties(${project_name} PROPERTIES COMPILE_DEFINITIONS_DEBUG "_CONSOLE")
-         set_target_properties(${project_name} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
-         set_target_properties(${project_name} PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
-         set_target_properties(${project_name} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE") 
-         set_target_properties(${project_name} PROPERTIES MINSIZEREL "/SUBSYSTEM:_CONSOLE")
-        endif(MSVC)
-    endif(WIN32)
-endfunction()
-
-#--------------------------------------------------------------------
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name target_name)
     # Set the compiler flags
@@ -667,16 +652,33 @@ macro(ivw_make_package package_name project_name)
 
     list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES 
-            optimized ${IVW_LIBRARY_DIR}/Release/${project_name}.lib 
-            debug ${IVW_LIBRARY_DIR}/Debug/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
+        set(PROJECT_LIBRARIES
+            optimized ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}.lib
+            debug ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
     else()
-       set(PROJECT_LIBRARIES 
-           optimized ${project_name} 
+       set(PROJECT_LIBRARIES
+           optimized ${project_name}
            debug ${project_name}${CMAKE_DEBUG_POSTFIX})
     endif()
     list(APPEND _allLibs ${PROJECT_LIBRARIES})
   
+    ivw_debug_message("Make package: ${project_name}")
+    
+    ivw_print_list(_allLibs)
+    get_target_property(mypubliclibs ${project_name} INTERFACE_LINK_LIBRARIES)
+    ivw_print_list(mypubliclibs)
+
+    ivw_print_list(_allIncludeDirs)
+    get_target_property(pubincdirs ${project_name} INCLUDE_DIRECTORIES)
+    ivw_print_list(pubincdirs)
+
+    ivw_print_list(_allDefinitions)
+    get_target_property(mydefs ${project_name} COMPILE_DEFINITIONS)
+    ivw_print_list(mydefs)
+
+    get_target_property(myopts ${project_name} COMPILE_OPTIONS)
+    ivw_print_list(myopts)
+
     remove_duplicates(uniqueIncludes ${_allIncludes})
     remove_duplicates(uniqueIncludeDirs ${_allIncludeDirs})
     remove_duplicates(uniqueLibsDir ${_allLibsDir})
@@ -686,10 +688,10 @@ macro(ivw_make_package package_name project_name)
     
     string(TOUPPER ${package_name} u_package_name)
     set(package_name ${u_package_name})
-    set(_allIncludes ${uniqueIncludes})
-    set(_allIncludeDirs ${uniqueIncludeDirs})
-    set(_allLibsDir ${uniqueLibsDir})
-    set(_allLibs ${_allLibs})
+    set(_allIncludes ${uniqueIncludes})             #BLÄ
+    set(_allIncludeDirs ${uniqueIncludeDirs})       # INCLUDE_DIRECTORIES
+    set(_allLibsDir ${uniqueLibsDir})               # BLÄ should not use, only has inviwo/lib anyway
+    set(_allLibs ${_allLibs})                       # INTERFACE_LINK_LIBRARIES
     set(_allDefinitions ${uniqueDefs})
     set(_allLinkFlags ${uniqueLinkFlags})
     set(_project_name ${project_name})
@@ -796,7 +798,6 @@ endmacro()
 # internal function call by ivw_create_module
 # call add_dependency_libs_to_module instead before, ivw_crete_module
 # Adds dependancy and includes package variables to the project
-
 macro(ivw_add_dependency_libraries)
     if(${ARGC} GREATER 0)
         set(uniqueNewLibs ${ARGN})
@@ -828,6 +829,8 @@ endmacro()
 # _allIncludeDirs
 # 
 macro(ivw_add_dependencies)
+    ivw_debug_message("Link: ${_projectName}")
+
     foreach (package ${ARGN})
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
@@ -903,7 +906,8 @@ macro(ivw_add_dependencies)
             add_dependencies(${_projectName} ${${u_package}_PROJECT})
         endif(BUILD_${u_package})
       
-        # Link library     
+        # Link library
+        ivw_print_list(${u_package}_LIBRARIES)
         target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
       
         # Link flags

@@ -214,22 +214,6 @@ mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
-    # Set ignored libs
-    set(VS_MULTITHREADED_DEBUG_DLL_IGNORE_LIBRARY_FLAGS
-        "/NODEFAULTLIB:libc.lib
-         /NODEFAULTLIB:libcmt.lib
-         /NODEFAULTLIB:msvcrt.lib
-         /NODEFAULTLIB:libcd.lib
-         /NODEFAULTLIB:libcmtd.lib"
-    )
-    set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
-        "/NODEFAULTLIB:libc.lib
-         /NODEFAULTLIB:libcmt.lib
-         /NODEFAULTLIB:libcd.lib
-         /NODEFAULTLIB:libcmtd.lib
-         /NODEFAULTLIB:msvcrtd.lib"
-    )
-    
     if(SHARED_LIBS)
         set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
     else()
@@ -241,15 +225,25 @@ if(WIN32 AND MSVC)
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
     if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_DEBUG} /MD")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} /MDd")
+
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_DEBUG} /MD")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} /MDd")
     else()
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_DEBUG} /MT")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} /MTd")
+
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_DEBUG} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
     endif()
 
     # For >=VS2015 enable edit and continue "ZI"

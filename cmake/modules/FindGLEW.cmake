@@ -64,7 +64,8 @@
 #endif(NOT GLEW_FOUND)
 
 if(WIN32 AND BUILD_SHARED_LIBS)
-    set(GLEW_LIBRARIES optimized ${IVW_LIBRARY_DIR}/Release/${GLEW_LIBRARY}.lib debug ${IVW_LIBRARY_DIR}/Debug/${GLEW_LIBRARY}${CMAKE_DEBUG_POSTFIX}.lib)
+    set(GLEW_LIBRARIES optimized ${IVW_LIBRARY_DIR}/$<CONFIG>/${GLEW_LIBRARY}.lib 
+    	               debug ${IVW_LIBRARY_DIR}/$<CONFIG>/${GLEW_LIBRARY}${CMAKE_DEBUG_POSTFIX}.lib)
 else()
     set(GLEW_LIBRARIES optimized ${GLEW_LIBRARY} debug ${GLEW_LIBRARY}${CMAKE_DEBUG_POSTFIX})
 endif()
