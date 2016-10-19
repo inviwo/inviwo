@@ -52,6 +52,11 @@ else()
     endif()
 endif()
 
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    mesage(WARNING "Inviwo is only supported for 64-bit architectures.")
+endif()
+
+
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
