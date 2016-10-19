@@ -29,6 +29,7 @@
 
 #include <modules/base/basemodule.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <modules/base/processors/convexhull2dprocessor.h>
 #include <modules/base/processors/cubeproxygeometry.h>
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
@@ -92,6 +93,7 @@ using WorldTransformMesh = WorldTransform<Mesh>;
 using WorldTransformVolume = WorldTransform<Volume>;
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
+    registerProcessor<ConvexHull2DProcessor>();
     registerProcessor<CubeProxyGeometry>();
     registerProcessor<DiffuseLightSourceProcessor>();
     registerProcessor<DirectionalLightSourceProcessor>();

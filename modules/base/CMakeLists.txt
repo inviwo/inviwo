@@ -6,6 +6,8 @@ ivw_module(Base)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhull.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
@@ -19,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datasource.h
@@ -74,6 +77,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
@@ -86,6 +90,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
@@ -136,6 +141,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
