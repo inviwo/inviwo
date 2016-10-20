@@ -45,9 +45,21 @@ const ProcessorInfo VolumeBinary::getProcessorInfo() const {
 }
 
 VolumeBinary::VolumeBinary()
-    : VolumeGLProcessor("volume_binary.frag")
-    , threshold_("threshold", "Threshold", 0.5) {
+    : VolumeGLProcessor("volume_binary.frag",false)
+    , threshold_("threshold", "Threshold", 0.5) 
+    , op_("operator","Operator",InvalidationLevel::InvalidResources)
+{
     addProperty(threshold_);
+    addProperty(op_);
+
+    op_.addOption("greaterthen", ">", Operator::GreaterThen);
+    op_.addOption("greaterthenorequal", ">=", Operator::GreaterThenOrEqual);
+    op_.addOption("lessthen", "<", Operator::LessThen);
+    op_.addOption("lessthenorequal", "<=", Operator::LessThenOrEqual);
+    op_.addOption("equal", "==", Operator::Equal);
+    op_.addOption("notequal", "!=", Operator::NotEqual);
+
+    op_.setCurrentStateAsDefault();
     this->dataFormat_ = DataUInt8::get();
 }
     
@@ -57,6 +69,13 @@ void VolumeBinary::preProcess(TextureUnitContainer &cont) {
 
 void VolumeBinary::postProcess() {
     volume_->dataMap_.dataRange = vec2(0, 255);
+}
+
+void VolumeBinary::initializeResources() {
+
+    shader_.getFragmentShaderObject()->addShaderDefine("OP", op_.getSelectedDisplayName());
+    shader_.build();
+
 }
 
 } // namespace
