@@ -143,6 +143,19 @@ InviwoApplication::~InviwoApplication() {
     ResourceManager::getPtr()->clearAllResources();
 }
 
+void InviwoApplication::clearModules() {
+    ResourceManager::getPtr()->clearAllResources();
+    // Need to clear the modules in reverse order since the might depend on each other.
+    // The destuction order of vector is undefined.
+    for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+        it->reset();
+    }
+    modules_.clear();
+    modulesFactoryObjects_.clear();
+    moduleSharedLibraries_.clear();
+    //moduleLibraryObservers_.clear();
+}
+
 void topologicalSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& graph,
                       std::unordered_set<std::string>& explored, std::string i,
                       std::vector<std::string>& sorted, size_t& t) {
@@ -312,6 +325,216 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     postProgress("Loading Settings");
     auto settings = getModuleSettings(1);
     for (auto setting : settings) setting->loadFromDisk();
+}
+
+void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories) {
+    for(auto& mod: moduleFactories) {
+        modulesFactoryObjects_.emplace_back(std::move(mod));
+    }
+    
+    // Topological sort to make sure that we load modules in correct order
+    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+    std::unordered_set<std::string> explored;
+    auto t = modulesFactoryObjects_.size();
+    std::vector<std::string> sorted(modulesFactoryObjects_.size());
+    for (const auto& module : modulesFactoryObjects_) {
+        auto lowerCaseName = toLower(module->name_);
+        if (explored.find(lowerCaseName) == explored.end()) {
+            topologicalSort(modulesFactoryObjects_, explored, lowerCaseName, sorted, t);
+        }
+    }
+    // Sort modules according to dependency graph
+    std::sort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_),
+        [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
+            const std::unique_ptr<InviwoModuleFactoryObject>& b) {
+        return std::find(std::begin(sorted), std::end(sorted), toLower(a->name_)) >
+            std::find(std::begin(sorted), std::end(sorted), toLower(b->name_));
+    });
+
+    std::vector<std::string> failed;
+    auto checkdepends = [&](const std::vector<std::string>& deps) {
+        for (const auto& dep : deps) {
+            auto it = util::find(failed, dep);
+            if (it != failed.end()) return it;
+        }
+        return failed.end();
+    };
+
+    auto checkVersionCompability = [](const std::string referenceVersion, const std::string toCompare) {
+        istringstream refSS(referenceVersion);
+        std::string refMajor, refMinor, refPatch;
+        std::getline(refSS, refMajor, '.'); std::getline(refSS, refMinor, '.'); std::getline(refSS, refPatch, '.');
+        istringstream toCompSS(toCompare);
+        std::string toCompMajor, toCompMinor, toCompPatch;
+        std::getline(toCompSS, toCompMajor, '.');
+        std::getline(toCompSS, toCompMinor, '.');
+        std::getline(toCompSS, toCompPatch, '.');
+        // Major and minor versions need to be the same.
+        if (refMajor != toCompMajor || refMinor != toCompMinor) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+
+    auto checkDepencyVersion = [&](const std::string& dep, const std::string& depVersions) {
+        std::map<std::string, std::string> incorrectDepencencyVersions;
+        auto lowerCaseDep = toLower(dep);
+        // Find module
+        auto it = util::find_if(modulesFactoryObjects_, [&](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
+            return toLower(module->name_) == lowerCaseDep;
+        });
+        // Check if dependent module is of correct version
+        if (it != modulesFactoryObjects_.end() && checkVersionCompability((*it)->version_, depVersions)) {
+            return true;
+        }
+        else {
+            return false;
+        };
+    };
+
+
+    for (auto& moduleObj : modulesFactoryObjects_) {
+        postProgress("Loading module: " + moduleObj->name_);
+        // Make sure that the module supports the current inviwo core version
+        if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion_ + ", current version is " + IVW_VERSION);
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+            continue;
+        }
+        // Check if dependency modules have correct versions.
+        // Note that the module version only need to be increased 
+        // when changing and the inviwo core version has not changed
+        // since we are ensuring the they must be built for the 
+        // same core version. 
+        auto versionIt = moduleObj->dependenciesVersion_.cbegin();
+        auto anyIncorrectDependencyVersions = false;
+        std::stringstream dependencyVersionError;
+        for (auto dep = moduleObj->depends_.cbegin();
+            dep != moduleObj->depends_.end(); ++dep, ++versionIt) {
+            if (!checkDepencyVersion(*dep, *versionIt)) {
+                dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but another version was loaded" << std::endl;
+            };
+        }
+        if (dependencyVersionError.str().size() > 0) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: " + dependencyVersionError.str());
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+            continue;
+        }
+        try {
+            auto it = checkdepends(moduleObj->depends_);
+            if (it == failed.end()) {
+                registerModule(moduleObj->create(this));
+                //moduleLibraryObservers_.emplace_back(ModuleLibraryObserver(toLower(moduleObj->name_)));
+                //moduleLibraryObservers_.back().startFileObservation(moduleObj->library_->getFilePath());
+            }
+            else {
+                LogError("Could not register module: " + moduleObj->name_ + " since dependency: " +
+                    *it + " failed to register");
+            }
+        }
+        catch (const ModuleInitException& e) {
+            LogError("Failed to register module: " + moduleObj->name_);
+            LogError("Reason: " + e.getMessage());
+            util::push_back_unique(failed, toLower(moduleObj->name_));
+
+            std::vector<std::string> toDeregister;
+            for (const auto& m : e.getModulesToDeregister()) {
+                util::append(toDeregister, findDependentModules(m));
+                toDeregister.push_back(toLower(m));
+            }
+            for (const auto& dereg : toDeregister) {
+                util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
+                    if (toLower(m->getIdentifier()) == dereg) {
+                        LogError("De-registering " + m->getIdentifier() + " because " +
+                            moduleObj->name_ + " failed to register");
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                });
+                util::push_back_unique(failed, dereg);
+            }
+        }
+    }
+
+    postProgress("Loading Capabilities");
+    for (auto& module : modules_) {
+        for (auto& elem : module->getCapabilities()) {
+            elem->retrieveStaticInfo();
+            elem->printInfo();
+        }
+    }
+
+    // Load settings from other modules
+    postProgress("Loading Settings");
+    auto settings = getModuleSettings(1);
+    for (auto setting : settings) setting->loadFromDisk();
+}
+
+typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
+void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<std::string>& librarySearchPaths) {
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+    std::vector<std::string> files;
+    for (auto path : librarySearchPaths) {
+        auto filesInDir = filesystem::getDirectoryContents(filesystem::getFileDirectory(filesystem::getExecutablePath()), filesystem::ListMode::Files);
+        for (auto& file : filesInDir) {
+            file = filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/" + file;
+        }
+        files.insert(std::end(files), std::begin(filesInDir), std::end(filesInDir));
+    }
+    
+#if WIN32
+    std::string libraryType = "dll";
+    // Prevent error mode dialogs from displaying.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
+#else
+    std::string libraryType = "so";
+#endif
+    for (const auto& filePath : files) {
+        if (filesystem::getFileExtension(filePath) == libraryType) {
+            std::string tmpDir = filesystem::getWorkingDirectory();
+            //std::string tmpDir = dir + "/tmp";
+            if (!filesystem::directoryExists(tmpDir)) {
+                filesystem::createDirectoryRecursively(tmpDir);
+            }
+
+            std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
+            {
+                // Load a copy of the file to make sure that
+                // we can overwrite the file.
+                std::ifstream  src(filePath, std::ios::binary);
+                std::ofstream  dst(dstPath, std::ios::binary);
+
+                dst << src.rdbuf();
+            }
+        }
+    }
+    std::string tmpDir = filesystem::getWorkingDirectory();
+    for (const auto& filePath : files) {
+        std::string pattern = "inviwo-cored.dll";
+        if (filesystem::getFileExtension(filePath) == libraryType &&
+            (std::mismatch(pattern.rbegin(), pattern.rend(), filePath.rbegin(), filePath.rend()).first != pattern.rend())) {
+            try {
+                std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(filePath));
+                f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
+                if (moduleFunc) {
+                    modules.emplace_back(moduleFunc());
+                    moduleSharedLibraries_.emplace_back(std::move(sharedLib));
+                    moduleLibraryObservers_.emplace_back(toLower(modules.back()->name_));
+                    moduleLibraryObservers_.back().startFileObservation(filePath);
+                }
+            }
+            catch (Exception ex) {
+                //LogError(ex.getMessage());
+            }
+        }
+    }
+    registerModules(modules);
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }

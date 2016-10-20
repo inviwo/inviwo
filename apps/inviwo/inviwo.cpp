@@ -71,7 +71,8 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.registerModules(&inviwo::registerAllModules);
+    inviwoApp.registerModulesFromDynamicLibraries(std::vector<std::string>(1, inviwo::filesystem::getExecutablePath()));
+    //inviwoApp.registerModules(&inviwo::registerAllModules);
     inviwoApp.processEvents();
 
     // Do this after registerModules if some arguments were added

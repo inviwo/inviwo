@@ -71,6 +71,7 @@ public:
     virtual ~InviwoModuleFactoryObject();
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
+    void setSharedLibrary(std::unique_ptr<SharedLibrary>& library);
 
     const std::string name_; // Module name
     const std::string version_; // Module version (Major.Minor.Patch)
@@ -103,12 +104,14 @@ inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
 class IVW_CORE_API ModuleLibraryObserver : public FileObserver {
 
 public:
-    ModuleLibraryObserver() = default;
-    virtual ~ModuleLibraryObserver() = default;
+    ModuleLibraryObserver();
+    ModuleLibraryObserver(std::string moduleName);
+    ModuleLibraryObserver(ModuleLibraryObserver&& other);
+    virtual ~ModuleLibraryObserver();
 
     virtual void fileChanged(const std::string& fileName);
 
-    InviwoModuleFactoryObject* observedModule_;
+    std::string observedModuleName;
 };
 
 }  // namespace

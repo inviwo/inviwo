@@ -102,7 +102,8 @@ public:
     virtual ~InviwoApplication();
 
     virtual void registerModules(RegisterModuleFunc func);
-
+    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories);
+    virtual void registerModulesFromDynamicLibraries(const std::vector<std::string>& librarySearchPaths);
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
@@ -188,6 +189,8 @@ public:
     InteractionStateManager& getInteractionStateManager();
 
     std::vector<std::string> findDependentModules(std::string module) const;
+
+    void clearModules();
 protected:
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
@@ -236,6 +239,8 @@ protected:
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
+    std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
+    std::vector<ModuleLibraryObserver> moduleLibraryObservers_;
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 

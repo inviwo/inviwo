@@ -20,10 +20,12 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
             try {
                 std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(filePath));
                 f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
-                modules.emplace_back(moduleFunc());
-                //modules.back()->library_ = std::move(sharedLib);
+                if (moduleFunc) {
+                    modules.emplace_back(moduleFunc());
+                    modules.back()->setSharedLibrary(sharedLib);
+                }
             } catch (Exception ex) {
-                LogError(ex.message());
+                //LogError(ex.getMessage());
             }
         }
     }
