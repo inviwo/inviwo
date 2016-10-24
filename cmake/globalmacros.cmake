@@ -872,7 +872,7 @@ macro(ivw_add_dependencies_on_target target)
       
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-            set_properties(TARGET ${target} APPEND_STRING PROPERTIES LINK_FLAGS " ${${u_package}_LINK_FLAGS}")
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " ${${u_package}_LINK_FLAGS}")
         endif()
       
         # Qt5

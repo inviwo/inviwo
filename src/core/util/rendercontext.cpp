@@ -57,7 +57,7 @@ void RenderContext::activateLocalRenderContext() const {
             auto& canvas = contextMap_[id];
             lock.unlock();
 
-            canvas = std::move(defaultContext_->createHiddenCanvas());
+            canvas = defaultContext_->createHiddenCanvas();
             localContext = canvas.get();
         } else {
             localContext = (*it).second.get();

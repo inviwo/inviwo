@@ -45,8 +45,8 @@ std::vector<T> getPointSet(const std::size_t numPoints) {
     srand(0);  // seed to always be the same random numbers
 
     std::vector<T> points(numPoints);
-    for (std::size_t i = 0; i < numPoints; i++) {
-        for (int j = 0; j < util::extent<T>::value; ++j) {
+    for (size_t i = 0; i < numPoints; i++) {
+        for (size_t j = 0; j < util::extent<T>::value; ++j) {
             points[i][j] = rand() / float(RAND_MAX);
         }
     }
@@ -61,8 +61,8 @@ std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
     srand(0);  // seed to always be the same random numbers
 
     std::vector<T> points(numPoints);
-    for (std::size_t i = 0; i < numPoints; i++) {
-        for (int j = 0; j < util::extent<T>::value; ++j) {
+    for (size_t i = 0; i < numPoints; i++) {
+        for (size_t j = 0; j < util::extent<T>::value; ++j) {
             points[i][j] = rand() % extent[j];
         }
     }

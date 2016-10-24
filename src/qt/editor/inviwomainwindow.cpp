@@ -1006,7 +1006,7 @@ void InviwoMainWindow::showAboutBox() {
         aboutText << "<p><b>Build Date: </b>\n" << syscap->getBuildDateString() << "</p>\n";
         aboutText << "<p><b>Repos:</b>\n"
                   << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
-        for (int i = 0; i < syscap->getGitNumberOfHashes(); ++i) {
+        for (size_t i = 0; i < syscap->getGitNumberOfHashes(); ++i) {
             auto item = syscap->getGitHash(i);
             aboutText << "<tr><td style='padding-right:8px;'>" << item.first
                       << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";

@@ -317,7 +317,7 @@ std::string ShaderObject::print(bool showSource, bool preprocess) const {
                 unsigned int lineNumber =
                     i < lineNumberResolver_.size() ? lineNumberResolver_[i].second : 0;
 
-                out << std::left << std::setw(width + 1) << file << std::right << std::setw(4)
+                out << std::left << std::setw(width + 1u) << file << std::right << std::setw(4)
                     << lineNumber << ": " << std::left << line << "\n";
                 ++i;
             }
@@ -334,7 +334,7 @@ std::string ShaderObject::print(bool showSource, bool preprocess) const {
             while (std::getline(in, line)) {
                 std::string file = resource_->key();
 
-                out << std::left << std::setw(file.length() + 1) << file << std::right
+                out << std::left << std::setw(file.length() + 1u) << file << std::right
                     << std::setw(4) << lineNumber << ": " << std::left << line << "\n";
                 ++lineNumber;
             }
