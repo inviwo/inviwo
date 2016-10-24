@@ -36,17 +36,19 @@ namespace inviwo {
 
 LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format, const void* data)
     : LayerRepresentation(dimensions, type, format)
-    , layerFormat_(dataFormatToCLImageFormat(format->getId())) {
+    , layerFormat_(dataFormatToCLImageFormat(format->getId()))
+    , swizzleMask_(swizzlemasks::rgba) {
     initialize(data);
 }
 
-LayerCL::LayerCL(const LayerCL& rhs) : LayerRepresentation(rhs), layerFormat_(rhs.layerFormat_) {
+LayerCL::LayerCL(const LayerCL& rhs)
+    : LayerRepresentation(rhs), layerFormat_(rhs.layerFormat_), swizzleMask_(rhs.swizzleMask_) {
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_, 1));
 }
 
-LayerCL::~LayerCL() {}
+LayerCL::~LayerCL() = default;
 
 void LayerCL::initialize(const void* texels) {
     if (texels != nullptr) {
@@ -113,6 +115,14 @@ void LayerCL::setDimensions(size2_t dimensions) {
                                                   getFormat(), dimensions.x, dimensions.y);
     LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
     clImage_ = std::unique_ptr<cl::Image2D>(resizedLayer2D);
+}
+
+void LayerCL::setSwizzleMask(const SwizzleMask &mask) {
+    swizzleMask_ = mask;
+}
+
+SwizzleMask LayerCL::getSwizzleMask() const {
+    return swizzleMask_;
 }
 
 }  // namespace

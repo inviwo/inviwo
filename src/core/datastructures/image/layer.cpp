@@ -115,6 +115,22 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(const std::s
     return std::unique_ptr<std::vector<unsigned char>>();
 }
 
+void Layer::setSwizzleMask(const SwizzleMask &mask) {
+    if ((layerType_ == LayerType::Color) && this->hasRepresentations()) {
+        // update swizzle mask of all representations
+        for (auto rep : representations_) {
+            rep.second->setSwizzleMask(mask);
+        }
+    }
+}
+
+SwizzleMask Layer::getSwizzleMask() const {
+    if (this->hasRepresentations() && lastValidRepresentation_) {
+        return lastValidRepresentation_->getSwizzleMask();
+    }
+    return swizzlemasks::rgba;
+}
+
 std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const {
     return createLayerRAM(getDimensions(), getLayerType(), getDataFormat());
 }

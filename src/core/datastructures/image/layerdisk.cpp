@@ -32,16 +32,17 @@
 namespace inviwo {
 
 LayerDisk::LayerDisk(LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation() {}
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(), swizzleMask_(swizzlemasks::rgba) {}
 
 LayerDisk::LayerDisk(std::string url, LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url) {}
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url), swizzleMask_(swizzlemasks::rgba) {}
 
-LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs) {}
+LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs), swizzleMask_(rhs.swizzleMask_) {}
 
 LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
     if (this != &that) {
         LayerRepresentation::operator=(that);
+        swizzleMask_ = that.swizzleMask_;
     }
     return *this;
 }
@@ -54,10 +55,37 @@ void LayerDisk::setDimensions(size2_t dimensions) { dimensions_ = dimensions; }
 
 bool LayerDisk::copyRepresentationsTo(DataRepresentation*) const { return false; }
 
-void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
+void LayerDisk::updateDataFormat(const DataFormatBase* format) { 
+    setDataFormat(format); 
+
+    auto swizzleMask = [](std::size_t numComponents) {
+        switch (numComponents) {
+            case 1:
+                return swizzlemasks::luminance;
+            case 2:
+                return swizzlemasks::luminanceAlpha;
+            case 3:
+                return swizzlemasks::rgb;
+            case 4:
+            default:
+                return swizzlemasks::rgba;
+        }
+
+    };
+
+    setSwizzleMask(swizzleMask(format->getComponents()));
+}
 
 std::type_index LayerDisk::getTypeIndex() const {
     return std::type_index(typeid(LayerDisk));
+}
+
+void LayerDisk::setSwizzleMask(const SwizzleMask &mask) {
+    swizzleMask_ = mask;
+}
+
+SwizzleMask LayerDisk::getSwizzleMask() const {
+    return swizzleMask_;
 }
 
 }  // namespace

@@ -37,6 +37,7 @@ std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
     auto layerGL = std::make_shared<LayerGL>(layerRAM->getDimensions(), layerRAM->getLayerType(),
                                              layerRAM->getDataFormat());
     layerGL->getTexture()->initialize(layerRAM->getData());
+    layerGL->setSwizzleMask(layerRAM->getSwizzleMask());
     return layerGL;
 }
 
@@ -47,6 +48,7 @@ void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
     }
 
     layerDst->getTexture()->upload(layerSrc->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
@@ -56,6 +58,7 @@ std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
 
     if (layerRAM) {
         layerGL->getTexture()->download(layerRAM->getData());
+        layerRAM->setSwizzleMask(layerGL->getSwizzleMask());
         return layerRAM;
     } else {
         LogError("Cannot convert format from GL to RAM:" << layerGL->getDataFormat()->getString());
@@ -70,6 +73,7 @@ void LayerGL2RAMConverter::update(std::shared_ptr<const LayerGL> layerSrc,
         layerDst->setDimensions(layerSrc->getDimensions());
     }
     layerSrc->getTexture()->download(layerDst->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 }  // namespace

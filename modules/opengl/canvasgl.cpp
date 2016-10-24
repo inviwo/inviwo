@@ -70,6 +70,8 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
         
+        auto swizzleMask = imageGL_->getColorLayerGL(0)->getTexture()->getSwizzleMask();
+
         if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
             checkChannels(imageGL_->getLayerGL(layerType_, idx)->getDataFormat()->getComponents());
         } else {

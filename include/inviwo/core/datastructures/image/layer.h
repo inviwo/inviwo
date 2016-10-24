@@ -77,6 +77,14 @@ public:
      */
     std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(const std::string& fileExtension) const;
 
+    /**
+    * \brief update the swizzle mask of the channels for sampling color layers
+    * The swizzle mask is only affecting Color layers.
+    *
+    * @param mask    new swizzle mask
+    */
+    void setSwizzleMask(const SwizzleMask &mask);
+    SwizzleMask getSwizzleMask() const;
 
 protected:
     virtual std::shared_ptr<LayerRepresentation> createDefaultRepresentation() const override;

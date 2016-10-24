@@ -62,6 +62,18 @@ public:
      */
     void updateDataFormat(const DataFormatBase* format);
     virtual std::type_index getTypeIndex() const override final;
+
+    /**
+    * \brief update the swizzle mask of the channels for sampling color layers
+    * Needs to be overloaded by child classes.
+    *
+    * @param mask    new swizzle mask
+    */
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
+private:
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

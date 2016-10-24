@@ -37,7 +37,8 @@ CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                      std::shared_ptr<Texture2D> data)
-    : LayerRepresentation(dimensions, type, format), texture_(data) {
+    : LayerRepresentation(dimensions, type, format)
+    , texture_(data) {
     if (data) {
         initialize(data.get());
         CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
@@ -157,6 +158,19 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 }
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
+
+void LayerCLGL::setSwizzleMask(const SwizzleMask &mask) {
+    if (texture_) {
+        texture_->setSwizzleMask(mask);
+    }
+}
+
+SwizzleMask LayerCLGL::getSwizzleMask() const {
+    if (texture_) {
+        return texture_->getSwizzleMask();
+    }
+    return swizzlemasks::rgba;
+}
 
 }  // namespace
 

@@ -192,6 +192,12 @@ GLuint Texture::getSizeInBytes() const {
     return byteSize_;
 }
 
+void Texture::setTextureParameters(std::function<void(Texture*)> fun) {
+    bind();
+    fun(this);
+    unbind();
+}
+
 void Texture::bind() const {
     glBindTexture(target_, id_);
     LGL_ERROR;
@@ -200,6 +206,62 @@ void Texture::bind() const {
 void Texture::unbind() const {
     glBindTexture(target_, 0);
     LGL_ERROR;
+}
+
+void Texture::setSwizzleMask(SwizzleMask mask) {
+    auto convertToGL = [](ImageChannel channel) {
+        switch (channel) {
+            case ImageChannel::Red:
+                return GL_RED;
+            case ImageChannel::Green:
+                return GL_GREEN;
+            case ImageChannel::Blue:
+                return GL_BLUE;
+            case ImageChannel::Alpha:
+                return GL_ALPHA;
+            case ImageChannel::Zero:
+                return GL_ZERO;
+            case ImageChannel::One:
+                return GL_ONE;
+            default:
+                return GL_ZERO;
+        }
+    };
+    std::array<GLint, 4> swizzleMaskGL;
+    std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
+
+    bind();
+    glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    unbind();
+}
+
+SwizzleMask Texture::getSwizzleMask() const {
+    std::array<GLint, 4> swizzleMaskGL;
+    bind();
+    glGetTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    unbind();
+
+    auto convertFromGL = [](GLint channel) {
+        switch (channel) {
+            case GL_RED:
+                return ImageChannel::Red;
+            case GL_GREEN:
+                return ImageChannel::Green;
+            case GL_BLUE:
+                return ImageChannel::Blue;
+            case GL_ALPHA:
+                return ImageChannel::Alpha;
+            case GL_ZERO:
+                return ImageChannel::Zero;
+            case GL_ONE:
+                return ImageChannel::One;
+            default:
+                return ImageChannel::Zero;
+        }
+    };
+    SwizzleMask mask;
+    std::transform(swizzleMaskGL.begin(), swizzleMaskGL.end(), mask.begin(), convertFromGL);
+    return mask;
 }
 
 void Texture::bindFromPBO() const {
