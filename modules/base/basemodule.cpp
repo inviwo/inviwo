@@ -78,6 +78,7 @@
 #include <modules/base/processors/volumegradientcpuprocessor.h>
 #include <modules/base/processors/volumecurlcpuprocessor.h>
 #include <modules/base/processors/volumelaplacianprocessor.h>
+#include <modules/base/processors/volumedivergencecpuprocessor.h>
 #include <modules/base/processors/meshexport.h>
 
 #include <modules/base/io/stlwriter.h>
@@ -136,6 +137,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
     registerProcessor<VolumeGradientCPUProcessor>();
     registerProcessor<VolumeCurlCPUProcessor>();
+    registerProcessor<VolumeDivergenceCPUProcessor>();
     registerProcessor<VolumeLaplacianProcessor>();
     registerProcessor<MeshExport>();
 
