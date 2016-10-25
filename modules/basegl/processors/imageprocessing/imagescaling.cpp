@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/imagescaling.h>
+#include <modules/basegl/processors/imageprocessing/imagescaling.h>
 
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <modules/opengl/openglutils.h>
