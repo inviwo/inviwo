@@ -30,7 +30,7 @@
 #include <modules/base/basemodule.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/base/processors/convexhull2dprocessor.h>
-#include <modules/base/processors/cubeproxygeometry.h>
+#include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>

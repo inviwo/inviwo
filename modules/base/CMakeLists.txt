@@ -22,7 +22,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datasource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.h
@@ -91,7 +91,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.cpp

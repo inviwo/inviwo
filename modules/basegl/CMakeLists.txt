@@ -9,7 +9,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.h
@@ -63,7 +63,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.cpp

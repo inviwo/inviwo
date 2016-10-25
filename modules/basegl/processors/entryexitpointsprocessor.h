@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_ENTRYEXITPOINTS_H
-#define IVW_ENTRYEXITPOINTS_H
+#ifndef IVW_ENTRYEXITPOINTSPROCESSOR_H
+#define IVW_ENTRYEXITPOINTSPROCESSOR_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -91,4 +91,4 @@ private:
 
 } // namespace
 
-#endif // IVW_ENTRYEXITPOINTS_H
+#endif // IVW_ENTRYEXITPOINTSPROCESSOR_H

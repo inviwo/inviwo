@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "entryexitpoints.h"
+#include "entryexitpointsprocessor.h"
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>

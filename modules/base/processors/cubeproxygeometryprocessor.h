@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_CUBEPROXYGEOMETRY_H
-#define IVW_CUBEPROXYGEOMETRY_H
+#ifndef IVW_CUBEPROXYGEOMETRYPROCESSOR_H
+#define IVW_CUBEPROXYGEOMETRYPROCESSOR_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -85,4 +85,4 @@ private:
 
 } // namespace
 
-#endif // IVW_CUBEPROXYGEOMETRY_H
+#endif // IVW_CUBEPROXYGEOMETRYPROCESSOR_H
