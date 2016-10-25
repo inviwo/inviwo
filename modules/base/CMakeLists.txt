@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhull.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
@@ -78,6 +79,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp

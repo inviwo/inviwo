@@ -30,6 +30,8 @@
 #include "cubeproxygeometryprocessor.h"
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/volumeutils.h>
+#include <modules/base/algorithm/cubeproxygeometry.h>
 
 namespace inviwo {
 
@@ -73,104 +75,35 @@ CubeProxyGeometry::CubeProxyGeometry()
 CubeProxyGeometry::~CubeProxyGeometry() {}
 
 void CubeProxyGeometry::process() {
-    vec3 startDataTexCoord = vec3(0.0f);
-    vec3 extent = vec3(1.0f); //!< will be added to the origin in the parallelepiped() yielding the end position
-
-    if (inport_.getData()->getMetaData<BoolMetaData>("marginsEnabled", false)) {
-        // volume has margins enabled
-        // adjust start and end texture coordinate accordingly
-        auto marginsBottomLeft = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
-        auto marginsTopRight = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
-
-        startDataTexCoord += marginsBottomLeft;
-        // extent needs to be adjusted for both margins
-        extent -= marginsBottomLeft + marginsTopRight;
-    }
-
-    glm::vec3 origin(0.0f);
-    glm::vec3 e1(1.0f, 0.0f, 0.0f);
-    glm::vec3 e2(0.0f, 1.0f, 0.0f);
-    glm::vec3 e3(0.0f, 0.0f, 1.0f);
-    glm::vec3 texOrigin(startDataTexCoord);
-    glm::vec3 t1(extent.x, 0.0f, 0.0f);
-    glm::vec3 t2(0.0f, extent.y, 0.0f);
-    glm::vec3 t3(0.0f, 0.0f, extent.z);
-    glm::vec4 colOrigin(startDataTexCoord, 1.0f);
-    glm::vec4 c1(t1, 0.0f);
-    glm::vec4 c2(t2, 0.0f);
-    glm::vec4 c3(t3, 0.0f);
-
+    std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
-
-        vec3 clipRange(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax());
-
-        vec3 clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
-        vec3 clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
-
-        vec3 min(clipMin / clipRange);
-        vec3 clipextent((clipMax - clipMin) / clipRange);
-
-        origin = origin + e1 * min.x + e2 * min.y + e3 * min.z;
-        e1 *= clipextent.x;
-        e2 *= clipextent.y;
-        e3 *= clipextent.z;
-
-        texOrigin = texOrigin + t1 * min.x + t2 * min.y + t3 * min.z;
-        t1 *= clipextent.x;
-        t2 *= clipextent.y;
-        t3 *= clipextent.z;
-
-        colOrigin += c1 * min.x + c2 * min.y + c3 * min.z;
-        c1 *= clipextent.x;
-        c2 *= clipextent.y;
-        c3 *= clipextent.z;
+        const size3_t clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
+        const size3_t clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
+        mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax);
     }
-
-    // Create parallelepiped and set it to the outport. The outport will own the data.
-    auto geom = SimpleMeshCreator::parallelepiped(origin, e1, e2, e3,
-                                                  texOrigin, t1, t2, t3,
-                                                  colOrigin, c1, c2, c3);
-    geom->setModelMatrix(inport_.getData()->getModelMatrix());
-    geom->setWorldMatrix(inport_.getData()->getWorldMatrix());
-    outport_.setData(geom);
+    else {
+        mesh = algorithm::createCubeProxyGeometry(inport_.getData());
+    }
+    outport_.setData(mesh);
 }
 
 void CubeProxyGeometry::onVolumeChange() {
+    auto volume = inport_.getData();
     // Update to the new dimensions.
-    auto dims = inport_.getData()->getDimensions();
-    
-    if (inport_.getData()->getMetaData<BoolMetaData>("brickedVolume", false)) {
-        // adjust dimensions for bricked volumes
-
-        // volume dimensions refer only to the size of the index volume, multiply it by brick dimension
-        auto brickDim = inport_.getData()->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1));
-        dims *= size3_t(brickDim);
-    }
-    // re-adjust slider ranges by considering margins
-    // the clip range should not cover the area within the margins
-    if (inport_.getData()->getMetaData<BoolMetaData>("marginsEnabled", false)) {
-        // volume has margins enabled
-        // adjust start and end texture coordinate accordingly
-        auto marginsBottomLeft = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
-        auto marginsTopRight = inport_.getData()->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
-        
-        dims = size3_t(vec3(dims) * (vec3(1.0f) - (marginsBottomLeft + marginsTopRight)));
-    }
+    auto dims = util::getVolumeDimensions(volume);
 
     if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
         NetworkLock lock(this);
 
-        clipX_.setRangeNormalized(ivec2(0, dims.x));
-        clipY_.setRangeNormalized(ivec2(0, dims.y));
-        clipZ_.setRangeNormalized(ivec2(0, dims.z));
+        clipX_.setRangeNormalized(ivec2(0, dims.x-1));
+        clipY_.setRangeNormalized(ivec2(0, dims.y-1));
+        clipZ_.setRangeNormalized(ivec2(0, dims.z-1));
 
         // set the new dimensions to default if we were to press reset
         clipX_.setCurrentStateAsDefault();
         clipY_.setCurrentStateAsDefault();
         clipZ_.setCurrentStateAsDefault();
     }
-
 }
 
 } // namespace
-

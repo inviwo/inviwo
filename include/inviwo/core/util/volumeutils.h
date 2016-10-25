@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,42 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEUTILSGL_H
-#define IVW_VOLUMEUTILSGL_H
+#ifndef IVW_VOLUMEUTILS_H
+#define IVW_VOLUMEUTILS_H
 
-#include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+
+#include <tuple>
 
 namespace inviwo {
 
-class Shader;
+class Volume;
 
-namespace utilgl {
+namespace util {
 
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Volume& volume,
-                                             const std::string& samplerID);
+bool IVW_CORE_API hasMargins(const std::shared_ptr<const Volume> &volume);
 
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const VolumeInport& port,
-                                             const std::string& samplerID);
+bool IVW_CORE_API isBricked(const std::shared_ptr<const Volume> &volume);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              VolumeInport& volume);
+size3_t IVW_CORE_API getBrickDimensions(const std::shared_ptr<const Volume> &volume);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const Volume& volume, const std::string& samplerID);
-}
+/**
+* \brief return the margins of a volume, in normalized texture coordinates [0,1]
+*
+* @return pair of margins from the bottom left corner and the top right corner
+*/
+std::pair<vec3, vec3> IVW_CORE_API getVolumeMargins(const std::shared_ptr<const Volume> &volume);
 
-}  // namespace
+/**
+* \brief returns the true volume dimensions considering volume margins and bricking
+*
+* @return true volume dimensions
+*/
+size3_t IVW_CORE_API getVolumeDimensions(const std::shared_ptr<const Volume> &volume);
 
-#endif  // IVW_VOLUMEUTILSGL_H
+} // namespace util
+
+}  // namespace inviwo
+
+#endif // IVW_VOLUMEUTILS_H

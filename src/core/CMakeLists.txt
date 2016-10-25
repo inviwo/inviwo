@@ -284,6 +284,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -502,6 +503,7 @@ set(SOURCE_FILES
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
     util/volumesequenceutils.cpp
+    util/volumeutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
