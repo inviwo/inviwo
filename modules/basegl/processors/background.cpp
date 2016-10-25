@@ -77,7 +77,7 @@ Background::Background()
 
     blendMode_.addOption("backtofront", "Back To Front", BlendMode::BackToFront);
     blendMode_.addOption("alphamixing", "Alpha Mixing", BlendMode::AlphaMixing);
-
+    blendMode_.setCurrentStateAsDefault();
 
     switchColors_.onChange(this, &Background::switchColors);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
