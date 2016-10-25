@@ -34,6 +34,7 @@
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/util/stdextensions.h>
 
 #include <unordered_set>
@@ -88,9 +89,9 @@ TEST(PickingTests, Unique) {
 
 TEST(PickingMapperTests, Create) {
     PickingManager manager;   
-    PickingMapper mapper(nullptr, 100, [](const PickingObject*){}, &manager);
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*){}, &manager);
 
-    auto po = mapper.getPickingObject();
+    auto po = mapper.getPickingAction();
     EXPECT_NE(po, nullptr);
 
     EXPECT_EQ(po->getSize(), 100);
@@ -100,9 +101,9 @@ TEST(PickingMapperTests, Create) {
 TEST(PickingMapperTests, Resize) {
     PickingManager manager;
 
-    PickingMapper mapper(nullptr, 100, [](const PickingObject*){}, &manager);
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*){}, &manager);
     {
-        auto po = mapper.getPickingObject();
+        auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 100);
 
@@ -116,10 +117,10 @@ TEST(PickingMapperTests, Resize) {
 
     }
 
-    mapper = PickingMapper(nullptr, 200, [](const PickingObject*){}, &manager);
+    mapper = PickingMapper(nullptr, 200, [](const PickingEvent*){}, &manager);
 
     {
-        auto po = mapper.getPickingObject();
+        auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 200);
 
@@ -136,7 +137,7 @@ TEST(PickingMapperTests, Resize) {
     mapper.resize(300);
 
     {
-        auto po = mapper.getPickingObject();
+        auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 300);
 

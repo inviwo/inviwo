@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,68 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGMAPPER_H
-#define IVW_PICKINGMAPPER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
-class Processor;
-class PickingEvent;
-class PickingAction;
+PickingAction::PickingAction(size_t id, size_t size)
+    : start_(id)
+    , size_(size)
+    , capacity_(size) {
+}
 
-/**
- * \class PickingMapper
- * \brief RAII tool for PickingObjects
- */
-class IVW_CORE_API PickingMapper {
-public:
-    PickingMapper(PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingEvent*)> callback,
-                  PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(const PickingMapper& rhs) = delete;
-    PickingMapper& operator=(const PickingMapper& that) = delete;
+PickingAction::~PickingAction() = default;
 
-    PickingMapper(PickingMapper&& rhs);
-    PickingMapper& operator=(PickingMapper&& that);
-    ~PickingMapper();
+size_t PickingAction::getPickingId(size_t id) const {
+    if (id < size_)
+        return start_ + id;
+    else 
+        throw Exception("Out of range", IvwContext);
+}
 
-    // this will invalidate all old indices/colors
-    void resize(size_t newSize);
+vec3 PickingAction::getColor(size_t id) const {
+    return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
+}
 
-    bool isEnabled() const;
-    void setEnabled(bool enabled);
+size_t PickingAction::getSize() const {
+    return size_;
+}
 
-    const PickingAction* getPickingAction() const;
+bool PickingAction::isEnabled() const {
+    return enabled_;
+}
 
-private:
-    PickingManager* manager_ = nullptr;
-    Processor* processor_ = nullptr;
-    std::function<void(const PickingEvent*)> callback_;
-    PickingAction* pickingAction_ = nullptr;
-};
+void PickingAction::setEnabled(bool enabled) {
+    enabled_ = enabled;
+}
+
+void PickingAction::setAction(Action action) {
+    action_ = action;
+}
+
+void PickingAction::operator()(const PickingEvent* event) const {
+    action_(event);
+}
+
+void PickingAction::setProcessor(Processor* processor) {
+    processor_ = processor;
+}
+
+Processor* PickingAction::getProcessor() const {
+    return processor_;
+}
+
+size_t PickingAction::getCapacity() const {
+    return capacity_;
+}
+
+void PickingAction::setSize(size_t size) {
+    if (size <= capacity_)
+        size_ = size;
+    else
+        throw Exception("Out of range", IvwContext);
+}
 
 } // namespace
-
-#endif // IVW_PICKINGMAPPER_H
 

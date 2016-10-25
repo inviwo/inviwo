@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,51 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGMAPPER_H
-#define IVW_PICKINGMAPPER_H
+#ifndef IVW_PICKINGCONTROLLER_H
+#define IVW_PICKINGCONTROLLER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
-class Processor;
-class PickingEvent;
+class Image;
+class EventPropagator;
+class Event;
 class PickingAction;
 
 /**
- * \class PickingMapper
- * \brief RAII tool for PickingObjects
+ * \class PickingController
  */
-class IVW_CORE_API PickingMapper {
+class IVW_CORE_API PickingController { 
 public:
-    PickingMapper(PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingEvent*)> callback,
-                  PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(const PickingMapper& rhs) = delete;
-    PickingMapper& operator=(const PickingMapper& that) = delete;
-
-    PickingMapper(PickingMapper&& rhs);
-    PickingMapper& operator=(PickingMapper&& that);
-    ~PickingMapper();
-
-    // this will invalidate all old indices/colors
-    void resize(size_t newSize);
-
-    bool isEnabled() const;
-    void setEnabled(bool enabled);
-
-    const PickingAction* getPickingAction() const;
-
+    PickingController();
+    virtual ~PickingController() = default;
+    
+    void handlePickingEvent(EventPropagator*, Event*);
+    
+    void setPickingSource(const std::shared_ptr<const Image>& src);
+    bool pickingEnabled() const;
 private:
-    PickingManager* manager_ = nullptr;
-    Processor* processor_ = nullptr;
-    std::function<void(const PickingEvent*)> callback_;
-    PickingAction* pickingAction_ = nullptr;
+
+    struct State {
+        std::pair<size_t, const PickingAction*> previousPa_ = {0, nullptr};
+        dvec3 previousNDC_ = dvec3(0.0);
+        size_t previousPickingId_ = 0;
+
+        std::pair<size_t, const PickingAction*> pressedPa_ = {0, nullptr};
+        bool mousePressed_ = false;
+        dvec3 pressNDC_ = dvec3(0.0);
+    };
+
+
+    std::pair<size_t, const PickingAction*> findPickingAction(const uvec2& coord);
+    std::shared_ptr<const Image> src_;
+
+    State state_;
 };
 
 } // namespace
 
-#endif // IVW_PICKINGMAPPER_H
+#endif // IVW_PICKINGCONTROLLER_H
 

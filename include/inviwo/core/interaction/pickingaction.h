@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,72 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGMAPPER_H
-#define IVW_PICKINGMAPPER_H
+#ifndef IVW_PICKINGACTION_H
+#define IVW_PICKINGACTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
-class Processor;
 class PickingEvent;
-class PickingAction;
 
 /**
- * \class PickingMapper
- * \brief RAII tool for PickingObjects
+ * \class PickingAction
+ * Associate a range of indices / colors to a action
  */
-class IVW_CORE_API PickingMapper {
+class IVW_CORE_API PickingAction {
 public:
-    PickingMapper(PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingEvent*)> callback,
-                  PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(const PickingMapper& rhs) = delete;
-    PickingMapper& operator=(const PickingMapper& that) = delete;
+    friend class PickingManager;
+    using Action = std::function<void(const PickingEvent*)>;
 
-    PickingMapper(PickingMapper&& rhs);
-    PickingMapper& operator=(PickingMapper&& that);
-    ~PickingMapper();
+    PickingAction(size_t start, size_t size = 1);
+    virtual ~PickingAction();
+    
+    /**
+    * Returns the global picking index, the global index can be used with the 
+    * PickingManager::indexToColor(size_t index) function to get a picking color.
+    * \param id the local picking index 
+    */
+    size_t getPickingId(size_t id = 0) const;
 
-    // this will invalidate all old indices/colors
-    void resize(size_t newSize);
-
+    /**
+     *	The picking color to use for the object with local index id.
+     *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
+     * \param id the local picking index 
+     */
+    vec3 getColor(size_t id = 0) const;
+    /**
+     *	The number of local picking indices in this picking object.
+     */
+    size_t getSize() const;
+    
     bool isEnabled() const;
     void setEnabled(bool enabled);
-
-    const PickingAction* getPickingAction() const;
-
+    
+    void setAction(Action action);
+    Action getAction() const;
+    
+    void setProcessor(Processor* processor);
+    Processor* getProcessor() const;
+    
+    void operator()(const PickingEvent*) const;
+    
 private:
-    PickingManager* manager_ = nullptr;
-    Processor* processor_ = nullptr;
-    std::function<void(const PickingEvent*)> callback_;
-    PickingAction* pickingAction_ = nullptr;
+    size_t getCapacity() const;
+    void setSize(size_t size);
+
+    size_t start_;
+    size_t size_;
+    size_t capacity_;
+
+    Action action_;
+    Processor* processor_;
+    
+    bool enabled_ = true;
 };
 
 } // namespace
 
-#endif // IVW_PICKINGMAPPER_H
+#endif // IVW_PICKINGACTION_H
 

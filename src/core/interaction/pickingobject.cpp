@@ -191,6 +191,14 @@ void PickingObject::setAction(Action action) {
     action_ = action;
 }
 
+void PickingObject::setProcessor(Processor* processor) {
+    processor_ = processor;
+}
+
+Processor* PickingObject::getProcessor() const {
+    return processor_;
+}
+
 size_t PickingObject::getCapacity() const {
     return capacity_;
 }

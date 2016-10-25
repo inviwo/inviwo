@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/pickingobject.h>
 
 namespace inviwo {
 
@@ -60,7 +61,7 @@ void PickingContainer::propagateEvent(Event* event) {
             break;
         }
     }
-}
+} 
 
 void PickingContainer::performMousePick(MouseEvent* e) {
     if (touchPickingOn_) return;
@@ -218,7 +219,7 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
             const auto value = pickingLayerRAM->getAsNormalizedDVec4(coord);
             const auto pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
             const uvec3 color(pickedColor*255.0);
-            return PickingManager::getPtr()->getPickingObjectFromColor(color);
+            //return PickingManager::getPtr()->getPickingObjectFromColor(color);
         }
     }
     return nullptr;

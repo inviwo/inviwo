@@ -33,6 +33,7 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -405,7 +406,15 @@ void Processor::setValid() {
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
 
 void Processor::invokeEvent(Event* event) {
+    if (event->hash() == PickingEvent::chash()) {
+        auto pe = static_cast<PickingEvent*>(event);
+        pe->invoke(this);
+    }
+    if (event->hasBeenUsed()) return;
+    
     PropertyOwner::invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+    
     for (auto elem : interactionHandlers_) elem->invokeEvent(event);
 }
 

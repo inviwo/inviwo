@@ -68,8 +68,8 @@ size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
 void Canvas::propagateEvent(Event* event) {
     NetworkLock lock;
 
-    if (pickingContainer_.pickingEnabled()) pickingContainer_.propagateEvent(event);
-
+    pickingContainer_.handlePickingEvent(propagator_, event);
+ 
     if (event->hasBeenUsed()) return;
 
     if (propagator_) propagator_->propagateEvent(event, nullptr);
