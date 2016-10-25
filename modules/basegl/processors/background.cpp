@@ -50,22 +50,26 @@ Background::Background()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , backgroundStyle_("backgroundStyle", "Style", InvalidationLevel::InvalidResources)
+    , backgroundStyle_("backgroundStyle", "Style",
+                       {{"linearGradientVertical", "Linear gradient (Vertical)", 0},
+                        {"linearGradientHorizontal", "Linear gradient (Horizontal)", 1},
+                        {"uniformColor", "Uniform color", 2},
+                        {"checkerBoard", "Checker board", 3}},
+                       0, InvalidationLevel::InvalidResources)
     , color1_("color1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
     , color2_("color2", "Color 2", vec4(1.0f))
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
-    , blendMode_("blendMode","Blend mode" , InvalidationLevel::InvalidResources)
+    , blendMode_("blendMode", "Blend mode",
+                 {{"backtofront", "Back To Front", BlendMode::BackToFront},
+                  {"alphamixing", "Alpha Mixing", BlendMode::AlphaMixing}},
+                 0, InvalidationLevel::InvalidResources)
     , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);
     inport_.setOptional(true);
-    backgroundStyle_.addOption("linearGradientVertical", "Linear gradient (Vertical)", 0);
-    backgroundStyle_.addOption("linearGradientHorizontal", "Linear gradient (Horizontal)", 1);
-    backgroundStyle_.addOption("uniformColor", "Uniform color", 2);
-    backgroundStyle_.addOption("checkerBoard", "Checker board", 3);
-    backgroundStyle_.setCurrentStateAsDefault();
+
     addProperty(backgroundStyle_);
     color1_.setSemantics(PropertySemantics::Color);
     addProperty(color1_);
@@ -74,11 +78,7 @@ Background::Background()
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
     addProperty(blendMode_);
-
-    blendMode_.addOption("backtofront", "Back To Front", BlendMode::BackToFront);
-    blendMode_.addOption("alphamixing", "Alpha Mixing", BlendMode::AlphaMixing);
-    blendMode_.setCurrentStateAsDefault();
-
+    
     switchColors_.onChange(this, &Background::switchColors);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }

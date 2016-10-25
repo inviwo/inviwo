@@ -29,6 +29,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagescaling.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
@@ -82,6 +83,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagescaling.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
