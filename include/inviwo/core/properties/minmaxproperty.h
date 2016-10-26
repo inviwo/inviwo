@@ -237,7 +237,7 @@ void inviwo::MinMaxProperty<T>::setMinSeparation(const T& value) {
 
 template <typename T>
 void MinMaxProperty<T>::setRange(const range_type& value) {
-    onRangeChangeCallback_.stopBlockingCallbacks();
+    onRangeChangeCallback_.startBlockingCallbacks();
     setRangeMin(value.x);
     setRangeMax(value.y);
     onRangeChangeCallback_.stopBlockingCallbacks();
