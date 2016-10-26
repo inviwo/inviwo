@@ -69,8 +69,8 @@ EntryExitPoints::EntryExitPoints()
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    entryExitHelper_(entryPort_.getEditableData(), exitPort_.getEditableData(), &camera_.get(),
-                     inport_.getData(), capNearClipping_.get());
+    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(), camera_.get(),
+                     *inport_.getData().get(), capNearClipping_.get());
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {

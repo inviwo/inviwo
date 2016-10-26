@@ -46,9 +46,10 @@ EntryExitPointsHelper::EntryExitPointsHelper()
     : entryExitShader_("standard.vert", "standard.frag")
     , nearClipShader_("img_identity.vert", "capnearclipping.frag") {}
 
-void EntryExitPointsHelper::operator()(const std::shared_ptr<Image> &entryPoints,
-                                       const std::shared_ptr<Image> &exitPoints, Camera *camera,
-                                       const std::shared_ptr<const Mesh> &mesh, bool capNearClip) {
+void EntryExitPointsHelper::operator()(Image &entryPoints,
+                                       Image &exitPoints,
+                                       const Camera &camera,
+                                       const Mesh &mesh, bool capNearClip) {
     if (capNearClip) {
         createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh);
     } else {
@@ -56,22 +57,22 @@ void EntryExitPointsHelper::operator()(const std::shared_ptr<Image> &entryPoints
     }
 }
 
-void EntryExitPointsHelper::createEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
-                                                  const std::shared_ptr<Image> &exitPoints,
-                                                  Camera *camera,
-                                                  const std::shared_ptr<const Mesh> &mesh) {
+void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints,
+                                                  Image &exitPoints,
+                                                  const Camera &camera,
+                                                  const Mesh &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
 
     entryExitShader_.activate();
-    mat4 modelMatrix = mesh->getCoordinateTransformer(*camera).getDataToClipMatrix();
+    mat4 modelMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
     entryExitShader_.setUniform("dataToClip", modelMatrix);
 
-    auto drawer = MeshDrawerGL::getDrawObject(mesh.get());
+    auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
         // generate exit points
-        utilgl::activateAndClearTarget(*exitPoints.get(), ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -79,7 +80,7 @@ void EntryExitPointsHelper::createEntryExitPoints(const std::shared_ptr<Image> &
 
     {
         // generate entry points
-        utilgl::activateAndClearTarget(*entryPoints.get(), ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(entryPoints, ImageType::ColorDepth);
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
@@ -88,22 +89,22 @@ void EntryExitPointsHelper::createEntryExitPoints(const std::shared_ptr<Image> &
     }
 }
 
-void EntryExitPointsHelper::createCappedEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
-                                                        const std::shared_ptr<Image> &exitPoints,
-                                                        Camera *camera,
-                                                        const std::shared_ptr<const Mesh> &mesh) {
+void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints,
+                                                        Image &exitPoints,
+                                                        const Camera &camera,
+                                                        const Mesh &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
 
     entryExitShader_.activate();
-    mat4 modelMatrix = mesh->getCoordinateTransformer(*camera).getDataToClipMatrix();
+    mat4 modelMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
     entryExitShader_.setUniform("dataToClip", modelMatrix);
 
-    auto drawer = MeshDrawerGL::getDrawObject(mesh.get());
+    auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
         // generate exit points
-        utilgl::activateAndClearTarget(*exitPoints.get(), ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -111,10 +112,10 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(const std::shared_ptr<Im
 
     {
         // generate entry points
-        if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints->getDimensions() ||
-            tmpEntry_->getDataFormat() != entryPoints->getDataFormat()) {
+        if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints.getDimensions() ||
+            tmpEntry_->getDataFormat() != entryPoints.getDataFormat()) {
             tmpEntry_.reset(
-                new Image(entryPoints->getDimensions(), entryPoints->getDataFormat()));
+                new Image(entryPoints.getDimensions(), entryPoints.getDataFormat()));
         }
         utilgl::activateAndClearTarget(*tmpEntry_);
 
@@ -125,18 +126,18 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(const std::shared_ptr<Im
     }
 
     // render an image plane aligned quad to cap the proxy geometry
-    utilgl::activateAndClearTarget(*entryPoints.get(), ImageType::ColorDepth);
+    utilgl::activateAndClearTarget(entryPoints, ImageType::ColorDepth);
     nearClipShader_.activate();
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(nearClipShader_, units, *tmpEntry_, "entry", ImageType::ColorDepth);
-    utilgl::bindAndSetUniforms(nearClipShader_, units, *exitPoints.get(), "exit", ImageType::ColorDepth);
+    utilgl::bindAndSetUniforms(nearClipShader_, units, exitPoints, "exit", ImageType::ColorDepth);
 
     // the rendered plane is specified in camera coordinates
     // thus we must transform from camera to world to texture coordinates
-    mat4 clipToTexMat = mesh->getCoordinateTransformer(*camera).getClipToDataMatrix();
+    mat4 clipToTexMat = mesh.getCoordinateTransformer(camera).getClipToDataMatrix();
     nearClipShader_.setUniform("NDCToTextureMat", clipToTexMat);
-    nearClipShader_.setUniform("nearDist", camera->getNearPlaneDist());
+    nearClipShader_.setUniform("nearDist", camera.getNearPlaneDist());
 
     utilgl::singleDrawImagePlaneRect();
     nearClipShader_.deactivate();

@@ -63,20 +63,17 @@ public:
      * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
      *                     additional plane will be used to close the volume in front of the camera
      */
-    void operator()(const std::shared_ptr<Image> &entryPoints,
-                    const std::shared_ptr<Image> &exitPoints, Camera *camera,
-                    const std::shared_ptr<const Mesh> &mesh, bool capNearClip);
+    void operator()(Image &entryPoints, Image &exitPoints, const Camera &camera,
+                    const Mesh &mesh, bool capNearClip);
 
-    Shader& getEntryExitShader() { return entryExitShader_; }
-    Shader& getNearClipShader() { return nearClipShader_; }
+    Shader &getEntryExitShader() { return entryExitShader_; }
+    Shader &getNearClipShader() { return nearClipShader_; }
 
 private:
-    void createEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
-                               const std::shared_ptr<Image> &exitPoints, Camera *camera,
-                               const std::shared_ptr<const Mesh> &mesh);
-    void createCappedEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
-                                     const std::shared_ptr<Image> &exitPoints, Camera *camera,
-                                     const std::shared_ptr<const Mesh> &mesh);
+    void createEntryExitPoints(Image &entryPoints, Image &exitPoints, const Camera &camera,
+                               const Mesh &mesh);
+    void createCappedEntryExitPoints(Image &entryPoints, Image &exitPoints, const Camera &camera,
+                                     const Mesh &mesh);
 
     Shader entryExitShader_;
     Shader nearClipShader_;
