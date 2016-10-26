@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/volumeutils.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 

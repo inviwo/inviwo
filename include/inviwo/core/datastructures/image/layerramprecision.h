@@ -71,8 +71,8 @@ public:
     *
     * @param mask    new swizzle mask
     */
-    virtual void setSwizzleMask(const SwizzleMask &mask);
-    virtual SwizzleMask getSwizzleMask() const;
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
 
     virtual double getAsDouble(const size2_t& pos) const override;
     virtual dvec2 getAsDVec2(const size2_t& pos) const override;
