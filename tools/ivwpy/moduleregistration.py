@@ -56,20 +56,18 @@ class ModuleRegistration:
 
 		lastInclude = None
 		constructorStart = None
-		constructorEnd = None
+		constructorStartBracket = None
 		lastProcessor = None
 
 		for i,line in enumerate(self.lines):
 			if mInclude.match(line): lastInclude = i
 			elif mConstructorStart.match(line): constructorStart = i
 			elif mProcessor.match(line): lastProcessor = i
-			if constructorStart != None and constructorEnd == None and "{" in line: constructorEnd = i
+			if constructorStart != None and constructorStartBracket == None and "{" in line: constructorStartBracket = i
 
-		print([lastInclude,constructorStart,constructorEnd,lastProcessor]);
-
-		if constructorEnd ==  None: raise ModuleRegistrationError("Error: Cound not find construcor")
+		if constructorStartBracket ==  None: raise ModuleRegistrationError("Error: Cound not find construcor")
 		if lastInclude ==  None: raise ModuleRegistrationError("Error: Cound not find includes")
-		if lastInclude >= constructorEnd: raise ModuleRegistrationError("Error: we do not understand the file structure")
+		if lastInclude >= constructorStartBracket: raise ModuleRegistrationError("Error: we do not understand the file structure")
 		
 		self.lines.insert(lastInclude+1, "#include " + header + "\n")
 		ppos = lastProcessor+2 if lastProcessor != None else constructorStart + 2
