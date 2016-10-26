@@ -108,6 +108,7 @@ std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() c
     }
 
     layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
+    updateSwizzleMask(layerDisk_);
 
     return layerDisk_->getDataFormat()->dispatch(*this, data);
 }
@@ -144,6 +145,26 @@ void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation
     }
 
     layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
+    updateSwizzleMask(layerDisk_);
+}
+
+void CImgLayerRAMLoader::updateSwizzleMask(LayerDisk* layerDisk) {
+    auto swizzleMask = [](std::size_t numComponents) {
+        switch (numComponents) {
+            case 1:
+                return swizzlemasks::luminance;
+            case 2:
+                return swizzlemasks::luminanceAlpha;
+            case 3:
+                return swizzlemasks::rgb;
+            case 4:
+            default:
+                return swizzlemasks::rgba;
+        }
+
+    };
+
+    layerDisk->setSwizzleMask(swizzleMask(layerDisk->getDataFormat()->getComponents()));
 }
 
 }  // namespace

@@ -29,6 +29,8 @@
 
 #include "texture.h"
 
+#include <modules/opengl/openglutils.h>
+
 namespace inviwo {
 
 Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
@@ -192,6 +194,12 @@ GLuint Texture::getSizeInBytes() const {
     return byteSize_;
 }
 
+void Texture::setTextureParameters(std::function<void(Texture*)> fun) {
+    bind();
+    fun(this);
+    unbind();
+}
+
 void Texture::bind() const {
     glBindTexture(target_, id_);
     LGL_ERROR;
@@ -200,6 +208,23 @@ void Texture::bind() const {
 void Texture::unbind() const {
     glBindTexture(target_, 0);
     LGL_ERROR;
+}
+
+void Texture::setSwizzleMask(SwizzleMask mask) {
+    auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(mask);
+
+    bind();
+    glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    unbind();
+}
+
+SwizzleMask Texture::getSwizzleMask() const {
+    std::array<GLint, 4> swizzleMaskGL;
+    bind();
+    glGetTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    unbind();
+
+    return utilgl::convertSwizzleMaskFromGL(swizzleMaskGL);
 }
 
 void Texture::bindFromPBO() const {

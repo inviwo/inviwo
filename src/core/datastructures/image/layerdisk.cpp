@@ -31,17 +31,18 @@
 
 namespace inviwo {
 
-LayerDisk::LayerDisk(LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation() {}
+LayerDisk::LayerDisk(LayerType type, const SwizzleMask &swizzleMask)
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(), swizzleMask_(swizzleMask) {}
 
-LayerDisk::LayerDisk(std::string url, LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url) {}
+LayerDisk::LayerDisk(std::string url, LayerType type, const SwizzleMask &swizzleMask)
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url), swizzleMask_(swizzleMask) {}
 
-LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs) {}
+LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs), swizzleMask_(rhs.swizzleMask_) {}
 
 LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
     if (this != &that) {
         LayerRepresentation::operator=(that);
+        swizzleMask_ = that.swizzleMask_;
     }
     return *this;
 }
@@ -50,14 +51,28 @@ LayerDisk::~LayerDisk() {}
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
-void LayerDisk::setDimensions(size2_t dimensions) { dimensions_ = dimensions; }
+void LayerDisk::setDimensions(size2_t dimensions) { 
+    dimensions_ = dimensions; 
+    updateBaseMetaFromRepresentation();
+}
 
 bool LayerDisk::copyRepresentationsTo(DataRepresentation*) const { return false; }
 
-void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
+void LayerDisk::updateDataFormat(const DataFormatBase* format) { 
+    setDataFormat(format); 
+}
 
 std::type_index LayerDisk::getTypeIndex() const {
     return std::type_index(typeid(LayerDisk));
+}
+
+void LayerDisk::setSwizzleMask(const SwizzleMask &mask) {
+    swizzleMask_ = mask;
+    updateBaseMetaFromRepresentation();
+}
+
+SwizzleMask LayerDisk::getSwizzleMask() const {
+    return swizzleMask_;
 }
 
 }  // namespace

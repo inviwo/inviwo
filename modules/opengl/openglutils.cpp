@@ -29,8 +29,59 @@
 
 #include "openglutils.h"
 
+#include <algorithm>
+
 namespace inviwo {
 namespace utilgl {
+
+std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask &mask) {
+    auto convertToGL = [](ImageChannel channel) {
+        switch (channel) {
+            case ImageChannel::Red:
+                return GL_RED;
+            case ImageChannel::Green:
+                return GL_GREEN;
+            case ImageChannel::Blue:
+                return GL_BLUE;
+            case ImageChannel::Alpha:
+                return GL_ALPHA;
+            case ImageChannel::Zero:
+                return GL_ZERO;
+            case ImageChannel::One:
+                return GL_ONE;
+            default:
+                return GL_ZERO;
+        }
+    };
+    std::array<GLint, 4> swizzleMaskGL;
+    std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
+    return swizzleMaskGL;
+}
+
+SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4> &maskGL) {
+    auto convertFromGL = [](GLint channel) {
+        switch (channel) {
+            case GL_RED:
+                return ImageChannel::Red;
+            case GL_GREEN:
+                return ImageChannel::Green;
+            case GL_BLUE:
+                return ImageChannel::Blue;
+            case GL_ALPHA:
+                return ImageChannel::Alpha;
+            case GL_ZERO:
+                return ImageChannel::Zero;
+            case GL_ONE:
+                return ImageChannel::One;
+            default:
+                return ImageChannel::Zero;
+        }
+    };
+    SwizzleMask mask;
+    std::transform(maskGL.begin(), maskGL.end(), mask.begin(), convertFromGL);
+    return mask;
+}
+
 
 PolygonModeState& utilgl::PolygonModeState::operator=(PolygonModeState&& that) {
     if (this != &that) {

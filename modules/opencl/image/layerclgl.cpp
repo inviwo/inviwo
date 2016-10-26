@@ -36,8 +36,10 @@ namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                     std::shared_ptr<Texture2D> data)
-    : LayerRepresentation(dimensions, type, format), texture_(data) {
+                     std::shared_ptr<Texture2D> data, const SwizzleMask &swizzleMask)
+    : LayerRepresentation(dimensions, type, format)
+    , texture_(data)
+    , swizzleMask_(swizzleMask) {
     if (data) {
         initialize(data.get());
         CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
@@ -56,7 +58,7 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
+    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()), swizzleMask_(rhs.swizzleMask_) {
     initialize(texture_.get());
 }
 
@@ -105,6 +107,7 @@ void LayerCLGL::setDimensions(size2_t dimensions) {
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
     texture_->resize(dimensions);
+    updateBaseMetaFromRepresentation();
 }
 
 bool LayerCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
@@ -157,6 +160,21 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 }
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
+
+void LayerCLGL::setSwizzleMask(const SwizzleMask &mask) {
+    if (texture_) {
+        texture_->setSwizzleMask(mask);
+    }
+    swizzleMask_ = mask;
+    updateBaseMetaFromRepresentation();
+}
+
+SwizzleMask LayerCLGL::getSwizzleMask() const {
+    if (texture_) {
+        return texture_->getSwizzleMask();
+    }
+    return swizzleMask_;
+}
 
 }  // namespace
 

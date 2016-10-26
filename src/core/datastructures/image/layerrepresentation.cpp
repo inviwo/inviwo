@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 
@@ -60,6 +61,9 @@ LayerType LayerRepresentation::getLayerType() const {
     return layerType_;
 }
 
-
+void LayerRepresentation::updateBaseMetaFromRepresentation() {
+    auto base = static_cast<Layer *>(getOwner());
+    base->updateMetaFromRepresentation(this);
+}
 
 } // namespace

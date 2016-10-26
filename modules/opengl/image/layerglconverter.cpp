@@ -35,7 +35,7 @@ namespace inviwo {
 std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
     std::shared_ptr<const LayerRAM> layerRAM) const {
     auto layerGL = std::make_shared<LayerGL>(layerRAM->getDimensions(), layerRAM->getLayerType(),
-                                             layerRAM->getDataFormat());
+                                             layerRAM->getDataFormat(), nullptr, layerRAM->getSwizzleMask());
     layerGL->getTexture()->initialize(layerRAM->getData());
     return layerGL;
 }
@@ -47,12 +47,13 @@ void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
     }
 
     layerDst->getTexture()->upload(layerSrc->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
     std::shared_ptr<const LayerGL> layerGL) const {
     auto layerRAM =
-        createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat());
+        createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat(), layerGL->getSwizzleMask());
 
     if (layerRAM) {
         layerGL->getTexture()->download(layerRAM->getData());
@@ -70,6 +71,7 @@ void LayerGL2RAMConverter::update(std::shared_ptr<const LayerGL> layerSrc,
         layerDst->setDimensions(layerSrc->getDimensions());
     }
     layerSrc->getTexture()->download(layerDst->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 }  // namespace

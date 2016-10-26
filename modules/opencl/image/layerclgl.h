@@ -58,7 +58,7 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public TextureObserver {
 public:
     LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-              std::shared_ptr<Texture2D> data);
+              std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const override;
@@ -95,10 +95,22 @@ public:
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncLayers, syncEvents, event);
     }
     virtual std::type_index getTypeIndex() const override final;
+
+    /**
+    * \brief update the swizzle mask of the channels for sampling color layers
+    * Needs to be overloaded by child classes.
+    *
+    * @param mask    new swizzle mask
+    */
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
 protected:
     static CLTextureSharingMap clImageSharingMap_;
     std::shared_ptr<Texture2D> texture_;      ///< Shared with LayerGL
     std::shared_ptr<cl::Image2DGL> clImage_;  ///< Potentially shared with other LayerCLGL
+
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

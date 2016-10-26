@@ -134,6 +134,7 @@ void NoiseProcessor::process() {
             break;
     }
 
+    img->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
     noise_.setData(img.release());
 }
 
