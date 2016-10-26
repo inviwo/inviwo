@@ -98,7 +98,7 @@ void main() {
 	v /= c;
 
     if(intensityMapping)
-        v = pow(v,(4.0/pow((v+1.0),4)));
+        v = pow(v,(5.0/pow((v+1.0),4)));
 
     FragData0 = vec4(v,v,v,1.0);
 }
