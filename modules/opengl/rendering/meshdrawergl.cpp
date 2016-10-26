@@ -40,6 +40,14 @@ MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
+MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
+    return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo());
+}
+
+MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject(const Mesh *mesh) {
+    return DrawObject(mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo());
+}
+
 void MeshDrawerGL::draw() {
     if (meshToDraw_->getNumberOfBuffers() == 0) {
         // empty mesh, do nothing
