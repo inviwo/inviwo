@@ -30,14 +30,7 @@
 #include "entryexitpointsprocessor.h"
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/clockgl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -58,11 +51,7 @@ EntryExitPoints::EntryExitPoints()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
-    , trackball_(&camera_)
-    , shader_("standard.vert", "standard.frag")
-    , clipping_("img_identity.vert", "capnearclipping.frag")
-    , tmpEntry_()
-    , drawer_() {
+    , trackball_(&camera_) {
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -71,74 +60,17 @@ EntryExitPoints::EntryExitPoints()
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    clipping_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    entryExitHelper_.getEntryExitShader().onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
+    entryExitHelper_.getNearClipShader().onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    // Check if no renderer exist or if geometry changed
-    if (inport_.isChanged() && inport_.hasData()) {
-        drawer_ =
-           getNetwork()->getApplication()->getMeshDrawerFactory()->create(inport_.getData().get());
-    }
-    if (!drawer_) return;
-
-    utilgl::DepthFuncState depthfunc(GL_ALWAYS);
-    utilgl::PointSizeState pointsize(1.0f);
-
-    shader_.activate();
-    auto geom = inport_.getData();
-    mat4 modelMatrix = geom->getCoordinateTransformer(camera_.get()).getDataToClipMatrix();
-    shader_.setUniform("dataToClip", modelMatrix);
-
-    {
-        // generate exit points
-        utilgl::activateAndClearTarget(exitPort_, ImageType::ColorDepth);
-        utilgl::CullFaceState cull(GL_FRONT);
-        drawer_->draw();
-        utilgl::deactivateCurrentTarget();
-    }
-
-    {
-        // generate entry points
-        if (capNearClipping_) {
-            if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPort_.getDimensions() ||
-                tmpEntry_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
-                tmpEntry_.reset(
-                    new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat()));
-            }
-            utilgl::activateAndClearTarget(*tmpEntry_);
-        } else {
-            utilgl::activateAndClearTarget(entryPort_, ImageType::ColorDepth);
-        }
-
-        utilgl::CullFaceState cull(GL_BACK);
-        drawer_->draw();
-        shader_.deactivate();
-        utilgl::deactivateCurrentTarget();
-    }
-
-    if (capNearClipping_ && tmpEntry_) {
-        // render an image plane aligned quad to cap the proxy geometry
-        utilgl::activateAndClearTarget(entryPort_, ImageType::ColorDepth);
-        clipping_.activate();
-
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(clipping_, units, *tmpEntry_, "entry", ImageType::ColorDepth);
-        utilgl::bindAndSetUniforms(clipping_, units, exitPort_, ImageType::ColorDepth);
-
-        // the rendered plane is specified in camera coordinates
-        // thus we must transform from camera to world to texture coordinates
-        mat4 clipToTexMat = geom->getCoordinateTransformer(camera_.get()).getClipToDataMatrix();
-        clipping_.setUniform("NDCToTextureMat", clipToTexMat);
-        clipping_.setUniform("nearDist", camera_.getNearPlaneDist());
-
-        utilgl::singleDrawImagePlaneRect();
-        clipping_.deactivate();
-        utilgl::deactivateCurrentTarget();
-    }
+    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(), camera_.get(),
+                     *inport_.getData().get(), capNearClipping_.get());
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {
