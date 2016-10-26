@@ -33,12 +33,12 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
 class Camera;
+class Image;
 class Mesh;
 
 namespace algorithm {
@@ -49,23 +49,38 @@ namespace algorithm {
 */
 class IVW_MODULE_BASEGL_API EntryExitPointsHelper {
 public:
-    EntryExitPointsHelper(ImageOutport *entryPoints, ImageOutport *exitPoints);
+    EntryExitPointsHelper();
     ~EntryExitPointsHelper() = default;
 
-    void operator()(Camera *camera, const std::shared_ptr<const Mesh> &mesh, bool capNearClip);
+    /**
+     * \brief computes entry and exit points for raycasting using the 
+     * given camera and bounding geometry
+     *
+     * @param entryPoints  entry points for raycasting the bounding geometry
+     * @param exitPoints   exit points for raycasting the bounding geometry
+     * @param camera       camera 
+     * @param mesh         mesh containing the bounding geometry
+     * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
+     *                     additional plane will be used to close the volume in front of the camera
+     */
+    void operator()(const std::shared_ptr<Image> &entryPoints,
+                    const std::shared_ptr<Image> &exitPoints, Camera *camera,
+                    const std::shared_ptr<const Mesh> &mesh, bool capNearClip);
 
     Shader& getEntryExitShader() { return entryExitShader_; }
     Shader& getNearClipShader() { return nearClipShader_; }
 
 private:
-    void createEntryExitPoints(Camera *camera, const std::shared_ptr<const Mesh> &mesh);
-    void createCappedEntryExitPoints(Camera *camera, const std::shared_ptr<const Mesh> &mesh);
+    void createEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
+                               const std::shared_ptr<Image> &exitPoints, Camera *camera,
+                               const std::shared_ptr<const Mesh> &mesh);
+    void createCappedEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
+                                     const std::shared_ptr<Image> &exitPoints, Camera *camera,
+                                     const std::shared_ptr<const Mesh> &mesh);
 
     Shader entryExitShader_;
     Shader nearClipShader_;
 
-    ImageOutport *entryPoints_;
-    ImageOutport *exitPoints_;
     std::unique_ptr<Image> tmpEntry_;
 };
 

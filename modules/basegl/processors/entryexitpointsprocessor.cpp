@@ -51,8 +51,7 @@ EntryExitPoints::EntryExitPoints()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
-    , trackball_(&camera_)
-    , entryExitHelper_(&entryPort_, &exitPort_) {
+    , trackball_(&camera_) {
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -70,7 +69,8 @@ EntryExitPoints::EntryExitPoints()
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    entryExitHelper_(&camera_.get(), inport_.getData(), capNearClipping_.get());
+    entryExitHelper_(entryPort_.getEditableData(), exitPort_.getEditableData(), &camera_.get(),
+                     inport_.getData(), capNearClipping_.get());
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
@@ -41,27 +42,23 @@ namespace inviwo {
 
 namespace algorithm {
 
-EntryExitPointsHelper::EntryExitPointsHelper(ImageOutport *entryPoints, ImageOutport *exitPoints)
+EntryExitPointsHelper::EntryExitPointsHelper()
     : entryExitShader_("standard.vert", "standard.frag")
-    , nearClipShader_("img_identity.vert", "capnearclipping.frag")
-    , entryPoints_(entryPoints)
-    , exitPoints_(exitPoints) {
-}
+    , nearClipShader_("img_identity.vert", "capnearclipping.frag") {}
 
-void EntryExitPointsHelper::operator()(Camera *camera, const std::shared_ptr<const Mesh> &mesh,
-                                       bool capNearClip) {
-    if (!entryPoints_ || !exitPoints_) {
-        return;
-    }
-
+void EntryExitPointsHelper::operator()(const std::shared_ptr<Image> &entryPoints,
+                                       const std::shared_ptr<Image> &exitPoints, Camera *camera,
+                                       const std::shared_ptr<const Mesh> &mesh, bool capNearClip) {
     if (capNearClip) {
-        createCappedEntryExitPoints(camera, mesh);
+        createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh);
     } else {
-        createEntryExitPoints(camera, mesh);
+        createEntryExitPoints(entryPoints, exitPoints, camera, mesh);
     }
 }
 
-void EntryExitPointsHelper::createEntryExitPoints(Camera *camera,
+void EntryExitPointsHelper::createEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
+                                                  const std::shared_ptr<Image> &exitPoints,
+                                                  Camera *camera,
                                                   const std::shared_ptr<const Mesh> &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
@@ -74,7 +71,7 @@ void EntryExitPointsHelper::createEntryExitPoints(Camera *camera,
 
     {
         // generate exit points
-        utilgl::activateAndClearTarget(*exitPoints_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(*exitPoints.get(), ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -82,7 +79,7 @@ void EntryExitPointsHelper::createEntryExitPoints(Camera *camera,
 
     {
         // generate entry points
-        utilgl::activateAndClearTarget(*entryPoints_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(*entryPoints.get(), ImageType::ColorDepth);
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
@@ -91,7 +88,9 @@ void EntryExitPointsHelper::createEntryExitPoints(Camera *camera,
     }
 }
 
-void EntryExitPointsHelper::createCappedEntryExitPoints(Camera *camera,
+void EntryExitPointsHelper::createCappedEntryExitPoints(const std::shared_ptr<Image> &entryPoints,
+                                                        const std::shared_ptr<Image> &exitPoints,
+                                                        Camera *camera,
                                                         const std::shared_ptr<const Mesh> &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
@@ -104,7 +103,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Camera *camera,
 
     {
         // generate exit points
-        utilgl::activateAndClearTarget(*exitPoints_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(*exitPoints.get(), ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -112,10 +111,10 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Camera *camera,
 
     {
         // generate entry points
-        if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints_->getDimensions() ||
-            tmpEntry_->getDataFormat() != entryPoints_->getData()->getDataFormat()) {
+        if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints->getDimensions() ||
+            tmpEntry_->getDataFormat() != entryPoints->getDataFormat()) {
             tmpEntry_.reset(
-                new Image(entryPoints_->getDimensions(), entryPoints_->getData()->getDataFormat()));
+                new Image(entryPoints->getDimensions(), entryPoints->getDataFormat()));
         }
         utilgl::activateAndClearTarget(*tmpEntry_);
 
@@ -126,12 +125,12 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Camera *camera,
     }
 
     // render an image plane aligned quad to cap the proxy geometry
-    utilgl::activateAndClearTarget(*entryPoints_, ImageType::ColorDepth);
+    utilgl::activateAndClearTarget(*entryPoints.get(), ImageType::ColorDepth);
     nearClipShader_.activate();
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(nearClipShader_, units, *tmpEntry_, "entry", ImageType::ColorDepth);
-    utilgl::bindAndSetUniforms(nearClipShader_, units, *exitPoints_, ImageType::ColorDepth);
+    utilgl::bindAndSetUniforms(nearClipShader_, units, *exitPoints.get(), "exit", ImageType::ColorDepth);
 
     // the rendered plane is specified in camera coordinates
     // thus we must transform from camera to world to texture coordinates
