@@ -41,8 +41,10 @@ namespace inviwo {
  */
 class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
 public:
-    LayerDisk(LayerType type = LayerType::Color);
-    LayerDisk(std::string url, LayerType type = LayerType::Color);
+    LayerDisk(LayerType type = LayerType::Color,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    LayerDisk(std::string url, LayerType type = LayerType::Color,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const override;

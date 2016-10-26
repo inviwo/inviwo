@@ -70,12 +70,14 @@ public:
     std::shared_ptr<LayerRAM> dispatch(void* data) const {
         typedef typename T::type F;
         auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(
-            static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType());
-        layerRAM->setSwizzleMask(layerDisk_->getSwizzleMask());
+            static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType(),
+            layerDisk_->getSwizzleMask());
         return layerRAM;
     }
 
 private:
+    static void updateSwizzleMask(LayerDisk* layerDisk);
+
     LayerDisk* layerDisk_;
 };
 

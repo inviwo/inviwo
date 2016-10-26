@@ -35,9 +35,8 @@ namespace inviwo {
 std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
     std::shared_ptr<const LayerRAM> layerRAM) const {
     auto layerGL = std::make_shared<LayerGL>(layerRAM->getDimensions(), layerRAM->getLayerType(),
-                                             layerRAM->getDataFormat());
+                                             layerRAM->getDataFormat(), nullptr, layerRAM->getSwizzleMask());
     layerGL->getTexture()->initialize(layerRAM->getData());
-    layerGL->setSwizzleMask(layerRAM->getSwizzleMask());
     return layerGL;
 }
 
@@ -54,11 +53,10 @@ void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
 std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
     std::shared_ptr<const LayerGL> layerGL) const {
     auto layerRAM =
-        createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat());
+        createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat(), layerGL->getSwizzleMask());
 
     if (layerRAM) {
         layerGL->getTexture()->download(layerRAM->getData());
-        layerRAM->setSwizzleMask(layerGL->getSwizzleMask());
         return layerRAM;
     } else {
         LogError("Cannot convert format from GL to RAM:" << layerGL->getDataFormat()->getString());

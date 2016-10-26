@@ -37,13 +37,18 @@
 
 namespace inviwo {
 
-Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type)
-    : Data<LayerRepresentation>(format), StructuredGridEntity<2>(dimensions), layerType_(type) {}
+Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type,
+             const SwizzleMask& swizzleMask)
+    : Data<LayerRepresentation>(format)
+    , StructuredGridEntity<2>(dimensions)
+    , layerType_(type)
+    , swizzleMask_(swizzleMask) {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<LayerRepresentation>(in->getDataFormat())
     , StructuredGridEntity<2>(in->getDimensions())
-    , layerType_(in->getLayerType()) {
+    , layerType_(in->getLayerType())
+    , swizzleMask_(in->getSwizzleMask()) {
     addRepresentation(in);
 }
 
@@ -83,7 +88,7 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
         }
     }
 
-    // Fallback
+    // Fall-back
     auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
     targetLayer->addRepresentation(clone);
     targetLayer->removeOtherRepresentations(clone.get());
@@ -128,11 +133,19 @@ SwizzleMask Layer::getSwizzleMask() const {
     if (this->hasRepresentations() && lastValidRepresentation_) {
         return lastValidRepresentation_->getSwizzleMask();
     }
-    return swizzlemasks::rgba;
+    return swizzleMask_;
 }
 
 std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const {
-    return createLayerRAM(getDimensions(), getLayerType(), getDataFormat());
+    return createLayerRAM(getDimensions(), getLayerType(), getDataFormat(), getSwizzleMask());
+}
+
+void Layer::updateMetaFromRepresentation(const LayerRepresentation *layerRep) {
+    if (layerRep) {
+        StructuredGridEntity<2>::setDimensions(layerRep->getDimensions());
+        layerType_ = layerRep->getLayerType();
+        swizzleMask_ = layerRep->getSwizzleMask();
+    }
 }
 
 }  // namespace

@@ -58,7 +58,7 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public TextureObserver {
 public:
     LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-              std::shared_ptr<Texture2D> data);
+              std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const override;

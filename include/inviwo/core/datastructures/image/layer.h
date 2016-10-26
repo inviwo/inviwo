@@ -44,7 +44,7 @@ namespace inviwo {
 class IVW_CORE_API Layer : public Data<LayerRepresentation>, public StructuredGridEntity<2> {
 public:
     Layer(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get(),
-          LayerType type = LayerType::Color);
+          LayerType type = LayerType::Color, const SwizzleMask &swizzleMask = swizzlemasks::rgba);
     Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
     Layer& operator=(const Layer& that) = default;
@@ -90,7 +90,18 @@ protected:
     virtual std::shared_ptr<LayerRepresentation> createDefaultRepresentation() const override;
 
 private:
+    friend class LayerRepresentation;
+
+    /**
+    * \brief update the internal state of the layer based on the given representation
+    * This will affect layer type, dimension, and swizzle mask.
+    *
+    * @param layerRep    layer representation of which the values will be taken from
+    */
+    void updateMetaFromRepresentation(const LayerRepresentation *layerRep);
+
     LayerType layerType_;
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

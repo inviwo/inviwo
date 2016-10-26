@@ -42,8 +42,11 @@ class LayerRAMPrecision : public LayerRAM {
 public:
     using type = T;
 
-    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
-    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
+    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color,
+                      const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8),
+                      LayerType type = LayerType::Color,
+                      const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
@@ -105,20 +108,23 @@ private:
  * @param format of layer to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
-                                      const DataFormatBase* format);
+IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(
+    const size2_t& dimensions, LayerType type, const DataFormatBase* format,
+    const SwizzleMask& swizzleMask = swizzlemasks::rgba);
 
 template <typename T>
-LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type)
+LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
+                                        const SwizzleMask& swizzleMask)
     : LayerRAM(dimensions, type, DataFormat<T>::get())
     , data_(new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzlemasks::rgba) {}
+    , swizzleMask_(swizzleMask) {}
 
 template <typename T>
-LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type)
+LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
+                                        const SwizzleMask& swizzleMask)
     : LayerRAM(dimensions, type, DataFormat<T>::get())
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzlemasks::rgba) {}
+    , swizzleMask_(swizzleMask) {}
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
@@ -181,11 +187,13 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         data_.swap(data);
         std::swap(dimensions, dimensions_);
     }
+    updateBaseMetaFromRepresentation();
 }
 
 template <typename T>
 void LayerRAMPrecision<T>::setSwizzleMask(const SwizzleMask &mask) {
     swizzleMask_ = mask;
+    updateBaseMetaFromRepresentation();
 }
 
 template <typename T>

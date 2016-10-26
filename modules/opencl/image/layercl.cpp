@@ -34,10 +34,11 @@
 
 namespace inviwo {
 
-LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format, const void* data)
+LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format,
+                 const SwizzleMask& swizzleMask, const void* data)
     : LayerRepresentation(dimensions, type, format)
     , layerFormat_(dataFormatToCLImageFormat(format->getId()))
-    , swizzleMask_(swizzlemasks::rgba) {
+    , swizzleMask_(swizzleMask) {
     initialize(data);
 }
 
@@ -115,10 +116,12 @@ void LayerCL::setDimensions(size2_t dimensions) {
                                                   getFormat(), dimensions.x, dimensions.y);
     LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
     clImage_ = std::unique_ptr<cl::Image2D>(resizedLayer2D);
+    updateBaseMetaFromRepresentation();
 }
 
 void LayerCL::setSwizzleMask(const SwizzleMask &mask) {
     swizzleMask_ = mask;
+    updateBaseMetaFromRepresentation();
 }
 
 SwizzleMask LayerCL::getSwizzleMask() const {

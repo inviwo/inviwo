@@ -75,6 +75,8 @@ public:
     LayerType getLayerType() const;
 
 protected:
+    void updateBaseMetaFromRepresentation();
+
     size2_t dimensions_;
     LayerType layerType_;
 };

@@ -31,11 +31,11 @@
 
 namespace inviwo {
 
-LayerDisk::LayerDisk(LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(), swizzleMask_(swizzlemasks::rgba) {}
+LayerDisk::LayerDisk(LayerType type, const SwizzleMask &swizzleMask)
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(), swizzleMask_(swizzleMask) {}
 
-LayerDisk::LayerDisk(std::string url, LayerType type)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url), swizzleMask_(swizzlemasks::rgba) {}
+LayerDisk::LayerDisk(std::string url, LayerType type, const SwizzleMask &swizzleMask)
+    : LayerRepresentation(size2_t(0), type, DataFormatBase::get()), DiskRepresentation(url), swizzleMask_(swizzleMask) {}
 
 LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs), swizzleMask_(rhs.swizzleMask_) {}
 
@@ -51,29 +51,15 @@ LayerDisk::~LayerDisk() {}
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
-void LayerDisk::setDimensions(size2_t dimensions) { dimensions_ = dimensions; }
+void LayerDisk::setDimensions(size2_t dimensions) { 
+    dimensions_ = dimensions; 
+    updateBaseMetaFromRepresentation();
+}
 
 bool LayerDisk::copyRepresentationsTo(DataRepresentation*) const { return false; }
 
 void LayerDisk::updateDataFormat(const DataFormatBase* format) { 
     setDataFormat(format); 
-
-    auto swizzleMask = [](std::size_t numComponents) {
-        switch (numComponents) {
-            case 1:
-                return swizzlemasks::luminance;
-            case 2:
-                return swizzlemasks::luminanceAlpha;
-            case 3:
-                return swizzlemasks::rgb;
-            case 4:
-            default:
-                return swizzlemasks::rgba;
-        }
-
-    };
-
-    setSwizzleMask(swizzleMask(format->getComponents()));
 }
 
 std::type_index LayerDisk::getTypeIndex() const {
@@ -82,6 +68,7 @@ std::type_index LayerDisk::getTypeIndex() const {
 
 void LayerDisk::setSwizzleMask(const SwizzleMask &mask) {
     swizzleMask_ = mask;
+    updateBaseMetaFromRepresentation();
 }
 
 SwizzleMask LayerDisk::getSwizzleMask() const {

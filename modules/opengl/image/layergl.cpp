@@ -37,8 +37,8 @@
 namespace inviwo {
 
 LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                 std::shared_ptr<Texture2D> tex)
-    : LayerRepresentation(dimensions, type, format), texture_(tex), swizzleMask_(swizzlemasks::rgba) {
+                 std::shared_ptr<Texture2D> tex, const SwizzleMask& swizzleMask)
+    : LayerRepresentation(dimensions, type, format), texture_(tex), swizzleMask_(swizzleMask) {
     if (!texture_) {
         auto glFormat = GLFormats::get(getDataFormatId());
 
