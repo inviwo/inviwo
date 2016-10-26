@@ -38,11 +38,11 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+
+#include <modules/basegl/algorithm/entryexitpoints.h>
 
 namespace inviwo {
 
@@ -82,11 +82,8 @@ private:
     CameraProperty camera_;
     BoolProperty capNearClipping_;
     CameraTrackball trackball_;
-    
-    Shader shader_;
-    Shader clipping_;
-    std::unique_ptr<Image> tmpEntry_;
-    std::unique_ptr<MeshDrawer> drawer_;
+
+    algorithm::EntryExitPointsHelper entryExitHelper_;
 };
 
 } // namespace
