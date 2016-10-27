@@ -52,8 +52,8 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    VolumeDoubleSampler<4> sampler(volume);
     const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+    VolumeDoubleSampler<4> sampler(volume,worldSpace);
 
     util::IndexMapper3D index(volume->getDimensions());
     auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
@@ -66,13 +66,13 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
             (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
         const auto Fx =
-            (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) /
+            (sampler.sample(world + ox) - sampler.sample(world - ox)) /
             (2.0 * spacing.x);
         const auto Fy =
-            (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace)) /
+            (sampler.sample(world + oy) - sampler.sample(world - oy)) /
             (2.0 * spacing.y);
         const auto Fz =
-            (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) /
+            (sampler.sample(world + oz) - sampler.sample(world - oz)) /
             (2.0 * spacing.z);
 
         vec3 c;
