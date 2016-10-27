@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-ViewManager::ViewManager() {}
+ViewManager::ViewManager() = default;
 
 std::unique_ptr<Event> ViewManager::handlePickingEvent(const PickingEvent* pe) {
     Event* e = pe->getEvent();
@@ -70,7 +70,8 @@ std::unique_ptr<Event> ViewManager::handlePickingEvent(const PickingEvent* pe) {
         auto pressPos = pe->getPressPosition();
         auto previousPos = pe->getPreviousPosition();
 
-        auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
+        auto offset =
+            dvec2(views_[selectedView_.second].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
 
         auto scale = dvec2(pe->getCanvasSize() - uvec2(1)) /
                      dvec2(views_[selectedView_.second].size - ivec2(1));
@@ -136,7 +137,7 @@ std::unique_ptr<Event> ViewManager::handleGestureEvent(const GestureEvent* ge) {
 }
 
 std::unique_ptr<Event> ViewManager::handleTouchEvent(const TouchEvent* te) {
-    /*
+    /* TODO...
     const auto touchEvent = static_cast<const TouchEvent*>(event);
     activePosition_ = touchEvent->getCenterPoint();
     if (!viewportActive_ &&

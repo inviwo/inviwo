@@ -83,9 +83,9 @@ public:
      */
     std::unique_ptr<Event> registerEvent(const Event* event);
 
-    /** 
-     * \brief Returns the index of the last active view. Returns -1 if no active view has been set.
-     * @return Index of active view, -1 if not set.
+    /**
+     * \brief Returns a pair with a bool of whether a view was found, and the index of the found
+     * view.
      */
     std::pair<bool, ViewId> getSelectedView() const;
 
@@ -99,7 +99,6 @@ public:
      *   ------> x
      *
      * @see ViewManager
-     * @param view Position and size of viewport (x,y width,height)
      */
     void push_back(View view);
 
@@ -108,7 +107,6 @@ public:
     * before, nothing happens.
     *
     * @see ViewManager
-    * @param view Position and size of viewport (x,y width,height)
     */
     void erase(View view);
 
@@ -120,8 +118,8 @@ public:
     void erase(ViewId ind);
 
     /**
-    * \brief replace a previously defined viewport at index ind with a new viewport (x,y
-    * width,height) using the following coordinate system:
+    * \brief replace a previously defined viewport at index ind with a new viewport using the
+    * following coordinate system:
     * y ^
     *   |
     *   |
@@ -129,7 +127,6 @@ public:
     *
     * @see ViewManager
     * @param ind Viewport index [0 size()-1]
-    * @param view Position and size of viewport (x,y width,height)
     */
     void replace(ViewId ind, View view);
 

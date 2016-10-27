@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
@@ -39,6 +40,9 @@ class Image;
 class EventPropagator;
 class Event;
 class PickingAction;
+class MouseInteractionEvent;
+class TouchEvent;
+class GestureEvent;
 
 /**
  * \class PickingController
@@ -49,23 +53,28 @@ public:
     virtual ~PickingController() = default;
     
     void handlePickingEvent(EventPropagator*, Event*);
-    
+   
     void setPickingSource(const std::shared_ptr<const Image>& src);
     bool pickingEnabled() const;
 private:
+    void handlePickingEvent(EventPropagator*, MouseInteractionEvent*);
+    void handlePickingEvent(EventPropagator*, TouchEvent*);
+    void handlePickingEvent(EventPropagator*, GestureEvent*);
 
     struct State {
-        std::pair<size_t, const PickingAction*> previousPa_ = {0, nullptr};
-        dvec3 previousNDC_ = dvec3(0.0);
-        size_t previousPickingId_ = 0;
+        PickingManager::Result update(PickingController& pc, MouseInteractionEvent* e);
 
-        std::pair<size_t, const PickingAction*> pressedPa_ = {0, nullptr};
-        bool mousePressed_ = false;
-        dvec3 pressNDC_ = dvec3(0.0);
+        PickingManager::Result previousPickingAction = {0, nullptr};
+        dvec3 previousNDC = dvec3(0.0);
+        size_t previousPickingId = 0;
+
+        bool mousePressed = false;
+        PickingManager::Result pressedPickingAction = {0, nullptr};
+        dvec3 pressNDC = dvec3(0.0);
     };
 
 
-    std::pair<size_t, const PickingAction*> findPickingAction(const uvec2& coord);
+    PickingManager::Result findPickingAction(const uvec2& coord);
     std::shared_ptr<const Image> src_;
 
     State state_;

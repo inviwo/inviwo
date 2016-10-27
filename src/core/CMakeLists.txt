@@ -93,11 +93,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
@@ -361,11 +359,9 @@ set(SOURCE_FILES
     interaction/interactionhandler.cpp
     interaction/interactionstatemanager.cpp
     interaction/pickingaction.cpp
-    interaction/pickingcontainer.cpp
     interaction/pickingcontroller.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
-    interaction/pickingobject.cpp
     interaction/trackball.cpp
     interaction/trackballobject.cpp
     io/bytereaderutil.cpp

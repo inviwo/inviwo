@@ -33,19 +33,22 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/interaction/pickingaction.h>
 
 namespace inviwo {
 
 class PickingEvent;
-class PickingAction;
 
 /** \class PickingManager
  * Manager for picking objects.
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
-    friend class PickingController;
-
 public:
+    struct Result {
+        size_t index;
+        const PickingAction* action;
+    };
+
     PickingManager();
     PickingManager(PickingManager const&) = delete;
     PickingManager& operator=(PickingManager const&) = delete;
@@ -55,7 +58,7 @@ public:
     PickingAction* registerPickingAction(Processor* processor, T* o,
                                          void (T::*m)(PickingEvent*), size_t size = 1);
     PickingAction* registerPickingAction(Processor* processor,
-                                         std::function<void(PickingEvent*)> callback,
+                                         PickingAction::Callback callback,
                                          size_t size = 1);
 
     bool unregisterPickingAction(const PickingAction*);
@@ -64,10 +67,11 @@ public:
     static uvec3 indexToColor(size_t index);
     static size_t colorToIndex(uvec3 color);
 
-private:
-    std::pair<size_t, const PickingAction*> getPickingActionFromColor(const uvec3& color);
+    Result getPickingActionFromColor(const uvec3& color);
 
-    size_t lastIndex_ = 0;
+private:
+    // start indexing at 1, 0 maps to black {0,0,0} and indicated no picking.
+    size_t lastIndex_ = 1;
     // pickingObjects_ should be sorted on the start index.
     std::vector<std::unique_ptr<PickingAction>> pickingActions_;
     // unusedObjects_ should be sorted on capacity.

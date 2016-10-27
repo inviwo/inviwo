@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
-#include <inviwo/core/interaction/pickingaction.h>
 
 namespace inviwo {
 
@@ -42,7 +41,7 @@ PickingManager::PickingManager() = default;
 PickingManager::~PickingManager() = default;
 
 PickingAction* PickingManager::registerPickingAction(Processor* processor,
-                                                     PickingAction::Action action, size_t size) {
+                                                     PickingAction::Callback action, size_t size) {
     PickingAction* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
@@ -90,8 +89,9 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     return false;
 }
 
-std::pair<size_t, const PickingAction*> PickingManager::getPickingActionFromColor(const uvec3& c) {
+PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c) {
     auto index = colorToIndex(c);
+    if (index == 0) return {index, nullptr}; 
 
     // This will find the first picking object with an start greater then index.
     auto pit = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
@@ -134,7 +134,7 @@ std::uint8_t reverse(std::uint8_t b) {
 }
 
 uvec3 PickingManager::indexToColor(size_t id) {
-    std::uint32_t index = static_cast<std::uint32_t>(id + 1);
+    std::uint32_t index = static_cast<std::uint32_t>(id);
 
     std::uint8_t r = 0;
     std::uint8_t g = 0;
@@ -160,7 +160,7 @@ size_t PickingManager::colorToIndex(uvec3 color) {
         index |= (((g & (1 << i)) << (1 + 2 * i)));
         index |= (((r & (1 << i)) << (2 + 2 * i)));
     }
-    return index - 1;
+    return index;
 }
 
 

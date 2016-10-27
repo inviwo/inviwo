@@ -63,7 +63,7 @@ void PickingAction::setEnabled(bool enabled) {
     enabled_ = enabled;
 }
 
-void PickingAction::setAction(Action action) {
+void PickingAction::setAction(Callback action) {
     action_ = action;
 }
 

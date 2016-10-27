@@ -36,15 +36,16 @@
 namespace inviwo {
 
 class PickingEvent;
+class Processor;
 
 /**
  * \class PickingAction
- * Associate a range of indices / colors to a action
+ * Associate a range of picking colors / indices to a callback function
  */
 class IVW_CORE_API PickingAction {
 public:
     friend class PickingManager;
-    using Action = std::function<void(PickingEvent*)>;
+    using Callback = std::function<void(PickingEvent*)>;
 
     PickingAction(size_t start, size_t size = 1);
     virtual ~PickingAction();
@@ -70,7 +71,7 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
     
-    void setAction(Action action);
+    void setAction(Callback action);
     
     void setProcessor(Processor* processor);
     Processor* getProcessor() const;
@@ -85,7 +86,7 @@ private:
     size_t size_;
     size_t capacity_;
 
-    Action action_;
+    Callback action_;
     Processor* processor_;
     
     bool enabled_ = true;

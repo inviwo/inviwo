@@ -83,7 +83,7 @@ protected:
 
     size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
-    PickingController pickingContainer_;
+    PickingController pickingController_;
     ProcessorWidget* ownerWidget_;  //< non-owning reference
 };
 
