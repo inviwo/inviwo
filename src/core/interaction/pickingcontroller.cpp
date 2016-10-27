@@ -72,6 +72,7 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, Event* e
                                           state_.pressNDC_, state_.previousNDC_,
                                           state_.previousPa_.first);
                 propagator->propagateEvent(&pickingEvent, nullptr);
+                if (pickingEvent.hasBeenUsed()) event->markAsUsed();
             }
 
             if (pa.second) {
@@ -81,6 +82,7 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, Event* e
                 PickingEvent pickingEvent(pa.second, ps, e, state_.pressNDC_, state_.previousNDC_,
                                           pa.first);
                 propagator->propagateEvent(&pickingEvent, nullptr);
+                if (pickingEvent.hasBeenUsed()) event->markAsUsed();
             }
 
             state_.previousPa_ = pa;
@@ -92,6 +94,8 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, Event* e
             auto e = static_cast<WheelEvent*>(event);
             auto coord = glm::clamp(e->pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
             auto pa = findPickingAction(coord);
+
+            // TODO!!!!
 
             break;
         }

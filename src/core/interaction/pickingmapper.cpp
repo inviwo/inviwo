@@ -36,7 +36,7 @@ namespace inviwo {
 PickingMapper::PickingMapper(PickingManager* manager) : manager_(manager) {}
 
 PickingMapper::PickingMapper(Processor* processor, size_t size,
-                             std::function<void(const PickingEvent*)> callback,
+                             std::function<void(PickingEvent*)> callback,
                              PickingManager* manager)
     : manager_(manager)
     , processor_(processor)
@@ -97,6 +97,18 @@ bool PickingMapper::isEnabled() const {
 
 void PickingMapper::setEnabled(bool enabled) {
     if (pickingAction_) pickingAction_->setEnabled(enabled);
+}
+
+size_t PickingMapper::getPickingId(size_t id) const {
+    return pickingAction_->getPickingId(id);
+}
+
+inviwo::vec3 PickingMapper::getColor(size_t id) const {
+    return pickingAction_->getColor(id);
+}
+
+size_t PickingMapper::getSize() const {
+    return pickingAction_->getSize();
 }
 
 const PickingAction* PickingMapper::getPickingAction() const { return pickingAction_; }

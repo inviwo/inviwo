@@ -48,9 +48,14 @@ class IVW_CORE_API PickingEvent : public Event {
 public:
     PickingEvent(const PickingAction* pickingAction, PickingState state, Event* event,
                  dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
-    
-    virtual ~PickingEvent() = default;
-    
+    PickingEvent(const PickingAction* pickingAction, PickingState state,
+                 std::unique_ptr<Event> event, dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
+
+    virtual ~PickingEvent();
+    PickingEvent(const PickingEvent&);
+    PickingEvent& operator=(const PickingEvent&);
+
+
     virtual PickingEvent* clone() const override;
     
     /**
@@ -113,32 +118,45 @@ public:
     dvec3 getPreviousNDC() const;
     dvec3 getPressNDC() const;
 
+    /**
+     *	The size of the canvas where the event occurred.
+     */
+    uvec2 getCanvasSize() const;
+
     PickingState getState() const;
 
-    void invoke(Processor* p) const;
+
+
+    void invoke(Processor* p);
+    const PickingAction* getPickingAction() const;
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() {
         return util::constexpr_hash("org.inviwo.PickingEvent");
     }
 
+    Event* getEvent() const;
+
     template <typename EventType>
     EventType* getEventAs() const;
 
 private:
+    using EventPtr = std::unique_ptr<Event,std::function<void(Event*)>>;
+
     const PickingAction* pickingAction_;
     PickingState state_ = PickingState::None;
-    Event* event_ = nullptr;
+    EventPtr event_;
+    bool ownsEvent_ = false;
     
     dvec3 pressNDC_ = dvec3(0.0);
     dvec3 previousNDC_ = dvec3(0.0);
-    size_t pickedId_;
+    size_t pickedId_ = 0;
 };
 
 template <typename EventType>
 EventType* PickingEvent::getEventAs() const {
     if (event_ && event_->hash() == EventType::chash()) {
-        return static_cast<EventType*>(event_);
+        return static_cast<EventType*>(event_.get());
     }
     return nullptr;
 }

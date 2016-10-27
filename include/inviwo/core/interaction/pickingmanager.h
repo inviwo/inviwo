@@ -53,9 +53,9 @@ public:
 
     template <typename T>
     PickingAction* registerPickingAction(Processor* processor, T* o,
-                                         void (T::*m)(const PickingEvent*), size_t size = 1);
+                                         void (T::*m)(PickingEvent*), size_t size = 1);
     PickingAction* registerPickingAction(Processor* processor,
-                                         std::function<void(const PickingEvent*)> callback,
+                                         std::function<void(PickingEvent*)> callback,
                                          size_t size = 1);
 
     bool unregisterPickingAction(const PickingAction*);
@@ -79,7 +79,7 @@ private:
 
 template <typename T>
 PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
-                                                     void (T::*m)(const PickingEvent*),
+                                                     void (T::*m)(PickingEvent*),
                                                      size_t size) {
     using namespace std::placeholders;
     return registerPickingAction(processor, std::bind(m, o, _1), size);

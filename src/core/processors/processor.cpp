@@ -407,8 +407,7 @@ void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this);
 
 void Processor::invokeEvent(Event* event) {
     if (event->hash() == PickingEvent::chash()) {
-        auto pe = static_cast<PickingEvent*>(event);
-        pe->invoke(this);
+        static_cast<PickingEvent*>(event)->invoke(this);
     }
     if (event->hasBeenUsed()) return;
     

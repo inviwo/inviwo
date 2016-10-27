@@ -67,7 +67,7 @@ void PickingAction::setAction(Action action) {
     action_ = action;
 }
 
-void PickingAction::operator()(const PickingEvent* event) const {
+void PickingAction::operator()(PickingEvent* event) const {
     action_(event);
 }
 

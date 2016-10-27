@@ -58,6 +58,16 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ViewManager {
 public:
+    struct View {
+        View(const ivec2& p, const ivec2& s) : pos(p), size(s) {}; 
+        View(const ivec4& m) : pos(m.xy()), size(m.zw()) {};
+
+        ivec2 pos;
+        ivec2 size;
+    };
+    using ViewList = std::vector<View>;
+    using ViewId = size_t;
+
     ViewManager();
 
     /**
@@ -71,22 +81,15 @@ public:
      * @return An event transformed to the active viewport or null if initiated outside of
      * added views.
      */
-    Event* registerEvent(const Event* event);
-    /**
-     * \brief Get the untransformed position, relative to the original viewport size, in the
-     * coordinate system of the ViewManager.
-     *
-     * @return The pixel position in the same coordinate system as the ViewManager.
-     */
-    dvec2 getActivePosition() const { return activePosition_; }
+    std::unique_ptr<Event> registerEvent(const Event* event);
+
     /** 
      * \brief Returns the index of the last active view. Returns -1 if no active view has been set.
-     * 
      * @return Index of active view, -1 if not set.
      */
-    int getActiveView() const { return activeView_; }
+    std::pair<bool, ViewId> getSelectedView() const;
 
-    const std::vector<ivec4>& getViews() const;
+    const ViewList& getViews() const;
 
     /** 
      * \brief Add a viewport (x,y width,height) using the following coordinate system:
@@ -98,7 +101,7 @@ public:
      * @see ViewManager
      * @param view Position and size of viewport (x,y width,height)
      */
-    void push_back(ivec4 view);
+    void push_back(View view);
 
     /**
     * \brief Erase a previously defined viewport (x,y width,height). If the viewport was not added
@@ -107,14 +110,14 @@ public:
     * @see ViewManager
     * @param view Position and size of viewport (x,y width,height)
     */
-    void erase(ivec4 view);
+    void erase(View view);
 
     /**
     * \brief Erase a previously defined viewport using index ind.
     *
     * @param ind Viewport index [0 size()-1]
     */
-    void erase(size_t ind);
+    void erase(ViewId ind);
 
     /**
     * \brief replace a previously defined viewport at index ind with a new viewport (x,y
@@ -128,7 +131,7 @@ public:
     * @param ind Viewport index [0 size()-1]
     * @param view Position and size of viewport (x,y width,height)
     */
-    void replace(size_t ind, ivec4 view);
+    void replace(ViewId ind, View view);
 
     /** 
      * \brief Return viewport using index ind.
@@ -136,19 +139,54 @@ public:
      * @param ind Viewport index [0 size()-1]
      * @return ivec4& 
      */
-    ivec4& operator[](size_t ind);
+    View& operator[](ViewId ind);
     size_t size() const;
     void clear();
 
 private:
-    int findView(ivec2 pos) const;
+    struct EventState {
+        std::pair<bool, ViewId> getView(ViewManager&  m, const MouseEvent* me) {
+            if(!pressing_ && me->buttonState() != MouseButton::None) {       // Start Pressing
+                pressing_ = true;
+                pressedView_ = m.findView(static_cast<ivec2>(me->pos()));
+            } else if (pressing_ && me->buttonState() == MouseButton::None) { // Stop Pressing
+                pressing_ = false;
+                pressedView_ = {false, 0};
+            }
+            return pressing_ ? pressedView_ : m.findView(static_cast<ivec2>(me->pos()));
+        }
 
-    static bool inView(const ivec4& view, const ivec2& pos);
+        std::pair<bool, ViewId> getView(ViewManager&  m, const GestureEvent* ge) {
+            if (!pressing_ && ge->state() == GestureState::Started) {       // Start Pressing
+                pressing_ = true;
+                pressedView_ = m.findView(
+                    static_cast<ivec2>(dvec2(ge->canvasSize()) * ge->screenPosNormalized()));
+            } else if (pressing_ && ge->state() == GestureState::Finished) {  // Stop Pressing
+                pressing_ = false;
+                auto tmp = pressedView_;
+                pressedView_ = { false, 0 };
+                return tmp;
+            }
+            return pressedView_;
+        }
 
-    bool viewportActive_;
-    dvec2 activePosition_;
-    int activeView_;
-    std::vector<ivec4> views_;
+
+        bool pressing_ = false;
+        std::pair<bool, ViewId> pressedView_ = {false, 0};
+    };
+
+    std::unique_ptr<Event> handlePickingEvent(const PickingEvent* pe); 
+    std::unique_ptr<Event> handleMouseEvent(const MouseEvent* me); 
+    std::unique_ptr<Event> handleWheelEvent(const WheelEvent* we); 
+    std::unique_ptr<Event> handleGestureEvent(const GestureEvent* ge); 
+    std::unique_ptr<Event> handleTouchEvent(const TouchEvent* te);
+
+    std::pair<bool, ViewId> findView(ivec2 pos) const;
+    static bool inView(const View& view, const ivec2& pos);
+
+    EventState eventState_;
+    std::pair<bool, ViewId> selectedView_ = {false, 0};
+    ViewList views_;
 };
 
 }  // namespace

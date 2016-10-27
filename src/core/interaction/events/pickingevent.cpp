@@ -30,6 +30,8 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
@@ -39,11 +41,47 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     : Event()
     , pickingAction_(pickingAction)
     , state_(state)
-    , event_(event)
+    , event_{event, [](Event* event) {}}
+    , ownsEvent_(false)
     , pressNDC_(pressNDC)
     , previousNDC_(previousNDC)
     , pickedId_(pickedId) {}
 
+PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState state,
+                           std::unique_ptr<Event> event, dvec3 pressNDC, dvec3 previousNDC,
+                           size_t pickedId)
+    : Event()
+    , pickingAction_(pickingAction)
+    , state_(state)
+    , event_{event.release(), [](Event* event) { delete event; }}
+    , ownsEvent_(false)
+    , pressNDC_(pressNDC)
+    , previousNDC_(previousNDC)
+    , pickedId_(pickedId) {}
+
+PickingEvent::PickingEvent(const PickingEvent& rhs)
+    : pickingAction_(rhs.pickingAction_)
+    , state_(rhs.state_)
+    , event_(rhs.event_->clone(), [](Event* event) {delete event;})
+    , ownsEvent_(true)
+    , pressNDC_(rhs.pressNDC_) 
+    , previousNDC_(rhs.previousNDC_)
+    , pickedId_(rhs.pickedId_) {}
+
+PickingEvent& PickingEvent::operator=(const PickingEvent& that) {
+    if (this != &that) {
+        pickingAction_ = that.pickingAction_;
+        state_ = that.state_;
+        event_ = EventPtr(that.event_->clone(), [](Event* event) {delete event;});
+        ownsEvent_ = true;
+        pressNDC_ = that.pressNDC_;
+        previousNDC_ = that.previousNDC_;
+        pickedId_ = that.pickedId_;
+    }
+    return *this;
+}
+
+PickingEvent::~PickingEvent() = default;
 
 PickingEvent* PickingEvent::clone() const {
     return new PickingEvent(*this);
@@ -54,6 +92,10 @@ uint64_t PickingEvent::hash() const {
 }
 
 
+Event* PickingEvent::getEvent() const {
+    return event_.get();
+}
+
 size_t PickingEvent::getPickedId() const {
     return pickedId_;
 }
@@ -62,9 +104,13 @@ dvec2 PickingEvent::getPosition() const {
     if(event_) {
         switch (event_->hash()) {
             case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->posNormalized();
+                return static_cast<MouseEvent*>(event_.get())->posNormalized();
+            case WheelEvent::chash():
+                return static_cast<WheelEvent*>(event_.get())->posNormalized();
+            case GestureEvent::chash():
+                return static_cast<GestureEvent*>(event_.get())->screenPosNormalized();
             case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_)->getCenterPointNormalized();
+                return static_cast<TouchEvent*>(event_.get())->getCenterPointNormalized();
         }  
     } 
     return dvec2(0.0f);
@@ -74,12 +120,32 @@ double PickingEvent::getDepth() const {
     if (event_) {
         switch (event_->hash()) {
             case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->depth();
+                return static_cast<MouseEvent*>(event_.get())->depth();
+            case WheelEvent::chash():
+                return static_cast<WheelEvent*>(event_.get())->depth();
+            case GestureEvent::chash():
+                return static_cast<GestureEvent*>(event_.get())->depth();
             case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_)->getTouchPoints().front().getDepth();
+                return static_cast<TouchEvent*>(event_.get())->getTouchPoints().front().getDepth();
         }
     }
     return 0.0f;
+}
+
+uvec2 PickingEvent::getCanvasSize() const {
+    if (event_) {
+        switch (event_->hash()) {
+            case MouseEvent::chash():
+                return static_cast<MouseEvent*>(event_.get())->canvasSize();
+            case WheelEvent::chash():
+                return static_cast<WheelEvent*>(event_.get())->canvasSize();
+            case GestureEvent::chash():
+                return static_cast<GestureEvent*>(event_.get())->canvasSize();
+            case TouchEvent::chash():
+                return static_cast<TouchEvent*>(event_.get())->canvasSize();
+        }
+    }
+    return uvec2(0);
 }
 
 dvec2 PickingEvent::getPreviousPosition() const {
@@ -121,7 +187,11 @@ dvec3 PickingEvent::getNDC() const {
     if (event_) {
         switch (event_->hash()) {
             case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->ndc();
+                return static_cast<MouseEvent*>(event_.get())->ndc();
+            case WheelEvent::chash():
+                return static_cast<WheelEvent*>(event_.get())->ndc();
+            case GestureEvent::chash():
+                return static_cast<GestureEvent*>(event_.get())->ndc();
             //case TouchEvent::chash():
             //    return static_cast<TouchEvent*>(event_)->getCenterPointNormalized();
         }
@@ -137,16 +207,22 @@ dvec3 PickingEvent::getPressNDC() const {
     return pressNDC_;
 }
 
+
+
 PickingState PickingEvent::getState() const {
     return state_;
 }
 
-void PickingEvent::invoke(Processor* p) const {
+void PickingEvent::invoke(Processor* p) {
     if (p == pickingAction_->getProcessor() && pickingAction_->isEnabled()) {
         (*pickingAction_)(this);
     }
 }
 
+
+const inviwo::PickingAction* PickingEvent::getPickingAction() const {
+    return pickingAction_;
+}
 
 } // namespace
 

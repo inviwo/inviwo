@@ -47,7 +47,7 @@ class PickingAction;
 class IVW_CORE_API PickingMapper {
 public:
     PickingMapper(PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingEvent*)> callback,
+    PickingMapper(Processor* p, size_t size, std::function<void(PickingEvent*)> callback,
                   PickingManager* manager = PickingManager::getPtr());
     PickingMapper(const PickingMapper& rhs) = delete;
     PickingMapper& operator=(const PickingMapper& that) = delete;
@@ -62,12 +62,27 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
+    /**
+    * \see PickingAction::getPickingId
+    */
+    size_t getPickingId(size_t id = 0) const;
+
+    /**
+    * \see PickingAction::getColor
+    */
+    vec3 getColor(size_t id = 0) const;
+    /**
+    * \see PickingAction::getSize
+    */
+    size_t getSize() const;
+
+
     const PickingAction* getPickingAction() const;
 
 private:
-    PickingManager* manager_ = nullptr;
+    PickingManager* manager_ = nullptr; // Should never be null.
     Processor* processor_ = nullptr;
-    std::function<void(const PickingEvent*)> callback_;
+    std::function<void(PickingEvent*)> callback_;
     PickingAction* pickingAction_ = nullptr;
 };
 

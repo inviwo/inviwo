@@ -44,7 +44,7 @@ class PickingEvent;
 class IVW_CORE_API PickingAction {
 public:
     friend class PickingManager;
-    using Action = std::function<void(const PickingEvent*)>;
+    using Action = std::function<void(PickingEvent*)>;
 
     PickingAction(size_t start, size_t size = 1);
     virtual ~PickingAction();
@@ -71,12 +71,11 @@ public:
     void setEnabled(bool enabled);
     
     void setAction(Action action);
-    Action getAction() const;
     
     void setProcessor(Processor* processor);
     Processor* getProcessor() const;
     
-    void operator()(const PickingEvent*) const;
+    void operator()(PickingEvent*) const;
     
 private:
     size_t getCapacity() const;

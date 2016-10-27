@@ -30,6 +30,7 @@
 #include "meshpicking.h"
 
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -43,13 +44,11 @@ namespace inviwo {
 const ProcessorInfo MeshPicking::processorInfo_{
     "org.inviwo.GeometryPicking",  // Class identifier
     "Mesh Picking",                // Display name
-    "Mesh Rendering",          // Category
+    "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo MeshPicking::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MeshPicking::getProcessorInfo() const { return processorInfo_; }
 
 MeshPicking::MeshPicking()
     : Processor()
@@ -67,7 +66,7 @@ MeshPicking::MeshPicking()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_)
-    , picking_(this, 1, [&](const PickingObject* p) { updateWidgetPositionFromPicking(p); })
+    , picking_(this, 1, [&](PickingEvent* p) { updateWidgetPositionFromPicking(p); })
     , shader_("standard.vert", "picking.frag") {
     
     imageInport_.setOptional(true);
@@ -91,11 +90,11 @@ MeshPicking::MeshPicking()
 
 MeshPicking::~MeshPicking() = default;
 
-void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
+void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = static_cast<MouseEvent*>(p->getEvent());
+        auto me =  p->getEventAs<MouseEvent>();
         if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-            p->getEvent()->markAsUsed();
+            p->markAsUsed();
 
             auto currNDC = p->getNDC();
             auto prevNDC = p->getPreviousNDC();
@@ -113,7 +112,7 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
             position_.set(position_.get() + (corrWorld - prevWorld));
         }
     } else if (auto we = p->getEventAs<WheelEvent>()) {
-        p->getEvent()->markAsUsed();
+        p->markAsUsed();
 
         double Zn = camera_.getNearPlaneDist();
         double Zf = camera_.getFarPlaneDist();
@@ -141,7 +140,7 @@ void MeshPicking::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
-    shader_.setUniform("pickingColor", picking_.getPickingObject()->getColor());
+    shader_.setUniform("pickingColor", picking_.getColor());
     shader_.setUniform("highlight", highlight_);
     utilgl::setShaderUniforms(shader_, highlightColor_);
 
