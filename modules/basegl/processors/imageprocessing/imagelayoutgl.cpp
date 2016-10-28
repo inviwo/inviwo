@@ -129,18 +129,14 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
             multiinport_.propagateEvent(&e, outports[i]);
         }
     } else {
-        auto newEvent = viewManager_.registerEvent(event);
-        auto selview = viewManager_.getSelectedView();
         auto& data = multiinport_.getConnectedOutports();
-        if (newEvent && selview.first && selview.second < data.size()) {
-            multiinport_.propagateEvent(newEvent.get(), data[selview.second]);
-            
-            if (newEvent->hasBeenUsed()) event->markAsUsed();
-            for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
-            return;
-        }
-
-        if (event->shouldPropagateTo(&multiinport_, this, source)) {
+        auto prop = [&](Event* newEvent, size_t ind) {
+            if (ind < data.size()) {
+                multiinport_.propagateEvent(newEvent, data[ind]);
+            }
+        };
+        auto propagated = viewManager_.propagateEvent(event, prop);
+        if (!propagated && event->shouldPropagateTo(&multiinport_, this, source)) {
             multiinport_.propagateEvent(event);
         }
     }

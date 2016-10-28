@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
@@ -41,7 +42,6 @@ class EventPropagator;
 class Event;
 class PickingAction;
 class MouseInteractionEvent;
-class TouchEvent;
 class GestureEvent;
 
 /**
@@ -61,7 +61,7 @@ private:
     void handlePickingEvent(EventPropagator*, TouchEvent*);
     void handlePickingEvent(EventPropagator*, GestureEvent*);
 
-    struct State {
+    struct PCMouseState {
         PickingManager::Result update(PickingController& pc, MouseInteractionEvent* e);
 
         PickingManager::Result previousPickingAction = {0, nullptr};
@@ -73,11 +73,19 @@ private:
         dvec3 pressNDC = dvec3(0.0);
     };
 
+    struct PCTouchState {
+        std::unordered_map<int, PickingManager::Result> pointIdToPickingId;
+        std::unordered_map<size_t, const PickingAction*> lastPickingIdToAction;
+        std::unordered_map<size_t, dvec3> pickingIdToPressNDC;
+        std::unordered_map<size_t, dvec3> pickingIdToPreviousNDC;
+    };
 
     PickingManager::Result findPickingAction(const uvec2& coord);
     std::shared_ptr<const Image> src_;
 
-    State state_;
+    PCMouseState mstate_;
+
+    PCTouchState tstate_;
 };
 
 } // namespace

@@ -110,7 +110,7 @@ dvec2 PickingEvent::getPosition() const {
             case GestureEvent::chash():
                 return static_cast<GestureEvent*>(event_.get())->screenPosNormalized();
             case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_.get())->getCenterPointNormalized();
+                return static_cast<TouchEvent*>(event_.get())->centerPointNormalized();
         }  
     } 
     return dvec2(0.0f);
@@ -126,10 +126,10 @@ double PickingEvent::getDepth() const {
             case GestureEvent::chash():
                 return static_cast<GestureEvent*>(event_.get())->depth();
             case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_.get())->getTouchPoints().front().getDepth();
+                return static_cast<TouchEvent*>(event_.get())->averageDepth();
         }
     }
-    return 0.0f;
+    return 1.0f;
 }
 
 uvec2 PickingEvent::getCanvasSize() const {
@@ -192,8 +192,8 @@ dvec3 PickingEvent::getNDC() const {
                 return static_cast<WheelEvent*>(event_.get())->ndc();
             case GestureEvent::chash():
                 return static_cast<GestureEvent*>(event_.get())->ndc();
-            //case TouchEvent::chash():
-            //    return static_cast<TouchEvent*>(event_)->getCenterPointNormalized();
+            case TouchEvent::chash():
+                return static_cast<TouchEvent*>(event_.get())->centerNDC();
         }
     }
     return dvec3(0.0f);

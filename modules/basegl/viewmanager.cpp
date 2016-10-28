@@ -40,159 +40,176 @@ namespace inviwo {
 
 ViewManager::ViewManager() = default;
 
-std::unique_ptr<Event> ViewManager::handlePickingEvent(const PickingEvent* pe) {
-    Event* e = pe->getEvent();
+bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator) {
 
-    std::unique_ptr<Event> newEvent;
+    auto prop = [&](Event* newEvent, size_t ind) {
+        if (newEvent) {
+            auto pressPos = pe->getPressPosition();
+            auto previousPos = pe->getPreviousPosition();
+
+            auto offset = dvec2(views_[ind].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
+            auto scale = dvec2(pe->getCanvasSize() - uvec2(1)) / dvec2(views_[ind].size - ivec2(1));
+
+            auto pressNDC = dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressDepth());
+            auto previousNDC =
+                dvec3(2.0 * scale * (previousPos - offset) - 1.0, pe->getPreviousDepth());
+
+            PickingEvent newPe(pe->getPickingAction(), pe->getState(), newEvent, pressNDC,
+                               previousNDC, pe->getPickedId());
+
+            propagator(&newPe, ind);
+            if (newPe.hasBeenUsed()) newEvent->markAsUsed();
+            for (auto p : newPe.getVisitedProcessors()) newEvent->markAsVisited(p);
+        }
+    };
+
+    auto e = pe->getEvent();
+    bool propagated = false;
     switch (e->hash()) {
-        case MouseEvent::chash(): {
-            newEvent = handleMouseEvent(static_cast<const MouseEvent*>(e));
+        case MouseEvent::chash():
+            propagated = propagateMouseEvent(static_cast<MouseEvent*>(e), prop);
             break;
-        }
-        case WheelEvent::chash(): {
-            newEvent = handleWheelEvent(static_cast<const WheelEvent*>(e));
+        case WheelEvent::chash():
+            propagated = propagateWheelEvent(static_cast<WheelEvent*>(e), prop);
             break;
-        }
-        case GestureEvent::chash(): {
-            newEvent = handleGestureEvent(static_cast<const GestureEvent*>(e));
+        case GestureEvent::chash():
+            propagated = propagateGestureEvent(static_cast<GestureEvent*>(e), prop);
             break;
-        }
-        case TouchEvent::chash(): {
-            newEvent = handleTouchEvent(static_cast<const TouchEvent*>(e));
+        case TouchEvent::chash():
+            propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop);
             break;
-        }
         default:
-            newEvent = nullptr;
+            propagated = false;
             break;
     }
+    if (e->hasBeenUsed()) pe->markAsUsed();
+    for (auto p : e->getVisitedProcessors()) pe->markAsVisited(p);
 
-    if (newEvent, selectedView_.first) {
-        auto pressPos = pe->getPressPosition();
-        auto previousPos = pe->getPreviousPosition();
-
-        auto offset =
-            dvec2(views_[selectedView_.second].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
-
-        auto scale = dvec2(pe->getCanvasSize() - uvec2(1)) /
-                     dvec2(views_[selectedView_.second].size - ivec2(1));
-
-        auto pressNDC = dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressDepth());
-        auto previousNDC =
-            dvec3(2.0 * scale * (previousPos - offset) - 1.0, pe->getPreviousDepth());
-
-        auto newPe = new PickingEvent(pe->getPickingAction(), pe->getState(), std::move(newEvent),
-                                      pressNDC, previousNDC, pe->getPickedId());
-        return std::unique_ptr<Event>(newPe);
-    }
-
-    return nullptr;
+    return propagated;
 }
 
-std::unique_ptr<Event> ViewManager::handleMouseEvent(const MouseEvent* me) {
+bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator) {
     selectedView_ = eventState_.getView(*this, me);
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
-        auto newEvent = me->clone();
-        newEvent->setCanvasSize(uvec2(views_[selectedView_.second].size));
+        MouseEvent newEvent(*me);
+        newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
         auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(me->canvasSize() - uvec2(1));
         auto scale = dvec2(me->canvasSize() - uvec2(1)) /
                      dvec2(views_[selectedView_.second].size - ivec2(1));
-        newEvent->setPosNormalized(scale * (newEvent->posNormalized() - offset));
-        return std::unique_ptr<Event>(newEvent);
+        newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
+        propagator(&newEvent, selectedView_.second);
+        if (newEvent.hasBeenUsed()) me->markAsUsed();
+        for (auto p : newEvent.getVisitedProcessors()) me->markAsVisited(p);
+
+        return true;
     } else {
-        return nullptr;
+        return false;
     }
 }
 
-std::unique_ptr<Event> ViewManager::handleWheelEvent(const WheelEvent* we) {
+bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator) {
     selectedView_ = findView(we->pos());
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
-        auto newEvent = we->clone();
-        newEvent->setCanvasSize(uvec2(views_[selectedView_.second].size));
+        WheelEvent newEvent(*we);
+        newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
         auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(we->canvasSize() - uvec2(1));
         auto scale = dvec2(we->canvasSize() - uvec2(1)) /
                      dvec2(views_[selectedView_.second].size - ivec2(1));
-        newEvent->setPosNormalized(scale * (newEvent->posNormalized() - offset));
-        return std::unique_ptr<Event>(newEvent);
+        newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
+        propagator(&newEvent, selectedView_.second);
+        if (newEvent.hasBeenUsed()) we->markAsUsed();
+        for (auto p : newEvent.getVisitedProcessors()) we->markAsVisited(p);
+
+        return true;
     } else {
-        return nullptr;
+        return false;
     }
 }
 
-std::unique_ptr<Event> ViewManager::handleGestureEvent(const GestureEvent* ge) {
+bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator) {
     selectedView_ = eventState_.getView(*this, ge);
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
-        auto newEvent = ge->clone();
-        newEvent->setCanvasSize(uvec2(views_[selectedView_.second].size));
+        GestureEvent newEvent(*ge);
+        newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
         auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(ge->canvasSize() - uvec2(1));
         auto scale = dvec2(ge->canvasSize() - uvec2(1)) /
                      dvec2(views_[selectedView_.second].size - ivec2(1));
-        newEvent->setScreenPosNormalized(scale * (newEvent->screenPosNormalized() - offset));
-        return std::unique_ptr<Event>(newEvent);
+        newEvent.setScreenPosNormalized(scale * (newEvent.screenPosNormalized() - offset));
+        propagator(&newEvent, selectedView_.second);
+        if (newEvent.hasBeenUsed()) ge->markAsUsed();
+        for (auto p : newEvent.getVisitedProcessors()) ge->markAsVisited(p);
+
+        return true;
     } else {
-        return nullptr;
+        return false;
     }
 }
 
-std::unique_ptr<Event> ViewManager::handleTouchEvent(const TouchEvent* te) {
-    /* TODO...
-    const auto touchEvent = static_cast<const TouchEvent*>(event);
-    activePosition_ = touchEvent->getCenterPoint();
-    if (!viewportActive_ &&
-        touchEvent->getTouchPoints().front().state() == TouchState::Started) {
-        viewportActive_ = true;
-        activeView_ = findView(activePosition_);
-    } else if (viewportActive_ &&
-               touchEvent->getTouchPoints().front().state() == TouchState::Finished) {
-        viewportActive_ = false;
-    }
+bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
+    auto& touchPoints = te->touchPoints();
 
-    if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
-        // Modify all touch points
-        const ivec4& view = views_[activeView_];
-        vec2 viewportOffset(view.x, view.y);
-        vec2 viewportSize(view.z, view.w);
-        std::vector<TouchPoint> modifiedTouchPoints;
-        auto touchPoints = touchEvent->getTouchPoints();
-        modifiedTouchPoints.reserve(touchPoints.size());
-        // Loop over all touch points and modify their positions
-        for (auto elem : touchPoints) {
-            // Translate position to viewport
-            vec2 pos = elem.getPos() - viewportOffset;
-            vec2 posNormalized = pos / viewportSize;
-            vec2 prevPos = elem.getPrevPos() - viewportOffset;
-            vec2 prevPosNormalized = prevPos / viewportSize;
-            modifiedTouchPoints.push_back(TouchPoint(elem.getId(), pos, posNormalized,
-                                                     prevPos, prevPosNormalized,
-                                                     elem.state()));
+    std::unordered_map<size_t, std::vector<TouchPoint>> viewIdToTouchPoints;
+    std::vector<int> propagatedPointIds;
+
+    for (auto& point : touchPoints) {
+        auto view = findView(static_cast<ivec2>(point.pos()));
+        if (view.first) {
+            viewIdToTouchPoints[view.second].push_back(point);
         }
-        TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, viewportSize);
+    }
 
-        return newEvent;
-    } else {
-    */
-    return nullptr;
-    //}
+    for (auto& item : viewIdToTouchPoints) {
+        const auto& viewId = item.first;
+        auto points = item.second;
+
+        const auto canvasSize = uvec2(views_[viewId].size);
+        const auto offset = dvec2(views_[viewId].pos) / dvec2(te->canvasSize() - uvec2(1));
+        const auto scale =
+            dvec2(te->canvasSize() - uvec2(1)) / dvec2(views_[viewId].size - ivec2(1));
+
+        for (auto& p : points) {
+            p.setCanvasSize(canvasSize);
+            p.setPosNormalized(scale * (p.posNormalized() - offset));
+            p.setPrevPosNormalized(scale * (p.prevPosNormalized() - offset));
+        }
+
+        TouchEvent newEvent(points);
+
+        propagator(&newEvent, viewId);
+
+        for (auto p : newEvent.getVisitedProcessors()) te->markAsVisited(p);
+        for (const auto& p : points) propagatedPointIds.push_back(p.id());
+    }
+
+    // remove the "used" points from the event
+    util::erase_remove_if(touchPoints, [&](const auto& p) {
+        return util::contains(propagatedPointIds, p.id());
+    });
+    
+    if (touchPoints.empty()) te->markAsUsed();
+
+    return touchPoints.empty();
 }
 
-std::unique_ptr<Event> ViewManager::registerEvent(const Event* event) {
+bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
     switch (event->hash()) {
         case PickingEvent::chash(): {
-            return handlePickingEvent(static_cast<const PickingEvent*>(event));
+            return propagatePickingEvent(static_cast<PickingEvent*>(event), propagator);
         }
         case MouseEvent::chash(): {
-            return handleMouseEvent(static_cast<const MouseEvent*>(event));
+            return propagateMouseEvent(static_cast<MouseEvent*>(event), propagator);
         }
         case WheelEvent::chash(): {
-            return handleWheelEvent(static_cast<const WheelEvent*>(event));
+            return propagateWheelEvent(static_cast<WheelEvent*>(event), propagator);
         }
         case GestureEvent::chash(): {
-            return handleGestureEvent(static_cast<const GestureEvent*>(event));
+            return propagateGestureEvent(static_cast<GestureEvent*>(event), propagator);
         }
         case TouchEvent::chash(): {
-            return handleTouchEvent(static_cast<const TouchEvent*>(event));
+            return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator);
         }
         default:
             return nullptr;

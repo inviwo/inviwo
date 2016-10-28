@@ -37,6 +37,7 @@
 #include <modules/opengl/openglutils.h>
 #include <opengl/shader/shaderutils.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
@@ -92,8 +93,30 @@ MeshPicking::~MeshPicking() = default;
 
 void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me =  p->getEventAs<MouseEvent>();
+        auto me = p->getEventAs<MouseEvent>();
         if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
+            p->markAsUsed();
+
+            auto currNDC = p->getNDC();
+            auto prevNDC = p->getPreviousNDC();
+
+            // Use depth of initial press as reference to move in the image plane.
+            auto refDepth = p->getPressDepth();
+            currNDC.z = refDepth;
+            prevNDC.z = refDepth;
+
+            auto corrWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+            auto prevWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+
+            position_.set(position_.get() + (corrWorld - prevWorld));
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
+
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
             p->markAsUsed();
 
             auto currNDC = p->getNDC();
@@ -116,10 +139,10 @@ void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
 
         double Zn = camera_.getNearPlaneDist();
         double Zf = camera_.getFarPlaneDist();
-        
+
         dvec3 camDir(glm::normalize(camera_.get().getDirection()));
 
-        position_.set(position_.get() + vec3(0.01*(Zf-Zn)*we->delta().y * camDir));
+        position_.set(position_.get() + vec3(0.01 * (Zf - Zn) * we->delta().y * camDir));
     }
 
     if (p->getState() == PickingState::Started) {
@@ -127,7 +150,7 @@ void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
         invalidate(InvalidationLevel::InvalidOutput);
     } else if (p->getState() == PickingState::Finished) {
         highlight_ = false;
-        invalidate(InvalidationLevel::InvalidOutput);   
+        invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 

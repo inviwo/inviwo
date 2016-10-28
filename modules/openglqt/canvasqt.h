@@ -101,7 +101,6 @@ private:
     bool gestureMode_ = false;
     Qt::GestureType lastType_;
     int lastNumFingers_;
-    std::vector<int> lastTouchIds_;
     vec2 screenPositionNormalized_;
 };
 
@@ -322,33 +321,23 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     QTouchEvent::TouchPoint firstPoint = touch->touchPoints()[0];
     switch (firstPoint.state()) {
         case Qt::TouchPointPressed:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
-            break;
         case Qt::TouchPointMoved:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
-            break;
         case Qt::TouchPointStationary:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
+            gestureMode_ = true;
             break;
         case Qt::TouchPointReleased:
-            gestureMode_ = false;
-            break;
         default:
             gestureMode_ = false;
+            break;
     }
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
-    // Fetch layer before loop (optimization)
-    const LayerRAM* depthLayerRAM = this->getDepthLayerRAM();
-    vec2 screenSize(this->getCanvasDimensions());
+    uvec2 screenSize(this->getCanvasDimensions());
 
-    std::vector<int> endedTouchIds;
-
-    for (auto& touchPoint : touch->touchPoints()) {
-        const vec2 screenTouchPos{utilqt::toGLM(touchPoint.pos())};
-        const vec2 prevScreenTouchPos{utilqt::toGLM(touchPoint.lastPos())};
-        const vec2 pixelCoord{util::invertY(screenTouchPos, screenSize)};
+    for (const auto& touchPoint : touch->touchPoints()) {
+        const auto pos = normalPos(utilqt::toGLM(touchPoint.pos()));
+        const auto prevPos = normalPos(utilqt::toGLM(touchPoint.lastPos()));
 
         TouchState touchState;
         switch (touchPoint.state()) {
@@ -367,63 +356,20 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
             default:
                 touchState = TouchState::None;
         }
-
-        // Note that screenTouchPos/prevScreenTouchPos are in [0 screenDim] and does not need to be
-        // adjusted to become centered in the pixel (+0.5)
-
-        // Saving id order to preserve order of touch points at next touch event
-
-        const auto lastIdIdx = util::find(lastTouchIds_, touchPoint.id());
-
-        if (lastIdIdx != lastTouchIds_.end()) {
-            if (touchState == TouchState::Finished) {
-                endedTouchIds.push_back(touchPoint.id());
-            }
-        } else {
-            lastTouchIds_.push_back(touchPoint.id());
-        }
-        touchPoints.emplace_back(touchPoint.id(), screenTouchPos, screenTouchPos / screenSize,
-                                 prevScreenTouchPos, prevScreenTouchPos / screenSize, touchState,
-                                 this->getDepthValueAtCoord(pixelCoord, depthLayerRAM));
+        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, screenSize,
+                                 this->getDepthValueAtNormalizedCoord(pos));
     }
     // Ensure that the order to the touch points are the same as last touch event.
     // Note that the ID of a touch point is always the same but the order in which
     // they are given can vary.
-    // Example
-    // lastTouchIds_    touchPoints
-    //     0                 0
-    //     3                 1 
-    //     2                 2
-    //     4
-    // Will result in:
-    //                  touchPoints
-    //                       0 (no swap)
-    //                       2 (2 will swap with 1)
-    //                       1
+    std::sort(touchPoints.begin(), touchPoints.end(),
+              [](const auto& a, const auto& b) { return a.id() < b.id(); });
 
-    auto touchIndex = 0;  // Index to first unsorted element in touchPoints array
-    for (const auto& lastTouchPointId : lastTouchIds_) {
-        const auto touchPointIt = util::find_if(
-            touchPoints,
-            [lastTouchPointId](const TouchPoint& p) { return p.getId() == lastTouchPointId; });
-        // Swap current location in the container with the location it was in last touch event.
-        if (touchPointIt != touchPoints.end() &&
-            std::distance(touchPoints.begin(), touchPointIt) != touchIndex) {
-            std::swap(*(touchPoints.begin() + touchIndex), *touchPointIt);
-            ++touchIndex;
-        }
-    }
-
-    util::erase_remove_if(lastTouchIds_, [&](int e) {
-        return util::contains(endedTouchIds, e);
-    });
-
-    // We need to send out touch event all the time to support one -> two finger touch switch
-    TouchEvent touchEvent(touchPoints, this->getCanvasDimensions());
+    TouchEvent touchEvent(touchPoints);
     touch->accept();
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
-    screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
+    screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     Canvas::propagateEvent(&touchEvent);
     return true;
@@ -494,7 +440,6 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
-    // std::cout << "PINCH: " << gesture->scaleFactor() << std::endl;
     // Mouse events will be triggered for touch events by Qt 5.3.1 (even though we specify that the
     // touch event is handled)
     // http://www.qtcentre.org/archive/index.php/t-52367.html

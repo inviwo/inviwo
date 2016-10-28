@@ -37,6 +37,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/pickingstate.h>
 
 namespace inviwo {
@@ -69,140 +70,114 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, Event* e
 
 void PickingController::handlePickingEvent(EventPropagator* propagator, MouseInteractionEvent* e) {
     auto ndc = e->ndc();
-    auto pa = state_.update(*this, e);
+    auto pa = mstate_.update(*this, e);
 
     // Check if we have switched picking id, if so send a Finished event
-    if (state_.previousPickingAction.action &&
-        pa.index != state_.previousPickingAction.index) {
-        PickingEvent pickingEvent(state_.previousPickingAction.action,
-                                  PickingState::Finished, e, state_.pressNDC,
-                                  state_.previousNDC, state_.previousPickingAction.index);
+    if (mstate_.previousPickingAction.action &&
+        pa.index != mstate_.previousPickingAction.index) {
+        PickingEvent pickingEvent(mstate_.previousPickingAction.action,
+                                  PickingState::Finished, e, mstate_.pressNDC,
+                                  mstate_.previousNDC, mstate_.previousPickingAction.index);
         propagator->propagateEvent(&pickingEvent, nullptr);
-        if (pickingEvent.hasBeenUsed()) e->markAsUsed();
     }
 
     // if there was a picking action, then propagate a picking event.
     if (pa.action) {
-        auto ps = pa.index == state_.previousPickingAction.index ? PickingState::Updated
+        auto ps = pa.index == mstate_.previousPickingAction.index ? PickingState::Updated
             : PickingState::Started;
 
-        PickingEvent pickingEvent(pa.action, ps, e, state_.pressNDC, state_.previousNDC,
+        PickingEvent pickingEvent(pa.action, ps, e, mstate_.pressNDC, mstate_.previousNDC,
                                   pa.index);
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed()) e->markAsUsed();
     }
 
-    state_.previousPickingAction = pa;
-    state_.previousNDC = ndc;
+    mstate_.previousPickingAction = pa;
+    mstate_.previousNDC = ndc;
 }
 
 void PickingController::handlePickingEvent(EventPropagator* propagator, TouchEvent* e) {
-    /* TODO   Old version from the PickingContainer....
-    std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
+    auto& touchPoints = e->touchPoints();
 
-    // Clear the picked touch point map
-    pickedTouchPoints_.clear();
+    std::unordered_map<size_t, std::vector<TouchPoint>> pickngIdToTouchPoints;
+    std::unordered_map<size_t, const PickingAction*> pickingIdToAction;
+    std::vector<int> usedPointIds;
 
-    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchState::Finished)
-        touchPickingOn_ = true;
-    else
-        touchPickingOn_ = false;
-
-    std::unordered_map<int, PickingObject*>::iterator touchPickObjs_it;
-    std::unordered_map<PickingObject*, std::vector<TouchPoint>>::iterator pickedTouchPoints_it;
-
-    auto touchPoint = touchPoints.begin();
-    while (touchPoint != touchPoints.end()) {
-        bool isAssociated = false;
-        if (touchPoint->state() == TouchState::Started) {
-            // Find out if new touch point is touching inside a picking object
-            uvec2 coord = clampToScreenCoords(touchPoint->getPos(), e->canvasSize());
-            PickingObject* pickObj = findPickingObject(coord);
-
-            // If it is, put it in the TouchIDPickingMap
-            if (pickObj) {
-                touchPickObjs_.insert(std::pair<int, PickingObject*>(touchPoint->getId(), pickObj));
-
-                // Associate touch point with picking object
-                // which can already have other associated touch points.
-                pickedTouchPoints_it = pickedTouchPoints_.find(pickObj);
-                if (pickedTouchPoints_it != pickedTouchPoints_.end()){
-                    pickedTouchPoints_it->second.push_back(*touchPoint);
-                }
-                else{
-                    pickedTouchPoints_.insert(std::pair<PickingObject*, 
-                        std::vector<TouchPoint>>(pickObj, std::vector<TouchPoint>{*touchPoint}));
-                }
-                isAssociated = true;
-            }
+    for (auto& point : touchPoints) {
+        auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
+        if (point.state() == TouchState::Started) {
+            auto pa = findPickingAction(coord);
+            tstate_.pointIdToPickingId[point.id()] = pa;
+            tstate_.pickingIdToPressNDC[pa.index] = point.ndc();
         }
-        else if (touchPoint->state() == TouchState::Finished) {
-            // Erase touch point from TouchIDPickingMap
-            size_t numberOfErasedElements = touchPickObjs_.erase(touchPoint->getId());
-            isAssociated = (numberOfErasedElements > 0);
+
+        auto it = tstate_.pointIdToPickingId.find(point.id());       
+        auto pa = it != tstate_.pointIdToPickingId.end() ? it->second : findPickingAction(coord);
+
+        if (pa.action) {
+            pickngIdToTouchPoints[pa.index].push_back(point);
+            pickingIdToAction[pa.index] = pa.action;
         }
-        else {
-            // Find out if touch point is in the TouchIDPickingMap
-            // If it exists, associate touch point with picking object
-            touchPickObjs_it = touchPickObjs_.find(touchPoint->getId());
-            if (touchPickObjs_it != touchPickObjs_.end()){
-                // Associate touch point with picking object
-                // which can already have other associated touch points.
-                pickedTouchPoints_it = pickedTouchPoints_.find(touchPickObjs_it->second);
-                if (pickedTouchPoints_it != pickedTouchPoints_.end()){
-                    pickedTouchPoints_it->second.push_back(*touchPoint);
-                }
-                else{
-                    pickedTouchPoints_.insert(std::pair<PickingObject*, 
-                        std::vector<TouchPoint>>(touchPickObjs_it->second, std::vector<TouchPoint>{*touchPoint}));
-                }
-                isAssociated = true;
-            }
-        }
-        // Removed touch point from the actual event if it was associated with a picking object
-        if (isAssociated)
-            touchPoint = touchPoints.erase(touchPoint);
-        else
-            ++touchPoint;
     }
 
-    // Build touch event for all picking objects with associated touch points
-    for (pickedTouchPoints_it = pickedTouchPoints_.begin(); pickedTouchPoints_it != pickedTouchPoints_.end(); ++pickedTouchPoints_it){
-        // Treat one touch point the same as mouse event, for now
-        if (pickedTouchPoints_it->second.size() == 1){
-            uvec2 coord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
-            if (pickedTouchPoints_it->second[0].state() & TouchState::Started){
-                pickedTouchPoints_it->first->setPosition(normalizedCoordinates(coord));
-                pickedTouchPoints_it->first->setDepth(pickedTouchPoints_it->second[0].getDepth());
-                pickedTouchPoints_it->first->setDelta(vec2(0.f, 0.f));
-            }
-            else{
-                uvec2 prevCoord = clampToScreenCoords(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
-                pickedTouchPoints_it->first->setDelta(normalizedMovement(prevCoord, coord));
-            }
-            // One touch point is currently treated as mouse event as well...
-            // So prepare for that
-            prevMouseCoord_ = coord;
-            mousePickObj_ = pickedTouchPoints_it->first;
-           // mousePickingOngoing_ = true;
+    // Propagate Finished picking events
+    for (const auto& oldPoickingId : tstate_.lastPickingIdToAction) {
+        auto it = pickngIdToTouchPoints.find(oldPoickingId.first);
+        if (it == pickngIdToTouchPoints.end()) { // picking ended for oldPickingID;
+            TouchEvent te{};
+            PickingEvent pickingEvent(oldPoickingId.second, PickingState::Finished, &te,
+                                      tstate_.pickingIdToPressNDC[oldPoickingId.first],
+                                      tstate_.pickingIdToPreviousNDC[oldPoickingId.first],
+                                      oldPoickingId.first);
+            propagator->propagateEvent(&pickingEvent, nullptr);
+        }
+    }
+
+    // Propagate Stated and Updated picking events
+    for (auto& item : pickngIdToTouchPoints) {
+        const auto& pickingId = item.first;
+        const auto& points = item.second;
+
+        auto ps =
+            tstate_.lastPickingIdToAction.find(pickingId) == tstate_.lastPickingIdToAction.end()
+                ? PickingState::Started
+                : PickingState::Updated;
+
+        TouchEvent te(points);
+        auto prevPos = te.centerNDC(); // Need so save here since te might be modified
+        PickingEvent pickingEvent(pickingIdToAction[pickingId], ps, &te,
+                                  tstate_.pickingIdToPressNDC[pickingId],
+                                  tstate_.pickingIdToPreviousNDC[pickingId], pickingId);
+        propagator->propagateEvent(&pickingEvent, nullptr);
+        if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {
+            for (const auto& p : points) usedPointIds.push_back(p.id());
         }
 
-        pickedTouchPoints_it->first->setTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
+        tstate_.pickingIdToPreviousNDC[pickingId] = prevPos;
     }
 
-    // One touch point is currently treated as mouse event as well...
-    // So prepare for that
-    if (touchPoints.size() == 1){
-        prevMouseCoord_ = clampToScreenCoords(touchPoints[0].getPos(), e->canvasSize());
-        touchPickingOn_ = false;
+    
+    // Cleanup
+    for (auto& point : touchPoints) {
+        if (point.state() == TouchState::Finished) {
+            tstate_.pointIdToPickingId.erase(point.id());
+        }
     }
 
-    // Mark all picking objects in TouchIDPickingMap as picked.
-    for (touchPickObjs_it = touchPickObjs_.begin(); touchPickObjs_it != touchPickObjs_.end(); ++touchPickObjs_it)
-        touchPickObjs_it->second->picked();
+    util::map_erase_remove_if(tstate_.pickingIdToPressNDC, [&](const auto& item) {
+        return pickingIdToAction.find(item.first) == pickingIdToAction.end();
+    });
+    util::map_erase_remove_if(tstate_.pickingIdToPreviousNDC, [&](const auto& item) {
+        return pickingIdToAction.find(item.first) == pickingIdToAction.end();
+    });
 
-    return !touchPickObjs_.empty();
-    */
+    tstate_.lastPickingIdToAction = std::move(pickingIdToAction);
+
+    // remove the "used" points from the event
+    util::erase_remove_if(touchPoints, [&](const auto& p) {
+        return util::contains(usedPointIds, p.id());
+    });
+    if (touchPoints.empty()) e->markAsUsed();
 }
 
 void PickingController::handlePickingEvent(EventPropagator*, GestureEvent*) {
@@ -230,7 +205,7 @@ bool PickingController::pickingEnabled() const {
     return PickingManager::getPtr()->pickingEnabled();
 }
 
-PickingManager::Result PickingController::State::update(PickingController& pc,
+PickingManager::Result PickingController::PCMouseState::update(PickingController& pc,
                                                         MouseInteractionEvent* e) {
     auto coord = glm::clamp(e->pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
 

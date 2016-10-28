@@ -58,6 +58,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ViewManager {
 public:
+    using Propagator = std::function<void(Event*, size_t ind)>;
+
     struct View {
         View(const ivec2& p, const ivec2& s) : pos(p), size(s) {}; 
         View(const ivec4& m) : pos(m.xy()), size(m.zw()) {};
@@ -71,17 +73,10 @@ public:
     ViewManager();
 
     /**
-     * \brief Creates a new event for the currently active viewport.
-     * Sets the viewport that the event lie in as active when starting an action
-     * (pressing/touching).
-     * Further events will be propagated to the active viewport until a release appears.
-     * Returns null if the initiating (pressing/touching) event is outside the added viewports.
-     *
-     * @param event The event to transform.
-     * @return An event transformed to the active viewport or null if initiated outside of
-     * added views.
+     * \brief maps a propagates event to the selected view
+     * return whether the event found a view was found
      */
-    std::unique_ptr<Event> registerEvent(const Event* event);
+    bool propagateEvent(Event* event, Propagator propagator);
 
     /**
      * \brief Returns a pair with a bool of whether a view was found, and the index of the found
@@ -172,11 +167,11 @@ private:
         std::pair<bool, ViewId> pressedView_ = {false, 0};
     };
 
-    std::unique_ptr<Event> handlePickingEvent(const PickingEvent* pe); 
-    std::unique_ptr<Event> handleMouseEvent(const MouseEvent* me); 
-    std::unique_ptr<Event> handleWheelEvent(const WheelEvent* we); 
-    std::unique_ptr<Event> handleGestureEvent(const GestureEvent* ge); 
-    std::unique_ptr<Event> handleTouchEvent(const TouchEvent* te);
+    bool propagatePickingEvent(PickingEvent* pe, Propagator propagator); 
+    bool propagateMouseEvent(MouseEvent* me, Propagator propagator); 
+    bool propagateWheelEvent(WheelEvent* we, Propagator propagator); 
+    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator); 
+    bool propagateTouchEvent(TouchEvent* te, Propagator propagator);
 
     std::pair<bool, ViewId> findView(ivec2 pos) const;
     static bool inView(const View& view, const ivec2& pos);

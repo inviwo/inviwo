@@ -251,13 +251,9 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            auto newEvent = viewManager_.registerEvent(event);
-            auto selview = viewManager_.getSelectedView();
-
-            if (newEvent && selview.first) {
-                overlayPort_.propagateEvent(newEvent.get());
-                if (newEvent->hasBeenUsed()) event->markAsUsed();
-                for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+            if (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
+                    overlayPort_.propagateEvent(newEvent);
+                })) {
                 return;
             }
         }
