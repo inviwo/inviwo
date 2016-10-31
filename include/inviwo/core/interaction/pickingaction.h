@@ -40,7 +40,8 @@ class Processor;
 
 /**
  * \class PickingAction
- * Associate a range of picking colors / indices to a callback function
+ * Associate a range of picking colors / indices to a callback function. Created and handled by the
+ * PickingManger. Use a PickingMapper to ask the PickingManager for a PickingAction.
  */
 class IVW_CORE_API PickingAction {
 public:
@@ -63,16 +64,26 @@ public:
      * \param id the local picking index 
      */
     vec3 getColor(size_t id = 0) const;
+
     /**
-     *	The number of local picking indices in this picking object.
+     *	The number of picking indices in this picking object.
      */
     size_t getSize() const;
     
-    bool isEnabled() const;
+    /**
+     * Enable or disable calling of the callback action.   
+     */
     void setEnabled(bool enabled);
+    bool isEnabled() const;
     
+    /**
+     *	Set the callback action
+     */
     void setAction(Callback action);
     
+    /**
+     *	Set the processor where the picking colors is drawn. 
+     */
     void setProcessor(Processor* processor);
     Processor* getProcessor() const;
     

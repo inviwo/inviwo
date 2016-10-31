@@ -83,7 +83,9 @@ public:
 
     virtual void process() override;
 
-    void updateWidgetPositionFromPicking(PickingEvent*);
+    void handlePickingEvent(PickingEvent*);
+
+    void updatePosition(PickingEvent* p);
 
 private:
     MeshInport meshInport_;

@@ -67,10 +67,11 @@ size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
 
 void Canvas::propagateEvent(Event* event) {
     NetworkLock lock;
+    if (!propagator_) return;
 
-    pickingController_.handlePickingEvent(propagator_, event);
+    pickingController_.propagateEvent(event, propagator_);
     if (event->hasBeenUsed()) return;
-    if (propagator_) propagator_->propagateEvent(event, nullptr);
+    propagator_->propagateEvent(event, nullptr);
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

@@ -94,13 +94,13 @@ PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c)
     if (index == 0) return {index, nullptr}; 
 
     // This will find the first picking object with an start greater then index.
-    auto pit = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
+    auto pIt = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
                                 [](const size_t& i, const std::unique_ptr<PickingAction>& p) {
                                     return i < p->getPickingId(0);
                                 });
 
-    if (std::distance(pickingActions_.begin(), pit) > 0) {
-        auto po = (*(--pit)).get();
+    if (std::distance(pickingActions_.begin(), pIt) > 0) {
+        auto po = (*(--pIt)).get();
         const auto start = po->getPickingId(0);
         if (index >= start && index < start + po->getSize()) {
             return {index, po};

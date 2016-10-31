@@ -43,7 +43,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     , state_(state)
     , event_{event, [](Event* event) {}}
     , ownsEvent_(false)
-    , pressNDC_(pressNDC)
+    , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)
     , pickedId_(pickedId) {}
 
@@ -55,7 +55,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     , state_(state)
     , event_{event.release(), [](Event* event) { delete event; }}
     , ownsEvent_(false)
-    , pressNDC_(pressNDC)
+    , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)
     , pickedId_(pickedId) {}
 
@@ -64,7 +64,7 @@ PickingEvent::PickingEvent(const PickingEvent& rhs)
     , state_(rhs.state_)
     , event_(rhs.event_->clone(), [](Event* event) {delete event;})
     , ownsEvent_(true)
-    , pressNDC_(rhs.pressNDC_) 
+    , pressedNDC_(rhs.pressedNDC_) 
     , previousNDC_(rhs.previousNDC_)
     , pickedId_(rhs.pickedId_) {}
 
@@ -74,7 +74,7 @@ PickingEvent& PickingEvent::operator=(const PickingEvent& that) {
         state_ = that.state_;
         event_ = EventPtr(that.event_->clone(), [](Event* event) {delete event;});
         ownsEvent_ = true;
-        pressNDC_ = that.pressNDC_;
+        pressedNDC_ = that.pressedNDC_;
         previousNDC_ = that.previousNDC_;
         pickedId_ = that.pickedId_;
     }
@@ -158,13 +158,13 @@ double PickingEvent::getPreviousDepth() const {
 }
 
 
-dvec2 PickingEvent::getPressPosition() const {
-    return dvec2(0.5) * (pressNDC_.xy() + dvec2(1.0));
+dvec2 PickingEvent::getPressedPosition() const {
+    return dvec2(0.5) * (pressedNDC_.xy() + dvec2(1.0));
 }
 
 
-double PickingEvent::getPressDepth() const {
-    return pressNDC_.z;
+double PickingEvent::getPressedDepth() const {
+    return pressedNDC_.z;
 }
 
 dvec2 PickingEvent::getDeltaPosition() const {
@@ -175,12 +175,12 @@ double PickingEvent::getDeltaDepth() const {
     return getDepth() - previousNDC_.z;
 }
 
-dvec2 PickingEvent::getDeltaPressPosition() const {
-    return getPosition() - getPressPosition();
+dvec2 PickingEvent::getDeltaPressedPosition() const {
+    return getPosition() - getPressedPosition();
 }
 
-double PickingEvent::getDeltaPressDepth() const {
-    return getDepth() - pressNDC_.z;
+double PickingEvent::getDeltaPressedDepth() const {
+    return getDepth() - pressedNDC_.z;
 }
 
 dvec3 PickingEvent::getNDC() const {
@@ -203,8 +203,8 @@ dvec3 PickingEvent::getPreviousNDC() const {
     return previousNDC_;
 }
 
-dvec3 PickingEvent::getPressNDC() const {
-    return pressNDC_;
+dvec3 PickingEvent::getPressedNDC() const {
+    return pressedNDC_;
 }
 
 

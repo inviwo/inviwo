@@ -44,13 +44,13 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
 
     auto prop = [&](Event* newEvent, size_t ind) {
         if (newEvent) {
-            auto pressPos = pe->getPressPosition();
+            auto pressPos = pe->getPressedPosition();
             auto previousPos = pe->getPreviousPosition();
 
             auto offset = dvec2(views_[ind].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
             auto scale = dvec2(pe->getCanvasSize() - uvec2(1)) / dvec2(views_[ind].size - ivec2(1));
 
-            auto pressNDC = dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressDepth());
+            auto pressNDC = dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressedDepth());
             auto previousNDC =
                 dvec3(2.0 * scale * (previousPos - offset) - 1.0, pe->getPreviousDepth());
 
@@ -262,7 +262,7 @@ std::pair<bool, ViewManager::ViewId> ViewManager::findView(ivec2 pos) const {
 }
 
 bool ViewManager::inView(const View& view, const ivec2& pos) {
-    return glm::all(glm::lessThan(view.pos, pos)) &&
+    return glm::all(glm::greaterThanEqual(pos, view.pos)) &&
            glm::all(glm::lessThan(pos, view.pos + view.size));
 }
 

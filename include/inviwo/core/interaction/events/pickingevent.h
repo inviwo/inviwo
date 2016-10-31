@@ -84,11 +84,11 @@ public:
     /**
     * Returns the normalized position of the most resent press
     */
-    dvec2 getPressPosition() const;
+    dvec2 getPressedPosition() const;
     /**
     * Returns the normalized depth of the most resent press
     */
-    double getPressDepth() const;
+    double getPressedDepth() const;
 
     /**
     * Returns the delta of the previous and current position;
@@ -102,12 +102,12 @@ public:
     /**
     * Returns the delta of the press position and current position;
     */
-    dvec2 getDeltaPressPosition() const;
+    dvec2 getDeltaPressedPosition() const;
     
     /**
     * Returns the delta of the press depth and current depth;
     */
-    double getDeltaPressDepth() const;
+    double getDeltaPressedDepth() const;
 
     /**
      * Returns the normalized device coordinates. Position and depth normalized to the range of
@@ -116,7 +116,7 @@ public:
      */
     dvec3 getNDC() const;
     dvec3 getPreviousNDC() const;
-    dvec3 getPressNDC() const;
+    dvec3 getPressedNDC() const;
 
     /**
      *	The size of the canvas where the event occurred.
@@ -148,7 +148,7 @@ private:
     EventPtr event_;
     bool ownsEvent_ = false;
     
-    dvec3 pressNDC_ = dvec3(0.0);
+    dvec3 pressedNDC_ = dvec3(0.0);
     dvec3 previousNDC_ = dvec3(0.0);
     size_t pickedId_ = 0;
 };

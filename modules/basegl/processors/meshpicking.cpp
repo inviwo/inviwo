@@ -67,7 +67,7 @@ MeshPicking::MeshPicking()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_)
-    , picking_(this, 1, [&](PickingEvent* p) { updateWidgetPositionFromPicking(p); })
+    , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
     , shader_("standard.vert", "picking.frag") {
     
     imageInport_.setOptional(true);
@@ -91,48 +91,18 @@ MeshPicking::MeshPicking()
 
 MeshPicking::~MeshPicking() = default;
 
-void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
+void MeshPicking::handlePickingEvent(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
         auto me = p->getEventAs<MouseEvent>();
         if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-            p->markAsUsed();
-
-            auto currNDC = p->getNDC();
-            auto prevNDC = p->getPreviousNDC();
-
-            // Use depth of initial press as reference to move in the image plane.
-            auto refDepth = p->getPressDepth();
-            currNDC.z = refDepth;
-            prevNDC.z = refDepth;
-
-            auto corrWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-            auto prevWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-
-            position_.set(position_.get() + (corrWorld - prevWorld));
+            updatePosition(p);
         }
     } else if (p->getState() == PickingState::Updated &&
                p->getEvent()->hash() == TouchEvent::chash()) {
 
         auto te = p->getEventAs<TouchEvent>();
         if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
-            p->markAsUsed();
-
-            auto currNDC = p->getNDC();
-            auto prevNDC = p->getPreviousNDC();
-
-            // Use depth of initial press as reference to move in the image plane.
-            auto refDepth = p->getPressDepth();
-            currNDC.z = refDepth;
-            prevNDC.z = refDepth;
-
-            auto corrWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-            auto prevWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-
-            position_.set(position_.get() + (corrWorld - prevWorld));
+            updatePosition(p);
         }
     } else if (auto we = p->getEventAs<WheelEvent>()) {
         p->markAsUsed();
@@ -152,6 +122,25 @@ void MeshPicking::updateWidgetPositionFromPicking(PickingEvent* p) {
         highlight_ = false;
         invalidate(InvalidationLevel::InvalidOutput);
     }
+}
+
+void MeshPicking::updatePosition(PickingEvent* p) {
+    p->markAsUsed();
+
+    auto currNDC = p->getNDC();
+    auto prevNDC = p->getPreviousNDC();
+
+    // Use depth of initial press as reference to move in the image plane.
+    auto refDepth = p->getPressedDepth();
+    currNDC.z = refDepth;
+    prevNDC.z = refDepth;
+
+    auto corrWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    auto prevWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+
+    position_.set(position_.get() + (corrWorld - prevWorld));
 }
 
 void MeshPicking::process() {

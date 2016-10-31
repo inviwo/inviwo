@@ -46,20 +46,22 @@ class GestureEvent;
 
 /**
  * \class PickingController
+ * Handle mapping of interaction events into picking events and propagation of them
+ * if the index of the color in the picking buffer of the src image if found by the PickingManager
  */
 class IVW_CORE_API PickingController { 
 public:
     PickingController();
     virtual ~PickingController() = default;
     
-    void handlePickingEvent(EventPropagator*, Event*);
-   
+    void propagateEvent(Event*, EventPropagator*);
     void setPickingSource(const std::shared_ptr<const Image>& src);
     bool pickingEnabled() const;
+
 private:
-    void handlePickingEvent(EventPropagator*, MouseInteractionEvent*);
-    void handlePickingEvent(EventPropagator*, TouchEvent*);
-    void handlePickingEvent(EventPropagator*, GestureEvent*);
+    void propagateEvent(MouseInteractionEvent*, EventPropagator*);
+    void propagateEvent(TouchEvent*, EventPropagator*);
+    void propagateEvent(GestureEvent*, EventPropagator*);
 
     struct PCMouseState {
         PickingManager::Result update(PickingController& pc, MouseInteractionEvent* e);

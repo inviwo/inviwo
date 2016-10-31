@@ -44,31 +44,31 @@ namespace inviwo {
 
 PickingController::PickingController() = default;
 
-void PickingController::handlePickingEvent(EventPropagator* propagator, Event* event) {
+void PickingController::propagateEvent(Event* event, EventPropagator* propagator) {
     if (!propagator) return;
     if (!event) return;
 
     switch (event->hash()) {
         case MouseEvent::chash(): {
-            handlePickingEvent(propagator, static_cast<MouseEvent*>(event));
+            propagateEvent(static_cast<MouseEvent*>(event), propagator);
             break;
         }
         case WheelEvent::chash(): {
-            handlePickingEvent(propagator, static_cast<WheelEvent*>(event));
+            propagateEvent(static_cast<WheelEvent*>(event), propagator);
             break;
         }
         case GestureEvent::chash(): {
-            handlePickingEvent(propagator, static_cast<GestureEvent*>(event));
+            propagateEvent(static_cast<GestureEvent*>(event), propagator);
             break;
         }
         case TouchEvent::chash(): {
-            handlePickingEvent(propagator, static_cast<TouchEvent*>(event));
+            propagateEvent(static_cast<TouchEvent*>(event), propagator);
             break;
         }
     }
 }
 
-void PickingController::handlePickingEvent(EventPropagator* propagator, MouseInteractionEvent* e) {
+void PickingController::propagateEvent(MouseInteractionEvent* e, EventPropagator* propagator) {
     auto ndc = e->ndc();
     auto pa = mstate_.update(*this, e);
 
@@ -96,7 +96,7 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, MouseInt
     mstate_.previousNDC = ndc;
 }
 
-void PickingController::handlePickingEvent(EventPropagator* propagator, TouchEvent* e) {
+void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagator) {
     auto& touchPoints = e->touchPoints();
 
     std::unordered_map<size_t, std::vector<TouchPoint>> pickngIdToTouchPoints;
@@ -180,7 +180,7 @@ void PickingController::handlePickingEvent(EventPropagator* propagator, TouchEve
     if (touchPoints.empty()) e->markAsUsed();
 }
 
-void PickingController::handlePickingEvent(EventPropagator*, GestureEvent*) {
+void PickingController::propagateEvent(GestureEvent* event, EventPropagator* propagator) {
     // TODO...
 }
 
