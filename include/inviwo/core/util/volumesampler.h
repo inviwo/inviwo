@@ -109,8 +109,7 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<Vector<DataDims, double>>::trilinear(
-        samples, interpolants, &Interpolation<Vector<DataDims, double>>::linear);
+    return Interpolation<Vector<DataDims, double>>::trilinear( samples, interpolants);
 }
 
 template <unsigned int DataDims>
