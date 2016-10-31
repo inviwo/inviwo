@@ -30,7 +30,10 @@
 
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/util/templatesampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 namespace util {
@@ -52,45 +55,62 @@ std::shared_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
-    VolumeDoubleSampler<4> sampler(volume,worldSpace);
+    volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>([&](auto vol) {
+        using ValueType = util::PrecsionValueType<decltype(vol)>;
+        using ComponentType = typename ValueType::value_type;
 
-    util::IndexMapper3D index(volume->getDimensions());
-    auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+        const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
 
-    float minV = std::numeric_limits<float>::max();
-    float maxV = std::numeric_limits<float>::lowest();
 
-    auto func = [&](const size3_t& pos) {
-        const vec3 world =
-            (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
-        const auto Fx =
-            (sampler.sample(world + ox) - sampler.sample(world - ox)) /
-            (2.0 * spacing.x);
-        const auto Fy =
-            (sampler.sample(world + oy) - sampler.sample(world - oy)) /
-            (2.0 * spacing.y);
-        const auto Fz =
-            (sampler.sample(world + oz) - sampler.sample(world - oz)) /
-            (2.0 * spacing.z);
+        util::IndexMapper3D index(volume->getDimensions());
+        auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+        float minV = std::numeric_limits<float>::max();
+        float maxV = std::numeric_limits<float>::lowest();
 
-        vec3 c;
-        c.x = static_cast<float>(Fy.z - Fz.y);
-        c.y = static_cast<float>(Fz.x - Fx.z);
-        c.z = static_cast<float>(Fx.y - Fy.x);
 
-        minV = std::min({minV, c.x, c.y, c.z});
-        maxV = std::max({maxV, c.x, c.y, c.z});
 
-        data[index(pos)] = c;
-    };
+        auto datain = vol->getDataTyped();
+        auto test = datain[0].rgb;
 
-    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+        TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
-    auto range = std::max(std::abs(minV), std::abs(maxV));
-    newVolume->dataMap_.dataRange = dvec2(-range, range);
-    newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+
+
+        auto func = [&](const size3_t& pos) {
+            const vec3 world =
+                (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
+
+            auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
+            auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
+            auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
+            auto Fym = static_cast<vec3>(sampler.sample(world - oy));
+            auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
+            auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
+
+            const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
+            const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
+            const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
+
+            vec3 c;
+            c.x = static_cast<float>(Fy.z - Fz.y);
+            c.y = static_cast<float>(Fz.x - Fx.z);
+            c.z = static_cast<float>(Fx.y - Fy.x);
+
+            minV = std::min({ minV, c.x, c.y, c.z });
+            maxV = std::max({ maxV, c.x, c.y, c.z });
+
+            data[index(pos)] = c;
+        };
+
+        util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+
+        auto range = std::max(std::abs(minV), std::abs(maxV));
+        newVolume->dataMap_.dataRange = dvec2(-range, range);
+        newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+
+    });
+    //      */
 
     return newVolume;
 }
