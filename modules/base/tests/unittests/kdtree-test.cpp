@@ -134,11 +134,11 @@ TEST(KDTreeTests, findNClosests) {
 
     glm::vec3 p(0.5f,0.5f,0.5f);
 
-    std::vector< K3DTree<int, float>::Node*> n10 = tree.findNNearest(glm::value_ptr(p),10);
+    std::vector< K3DTree<int, float>::Node*> n10 = tree.findNNearest(p,10);
     EXPECT_EQ(n10.size() , 10);
-    std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(glm::value_ptr(p),20);
+    std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(p,20);
     EXPECT_EQ(n20.size() , 20);
-    std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(glm::value_ptr(p),100);
+    std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(p,100);
     EXPECT_EQ(n100.size() , 100);
 }
 
