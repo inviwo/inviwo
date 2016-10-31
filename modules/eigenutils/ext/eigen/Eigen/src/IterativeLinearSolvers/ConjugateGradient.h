@@ -139,6 +139,8 @@ struct traits<ConjugateGradient<_MatrixType,_UpLo,_Preconditioner> >
   * By default the iterations start with x=0 as an initial guess of the solution.
   * One can control the start using the solveWithGuess() method.
   * 
+  * ConjugateGradient can also be used in a matrix-free context, see the following \link MatrixfreeSolverExample example \endlink.
+  *
   * \sa class SimplicialCholesky, DiagonalPreconditioner, IdentityPreconditioner
   */
 template< typename _MatrixType, int _UpLo, typename _Preconditioner>
@@ -176,7 +178,8 @@ public:
     * this class becomes invalid. Call compute() to update it with the new
     * matrix A, or modify a copy of A.
     */
-  ConjugateGradient(const MatrixType& A) : Base(A) {}
+  template<typename MatrixDerived>
+  explicit ConjugateGradient(const EigenBase<MatrixDerived>& A) : Base(A.derived()) {}
 
   ~ConjugateGradient() {}
   
