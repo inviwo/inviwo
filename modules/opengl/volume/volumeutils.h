@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEUTILS_H
-#define IVW_VOLUMEUTILS_H
+#ifndef IVW_VOLUMEUTILSGL_H
+#define IVW_VOLUMEUTILSGL_H
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -57,4 +57,4 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
 
 }  // namespace
 
-#endif  // IVW_VOLUMEUTILS_H
+#endif  // IVW_VOLUMEUTILSGL_H

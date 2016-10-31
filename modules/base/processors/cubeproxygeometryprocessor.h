@@ -27,68 +27,62 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_ENTRYEXITPOINTS_H
-#define IVW_ENTRYEXITPOINTS_H
+#ifndef IVW_CUBEPROXYGEOMETRYPROCESSOR_H
+#define IVW_CUBEPROXYGEOMETRYPROCESSOR_H
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
-
-/** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
- * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
- * Computes the entry and exit points of a triangle mesh from the camera position in texture space. 
- * The output color will be zero if no intersection is found, otherwise .
+/** \docpage{org.inviwo.CubeProxyGeometry, Cube Proxy Geometry}
+ * ![](org.inviwo.CubeProxyGeometry.png?classIdentifier=org.inviwo.CubeProxyGeometry)
+ *
+ * Constructs a proxy geometry based on the model and world matrix of the input volume. 
+ * The gemetry will be shaped as a parallelepiped. If clipping is enabled the geometry
+ * will be cut along the corresponding axes. 
+ * 
  * ### Inports
- *   * __MeshInport__ The mesh to intersect.
+ *   * __Inport__ Input Volume
  *
  * ### Outports
- *   * __ImageOutport__ The first hit point.
- *   * __ImageOutport__ The last hit point.
+ *   * __Outport__ Output proxy geometry.
  * 
  * ### Properties
- *   * __Camera__ Camera of the scene.
+ *   * __Enable Clipping__ Enable axis aligned clipping of the mesh
+ *   * __Clip X Slices__ Clip X axis
+ *   * __Clip Y Slices__ Clip Y axis
+ *   * __Clip Z Slices__ Clip Z axis
  */
 
-class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
+class IVW_MODULE_BASE_API CubeProxyGeometry : public Processor {
 public:
+    CubeProxyGeometry();
+    ~CubeProxyGeometry();
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
-    EntryExitPoints();
-    virtual ~EntryExitPoints();
 
+protected:
     virtual void process() override;
 
-    // override to do member renaming.
-    virtual void deserialize(Deserializer& d) override;
+    void onVolumeChange();
 
 private:
-    MeshInport inport_;
-    ImageOutport entryPort_;
-    ImageOutport exitPort_;
+    VolumeInport inport_;
+    MeshOutport outport_;
 
-    CameraProperty camera_;
-    BoolProperty capNearClipping_;
-    CameraTrackball trackball_;
-    
-    Shader shader_;
-    Shader clipping_;
-    std::unique_ptr<Image> tmpEntry_;
-    std::unique_ptr<MeshDrawer> drawer_;
+    BoolProperty clippingEnabled_;
+
+    IntMinMaxProperty clipX_;
+    IntMinMaxProperty clipY_;
+    IntMinMaxProperty clipZ_;
 };
 
 } // namespace
 
-#endif // IVW_ENTRYEXITPOINTS_H
+#endif // IVW_CUBEPROXYGEOMETRYPROCESSOR_H

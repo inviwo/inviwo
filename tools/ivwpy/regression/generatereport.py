@@ -327,7 +327,7 @@ class TestRun:
 		mean, std = stats([x.value for x in data.measurements])
 
 		values = [x for x in data.measurements if x.created.timestamp() > xmin]
-		if len(values) == 0: values = data.measurements[:-30]
+		if len(values) == 0: values = data.measurements[-30:]
 		minval = min((x.value for x in values))
 		maxval = max((x.value for x in values))
 		datastr = ", ".join((str(x.created.timestamp()) + ":" + str(x.value) for x in values))

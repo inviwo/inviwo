@@ -41,8 +41,10 @@ namespace inviwo {
  */
 class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
 public:
-    LayerDisk(LayerType type = LayerType::Color);
-    LayerDisk(std::string url, LayerType type = LayerType::Color);
+    LayerDisk(LayerType type = LayerType::Color,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    LayerDisk(std::string url, LayerType type = LayerType::Color,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const override;
@@ -62,6 +64,18 @@ public:
      */
     void updateDataFormat(const DataFormatBase* format);
     virtual std::type_index getTypeIndex() const override final;
+
+    /**
+    * \brief update the swizzle mask of the channels for sampling color layers
+    * Needs to be overloaded by child classes.
+    *
+    * @param mask    new swizzle mask
+    */
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
+private:
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

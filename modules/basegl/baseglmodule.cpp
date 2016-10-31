@@ -34,7 +34,7 @@
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
-#include <modules/basegl/processors/entryexitpoints.h>
+#include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/firstivwprocessor.h>
 #include <modules/basegl/processors/heightfieldprocessor.h>
 #include <modules/basegl/processors/imageprocessing/findedges.h>

@@ -47,13 +47,24 @@ class Texture2D;
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
     LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
-        const DataFormatBase* format = DataVec4UInt8::get(), std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr));
+            const DataFormatBase* format = DataVec4UInt8::get(),
+            std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
+            const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
     virtual LayerGL* clone() const override;
 
     virtual void setDimensions(size2_t dimensions) override;
+
+    /**
+    * \brief update the swizzle mask of the channels for sampling the layer
+    * Needs to be overloaded by child classes.
+    *
+    * @param mask    new swizzle mask
+    */
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
 
     void bindTexture(GLenum texUnit) const;
     void bindTexture(const TextureUnit &texUnit) const;
@@ -64,8 +75,9 @@ public:
     std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     virtual std::type_index getTypeIndex() const override final;
 private:
-    std::shared_ptr<Texture2D> texture_; // Can be share
+    std::shared_ptr<Texture2D> texture_; // Can be shared
     mutable GLenum texUnit_;
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

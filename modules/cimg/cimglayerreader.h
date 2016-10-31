@@ -69,11 +69,15 @@ public:
     template <class T>
     std::shared_ptr<LayerRAM> dispatch(void* data) const {
         typedef typename T::type F;
-        return std::make_shared<LayerRAMPrecision<F>>(
-            static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType());
+        auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(
+            static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType(),
+            layerDisk_->getSwizzleMask());
+        return layerRAM;
     }
 
 private:
+    static void updateSwizzleMask(LayerDisk* layerDisk);
+
     LayerDisk* layerDisk_;
 };
 

@@ -98,7 +98,8 @@ public:
     MeshDrawerGL& operator=(const MeshDrawerGL& other) = default;
     MeshDrawerGL& operator=(MeshDrawerGL&& rhs) = default;
 
-    DrawObject getDrawObject() const { return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo()); }
+    DrawObject getDrawObject() const;
+    static DrawObject getDrawObject(const Mesh *mesh);
 
     /**
      * \brief draws the mesh using its mesh info. If index buffers are present, the mesh

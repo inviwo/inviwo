@@ -95,6 +95,8 @@ bool cylinderIntersect(vec3 origin , vec3 dir, out float t){
 
 
 void main() {
+    if(startPos_==endPos_) discard;
+
 	vec3 camPos = (camera.viewToWorld * vec4(0,0,0,1)).xyz;
 	vec3 dir = normalize(camPos - worldPos_);
 
@@ -116,16 +118,11 @@ void main() {
         return;
     }
 
-
-	FragData0 = vec4(dir,1);
-
-
-
 	vec3 x0 = hitPoint;
     vec3 x1 = startPos_;
     vec3 x2 = endPos_;
-    float length = distance(x1, x2);
-    vec3 v = (x2 - x1) / length;
+    float len = distance(x1, x2);
+    vec3 v = (x2 - x1) / len;
     float t = dot(x0 - x1, v);
     vec3 spinePoint = x1 + t * v;
     vec3 N = normalize(hitPoint - spinePoint);
