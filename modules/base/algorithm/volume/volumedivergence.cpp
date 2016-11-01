@@ -38,42 +38,37 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
-        auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataFloat32::get());
-        newVolume->setModelMatrix(volume->getModelMatrix());
-        newVolume->setWorldMatrix(volume->getWorldMatrix());
-        newVolume->dataMap_ = volume->dataMap_;
+    auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataFloat32::get());
+    newVolume->setModelMatrix(volume->getModelMatrix());
+    newVolume->setWorldMatrix(volume->getWorldMatrix());
+    newVolume->dataMap_ = volume->dataMap_;
 
-        const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
-        const auto a = m * vec4(0, 0, 0, 1);
-        const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
-        const auto spacing = b - a;
+    const auto a = m * vec4(0, 0, 0, 1);
+    const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
+    const auto spacing = b - a;
 
-        const vec3 ox(spacing.x, 0, 0);
-        const vec3 oy(0, spacing.y, 0);
-        const vec3 oz(0, 0, spacing.z);
+    const vec3 ox(spacing.x, 0, 0);
+    const vec3 oy(0, spacing.y, 0);
+    const vec3 oz(0, 0, spacing.z);
 
-        volume->getRepresentation<VolumeRAM>()->dispatch<void,dispatching::filter::Vec3s>([&](auto vol){
+    volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
+        [&](auto vol) {
             using ValueType = util::PrecsionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
 
-
-
-
             util::IndexMapper3D index(volume->getDimensions());
-            auto data = static_cast<float*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            auto data =
+                static_cast<float*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
             float minV = std::numeric_limits<float>::max();
             float maxV = std::numeric_limits<float>::lowest();
-
-
 
             auto datain = vol->getDataTyped();
             auto test = datain[0].rgb;
 
             const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
-            TemplateVolumeSampler<ValueType,ComponentType> sampler(volume, worldSpace);
-
-
+            TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
             auto func = [&](const size3_t& pos) {
                 const vec3 world =
@@ -106,10 +101,7 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
 
         });
 
-
-
-
-  //      */
+    //      */
 
     return newVolume;
 }
