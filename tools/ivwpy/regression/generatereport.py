@@ -37,6 +37,7 @@ import contextlib
 import lesscpy
 import json
 import itertools
+import html
 
 # Beautiful Soup 4 for dom manipulation
 import bs4
@@ -144,7 +145,7 @@ def getDiffLink(start, stop):
 def commitInfo(commit):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('ul'):
-		val = commit.message
+		val = html.escape(commit.message)
 		vabr = abr(val)
 		gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -158,18 +159,21 @@ def commitInfo(commit):
 
 def formatLog(file):
 	doc, tag, text = yattag.Doc().tagtext()
-	with open(file, 'r') as f:
-		loghtml = f.read()
-		err  = loghtml.count("Error:")
-		warn = loghtml.count("Warn:")
-		info = loghtml.count("Info:")
-		short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
+	try:
+		with open(file, 'r') as f:
+			loghtml = f.read()
+			err  = loghtml.count("Error:")
+			warn = loghtml.count("Warn:")
+			info = loghtml.count("Info:")
+			short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
 				
-		def log(doc, tag, text): 
-			with tag('div', klass='log'): 
-				doc.asis(loghtml)
+			def log(doc, tag, text): 
+				with tag('div', klass='log'): 
+					doc.asis(loghtml)
 
-		doc.asis(listItem(keyval("Log", short), log, status = "ok" if err == 0 else "fail")) 
+			doc.asis(listItem(keyval("Log", short), log, status = "ok" if err == 0 else "fail")) 
+	except FileNotFoundError as e:
+		doc.asis(listItem(keyval("Log", "Logfile missing"), str(e), status = "fail"))
 	return doc.getvalue()
 
 def image(path, **opts):
