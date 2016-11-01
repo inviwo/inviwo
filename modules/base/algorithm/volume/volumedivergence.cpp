@@ -64,9 +64,6 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
             float minV = std::numeric_limits<float>::max();
             float maxV = std::numeric_limits<float>::lowest();
 
-            auto datain = vol->getDataTyped();
-            auto test = datain[0].rgb;
-
             const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
             TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
