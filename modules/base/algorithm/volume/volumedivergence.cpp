@@ -27,10 +27,12 @@
  *
  *********************************************************************************/
 
-
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/templatesampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 namespace util {
@@ -54,8 +56,7 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
         volume->getRepresentation<VolumeRAM>()->dispatch<void,dispatching::filter::Vec3s>([&](auto vol){
             using ValueType = util::PrecsionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
-           
-            const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+
 
 
 
@@ -69,6 +70,7 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
             auto datain = vol->getDataTyped();
             auto test = datain[0].rgb;
 
+            const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
             TemplateVolumeSampler<ValueType,ComponentType> sampler(volume, worldSpace);
 
 
