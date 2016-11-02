@@ -315,8 +315,8 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_STRONG_INLINE void resizeLike(const EigenBase<OtherDerived>& _other)
     {
       const OtherDerived& other = _other.derived();
-      internal::check_rows_cols_for_overflow<MaxSizeAtCompileTime>::run(other.rows(), other.cols());
-      const Index othersize = other.rows()*other.cols();
+      internal::check_rows_cols_for_overflow<MaxSizeAtCompileTime>::run(Index(other.rows()), Index(other.cols()));
+      const Index othersize = Index(other.rows())*Index(other.cols());
       if(RowsAtCompileTime == 1)
       {
         eigen_assert(other.rows() == 1 || other.cols() == 1);
@@ -437,6 +437,36 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     }
 #endif
 
+#ifdef EIGEN_HAVE_RVALUE_REFERENCES
+    PlainObjectBase(PlainObjectBase&& other)
+      : m_storage( std::move(other.m_storage) )
+    {
+    }
+
+    PlainObjectBase& operator=(PlainObjectBase&& other)
+    {
+      using std::swap;
+      swap(m_storage, other.m_storage);
+      return *this;
+    }
+#endif
+
+    /** Copy constructor */
+    EIGEN_STRONG_INLINE PlainObjectBase(const PlainObjectBase& other)
+      : m_storage()
+    {
+      _check_template_params();
+      lazyAssign(other);
+    }
+
+    template<typename OtherDerived>
+    EIGEN_STRONG_INLINE PlainObjectBase(const DenseBase<OtherDerived> &other)
+      : m_storage()
+    {
+      _check_template_params();
+      lazyAssign(other);
+    }
+
     EIGEN_STRONG_INLINE PlainObjectBase(Index a_size, Index nbRows, Index nbCols)
       : m_storage(a_size, nbRows, nbCols)
     {
@@ -457,7 +487,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     /** \sa MatrixBase::operator=(const EigenBase<OtherDerived>&) */
     template<typename OtherDerived>
     EIGEN_STRONG_INLINE PlainObjectBase(const EigenBase<OtherDerived> &other)
-      : m_storage(other.derived().rows() * other.derived().cols(), other.derived().rows(), other.derived().cols())
+      : m_storage(Index(other.derived().rows()) * Index(other.derived().cols()), other.derived().rows(), other.derived().cols())
     {
       _check_template_params();
       internal::check_rows_cols_for_overflow<MaxSizeAtCompileTime>::run(other.derived().rows(), other.derived().cols());

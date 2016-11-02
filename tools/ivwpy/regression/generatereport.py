@@ -237,7 +237,7 @@ class TestRun:
 
 				self.testRunInfo("Current Version", testrun)
 				if self.totalstatus() != "ok":
-					self.testRunInfo("Last Succsess", lastSuccess)
+					self.testRunInfo("Last Success", lastSuccess)
 					self.testRunInfo("First Failure", firstFailure)
 					self.gitDiff(lastSuccess, firstFailure)
 				

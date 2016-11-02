@@ -179,7 +179,7 @@ public:
         return Tree::findNearest(glm::value_ptr(pos));
     }
 
-    Node *findNearest(const Vector<N, P> &pos, const int &amount) {
+    std::vector<Node *> findNNearest(const Vector<N, P> &pos, const int &amount) {
         return Tree::findNNearest(glm::value_ptr(pos), amount);
     }
 

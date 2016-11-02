@@ -27,10 +27,12 @@
  *
  *********************************************************************************/
 
-
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/util/templatesampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 namespace util {
@@ -39,7 +41,6 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
     auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataFloat32::get());
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
-
     newVolume->dataMap_ = volume->dataMap_;
 
     const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
@@ -52,42 +53,52 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    VolumeDoubleSampler<4> sampler(volume);
-    const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+    volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
+        [&](auto vol) {
+            using ValueType = util::PrecsionValueType<decltype(vol)>;
+            using ComponentType = typename ValueType::value_type;
 
-    util::IndexMapper3D index(volume->getDimensions());
-    auto data = static_cast<float*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            util::IndexMapper3D index(volume->getDimensions());
+            auto data =
+                static_cast<float*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            float minV = std::numeric_limits<float>::max();
+            float maxV = std::numeric_limits<float>::lowest();
 
-    float minV = std::numeric_limits<float>::max();
-    float maxV = std::numeric_limits<float>::lowest();
+            const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
+            TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
-    auto func = [&](const size3_t& pos) {
-        const vec3 world =
-            (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
+            auto func = [&](const size3_t& pos) {
+                const vec3 world =
+                    (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
-        const auto Fx =
-            (sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace)) /
-            (2.0 * spacing.x);
-        const auto Fy =
-            (sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace)) /
-            (2.0 * spacing.y);
-        const auto Fz =
-            (sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace)) /
-            (2.0 * spacing.z);
+                auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
+                auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
+                auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
+                auto Fym = static_cast<vec3>(sampler.sample(world - oy));
+                auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
+                auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
 
-        float d = Fx.x + Fy.y + Fz.z;
+                const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
+                const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
+                const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
 
-        minV = std::min(minV, d);
-        maxV = std::max(maxV, d);
+                float d = Fx.x + Fy.y + Fz.z;
 
-        data[index(pos)] = d;
-    };
+                minV = std::min(minV, d);
+                maxV = std::max(maxV, d);
 
-    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+                data[index(pos)] = d;
+            };
 
-    auto range = std::max(std::abs(minV), std::abs(maxV));
-    newVolume->dataMap_.dataRange = dvec2(-range, range);
-    newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+            util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+
+            auto range = std::max(std::abs(minV), std::abs(maxV));
+            newVolume->dataMap_.dataRange = dvec2(-range, range);
+            newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+
+        });
+
+    //      */
 
     return newVolume;
 }
