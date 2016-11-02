@@ -72,6 +72,7 @@ protected:
 
     BoolProperty enableDepthTest_;
 
+    FloatProperty top_,bottom_,left_,right_;
 
     using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
     DrawerMap drawers_;
