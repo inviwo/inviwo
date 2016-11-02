@@ -33,12 +33,72 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
-class QTextEdit;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QAbstractTableModel>
+#include <QTableView>
+#include <QVariant>
+#include <QStandardItemModel>
+#include <warn/pop>
+
+#include <chrono>
+
+class QTableView;
 class QLabel;
 class QKeyEvent;
 
 namespace inviwo {
+
+class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+    struct Entry {
+        std::chrono::system_clock::time_point time;
+        std::string source;
+        LogLevel level;
+        LogAudience audience;
+        std::string fileName;
+        int lineNumber;
+        std::string funcionName;
+        std::string message;
+
+        std::string getTime() const;
+
+        static constexpr size_t size() { return 8; }
+        QVariant get(size_t ind) const;
+    };
+
+public:
+    LogTableModel();
+
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    virtual QVariant headerData(int section, Qt::Orientation orientation,
+                                int role = Qt::DisplayRole) const override;
+
+    void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
+             const char* functionName, int lineNumber, std::string logMsg);
+
+    QVariant getName(size_t ind) const;
+
+public slots:
+    void log(Entry entry);
+
+signals:
+    void logSignal(Entry entry);
+
+private:
+    QColor infoTextColor_ = {153, 153, 153};
+    QColor warnTextColor_ = {221, 165, 8};
+    QColor errorTextColor_ = {255, 107, 107};
+
+    std::vector<Entry> log_;
+};
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
     #include <warn/push>
@@ -62,12 +122,11 @@ public:
 private:
     void keyPressEvent(QKeyEvent* keyEvent) override;
 
+    LogTableModel model_;
 
-    QTextEdit* textField_;
-    /// Log level colors
-    QColor infoTextColor_;
-    QColor warnTextColor_;
-    QColor errorTextColor_;
+    QStandardItemModel* model2_;
+
+    QTableView* tableView_;
 
     QLabel* errorsLabel_;
     QLabel* warningsLabel_;
@@ -77,13 +136,12 @@ private:
     unsigned int numInfos_;
 
 public slots:
-    void logMessage(LogLevel level, QString message);
-    void logMessage(int level, QString message);
+    void updateIndicators(LogLevel level);
     void showContextMenu(const QPoint& pos);
     void clear();
 
 signals:
-    void logMessageSignal(int logLevel, QString message);
+    void updateIndicatorsSignal(LogLevel level);
     void clearSignal();
 };
 
