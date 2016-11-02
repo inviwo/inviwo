@@ -48,14 +48,31 @@
 class QTableView;
 class QLabel;
 class QKeyEvent;
+class QAction;
 
 namespace inviwo {
 
-class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
+class InviwoMainWindow;
+
+class IVW_QTEDITOR_API LogTableModel : public QObject {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
+public:
+    enum class Columns {
+        Date = 0,
+        Time,
+        Source,
+        Level,
+        Audience,
+        Path,
+        File,
+        Line,
+        Function,
+        Message
+    };
+
     struct Entry {
         std::chrono::system_clock::time_point time;
         std::string source;
@@ -66,26 +83,21 @@ class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
         std::string funcionName;
         std::string message;
 
-        std::string getTime() const;
-
-        static constexpr size_t size() { return 8; }
-        QVariant get(size_t ind) const;
+        std::string getTime(const std::string& format) const;
+        static constexpr size_t size() { return 10; }
+        QStandardItem*  get(Columns ind) const;
     };
 
-public:
     LogTableModel();
-
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const override;
 
     void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
              const char* functionName, int lineNumber, std::string logMsg);
 
-    QVariant getName(size_t ind) const;
-
+    QString getName(Columns ind) const;
+    QStandardItemModel* model();
+    
+    void clear();
+    
 public slots:
     void log(Entry entry);
 
@@ -97,7 +109,8 @@ private:
     QColor warnTextColor_ = {221, 165, 8};
     QColor errorTextColor_ = {255, 107, 107};
 
-    std::vector<Entry> log_;
+
+    QStandardItemModel model_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
@@ -106,7 +119,7 @@ class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
     Q_OBJECT
     #include <warn/pop>
 public:
-    ConsoleWidget(QWidget* parent);
+    ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
@@ -119,12 +132,23 @@ public:
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line) override;
 
+    QAction* getClearAction();
+    QTableView* view() {return tableView_;}
+
+public slots:
+    void updateIndicators(LogLevel level);
+    void clear();
+
+signals:
+    void updateIndicatorsSignal(LogLevel level);
+    void clearSignal();
+
+protected:
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual bool eventFilter(QObject *object, QEvent *event) override;
+
 private:
-    void keyPressEvent(QKeyEvent* keyEvent) override;
-
     LogTableModel model_;
-
-    QStandardItemModel* model2_;
 
     QTableView* tableView_;
 
@@ -135,14 +159,12 @@ private:
     unsigned int numWarnings_;
     unsigned int numInfos_;
 
-public slots:
-    void updateIndicators(LogLevel level);
-    void showContextMenu(const QPoint& pos);
-    void clear();
-
-signals:
-    void updateIndicatorsSignal(LogLevel level);
-    void clearSignal();
+    QAction* clearAction_;
+    InviwoMainWindow* mainwindow_;
+    std::unordered_map<std::string, QMetaObject::Connection> connections_;
+    
+    bool hover_ = false;
+    bool focus_ = false;;
 };
 
 }  // namespace
