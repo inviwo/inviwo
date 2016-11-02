@@ -38,6 +38,7 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/pickingstate.h>
 
 namespace inviwo {

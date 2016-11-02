@@ -41,7 +41,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     : Event()
     , pickingAction_(pickingAction)
     , state_(state)
-    , event_{event, [](Event* event) {}}
+    , event_{event, [](Event* e) {}}
     , ownsEvent_(false)
     , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)
@@ -53,7 +53,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     : Event()
     , pickingAction_(pickingAction)
     , state_(state)
-    , event_{event.release(), [](Event* event) { delete event; }}
+    , event_{event.release(), [](Event* e) { delete e; }}
     , ownsEvent_(false)
     , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)

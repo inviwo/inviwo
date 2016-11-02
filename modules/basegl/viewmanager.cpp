@@ -266,4 +266,31 @@ bool ViewManager::inView(const View& view, const ivec2& pos) {
            glm::all(glm::lessThan(pos, view.pos + view.size));
 }
 
+std::pair<bool, ViewManager::ViewId> ViewManager::EventState::getView(ViewManager& m,
+                                                                      const MouseEvent* me) {
+    if (!pressing_ && me->buttonState() != MouseButton::None) {  // Start Pressing
+        pressing_ = true;
+        pressedView_ = m.findView(static_cast<ivec2>(me->pos()));
+    } else if (pressing_ && me->buttonState() == MouseButton::None) {  // Stop Pressing
+        pressing_ = false;
+        pressedView_ = {false, 0};
+    }
+    return pressing_ ? pressedView_ : m.findView(static_cast<ivec2>(me->pos()));
+}
+
+std::pair<bool, ViewManager::ViewId> ViewManager::EventState::getView(ViewManager& m,
+                                                                      const GestureEvent* ge) {
+    if (!pressing_ && ge->state() == GestureState::Started) {  // Start Pressing
+        pressing_ = true;
+        pressedView_ =
+            m.findView(static_cast<ivec2>(dvec2(ge->canvasSize()) * ge->screenPosNormalized()));
+    } else if (pressing_ && ge->state() == GestureState::Finished) {  // Stop Pressing
+        pressing_ = false;
+        auto tmp = pressedView_;
+        pressedView_ = {false, 0};
+        return tmp;
+    }
+    return pressedView_;
+}
+
 }  // namespace

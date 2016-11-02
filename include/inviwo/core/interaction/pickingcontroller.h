@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmanager.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
@@ -43,6 +42,7 @@ class Event;
 class PickingAction;
 class MouseInteractionEvent;
 class GestureEvent;
+class TouchEvent;
 
 /**
  * \class PickingController

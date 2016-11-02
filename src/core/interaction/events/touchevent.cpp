@@ -103,7 +103,7 @@ dvec2 TouchEvent::centerPoint() const {
     } else {
         // Compute average position
         auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
-                                   [](dvec2 sum, const TouchPoint& p) { return sum + p.pos(); });
+                                   [](dvec2 s, const TouchPoint& p) { return s + p.pos(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -115,7 +115,7 @@ inviwo::dvec2 TouchEvent::centerPointNormalized() const {
         // Compute average position
         auto sum =
             std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
-                            [](dvec2 sum, const TouchPoint& p) { return sum + p.posNormalized(); });
+                            [](dvec2 s, const TouchPoint& p) { return s + p.posNormalized(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -127,7 +127,7 @@ dvec2 TouchEvent::prevCenterPointNormalized() const {
         // Compute average position
         auto sum = std::accumulate(
             touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
-            [](dvec2 sum, const TouchPoint& p) { return sum + p.prevPosNormalized(); });
+            [](dvec2 s, const TouchPoint& p) { return s + p.prevPosNormalized(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -138,7 +138,7 @@ dvec3 TouchEvent::centerNDC() const {
     } else {
         // Compute average position
         auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec3(0.0),
-                                   [](dvec3 sum, const TouchPoint& p) { return sum + p.ndc(); });
+                                   [](dvec3 s, const TouchPoint& p) { return s + p.ndc(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -149,7 +149,7 @@ double TouchEvent::averageDepth() const {
     } else {
         // Compute average position
         auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), 0.0,
-                                   [](double sum, const TouchPoint& p) { return sum + p.depth(); });
+                                   [](double s, const TouchPoint& p) { return s + p.depth(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
