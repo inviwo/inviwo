@@ -406,6 +406,7 @@ void InviwoMainWindow::addActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem->addAction(copyAction);
+        consoleWidget_->view()->addAction(copyAction);
         copyAction->setEnabled(false);
     }
 
@@ -457,11 +458,9 @@ void InviwoMainWindow::addActions() {
     editMenuItem->addSeparator();
 
     {
-        auto clearLogAction = new QAction(tr("&Clear Log"), this);
+        auto clearLogAction = consoleWidget_->getClearAction();
         actions_["Clear Log"] = clearLogAction;
-        clearLogAction->setShortcut(Qt::ControlModifier + Qt::Key_E);
         editMenuItem->addAction(clearLogAction);
-        connect(clearLogAction, &QAction::triggered, [&]() { consoleWidget_->clear(); });
     }
 
     // View
@@ -911,17 +910,6 @@ void InviwoMainWindow::saveWorkspace() {
         getNetworkEditor()->saveNetwork(currentWorkspaceFileName_.toLocal8Bit().constData());
         updateWindowTitle();
     }
-
-    /*
-    // The following code snippet allows to reload the Qt style sheets during runtime,
-    // which is handy while we change them. once the style sheets have been finalized,
-    // this code should be removed.
-    QFile styleSheetFile("C:/inviwo/resources/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->setStyleSheet(styleSheet);
-    styleSheetFile.close();
-    */
 }
 
 void InviwoMainWindow::saveWorkspaceAs() {

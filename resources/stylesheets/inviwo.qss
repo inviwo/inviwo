@@ -160,6 +160,20 @@ QDockWidget#ConsoleWidget QTextEdit {
     border-bottom: 2px ridge #4a4a4f;
 }
 
+QDockWidget#ConsoleWidget QTableView {
+    border: none;
+    color: #999999;
+    selection-color: #999;
+    selection-background-color: #47474b;
+    border-bottom: 2px ridge #4a4a4f;
+}
+QDockWidget#ConsoleWidget QTableView QHeaderView::section {
+    padding: 3px;
+    border: none;
+    border-bottom: 2px ridge #4a4a4f;
+    background: transparent;
+}
+
 /* QToolBar styles */
 QToolBar {
     spacing: 3px;
