@@ -63,6 +63,51 @@ auto glm2eigen(T& elem)
     return a;
 }
 
+
+
+template <typename T, unsigned Rows, unsigned Cols
+    , typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4), int>::type = 0 >
+auto eigen2glm(const Eigen::Matrix<T, Rows, Cols> &m)
+{
+    using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
+    GlmMatrix outm;
+    for (size_t i = 0; i < Rows; i++) {
+        for (size_t j = 0; j < Cols; j++) {
+            outm[i][j] = m(j, i);
+        }
+    }
+    return outm;
+}
+
+
+template <typename T, unsigned Rows, unsigned Cols
+    , typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols == 1), int>::type = 0 >
+    auto eigen2glm(const Eigen::Matrix<T, Rows, Cols> &m)
+{
+    using GlmVector = typename util::glmtype<T, Rows, 1>::type;
+    GlmVector outv;
+    for (size_t i = 0; i < Rows; i++) {
+        outv[i] = m(i);
+    }
+    return outv;
+}
+
+
+
+template <typename T, unsigned Rows, unsigned Cols
+    , typename std::enable_if<(Cols >= 2 && Cols <= 4 && Rows == 1), int>::type = 0 >
+    auto eigen2glm(const Eigen::Matrix<T, Cols, Cols> &m)
+{
+    using GlmVector = typename util::glmtype<T, Cols, 1>::type;
+    GlmVector outv;
+    for (size_t i = 0; i < Cols; i++) {
+        outv[i] = m(i);
+    }
+    return outv;
+}
+
+
+
 template <typename T>
 std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m) {
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
