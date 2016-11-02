@@ -48,6 +48,35 @@ class Processor;
 enum class LogLevel : int { Info, Warn, Error };
 enum class LogAudience : int { User, Developer };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LogLevel ll) {
+    switch (ll) {
+        case LogLevel::Info:
+            ss << "Info";
+            break;
+        case LogLevel::Warn:
+            ss << "Warn";
+            break;
+        case LogLevel::Error:
+            ss << "Error";
+            break;
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LogAudience la) {
+    switch (la) {
+        case LogAudience::User:
+            ss << "User";
+            break;
+        case LogAudience::Developer:
+            ss << "Developer";
+            break;
+    }
+    return ss;
+}
+
 #define LogInfo(message)                                                                          \
     {                                                                                             \
         std::ostringstream stream__;                                                              \
