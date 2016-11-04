@@ -63,13 +63,29 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     , imageInport_("imageInport")
     , outport_("outputImage")
     , enableDepthTest_("enableDepthTest","Enable Depth Test" ,true)
-    , shader_("mesh2drendering.vert", "mesh2drendering.frag") {
+
+    , top_("top", "Top", 1, -1, 1)
+    , bottom_("bottom", "Bottom", 0, -1, 1)
+    , left_("left", "Left", 0, -1, 1)
+    , right_("right", "Right", 1, -1, 1)
+
+    , shader_("mesh2drendering.vert", "mesh2drendering.frag") 
+
+
+{
     addPort(inport_);
     addPort(imageInport_);
     addPort(outport_);
+
+
     imageInport_.setOptional(true);
 
     addProperty(enableDepthTest_);
+
+    addProperty(left_);
+    addProperty(right_);
+    addProperty(bottom_);
+    addProperty(top_);
 
     inport_.onChange(this, &Mesh2DRenderProcessorGL::updateDrawers);
 }
@@ -84,7 +100,8 @@ void Mesh2DRenderProcessorGL::process() {
     }
     shader_.activate();
 
-    mat4 proj = glm::ortho(-0.0f, 1.0f, -0.0f, 1.0f, -200.0f, 100.0f);
+    mat4 proj = glm::ortho(left_.get(),right_.get(), bottom_.get(), top_.get(), -200.0f, 100.0f);
+    //mat4 proj = glm::ortho(-0.0f, 1.0f, -0.0f, 1.0f, -200.0f, 100.0f);
     shader_.setUniform("projectionMatrix", proj);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
