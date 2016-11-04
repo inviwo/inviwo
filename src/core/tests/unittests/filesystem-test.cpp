@@ -67,7 +67,7 @@ TEST(filesystemTest, fileNameWithExtension) {
 TEST(filesystemTest, fileDirectoryTest) {
     EXPECT_STREQ("C:/a/directory/for/test",
                  filesystem::getFileDirectory("C:/a/directory/for/test/file.txt").c_str());
-    EXPECT_STREQ("C:\\a\\directory\\for\\test",
+    EXPECT_STREQ("C:/a/directory/for/test",
                  filesystem::getFileDirectory("C:\\a\\directory\\for\\test\\file.txt").c_str());
     EXPECT_STREQ("", filesystem::getFileDirectory("justafile.txt").c_str());
 }

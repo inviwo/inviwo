@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -61,6 +62,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor { 
 public:
+    enum class Operator{
+        GreaterThen, GreaterThenOrEqual,
+        LessThen, LessThenOrEqual,
+        Equal, NotEqual
+    };
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     VolumeBinary();
@@ -70,7 +77,10 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
     virtual void postProcess() override;
 
+    virtual void initializeResources() override;
+
     FloatProperty threshold_;
+    TemplateOptionProperty<Operator> op_;
 
 };
 

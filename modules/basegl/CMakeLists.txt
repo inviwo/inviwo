@@ -5,29 +5,32 @@ ivw_module(BaseGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagecompositeprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemixer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
@@ -57,29 +60,32 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagecompositeprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemixer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
@@ -122,6 +128,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_graysc.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_highpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_invert.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_jacobian.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_lowpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag

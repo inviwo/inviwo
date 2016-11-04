@@ -107,7 +107,7 @@ function(ivw_make_unittest_target name dependencies)
 
 	#--------------------------------------------------------------------
 	# Add dependencies
-	ivw_add_dependency_libraries(${_preModuleDependencies})
+	target_link_libraries(${test_name} ${_preModuleDependencies})
 	ivw_add_dependencies(${test_dependencies})
 
 	#--------------------------------------------------------------------

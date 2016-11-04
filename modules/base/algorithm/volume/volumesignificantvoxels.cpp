@@ -28,12 +28,31 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
-size_t util::volumeSignificantVoxels(const VolumeRAM* volume) {
-    detail::VolumeSignificantVoxelsDispatcher disp;
-    return volume->getDataFormat()->dispatch(disp, volume);
+size_t util::volumeSignificantVoxels(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
+    return volume->dispatch<size_t>([&ignore](auto vr) -> size_t {
+        using VolumeType = util::PrecsionType<decltype(vr)>;
+        using ValueType = util::PrecsionValueType<decltype(vr)>;
+
+        const auto data = vr->getDataTyped();
+        const auto dim = vr->getDimensions();
+        const auto size = dim.x * dim.y * dim.z;
+
+        if (ignore == IgnoreSpecialValues::Yes) {
+            return std::count_if(data, data + size, [](const auto& v) {
+                return util::all(v != v + ValueType(1)) && util::any(v != ValueType(0));
+            });
+        } else {
+            return std::count_if(data, data + size,
+                                 [](const auto& v) { return util::any(v != ValueType(0)); });
+        }
+    });
 }
 
 }  // namespace

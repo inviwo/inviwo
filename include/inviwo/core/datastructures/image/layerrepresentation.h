@@ -58,6 +58,15 @@ public:
      */
     virtual void setDimensions(size2_t dimensions) = 0;
 
+    /** 
+     * \brief update the swizzle mask of the channels for sampling color layers
+     * Needs to be overloaded by child classes.
+     * 
+     * @param mask    new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask &mask) = 0;
+    virtual SwizzleMask getSwizzleMask() const = 0;
+
     /**
      * Copy and resize the representations of this onto the target.
      */
@@ -66,6 +75,8 @@ public:
     LayerType getLayerType() const;
 
 protected:
+    void updateBaseMetaFromRepresentation();
+
     size2_t dimensions_;
     LayerType layerType_;
 };

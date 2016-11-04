@@ -64,13 +64,11 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
-
     , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
                              [this](Event* e) { changeFocusPoint(e); }, MouseButton::Left,
                              MouseState::DoubleClick)
 
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
-
     , camera_()
     , inport_(inport)
     , data_(nullptr)
@@ -79,7 +77,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     // in sync with the property values.
     cameraType_.setSelectedIdentifier("PerspectiveCamera");
     cameraType_.setCurrentStateAsDefault();
-    addProperty(cameraType_);
     cameraType_.onChange([&]() {
         changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
     });
@@ -87,12 +84,14 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_.get()); });
     lookTo_.onChange([&]() { camera_->setLookTo(lookTo_.get()); });
     lookUp_.onChange([&]() { camera_->setLookUp(lookUp_.get()); });
-    addProperty(lookFrom_);
-    addProperty(lookTo_);
-    addProperty(lookUp_);
     aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_.get()); });
     nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_.get()); });
     farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_.get()); });
+
+    addProperty(cameraType_);
+    addProperty(lookFrom_);
+    addProperty(lookTo_);
+    addProperty(lookUp_);
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
@@ -120,31 +119,29 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , camera_()
     , inport_(rhs.inport_)
     , data_(nullptr)
-    , prevDataToWorldMatrix_(0) 
+    , prevDataToWorldMatrix_(0) {
 
-{
     // Make sure that the Camera) is
     // in sync with the property values.
-    addProperty(cameraType_);
     cameraType_.onChange([&]() {
         changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
     });
-
     lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_.get()); });
     lookTo_.onChange([&]() { camera_->setLookTo(lookTo_.get()); });
     lookUp_.onChange([&]() { camera_->setLookUp(lookUp_.get()); });
-    addProperty(lookFrom_);
-    addProperty(lookTo_);
-    addProperty(lookUp_);
     aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_.get()); });
     nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_.get()); });
     farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_.get()); });
+    adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
+
+    addProperty(cameraType_);
+    addProperty(lookFrom_);
+    addProperty(lookTo_);
+    addProperty(lookUp_);
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
     addProperty(mouseChangeFocusPoint_);
-
-    adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
@@ -192,7 +189,13 @@ void CameraProperty::set(const Property* srcProperty) {
             // update failed, make a clone
             changeCamera(std::unique_ptr<Camera>(cameraSrcProp->camera_->clone()));
         }
-        CompositeProperty::set(static_cast<const CompositeProperty*>(srcProperty));
+
+        for (auto dest : getProperties()) {
+            if (auto src = cameraSrcProp->getPropertyByIdentifier(dest->getIdentifier())) {
+                dest->set(src);
+            }
+        }
+        propertyModified();
     }
 }
 

@@ -30,47 +30,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
-PropertyClassIdentifier(OptionPropertyString, "org.inviwo.OptionPropertyString");
-
-void OptionPropertyString::addOption(std::string identifier, std::string displayName,
-                                     std::string value) {
-    TemplateOptionProperty<std::string>::addOption(identifier, displayName, value);
-}
-
-void OptionPropertyString::addOption(std::string identifier, std::string displayName) {
-    TemplateOptionProperty<std::string>::addOption(identifier, displayName, identifier);
-}
-
-OptionPropertyString::OptionPropertyString(std::string identifier, std::string displayName,
-                                           InvalidationLevel invalidationLevel,
-                                           PropertySemantics semantics)
-    : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
-
-
-OptionPropertyString::OptionPropertyString(std::string identifier, std::string displayName,
-                                           std::vector<OptionPropertyOption<std::string>> options,
-                                           size_t selectedIndex,
-                                           InvalidationLevel invalidationLevel,
-                                           PropertySemantics semantics)
-    : TemplateOptionProperty<std::string>(identifier, displayName, options, selectedIndex,
-                                          invalidationLevel, semantics) {}
-
-
-OptionPropertyString::OptionPropertyString(const OptionPropertyString& rhs)
-    : TemplateOptionProperty<std::string>(rhs) {}
-
-OptionPropertyString& OptionPropertyString::operator=(const OptionPropertyString& that) {
-    if (this != &that) {
-        TemplateOptionProperty<std::string>::operator=(that);
-    }
-    return *this;
-}
-
-OptionPropertyString* OptionPropertyString::clone() const {
-    return new OptionPropertyString(*this);
-}
-
-BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) : Property(rhs) {}
 
 BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
                                        InvalidationLevel invalidationLevel,

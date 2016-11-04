@@ -44,24 +44,9 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
     , collapsed_(false)
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
 
-CompositeProperty::CompositeProperty(const CompositeProperty& rhs)
-    : Property(rhs), PropertyOwner(rhs), collapsed_(rhs.collapsed_) {}
-
-CompositeProperty& CompositeProperty::operator=(const CompositeProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-        PropertyOwner::operator=(that);
-        collapsed_ = that.collapsed_;
-        subPropertyInvalidationLevel_ = that.subPropertyInvalidationLevel_;
-    }
-    return *this;
-}
-
 CompositeProperty* CompositeProperty::clone() const {
     return new CompositeProperty(*this);
 }
-
-CompositeProperty::~CompositeProperty() {}
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::CLASS_IDENTIFIER;
@@ -92,7 +77,7 @@ void CompositeProperty::set(const Property* srcProperty) {
 
 void CompositeProperty::set(const CompositeProperty* src) {
     NetworkLock lock(this);
-    auto subProperties = src->getProperties();
+    const auto& subProperties = src->getProperties();
     if (subProperties.size() == this->properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {
             this->properties_[i]->set(subProperties[i]);

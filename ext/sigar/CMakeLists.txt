@@ -30,86 +30,85 @@ include_directories(include/)
 
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  set(SIGAR_SRC src/os/linux/linux_sigar.c)
-
-  include_directories(src/os/linux/)
+    set(SIGAR_SRC src/os/linux/linux_sigar.c)
+    include_directories(src/os/linux/)
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 ## macosx, freebsd
 if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
-  set(SIGAR_SRC src/os/darwin/darwin_sigar.c)
-  include_directories(src/os/darwin/)
-  if(CMAKE_SYSTEM_NAME MATCHES "(Darwin)")
-    ivw_include_directories(/Developer/Headers/FlatCarbon/)
-    add_definitions(-DDARWIN)
-    set(SIGAR_LINK_FLAGS "-framework CoreServices -framework IOKit")
-  else(CMAKE_SYSTEM_NAME MATCHES "(Darwin)")
-    ## freebsd needs libkvm
-    set(SIGAR_LINK_FLAGS "-lkvm")
-  endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin)")
-endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+    set(SIGAR_SRC src/os/darwin/darwin_sigar.c)
+    include_directories(src/os/darwin/)
+    if(CMAKE_SYSTEM_NAME MATCHES "(Darwin)")
+        ivw_include_directories(/Developer/Headers/FlatCarbon/)
+        add_definitions(-DDARWIN)
+        set(SIGAR_LINK_FLAGS "-framework CoreServices -framework IOKit")
+    else()
+        ## freebsd needs libkvm
+        set(SIGAR_LINK_FLAGS "-lkvm")
+    endif()
+endif()
 
 ## solaris
 if(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
-  set(SIGAR_SRC
-    src/os/solaris/solaris_sigar.c
-    src/os/solaris/get_mib2.c
-    src/os/solaris/kstats.c
-    src/os/solaris/procfs.c
-  )
+    set(SIGAR_SRC
+        src/os/solaris/solaris_sigar.c
+        src/os/solaris/get_mib2.c
+        src/os/solaris/kstats.c
+        src/os/solaris/procfs.c
+    )
 
-  include_directories(src/os/solaris/)
-  add_definitions(-DSOLARIS)
-  set(SIGAR_LINK_FLAGS -lkstat -ldl -lnsl -lsocket -lresolv)
-endif(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
+    include_directories(src/os/solaris/)
+    add_definitions(-DSOLARIS)
+    set(SIGAR_LINK_FLAGS -lkstat -ldl -lnsl -lsocket -lresolv)
+endif()
 
 ## solaris
 if(CMAKE_SYSTEM_NAME MATCHES "(hpux)" )
-  set(SIGAR_SRC src/os/hpux/hpux_sigar.c)
-  include_directories(src/os/hpux/)
-  ivw_add_definition(-DSIGAR_HPUX)
-  set(SIGAR_LINK_FLAGS -lnm)
-endif(CMAKE_SYSTEM_NAME MATCHES "(hpux)" )
+    set(SIGAR_SRC src/os/hpux/hpux_sigar.c)
+    include_directories(src/os/hpux/)
+    ivw_add_definition(-DSIGAR_HPUX)
+    set(SIGAR_LINK_FLAGS -lnm)
+endif()
 
 ## aix
 if(CMAKE_SYSTEM_NAME MATCHES "(AIX)" )
-  set(SIGAR_SRC src/os/aix/aix_sigar.c)
+    set(SIGAR_SRC src/os/aix/aix_sigar.c)
 
-  include_directories(src/os/aix/)
-  set(SIGAR_LINK_FLAGS -lodm -lcfg)
-endif(CMAKE_SYSTEM_NAME MATCHES "(AIX)" )
+    include_directories(src/os/aix/)
+    set(SIGAR_LINK_FLAGS -lodm -lcfg)
+endif()
 
 if(WIN32)
-  if(BUILD_SHARED_LIBS)
-    ivw_add_definition(SIGAR_SHARED)
-    add_definitions(-DSIGAR_EXPORTS)
-  endif()
-  set(SIGAR_SRC src/os/win32/peb.c src/os/win32/win32_sigar.c src/os/win32/wmi.cpp)
-  include_directories(src/os/win32)
-else(WIN32)
-      add_definitions(-DHAVE_CONFIG_H)
-endif(WIN32)
+    if(BUILD_SHARED_LIBS)
+        ivw_add_definition(SIGAR_SHARED)
+        add_definitions(-DSIGAR_EXPORTS)
+    endif()
+    set(SIGAR_SRC src/os/win32/peb.c src/os/win32/win32_sigar.c src/os/win32/wmi.cpp)
+    include_directories(src/os/win32)
+else()
+    add_definitions(-DHAVE_CONFIG_H)
+endif()
 
 set(SIGAR_SRC ${SIGAR_SRC}
-  src/sigar.c
-  src/sigar_cache.c
-  src/sigar_fileinfo.c
-  src/sigar_format.c
-  src/sigar_getline.c
-  src/sigar_ptql.c
-  src/sigar_signal.c
-  src/sigar_util.c
+    src/sigar.c
+    src/sigar_cache.c
+    src/sigar_fileinfo.c
+    src/sigar_format.c
+    src/sigar_getline.c
+    src/sigar_ptql.c
+    src/sigar_signal.c
+    src/sigar_util.c
 )
 
 add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
 
 if(WIN32)
-    ivw_add_dependency_libraries(ws2_32 netapi32 version)
+    target_link_libraries(sigar PRIVATE ws2_32 netapi32 version)
 endif(WIN32)
 
 if(SIGAR_LINK_FLAGS)
     ivw_add_link_flags(${SIGAR_LINK_FLAGS})
-endif(SIGAR_LINK_FLAGS)
+endif()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

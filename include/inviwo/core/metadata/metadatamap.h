@@ -38,33 +38,41 @@ namespace inviwo {
 
 class IVW_CORE_API MetaDataMap : public Serializable {
 public:
-    MetaDataMap();
+    MetaDataMap() = default;
     MetaDataMap(const MetaDataMap&);
-    virtual ~MetaDataMap();
-    virtual MetaDataMap* clone() const;
-    void add(const std::string &key, MetaData* metaData);
-    void remove(const std::string &key);
-    void removeAll();
-    void rename(const std::string &newKey, const std::string& oldKey);
-    std::vector<std::string> getKeys() const;
-    MetaData* get(const std::string &key);
-    const MetaData* get(const std::string &key) const;
-
-    bool empty() const { return metaData_.empty(); }
-    
     MetaDataMap& operator=(const MetaDataMap& map);
+    virtual ~MetaDataMap() = default;
+
+    MetaData* add(const std::string& key, MetaData* metaData);
+    template <typename T> // T Should derive from MetaData
+    T* add(const std::string& key, std::unique_ptr<T> metaData);
+
+    void remove(const std::string& key);
+    void removeAll();
+
+    void rename(const std::string& newKey, const std::string& oldKey);
+
+    std::vector<std::string> getKeys() const;
+    MetaData* get(const std::string& key);
+    const MetaData* get(const std::string& key) const;
+
+    bool empty() const;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
-    typedef std::map<std::string, MetaData*>::const_iterator cIterator;
-    typedef std::map<std::string, MetaData*>::iterator iterator;
-
     friend bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
 private:
-    std::map<std::string, MetaData*> metaData_;
+    std::map<std::string, std::unique_ptr<MetaData>> metaData_;
 };
+
+template <typename T>
+T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData) {
+    auto ptr = metaData.get();
+    metaData_[key] = std::move(metaData);
+    return ptr;
+}
 
 bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
 bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);

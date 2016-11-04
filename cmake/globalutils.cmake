@@ -647,7 +647,7 @@ endfunction()
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
-function(ivw_generate_build_info template buildinfofile)
+function(ivw_generate_build_info header_template ini_template buildinfo_headerfile buildinfo_inifile)
     ivw_find_unique_path_segements(unique_names "${ARGN}")
     set(index 0)
     set(hashes_list "")
@@ -658,7 +658,20 @@ function(ivw_generate_build_info template buildinfofile)
         MATH(EXPR index "${index}+1")
     endforeach()
     string(REPLACE ";" ",\n    " hashes "${hashes_list}")
-    set(HASHES "{\n    ${hashes}\n}")
+    set(HASHES "{{\n    ${hashes}\n}}")
+    set(NHASHES "${index}")
+
+    set(index 0)
+    set(hashes_list "")
+    foreach(dir ${ARGN})
+        list(GET unique_names ${index} name)
+        ivw_git_get_hash(${dir} hash)
+        list(APPEND hashes_list "${name}=${hash}")
+        MATH(EXPR index "${index}+1")
+    endforeach()
+    string(REPLACE ";" "\n" hashes "${hashes_list}")
+    set(INIHASHES "${hashes}\n")
+
 
     string(TIMESTAMP TMPYEAR "%Y")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" YEAR ${TMPYEAR})
@@ -672,6 +685,38 @@ function(ivw_generate_build_info template buildinfofile)
     string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
     string(TIMESTAMP TMPSECOND "%S")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
-    configure_file("${template}" "${buildinfofile}" @ONLY)
+    configure_file("${header_template}" "${buildinfo_headerfile}" @ONLY)
+
+    string(REPLACE "\"" "" ini_dest_path ${INI_DEST_PATH})
+    configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
+endfunction()
+
+
+#--------------------------------------------------------------------
+# A helper funtion to install targets
+function(ivw_default_install_targets)
+    # package the zlib lib
+    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
+        if(WIN32)
+           install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    COMPONENT modules)
+        else(APPLE)
+            install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION .
+                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+                    COMPONENT modules)
+        
+        else()
+            install(TARGETS ${ARGN}
+                    RUNTIME DESTINATION bin
+                    BUNDLE DESTINATION bin
+                    ARCHIVE DESTINATION lib
+                    LIBRARY DESTINATION lib
+                    COMPONENT modules)
+        endif()
+    endif()
 endfunction()
 

@@ -41,7 +41,8 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API LayerCL : public LayerCLBase, public LayerRepresentation {
 public:
     LayerCL(size2_t dimensions = size2_t(128, 128), LayerType type = LayerType::Color,
-            const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
+            const DataFormatBase* format = DataFormatBase::get(),
+            const SwizzleMask& swizzleMask = swizzlemasks::rgba, const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
 
@@ -64,10 +65,20 @@ public:
     virtual const cl::Image2D& get() const override {    return *clImage_;   }
 
     virtual std::type_index getTypeIndex() const override final;
+    
+    /**
+    * \brief update the swizzle mask of the channels for sampling color layers
+    * Needs to be overloaded by child classes.
+    *
+    * @param mask    new swizzle mask
+    */
+    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
 
 protected:
     cl::ImageFormat layerFormat_;
-    std::unique_ptr<cl::Image2D> clImage_; 
+    std::unique_ptr<cl::Image2D> clImage_;
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace

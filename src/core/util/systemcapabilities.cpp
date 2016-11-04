@@ -30,9 +30,21 @@
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/assertion.h>
 #ifdef IVW_SIGAR
 #include <sigar/include/sigar.h>
 #endif
+
+#ifdef IVW_EMBED_BUILDINFO
+#  include <inviwo_buildinfo.h>
+#else
+#  include <fstream>
+#  include <inviwo/core/common/inviwoapplication.h>
+#endif // IVW_EMBED_BUILDINFO
+
+#include <sstream>
+#include <iomanip>
 
 namespace inviwo {
 
@@ -70,6 +82,21 @@ uvec3 SystemCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t for
 
 void SystemCapabilities::retrieveStaticInfo() {
     successOSInfo_ = lookupOSInfo();
+#ifdef IVW_EMBED_BUILDINFO
+    // retrieve build info from header file
+    buildInfo_.year = buildinfo::year;
+    buildInfo_.month = buildinfo::month;
+    buildInfo_.day = buildinfo::day;
+    buildInfo_.hour = buildinfo::hour;
+    buildInfo_.minute = buildinfo::minute;
+    buildInfo_.second = buildinfo::second;
+    buildInfo_.year = buildinfo::year;
+    buildInfo_.githashes.assign(buildinfo::githashes.begin(), buildinfo::githashes.end());
+#else
+    // retrieve build info from ini file
+    readBuildInfoFromIni();
+
+#endif // IVW_EMBED_BUILDINFO
 }
 
 void SystemCapabilities::retrieveDynamicInfo() {
@@ -77,6 +104,51 @@ void SystemCapabilities::retrieveDynamicInfo() {
     successMemoryInfo_ = lookupMemoryInfo();
     successDiskInfo_ = lookupDiskInfo();
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
+}
+
+
+
+std::string SystemCapabilities::getBuildDateString() const {
+    std::stringstream ss;
+    ss << getBuildTimeYear() << "-" << std::setfill('0') << std::setw(2) << getBuildTimeMonth()
+        << "-" << std::setfill('0') << std::setw(2) << getBuildTimeDay() << " "
+        << std::setfill('0') << std::setw(2) << getBuildTimeHour() << ":" << std::setfill('0')
+        << std::setw(2) << getBuildTimeMinute() << ":" << std::setfill('0') << std::setw(2)
+        << getBuildTimeSecond();
+    return ss.str();
+}
+
+const int SystemCapabilities::getBuildTimeYear() const {
+    return buildInfo_.year;
+}
+
+const int SystemCapabilities::getBuildTimeMonth() const {
+    return buildInfo_.month;
+}
+
+const int SystemCapabilities::getBuildTimeDay() const {
+    return buildInfo_.day;
+}
+
+const int SystemCapabilities::getBuildTimeHour() const {
+    return buildInfo_.hour;
+}
+
+const int SystemCapabilities::getBuildTimeMinute() const {
+    return buildInfo_.minute;
+}
+
+const int SystemCapabilities::getBuildTimeSecond() const {
+    return buildInfo_.second;
+}
+
+const std::size_t SystemCapabilities::getGitNumberOfHashes() const {
+    return buildInfo_.githashes.size();
+}
+
+const std::pair<std::string, std::string>& SystemCapabilities::getGitHash(std::size_t i) const {
+    ivwAssert(i < getGitNumberOfHashes(), "index out of bounds");
+    return buildInfo_.githashes[i];
 }
 
 bool SystemCapabilities::lookupOSInfo() {
@@ -193,6 +265,96 @@ bool SystemCapabilities::lookupProcessMemoryInfo() {
 #else
     return false;
 #endif
+}
+
+// helper struct to define arbitrary separator characters in a locale
+// usage:
+//   std::stringstream stream;
+//   stream.imbue(std::locale(stream.getloc(), new CsvWhitespace));
+struct IniSeparator : std::ctype<char> {
+    static const mask* makeTable() {
+        // copy table of C locale
+        static std::vector<mask> m(classic_table(), classic_table() + table_size);
+        m[' '] &= ~space; // remove space as whitespace
+        m['='] |= space;
+        return &m[0];
+    }
+    IniSeparator(std::size_t refs = 0) : ctype(makeTable(), false, refs) {}
+};
+
+void SystemCapabilities::readBuildInfoFromIni() {
+    auto dir = InviwoApplication::getPtr()->getBinaryPath() + "/inviwo_buildinfo.ini";
+    std::ifstream in(dir.c_str(), std::ios::in);
+    if (!in.is_open()) {
+        return;
+    }
+
+    buildInfo_ = BuildInfo();
+
+    std::istringstream iss;
+    iss.imbue(std::locale(iss.getloc(), new IniSeparator()));
+    enum class Section { Unknown, Date, Hashes };
+
+    std::string line;
+    Section currentSection = Section::Unknown;
+    while (std::getline(in, line)) {
+        line = trim(line);
+        // ignore comment, i.e. line starts with ';'
+        if (line.empty() || line[0] == ';') {
+            continue;
+        }
+        if (line == "[date]") {
+            currentSection = Section::Date;
+        }
+        else if (line == "[hashes]") {
+            currentSection = Section::Hashes;
+        }
+        else if (line[0] == '[') {
+            currentSection = Section::Unknown;
+        }
+        else {
+            // read in key value pairs
+            iss.clear();
+            iss.str(line);
+            std::string key;
+            std::string value;
+            if (!(iss >> key >> value)) {
+                // invalid key-value pair, ignore it
+                continue;
+            }
+            switch (currentSection) {
+                case Section::Date:
+                {
+                    int valuei = std::stoi(value);
+                    if (key == "year") {
+                        buildInfo_.year = valuei;
+                    }
+                    else if (key == "month") {
+                        buildInfo_.month = valuei;
+                    }
+                    else if (key == "day") {
+                        buildInfo_.day = valuei;
+                    }
+                    else if (key == "hour") {
+                        buildInfo_.hour = valuei;
+                    }
+                    else if (key == "minute") {
+                        buildInfo_.minute = valuei;
+                    }
+                    else if (key == "second") {
+                        buildInfo_.second = valuei;
+                    }
+                    break;
+                }
+                case Section::Hashes:
+                    buildInfo_.githashes.push_back({ key, value });
+                    break;
+                case Section::Unknown:
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void SystemCapabilities::printInfo() {

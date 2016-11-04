@@ -28,46 +28,70 @@
 #*********************************************************************************
 
 import inviwo 
-import inviwoqt
 
 import math
 import numpy as np
 
-def rotation_matrix(axis, theta):
-	"""
-	Return the rotation matrix associated with counterclockwise rotation about
-	the given axis by theta radians.
-	"""
-	axis = np.asarray(axis)
-	theta = np.asarray(theta)
-	axis = axis/math.sqrt(np.dot(axis, axis))
-	a = math.cos(theta/2.0)
-	b, c, d = -axis*math.sin(theta/2.0)
-	aa, bb, cc, dd = a*a, b*b, c*c, d*d
-	bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
-	return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
-					 [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
-					 [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+def rotation_matrix(axis, angle):
+    a = np.asarray(axis)
+    a = a / np.linalg.norm(a)
+    v = a * math.sin(0.5 * angle)
+    w = math.cos(0.5 * angle)
+
+    m = np.zeros([3,3])
+    m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2]);
+    m[0][1] = 2 * (v[0] * v[1] + v[2] * w);
+    m[0][2] = 2 * (v[2] * v[0] - v[1] * w);
+
+    m[1][0] = 2 * (v[0] * v[1] - v[2] * w);
+    m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0]);
+    m[1][2] = 2 * (v[1] * v[2] + v[0] * w);
+
+    m[2][0] = 2 * (v[2] * v[0] + v[1] * w);
+    m[2][1] = 2 * (v[1] * v[2] - v[0] * w);
+    m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0]);
+    return m
 
 
 class Camera:
-	def __init__(self, id):
-		self.id = id
-		(self.lookfrom, self.lookto, self.lookup) = inviwo.getPropertyValue(self.id)
-		(self.oldlookfrom, self.oldlookto, self.oldlookup) = inviwo.getPropertyValue(self.id)
+    """
+    Example:
+    with ivw.camera.Camera("EntryExitPoints.camera") as c:
+        for step in c.rotate(2.0*math.pi/steps, steps, [0,0,1]): 
+            print(step)
+            inviwoqt.update()
+    """
+    def __init__(self, id, lookfrom = None, lookto = None, lookup = None):
+        self.id = id
+        (self.oldlookfrom, self.oldlookto, self.oldlookup) = inviwo.getPropertyValue(self.id)
+        self.lookfrom = lookfrom if lookfrom != None else self.oldlookfrom
+        self.lookto = lookto if lookto != None else self.oldlookto
+        self.lookup = lookup if lookup != None else self.oldlookup
 
-	def set(self):
-		inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
-		inviwoqt.update()
+    def __enter__(self):
+        self.set()
+        return self
 
-	def restoreState(self):
-		inviwo.setPropertyValue(self.id, (self.oldlookfrom, self.oldlookto, self.oldlookup))
-		inviwoqt.update()
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.restore()
 
-	def rotate(self, delta = math.pi/30, steps = 60, axis = None):
-		if axis == None: axis = self.lookup
-		start = self.lookup
-		for i in range(1, steps+1):
-			mat = rotation_matrix(axis, i*delta)
-			self.lookup = np.dot(mat, start)
-			self.set()
+    def set(self):
+        inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
+
+    def restore(self):
+        inviwo.setPropertyValue(self.id, (self.oldlookfrom, self.oldlookto, self.oldlookup))
+
+    def rotate(self, delta = math.pi/30, steps = 60, axis = None):
+        if axis == None: axis = self.lookup
+        lookfrom = np.asarray(self.lookfrom)
+        lookto = np.asarray(self.lookto)
+        vec = lookfrom - lookto
+        up = np.asarray(self.lookup)
+        mat = rotation_matrix(axis, delta)
+        for i in range(1, steps+1):
+            vec = np.dot(mat, vec)
+            up = np.dot(mat, up)
+            self.lookfrom = vec + lookto
+            self.lookup = up
+            self.set()
+            yield i

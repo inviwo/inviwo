@@ -55,11 +55,11 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs);
-    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that);
+    OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that) = default;
     OrdinalProperty<T>& operator=(const T& value);
-    //virtual OrdinalProperty<T>* clone() const; // See ticket #642
-    virtual ~OrdinalProperty();
+    virtual OrdinalProperty<T>* clone() const override;
+    virtual ~OrdinalProperty() = default;
 
     T getMinValue() const;
     T getMaxValue() const;
@@ -143,38 +143,16 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
     maxValue_.value = glm::max(maxValue_.value, value_.value);
 }
 
-
-template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs)
-    : TemplateProperty<T>(rhs)
-    , minValue_(rhs.minValue_)
-    , maxValue_(rhs.maxValue_)
-    , increment_(rhs.increment_) {
-}
-
-template <typename T>
-OrdinalProperty<T>& OrdinalProperty<T>::operator=(const OrdinalProperty<T>& that) {
-    if (this != &that) {
-        TemplateProperty<T>::operator=(that);
-        minValue_ = that.minValue_;
-        maxValue_ = that.maxValue_;
-        increment_ = that.increment_;
-    }
-    return *this;
-}
 template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
     TemplateProperty<T>::operator=(value);
     return *this;
 }
 
-// template <typename T>
-// OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
-//     return new OrdinalProperty<T>(*this);
-// }
-
 template <typename T>
-OrdinalProperty<T>::~OrdinalProperty() {}
+OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
+    return new OrdinalProperty<T>(*this);
+}
 
 template <typename T>
 void OrdinalProperty<T>::set(const T& value) {

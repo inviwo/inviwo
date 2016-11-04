@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "distancetransformram.h"
-#include "modules/base/algorithm/volume/volumeminmax.h"
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -156,7 +156,7 @@ DataFormatIdMacro(UInt64)
 #include <warn/pop>
     distTransformDirty_ = false;
 
-    auto minMax = util::volumeMinMax(vol);
+    auto minMax = util::volumeMinMax(vol, IgnoreSpecialValues::Yes);
     volDist_->dataMap_.dataRange = volDist_->dataMap_.valueRange = dvec2(minMax.first.x, minMax.second.x);
 }
 

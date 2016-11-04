@@ -29,12 +29,11 @@
 
 #include <modules/base/algorithm/image/layerminmax.h>
 
+#include <inviwo/core/datastructures/image/layerram.h>
+
 namespace inviwo {
 
-std::pair<dvec4, dvec4> util::layerMinMax(const LayerRAM* layer) {
-    detail::LayerMinMaxDispatcher disp;
-    return layer->getDataFormat()->dispatch(disp, layer);
-}
+
 
 } // namespace
 

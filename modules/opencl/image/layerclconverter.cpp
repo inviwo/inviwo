@@ -37,8 +37,11 @@ std::shared_ptr<LayerCL> LayerRAM2CLConverter::createFrom(
     std::shared_ptr<const LayerRAM> layerRAM) const {
     uvec2 dimensions = layerRAM->getDimensions();
     const void* data = layerRAM->getData();
-    return std::make_shared<LayerCL>(dimensions, layerRAM->getLayerType(),
-                                     layerRAM->getDataFormat(), data);
+    auto layerCL =
+        std::make_shared<LayerCL>(dimensions, layerRAM->getLayerType(), layerRAM->getDataFormat(),
+                                  layerRAM->getSwizzleMask(), data);
+
+    return layerCL;
 }
 
 void LayerRAM2CLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
@@ -48,13 +51,14 @@ void LayerRAM2CLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
     }
 
     layerDst->upload(layerSrc->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 std::shared_ptr<LayerRAM> LayerCL2RAMConverter::createFrom(
     std::shared_ptr<const LayerCL> layerCL) const {
     uvec2 dimensions = layerCL->getDimensions();
     auto destination =
-        createLayerRAM(dimensions, layerCL->getLayerType(), layerCL->getDataFormat());
+        createLayerRAM(dimensions, layerCL->getLayerType(), layerCL->getDataFormat(), layerCL->getSwizzleMask());
 
     if (destination) {
         layerCL->download(destination->getData());
@@ -76,6 +80,7 @@ void LayerCL2RAMConverter::update(std::shared_ptr<const LayerCL> layerSrc,
     }
 
     layerSrc->download(layerDst->getData());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
 }  // namespace

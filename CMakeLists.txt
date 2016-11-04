@@ -123,7 +123,6 @@ set(ivw_default_modules
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
 	"Nifti" 
-    "BuildInfo"
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
@@ -145,20 +144,6 @@ if(OPENCL_FOUND)
         "BaseCL"
         )
 endif()
-
-
-#--------------------------------------------------------------------
-# Generate build info - the build info will be updated during every compilation
-
-# make a clean help script
-set(build_info_script_list
-    "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
-    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.h"
-    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
-    "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
-)
-string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
-file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 
 #--------------------------------------------------------------------

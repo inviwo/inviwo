@@ -126,7 +126,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
         }
         return std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>(
             [&f](std::vector<vec3>& normals, size_t i1, size_t i2, size_t i3) -> void {
-                normals.emplace_back(0.0);
+                normals.emplace_back(0.0f);
             });
     }();
 
@@ -191,7 +191,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     std::uint16_t attrib {0};
     std::array<char, 80> header = {0};
     f.write(header.data(), header.size());
-    std::uint32_t size = floatdata.size() / 4;
+    std::uint32_t size = static_cast<std::uint32_t>(floatdata.size() / 4);
     f.write(reinterpret_cast<char*>(&size), sizeof(size));
     for (size_t i = 0; i < floatdata.size() - 4u; i += 4) {
         f.write(reinterpret_cast<char*>(&floatdata[i+0]), sizeof(vec3));

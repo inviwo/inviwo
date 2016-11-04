@@ -99,7 +99,7 @@ void StreamLines::process() {
                 vec4 P = m * vec4(p, 1.0f);
                 auto line = tracer.traceFrom(P.xyz());
                 auto size = line.getPositions().size();
-                if (size != 0) {
+                if (size > 1) {
 #pragma omp critical
                     lines->push_back(line, startID + j);
                 };
@@ -114,7 +114,7 @@ void StreamLines::process() {
                 vec4 P = m * vec4(p, 1.0f);
                 auto line = tracer.traceFrom(P.xyz());
                 auto size = line.getPositions().size();
-                if (size != 0) {
+                if (size > 1) {
                     lines->push_back(line, startID);
                 }
                 startID++;
@@ -129,7 +129,7 @@ void StreamLines::process() {
             auto velocity = line.getMetaData("velocity").begin();
 
             auto size = line.getPositions().size();
-            if (size == 0) continue;
+            if (size <= 1) continue;
 
             auto indexBuffer =
                 mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);

@@ -251,8 +251,7 @@ KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront([&]() {
-        auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
-        return std::move(canvas);
+        return util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
     });
     return res.get();
 }

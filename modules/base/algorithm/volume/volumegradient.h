@@ -31,37 +31,19 @@
 #define IVW_VOLUMEGRADIENT_H
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <memory>
 
 namespace inviwo {
 
-namespace util {
-//namespace detail {
-//
-//struct VolumeGradientDispatcher {
-//    using type = std::shared_ptr<Volume>;
-//
-//    template <typename T>
-//    std::shared_ptr<Volume> dispatch(const Volume* volume) {
-//        using dataType = typename T::type;
-//        using primitive = typename T::primitive;
-//
-//        auto newVolume = std::make_shared<Volume>(volume->getDimensions());
-//        newVolume->setModelMatrix(volume->getModelMatrix());
-//        newVolume->setWorldMatrix(volume->getWorldMatrix());
-//
-//        util::forEachVoxel(volume->getRepresentation<VolumeRAM>(), [](const size3_t &pos) {
-//            
-//        });
-//            
-//        return newVolume;
-//    }
-//};
-//}
+class Volume;
 
-IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel);
-}
+namespace util {
+
+IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,
+                                                           int channel);
+
+}  // namespace
+
 }  // namespace
 
 #endif  // IVW_VOLUMEGRADIENT_H

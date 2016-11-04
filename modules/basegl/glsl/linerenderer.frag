@@ -65,7 +65,7 @@ void main() {
     vec4 color = color_;
     vec2 screenDim = screenDim_;
 
-    float linewidth = lineWidth_;
+    float linewidthHalf = lineWidth_ * 0.5;
 
     // make joins round by using the texture coords
     float distance = abs(texCoord_.y);
@@ -76,13 +76,13 @@ void main() {
         distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
     }
 
-    float d = distance * screenDim.x * 0.5 - linewidth/2.0 + antialias_;
+    float d = distance * screenDim.x * 0.5 - linewidthHalf + antialias_;
 
 
     // default color
     //color.rgb = vec3(0.7, 0.0, 0.0);
     // apply pseudo lighting
-    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidth/2.0 + antialias_) * 1.2);
+    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialias_) * 1.2);
 
     float alpha = 1.0;
     // line stippling
@@ -110,7 +110,7 @@ void main() {
 
     // correct depth
     float depth = reconstructDepth(gl_FragCoord.z);
-    float maxDist = (lineWidth_ + 1.5*antialias_) / screenDim.x;
+    float maxDist = (linewidthHalf + antialias_) / screenDim.x * 2.0;
     // assume circular profile of line
-    gl_FragDepth = computeDepth(depth - cos(distance/maxDist));
+    gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist);    
 }

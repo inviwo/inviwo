@@ -125,7 +125,13 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
         auto pi = t.append("tr").append("td");
         pi.append("b", port->getClassIdentifier(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(pi, P::end());
+        if (auto inport = dynamic_cast<const Inport*>(port)) {
+            if (inport->isOptional()) {
+                tb(H("Optional Port"));
+            }
+        }
         tb(H("Identifier"), port->getIdentifier());
+        
     }
 
     if (inspector) {
@@ -167,7 +173,19 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                         // do manual conversion from raw to png via QImage
                         QImage::Format format = QImage::Format_Invalid;
                         if (data->size() == portInspectorSize * portInspectorSize) {
+#if QT_VERSION >= 0x050500
                             format = QImage::Format_Grayscale8;
+#else
+                            format = QImage::Format_RGB888;
+                            // duplicate grayscale data into 3 channels
+                            auto newData = std::make_unique<std::vector<unsigned char>>();
+                            newData->reserve(data->size() * 3);
+
+                            for (auto value : *data.get()) {
+                                newData->insert(newData->end(), 3, value);
+                            }
+                            data = std::move(newData);
+#endif
                         }
                         else if (data->size() == portInspectorSize * portInspectorSize * 3) {
                             format = QImage::Format_RGB888;

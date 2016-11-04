@@ -259,20 +259,20 @@ public:
     static std::string str();
 
     // Converter functions
-    virtual double valueToDouble(void* val) const;
-    virtual dvec2 valueToVec2Double(void* val) const;
-    virtual dvec3 valueToVec3Double(void* val) const;
-    virtual dvec4 valueToVec4Double(void* val) const;
+    virtual double valueToDouble(void* val) const override;
+    virtual dvec2 valueToVec2Double(void* val) const override;
+    virtual dvec3 valueToVec3Double(void* val) const override;
+    virtual dvec4 valueToVec4Double(void* val) const override;
 
-    virtual double valueToNormalizedDouble(void* val) const;
-    virtual dvec2 valueToNormalizedVec2Double(void* val) const;
-    virtual dvec3 valueToNormalizedVec3Double(void* val) const;
-    virtual dvec4 valueToNormalizedVec4Double(void* val) const;
+    virtual double valueToNormalizedDouble(void* val) const override;
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const override;
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const override;
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const override;
 
-    virtual void doubleToValue(double in, void* out) const;
-    virtual void vec2DoubleToValue(dvec2 in, void* out) const;
-    virtual void vec3DoubleToValue(dvec3 in, void* out) const;
-    virtual void vec4DoubleToValue(dvec4 in, void* out) const;
+    virtual void doubleToValue(double in, void* out) const override;
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const override;
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const override;
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const override;
 };
 
 template <typename T, template <typename, glm::precision> class G>
@@ -314,20 +314,20 @@ public:
     static std::string str();
 
     // Converter functions
-    virtual double valueToDouble(void* val) const;
-    virtual dvec2 valueToVec2Double(void* val) const;
-    virtual dvec3 valueToVec3Double(void* val) const;
-    virtual dvec4 valueToVec4Double(void* val) const;
+    virtual double valueToDouble(void* val) const override;
+    virtual dvec2 valueToVec2Double(void* val) const override;
+    virtual dvec3 valueToVec3Double(void* val) const override;
+    virtual dvec4 valueToVec4Double(void* val) const override;
 
-    virtual double valueToNormalizedDouble(void* val) const;
-    virtual dvec2 valueToNormalizedVec2Double(void* val) const;
-    virtual dvec3 valueToNormalizedVec3Double(void* val) const;
-    virtual dvec4 valueToNormalizedVec4Double(void* val) const;
+    virtual double valueToNormalizedDouble(void* val) const override;
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const override;
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const override;
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const override;
 
-    virtual void doubleToValue(double in, void* out) const;
-    virtual void vec2DoubleToValue(dvec2 in, void* out) const;
-    virtual void vec3DoubleToValue(dvec3 in, void* out) const;
-    virtual void vec4DoubleToValue(dvec4 in, void* out) const;
+    virtual void doubleToValue(double in, void* out) const override;
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const override;
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const override;
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const override;
 };
 
 // Template implementations for DataFormat<T>

@@ -50,15 +50,13 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
-    TemplateProperty(const TemplateProperty& rhs);
-    TemplateProperty<T>& operator=(const TemplateProperty<T>& that);
     TemplateProperty<T>& operator=(const T& value);
-    
-//    virtual TemplateProperty<T>* clone() const // See ticket #642
+   
+    virtual TemplateProperty<T>* clone() const override = 0;
     virtual operator T&();
     virtual operator const T&() const;
 
-    virtual ~TemplateProperty();
+    virtual ~TemplateProperty() = default;
 
     virtual T& get();
     virtual const T& get() const;
@@ -73,6 +71,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    TemplateProperty(const TemplateProperty& rhs) = default;
+    TemplateProperty<T>& operator=(const TemplateProperty<T>& that) = default;
     ValueWrapper<T> value_;
 };
 
@@ -91,22 +91,6 @@ TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::
     , value_("value", value) {
 }
 
-
-template<typename T>
-TemplateProperty<T>::TemplateProperty(const TemplateProperty<T>& rhs)
-    : Property(rhs)
-    , value_(rhs.value_) {
-}
-
-template<typename T>
-TemplateProperty<T>& TemplateProperty<T>::operator=(const TemplateProperty<T>& that) {
-    if (this != &that) {
-        Property::operator=(that);
-        value_ = that.value_;
-    }
-    return *this;
-}
-
 template<typename T>
 TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
     if (value_ != value) {
@@ -115,11 +99,6 @@ TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
     }
     return *this;
 }
-
-// template <typename T>
-// TemplateProperty<T>* TemplateProperty<T>::clone() const {
-//     return new TemplateProperty<T>(*this);
-// }
 
 template<typename T>
 TemplateProperty<T>::operator T&() {
@@ -130,9 +109,6 @@ template<typename T>
 TemplateProperty<T>::operator const T&() const {
     return value_;
 }
-
-template<typename T>
-TemplateProperty<T>::~TemplateProperty() {}
 
 template<typename T>
 void inviwo::TemplateProperty<T>::resetToDefaultState() { 

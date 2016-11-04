@@ -31,6 +31,19 @@ if (ZLIB_FOUND)
 	set(ZLIB_VERSION_TWEAK 0 PARENT_SCOPE)
 
 	set(ZLIB_FOUND ${ZLIB_FOUND} PARENT_SCOPE)
+
+	#--------------------------------------------------------------------
+	# Add zlib to package
+	if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
+	    get_filename_component(zlib_lib_name "${ZLIB_LIBRARIES}" NAME_WE)
+	    get_filename_component(zlib_lib_dir "${ZLIB_LIBRARIES}" DIRECTORY)
+	    get_filename_component(zlib_dir "${zlib_lib_dir}" DIRECTORY)
+	    if(WIN32)
+	        find_file(ZLIB_DLL NAMES ${zlib_lib_name}.dll PATHS ${zlib_dir})
+	        install(FILES ${ZLIB_DLL} DESTINATION bin COMPONENT modules)
+	    endif()
+	endif()
+
 else()
 	ivw_debug_message(STATUS "Compiling zlib from source since it was not found")
 	if(BUILD_SHARED_LIBS)

@@ -5,13 +5,17 @@ ivw_module(Base)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhull.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
@@ -19,7 +23,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datasource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.h
@@ -49,6 +54,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
@@ -73,20 +79,24 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.cpp
@@ -112,6 +122,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
@@ -136,6 +147,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

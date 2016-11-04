@@ -27,16 +27,20 @@
  *
  *********************************************************************************/
 
+#include <array>
+#include <utility>
+#include <string>
+
 namespace inviwo {
 namespace buildinfo {
 
-const std::vector<std::pair<std::string,std::string>> githashes = @HASHES@;
-const int year = @YEAR@;
-const int month = @MONTH@; 
-const int day = @DAY@;
-const int hour = @HOUR@;
-const int minute = @MINUTE@;
-const int second  = @SECOND@;
+constexpr std::array<std::pair<const char *, const char *>, @NHASHES@> githashes = @HASHES@;
+constexpr int year = @YEAR@;
+constexpr int month = @MONTH@; 
+constexpr int day = @DAY@;
+constexpr int hour = @HOUR@;
+constexpr int minute = @MINUTE@;
+constexpr int second  = @SECOND@;
 
 }  // namespace
 }  // namespace

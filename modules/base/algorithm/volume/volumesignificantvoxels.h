@@ -32,38 +32,16 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <modules/base/algorithm/algorithmoptions.h>
 
 namespace inviwo {
+
+class VolumeRAM;
+
 namespace util {
-namespace detail {
 
-struct VolumeSignificantVoxelsDispatcher {
-    using type = size_t;
-
-    template <typename T>
-    size_t dispatch(const VolumeRAM* volume) {
-        using dataType = typename T::type;
-        using primitive = typename T::primitive;
-        auto data = static_cast<const dataType*>(volume->getData());
-
-        const auto dim = volume->getDimensions();
-        const auto size = dim.x * dim.y * dim.z;
-
-        size_t count = 0;
-        for (size_t i = 0; i < size; i++) {
-            auto v = data[i];
-            if (util::all(v != v + dataType(1)) && util::any(v != dataType(0)) ) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-};
-}  // namespace
-
-IVW_MODULE_BASE_API size_t volumeSignificantVoxels(const VolumeRAM* volume);
+IVW_MODULE_BASE_API size_t volumeSignificantVoxels(
+    const VolumeRAM* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
 }  // namespace
 

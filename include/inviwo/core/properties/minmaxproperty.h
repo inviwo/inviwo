@@ -55,12 +55,12 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    MinMaxProperty(const MinMaxProperty& rhs);
-    MinMaxProperty& operator=(const MinMaxProperty& that);
+    MinMaxProperty(const MinMaxProperty& rhs) = default;
+    MinMaxProperty& operator=(const MinMaxProperty& that) = default;
     MinMaxProperty& operator=(const range_type& value);
 
-    virtual MinMaxProperty* clone() const override;
-    virtual ~MinMaxProperty();
+    virtual MinMaxProperty<T>* clone() const override;
+    virtual ~MinMaxProperty() = default;
 
     T getRangeMin() const;
     T getRangeMax() const;
@@ -82,6 +82,10 @@ public:
     // set a new range, and maintains the same relative values as before.
     void setRangeNormalized(const range_type& newRange);
 
+
+    const BaseCallBack* onRangeChange(std::function<void()> callback);
+    void removeOnRangeChange(const BaseCallBack* callback);
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
@@ -101,13 +105,18 @@ private:
     ValueWrapper<range_type> range_;
     ValueWrapper<T> increment_;
     ValueWrapper<T> minSeparation_;
+
+
+    CallBackList onRangeChangeCallback_;
 };
 
-typedef MinMaxProperty<float> FloatMinMaxProperty;
-typedef MinMaxProperty<double> DoubleMinMaxProperty;
-typedef MinMaxProperty<int> IntMinMaxProperty;
+using FloatMinMaxProperty = MinMaxProperty<float>;
+using DoubleMinMaxProperty = MinMaxProperty<double>;
+using IntMinMaxProperty = MinMaxProperty<int>;
 
-template <typename T> PropertyClassIdentifier(MinMaxProperty<T>, "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty" );
+template <typename T>
+PropertyClassIdentifier(MinMaxProperty<T>,
+                        "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty");
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayName, T valueMin,
@@ -126,25 +135,6 @@ MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayNam
 }
 
 template <typename T>
-MinMaxProperty<T>::MinMaxProperty(const MinMaxProperty<T>& rhs)
-    : TemplateProperty<range_type>(rhs)  
-    , range_(rhs.range_)
-    , increment_(rhs.increment_)
-    , minSeparation_(rhs.minSeparation_) {
- }
-
-template <typename T>
-MinMaxProperty<T>& MinMaxProperty<T>::operator=(const MinMaxProperty<T>& that) {
-    if (this != &that) {
-        TemplateProperty<range_type>::operator=(that);
-        range_ = that.range_;
-        increment_ = that.increment_;
-        minSeparation_ = that.minSeparation_;
-    }
-    return *this;
-}
-
-template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::operator=(const range_type& value) {
     TemplateProperty<range_type >::operator=(value);
     return *this;
@@ -154,10 +144,6 @@ template <typename T>
 MinMaxProperty<T>* MinMaxProperty<T>::clone() const {
     return new MinMaxProperty<T>(*this);
 }
-
-template <typename T>
-MinMaxProperty<T>::~MinMaxProperty() {}
-
 
 template <typename T>
 T MinMaxProperty<T>::getRangeMin() const {
@@ -193,10 +179,17 @@ void MinMaxProperty<T>::set(const range_type& value) {
 template <typename T>
 void inviwo::MinMaxProperty<T>::set(const Property* srcProperty) {
     if (auto prop = dynamic_cast<const MinMaxProperty<T>*>(srcProperty)) {
-        this->range_.value = prop->range_.value;
-        this->increment_.value = prop->increment_.value;
-        this->minSeparation_.value = prop->minSeparation_.value;
+        bool rangeChanged = false;
+        if (range_.value != prop->range_.value) {
+            range_.value = prop->range_.value;
+            rangeChanged = true;
+        }
+        increment_.value = prop->increment_.value;
+        minSeparation_.value = prop->minSeparation_.value;
         TemplateProperty<range_type>::set(prop);
+        if (rangeChanged) {
+            onRangeChangeCallback_.invokeAll();
+        }
     }
 }
 
@@ -210,6 +203,7 @@ void MinMaxProperty<T>::setRangeMin(const T& value) {
 
     range_.value.x = value;
     TemplateProperty<range_type>::propertyModified();
+    onRangeChangeCallback_.invokeAll();
 }
 
 template <typename T>
@@ -222,6 +216,7 @@ void MinMaxProperty<T>::setRangeMax(const T& value) {
 
     range_.value.y = value;
     TemplateProperty<range_type>::propertyModified();
+    onRangeChangeCallback_.invokeAll();
 }
 
 template <typename T>
@@ -242,8 +237,11 @@ void inviwo::MinMaxProperty<T>::setMinSeparation(const T& value) {
 
 template <typename T>
 void MinMaxProperty<T>::setRange(const range_type& value) {
+    onRangeChangeCallback_.startBlockingCallbacks();
     setRangeMin(value.x);
     setRangeMax(value.y);
+    onRangeChangeCallback_.stopBlockingCallbacks();
+    onRangeChangeCallback_.invokeAll();
 }
 
 template <typename T>
@@ -261,6 +259,7 @@ void inviwo::MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
     this->set(newVal);
 }
 
+
 template <typename T>
 void MinMaxProperty<T>::resetToDefaultState() {
     range_.reset();
@@ -268,6 +267,20 @@ void MinMaxProperty<T>::resetToDefaultState() {
     minSeparation_.reset();
     TemplateProperty<range_type>::resetToDefaultState();
 }
+
+
+
+template <typename T>
+const BaseCallBack* MinMaxProperty<T>::onRangeChange(std::function<void()> callback) {
+    return onRangeChangeCallback_.addLambdaCallback(callback);  
+}
+
+
+template <typename T>
+void MinMaxProperty<T>::removeOnRangeChange(const BaseCallBack* callback) {
+    onRangeChangeCallback_.remove(callback);
+}
+
 
 template <typename T>
 void MinMaxProperty<T>::setCurrentStateAsDefault() {

@@ -106,8 +106,6 @@ foreach(qtarget Qt5Sql Qt5Network)
 endforeach()
 
 ivw_add_dependencies(InviwoQtWidgets)
-## add buildinfo module as library dependency
-ivw_add_dependency_libraries("inviwo-module-buildinfo")
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core

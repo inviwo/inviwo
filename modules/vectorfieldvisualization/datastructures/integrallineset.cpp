@@ -47,6 +47,10 @@ std::vector<IntegralLine>::iterator IntegralLineSet::end() { return lines_.end()
 
 size_t IntegralLineSet::size() const { return lines_.size(); }
 
+inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) { return lines_[idx]; }
+
+const inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) const { return lines_[idx]; }
+
 inviwo::IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
 
 const inviwo::IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }

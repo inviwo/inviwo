@@ -28,12 +28,64 @@
  *********************************************************************************/
 
 #include "volumeramsubsample.h"
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
 
-std::shared_ptr<VolumeRAM> VolumeRAMSubSample::apply(const VolumeRepresentation* in, size3_t factors) {
-    detail::VolumeRAMSubSampleDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, factors);
+std::shared_ptr<VolumeRAM> util::volumeSubSample(const VolumeRAM* volume, size3_t f) {
+    return volume->dispatch<std::shared_ptr<VolumeRAM>>(
+        [&f](auto srcVol) -> std::shared_ptr<VolumeRAM> {
+            using VolumeType = util::PrecsionType<decltype(srcVol)>;
+            using ValueType = util::PrecsionValueType<decltype(srcVol)>;
+
+            // use a double type to perform the summation
+            using P = typename util::same_extent<ValueType, double>::type;
+
+            // calculate new size
+            const size3_t srcDims{srcVol->getDimensions()};
+            const size3_t destDims{srcDims / f};
+
+            // allocate space
+            auto destVol = std::make_shared<VolumeRAMPrecision<ValueType>>(destDims);
+
+            // get data pointers
+            const auto src = srcVol->getDataTyped();
+            auto dst = destVol->getDataTyped();
+
+            util::IndexMapper3D o(srcDims);
+            util::IndexMapper3D n(destDims);
+
+            const double samplesInv = 1.0 / (f.x * f.y * f.z);
+#pragma omp parallel for
+            for (long long z_ = 0; z_ < static_cast<long long>(destDims.z); ++z_) {
+                const size_t z = static_cast<size_t>(z_);  // OpenMP need signed integral type.
+                for (size_t y = 0; y < destDims.y; ++y) {
+                    for (size_t x = 0; x < destDims.x; ++x) {
+                        const size_t px{x * f.x};
+                        const size_t py{y * f.y};
+                        const size_t pz{z * f.z};
+                        P val{0.0};
+
+                        for (size_t oz = 0; oz < f.z; ++oz) {
+                            for (size_t oy = 0; oy < f.y; ++oy) {
+                                for (size_t ox = 0; ox < f.x; ++ox) {
+                                    val += src[o(px + ox, py + oy, pz + oz)];
+                                }
+                            }
+                        }
+
+#include <warn/push>
+#include <warn/ignore/conversion>
+                        dst[n(x, y, z)] = static_cast<ValueType>(val * samplesInv);
+#include <warn/pop>
+                    }
+                }
+            }
+
+            return destVol;
+        });
 }
 
 }  // namespace

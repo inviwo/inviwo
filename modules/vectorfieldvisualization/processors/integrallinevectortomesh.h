@@ -47,6 +47,7 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 
 namespace inviwo {
@@ -67,6 +68,11 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor { 
 public:
+    enum class ColoringMethod {
+        Velocity,
+        Timestamp,
+        ColorPort
+    };
     IntegralLineVectorToMesh();
     virtual ~IntegralLineVectorToMesh() = default;
      
@@ -77,6 +83,7 @@ public:
 private:
     IntegralLineSetInport lines_;
     BrushingAndLinkingInport brushingList_;
+    DataInport<std::vector<vec4>> colors_;
     MeshOutport mesh_;
 
     BoolProperty ignoreBrushingList_;
@@ -88,7 +95,7 @@ private:
     ButtonProperty setFromData_ ;
 
     TransferFunctionProperty tf_;
-    //TemplateOptionProperty<ColoringMethod> coloringMethod_;
+    TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
 };

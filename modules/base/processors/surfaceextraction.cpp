@@ -95,7 +95,7 @@ void SurfaceExtraction::process() {
         switch (method_.get()) {
             case TETRA: {
                 if (util::is_future_ready(result_[i].result)) {
-                    (*meshes_)[i] = std::move(result_[i].result.get());
+                    (*meshes_)[i] = result_[i].result.get();
                     result_[i].status = 1.0f;
                     dirty_ = false;
                 }

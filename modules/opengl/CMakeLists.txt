@@ -142,4 +142,4 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 # Build GLEW if it couldn't be found
 if(BUILD_GLEW)
     add_subdirectory(ext/glew)
-endif(BUILD_GLEW)
+endif()

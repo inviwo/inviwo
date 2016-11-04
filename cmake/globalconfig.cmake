@@ -52,6 +52,11 @@ else()
     endif()
 endif()
 
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    mesage(WARNING "Inviwo is only supported for 64-bit architectures.")
+endif()
+
+
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
@@ -214,22 +219,6 @@ mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
-    # Set ignored libs
-    set(VS_MULTITHREADED_DEBUG_DLL_IGNORE_LIBRARY_FLAGS
-        "/NODEFAULTLIB:libc.lib
-         /NODEFAULTLIB:libcmt.lib
-         /NODEFAULTLIB:msvcrt.lib
-         /NODEFAULTLIB:libcd.lib
-         /NODEFAULTLIB:libcmtd.lib"
-    )
-    set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
-        "/NODEFAULTLIB:libc.lib
-         /NODEFAULTLIB:libcmt.lib
-         /NODEFAULTLIB:libcd.lib
-         /NODEFAULTLIB:libcmtd.lib
-         /NODEFAULTLIB:msvcrtd.lib"
-    )
-    
     if(SHARED_LIBS)
         set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
     else()
@@ -241,22 +230,39 @@ if(WIN32 AND MSVC)
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
     if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MD")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MD")
+
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MD")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MD")
     else()
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MT")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT")
+
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
     endif()
 
     # For >=VS2015 enable edit and continue "ZI"
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
 
+    # enable debug:fastlink for debug builds
+    # https://blogs.msdn.microsoft.com/vcblog/2014/11/12/speeding-up-the-incremental-developer-build-scenario/
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
+    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+
+
 
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx

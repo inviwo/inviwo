@@ -92,27 +92,32 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     : Processor()
     , lines_("lines")
     , brushingList_("brushingList")
+    , colors_("colors")
     , mesh_("mesh")
     , ignoreBrushingList_("ignoreBrushingList", "Ignore Brushing List", false)
 
     , timeBasedFiltering_("timeBasedFiltering","Time Based Filtering" , false)
     , minMaxT_("minMaxT","Min/Max Timestep", -1,1,-10,10)
     , setFromData_("setFromData","Set from data")
-    
+
+    , coloringMethod_("coloringMethod", "Color by")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
     , stride_("stride","Vertex stride",1,1,10)
 
 {
+    colors_.setOptional(true);
     
     addPort(lines_);
     addPort(brushingList_);
+    addPort(colors_);
     addPort(mesh_);
 
     addProperty(ignoreBrushingList_);
 
     addProperty(tf_);
+    addProperty(coloringMethod_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
 
@@ -122,6 +127,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     timeBasedFiltering_.addProperty(minMaxT_);
     timeBasedFiltering_.addProperty(setFromData_);
 
+
+    coloringMethod_.addOption("vel", "Velocity", ColoringMethod::Velocity);
+    coloringMethod_.addOption("time", "Timestamp", ColoringMethod::Timestamp);
+    coloringMethod_.addOption("port", "Colors in port", ColoringMethod::ColorPort);
 
     tf_.autoLinkToProperty<PathLines>("transferFunction");
     tf_.autoLinkToProperty<StreamLines>("transferFunction");
@@ -174,8 +183,12 @@ void IntegralLineVectorToMesh::process() {
 
     vertices.reserve(lines_.getData()->size()*2000);
 
-   
+    bool hasColors = colors_.hasData();
 
+    bool warnOnce = true;
+    bool warnOnce2 = true;
+
+    size_t idx = 0;
     for (auto &line : (*lines_.getData())) {
         auto size = line.getPositions().size();
         if (size == 0) continue;
@@ -195,7 +208,18 @@ void IntegralLineVectorToMesh::process() {
         indexBuffer->getDataContainer().reserve(size + 2);
 
         vec4 c(1, 1, 1, 1);
-
+        if (hasColors) {
+            if (idx >= colors_.getData()->size()) {
+                if (warnOnce2) {
+                    warnOnce2 = false;
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                }
+            }
+            else {
+                c = colors_.getData()->at(idx);
+            }
+        }
+        idx++;
         auto vSize = vertices.size();
         if (vSize != 0) vSize--;
         indexBuffer->add(static_cast<uint32_t>( vSize));
@@ -222,7 +246,26 @@ void IntegralLineVectorToMesh::process() {
             float l = glm::length(v);
             float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
             maxVelocity = std::max(maxVelocity, l);
-            c = tf_.get().sample(d);
+            switch (coloringMethod_.get())
+            {
+            case ColoringMethod::Timestamp:
+                c = tf_.get().sample(t);
+                break;
+            case ColoringMethod::ColorPort:
+                if (hasColors) {
+                    break;
+                }
+                else {
+                    if (warnOnce) {
+                        warnOnce = false;
+                        LogWarn("No colors in the color port, using velocity for coloring instead ");
+                    }
+                }
+            case ColoringMethod::Velocity:
+                c = tf_.get().sample(d);
+            default:
+                break;
+            }
 
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 

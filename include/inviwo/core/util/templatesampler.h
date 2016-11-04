@@ -118,17 +118,13 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataS
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<Vector<DataDims, T>>::trilinear(samples, interpolants,
-                                                &Interpolation<Vector<DataDims, T>>::linear);
+    return Interpolation<Vector<DataDims, T>,P>::trilinear(samples, interpolants);
 }
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::getVoxel(
     const size3_t &pos) const {
-    auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
-    const auto val{data_[ic_(p)]};
-    auto res = util::glm_convert<Vector<DataDims, T>, DataType>(val);
-    return res;
+    return data_[ic_(pos)];
 }
 
 }  // namespace

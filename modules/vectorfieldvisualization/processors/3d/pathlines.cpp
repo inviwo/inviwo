@@ -131,7 +131,7 @@ void PathLines::process() {
 
     auto m = pathLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
-    ImageSampler tf(tf_.get().getData());
+
 
     float maxVelocity = 0;
     PathLineTracer tracer(sampler, pathLineProperties_);
@@ -147,11 +147,11 @@ void PathLines::process() {
     for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
         for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
-            auto p = seeds->at(j);
+            const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
             auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
-            if (size != 0) {  
+            if (size>1) {  
                 #pragma omp critical
                 lines->push_back(line,startID + j);
             };
@@ -161,7 +161,7 @@ void PathLines::process() {
 
     for (auto &line : *lines) {
         auto size = line.getPositions().size();
-        if (size == 0) continue;
+        if (size <= 1) continue;
 
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData("velocity").begin();
@@ -196,7 +196,7 @@ void PathLines::process() {
             switch (coloringMethod_.get())
             {
             case ColoringMethod::Timestamp:
-                c = vec4(tf.sample(dvec2(t, 0.0)));
+                c = tf_.get().sample(t);
                 break;
             case ColoringMethod::ColorPort:
                 if (hasColors) {
@@ -209,7 +209,7 @@ void PathLines::process() {
                     }
                 }
             case ColoringMethod::Velocity:
-                c = vec4(tf.sample(dvec2(d, 0.0)));
+                c = tf_.get().sample(d);
             default:
                 break;
             }

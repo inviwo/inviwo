@@ -39,7 +39,7 @@ uniform float threshold;
 
 
 void main() {
-    bool b = getVoxel(volume,volumeParameters, texCoord_.xyz).r >= threshold;
+    bool b = getVoxel(volume,volumeParameters, texCoord_.xyz).r OP threshold;
     float v = b ? 1.0f : 0.0f;
     FragData0 = vec4(vec3(v),1.0);
 }

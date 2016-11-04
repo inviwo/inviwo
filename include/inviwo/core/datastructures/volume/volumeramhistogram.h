@@ -30,10 +30,8 @@
 #ifndef IVW_VOLUMERAMHISTOGRAM_H
 #define IVW_VOLUMERAMHISTOGRAM_H
 
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/histogram.h>
-
+#include <inviwo/core/util/indexmapper.h>
 namespace inviwo {
 
 namespace util {
@@ -72,6 +70,8 @@ HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, d
     const D rangeMin(dataRange.x);
     const D rangeScaleFactor(static_cast<double>(bins - 1) / (dataRange.y - dataRange.x));
 
+    util::IndexMapper3D mapper(dimensions);
+
     size3_t pos(0);
     // Column major data, so x is the fastest index.
     for (pos.z = 0; pos.z < dimensions.z; pos.z += sampleRate.z) {
@@ -79,7 +79,7 @@ HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, d
             for (pos.x = 0; pos.x < dimensions.x; pos.x += sampleRate.x) {
                 if (stop) return histograms;
 
-                val = static_cast<D>(data[VolumeRAM::posToIndex(pos, dimensions)]);
+                val = static_cast<D>(data[mapper(pos)]);
 
                 min = glm::min(min, val);
                 max = glm::max(max, val);

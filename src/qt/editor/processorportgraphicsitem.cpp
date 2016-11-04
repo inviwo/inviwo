@@ -75,30 +75,40 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
 void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                                       QWidget* widget) {
     p->save();
-    p->setBrush(Qt::NoBrush);
     p->setRenderHint(QPainter::Antialiasing, true);
+    p->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    QColor bottomColor(40, 40, 40);
-    
+    QColor borderColor(40, 40, 40);
+
     uvec3 color = port_->getColorCode();
 
     QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
-    
-    QLinearGradient portGrad(portRect.topLeft(), portRect.bottomLeft());
-    portGrad.setColorAt(0.0f,
-                        QColor(std::min(255u, color.r * 6 / 10), 
-                        std::min(255u, color.g * 6 / 10),
-                        std::min(255u, color.b * 6 / 10)));
-    portGrad.setColorAt(0.3f, QColor(color.r, color.g, color.b));
-    portGrad.setColorAt(1.0f, QColor(color.r, color.g, color.b));
-    //p->setBrush(portGrad);
     p->setBrush(QColor(color.r, color.g, color.b));
-    p->setPen(QPen(bottomColor, lineWidth_));
-    
-    //p->setPen(Qt::NoPen);
-    //p->setBrush(QColor(color.r, color.g, color.b));
-    p->drawRect(portRect);
-    
+    p->setPen(QPen(borderColor, lineWidth_));
+
+    auto inport = dynamic_cast<const Inport*>(port_);
+    if (inport && inport->isOptional()) {
+        // Use a different shape for optional ports (rounded at the bottom)
+        QPainterPath path;
+        auto start = (portRect.topRight() + portRect.bottomRight()) * 0.5;
+        path.moveTo(start);
+        path.lineTo(portRect.bottomRight());
+        path.lineTo(portRect.bottomLeft());
+        path.lineTo((portRect.topLeft() + portRect.bottomLeft()) * 0.5);
+        path.arcTo(portRect, 180, -180);
+        p->drawPath(path);
+
+        // Draw a dot in the middle
+        const qreal radius = 1.5;
+        QRectF dotRect(QPointF(-radius, radius), QPointF(radius, -radius));
+        p->setPen(borderColor.lighter(180));
+        p->setBrush(borderColor.lighter(180));
+        p->drawEllipse(dotRect);
+
+    } else {
+        p->drawRect(portRect);
+    }
+
     p->restore();
 }
 

@@ -31,8 +31,8 @@
 #define IVW_IMAGETYPES_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/deserializer.h>
+
+#include <array>
 
 namespace inviwo {
 
@@ -46,18 +46,51 @@ enum class ImageType {
 
 enum class LayerType { Color = 0, Depth = 1, Picking = 2 };
 
+enum class ImageChannel {
+    Red,
+    Green,
+    Blue,
+    Alpha,
+    Zero,
+    One
+};
+
+using SwizzleMask = std::array<ImageChannel, 4>;
+
+namespace swizzlemasks {
+
+constexpr SwizzleMask rgb = {
+    {ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::One}};
+
+constexpr SwizzleMask rgba = {
+    {ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::Alpha}};
+
+constexpr SwizzleMask rgbZeroAlpha ={
+    { ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::Zero } };
+
+constexpr SwizzleMask luminance = {
+    {ImageChannel::Red, ImageChannel::Red, ImageChannel::Red, ImageChannel::One}};
+
+constexpr SwizzleMask luminanceAlpha = {
+    {ImageChannel::Red, ImageChannel::Red, ImageChannel::Red, ImageChannel::Green}};
+
+constexpr SwizzleMask redGreen = {
+    {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::Zero}};
+
+}  // namespace swizzlemasks
+
 #include <warn/push>
 #include <warn/ignore/unused-function>
-static bool typeContainsColor(ImageType type) {
+inline bool IVW_CORE_API typeContainsColor(ImageType type) {
     return (type == ImageType::ColorOnly || type == ImageType::ColorDepth ||
             type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 
-static bool typeContainsDepth(ImageType type) {
+inline bool IVW_CORE_API typeContainsDepth(ImageType type) {
     return (type == ImageType::ColorDepth || type == ImageType::ColorDepthPicking);
 }
 
-static bool typeContainsPicking(ImageType type) {
+inline bool IVW_CORE_API typeContainsPicking(ImageType type) {
     return (type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 #include <warn/pop>

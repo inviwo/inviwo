@@ -54,10 +54,10 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
-    CompositeProperty(const CompositeProperty& rhs);
-    CompositeProperty& operator=(const CompositeProperty& that);
+    CompositeProperty(const CompositeProperty& rhs) = default;
+    CompositeProperty& operator=(const CompositeProperty& that) = default;
     virtual CompositeProperty* clone() const override;
-    virtual ~CompositeProperty();
+    virtual ~CompositeProperty() = default;
     virtual std::string getClassIdentifierForWidget() const override;
 
     virtual bool isCollapsed() const;

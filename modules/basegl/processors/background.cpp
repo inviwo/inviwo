@@ -50,20 +50,26 @@ Background::Background()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , backgroundStyle_("backgroundStyle", "Style", InvalidationLevel::InvalidResources)
+    , backgroundStyle_("backgroundStyle", "Style",
+                       {{"linearGradientVertical", "Linear gradient (Vertical)", 0},
+                        {"linearGradientHorizontal", "Linear gradient (Horizontal)", 1},
+                        {"uniformColor", "Uniform color", 2},
+                        {"checkerBoard", "Checker board", 3}},
+                       0, InvalidationLevel::InvalidResources)
     , color1_("color1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
     , color2_("color2", "Color 2", vec4(1.0f))
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
+    , blendMode_("blendMode", "Blend mode",
+                 {{"backtofront", "Back To Front", BlendMode::BackToFront},
+                  {"alphamixing", "Alpha Mixing", BlendMode::AlphaMixing}},
+                 0, InvalidationLevel::InvalidResources)
     , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);
     inport_.setOptional(true);
-    backgroundStyle_.addOption("linearGradient", "Linear gradient", 0);
-    backgroundStyle_.addOption("uniformColor", "Uniform color", 1);
-    backgroundStyle_.addOption("checkerBoard", "Checker board", 2);
-    backgroundStyle_.setCurrentStateAsDefault();
+
     addProperty(backgroundStyle_);
     color1_.setSemantics(PropertySemantics::Color);
     addProperty(color1_);
@@ -71,6 +77,8 @@ Background::Background()
     addProperty(color2_);
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
+    addProperty(blendMode_);
+    
     switchColors_.onChange(this, &Background::switchColors);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -89,14 +97,17 @@ void Background::initializeResources() {
 
     switch (backgroundStyle_.get()) {
         case 0:  // linear gradient
-            shaderDefine = "linearGradient(texCoords)";
+            shaderDefine = "linearGradientVertical(texCoords)";
+            break;
+        case 1:  // linear gradient
+            shaderDefine = "linearGradientHorizontal(texCoords)";
             break;
 
-        case 1:  // uniform color
+        case 2:  // uniform color
             shaderDefine = "color1";
             break;
 
-        case 2:  // checker board
+        case 3:  // checker board
             shaderDefine = "checkerBoard(texCoords)";
             checkerBoardSize_.setVisible(true);
             break;
@@ -112,6 +123,20 @@ void Background::initializeResources() {
         shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0.0,0.0,0.0,0.0)");
         hadData_ = false;
     }
+
+    std::string blendMode = "";
+    switch (blendMode_.get()) {
+        case BlendMode::BackToFront:
+            blendMode = "srcColor + backgroundColor * (1.0 - srcColor.a)";
+            break;
+        case BlendMode::AlphaMixing:
+            blendMode = "srcColor*srcColor.a + backgroundColor * (1.0 - srcColor.a)";
+            break;
+        default:
+            break;
+    }
+
+    shader_.getFragmentShaderObject()->addShaderDefine("BLEND(srcColor,dstColor)" , blendMode);
 
     shader_.build();
 }

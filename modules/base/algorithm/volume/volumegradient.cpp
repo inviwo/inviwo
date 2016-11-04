@@ -32,13 +32,12 @@
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 namespace util {
 
-std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,int channel) {
-    // detail::VolumeGradientDispatcher disp;
-    // return volume->getDataFormat()->dispatch(disp, volume);
+std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel) {
 
     auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataVec3Float32::get());
     newVolume->setModelMatrix(volume->getModelMatrix());
@@ -46,33 +45,38 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,int 
 
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
-    auto a = m * vec4(0, 0, 0, 1);
-    auto b = m * vec4(1.0f / vec3(volume->getDimensions()-size3_t(1)), 1);
-    auto spacing = b - a;
+    const auto a = m * vec4(0, 0, 0, 1);
+    const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
+    const auto spacing = b - a;
 
-    vec3 ox = vec3(spacing.x, 0, 0);
-    vec3 oy = vec3(0, spacing.y, 0);
-    vec3 oz = vec3(0, 0, spacing.z);
+    const vec3 ox(spacing.x, 0, 0);
+    const vec3 oy(0, spacing.y, 0);
+    const vec3 oz(0, 0, spacing.z);
 
     VolumeDoubleSampler<4> sampler(volume);
-    auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+    const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
 
     util::IndexMapper3D index(volume->getDimensions());
-    auto data = static_cast<vec3*>( newVolume->getEditableRepresentation<VolumeRAM>()->getData() );
+    auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
+    auto func = [&](const size3_t& pos) {
+        const vec3 world =
+            (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
 
-
-    std::function<void(const size3_t &)> func = [&](const size3_t& pos) {
-        vec3 world = (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
-        
         vec3 g;
-        g.x = static_cast<float>((sampler.sample(world + ox, worldSpace) - sampler.sample(world - ox, worldSpace))[channel] / (2.0 * spacing.x));
-        g.y = static_cast<float>((sampler.sample(world + oy, worldSpace) - sampler.sample(world - oy, worldSpace))[channel] / (2.0 * spacing.y));
-        g.z = static_cast<float>((sampler.sample(world + oz, worldSpace) - sampler.sample(world - oz, worldSpace))[channel] / (2.0 * spacing.z));
+        g.x = static_cast<float>((sampler.sample(world + ox, worldSpace) -
+                                  sampler.sample(world - ox, worldSpace))[channel] /
+                                 (2.0 * spacing.x));
+        g.y = static_cast<float>((sampler.sample(world + oy, worldSpace) -
+                                  sampler.sample(world - oy, worldSpace))[channel] /
+                                 (2.0 * spacing.y));
+        g.z = static_cast<float>((sampler.sample(world + oz, worldSpace) -
+                                  sampler.sample(world - oz, worldSpace))[channel] /
+                                 (2.0 * spacing.z));
         data[index(pos)] = g;
     };
 
-    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(),func);
+    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
 
     return newVolume;
 }

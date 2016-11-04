@@ -35,6 +35,8 @@
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/texture/textureobserver.h>
 
+#include <inviwo/core/datastructures/image/imagetypes.h>
+
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture : public Observable<TextureObserver> {
@@ -67,14 +69,13 @@ public:
     GLuint getNChannels() const;
     GLuint getSizeInBytes() const;
 
-    void setTextureParameters(std::function<void(Texture*)> fun) {
-        bind();
-        fun(this);
-        unbind();
-    }
+    void setTextureParameters(std::function<void(Texture*)> fun);
 
     void bind() const;
     void unbind() const;
+
+    void setSwizzleMask(SwizzleMask mask);
+    SwizzleMask getSwizzleMask() const;
 
     void download(void* data) const;
     void downloadToPBO() const;

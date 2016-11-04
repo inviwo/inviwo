@@ -34,21 +34,27 @@
 #include <inviwo/core/datastructures/volume/volumeramhistogram.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
+    using type = T;
+
     VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128));
     VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128));
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
+
+    T* getDataTyped();
+    const T* getDataTyped() const;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -68,7 +74,8 @@ public:
                                               size3_t sampleRate = size3_t(1)) override;
     virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
                                                     size3_t sampleRate = size3_t(1)) const override;
-    virtual void calculateHistograms(size_t bins, size3_t sampleRate, const bool& stop) const override;
+    virtual void calculateHistograms(size_t bins, size3_t sampleRate,
+                                     const bool& stop) const override;
 
     virtual double getAsDouble(const size3_t& pos) const override;
     virtual dvec2 getAsDVec2(const size3_t& pos) const override;
@@ -93,7 +100,6 @@ public:
     void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset, const size3_t& subSize,
                              const size3_t& subOffset) override;
 
-
     virtual size_t getNumberOfBytes() const override;
 
 private:
@@ -115,16 +121,6 @@ private:
 IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions,
                                                         const DataFormatBase* format,
                                                         void* dataPtr = nullptr);
-
-struct VolumeRamDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(void* dataPtr, const size3_t& dimensions) {
-        typedef typename T::type F;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions);
-    }
-};
-
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions)
@@ -172,6 +168,16 @@ VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
 template <typename T>
 VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
     return new VolumeRAMPrecision<T>(*this);
+}
+
+template <typename T>
+const T* inviwo::VolumeRAMPrecision<T>::getDataTyped() const {
+    return data_.get();
+}
+
+template <typename T>
+T* inviwo::VolumeRAMPrecision<T>::getDataTyped() {
+    return data_.get();
 }
 
 template <typename T>

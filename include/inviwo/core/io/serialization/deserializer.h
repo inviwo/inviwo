@@ -736,8 +736,12 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
             }
         } else {
             try {
-                auto ptr = vector[i].get();
-                deserialize(itemKey, ptr);
+                if (auto ptr = vector[i].get()) {
+                    deserialize(itemKey, ptr);
+                } else {
+                    deserialize(itemKey, ptr);
+                    vector[i].reset(ptr);
+                }
             } catch (...) {
                 handleError(IvwContext);
             }
@@ -921,7 +925,12 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
         auto it = map.find(childkey);
         if (it != map.end()) {
             try {
-                deserialize(itemKey, it->second.get());
+                if(auto ptr = it->second.get()) {
+                    deserialize(itemKey, ptr);
+                } else {
+                    deserialize(itemKey, ptr);
+                    it->second.reset(ptr);          
+                }
             } catch (...) {
                 handleError(IvwContext);
             }

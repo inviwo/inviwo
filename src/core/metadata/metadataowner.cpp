@@ -31,47 +31,21 @@
 
 namespace inviwo {
 
-MetaDataOwner::MetaDataOwner()
-    : metaData_(new MetaDataMap()) {}
-
-MetaDataOwner::MetaDataOwner(const MetaDataOwner& rhs)
-    : metaData_(rhs.metaData_->clone()) {}
-
-MetaDataOwner& MetaDataOwner::operator=(const MetaDataOwner& that) {
-    if (this != &that) {
-        MetaDataMap* metadata = that.metaData_->clone();
-        delete metaData_;
-        metaData_ = metadata;
-    }
-
-    return *this;
-}
-MetaDataOwner* MetaDataOwner::clone() const {
-    return new MetaDataOwner(*this);
-}
-MetaDataOwner::~MetaDataOwner() {
-    delete metaData_;
-}
-
-void MetaDataOwner::copyMetaDataFrom(const MetaDataOwner& src) { 
-    if (&src == this)
-        return;
+void MetaDataOwner::copyMetaDataFrom(const MetaDataOwner& src) {
+    if (&src == this) return;
     *this = src;
 }
 
-void MetaDataOwner::copyMetaDataTo(MetaDataOwner &dst) {
-    if (&dst == this)
-        return;
+void MetaDataOwner::copyMetaDataTo(MetaDataOwner& dst) {
+    if (&dst == this) return;
     dst = *this;
 }
+MetaDataMap* MetaDataOwner::getMetaDataMap() { return &metaData_; }
 
-void MetaDataOwner::serialize(Serializer& s) const {
-    metaData_->serialize(s);
-}
+const MetaDataMap* MetaDataOwner::getMetaDataMap() const { return &metaData_; }
 
-void MetaDataOwner::deserialize(Deserializer& d) {
-    metaData_->deserialize(d);
-}
+void MetaDataOwner::serialize(Serializer& s) const { metaData_.serialize(s); }
 
+void MetaDataOwner::deserialize(Deserializer& d) { metaData_.deserialize(d); }
 
 } // namespace

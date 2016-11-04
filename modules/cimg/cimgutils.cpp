@@ -127,8 +127,8 @@ struct LayerToCImg {
     static std::unique_ptr<CImg<T>> convert(const LayerRAM* inputLayerRAM, bool permute = true) {
         // Single channel means we can do xyzc, as no permutation is needed
         auto img = util::make_unique<CImg<T>>(static_cast<const T*>(inputLayerRAM->getData()),
-                                              inputLayerRAM->getDimensions().x,
-                                              inputLayerRAM->getDimensions().y, 1, 1, false);
+                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
+                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
 
         return img;
     }

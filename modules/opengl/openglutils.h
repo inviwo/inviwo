@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <modules/opengl/texture/textureunit.h>
 
 #include <functional>
@@ -40,6 +41,11 @@
 namespace inviwo {
 
 namespace utilgl {
+
+std::array<GLint, 4> IVW_MODULE_OPENGL_API convertSwizzleMaskToGL(const SwizzleMask &mask);
+
+SwizzleMask IVW_MODULE_OPENGL_API convertSwizzleMaskFromGL(const std::array<GLint, 4> &maskGL);
+
 
 struct IVW_MODULE_OPENGL_API TexParameter {
     TexParameter() = delete;

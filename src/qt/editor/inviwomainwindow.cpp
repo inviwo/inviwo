@@ -28,10 +28,13 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/systemcapabilities.h>
+#include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -45,8 +48,6 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-
-#include <modules/buildinfo/buildinfo.h>
 
 #include <inviwomodulespaths.h>
 
@@ -825,7 +826,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
         onNetworkEditorFileChanged(fileName);
         saveWindowState();
     } else {
-        setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
     }
@@ -897,7 +898,7 @@ void InviwoMainWindow::openExampleWorkspace() {
         }
         // reset workspace title in every case, we don't want to overwrite the
         // existing example workspace
-        setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
     }
@@ -969,6 +970,11 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 }
 
 void InviwoMainWindow::showAboutBox() {
+    auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();
+    auto syscap = getTypeFromVector<SystemCapabilities>(caps);
+    
+    const int buildYear = (syscap ? syscap->getBuildTimeYear() : 0);
+
     std::stringstream aboutText;
     aboutText << "<html><head>\n"
               << "<style>\n"
@@ -983,7 +989,7 @@ void InviwoMainWindow::showAboutBox() {
 
               << "<b>Inviwo v" << IVW_VERSION << "</b><br>\n"
               << "Interactive Visualization Workshop<br>\n"
-              << "&copy; 2012-" << buildinfo::getBuildTimeYear() << " The Inviwo Foundation<br>\n"
+              << "&copy; 2012-" << buildYear << " The Inviwo Foundation<br>\n"
               << "<a href='http://www.inviwo.org/' style='color: #AAAAAA;'>"
               << "http://www.inviwo.org/</a>\n"
               << "<p>Inviwo is a rapid prototyping environment for interactive "
@@ -995,20 +1001,18 @@ void InviwoMainWindow::showAboutBox() {
     
               << "<p><b>Former Developers:</b><br>\n"
               << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
-              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n"
-
-              << "<p><b>Build Date: </b>\n"
-              << buildinfo::getBuildDateString()
-              << "</p>\n";
-
-    aboutText << "<p><b>Repos:</b>\n"
-              << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
-    for (const auto& item : buildinfo::getGitHashes()) {
-        aboutText << "<tr><td style='padding-right:8px;'>" << item.first
-                  << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
+              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n";
+    if (syscap) {
+        aboutText << "<p><b>Build Date: </b>\n" << syscap->getBuildDateString() << "</p>\n";
+        aboutText << "<p><b>Repos:</b>\n"
+                  << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
+        for (size_t i = 0; i < syscap->getGitNumberOfHashes(); ++i) {
+            auto item = syscap->getGitHash(i);
+            aboutText << "<tr><td style='padding-right:8px;'>" << item.first
+                      << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
+        }
+        aboutText << "</table></p>\n";
     }
-    aboutText << "</table></p>\n";
-
     const auto& mfos = InviwoApplication::getPtr()->getModuleFactoryObjects();
     auto names = util::transform(
         mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name_; });

@@ -123,7 +123,7 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
       return internal::ploadt<PacketScalar, LoadMode>(m_data + index * innerStride());
     }
 
-    inline MapBase(PointerType dataPtr) : m_data(dataPtr), m_rows(RowsAtCompileTime), m_cols(ColsAtCompileTime)
+    explicit inline MapBase(PointerType dataPtr) : m_data(dataPtr), m_rows(RowsAtCompileTime), m_cols(ColsAtCompileTime)
     {
       EIGEN_STATIC_ASSERT_FIXED_SIZE(Derived)
       checkSanity();
@@ -148,6 +148,10 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
                   && nbCols >= 0 && (ColsAtCompileTime == Dynamic || ColsAtCompileTime == nbCols)));
       checkSanity();
     }
+
+    #ifdef EIGEN_MAPBASE_PLUGIN
+    #include EIGEN_MAPBASE_PLUGIN
+    #endif
 
   protected:
 

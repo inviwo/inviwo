@@ -64,19 +64,16 @@ public:
     Camera& operator=(const Camera& other) = default;
 
     virtual Camera* clone() const = 0;
+
     virtual bool update(const Camera* source) = 0;
+    virtual void configureProperties(CompositeProperty* comp) = 0;
 
-    virtual void configureProperties(CompositeProperty* comp) {};
-
-    vec3& getLookFrom() { return lookFrom_; }
     const vec3& getLookFrom() const;
     void setLookFrom(vec3 val);
 
-    vec3& getLookTo() { return lookTo_; }
     const vec3& getLookTo() const;
     void setLookTo(vec3 val);
 
-    vec3& getLookUp() { return lookUp_; }
     const vec3& getLookUp() const;
     void setLookUp(vec3 val);
 
@@ -85,26 +82,20 @@ public:
 
     /**
      * \brief Get unnormalized direction of camera: lookTo - lookFrom
-     *
-     * @return Unnormalized direction of camera
      */
-    vec3 getDirection() const { return lookTo_ - lookFrom_; }
+    vec3 getDirection() const;
 
-    float getNearPlaneDist() const;
     /**
      * \brief Set distance to the near plane from lookFrom.
-     *
-     * @param val Distance
      */
-    void setNearPlaneDist(float val);
+    void setNearPlaneDist(float distance);
+    float getNearPlaneDist() const;
 
-    float getFarPlaneDist() const;
     /**
      * \brief Set distance to the far plane from lookFrom.
-     *
-     * @param val Distance
      */
-    void setFarPlaneDist(float val);
+    void setFarPlaneDist(float distance);
+    float getFarPlaneDist() const;
 
     const mat4& getViewMatrix() const;
     const mat4& getProjectionMatrix() const;
@@ -113,7 +104,6 @@ public:
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
-    *
     * @param ndcCoords Coordinates in [-1 1]
     * @return World space position
     */
@@ -307,22 +297,26 @@ bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamer
 
 
 // Implementation details
-
 inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
+inline const vec3& Camera::getLookTo() const { return lookTo_; }
+inline const vec3& Camera::getLookUp() const { return lookUp_; }
+
 inline void Camera::setLookFrom(vec3 val) {
     lookFrom_ = val;
     invalidateViewMatrix();
 }
-inline const vec3& Camera::getLookTo() const { return lookTo_; }
+
 inline void Camera::setLookTo(vec3 val) {
     lookTo_ = val;
     invalidateViewMatrix();
 }
-inline const vec3& Camera::getLookUp() const { return lookUp_; }
+
 inline void Camera::setLookUp(vec3 val) {
     lookUp_ = val;
     invalidateViewMatrix();
 }
+
+inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
 
 inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
 inline void Camera::setNearPlaneDist(float val) {

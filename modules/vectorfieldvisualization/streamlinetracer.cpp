@@ -139,17 +139,27 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
     if (!fwd) h = -h;
     auto h2 = h / 2;
 
+    auto normalize = [](dvec3 k) {
+        auto l = glm::length(k);
+        if (l == 0) {
+            return k;
+        }
+        else {
+            return k / l;
+        }
+    };
+
     auto k1 = volumeSampler_->sample(curPos).xyz();
-    if (normalizeSample_) k1 = glm::normalize(k1);
+    if (normalizeSample_) k1 = normalize(k1);
     auto K1 = m * k1;
     auto k2 = volumeSampler_->sample(curPos + K1 * h2).xyz();
-    if (normalizeSample_) k2 = glm::normalize(k2);
+    if (normalizeSample_) k2 = normalize(k2);
     auto K2 = m * k2;
     auto k3 = volumeSampler_->sample(curPos + K2 * h2).xyz();
-    if (normalizeSample_) k3 = glm::normalize(k3);
+    if (normalizeSample_) k3 = normalize(k3);
     auto K3 = m * k3;
     auto k4 = volumeSampler_->sample(curPos + K3 * h).xyz();
-    if (normalizeSample_) k4 = glm::normalize(k4);
+    if (normalizeSample_) k4 = normalize(k4);
 
     return (k1+2.0*(k2+k3)+k4 )/6.0;
 }

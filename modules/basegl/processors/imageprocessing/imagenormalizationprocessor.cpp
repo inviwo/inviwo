@@ -31,7 +31,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/base/algorithm/image/layerminmax.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -117,7 +117,7 @@ void ImageNormalizationProcessor::updateMinMax() {
         }
     }
 
-    auto minMax = util::layerMinMax(img);
+    auto minMax = util::layerMinMax(img, IgnoreSpecialValues::Yes);
 
     min_ = minMax.first;
     max_ = minMax.second;

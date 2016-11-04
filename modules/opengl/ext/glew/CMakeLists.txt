@@ -39,9 +39,9 @@ include_directories(
 # Set the compiler flags
 if(WIN32)
   add_definitions(-DGLEW_BUILD)
-else(WIN32)
+else()
   add_definitions(-DHAVE_CONFIG_H)
-endif(WIN32)
+endif()
 
 add_definitions(-DUNICODE)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
@@ -49,35 +49,12 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Create a target for the library
 add_library(GLEW ${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(GLEW ${OPENGL_LIBRARIES})
 
 # InViWo Macros
 ivw_folder(GLEW ext)
 
-target_link_libraries(GLEW
-    ${OPENGL_LIBRARIES}
-)
-
 #--------------------------------------------------------------------
 # Add to package
-if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-if(WIN32)
-   install(TARGETS GLEW
-            RUNTIME DESTINATION bin
-            COMPONENT modules)
-else(APPLE)
-    install(TARGETS GLEW
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION .
-            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-            LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-            COMPONENT modules)
+ivw_default_install_targets(GLEW)
 
-else()
-    install(TARGETS GLEW
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT modules)
-endif()
-endif()
