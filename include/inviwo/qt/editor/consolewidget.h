@@ -49,16 +49,14 @@ class QTableView;
 class QLabel;
 class QKeyEvent;
 class QAction;
+class QSortFilterProxyModel;
+class QLineEdit;
 
 namespace inviwo {
 
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API LogTableModel : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+class IVW_QTEDITOR_API LogTableModel {
 public:
     enum class Columns {
         Date = 0,
@@ -83,33 +81,27 @@ public:
         std::string funcionName;
         std::string message;
 
-        std::string getTime(const std::string& format) const;
+        std::string getDate() const;
+        std::string getTime() const;
         static constexpr size_t size() { return 10; }
         QStandardItem*  get(Columns ind) const;
     };
 
-    LogTableModel();
-
-    void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
-             const char* functionName, int lineNumber, std::string logMsg);
+    LogTableModel(QTableView* view);
 
     QString getName(Columns ind) const;
     QStandardItemModel* model();
     
-    void clear();
-    
-public slots:
+    void clear();    
     void log(Entry entry);
 
-signals:
-    void logSignal(Entry entry);
 
 private:
     QColor infoTextColor_ = {153, 153, 153};
     QColor warnTextColor_ = {221, 165, 8};
     QColor errorTextColor_ = {255, 107, 107};
 
-
+    QTableView* view_;
     QStandardItemModel model_;
 };
 
@@ -140,31 +132,46 @@ public slots:
     void clear();
 
 signals:
-    void updateIndicatorsSignal(LogLevel level);
+    void logSignal(LogTableModel::Entry level);
     void clearSignal();
 
 protected:
+    void log(LogTableModel::Entry);
+
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual bool eventFilter(QObject *object, QEvent *event) override;
+    virtual void closeEvent(QCloseEvent *event) override;
 
 private:
-    LogTableModel model_;
+    QModelIndex mapToSource(int row, int col);
+    QModelIndex mapFromSource(int row, int col);
+
 
     QTableView* tableView_;
+    LogTableModel model_;
+    QSortFilterProxyModel* filter_;
+    QSortFilterProxyModel* levelFilter_;
 
-    QLabel* errorsLabel_;
-    QLabel* warningsLabel_;
-    QLabel* infoLabel_;
-    unsigned int numErrors_;
-    unsigned int numWarnings_;
-    unsigned int numInfos_;
+    struct Level {
+        LogLevel level;
+        std::string name;
+        std::string icon;
+        int count;
+        QAction* action;
+        QLabel* label;
+    };
 
+    std::array<Level, 3> levels = {{{LogLevel::Error, "Errors", "error", 0, nullptr, nullptr},
+                                    {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
+                                    {LogLevel::Info, "Info", "info", 0, nullptr, nullptr}}};
+
+    QLineEdit* filterPattern_;
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;
     std::unordered_map<std::string, QMetaObject::Connection> connections_;
     
     bool hover_ = false;
-    bool focus_ = false;;
+    bool focus_ = false;
 };
 
 }  // namespace

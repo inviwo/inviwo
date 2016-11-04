@@ -93,7 +93,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
-    // make sure, tooltips are always shown (this includes prot inspectors as well)
+    // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
     networkEditor_ = std::make_shared<NetworkEditor>(this);
@@ -1102,6 +1102,8 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
     }
     settings.endGroup();
+
+    consoleWidget_->close();
 
     QMainWindow::closeEvent(event);
 }

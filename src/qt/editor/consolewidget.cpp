@@ -44,6 +44,11 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
+#include <QSortFilterProxyModel>
+#include <QLineEdit>
+#include <QToolButton>
+#include <QPixmap>
+#include <QSettings>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
@@ -52,24 +57,29 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 namespace inviwo {
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent)
-    , errorsLabel_(nullptr)
-    , warningsLabel_(nullptr)
-    , infoLabel_(nullptr)
-    , numErrors_(0)
-    , numWarnings_(0)
-    , numInfos_(0)
+    , tableView_(new QTableView(this))
+    , model_(tableView_)
+    , filter_(new QSortFilterProxyModel(this))
+    , levelFilter_(new QSortFilterProxyModel(this))
+    , filterPattern_(new QLineEdit(this))
     , mainwindow_(parent) {
 
     setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
-    tableView_ = new QTableView(this);
-    tableView_->setModel(model_.model());
+    filter_->setSourceModel(model_.model());
+    filter_->setFilterKeyColumn(static_cast<int>(LogTableModel::Columns::Message));
+
+    levelFilter_->setSourceModel(filter_);
+    levelFilter_->setFilterKeyColumn(static_cast<int>(LogTableModel::Columns::Level));
+
+    tableView_->setModel(levelFilter_);
     tableView_->setGridStyle(Qt::NoPen);
     tableView_->setCornerButtonEnabled(false);
     
@@ -91,6 +101,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     
     const auto cols = tableView_->horizontalHeader()->count();
 
+    auto viewColGroup = new QMenu(this);
     for (int i = 0; i < cols; ++i) {
         auto viewCol = new QAction(
             QString("View ") + model_.getName(static_cast<LogTableModel::Columns>(i)), this);
@@ -104,7 +115,11 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             }
         });
         tableView_->horizontalHeader()->addAction(viewCol);
+        viewColGroup->addAction(viewCol);
     }
+    auto viewColAction = new QAction("View", this);
+    viewColAction->setMenu(viewColGroup);
+    tableView_->addAction(viewColAction);
 
     tableView_->horizontalHeader()->setResizeContentsPrecision(0);
     tableView_->horizontalHeader()->setSectionResizeMode(cols - 1, QHeaderView::Stretch);
@@ -112,40 +127,116 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     tableView_->verticalHeader()->setVisible(false);
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
-    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    tableView_->verticalHeader()->setMinimumSectionSize(5);
-    tableView_->verticalHeader()->setDefaultSectionSize(13);
+    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    auto height = 2 + QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+    tableView_->verticalHeader()->setMinimumSectionSize(height);
+    tableView_->verticalHeader()->setDefaultSectionSize(height);
     
     QHBoxLayout *statusBar = new QHBoxLayout();
+    statusBar->setObjectName("StatusBar");
 
-    errorsLabel_ = new QLabel("0", this);
-    warningsLabel_ = new QLabel("0", this);
-    infoLabel_ = new QLabel("0", this);
+    auto makeToolButton = [this, statusBar](const QString& label, const QString& file,
+                                            bool checkable = true) {
+        auto button = new QToolButton(this);
+        auto icon = QIcon();
+        if(checkable) {
+            icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::On);
+            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Normal, QIcon::Off);
+        } else {
+            icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Disabled, QIcon::Off);
+        }
 
-    QFrame* line1 = new QFrame();
-    QFrame* line2 = new QFrame();
-    QFrame* line3 = new QFrame();
-    line1->setFrameShape(QFrame::VLine);
-    line2->setFrameShape(QFrame::VLine);
-    line3->setFrameShape(QFrame::VLine);
-    
-    line1->setFrameShadow(QFrame::Raised);
-    line2->setFrameShadow(QFrame::Raised);
-    line3->setFrameShadow(QFrame::Raised);
+        auto action = new QAction(icon, label, this);
+        action->setCheckable(checkable);
+        if (checkable) action->setChecked(true);
 
-    statusBar->addWidget(new QLabel( "<img width='16' height='16' src=':/icons/error.png'>", this));
-    statusBar->addWidget(errorsLabel_);
-    statusBar->addWidget(line1);
-    statusBar->addWidget(new QLabel( "<img width='16' height='16' src=':/icons/warning.png'>", this));
-    statusBar->addWidget(warningsLabel_);
-    statusBar->addWidget(line2);
-    statusBar->addWidget(new QLabel( "<img width='16' height='16' src=':/icons/info.png'>", this));
-    statusBar->addWidget(infoLabel_);
-    statusBar->addWidget(line3);
-    
+        button->setDefaultAction(action);
+        statusBar->addWidget(button);
+        return action;
+    };
 
-    statusBar->addItem(new QSpacerItem(40, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    
+    auto updateRowsHeights = [this]() {
+        tableView_->setUpdatesEnabled(false);
+        auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+
+        auto vrows = tableView_->verticalHeader()->count();
+        for (int i = 0; i < vrows; ++i) {
+            auto mind = mapToSource(i, static_cast<int>(LogTableModel::Columns::Message));
+            auto message = mind.data(Qt::DisplayRole).toString();
+            auto lines = std::count(message.begin(), message.end(), '\n') + 1;
+            tableView_->verticalHeader()->resizeSection(i, 2 + lines * height);
+        }
+        tableView_->setUpdatesEnabled(true);
+    };
+
+    auto levelCallback = [this, updateRowsHeights](bool checked) {
+        if (util::all_of(levels, [](const auto& level){return level.action->isChecked();})) {
+            levelFilter_->setFilterRegExp("");
+        } else {
+            std::stringstream ss;
+            auto joiner = util::make_ostream_joiner(ss, "|");
+            joiner = "None";
+            for (const auto& level : levels) {
+                if (level.action->isChecked()) joiner = level.level;
+            }
+            levelFilter_->setFilterRegExp(QString::fromStdString(ss.str()));
+        }
+        updateRowsHeights();
+    };
+
+    auto levelGroup = new QMenu(this);
+    for (auto& level : levels) {
+        level.action =
+            makeToolButton(QString::fromStdString(level.name), QString::fromStdString(level.icon));
+        level.label = new QLabel("0", this);
+        statusBar->addWidget(level.label);
+        statusBar->addSpacing(5);
+        levelGroup->addAction(level.action);
+        connect(level.action, &QAction::triggered, levelCallback);
+    }
+    auto viewAction = new QAction("Log Level", this);
+    viewAction->setMenu(levelGroup);
+    tableView_->addAction(viewAction);
+
+    statusBar->addStretch(3);
+    statusBar->addWidget(new QLabel("Filter", this));
+
+    filterPattern_->setMinimumWidth(200);
+    statusBar->addWidget(filterPattern_, 1);
+    auto clearFilter = makeToolButton("Clear Filter", "button_cancel", false);
+    clearFilter->setEnabled(false);
+
+    tableView_->addAction(clearFilter);
+
+    statusBar->addSpacing(5);
+
+    auto clearButton = new QToolButton(this);
+    clearButton->setDefaultAction(clearAction_);
+    statusBar->addWidget(clearButton);
+    statusBar->addSpacing(5);
+
+    connect(filterPattern_, &QLineEdit::textChanged,
+            [this, updateRowsHeights, clearFilter](const QString& text) {
+                filter_->setFilterRegExp(text);
+                updateRowsHeights();
+                clearFilter->setEnabled(!text.isEmpty());
+            });
+
+    connect(clearFilter, &QAction::triggered, [this]() {
+        filterPattern_->setText("");
+    });
+
+    auto filterAction = new QAction("Filter", this);
+    filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
+    connect(filterAction, &QAction::triggered, [this](){
+        raise();
+        filterPattern_->setFocus();
+        filterPattern_->selectAll();
+    });
+    tableView_->addAction(filterAction);
+
+
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(tableView_);
     layout->addLayout(statusBar);
@@ -158,8 +249,35 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->installEventFilter(this);
     tableView_->setAttribute(Qt::WA_Hover);
 
-    connect(this, &ConsoleWidget::updateIndicatorsSignal, [&](LogLevel l){updateIndicators(l);});
-    connect(this, SIGNAL(clearSignal()), this, SLOT(clear()));
+    connect(this, &ConsoleWidget::logSignal, [&](LogTableModel::Entry e) { log(e); });
+    connect(this, &ConsoleWidget::clearSignal, [&]() { clear(); });
+
+    // Restore State
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("console");
+
+    auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
+    auto columnsWidth = settings.value("columnsWidth", QVariant(QList<QVariant>()));
+
+    int i = 0;
+    for (const auto& col : columnsActive.toList()) {
+        tableView_->horizontalHeader()->setSectionHidden(i++, col.toBool());
+    }
+
+    i = 0;
+    for (const auto& col : columnsWidth.toList()) {
+        tableView_->horizontalHeader()->resizeSection(i++, col.toInt());
+    }
+    auto levelsActive = settings.value("levelsActive", QVariant(QList<QVariant>()));
+    i = 0;
+    for (const auto& level : levelsActive.toList()) {
+        levels[i++].action->setChecked(level.toBool());
+    }
+    auto filterText = settings.value("filterText", "");
+    filterPattern_->setText(filterText.toString());
+
+    settings.endGroup();
+
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
@@ -175,58 +293,93 @@ void ConsoleWidget::clear(){
     }
 
     model_.clear();
-    errorsLabel_->setText("0");
-    warningsLabel_->setText("0");
-    infoLabel_->setText("0");
-    numErrors_ = numWarnings_ = numInfos_ = 0;
-}
-
-void ConsoleWidget::updateIndicators(LogLevel level) {
-    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
-        emit updateIndicatorsSignal(level);
-    } else {
-        switch (level) {
-            case LogLevel::Error: {
-                errorsLabel_->setText(toString(++numErrors_).c_str());
-                break;
-            }
-            case LogLevel::Warn: {
-                warningsLabel_->setText(toString(++numWarnings_).c_str());
-                break;
-            }
-            case LogLevel::Info: {
-                infoLabel_->setText(toString(++numInfos_).c_str());
-                break;
-            }
-        }
+    for (auto& level : levels) {
+        level.label->setText("0");
+        level.count = 0;
     }
 }
 
-void ConsoleWidget::log(std::string logSource, LogLevel level, LogAudience audience,
-                        const char* fileName, const char* function, int line, std::string msg) {
-
-    model_.log(logSource, level, audience, fileName, function, line, msg);
-    updateIndicators(level);
-    tableView_->scrollToBottom(); //crazy slow...
+void ConsoleWidget::updateIndicators(LogLevel level) {
+    auto it = util::find_if(levels, [&](const auto& l){return l.level == level;});
+    if (it != levels.end()) {
+        it->label->setText(toString(++(it->count)).c_str());
+    }
 }
+
+void ConsoleWidget::log(std::string source, LogLevel level, LogAudience audience,
+                        const char* file, const char* function, int line, std::string msg) {
+    LogTableModel::Entry e = {
+        std::chrono::system_clock::now(),
+        source,
+        level,
+        audience,
+        file ? file : "",
+        line,
+        function ? function : "",
+        msg
+    };
+    log(std::move(e));
+}
+
 
 void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                                  std::string msg, const char* file, const char* function,
                                  int line) {
-    model_.log(processor->getIdentifier(), level, audience, file, function, line,
-               msg);
-    updateIndicators(level);
-    tableView_->scrollToBottom();
+    LogTableModel::Entry e = {
+        std::chrono::system_clock::now(),
+        processor->getIdentifier(),
+        level,
+        audience,
+        file ? file : "",
+        line,
+        function ? function : "",
+        msg
+    };
+    log(std::move(e));
 }
 
 void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function,
                               int line) {
-    
-    model_.log("ProcessorNetwork", level, audience, file, function, line, msg);
-    updateIndicators(level);
-    tableView_->scrollToBottom();
+    LogTableModel::Entry e = {
+        std::chrono::system_clock::now(),
+        "ProcessorNetwork",
+        level,
+        audience,
+        file ? file : "",
+        line,
+        function ? function : "",
+        msg
+    };
+    log(std::move(e));
 }
+
+void ConsoleWidget::log(LogTableModel::Entry e) {
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
+        emit logSignal(e);
+        return;
+    }
+
+    auto lines = std::count(e.message.begin(), e.message.end(), '\n') + 1;
+    auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+
+    tableView_->setUpdatesEnabled(false);
+
+    model_.log(e);
+    updateIndicators(e.level);
+
+    // Faster but messes with filters.
+    if (lines != 1) {
+        auto vind = mapFromSource(model_.model()->rowCount()-1,0);
+        if (vind.isValid()) {
+            tableView_->verticalHeader()->resizeSection(vind.row(), 2 + lines*height);
+        }
+    }
+
+    tableView_->scrollToBottom();
+    tableView_->setUpdatesEnabled(true);
+}
+
 
 
 void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
@@ -246,15 +399,17 @@ bool ConsoleWidget::eventFilter(QObject* object, QEvent* event) {
             connections_["Copy"] = connect(action, &QAction::triggered, [&]() {
                 const auto& inds = tableView_->selectionModel()->selectedIndexes();
                 int prevrow = inds.first().row();
+                bool first = true;
                 QString text;
                 for (const auto& ind : inds) {
-                    auto data = model_.model()->data(ind);
-                    if (tableView_->isColumnHidden(ind.column())) continue;
-                    text.append(data.toString());
-                    if (ind.row() == prevrow) {
-                        text.append('\t');
-                    } else {
-                        text.append('\n');
+                    if (!tableView_->isColumnHidden(ind.column())) {
+                        if (!first && ind.row() == prevrow) {
+                            text.append('\t');
+                        } else if(!first) {
+                            text.append('\n');
+                        }
+                        text.append(ind.data(Qt::DisplayRole).toString());
+                        first = false;
                     }
                     prevrow = ind.row();
                 }
@@ -287,9 +442,46 @@ bool ConsoleWidget::eventFilter(QObject* object, QEvent* event) {
     return false;
 }
 
-LogTableModel::LogTableModel() : QObject(), model_(0, Entry::size()) {
-    connect(this, &LogTableModel::logSignal, [&](Entry e) { log(e); });
+QModelIndex ConsoleWidget::mapToSource(int row, int col) {
+    auto ind = levelFilter_->index(row, col);
+    auto lind = levelFilter_->mapToSource(ind);
+    return filter_->mapToSource(lind);
+}
 
+QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
+    auto mind = model_.model()->index(row, col);
+    auto lind = filter_->mapFromSource(mind);
+    return levelFilter_->mapFromSource(lind);
+}
+
+void ConsoleWidget::closeEvent(QCloseEvent *event) {
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("console");
+    settings.setValue("geometry", saveGeometry());
+
+    const auto cols = tableView_->horizontalHeader()->count();
+    QList<QVariant> columnsActive;
+    QList<QVariant> columnsWidth;
+    columnsActive.reserve(cols);
+    columnsWidth.reserve(cols);
+    for (int i = 0; i < cols; ++i) {
+        columnsActive.append(tableView_->horizontalHeader()->isSectionHidden(i));
+        columnsWidth.append(tableView_->horizontalHeader()->sectionSize(i));
+    }
+    QList<QVariant> levelsActive;
+    for (const auto& level : levels) {
+        levelsActive.append(level.action->isChecked());
+    }
+    
+    settings.setValue("columnsActive", QVariant(columnsActive));
+    settings.setValue("columnsWidth", QVariant(columnsWidth));
+    settings.setValue("levelsActive", QVariant(levelsActive));
+    settings.setValue("filterText", QVariant(filterPattern_->text()));
+    settings.endGroup();
+}
+
+
+LogTableModel::LogTableModel(QTableView* view) : view_(view), model_(0, Entry::size()) {
     for (size_t i = 0; i < Entry::size(); ++i) {
         auto item = new QStandardItem(getName(static_cast<Columns>(i)));
         item->setTextAlignment(Qt::AlignLeft);
@@ -297,39 +489,16 @@ LogTableModel::LogTableModel() : QObject(), model_(0, Entry::size()) {
     }
 }
 
-void LogTableModel::log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                        const char* fileName, const char* functionName, int lineNumber,
-                        std::string logMsg) {
-
-    Entry e = {std::chrono::system_clock::now(),
-               logSource,
-               logLevel,
-               audience,
-               fileName ? fileName : "",
-               lineNumber,
-               functionName ? functionName : "",
-               logMsg};
-
-    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
-        emit logSignal(e);
-    } else {
-        log(e);
-    }
-}
 
 void LogTableModel::log(Entry entry) {
-    auto lines = std::count(entry.message.begin(), entry.message.end(), '\n') + 1;
-
     QList<QStandardItem*> items;
     items.reserve(Entry::size());
     for (size_t i = 0; i < Entry::size(); ++i) {
         items.append(entry.get(static_cast<Columns>(i)));
         items.last()->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
         items.last()->setTextAlignment(Qt::AlignLeft);
-        items.last()->setEditable(false);
-        auto height = QFontMetrics(items.last()->font()).height();
-        items.last()->setSizeHint(QSize(1, lines * height));
-        
+        items.last()->setEditable(false);    
+        //items.last()->setSizeHint(QSize(1, lines * height));
         
         switch (entry.level) {
             case LogLevel::Info:
@@ -374,19 +543,28 @@ QString LogTableModel::getName(Columns ind) const {
     }
 }
 
-std::string LogTableModel::Entry::getTime(const std::string& format) const {
+std::string LogTableModel::Entry::getDate() const {
     auto in_time_t = std::chrono::system_clock::to_time_t(time);
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&in_time_t), format.c_str());
+    ss << std::put_time(std::localtime(&in_time_t), "%F");
+    return ss.str();
+}
+std::string LogTableModel::Entry::getTime() const {
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()) % 1000;
+
+    auto in_time_t = std::chrono::system_clock::to_time_t(time);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), "%T");
+    ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
     return ss.str();
 }
 
 QStandardItem* LogTableModel::Entry::get(Columns ind) const {
     switch (ind) {
         case Columns::Date:
-            return new QStandardItem(utilqt::toQString(getTime("%F")));
+            return new QStandardItem(utilqt::toQString(getDate()));
         case Columns::Time:
-            return new QStandardItem(utilqt::toQString(getTime("%T")));
+            return new QStandardItem(utilqt::toQString(getTime()));
         case Columns::Source:
             return new QStandardItem(utilqt::toQString(source));
         case Columns::Level:
