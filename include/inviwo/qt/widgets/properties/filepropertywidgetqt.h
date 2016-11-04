@@ -30,7 +30,7 @@
 #ifndef IVW_FILEPROPERTYWIDGETQT_H
 #define IVW_FILEPROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/filepathlineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -46,7 +46,7 @@ class QDropEvent;
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
+class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
 
 #include <warn/push>
 #include <warn/ignore/all>

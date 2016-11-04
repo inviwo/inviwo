@@ -77,7 +77,6 @@ include(cmake/globalconfig.cmake)
 # Applications/Qt
 option(IVW_QT_APPLICATION "Build Inviwo Qt Application" ON)
 option(IVW_QT_EDITOR "Build Inviwo Qt Editor" ON)
-option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 
 #--------------------------------------------------------------------
 # Add externals
@@ -120,9 +119,10 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
+    "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
-	"Nifti" 
+    "Nifti" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
 

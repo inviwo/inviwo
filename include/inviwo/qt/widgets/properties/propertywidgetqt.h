@@ -30,7 +30,7 @@
 #ifndef IVW_PROPERTYWIDGETQT_H
 #define IVW_PROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertywidget.h>
@@ -52,7 +52,7 @@ class QActionGroup;
 
 namespace inviwo {
 
-enum IVW_QTWIDGETS_API InviwoWidgetGraphicsItemType {
+enum IVW_MODULE_QTWIDGETS_API InviwoWidgetGraphicsItemType {
     TransferFunctionEditorControlPointType = 1,
     TransferFunctionControlPointConnectionType,
     Number_of_InviwoWidgetGraphicsItemTypes
@@ -62,7 +62,7 @@ class PropertyListWidget;
 class Property;
 using BaseCallBack = std::function<void()>;
 
-class IVW_QTWIDGETS_API IvwLineEdit : public QLineEdit {
+class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT
@@ -74,7 +74,7 @@ public:
     QSize sizeHint() const;
 };
 
-class IVW_QTWIDGETS_API IvwPushButton : public QPushButton {
+class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -87,7 +87,7 @@ public:
     QSize minimumSizeHint() const;
 };
 
-class IVW_QTWIDGETS_API IvwComboBox : public QComboBox {
+class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -100,7 +100,7 @@ public:
     QSize minimumSizeHint() const;
 };
 
-class IVW_QTWIDGETS_API PropertyWidgetQt : public QWidget,
+class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                            public PropertyWidget,
                                            public PropertyObserver {
 #include <warn/push>
@@ -194,7 +194,7 @@ private:
 };
 
 // PropertyEditorWidget owned by PropertyWidget
-class IVW_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
+class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
                                                  public PropertyEditorWidget {
 #include <warn/push>
 #include <warn/ignore/all>

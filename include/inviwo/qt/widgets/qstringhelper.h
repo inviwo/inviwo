@@ -30,7 +30,7 @@
 #ifndef IVW_QSTRINGHELPER_H
 #define IVW_QSTRINGHELPER_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <warn/push>
 #include <warn/ignore/all>

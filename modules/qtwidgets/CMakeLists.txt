@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Qt Widgets
-ivw_project(inviwo-qtwidgets)
+ivw_module(QtWidgets)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -58,14 +58,14 @@ set(MOC_FILES
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/eventconverterqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtwidgetsdefine.h
+    qtwidgetsmoduledefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/keyboardutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/labelgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qstringhelper.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qtwidgetmodule.h
+    qtwidgetsmodule.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rawdatareaderdialogqt.h
     ${MOC_FILES}
 )
@@ -126,7 +126,7 @@ set(SOURCE_FILES
     properties/transferfunctionpropertywidgetqt.cpp 
     propertylistwidget.cpp
     propertyselectiontreewidget.cpp
-    qtwidgetmodule.cpp
+    qtwidgetsmodule.cpp
     rangesliderqt.cpp
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp
@@ -140,13 +140,29 @@ ivw_group("Source Files" ${SOURCE_FILES})
 find_package(Qt5Core QUIET REQUIRED)
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
-add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+#add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+
 
 #--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(IVW_QTWIDGETS inviwo-qtwidgets)
-ivw_define_standard_properties(inviwo-qtwidgets)
+#ivw_define_standard_definitions(IVW_QTWIDGETS inviwo-qtwidgets)
+#ivw_define_standard_properties(inviwo-qtwidgets)
 ivw_define_qt_definitions()
+
+
+
+# Add core dependencies to this list
+#ivw_add_dependencies(InviwoCore)
+
+
+#--------------------------------------------------------------------
+# Make package (for other projects to find)
+#ivw_set_cpack_name(qt_widgets)
+#ivw_make_package(InviwoQtWidgets inviwo-qtwidgets)
+
+#--------------------------------------------------------------------
+# Create module
+ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 
 # Add qt dependencies to this list
 set(IVW_WIDGETS_QT_DEPENDS
@@ -157,18 +173,6 @@ set(IVW_WIDGETS_QT_DEPENDS
 )
 
 foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
-    ivw_add_dependencies(${qtarget})
+    #ivw_add_dependencies(${qtarget})
     ivw_qt_add_to_install(${qtarget} qt_widgets)
 endforeach()
-
-# Add core dependencies to this list
-ivw_add_dependencies(InviwoCore)
-
-#--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_inviwo_core()
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_set_cpack_name(qt_widgets)
-ivw_make_package(InviwoQtWidgets inviwo-qtwidgets)

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/qtwidgetmodule.h>
+#include <modules/qtwidgets/qtwidgetsmodule.h>
 
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
@@ -70,7 +70,7 @@
 
 namespace inviwo {
 
-QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWidget") {
+QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidget") {
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
@@ -160,7 +160,7 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerDialog<InviwoFileDialog>("FileDialog");
 }
 
-std::string QtWidgetModule::getPath() const { return ""; }
+std::string QtWidgetsModule::getPath() const { return ""; }
 
 } // namespace
 

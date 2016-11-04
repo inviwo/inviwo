@@ -31,7 +31,6 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileobserver.h>
-#include <inviwo/qt/widgets/qtwidgetmodule.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/util/raiiutils.h>
 
@@ -160,20 +159,6 @@ void InviwoApplicationQt::resizePool(size_t newSize) {
         processFront();
         processEvents();
     }
-}
-
-void InviwoApplicationQt::registerModules(RegisterModuleFunc regModuleFunc) {
-    auto func = [&]() {
-        auto modules = regModuleFunc();
-
-        // Since QtWidgets are not a module we have to register it our self
-        modules.emplace_back(new InviwoModuleFactoryObjectTemplate<QtWidgetModule>(
-            "QtWidgetModule", "Module with Qt implementation of all propertywidgets etc.", {}));
-
-        return modules;
-    };
-
-    InviwoApplication::registerModules(func);
 }
 
 void InviwoApplicationQt::wait(int ms) {

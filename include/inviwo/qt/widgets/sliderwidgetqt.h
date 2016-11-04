@@ -30,7 +30,7 @@
 #ifndef IVW_SLIDETWIDGETQT_H
 #define IVW_SLIDETWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
 
@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
+class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

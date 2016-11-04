@@ -30,7 +30,7 @@
 #ifndef IVW_STRINGMULTILINEPROPERTYWIDGETQT_H
 #define IVW_STRINGMULTILINEPROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -51,7 +51,7 @@ class MultilineTextEdit;
     given defaults (2 to 10 lines). Changes are committed when the focus changes or
     CTRL + Return or CTRL + Enter is pressed.
 */
-class IVW_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -77,7 +77,7 @@ private:
 The height is automatically adjusted. The editingFinished signal is emitted when the
 widget looses focus or CTRL + Return or CTRL + Enter is pressed.
 */
-class IVW_QTWIDGETS_API MultilineTextEdit : public QPlainTextEdit {
+class IVW_MODULE_QTWIDGETS_API MultilineTextEdit : public QPlainTextEdit {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

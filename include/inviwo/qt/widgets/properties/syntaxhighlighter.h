@@ -30,7 +30,7 @@
 #ifndef IVW_SYNTAXHIGHLIGTHER_H
 #define IVW_SYNTAXHIGHLIGTHER_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 // QT includes
 #include <warn/push>
@@ -48,7 +48,7 @@ enum SyntaxType {
     Python = 2,
 };
 
-class IVW_QTWIDGETS_API SyntaxFormater {
+class IVW_MODULE_QTWIDGETS_API SyntaxFormater {
 public:
     struct Result {
         std::vector<unsigned int> start;
@@ -64,7 +64,7 @@ public:
     virtual ~SyntaxFormater() {}
 };
 
-class IVW_QTWIDGETS_API SyntaxHighligther : public QSyntaxHighlighter {
+class IVW_MODULE_QTWIDGETS_API SyntaxHighligther : public QSyntaxHighlighter {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -102,11 +102,11 @@ SyntaxHighligther* SyntaxHighligther::createSyntaxHighligther(QTextDocument* par
 }
 
 template <>
-IVW_QTWIDGETS_API void SyntaxHighligther::loadConfig<None>();
+IVW_MODULE_QTWIDGETS_API void SyntaxHighligther::loadConfig<None>();
 template <>
-IVW_QTWIDGETS_API void SyntaxHighligther::loadConfig<GLSL>();
+IVW_MODULE_QTWIDGETS_API void SyntaxHighligther::loadConfig<GLSL>();
 template <>
-IVW_QTWIDGETS_API void SyntaxHighligther::loadConfig<Python>();
+IVW_MODULE_QTWIDGETS_API void SyntaxHighligther::loadConfig<Python>();
 
 }  // namespace
 

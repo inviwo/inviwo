@@ -30,7 +30,7 @@
 #ifndef IVW_TRANSFERFUNCTIONEDITOR_H
 #define IVW_TRANSFERFUNCTIONEDITOR_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
 #include <warn/push>
@@ -51,7 +51,7 @@ class TransferFunctionEditorControlPoint;
 class TransferFunctionControlPointConnection;
 class TransferFunctionDataPoint;
 
-class IVW_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

@@ -30,7 +30,7 @@
 #ifndef IVW_TEXTEDITORWIDGETQT_H
 #define IVW_TEXTEDITORWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 //QT includes
 #include <warn/push>
@@ -58,7 +58,7 @@ class TextEditorWidgetQt;
 class HtmlEditorWidgetQt;
 class StringPropertyWidgetQt;
 
-class IVW_QTWIDGETS_API ModifiedWidget : public QWidget {
+class IVW_MODULE_QTWIDGETS_API ModifiedWidget : public QWidget {
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -94,7 +94,7 @@ private:
     SyntaxHighligther* syntaxHighligther_;
 };
 
-class IVW_QTWIDGETS_API TextEditorWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API TextEditorWidgetQt : public PropertyWidgetQt {
 
 #include <warn/push>
 #include <warn/ignore/all>

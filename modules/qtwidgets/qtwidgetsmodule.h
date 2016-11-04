@@ -30,16 +30,16 @@
 #ifndef IVW_QTWIDGETMODULE_H
 #define IVW_QTWIDGETMODULE_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API QtWidgetModule : public InviwoModule {
+class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:
-    QtWidgetModule(InviwoApplication* app);
-    virtual ~QtWidgetModule() {}
+    QtWidgetsModule(InviwoApplication* app);
+    virtual ~QtWidgetsModule() {}
     
     virtual std::string getPath() const override;
 };

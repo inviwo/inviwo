@@ -30,7 +30,7 @@
 #ifndef IVW_INVIWOAPPLICATIONQT_H
 #define IVW_INVIWOAPPLICATIONQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API InviwoQtEvent : public QEvent {
+class IVW_MODULE_QTWIDGETS_API InviwoQtEvent : public QEvent {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_GADGET
@@ -62,7 +62,7 @@ private:
     static QEvent::Type InviwoQtEventType;
 };
 
-class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
+class IVW_MODULE_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -72,7 +72,7 @@ public:
     InviwoApplicationQt(std::string displayName, int& argc, char** argv, bool movePointsOn = true);
     virtual ~InviwoApplicationQt() =  default;
 
-    virtual void registerModules(RegisterModuleFunc) override;
+    //virtual void registerModules(RegisterModuleFunc) override;
     
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;

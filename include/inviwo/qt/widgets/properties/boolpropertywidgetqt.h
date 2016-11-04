@@ -30,7 +30,7 @@
 #ifndef IVW_BOOLPROPERTYWIDGETQT_H
 #define IVW_BOOLPROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -40,7 +40,7 @@ class QLineEdit;
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API BoolPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API BoolPropertyWidgetQt : public PropertyWidgetQt {
 public:
     BoolPropertyWidgetQt(BoolProperty* property);
     virtual ~BoolPropertyWidgetQt() = default;

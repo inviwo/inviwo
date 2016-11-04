@@ -32,21 +32,21 @@
 
 #ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
-#ifdef IVW_QTWIDGETS_EXPORTS
+#ifdef IVW_MODULE_QTWIDGETS_EXPORTS
 #ifdef _WIN32
-#define IVW_QTWIDGETS_API __declspec(dllexport)
+#define IVW_MODULE_QTWIDGETS_API __declspec(dllexport)
 #else //UNIX (GCC)
-#define IVW_QTWIDGETS_API __attribute__ ((visibility ("default")))
+#define IVW_MODULE_QTWIDGETS_API __attribute__ ((visibility ("default")))
 #endif
 #else
 #ifdef _WIN32
-#define IVW_QTWIDGETS_API __declspec(dllimport)
+#define IVW_MODULE_QTWIDGETS_API __declspec(dllimport)
 #else
-#define IVW_QTWIDGETS_API
+#define IVW_MODULE_QTWIDGETS_API
 #endif
 #endif
 #else //STATIC
-#define IVW_QTWIDGETS_API
+#define IVW_MODULE_QTWIDGETS_API
 #endif
 
 #endif /* _IVW_QTWIDGETS_DEFINE_H_ */
