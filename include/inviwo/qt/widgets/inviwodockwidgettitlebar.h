@@ -30,7 +30,7 @@
 #ifndef IVW_INVIWODOCKWIDGETTITLEBAR_H
 #define IVW_INVIWODOCKWIDGETTITLEBAR_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -53,7 +53,7 @@ dock button or double clicking the title bar is still possible.
 
 Note: adding a custom title bar to a QDockWidget removes the window decoration!
 */
-class IVW_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
+class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

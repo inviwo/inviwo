@@ -55,7 +55,7 @@
 namespace inviwo {
 
 class TextEditorWidgetQt;
-class IVW_QTWIDGETS_API HtmlEditorWidgetQt : public QWidget {
+class IVW_MODULE_QTWIDGETS_API HtmlEditorWidgetQt : public QWidget {
 
 #include <warn/push>
 #include <warn/ignore/all>

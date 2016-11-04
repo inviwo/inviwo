@@ -30,7 +30,7 @@
 #ifndef IVW_HTMLLISTWIDGETQT_H
 #define IVW_HTMLLISTWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,7 +45,7 @@ namespace inviwo {
 
 class ProcessorFactoryObject;
 
-class IVW_QTWIDGETS_API HtmlTree : public QTreeWidget {
+class IVW_MODULE_QTWIDGETS_API HtmlTree : public QTreeWidget {
 
 public:
     HtmlTree(QWidget* parent) : QTreeWidget(parent) {}
@@ -59,7 +59,7 @@ private:
     QPoint dragStartPosition_;
 };
 
-class IVW_QTWIDGETS_API HtmlTreeWidget : public QWidget {
+class IVW_MODULE_QTWIDGETS_API HtmlTreeWidget : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -78,7 +78,7 @@ private slots:
     void addTagsToTree(const QString& text="");
 };
 
-class IVW_QTWIDGETS_API HtmlDragObject : public QDrag {
+class IVW_MODULE_QTWIDGETS_API HtmlDragObject : public QDrag {
 public:
     HtmlDragObject(QWidget* source, const QString className);
 

@@ -30,7 +30,7 @@
 #ifndef IVW_INVIWOQTUTILS_H
 #define IVW_INVIWOQTUTILS_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
 
@@ -60,7 +60,7 @@ namespace utilqt {
  * 
  * @return std::locale   Qt locale converted to std::locale
  */
-IVW_QTWIDGETS_API std::locale getCurrentStdLocale();
+IVW_MODULE_QTWIDGETS_API std::locale getCurrentStdLocale();
 
 /** 
  * \brief localize
@@ -69,26 +69,26 @@ IVW_QTWIDGETS_API std::locale getCurrentStdLocale();
  * @param stream   the locale is imbued onto this stream
  * @return std::ios_base&  reference to the input stream
  */
-IVW_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
+IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 
 /** 
  * \brief create a localized QString from an "imbued" std::string
  * The given string is imbued with the currently set system locale provided by Qt.
  */
-IVW_QTWIDGETS_API QString toLocalQString(const std::string&);
-IVW_QTWIDGETS_API QString toQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toLocalQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::string&);
 
-IVW_QTWIDGETS_API dvec2 toGLM(QPointF);
-IVW_QTWIDGETS_API ivec2 toGLM(QPoint);
+IVW_MODULE_QTWIDGETS_API dvec2 toGLM(QPointF);
+IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QPoint);
 
-IVW_QTWIDGETS_API QPointF toQPoint(dvec2);
-IVW_QTWIDGETS_API QPoint toQPoint(ivec2);
+IVW_MODULE_QTWIDGETS_API QPointF toQPoint(dvec2);
+IVW_MODULE_QTWIDGETS_API QPoint toQPoint(ivec2);
 
-IVW_QTWIDGETS_API dvec2 toGLM(QSizeF);
-IVW_QTWIDGETS_API ivec2 toGLM(QSize);
+IVW_MODULE_QTWIDGETS_API dvec2 toGLM(QSizeF);
+IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QSize);
 
-IVW_QTWIDGETS_API QSizeF toQSize(dvec2);
-IVW_QTWIDGETS_API QSize toQSize(ivec2);
+IVW_MODULE_QTWIDGETS_API QSizeF toQSize(dvec2);
+IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
 
 } // namespace utilqt
 

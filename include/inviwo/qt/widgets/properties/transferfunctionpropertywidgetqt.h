@@ -30,7 +30,7 @@
 #ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
 #define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 
 namespace inviwo {
@@ -40,7 +40,7 @@ class TransferFunctionPropertyDialog;
 class TransferFunctionProperty;
 class TFPushButton;
 
-class IVW_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT
@@ -64,7 +64,7 @@ public slots:
     void openTransferFunctionDialog();
 };
 
-class IVW_QTWIDGETS_API TFPushButton : public IvwPushButton {
+class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

@@ -30,7 +30,7 @@
 #ifndef IVW_LABELGRAPHICSITEM_H
 #define IVW_LABELGRAPHICSITEM_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/util/observer.h>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API LabelGraphicsItemObserver: public Observer {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObserver: public Observer {
 public:
     LabelGraphicsItemObserver() = default;
 
@@ -50,7 +50,7 @@ public:
     */
     virtual void onLabelGraphicsItemChange() {};
 };
-class IVW_QTWIDGETS_API LabelGraphicsItemObservable: public Observable<LabelGraphicsItemObserver> {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable: public Observable<LabelGraphicsItemObserver> {
 public:
     LabelGraphicsItemObservable() = default;
 
@@ -59,7 +59,7 @@ public:
     }
 };
 
-class IVW_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem, public LabelGraphicsItemObservable {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem, public LabelGraphicsItemObservable {
 
 public:
     LabelGraphicsItem(QGraphicsItem* parent, Qt::Alignment alignment=Qt::AlignLeft | Qt::AlignTop);

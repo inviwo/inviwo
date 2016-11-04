@@ -30,7 +30,7 @@
 #ifndef IVW_MULTIFILEPROPERTYWIDGETQT_H
 #define IVW_MULTIFILEPROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/filepathlineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -51,7 +51,7 @@ namespace inviwo {
  * \class MultiFilePropertyWidgetQt
  * \brief Property widget for MultiFileProperty showing only the first file name.
  */
-class IVW_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
+class IVW_MODULE_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
 
 #include <warn/push>
 #include <warn/ignore/all>

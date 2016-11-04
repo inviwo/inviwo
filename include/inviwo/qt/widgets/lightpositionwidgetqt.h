@@ -30,7 +30,7 @@
 #ifndef IVW_LIGHTPOSITIONWIDGETQT_H
 #define IVW_LIGHTPOSITIONWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
@@ -47,7 +47,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
+class IVW_MODULE_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

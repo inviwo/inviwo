@@ -31,7 +31,7 @@
 #define IVW_INVIWOFILEDIALOG_H
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/util/fileextension.h>
 #include <string>
 #include <unordered_map>
@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API InviwoFileDialog : public QFileDialog {
+class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

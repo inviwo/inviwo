@@ -30,7 +30,7 @@
 #ifndef IVW_TRANSFERFUNCTIONEDITORVIEW_H
 #define IVW_TRANSFERFUNCTIONEDITORVIEW_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/histogram.h>
@@ -46,7 +46,7 @@ class TransferFunctionProperty;
 class TransferFunctionDataPoint;
 class VolumeRAM;
 
-class IVW_QTWIDGETS_API HistogramWorkerQt : public QObject {
+class IVW_MODULE_QTWIDGETS_API HistogramWorkerQt : public QObject {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -70,7 +70,7 @@ private:
 };
 
 
-class IVW_QTWIDGETS_API TransferFunctionEditorView : public QGraphicsView,
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorView : public QGraphicsView,
                                                      public TransferFunctionObserver {
     Q_OBJECT
 public:

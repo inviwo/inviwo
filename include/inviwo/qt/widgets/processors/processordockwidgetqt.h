@@ -35,7 +35,7 @@
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 namespace inviwo {
 
@@ -49,7 +49,7 @@ namespace inviwo {
  *
  * \see InviwoDockWidget ProcessorWidget
  */
-class IVW_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
+class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                 public ProcessorWidget,
                                                 public ProcessorObserver {
 #include <warn/push>

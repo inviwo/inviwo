@@ -30,7 +30,7 @@
 #ifndef IVW_SPINBOXRANGESLIDERQT_H
 #define IVW_SPINBOXRANGESLIDERQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/rangesliderqt.h>
 
 #include <warn/push>
@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API SpinBoxRangeSliderQt : public QWidget {
+class IVW_MODULE_QTWIDGETS_API SpinBoxRangeSliderQt : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

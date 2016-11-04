@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/io/datareaderdialog.h>
 
 #include <warn/push>
@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API RawDataReaderDialogQt : public DataReaderDialog, public QDialog {
+class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public DataReaderDialog, public QDialog {
 public:
     RawDataReaderDialogQt();
     virtual ~RawDataReaderDialogQt();

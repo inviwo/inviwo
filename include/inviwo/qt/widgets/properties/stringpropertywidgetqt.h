@@ -30,7 +30,7 @@
 #ifndef IVW_STRINGPROPERTYWIDGETQT_H
 #define IVW_STRINGPROPERTYWIDGETQT_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/lineeditqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

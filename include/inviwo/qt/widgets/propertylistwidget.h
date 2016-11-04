@@ -30,7 +30,7 @@
 #ifndef IVW_PROPERTYLISTWIDGET_H
 #define IVW_PROPERTYLISTWIDGET_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <warn/push>
@@ -48,7 +48,7 @@ namespace inviwo {
 class CollapsibleGroupBoxWidgetQt;
 class Processor;
 
-class IVW_QTWIDGETS_API PropertyListFrame : public QWidget {
+class IVW_MODULE_QTWIDGETS_API PropertyListFrame : public QWidget {
 public:
     PropertyListFrame(QWidget* parent);
     virtual QSize sizeHint() const;
@@ -56,7 +56,7 @@ public:
     void paintEvent(QPaintEvent*);
 };
 
-class IVW_QTWIDGETS_API PropertyListEvent : public QEvent {
+class IVW_MODULE_QTWIDGETS_API PropertyListEvent : public QEvent {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_GADGET
@@ -81,7 +81,7 @@ private:
     static QEvent::Type PropertyListEventType;
 };
 
-class IVW_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
+class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
