@@ -45,14 +45,14 @@ public:
     RawDataReaderDialogQt();
     virtual ~RawDataReaderDialogQt();
 
-    virtual bool show();
+    virtual bool show() override;
     
-    virtual void setFile(std::string fileName);
+    virtual void setFile(std::string fileName) override;
     
-    virtual const DataFormatBase* getFormat() const;
-    virtual uvec3 getDimensions() const;
-    virtual dvec3 getSpacing() const;
-    virtual bool getEndianess() const;
+    virtual const DataFormatBase* getFormat() const override;
+    virtual uvec3 getDimensions() const override;
+    virtual dvec3 getSpacing() const override;
+    virtual bool getEndianess() const override;
     
 
 private:
