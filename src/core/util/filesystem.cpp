@@ -90,8 +90,6 @@ std::string getExecutablePath() {
     }
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    auto pathSize = PROC_PIDPATHINFO_MAXSIZE;
-    executablePath = std::unique_ptr<char>(new char[pathSize]);
     auto pid = getpid();
     if (proc_pidpath(pid, executablePath.get(), pathSize) <= 0) {
         // Error retrieving path

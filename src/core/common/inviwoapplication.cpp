@@ -481,9 +481,9 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
     std::vector<std::string> files;
     for (auto path : librarySearchPaths) {
-        auto filesInDir = filesystem::getDirectoryContents(filesystem::getFileDirectory(filesystem::getExecutablePath()), filesystem::ListMode::Files);
+        auto filesInDir = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
         for (auto& file : filesInDir) {
-            file = filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/" + file;
+            file = path + "/" + file;
         }
         files.insert(std::end(files), std::begin(filesInDir), std::end(filesInDir));
     }
@@ -493,7 +493,8 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
     // Prevent error mode dialogs from displaying.
     SetErrorMode(SEM_FAILCRITICALERRORS);
 #else
-    std::string libraryType = "so";
+    //std::string libraryType = "so";
+    std::string libraryType = "dylib";
 #endif
     for (const auto& filePath : files) {
         if (filesystem::getFileExtension(filePath) == libraryType) {

@@ -28,9 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/assertion.h>
-
-
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -87,7 +89,7 @@ SharedLibrary::SharedLibrary(std::string filePath)
         throw Exception("Failed to load library: " + filePath + "\n Error: " + errorStream.str());
     }
 #else 
-    handle_ = dlopen(name, RTLD_NOW | RTLD_GLOBAL);
+    handle_ = dlopen(filePath.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!handle_) {
         throw Exception("Failed to load library: " + filePath);
     }
@@ -106,7 +108,7 @@ void* SharedLibrary::findSymbol(std::string name) {
 #if WIN32
     return GetProcAddress(handle_, "createModule");
 #else 
-    return dlsym(handle_, name);
+    return dlsym(handle_, name.c_str());
 #endif
 }
 
