@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filedialog.h>
 #include <string>
 #include <unordered_map>
 
@@ -46,45 +47,58 @@
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API InviwoFileDialog : public QFileDialog {
+class IVW_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public FileDialog {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT
     #include <warn/pop>
 public:
-    InviwoFileDialog(QWidget *parent, const std::string &title,
+    InviwoFileDialog(QWidget *parent=nullptr, const std::string &title="",
         const std::string &pathType = "default",
         const std::string &path="");
 
-    void addExtension(const FileExtension &fileExt);
-    void addExtension(const std::string &ext, const std::string &description);
-    void addExtension(const std::string &extString);
+    virtual bool show() override;
+
+    virtual int exec() override;
+    
+    virtual void setTitle(const std::string &title) override;
+    
+    virtual void setAcceptMode(inviwo::AcceptMode mode) override;
+    virtual inviwo::AcceptMode getAcceptMode() const override;
+
+    virtual void setFileMode(inviwo::FileMode mode) override;
+    virtual inviwo::FileMode getFileMode() const override;
+
+    /**
+    * \brief sets the current directory of the file dialog to the parent directory of the given
+    *   file name or, if it is referring to a directory, to the given path. The file will be
+    *   selected when the dialog is shown.
+    *
+    * @param filename  path and name of the file (can be either a file name or directory name including the full path)
+    */
+    virtual void setCurrentFile(const std::string &filename) override;
+    virtual std::vector<std::string> getSelectedFiles() const override;
+
+    /**
+    * \brief set the current directory of the file dialog
+    *
+    * @param path  given path, must not contain a file name
+    */
+    virtual void setCurrentDirectory(const std::string &path) override;
+
+    virtual FileExtension getSelectedFileExtension() const override;
+    virtual void setSelectedExtenstion(const FileExtension& ext) override;
+
+    virtual void addExtension(const FileExtension &fileExt) override;
+    virtual void addExtension(const std::string &ext, const std::string &description) override;
+    virtual void addExtension(const std::string &extString) override;
+    virtual void addExtensions(const std::vector<FileExtension>& extensions) override;
 
     void addSidebarPath(const PathType &path);
     void addSidebarPath(const std::string &path);
     void addSidebarPath(const QString &path);
 
     void useNativeDialog(const bool &use = true);
-
-    /**
-     * \brief sets the current directory of the file dialog to the parent directory of the given
-     *   file name or, if it is referring to a directory, to the given path. The file will be 
-     *   selected when the dialog is shown.
-     *
-     * @param filename  path and name of the file (can be either a file name or directory name including the full path)
-     */
-    void setCurrentFile(const std::string &filename);
-    /** 
-     * \brief set the current directory of the file dialog 
-     * 
-     * @param path  given path, must not contain a file name
-     */
-    void setCurrentDirectory(const std::string &path);
-
-    FileExtension getSelectedFileExtension() const;
-    void setSelectedExtenstion(const FileExtension& ext);
-
-    virtual int exec() override;
 
     static QString getPreviousPath(const QString &pathType);
     static void setPreviousPath(const QString &pathType, const QString &path);

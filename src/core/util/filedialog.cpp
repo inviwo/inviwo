@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,22 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filedialog.h>
 
 namespace inviwo {
 
-PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
+FileDialog::FileDialog() = default;
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+FileDialog::~FileDialog() = default;
+
+std::string FileDialog::getSelectedFile() const {
+    auto files = getSelectedFiles();
+    if (files.empty()) {
+        return{};
+    } else {
+        return files.front();
+    }
 }
 
-DirectoryProperty::~DirectoryProperty() {}
+} // namespace
 
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
-    return FileProperty::getClassIdentifier();
-}
-
-}  // namespace

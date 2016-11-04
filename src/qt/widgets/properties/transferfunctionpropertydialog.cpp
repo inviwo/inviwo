@@ -403,8 +403,8 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
     InviwoFileDialog importFileDialog(
         this, "Import transfer function", "transferfunction",
         filesystem::getPath(PathType::TransferFunctions));
-    importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-    importFileDialog.setFileMode(QFileDialog::ExistingFile);
+    importFileDialog.setAcceptMode(AcceptMode::Open);
+    importFileDialog.setFileMode(FileMode::ExistingFile);
     importFileDialog.addExtension("itf", "Inviwo Transfer Function");
 
     if (importFileDialog.exec()) {
@@ -422,8 +422,8 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
     InviwoFileDialog exportFileDialog(
         this, "Export transfer function", "transferfunction",
         filesystem::getPath(PathType::TransferFunctions));
-    exportFileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    exportFileDialog.setFileMode(QFileDialog::AnyFile);
+    exportFileDialog.setAcceptMode(AcceptMode::Save);
+    exportFileDialog.setFileMode(FileMode::AnyFile);
     exportFileDialog.addExtension("itf", "Inviwo Transfer Function");
     exportFileDialog.addExtension("png", "Transfer Function Image");
     exportFileDialog.addExtension("", "All files");  // this will add "All files (*)"

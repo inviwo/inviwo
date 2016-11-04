@@ -66,6 +66,7 @@
 
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/qt/widgets/rawdatareaderdialogqt.h>
+#include <inviwo/qt/widgets/inviwofiledialog.h>
 
 namespace inviwo {
 
@@ -156,6 +157,7 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerPropertyWidget<TextEditorWidgetQt, StringProperty>("ShaderEditor");
     registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
+    registerDialog<InviwoFileDialog>("FileDialog");
 }
 
 std::string QtWidgetModule::getPath() const { return ""; }

@@ -304,8 +304,8 @@ void InviwoMainWindow::addActions() {
         connect(fileMenuItem->addAction("Save Network Image"), &QAction::triggered,
             [&](bool state) {
             InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
-            saveFileDialog.setFileMode(QFileDialog::AnyFile);
-            saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+            saveFileDialog.setFileMode(FileMode::AnyFile);
+            saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setConfirmOverwrite(true);
 
             saveFileDialog.addSidebarPath(PathType::Workspaces);
@@ -864,7 +864,7 @@ void InviwoMainWindow::openWorkspace() {
 
         openFileDialog.addExtension("inv", "Inviwo File");
 
-        openFileDialog.setFileMode(QFileDialog::AnyFile);
+        openFileDialog.setFileMode(FileMode::AnyFile);
 
         if (openFileDialog.exec()) {
             QString path = openFileDialog.selectedFiles().at(0);
@@ -914,8 +914,8 @@ void InviwoMainWindow::saveWorkspace() {
 
 void InviwoMainWindow::saveWorkspaceAs() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
-    saveFileDialog.setFileMode(QFileDialog::AnyFile);
-    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);
@@ -937,8 +937,8 @@ void InviwoMainWindow::saveWorkspaceAs() {
 
 void InviwoMainWindow::saveWorkspaceAsCopy() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
-    saveFileDialog.setFileMode(QFileDialog::AnyFile);
-    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);

@@ -186,7 +186,7 @@ void FileProperty::setAcceptMode(AcceptMode mode) {
     acceptMode_ = mode; 
 }
 
-FileProperty::AcceptMode FileProperty::getAcceptMode() const {
+AcceptMode FileProperty::getAcceptMode() const {
     return acceptMode_;
 }
 
@@ -194,7 +194,7 @@ void FileProperty::setFileMode(FileMode mode) {
     fileMode_ = mode; 
 }
 
-FileProperty::FileMode FileProperty::getFileMode() const {
+FileMode FileProperty::getFileMode() const {
     return fileMode_; 
 }
 
@@ -226,15 +226,15 @@ Document FileProperty::getDescription() const {
 
     utildoc::TableBuilder tb(table);
     switch (fileMode_) {
-        case FileProperty::FileMode::AnyFile:
-        case FileProperty::FileMode::ExistingFile:
-        case FileProperty::FileMode::ExistingFiles: {
+        case FileMode::AnyFile:
+        case FileMode::ExistingFile:
+        case FileMode::ExistingFiles: {
             tb(H("File"), value_.value);
             break;
         }
 
-        case FileProperty::FileMode::Directory:
-        case FileProperty::FileMode::DirectoryOnly: {
+        case FileMode::Directory:
+        case FileMode::DirectoryOnly: {
             tb(H("Directory"), value_.value);
             break;
         }
@@ -245,39 +245,6 @@ Document FileProperty::getDescription() const {
     tb(H("Content Type"), contentType_);
 
     return doc;
-}
-
-std::ostream& operator<<(std::ostream &out, const FileProperty::AcceptMode& mode) {
-    switch(mode) {
-        case FileProperty::AcceptMode::Open:
-            out << "Open";
-            break;
-        case FileProperty::AcceptMode::Save:
-            out << "Save";
-            break;
-    }
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const FileProperty::FileMode& mode) {
-    switch (mode) {
-        case FileProperty::FileMode::AnyFile:
-            out << "Any File";
-            break;
-        case FileProperty::FileMode::ExistingFile:
-            out << "Existing File";
-            break;
-        case FileProperty::FileMode::Directory:
-            out << "Directory";
-            break;
-        case FileProperty::FileMode::ExistingFiles:
-            out << "Existing Files";
-            break;
-        case FileProperty::FileMode::DirectoryOnly:
-            out << "Directory Only";
-            break;
-    }
-    return out;
 }
 
 }  // namespace

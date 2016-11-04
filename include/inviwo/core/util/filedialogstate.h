@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,55 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialogstate.h>
+#ifndef IVW_FILEDIALOGSTATE_H
+#define IVW_FILEDIALOGSTATE_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <ostream>
 
 namespace inviwo {
 
-PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
+enum class AcceptMode { Open, Save };
+enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             AcceptMode& mode) {
+    switch (mode) {
+        case FileProperty::AcceptMode::Open:
+            ss << "Open";
+            break;
+        case FileProperty::AcceptMode::Save:
+            ss << "Save";
+            break;
+    }
+    return ss;
 }
 
-DirectoryProperty::~DirectoryProperty() {}
-
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
-    return FileProperty::getClassIdentifier();
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, FileMode& mode) {
+    switch (mode) {
+        case FileProperty::FileMode::AnyFile:
+            ss << "Any File";
+            break;
+        case FileProperty::FileMode::ExistingFile:
+            ss << "Existing File";
+            break;
+        case FileProperty::FileMode::Directory:
+            ss << "Directory";
+            break;
+        case FileProperty::FileMode::ExistingFiles:
+            ss << "Existing Files";
+            break;
+        case FileProperty::FileMode::DirectoryOnly:
+            ss << "Directory Only";
+            break;
+    }
+    return ss;
 }
 
-}  // namespace
+} // namespace inviwo
+
+#endif // IVW_FILEDIALOGSTATE_H
