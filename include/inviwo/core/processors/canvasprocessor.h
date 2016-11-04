@@ -95,6 +95,7 @@ protected:
     IntProperty colorLayer_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
+    ButtonProperty saveLayerToFileButton_;
     CompositeProperty inputSize_;
     ButtonProperty toggleFullscreen_;
     EventProperty fullscreen_;

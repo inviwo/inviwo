@@ -36,8 +36,10 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filedialog.h>
 
 namespace inviwo {
 
@@ -58,6 +60,7 @@ CanvasProcessor::CanvasProcessor()
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
+    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
     , fullscreen_("fullscreen", "FullScreen",
@@ -102,6 +105,28 @@ CanvasProcessor::CanvasProcessor()
 
     saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
     addProperty(saveLayerButton_);
+
+    saveLayerToFileButton_.onChange([this]() {
+        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+        if (!fileDialog) {
+            // no file dialog found, disable button
+            saveLayerToFileButton_.setReadOnly(true);
+            return;
+        }
+        fileDialog->setTitle("Save Layer to File...");
+        fileDialog->setAcceptMode(AcceptMode::Save);
+        fileDialog->setFileMode(FileMode::AnyFile);
+
+        auto wf = InviwoApplication::getPtr()->getDataWriterFactory();
+        fileDialog->addExtensions(wf->getExtensionsForType<Layer>());
+
+        if (fileDialog->show()) {
+            auto fileName = fileDialog->getSelectedFile();
+            saveImageLayer(fileName);
+        }
+    });
+    addProperty(saveLayerToFileButton_);
 
     colorLayer_.setSerializationMode(PropertySerializationMode::All);
     colorLayer_.setVisible(false);
