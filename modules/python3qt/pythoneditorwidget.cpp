@@ -331,8 +331,8 @@ void PythonTextEditor::keyPressEvent(QKeyEvent* keyEvent) {
 void PythonEditorWidget::saveAs() {
     InviwoFileDialog saveFileDialog(this, "Save Python Script ...", "script");
 
-    saveFileDialog.setFileMode(QFileDialog::AnyFile);
-    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(PathType::Scripts);
@@ -365,7 +365,7 @@ void PythonEditorWidget::open() {
 
     InviwoFileDialog openFileDialog(this, "Open Python Script ...", "script");
 
-    openFileDialog.setFileMode(QFileDialog::AnyFile);
+    openFileDialog.setFileMode(FileMode::AnyFile);
 
     openFileDialog.addSidebarPath(PathType::Scripts);
 
