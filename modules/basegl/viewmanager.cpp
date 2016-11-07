@@ -214,7 +214,7 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
             return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator);
         }
         default:
-            return nullptr;
+            return false;
     }
 }
 
