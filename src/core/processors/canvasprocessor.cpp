@@ -40,6 +40,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialog.h>
+#include <inviwo/core/util/dialogfactory.h>
 
 namespace inviwo {
 
