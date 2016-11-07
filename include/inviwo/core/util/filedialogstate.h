@@ -44,10 +44,10 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              AcceptMode& mode) {
     switch (mode) {
-        case FileProperty::AcceptMode::Open:
+        case AcceptMode::Open:
             ss << "Open";
             break;
-        case FileProperty::AcceptMode::Save:
+        case AcceptMode::Save:
             ss << "Save";
             break;
     }
@@ -57,19 +57,19 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, FileMode& mode) {
     switch (mode) {
-        case FileProperty::FileMode::AnyFile:
+        case FileMode::AnyFile:
             ss << "Any File";
             break;
-        case FileProperty::FileMode::ExistingFile:
+        case FileMode::ExistingFile:
             ss << "Existing File";
             break;
-        case FileProperty::FileMode::Directory:
+        case FileMode::Directory:
             ss << "Directory";
             break;
-        case FileProperty::FileMode::ExistingFiles:
+        case FileMode::ExistingFiles:
             ss << "Existing Files";
             break;
-        case FileProperty::FileMode::DirectoryOnly:
+        case FileMode::DirectoryOnly:
             ss << "Directory Only";
             break;
     }
