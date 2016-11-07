@@ -36,8 +36,6 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareader.h>
 
-#include <set>
-
 namespace inviwo {
 
 class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&> {
@@ -68,13 +66,13 @@ protected:
 
 template <typename T>
 std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
-    std::unordered_set<FileExtension> extensions;
+    std::vector<FileExtension> ext;
+
     for (auto reader : map_) {
         if (auto r = dynamic_cast<DataReaderType<T>*>(reader.second)) {
-            extensions.insert(reader.first);
+            ext.push_back(reader.first);
         }
     }
-    std::vector<FileExtension> ext(extensions.begin(), extensions.end());
     return ext;
 }
 

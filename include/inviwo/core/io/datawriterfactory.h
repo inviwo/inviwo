@@ -36,8 +36,6 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/fileextension.h>
 
-#include <set>
-
 namespace inviwo {
 
 template <typename T>
@@ -73,14 +71,15 @@ protected:
 
 template <typename T>
 std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
-    std::unordered_set<FileExtension> extensions;
+    std::vector<FileExtension> ext;
+
     for (auto& writer : map_) {
         if (auto r = dynamic_cast<DataWriterType<T>*>(writer.second)) {
             auto rext = r->getExtensions();
-            extensions.insert(rext.begin(), rext.end());
+            ext.insert(ext.end(), rext.begin(), rext.end());
         }
     }
-    std::vector<FileExtension> ext(extensions.begin(), extensions.end());
+
     return ext;
 }
 
