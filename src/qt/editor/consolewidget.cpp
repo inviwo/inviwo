@@ -483,19 +483,19 @@ void ConsoleWidget::closeEvent(QCloseEvent *event) {
     settings.endGroup();
 }
 
-
-LogTableModel::LogTableModel(QTableView* view) : view_(view), model_(0, Entry::size()) {
+LogTableModel::LogTableModel(QTableView* view)
+    : view_(view), model_(0, static_cast<int>(Entry::size())) {
     for (size_t i = 0; i < Entry::size(); ++i) {
         auto item = new QStandardItem(getName(static_cast<Columns>(i)));
         item->setTextAlignment(Qt::AlignLeft);
-        model_.setHorizontalHeaderItem(i, item);
+        model_.setHorizontalHeaderItem(static_cast<int>(i), item);
     }
 }
 
 
 void LogTableModel::log(Entry entry) {
     QList<QStandardItem*> items;
-    items.reserve(Entry::size());
+    items.reserve(static_cast<int>(Entry::size()));
     for (size_t i = 0; i < Entry::size(); ++i) {
         items.append(entry.get(static_cast<Columns>(i)));
         items.last()->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));

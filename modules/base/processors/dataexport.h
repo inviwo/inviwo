@@ -41,6 +41,7 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filedialogstate.h>
 
 namespace inviwo {
 
@@ -85,7 +86,7 @@ DataExport<DataType, PortType>::DataExport()
 
     addPort(port_);
     addProperty(file_);
-    file_.setAcceptMode(FileProperty::AcceptMode::Save);
+    file_.setAcceptMode(AcceptMode::Save);
     export_.onChange([&](){exportQueued_ = true;});
     addProperty(export_);
     addProperty(overwrite_);

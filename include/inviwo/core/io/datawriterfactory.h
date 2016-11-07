@@ -75,11 +75,9 @@ std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
 
     for (auto& writer : map_) {
         if (auto r = dynamic_cast<DataWriterType<T>*>(writer.second)) {
-            auto rext = r->getExtensions();
-            ext.insert(ext.end(), rext.begin(), rext.end());
+            ext.push_back(writer.first);
         }
     }
-
     return ext;
 }
 

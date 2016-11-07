@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filedialogstate.h>
 
 namespace inviwo {
 
@@ -55,8 +56,6 @@ public:
 class IVW_CORE_API FileProperty : public TemplateProperty<std::string> {
 public:
     InviwoPropertyInfo();
-    enum class AcceptMode { Open, Save };
-    enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
 
     /**
      * \brief Constructor for the FileProperty
@@ -120,10 +119,6 @@ private:
     FileMode fileMode_;
     std::string contentType_;
 };
-
-IVW_CORE_API std::ostream& operator<<(std::ostream &out, const FileProperty::AcceptMode& mode);
-IVW_CORE_API std::ostream& operator<<(std::ostream &out, const FileProperty::FileMode& mode);
-
 
 }  // namespace
 

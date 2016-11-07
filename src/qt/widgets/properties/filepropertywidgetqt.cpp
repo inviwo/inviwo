@@ -119,52 +119,14 @@ void FilePropertyWidgetQt::setPropertyValue() {
 
     for (const auto& filter : filters) importFileDialog.addExtension(filter);
 
-    switch (property_->getAcceptMode()) {
-        case FileProperty::AcceptMode::Save:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptSave);
-            break;
-
-        case FileProperty::AcceptMode::Open:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-            break;
-
-        default:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-    }
-
-    switch (property_->getFileMode()) {
-        case FileProperty::FileMode::AnyFile:
-            importFileDialog.setFileMode(QFileDialog::AnyFile);
-            break;
-
-        case FileProperty::FileMode::ExistingFile:
-            importFileDialog.setFileMode(QFileDialog::ExistingFile);
-            break;
-
-        case FileProperty::FileMode::Directory:
-            importFileDialog.setFileMode(QFileDialog::Directory);
-            break;
-
-        case FileProperty::FileMode::ExistingFiles:
-            importFileDialog.setFileMode(QFileDialog::ExistingFiles);
-            break;
-
-        case FileProperty::FileMode::DirectoryOnly:
-            importFileDialog.setFileMode(QFileDialog::Directory);
-            importFileDialog.setOption(QFileDialog::ShowDirsOnly);
-            break;
-
-        default:
-            importFileDialog.setFileMode(QFileDialog::AnyFile);
-            break;
-    }
+    importFileDialog.setAcceptMode(property_->getAcceptMode());
+    importFileDialog.setFileMode(property_->getFileMode());
 
     auto ext = property_->getSelectedExtension();
     if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
 
     if (importFileDialog.exec()) {
-        QString p = importFileDialog.selectedFiles().at(0);
-        property_->set(p.toStdString());
+        property_->set(importFileDialog.getSelectedFile());
         property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
     }
 
@@ -185,11 +147,11 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
 
 void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
     switch (property_->getAcceptMode()) {
-        case FileProperty::AcceptMode::Save: {
+        case AcceptMode::Save: {
             event->ignore();
             return;
         }
-        case FileProperty::AcceptMode::Open: {
+        case AcceptMode::Open: {
             if (event->mimeData()->hasUrls()) {
                 auto data = event->mimeData();
                 if (data->hasUrls()) {
@@ -198,9 +160,9 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                         auto file = url.toLocalFile().toStdString();
                         
                         switch (property_->getFileMode()) {
-                            case FileProperty::FileMode::AnyFile:
-                            case FileProperty::FileMode::ExistingFile:
-                            case FileProperty::FileMode::ExistingFiles: {
+                            case FileMode::AnyFile:
+                            case FileMode::ExistingFile:
+                            case FileMode::ExistingFiles: {
                                 auto ext = toLower(filesystem::getFileExtension(file));
                                 for (const auto& filter : property_->getNameFilters()) {
                                     if (filter.extension_ == ext) {
@@ -211,8 +173,8 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                                 break;
                             }
                         
-                            case FileProperty::FileMode::Directory:
-                            case FileProperty::FileMode::DirectoryOnly: {
+                            case FileMode::Directory:
+                            case FileMode::DirectoryOnly: {
                                 if(filesystem::directoryExists(file)) {
                                     event->accept();
                                     return;

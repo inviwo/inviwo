@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filedialogstate.h>
 
 namespace inviwo {
 
@@ -85,11 +86,11 @@ public:
     virtual void clearNameFilters();
     virtual std::vector<FileExtension> getNameFilters();
 
-    virtual void setAcceptMode(FileProperty::AcceptMode mode);
-    FileProperty::AcceptMode getAcceptMode() const;
+    virtual void setAcceptMode(AcceptMode mode);
+    AcceptMode getAcceptMode() const;
 
-    virtual void setFileMode(FileProperty::FileMode mode);
-    FileProperty::FileMode getFileMode() const;
+    virtual void setFileMode(FileMode mode);
+    FileMode getFileMode() const;
 
     void setContentType(const std::string& contentType);
     std::string getContentType() const;
@@ -103,8 +104,8 @@ public:
 
 private:
     std::vector<FileExtension> nameFilters_;
-    FileProperty::AcceptMode acceptMode_;
-    FileProperty::FileMode fileMode_;
+    AcceptMode acceptMode_;
+    FileMode fileMode_;
     std::string contentType_;
 };
 

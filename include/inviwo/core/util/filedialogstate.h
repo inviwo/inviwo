@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,53 +24,58 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/core/io/datareaderdialog.h>
+#ifndef IVW_FILEDIALOGSTATE_H
+#define IVW_FILEDIALOGSTATE_H
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QComboBox>
-#include <QDialog>
-#include <QLabel>
-#include <QSpinBox>
-#include <warn/pop>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <ostream>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API RawDataReaderDialogQt : public DataReaderDialog, public QDialog {
-public:
-    RawDataReaderDialogQt();
-    virtual ~RawDataReaderDialogQt();
+enum class AcceptMode { Open, Save };
+enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
 
-    virtual bool show() override;
-    
-    virtual void setFile(std::string fileName) override;
-    
-    virtual const DataFormatBase* getFormat() const override;
-    virtual uvec3 getDimensions() const override;
-    virtual dvec3 getSpacing() const override;
-    virtual bool getEndianess() const override;
-    
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             AcceptMode& mode) {
+    switch (mode) {
+        case FileProperty::AcceptMode::Open:
+            ss << "Open";
+            break;
+        case FileProperty::AcceptMode::Save:
+            ss << "Save";
+            break;
+    }
+    return ss;
+}
 
-private:
-    QLabel* fileName_;
-    QComboBox* bitDepth_;
-    QSpinBox* channels_;
-    QSpinBox* dimX_;
-    QSpinBox* dimY_;
-    QSpinBox* dimZ_;
-    
-    QLineEdit* spaceX_;
-    QLineEdit* spaceY_;
-    QLineEdit* spaceZ_;
-    
-    QSpinBox* timeSteps_;
-    QSpinBox* headerOffset_;
-    QSpinBox* timeStepOffset_;
-    QComboBox* endianess_;
-};
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, FileMode& mode) {
+    switch (mode) {
+        case FileProperty::FileMode::AnyFile:
+            ss << "Any File";
+            break;
+        case FileProperty::FileMode::ExistingFile:
+            ss << "Existing File";
+            break;
+        case FileProperty::FileMode::Directory:
+            ss << "Directory";
+            break;
+        case FileProperty::FileMode::ExistingFiles:
+            ss << "Existing Files";
+            break;
+        case FileProperty::FileMode::DirectoryOnly:
+            ss << "Directory Only";
+            break;
+    }
+    return ss;
+}
 
-} // namespace
+} // namespace inviwo
+
+#endif // IVW_FILEDIALOGSTATE_H

@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/filedialogstate.h>
 
 #include <algorithm>
 #include <iomanip>
@@ -68,8 +69,8 @@ FilePatternProperty::FilePatternProperty(std::string identifier, std::string dis
     rangeSelection_.addProperty(minIndex_);
     rangeSelection_.addProperty(maxIndex_);
 
-    pattern_.setAcceptMode(FileProperty::AcceptMode::Open);
-    pattern_.setFileMode(FileProperty::FileMode::ExistingFiles);
+    pattern_.setAcceptMode(AcceptMode::Open);
+    pattern_.setFileMode(FileMode::ExistingFiles);
 
     minIndex_.setSemantics(PropertySemantics::Text);
     maxIndex_.setSemantics(PropertySemantics::Text);
