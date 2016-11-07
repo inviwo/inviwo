@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
