@@ -121,28 +121,12 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         }
     }
 
-    // Propagate Finished picking events
-    for (const auto& oldPoickingId : tstate_.lastPickingIdToAction) {
-        auto it = pickngIdToTouchPoints.find(oldPoickingId.first);
-        if (it == pickngIdToTouchPoints.end()) { // picking ended for oldPickingID;
-            TouchEvent te{};
-            PickingEvent pickingEvent(oldPoickingId.second, PickingState::Finished, &te,
-                                      tstate_.pickingIdToPressNDC[oldPoickingId.first],
-                                      tstate_.pickingIdToPreviousNDC[oldPoickingId.first],
-                                      oldPoickingId.first);
-            propagator->propagateEvent(&pickingEvent, nullptr);
-        }
-    }
-
     // Propagate Stated and Updated picking events
     for (auto& item : pickngIdToTouchPoints) {
         const auto& pickingId = item.first;
         const auto& points = item.second;
 
-        auto ps =
-            tstate_.lastPickingIdToAction.find(pickingId) == tstate_.lastPickingIdToAction.end()
-                ? PickingState::Started
-                : PickingState::Updated;
+        auto ps = TouchEvent::getPickingState(points);
 
         TouchEvent te(points);
         auto prevPos = te.centerNDC(); // Need so save here since te might be modified
@@ -157,7 +141,6 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         tstate_.pickingIdToPreviousNDC[pickingId] = prevPos;
     }
 
-    
     // Cleanup
     for (auto& point : touchPoints) {
         if (point.state() == TouchState::Finished) {
@@ -171,8 +154,6 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     util::map_erase_remove_if(tstate_.pickingIdToPreviousNDC, [&](const auto& item) {
         return pickingIdToAction.find(item.first) == pickingIdToAction.end();
     });
-
-    tstate_.lastPickingIdToAction = std::move(pickingIdToAction);
 
     // remove the "used" points from the event
     util::erase_remove_if(touchPoints, [&](const auto& p) {

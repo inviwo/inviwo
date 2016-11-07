@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
@@ -52,7 +53,7 @@ public:
      * if no depth is available.
      */
     TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
-               uvec2 canvasSize, double depth = 1.0);
+               dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth = 1.0);
 
     TouchState state() const;
     /**
@@ -81,6 +82,19 @@ public:
     */
     dvec2 prevPosNormalized() const;
     void setPrevPosNormalized(dvec2 val);
+
+    /**
+    * \brief Retrieve the pressed event position in screen coordinates [0 dim-1]^2
+    */
+    dvec2 pressedPos() const;
+    void setPressedPos(dvec2 val);
+
+    /**
+    * \brief Retrieve the pressed position normalized to the size of the screen [0 1]^2.
+    */
+    dvec2 pressedPosNormalized() const;
+    void setPressedPosNormalized(dvec2 val);
+
     /**
     * Retrieve depth value in normalized device coordinates at touch point.
     * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
@@ -88,6 +102,9 @@ public:
     */
     double depth() const;
     void setDepth(double val);
+
+    double pressure() const;
+    void setPressure(double val);
 
     uvec2 canvasSize() const;
     void setCanvasSize(uvec2 size);
@@ -104,6 +121,8 @@ protected:
     TouchState state_;
     dvec2 posNormalized_;
     dvec2 prevPosNormalized_;
+    dvec2 pressedPosNormalized_;
+    double pressure_;
     uvec2 canvasSize_;
     double depth_;
 };
@@ -147,6 +166,8 @@ public:
     dvec3 centerNDC() const;
 
     double averageDepth() const;
+
+    static PickingState getPickingState(const std::vector<TouchPoint>& points);
 
     /**
     * \brief Retrieve pointers to the two closest touch points

@@ -145,9 +145,11 @@ private:
     struct EventState {
         std::pair<bool, ViewId> getView(ViewManager&  m, const MouseEvent* me);
         std::pair<bool, ViewId> getView(ViewManager&  m, const GestureEvent* ge);
+        std::unordered_map<int, ViewManager::ViewId> getView(ViewManager&  m, const TouchEvent* te);
 
         bool pressing_ = false;
         std::pair<bool, ViewId> pressedView_ = {false, 0};
+        std::unordered_map<int, ViewId> touchpointIdToViewId_;
     };
 
     bool propagatePickingEvent(PickingEvent* pe, Propagator propagator); 

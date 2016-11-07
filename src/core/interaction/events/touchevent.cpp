@@ -32,12 +32,14 @@
 namespace inviwo {
 
 TouchPoint::TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
-                       uvec2 canvasSize, double depth)
+dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     : id_(id)
     , state_(touchState)
     , posNormalized_(posNormalized)
     , prevPosNormalized_(prevPosNormalized)
+    , pressedPosNormalized_(pressedPosNormalized)
     , canvasSize_(canvasSize)
+    , pressure_(pressure)
     , depth_(depth) {}
 
 TouchState TouchPoint::state() const { return state_; }
@@ -62,9 +64,25 @@ dvec2 TouchPoint::prevPosNormalized() const { return prevPosNormalized_; }
 
 void TouchPoint::setPrevPosNormalized(dvec2 val) { prevPosNormalized_ = val; }
 
+dvec2 TouchPoint::pressedPos() const {
+    return pressedPosNormalized_ * dvec2(canvasSize_ - uvec2(1));
+}
+
+void TouchPoint::setPressedPos(dvec2 val) {
+    pressedPosNormalized_ = val / dvec2(canvasSize_ - uvec2(1));
+}
+
+dvec2 TouchPoint::pressedPosNormalized() const { return pressedPosNormalized_; }
+
+void TouchPoint::setPressedPosNormalized(dvec2 val) { pressedPosNormalized_ = val; }
+
 double TouchPoint::depth() const { return depth_; }
 
 void TouchPoint::setDepth(double val) { depth_ = val; }
+
+double TouchPoint::pressure() const { return pressure_; }
+
+void TouchPoint::setPressure(double val) { pressure_ = val; }
 
 uvec2 TouchPoint::canvasSize() const { return canvasSize_; }
 
@@ -108,7 +126,7 @@ dvec2 TouchEvent::centerPoint() const {
     }
 }
 
-inviwo::dvec2 TouchEvent::centerPointNormalized() const {
+dvec2 TouchEvent::centerPointNormalized() const {
     if (touchPoints_.empty()) {
         return dvec2(0.0);
     } else {
@@ -152,6 +170,31 @@ double TouchEvent::averageDepth() const {
                                    [](double s, const TouchPoint& p) { return s + p.depth(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
+}
+
+PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) {
+    auto toPickingState = [](TouchState ts) {
+        switch (ts) {
+            case TouchState::Started:
+                return PickingState::Started;
+            case TouchState::Finished:
+                return PickingState::Finished;
+            case TouchState::Updated:
+            case TouchState::None:
+            case TouchState::Stationary:
+            default:
+                return PickingState::Updated;
+        }
+    };
+
+    return std::accumulate(points.begin(), points.end(), toPickingState(points.front().state()),
+                           [&](PickingState ps, const TouchPoint& tp) {
+                               auto s = toPickingState(tp.state());
+                               if (ps == s)
+                                   return ps;
+                               else
+                                   return PickingState::Updated;
+                           });
 }
 
 std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {

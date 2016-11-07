@@ -77,7 +77,6 @@ private:
 
     struct PCTouchState {
         std::unordered_map<int, PickingManager::Result> pointIdToPickingId;
-        std::unordered_map<size_t, const PickingAction*> lastPickingIdToAction;
         std::unordered_map<size_t, dvec3> pickingIdToPressNDC;
         std::unordered_map<size_t, dvec3> pickingIdToPreviousNDC;
     };

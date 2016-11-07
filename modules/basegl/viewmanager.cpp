@@ -154,10 +154,11 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
     std::unordered_map<size_t, std::vector<TouchPoint>> viewIdToTouchPoints;
     std::vector<int> propagatedPointIds;
 
+    auto idToView = eventState_.getView(*this, te);
     for (auto& point : touchPoints) {
-        auto view = findView(static_cast<ivec2>(point.pos()));
-        if (view.first) {
-            viewIdToTouchPoints[view.second].push_back(point);
+        auto it = idToView.find(point.id());
+        if (it != idToView.end()) {
+            viewIdToTouchPoints[it->second].push_back(point);
         }
     }
 
@@ -174,6 +175,7 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
             p.setCanvasSize(canvasSize);
             p.setPosNormalized(scale * (p.posNormalized() - offset));
             p.setPrevPosNormalized(scale * (p.prevPosNormalized() - offset));
+            p.setPressedPosNormalized(scale *(p.pressedPosNormalized() - offset));
         }
 
         TouchEvent newEvent(points);
@@ -291,6 +293,45 @@ std::pair<bool, ViewManager::ViewId> ViewManager::EventState::getView(ViewManage
         return tmp;
     }
     return pressedView_;
+}
+
+std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
+    ViewManager& m, const TouchEvent* te) {
+
+    std::unordered_map<int, ViewId> newTouchpointIdToViewID;
+    std::vector<std::pair<bool, ViewManager::ViewId>> foundViews;
+
+    for (const auto& tp : te->touchPoints()) {
+        switch (tp.state()) {
+            case TouchState::Started: {
+                auto res = m.findView(static_cast<ivec2>(tp.pos()));
+                if (res.first) {
+                    touchpointIdToViewId_[tp.id()] = res.second;
+                    newTouchpointIdToViewID[tp.id()] = res.second;
+                }
+                break;
+            }
+            case TouchState::Finished: {
+                auto it = touchpointIdToViewId_.find(tp.id());
+                if (it != touchpointIdToViewId_.end()) {
+                    newTouchpointIdToViewID[tp.id()] = it->second;
+                }
+                touchpointIdToViewId_.erase(tp.id());
+                break;
+            }
+            case TouchState::Stationary:
+            case TouchState::Updated:
+            case TouchState::None:
+            default: {
+                auto it = touchpointIdToViewId_.find(tp.id());
+                if (it != touchpointIdToViewId_.end()) {
+                    newTouchpointIdToViewID[tp.id()] = it->second;
+                }
+                break;
+            }
+        }
+    }
+    return newTouchpointIdToViewID;
 }
 
 }  // namespace
