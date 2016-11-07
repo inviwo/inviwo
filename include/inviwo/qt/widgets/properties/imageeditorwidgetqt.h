@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/property.h>
 
 //Widget includes
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -82,7 +82,7 @@ namespace inviwo {
 
 /////////////////////////////////////////////////
 // Simple Graphics scene
-class IVW_MODULE_QTWIDGETS_API SimpleGraphicsScene : public QGraphicsScene {
+class IVW_QTWIDGETS_API SimpleGraphicsScene : public QGraphicsScene {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -98,7 +98,7 @@ signals:
 /////////////////////////////////////////////////
 // Simple Graphics Rectangle Item with label
 // used by Simple Graphics View
-class IVW_MODULE_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
+class IVW_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
 public:
     SimpleWithRectangleLabel(QPointF mendPoint, QGraphicsScene* scene, int index=0);
     SimpleWithRectangleLabel();
@@ -122,7 +122,7 @@ struct ImgRect {
     int uniqueIndex_;
 };
 
-class IVW_MODULE_QTWIDGETS_API SimpleGraphicsView : public QGraphicsView {
+class IVW_QTWIDGETS_API SimpleGraphicsView : public QGraphicsView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -164,7 +164,7 @@ private:
 /////////////////////////////////////////////////
 // Image Labeling widget
 class ImageEditorWidgetQt;
-class IVW_MODULE_QTWIDGETS_API ImageLabelWidget : public QWidget {
+class IVW_QTWIDGETS_API ImageLabelWidget : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -214,7 +214,7 @@ protected:
 
 /////////////////////////////////////////////////
 // Image Editor widget
-class IVW_MODULE_QTWIDGETS_API ImageEditorWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API ImageEditorWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

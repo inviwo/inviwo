@@ -30,7 +30,7 @@
 #ifndef IVW_OPTIONPROPERTYWIDGETQT_H
 #define IVW_OPTIONPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

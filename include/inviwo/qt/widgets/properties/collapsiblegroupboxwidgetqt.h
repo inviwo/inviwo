@@ -30,7 +30,7 @@
 #ifndef IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
 #define IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/processors/processorobserver.h>
@@ -49,7 +49,7 @@ class Property;
 class PropertyOwner;
 class EditableLabelQt;
 
-class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
+class IVW_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                       public PropertyOwnerObserver,
                                                       public ProcessorObserver {
     #include <warn/push>

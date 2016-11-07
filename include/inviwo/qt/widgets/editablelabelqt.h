@@ -30,7 +30,7 @@
 #ifndef EDITABLELABELQT_H
 #define EDITABLELABELQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyobserver.h>
 #include <warn/push>
@@ -44,7 +44,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
+class IVW_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

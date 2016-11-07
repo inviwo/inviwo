@@ -30,7 +30,7 @@
 #ifndef IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H
 #define IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -48,7 +48,7 @@ namespace inviwo {
 
 class TransferFunctionControlPointConnection;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint : public QGraphicsItem,
+class IVW_QTWIDGETS_API TransferFunctionEditorControlPoint : public QGraphicsItem,
                                                              public TransferFunctionPointObserver {
 public:
     TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
@@ -71,11 +71,11 @@ public:
 
     void setSize(float s) { size_ = s; }
     
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
+    friend IVW_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
                            const TransferFunctionEditorControlPoint& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
+    friend IVW_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
                           const TransferFunctionEditorControlPoint& rhs);
 
     TransferFunctionControlPointConnection* left_;   // Non-owning reference
@@ -103,17 +103,17 @@ private:
     QPointF currentPos_;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
                                   const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator!=(const TransferFunctionEditorControlPoint& lhs,
                                   const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
                                  const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator>(const TransferFunctionEditorControlPoint& lhs,
                                  const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator<=(const TransferFunctionEditorControlPoint& lhs,
                                   const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionEditorControlPoint& lhs,
+IVW_QTWIDGETS_API bool operator>=(const TransferFunctionEditorControlPoint& lhs,
                                   const TransferFunctionEditorControlPoint& rhs);
 
 }  // namespace

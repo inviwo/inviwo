@@ -30,7 +30,7 @@
 #ifndef IVW_ORDINALEDITORWIDGET_H
 #define IVW_ORDINALEDITORWIDGET_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget  {
+class IVW_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget  {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

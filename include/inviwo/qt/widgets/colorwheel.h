@@ -38,7 +38,7 @@
 #ifndef IVW_COLORWHEEL_H
 #define IVW_COLORWHEEL_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -54,7 +54,7 @@ class QPaintEvent;
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ColorWheel : public QWidget {
+class IVW_QTWIDGETS_API ColorWheel : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

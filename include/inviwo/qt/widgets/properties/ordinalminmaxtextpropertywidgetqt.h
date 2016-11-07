@@ -30,7 +30,7 @@
 #ifndef IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
 #define IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertysettingswidgetqt.h>
@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API BaseOrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API BaseOrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
 
 #include <warn/push>
 #include <warn/ignore/all>

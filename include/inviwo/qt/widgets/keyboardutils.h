@@ -29,7 +29,7 @@
 #ifndef IVW_KEYBOARDUTILS_H
 #define IVW_KEYBOARDUTILS_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
 class QKeyEvent;
@@ -38,7 +38,7 @@ namespace inviwo {
 
 namespace util {
 
-IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
+IVW_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
 
 } // namespace util
 

@@ -3,6 +3,6 @@
 # List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
     InviwoPython3Module
-    InviwoQtWidgetsModule
+    InviwoQtWidgets
     InviwoQtEditor
 )

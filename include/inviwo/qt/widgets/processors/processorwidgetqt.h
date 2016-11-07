@@ -30,7 +30,7 @@
 #ifndef IVW_PROCESSORWIDGETQT_H
 #define IVW_PROCESSORWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/processors/processorwidget.h>
 
 #include <warn/push>
@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidget {
+class IVW_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

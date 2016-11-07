@@ -30,7 +30,7 @@
 #ifndef IVW_COMPOSITEPROPERTYWIDGETQT_H
 #define IVW_COMPOSITEPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -44,7 +44,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
+class IVW_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
                                                     public CompositePropertyObserver {
     #include <warn/push>
     #include <warn/ignore/all>

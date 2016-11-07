@@ -30,7 +30,7 @@
 #ifndef IVW_PROPERTYSETTINGSWIDGETQT_H
 #define IVW_PROPERTYSETTINGSWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 // Core
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertywidget.h>
@@ -80,7 +80,7 @@ struct SinglePropertySetting {
     }
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

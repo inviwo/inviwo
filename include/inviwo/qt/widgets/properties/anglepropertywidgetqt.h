@@ -30,7 +30,7 @@
 #ifndef IVW_ANGLEPROPERTYWIDGETQT_H
 #define IVW_ANGLEPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/angleradiuswidget.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/propertysettingswidgetqt.h>
@@ -47,7 +47,7 @@ namespace inviwo {
  * 
  * @see AngleWidget
  */
-class IVW_MODULE_QTWIDGETS_API BaseAnglePropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API BaseAnglePropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

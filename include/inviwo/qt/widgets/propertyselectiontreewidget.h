@@ -30,7 +30,7 @@
 #ifndef IVW_PROPERTY_SELECTION_TREE_WIDGET_H
 #define IVW_PROPERTY_SELECTION_TREE_WIDGET_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,7 +46,7 @@ namespace inviwo {
 class Property;
 class ProcessorNetwork;
 
-class IVW_MODULE_QTWIDGETS_API PropertySelectionTree : public QTreeWidget {
+class IVW_QTWIDGETS_API PropertySelectionTree : public QTreeWidget {
 
 public:
     PropertySelectionTree(QWidget* parent) : QTreeWidget(parent) {};
@@ -59,7 +59,7 @@ private:
     QPoint dragStartPosition_;
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertySelectionTreeWidget : public QWidget {
+class IVW_QTWIDGETS_API PropertySelectionTreeWidget : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -77,7 +77,7 @@ private:
     QVBoxLayout* vLayout_;
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertySelectionTreeDialog : public QDialog {
+class IVW_QTWIDGETS_API PropertySelectionTreeDialog : public QDialog {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

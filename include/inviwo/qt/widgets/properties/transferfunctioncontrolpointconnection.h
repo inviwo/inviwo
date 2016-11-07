@@ -30,7 +30,7 @@
 #ifndef IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H
 #define IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,7 +42,7 @@
 namespace inviwo {
 class TransferFunctionEditorControlPoint;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionControlPointConnection : public QGraphicsItem {
+class IVW_QTWIDGETS_API TransferFunctionControlPointConnection : public QGraphicsItem {
 public:
     TransferFunctionControlPointConnection();
     virtual ~TransferFunctionControlPointConnection();
@@ -53,11 +53,11 @@ public:
     enum { Type = UserType + TransferFunctionControlPointConnectionType };
     int type() const { return Type; }
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
+    friend IVW_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
                            const TransferFunctionControlPointConnection& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
+    friend IVW_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
                           const TransferFunctionControlPointConnection& rhs);
 
     TransferFunctionEditorControlPoint* left_;   // Non-owning reference
@@ -78,17 +78,17 @@ private:
     QRectF rect_;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
                                   const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator!=(const TransferFunctionControlPointConnection& lhs,
                                   const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
                                  const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator>(const TransferFunctionControlPointConnection& lhs,
                                  const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator<=(const TransferFunctionControlPointConnection& lhs,
                                   const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionControlPointConnection& lhs,
+IVW_QTWIDGETS_API bool operator>=(const TransferFunctionControlPointConnection& lhs,
                                   const TransferFunctionControlPointConnection& rhs);
 
 }  // namespace

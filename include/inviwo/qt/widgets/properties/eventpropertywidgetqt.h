@@ -30,7 +30,7 @@
 #ifndef IVW_EVENTPROPERTYWIDGETQT_H
 #define IVW_EVENTPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 
 #include <warn/push>
@@ -46,7 +46,7 @@ class EventMatcher;
 class MouseEventMatcher;
 class KeyboardEventMatcher;
 
-class IVW_MODULE_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

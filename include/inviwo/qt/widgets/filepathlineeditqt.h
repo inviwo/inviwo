@@ -30,7 +30,7 @@
 #ifndef IVW_FILEPATHLINEEDITQT_H
 #define IVW_FILEPATHLINEEDITQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/lineeditqt.h>
 
 class QLabel;
@@ -43,7 +43,7 @@ namespace inviwo {
 *        When not in focus, it shows only the file name with extension.
 *        A small warning icon is shown to indicate non-existing files and paths.
 */
-class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
+class IVW_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

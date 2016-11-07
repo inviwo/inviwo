@@ -30,7 +30,7 @@
 #ifndef IVW_ORDINALPROPERTYWIDGETQT_H
 #define IVW_ORDINALPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
@@ -55,7 +55,7 @@ class Property;
 /**
  *  The Widget should work for FloatProperty and FloatVec(2|3|4)Property
  */
-class IVW_MODULE_QTWIDGETS_API BaseOrdinalPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API BaseOrdinalPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

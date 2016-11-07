@@ -30,7 +30,7 @@
 #ifndef IVW_RANGESLIDERQT_H
 #define IVW_RANGESLIDERQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSplitter>
@@ -42,7 +42,7 @@ namespace inviwo {
 
     class RangeSliderMiddle;
 
-class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
+class IVW_QTWIDGETS_API RangeSliderQt : public QSplitter {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -89,7 +89,7 @@ private:
     int minSeperation_;
 };
 
-class IVW_MODULE_QTWIDGETS_API RangeSliderMiddle : public QFrame {
+class IVW_QTWIDGETS_API RangeSliderMiddle : public QFrame {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

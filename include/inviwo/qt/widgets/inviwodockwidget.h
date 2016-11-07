@@ -30,7 +30,7 @@
 #ifndef IVW_INVIWODOCKWIDGET_H
 #define IVW_INVIWODOCKWIDGET_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDockWidget>
@@ -43,7 +43,7 @@ namespace inviwo {
 
     class InviwoDockWidgetTitleBar;
 
-class IVW_MODULE_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
+class IVW_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
     #include <warn/push>
     #include <warn/ignore/all>
     Q_OBJECT

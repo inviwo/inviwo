@@ -41,7 +41,7 @@
 #include <warn/pop>
 
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>

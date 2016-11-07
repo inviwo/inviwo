@@ -30,7 +30,7 @@
 #ifndef IVW_FLOATSLIDERQT_H
 #define IVW_FLOATSLIDERQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/customsliderwidgetqt.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
 #include <QSlider>
@@ -40,7 +40,7 @@
 
 namespace inviwo {
     
-//class IVW_MODULE_QTWIDGETS_API FloatSliderWidgetQt : public QWidget {
+//class IVW_QTWIDGETS_API FloatSliderWidgetQt : public QWidget {
 //    Q_OBJECT
 //public:
 //

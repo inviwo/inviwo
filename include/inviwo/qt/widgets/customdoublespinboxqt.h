@@ -30,7 +30,7 @@
 #ifndef IVW_DOUBLE_SPIN_BOX_QT_H
 #define IVW_DOUBLE_SPIN_BOX_QT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,7 +45,7 @@ namespace inviwo {
  *
  * Enables displaying a value with a certain precision without truncation the actual value, which QDoubleSpinBox does.
  */
-class IVW_MODULE_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
+class IVW_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

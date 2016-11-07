@@ -30,7 +30,7 @@
 #ifndef IVW_LIGHTPROPERTYWIDGETQT_H
 #define IVW_LIGHTPROPERTYWIDGETQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 
     #include <warn/push>
     #include <warn/ignore/all>
