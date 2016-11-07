@@ -58,6 +58,7 @@ CanvasProcessor::CanvasProcessor()
                           InvalidationLevel::Valid)
     , visibleLayer_("visibleLayer", "Visible Layer")
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
+    , imageTypeExt_("fileExt", "Image Type")
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...", InvalidationLevel::Valid)
@@ -99,9 +100,25 @@ CanvasProcessor::CanvasProcessor()
     visibleLayer_.addOption("depth", "Depth layer", LayerType::Depth);
     visibleLayer_.addOption("picking", "Picking layer", LayerType::Picking);
     visibleLayer_.set(LayerType::Color);
+
+    // add all supported image extensions to option property
+    auto wf = InviwoApplication::getPtr()->getDataWriterFactory();
+    // save first writer extension matching "png" to be used as default
+    std::string defaultExt;
+    for (auto ext : wf->getExtensionsForType<Layer>()) {
+        imageTypeExt_.addOption(ext.toString(), ext.toString());
+        if (defaultExt.empty() && ext.extension_ == "png") {
+            defaultExt = ext.toString();
+        }
+    }
+    if (!defaultExt.empty()) {
+        imageTypeExt_.setSelectedIdentifier(defaultExt);
+    }
+
     addProperty(visibleLayer_);
     addProperty(colorLayer_);
     addProperty(saveLayerDirectory_);
+    addProperty(imageTypeExt_);
 
     saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
     addProperty(saveLayerButton_);
@@ -122,8 +139,7 @@ CanvasProcessor::CanvasProcessor()
         fileDialog->addExtensions(wf->getExtensionsForType<Layer>());
 
         if (fileDialog->show()) {
-            auto fileName = fileDialog->getSelectedFile();
-            saveImageLayer(fileName);
+            saveImageLayer(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());
         }
     });
     addProperty(saveLayerToFileButton_);
@@ -234,30 +250,45 @@ ivec2 CanvasProcessor::calcSize() {
 
 void CanvasProcessor::saveImageLayer() {
     if (saveLayerDirectory_.get().empty()) saveLayerDirectory_.requestFile();
+
+    auto ext = FileExtension::createFileExtensionFromString(imageTypeExt_.get());
     std::string snapshotPath(saveLayerDirectory_.get() + "/" + toLower(getIdentifier()) + "-" +
-                             currentDateTime() + ".png");
-    saveImageLayer(snapshotPath);
+                             currentDateTime() + "." + ext.extension_);
+    saveImageLayer(snapshotPath, ext);
 }
 
-void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
+void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension &extension) {
     if (auto layer = getVisibleLayer()) {
-        const auto ext = filesystem::getFileExtension(snapshotPath);
-        if (auto writer = std::shared_ptr<DataWriterType<Layer>>(
+        auto writer = std::shared_ptr<DataWriterType<Layer>>(
+            InviwoApplication::getPtr()
+            ->getDataWriterFactory()
+            ->getWriterForTypeAndExtension<Layer>(extension));
+
+        if (!writer) {
+            // could not find a reader for the given extension, extension might be invalid
+            // try to get reader for the extension extracted from the file name, i.e. snapshotPath
+            const auto ext = filesystem::getFileExtension(snapshotPath);
+            writer = std::shared_ptr<DataWriterType<Layer>>(
                 InviwoApplication::getPtr()
-                    ->getDataWriterFactory()
-                    ->getWriterForTypeAndExtension<Layer>(ext))) {
-            try {
-                writer->setOverwrite(true);
-                writer->writeData(layer, snapshotPath);
-                LogInfo("Canvas layer exported to disk: " << snapshotPath);
-            } catch (DataWriterException const& e) {
-                LogError(e.getMessage());
+                ->getDataWriterFactory()
+                ->getWriterForTypeAndExtension<Layer>(ext));
+            if (!writer) {
+                LogError("Could not find a writer for the specified file extension (\""
+                         << ext << "\")");
+                return;
             }
-        } else {
-            LogError("Could not find a writer for the specified file extension (\""
-                     << ext << "\")");
         }
-    } else {
+
+        try {
+            writer->setOverwrite(true);
+            writer->writeData(layer, snapshotPath);
+            LogInfo("Canvas layer exported to disk: " << snapshotPath);
+        }
+        catch (DataWriterException const& e) {
+            LogError(e.getMessage());
+        }
+    }
+    else {
         LogError("Could not find visible layer");
     }
 }
