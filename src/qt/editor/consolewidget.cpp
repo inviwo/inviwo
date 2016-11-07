@@ -266,8 +266,11 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     i = 0;
     for (const auto& col : columnsWidth.toList()) {
-        tableView_->horizontalHeader()->resizeSection(i++, col.toInt());
+        if (!tableView_->horizontalHeader()->isHidden()) {
+            tableView_->horizontalHeader()->resizeSection(i++, col.toInt());
+        }
     }
+
     auto levelsActive = settings.value("levelsActive", QVariant(QList<QVariant>()));
     i = 0;
     for (const auto& level : levelsActive.toList()) {
