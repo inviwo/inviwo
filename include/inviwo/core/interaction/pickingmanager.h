@@ -31,55 +31,62 @@
 #define IVW_PICKINGMANAGER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/interaction/pickingaction.h>
 
 namespace inviwo {
+
+class PickingEvent;
 
 /** \class PickingManager
  * Manager for picking objects.
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
-    friend class PickingContainer;
-
 public:
-    PickingManager() = default;
+    struct Result {
+        size_t index;
+        const PickingAction* action;
+    };
+
+    PickingManager();
     PickingManager(PickingManager const&) = delete;
     PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();
 
     template <typename T>
-    PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
-                                                 size_t size = 1);
-    PickingObject* registerPickingCallback(std::function<void(const PickingObject*)> callback,
-                                                 size_t size = 1);
+    PickingAction* registerPickingAction(Processor* processor, T* o,
+                                         void (T::*m)(PickingEvent*), size_t size = 1);
+    PickingAction* registerPickingAction(Processor* processor,
+                                         PickingAction::Callback callback,
+                                         size_t size = 1);
 
-    bool unregisterPickingObject(const PickingObject*);
+    bool unregisterPickingAction(const PickingAction*);
     bool pickingEnabled();
 
     static uvec3 indexToColor(size_t index);
     static size_t colorToIndex(uvec3 color);
 
-protected:
-    PickingObject* getPickingObjectFromColor(const uvec3&);
+    Result getPickingActionFromColor(const uvec3& color);
 
 private:
-    size_t lastIndex_ = 0;
+    // start indexing at 1, 0 maps to black {0,0,0} and indicated no picking.
+    size_t lastIndex_ = 1;
     // pickingObjects_ should be sorted on the start index.
-    std::vector<std::unique_ptr<PickingObject>> pickingObjects_;
+    std::vector<std::unique_ptr<PickingAction>> pickingActions_;
     // unusedObjects_ should be sorted on capacity.
-    std::vector<PickingObject*> unusedObjects_;
-    
+    std::vector<PickingAction*> unusedObjects_;
+
     bool enabled_ = false;
     const BaseCallBack* enableCallback_ = nullptr;
 };
 
 template <typename T>
-PickingObject* PickingManager::registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
-                                                       size_t size) {
+PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
+                                                     void (T::*m)(PickingEvent*),
+                                                     size_t size) {
     using namespace std::placeholders;
-    return registerPickingCallback(std::bind(m, o, _1), size);
+    return registerPickingAction(processor, std::bind(m, o, _1), size);
 }
 
 }  // namespace

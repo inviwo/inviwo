@@ -98,10 +98,8 @@ private:
     bool mapPanTriggered(QPanGesture* );
     bool mapPinchTriggered(QPinchGesture* e);
         
-    bool gestureMode_ = false;
     Qt::GestureType lastType_;
     int lastNumFingers_;
-    std::vector<int> lastTouchIds_;
     vec2 screenPositionNormalized_;
 };
 
@@ -176,7 +174,7 @@ bool CanvasQtBase<T>::event(QEvent* e) {
         case QEvent::Gesture:
             return mapGestureEvent(static_cast<QGestureEvent*>(e));
         default:
-            return QGLWidget::event(e);
+            return QtBase::event(e);
     }
 }
 
@@ -188,7 +186,7 @@ dvec2 inviwo::CanvasQtBase<T>::normalPos(dvec2 pos) const {
 
 template <typename T>
 bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
-    if (gestureMode_) return true;
+    if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
@@ -204,7 +202,7 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
-    if (gestureMode_) return true;
+    if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
@@ -219,10 +217,7 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
-    if (gestureMode_) {
-        gestureMode_ = false;
-        return true;
-    }
+    if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
@@ -237,7 +232,7 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
-    if (gestureMode_) return true;
+    if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
@@ -316,39 +311,17 @@ bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
-    size_t nTouchPoints = touch->touchPoints().size();
-    if (nTouchPoints < 1) return true;
 
-    QTouchEvent::TouchPoint firstPoint = touch->touchPoints()[0];
-    switch (firstPoint.state()) {
-        case Qt::TouchPointPressed:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
-            break;
-        case Qt::TouchPointMoved:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
-            break;
-        case Qt::TouchPointStationary:
-            gestureMode_ = nTouchPoints > 1;  // Treat single touch point as mouse event
-            break;
-        case Qt::TouchPointReleased:
-            gestureMode_ = false;
-            break;
-        default:
-            gestureMode_ = false;
-    }
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
-    // Fetch layer before loop (optimization)
-    const LayerRAM* depthLayerRAM = this->getDepthLayerRAM();
-    vec2 screenSize(this->getCanvasDimensions());
+    uvec2 screenSize(this->getCanvasDimensions());
 
-    std::vector<int> endedTouchIds;
-
-    for (auto& touchPoint : touch->touchPoints()) {
-        const vec2 screenTouchPos{utilqt::toGLM(touchPoint.pos())};
-        const vec2 prevScreenTouchPos{utilqt::toGLM(touchPoint.lastPos())};
-        const vec2 pixelCoord{util::invertY(screenTouchPos, screenSize)};
+    for (const auto& touchPoint : touch->touchPoints()) {
+        const auto pos = normalPos(utilqt::toGLM(touchPoint.pos()));
+        const auto prevPos = normalPos(utilqt::toGLM(touchPoint.lastPos()));
+        const auto pressedPos = normalPos(utilqt::toGLM(touchPoint.startPos()));
+        const auto pressure = touchPoint.pressure();
 
         TouchState touchState;
         switch (touchPoint.state()) {
@@ -367,63 +340,20 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
             default:
                 touchState = TouchState::None;
         }
-
-        // Note that screenTouchPos/prevScreenTouchPos are in [0 screenDim] and does not need to be
-        // adjusted to become centered in the pixel (+0.5)
-
-        // Saving id order to preserve order of touch points at next touch event
-
-        const auto lastIdIdx = util::find(lastTouchIds_, touchPoint.id());
-
-        if (lastIdIdx != lastTouchIds_.end()) {
-            if (touchState == TouchState::Finished) {
-                endedTouchIds.push_back(touchPoint.id());
-            }
-        } else {
-            lastTouchIds_.push_back(touchPoint.id());
-        }
-        touchPoints.emplace_back(touchPoint.id(), screenTouchPos, screenTouchPos / screenSize,
-                                 prevScreenTouchPos, prevScreenTouchPos / screenSize, touchState,
-                                 this->getDepthValueAtCoord(pixelCoord, depthLayerRAM));
+        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos,pressedPos, screenSize,
+                                 pressure, this->getDepthValueAtNormalizedCoord(pos));
     }
     // Ensure that the order to the touch points are the same as last touch event.
     // Note that the ID of a touch point is always the same but the order in which
     // they are given can vary.
-    // Example
-    // lastTouchIds_    touchPoints
-    //     0                 0
-    //     3                 1 
-    //     2                 2
-    //     4
-    // Will result in:
-    //                  touchPoints
-    //                       0 (no swap)
-    //                       2 (2 will swap with 1)
-    //                       1
+    std::sort(touchPoints.begin(), touchPoints.end(),
+              [](const auto& a, const auto& b) { return a.id() < b.id(); });
 
-    auto touchIndex = 0;  // Index to first unsorted element in touchPoints array
-    for (const auto& lastTouchPointId : lastTouchIds_) {
-        const auto touchPointIt = util::find_if(
-            touchPoints,
-            [lastTouchPointId](const TouchPoint& p) { return p.getId() == lastTouchPointId; });
-        // Swap current location in the container with the location it was in last touch event.
-        if (touchPointIt != touchPoints.end() &&
-            std::distance(touchPoints.begin(), touchPointIt) != touchIndex) {
-            std::swap(*(touchPoints.begin() + touchIndex), *touchPointIt);
-            ++touchIndex;
-        }
-    }
-
-    util::erase_remove_if(lastTouchIds_, [&](int e) {
-        return util::contains(endedTouchIds, e);
-    });
-
-    // We need to send out touch event all the time to support one -> two finger touch switch
-    TouchEvent touchEvent(touchPoints, this->getCanvasDimensions());
+    TouchEvent touchEvent(touchPoints);
     touch->accept();
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
-    screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
+    screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     Canvas::propagateEvent(&touchEvent);
     return true;
@@ -465,27 +395,15 @@ bool CanvasQtBase<T>::mapGestureEvent(QGestureEvent* ge) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
-    // Mouse events will be triggered for touch events by Qt 5.3.1 (even though we specify that the
-    // touch event is handled)
-    // http://www.qtcentre.org/archive/index.php/t-52367.html
-    // Therefore keep track of if we are performing and disallow mouse events while performing a
-    // gesture ( see CanvasQt::event(QEvent *e) )
-    switch (gesture->state()) {
-        case Qt::GestureStarted:
-        case Qt::GestureUpdated:
-            gestureMode_ = true;
-            break;
-        default:
-            gestureMode_ = false;
-    }
-    vec2 deltaPos =
-        vec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getCanvasDimensions().x,
+    auto deltaPos =
+        dvec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getCanvasDimensions().x,
              (gesture->offset().y() - gesture->lastOffset().y()) /  this->getCanvasDimensions().y);
 
-    if (deltaPos == vec2(0.f)) return true;
+    if (deltaPos == dvec2(0.f)) return true;
 
+    auto depth = this->getDepthValueAtNormalizedCoord(screenPositionNormalized_);
     GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
-                    lastNumFingers_, screenPositionNormalized_,  this->getCanvasDimensions());
+                    lastNumFingers_, screenPositionNormalized_,  this->getCanvasDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;
@@ -493,24 +411,11 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
-    // std::cout << "PINCH: " << gesture->scaleFactor() << std::endl;
-    // Mouse events will be triggered for touch events by Qt 5.3.1 (even though we specify that the
-    // touch event is handled)
-    // http://www.qtcentre.org/archive/index.php/t-52367.html
-    // Therefore keep track of if we are performing and disallow mouse events while performing a
-    // gesture ( see CanvasQt::event(QEvent *e) )
-    switch (gesture->state()) {
-        case Qt::GestureStarted:
-        case Qt::GestureUpdated:
-            gestureMode_ = true;
-            break;
-        default:
-            gestureMode_ = false;
-    }
-    GestureEvent ge(vec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
+    auto depth = this->getDepthValueAtNormalizedCoord(screenPositionNormalized_);
+    GestureEvent ge(dvec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
                     static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
                     utilqt::getGestureState(gesture), lastNumFingers_,
-                    screenPositionNormalized_, this->getCanvasDimensions());
+                    screenPositionNormalized_, this->getCanvasDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;

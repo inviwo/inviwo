@@ -47,7 +47,7 @@ namespace inviwo {
 Canvas::Canvas(size2_t dimensions)
     : screenDimensions_(dimensions)
     , propagator_(nullptr)
-    , pickingContainer_()
+    , pickingController_()
     , ownerWidget_(nullptr) {}
 
 void Canvas::resize(size2_t canvasSize) {
@@ -67,12 +67,11 @@ size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
 
 void Canvas::propagateEvent(Event* event) {
     NetworkLock lock;
+    if (!propagator_) return;
 
-    if (pickingContainer_.pickingEnabled()) pickingContainer_.propagateEvent(event);
-
+    pickingController_.propagateEvent(event, propagator_);
     if (event->hasBeenUsed()) return;
-
-    if (propagator_) propagator_->propagateEvent(event, nullptr);
+    propagator_->propagateEvent(event, nullptr);
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

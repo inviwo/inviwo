@@ -28,27 +28,28 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/interaction/pickingobject.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/pickingaction.h>
 
 namespace inviwo {
 
 PickingMapper::PickingMapper(PickingManager* manager) : manager_(manager) {}
 
 PickingMapper::PickingMapper(Processor* processor, size_t size,
-                             std::function<void(const PickingObject*)> callback,
+                             std::function<void(PickingEvent*)> callback,
                              PickingManager* manager)
     : manager_(manager)
     , processor_(processor)
     , callback_(callback)
-    , pickingObject_(manager_->registerPickingCallback(callback, size)) {}
+    , pickingAction_(manager_->registerPickingAction(processor, callback, size)) {}
 
 PickingMapper::PickingMapper(PickingMapper&& rhs)
     : manager_(rhs.manager_)
     , processor_(rhs.processor_)
     , callback_(std::move(rhs.callback_))
-    , pickingObject_(rhs.pickingObject_) {
+    , pickingAction_(rhs.pickingAction_) {
     rhs.processor_ = nullptr;
-    rhs.pickingObject_ = nullptr;
+    rhs.pickingAction_ = nullptr;
 }
 
 PickingMapper& PickingMapper::operator=(PickingMapper&& that) {
@@ -56,48 +57,60 @@ PickingMapper& PickingMapper::operator=(PickingMapper&& that) {
         std::swap(that.manager_, manager_);
         std::swap(that.processor_, processor_);
         std::swap(that.callback_, callback_);
-        std::swap(that.pickingObject_, pickingObject_);
+        std::swap(that.pickingAction_, pickingAction_);
 
         that.processor_ = nullptr;
-        if (manager_) manager_->unregisterPickingObject(that.pickingObject_);
+        if (manager_) manager_->unregisterPickingAction(that.pickingAction_);
     }
     return *this;
 }
 
 PickingMapper::~PickingMapper() {
-    if (pickingObject_ && manager_) {
-        manager_->unregisterPickingObject(pickingObject_);
+    if (pickingAction_ && manager_) {
+        manager_->unregisterPickingAction(pickingAction_);
     }
 }
 
 void PickingMapper::resize(size_t newSize) {
-    if (newSize == getPickingObject()->getSize()) {
+    if (newSize == getPickingAction()->getSize()) {
         //Same size or size zero, do nothing
         return;
     }
     bool enabled = true;
-    if (pickingObject_ && manager_) {
-        enabled = pickingObject_->isEnabled();
-        manager_->unregisterPickingObject(pickingObject_);
-        pickingObject_ = nullptr;
+    if (pickingAction_ && manager_) {
+        enabled = pickingAction_->isEnabled();
+        manager_->unregisterPickingAction(pickingAction_);
+        pickingAction_ = nullptr;
     }
     if(newSize > 0 && manager_) {
-        pickingObject_ = manager_->registerPickingCallback(callback_, newSize);
-        pickingObject_->setEnabled(enabled);
+        pickingAction_ = manager_->registerPickingAction(processor_, callback_, newSize);
+        pickingAction_->setEnabled(enabled);
     }
 }
 
 bool PickingMapper::isEnabled() const {
-    if (pickingObject_)
-        return pickingObject_->isEnabled();
+    if (pickingAction_)
+        return pickingAction_->isEnabled();
     else
         return false;
 }
 
 void PickingMapper::setEnabled(bool enabled) {
-    if (pickingObject_) pickingObject_->setEnabled(enabled);
+    if (pickingAction_) pickingAction_->setEnabled(enabled);
 }
 
-const PickingObject* PickingMapper::getPickingObject() const { return pickingObject_; }
+size_t PickingMapper::getPickingId(size_t id) const {
+    return pickingAction_->getPickingId(id);
+}
+
+inviwo::vec3 PickingMapper::getColor(size_t id) const {
+    return pickingAction_->getColor(id);
+}
+
+size_t PickingMapper::getSize() const {
+    return pickingAction_->getSize();
+}
+
+const PickingAction* PickingMapper::getPickingAction() const { return pickingAction_; }
 
 }  // namespace

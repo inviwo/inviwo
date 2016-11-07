@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/interaction/trackball.h>

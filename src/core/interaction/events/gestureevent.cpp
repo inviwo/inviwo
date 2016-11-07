@@ -31,8 +31,9 @@
 
 namespace inviwo {
 
-GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureType type,
-                           GestureState state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize)
+GestureEvent::GestureEvent(dvec2 deltaPos, double deltaDistance, GestureType type,
+                           GestureState state, int numFingers, dvec2 screenPosNorm,
+                           uvec2 canvasSize, double depth)
     : InteractionEvent()
     , type_(type)
     , state_(state)
@@ -40,11 +41,12 @@ GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureType type
     , deltaPos_(deltaPos)
     , deltaDistance_(deltaDistance)
     , screenPosNorm_(screenPosNorm)
-    , canvasSize_(canvasSize) {}
+    , canvasSize_(canvasSize)
+    , depth_(depth) {}
 
 GestureEvent* GestureEvent::clone() const { return new GestureEvent(*this); }
 
-inviwo::vec2 GestureEvent::deltaPos() const { return deltaPos_; }
+dvec2 GestureEvent::deltaPos() const { return deltaPos_; }
 
 double GestureEvent::deltaDistance() const { return deltaDistance_; }
 
@@ -54,14 +56,22 @@ inviwo::GestureState GestureEvent::state() const { return state_; }
 
 int GestureEvent::numFingers() const { return numFingers_; }
 
-inviwo::vec2 GestureEvent::screenPosNormalized() const { return screenPosNorm_; }
+dvec2 GestureEvent::screenPosNormalized() const { return screenPosNorm_; }
 
-inviwo::vec2 GestureEvent::canvasSize() const { return canvasSize_; }
+uvec2 GestureEvent::canvasSize() const { return canvasSize_; }
 
-void GestureEvent::modify(vec2 posNorm) { screenPosNorm_ = posNorm; }
+void GestureEvent::setCanvasSize(uvec2 size) { canvasSize_ = size; }
 
-uint64_t GestureEvent::hash() const {
-    return chash();
+double GestureEvent::depth() const { return depth_; }
+
+void GestureEvent::setDepth(double depth) { depth_ = depth; }
+
+dvec3 GestureEvent::ndc() const {
+    return dvec3(2.0 * screenPosNorm_.x - 1.0, 2.0 * screenPosNorm_.y - 1.0, depth_);
 }
+
+void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posNorm; }
+
+uint64_t GestureEvent::hash() const { return chash(); }
 
 }  // namespace

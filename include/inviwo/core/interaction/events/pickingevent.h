@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,56 +24,43 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGOBJECT_H
-#define IVW_PICKINGOBJECT_H
+#ifndef IVW_PICKINGEVENT_H
+#define IVW_PICKINGEVENT_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
-/** \class PickingObject
+class PickingAction;
+class InteractionEvent;
+
+/**
+ * \class PickingEvent
  */
-class IVW_CORE_API PickingObject {
+class IVW_CORE_API PickingEvent : public Event {
 public:
-    friend class PickingManager;
+    PickingEvent(const PickingAction* pickingAction, PickingState state, Event* event,
+                 dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
+    PickingEvent(const PickingAction* pickingAction, PickingState state,
+                 std::unique_ptr<Event> event, dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
 
-    using Action = std::function<void(const PickingObject*)>;
+    virtual ~PickingEvent();
+    PickingEvent(const PickingEvent&);
+    PickingEvent& operator=(const PickingEvent&);
 
-    /**
-    * Create a picking object for "size" objects starting a "start"
-    * PickingObjects are usually created by the Picking manager
-    */
-    PickingObject(size_t start, size_t size = 1);
 
-    virtual ~PickingObject();
-
-    /**
-    * Returns the global picking index, the global index can be used with the 
-    * PickingManager::indexToColor(size_t index) function to get a picking color.
-    * \param id the local picking index 
-    */
-    size_t getPickingId(size_t id = 0) const;
-
-    /**
-     *	The picking color to use for the object with local index id.
-     *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
-     * \param id the local picking index 
-     */
-    vec3 getColor(size_t id = 0) const;
-    /**
-     *	The number of local picking indices in this picking object.
-     */
-    size_t getSize() const;
-
+    virtual PickingEvent* clone() const override;
+    
     /**
      *	Returns the local picking index of the object currently being picked. 
-     */
+    */
     size_t getPickedId() const;
 
     /**
@@ -97,11 +84,11 @@ public:
     /**
     * Returns the normalized position of the most resent press
     */
-    dvec2 getPressPosition() const;
+    dvec2 getPressedPosition() const;
     /**
     * Returns the normalized depth of the most resent press
     */
-    double getPressDepth() const;
+    double getPressedDepth() const;
 
     /**
     * Returns the delta of the previous and current position;
@@ -115,12 +102,12 @@ public:
     /**
     * Returns the delta of the press position and current position;
     */
-    dvec2 getDeltaPressPosition() const;
+    dvec2 getDeltaPressedPosition() const;
     
     /**
     * Returns the delta of the press depth and current depth;
     */
-    double getDeltaPressDepth() const;
+    double getDeltaPressedDepth() const;
 
     /**
      * Returns the normalized device coordinates. Position and depth normalized to the range of
@@ -129,55 +116,52 @@ public:
      */
     dvec3 getNDC() const;
     dvec3 getPreviousNDC() const;
-    dvec3 getPressNDC() const;
+    dvec3 getPressedNDC() const;
+
+    /**
+     *	The size of the canvas where the event occurred.
+     */
+    uvec2 getCanvasSize() const;
 
     PickingState getState() const;
 
-    void picked(Event* event, PickingState state);
+
+
+    void invoke(Processor* p);
+    const PickingAction* getPickingAction() const;
+
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.PickingEvent");
+    }
 
     Event* getEvent() const;
 
     template <typename EventType>
     EventType* getEventAs() const;
 
-    void setAction(Action action);
-    Action getAction() const;
-
-    bool isEnabled() const;
-    void setEnabled(bool enabled);
-
 private:
-    size_t getCapacity() const;
-    void setSize(size_t size);
-    void setPickedId(size_t id);
+    using EventPtr = std::unique_ptr<Event,std::function<void(Event*)>>;
 
-    size_t start_;
-    size_t size_;
-    size_t capacity_;
-
-    size_t pickedId_ = 0;
+    const PickingAction* pickingAction_;
     PickingState state_ = PickingState::None;
-
-    Event* event_ = nullptr;
+    EventPtr event_;
+    bool ownsEvent_ = false;
     
-    dvec3 pressNDC_ = dvec3(0.0);
-    dvec2 pressPosition_ = vec2(0.0);
-
+    dvec3 pressedNDC_ = dvec3(0.0);
     dvec3 previousNDC_ = dvec3(0.0);
-    dvec2 previousPosition_ = dvec2(0.0);
-
-    Action action_;
-    bool enabled_ = true;
+    size_t pickedId_ = 0;
 };
 
 template <typename EventType>
-EventType* PickingObject::getEventAs() const {
+EventType* PickingEvent::getEventAs() const {
     if (event_ && event_->hash() == EventType::chash()) {
-        return static_cast<EventType*>(event_);
+        return static_cast<EventType*>(event_.get());
     }
     return nullptr;
 }
 
 } // namespace
 
-#endif // IVW_PICKINGOBJECT_H
+#endif // IVW_PICKINGEVENT_H
+

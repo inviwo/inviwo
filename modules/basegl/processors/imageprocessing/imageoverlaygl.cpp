@@ -44,25 +44,27 @@ const ProcessorInfo ImageOverlayGL::processorInfo_{
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo ImageOverlayGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
 OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
-    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
-    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1), InvalidationLevel::Valid)
-    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1), InvalidationLevel::Valid)
-    , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f), InvalidationLevel::Valid)
+    , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f),
+           InvalidationLevel::Valid)
+    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f),
+            InvalidationLevel::Valid)
+    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1),
+                   InvalidationLevel::Valid)
+    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1),
+                    InvalidationLevel::Valid)
+    , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f),
+                 InvalidationLevel::Valid)
     , blendMode_("blendMode", "Blending Mode", InvalidationLevel::Valid)
     , positioningMode_("positioningMode", "Positioning Mode", InvalidationLevel::Valid)
     , sizeMode_("sizeMode", "Size Mode", InvalidationLevel::Valid)
     , viewDimensions_(-1, -1)
     , viewport_(0, 0, 1, 1)
-    , isDeserializing_(false)
-{ 
+    , isDeserializing_(false) {
     blendMode_.addOption("replace", "Replace", BlendMode::Replace);
     blendMode_.addOption("over", "Blend", BlendMode::Over);
     blendMode_.setSelectedValue(BlendMode::Over);
@@ -244,18 +246,14 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         inport_.propagateEvent(resizeEvent);
 
         if (overlayPort_.isConnected()) {
-            ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+            ResizeEvent e(uvec2(viewManager_[0].size));
             overlayPort_.propagateEvent(&e);
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
-            int activeView = viewManager_.getActiveView();
-
-            if (newEvent && activeView >= 0) {
-                overlayPort_.propagateEvent(newEvent.get());
-                if (newEvent->hasBeenUsed()) event->markAsUsed();
-                for (auto p : newEvent->getVisitedProcessors()) event->markAsVisited(p);
+            if (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
+                    overlayPort_.propagateEvent(newEvent);
+                })) {
                 return;
             }
         }
@@ -273,7 +271,7 @@ void ImageOverlayGL::onStatusChange() {
         // update viewport stored in view manager
         viewManager_.replace(0, overlayProperty_.getViewport());
 
-        ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+        ResizeEvent e(uvec2(viewManager_[0].size));
         overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
     }
 }

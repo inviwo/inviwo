@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,64 +24,71 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGCONTAINER_H
-#define IVW_PICKINGCONTAINER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <unordered_map>
+#include <inviwo/core/interaction/pickingaction.h>
+#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
-class Image;
-class PickingObject;
-class MouseEvent;
-class WheelEvent;
+PickingAction::PickingAction(size_t id, size_t size)
+    : start_(id)
+    , size_(size)
+    , capacity_(size) {
+}
 
-class IVW_CORE_API PickingContainer {
-public:
-    PickingContainer();
-    virtual ~PickingContainer();
+PickingAction::~PickingAction() = default;
 
-    bool pickingEnabled();
+size_t PickingAction::getPickingId(size_t id) const {
+    if (id < size_)
+        return start_ + id;
+    else 
+        throw Exception("Out of range", IvwContext);
+}
 
-    void propagateEvent(Event*);
+vec3 PickingAction::getColor(size_t id) const {
+    return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
+}
 
-    void setPickingSource(std::shared_ptr<const Image> src);
+size_t PickingAction::getSize() const {
+    return size_;
+}
 
-protected:
-    void performMousePick(MouseEvent*);
-    void performWheelPick(WheelEvent*);
-    void performTouchPick(TouchEvent*);
+bool PickingAction::isEnabled() const {
+    return enabled_;
+}
 
-    PickingObject* findPickingObject(const uvec2& coord);
+void PickingAction::setEnabled(bool enabled) {
+    enabled_ = enabled;
+}
 
-    /** 
-     * \brief clamps 2D position to be within the given rectangle [0, dim - 1]
-     * 
-     * @param mpos coordinate in screen coordinates which needs to be clamped
-     * @param dim canvas dimensions used for clamping
-     * @return clamped position
-     */
-    static uvec2 clampToScreenCoords(dvec2 mpos, ivec2 dim);
+void PickingAction::setAction(Callback action) {
+    action_ = action;
+}
 
-private:
-    std::shared_ptr<const Image> src_;
+void PickingAction::operator()(PickingEvent* event) const {
+    action_(event);
+}
 
-    bool mousePressed_ = false;
-    PickingObject* lastPickObj_ = nullptr;
-    PickingObject* pressedPickObj_ = nullptr;
+void PickingAction::setProcessor(Processor* processor) {
+    processor_ = processor;
+}
 
-    bool touchPickingOn_;
+Processor* PickingAction::getProcessor() const {
+    return processor_;
+}
 
-    std::unordered_map<int, PickingObject*> touchPickObjs_;
-    std::unordered_map<PickingObject*, std::vector<TouchPoint>> pickedTouchPoints_;
-};
+size_t PickingAction::getCapacity() const {
+    return capacity_;
+}
+
+void PickingAction::setSize(size_t size) {
+    if (size <= capacity_)
+        size_ = size;
+    else
+        throw Exception("Out of range", IvwContext);
+}
 
 } // namespace
 
-#endif // IVW_PICKINGCONTAINER_H
