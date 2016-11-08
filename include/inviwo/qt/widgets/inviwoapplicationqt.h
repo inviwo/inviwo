@@ -72,8 +72,6 @@ public:
     InviwoApplicationQt(std::string displayName, int& argc, char** argv, bool movePointsOn = true);
     virtual ~InviwoApplicationQt() =  default;
 
-    //virtual void registerModules(RegisterModuleFunc) override;
-    
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
     virtual void startFileObservation(std::string fileName) override;
@@ -82,6 +80,13 @@ public:
     virtual void playSound(Message soundID) override;
     virtual std::locale getUILocale() const override;
 
+    /** 
+     * \brief Set the main window used by the application.
+     * The widget object name will be set to "InviwoMainWindow".
+     * Other widgets can thereby find the main window in QApplication.
+     * @see utilqt::getApplicationMainWindow()
+     * @param mainWindow The main window of the application.
+     */
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }
 

@@ -44,6 +44,7 @@
 #include <QPoint>
 #include <QSizeF>
 #include <QSize>
+#include <QMainWindow>
 #include <warn/pop>
 
 namespace inviwo {
@@ -89,6 +90,12 @@ IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QSize);
 
 IVW_MODULE_QTWIDGETS_API QSizeF toQSize(dvec2);
 IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
+
+/**
+ * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
+ * @return The main window if the application contains the widget, otherwise null.
+ */
+IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
 
 } // namespace utilqt
 

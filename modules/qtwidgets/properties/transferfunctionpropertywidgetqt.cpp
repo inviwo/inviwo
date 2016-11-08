@@ -29,12 +29,12 @@
 
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertydialog.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -53,9 +53,9 @@ TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
 }
 
 void TransferFunctionPropertyWidgetQt::generateWidget() {
-    InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
+    auto mainWindow = utilqt::getApplicationMainWindow();
     transferFunctionDialog_ = new TransferFunctionPropertyDialog(
-        static_cast<TransferFunctionProperty*>(property_), app->getMainWindow());
+        static_cast<TransferFunctionProperty*>(property_), mainWindow);
     setEditorWidget(transferFunctionDialog_);
     // notify the transfer function dialog that the volume with the histogram is already there
     // TODO: Make sure that this work without notify. Can we do this in another way? It seems very

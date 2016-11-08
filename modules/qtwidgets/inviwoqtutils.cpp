@@ -35,6 +35,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLocale>
+#include <QApplication>
 #include <warn/pop>
 #include <ios>
 #include <exception>
@@ -106,6 +107,19 @@ QSizeF toQSize(dvec2 v) {
 
 QSize toQSize(ivec2 v) {
     return QSize(v.x, v.y);
+}
+
+QMainWindow* getApplicationMainWindow() {
+    auto widgets = QApplication::allWidgets();
+    auto it = std::find_if(widgets.begin(), widgets.end(), [](const auto& item) {
+        return item->objectName().compare("InviwoMainWindow") == 0;
+    });
+    if (it != widgets.end()) {
+        return dynamic_cast<QMainWindow*>(*it);
+    }
+    else {
+        return nullptr;
+    }
 }
 
 } // namespace utilqt

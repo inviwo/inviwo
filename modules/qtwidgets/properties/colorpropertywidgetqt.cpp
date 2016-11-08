@@ -29,10 +29,10 @@
 
 #include <inviwo/qt/widgets/properties/colorpropertywidgetqt.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -105,9 +105,11 @@ void ColorPropertyWidgetQt::offsetColorDialog() {
     static int offsetX = 0;
     static int offsetY = 0;
 
-    QRect mainFrame = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())
-                          ->getMainWindow()
-                          ->frameGeometry();
+    auto mainWindow = utilqt::getApplicationMainWindow();
+    QRect mainFrame;
+    if (mainWindow) {
+        mainFrame = mainWindow->frameGeometry();
+    }
 
     int x = mainFrame.left() + rightOffset;
     int y = mainFrame.top() + topOffset;

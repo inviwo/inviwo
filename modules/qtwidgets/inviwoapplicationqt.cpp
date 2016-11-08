@@ -68,7 +68,11 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
 }
 
-void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { mainWindow_ = mainWindow; }
+void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { 
+    mainWindow_ = mainWindow; 
+    // Enable widgets to find the main window using the object name
+    mainWindow_->setObjectName("InviwoMainWindow");
+}
 
 void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
     ivwAssert(std::find(fileObservers_.begin(), fileObservers_.end(), fileObserver) ==
