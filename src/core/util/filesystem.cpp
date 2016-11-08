@@ -50,8 +50,10 @@
 #include <CoreServices/CoreServices.h>
 #include <libproc.h> // proc_pidpath
 #include <unistd.h>
+#include <fcntl.h>         // open
 #else
 #include <unistd.h>
+#include <fcntl.h>         // open
 #endif
 
 
@@ -129,6 +131,45 @@ bool directoryExists(const std::string& path) {
         // No need to modify path
         return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
     }
+}
+
+std::time_t fileModificationTime(const std::string& filePath) {
+    struct stat buffer;
+    // If path contains the location of a directory, it cannot contain a trailing backslash. 
+    // If it does, -1 will be returned and errno will be set to ENOENT.
+    // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
+    // We therefore check if path ends with a backslash
+    if (filePath.size() > 1 && (filePath.back() == '/' || filePath.back() == '\\')) {
+        // Remove trailing backslash
+        std::string pathWithoutSlash = filePath.substr(0, filePath.size() - 1);
+        stat(pathWithoutSlash.c_str(), &buffer);
+    }
+    else {
+        // No need to modify path
+        stat(filePath.c_str(), &buffer);
+    }
+    return buffer.st_mtime;
+}
+
+IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
+#ifdef WIN32
+    return CopyFileA(src.c_str(), dst.c_str(), false);
+#else 
+    int source = open(src.c_str(), O_RDONLY, 0);
+    if (source < 0) { return false; }
+
+    int dest = open(dst.c_str(), O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+    if (dest < 0) { close(source); return false; }
+
+    struct stat stat_source;
+    fstat(source, &stat_source);
+
+    auto bytesWritten = sendfile(dest, source, 0, stat_source.st_size);
+
+    close(source);
+    close(dest);
+    return bytesWritten > 0;
+#endif
 }
 
 std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode) {

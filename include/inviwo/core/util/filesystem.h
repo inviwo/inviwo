@@ -72,6 +72,21 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
+/**
+ * \brief Get last time file was modified.
+ * @param std::string filePath The path to the file
+ * @return time_t Time of last modification
+ */
+IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
+
+/**
+ * \brief Copy an existing file to a new file.
+ * @param src Path to the file to the existing file
+ * @param dst Path to the new file
+ * @return bool True if source file exists and the copy is successful, false otherwise
+ */
+IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst);
+
 
 enum class ListMode {
     Files,
