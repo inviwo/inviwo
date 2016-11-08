@@ -56,7 +56,13 @@ SharedLibrary::SharedLibrary(std::string filePath)
 
     //    dst << src.rdbuf();
     //}
-    handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+    // Problem: LOAD_WITH_ALTERED_SEARCH_PATH first looks for dependencies in the 
+    // executable directory
+    //SetDllDirectoryA(nullptr);
+    //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+    handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
+    
+    //handle_ = LoadLibraryExA(filesystem::getFileNameWithExtension(dstPath).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
     //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr);
     //handle_ = LoadLibraryA(dstPath.c_str());
     //handle_ = LoadLibraryA(filePath.c_str());

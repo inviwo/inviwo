@@ -258,8 +258,11 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
         postProgress("Loading module: " + moduleObj->name_);
         // Make sure that the module supports the current inviwo core version
         if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
-            LogError("Failed to register module: " + moduleObj->name_);
-            LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion_ + ", current version is " + IVW_VERSION);
+            auto errorMsg = "Failed to register module: " + moduleObj->name_ +
+                " since the module was built for Inviwo version " +
+                moduleObj->inviwoCoreVersion_ + " but current version is " +
+                IVW_VERSION;
+            LogError(errorMsg);
             util::push_back_unique(failed, toLower(moduleObj->name_));
             continue;
         }
@@ -508,17 +511,15 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
             }
 
             std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            {
+            if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
                 // Load a copy of the file to make sure that
                 // we can overwrite the file.
-                std::ifstream  src(filePath, std::ios::binary);
-                std::ofstream  dst(dstPath, std::ios::binary);
-
-                dst << src.rdbuf();
+                filesystem::copyFile(filePath, dstPath);
             }
         }
     }
     std::string tmpDir = filesystem::getWorkingDirectory();
+    AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
     for (const auto& filePath : files) {
         std::string pattern = "inviwo-cored.dll";
         if (filesystem::getFileExtension(filePath) == libraryType &&
