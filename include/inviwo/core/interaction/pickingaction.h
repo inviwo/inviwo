@@ -59,6 +59,13 @@ public:
     size_t getPickingId(size_t id = 0) const;
 
     /**
+    * Returns the local picking index, the local index converted from the global index by
+    * subtracting the start id making it range from 0 to size-1
+    * \param id the global picking index
+    */
+    size_t getLocalPickingId(size_t id = 0) const;
+
+    /**
      *	The picking color to use for the object with local index id.
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
      * \param id the local picking index 
