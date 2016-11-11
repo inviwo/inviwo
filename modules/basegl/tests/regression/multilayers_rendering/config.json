@@ -1,7 +1,7 @@
 {
     "image_test" :  {
         "differenceTolerance" : {
-             "Color.png"   : 0.0001
+             "Color.png"   : 0.0001 , 
              "Color 1.png"   : 0.0001
         }
     }
