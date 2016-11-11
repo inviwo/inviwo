@@ -65,7 +65,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/eventconverterqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>

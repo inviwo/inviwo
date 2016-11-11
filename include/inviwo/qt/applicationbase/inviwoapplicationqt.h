@@ -30,7 +30,7 @@
 #ifndef IVW_INVIWOAPPLICATIONQT_H
 #define IVW_INVIWOAPPLICATIONQT_H
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API InviwoQtEvent : public QEvent {
+class IVW_QTAPPLICATIONBASE_API InviwoQtEvent : public QEvent {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_GADGET
@@ -62,7 +62,7 @@ private:
     static QEvent::Type InviwoQtEventType;
 };
 
-class IVW_MODULE_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
+class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication, public InviwoApplication {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -78,6 +78,11 @@ public:
     virtual void stopFileObservation(std::string fileName) override;
     virtual void closeInviwoApplication() override;
     virtual void playSound(Message soundID) override;
+    /**
+    * \brief Get locale object for determining parsing and formatting of data.
+    * 
+    * @return std::locale acquired during construction.
+    */
     virtual std::locale getUILocale() const override;
 
     /** 
@@ -103,6 +108,16 @@ protected:
 private:
     static void logQtMessages(QtMsgType type, const QMessageLogContext& context,
                               const QString& msg);
+    /**
+     * \brief getCurrentStdLocale
+     * This function returns the current system locale provided by Qt.
+     * If the Qt application has not been initialized, the returned
+     * value is the environment's default locale.
+     * @note This is a duplicate of utilqt::getCurrentStdLocale
+     * in the qtwidgets module. We do not want to depend on modules in external.      
+     * @return std::locale   Qt locale converted to std::locale
+     */
+    static std::locale getCurrentStdLocale();
 
     QMainWindow* mainWindow_;
     std::vector<FileObserver*> fileObservers_;

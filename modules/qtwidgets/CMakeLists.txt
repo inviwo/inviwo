@@ -11,7 +11,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/editablelabelqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/filepathlineeditqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/sliderwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoapplicationqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidgettitlebar.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
@@ -80,7 +79,6 @@ set(SOURCE_FILES
     editablelabelqt.cpp
     eventconverterqt.cpp
     filepathlineeditqt.cpp
-    inviwoapplicationqt.cpp
     inviwodockwidget.cpp
     inviwodockwidgettitlebar.cpp
     inviwofiledialog.cpp

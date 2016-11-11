@@ -31,7 +31,7 @@
 #include <warn/ignore/all>
 #include <QFile>
 #include <warn/pop>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>

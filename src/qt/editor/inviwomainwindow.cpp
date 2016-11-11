@@ -43,7 +43,7 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>

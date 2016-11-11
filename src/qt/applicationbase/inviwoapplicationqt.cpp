@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileobserver.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/util/raiiutils.h>
 
 #include <thread>
@@ -51,7 +50,7 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
-    , uiLocal_ (  utilqt::getCurrentStdLocale() )
+    , uiLocal_ (  getCurrentStdLocale() )
 {
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
@@ -230,6 +229,26 @@ bool InviwoApplicationQt::event(QEvent* e) {
     } else {
         return QApplication::event(e);
     }
+}
+
+std::locale InviwoApplicationQt::getCurrentStdLocale() {
+    std::locale loc;
+    try {
+        // use the system locale provided by Qt
+
+#ifdef WIN32
+        // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
+        // although std::locale should only accept locales with underscore, e.g. "sv_SE"
+        std::string localeName(QLocale::system().name().replace('_', '-').toStdString());
+#else
+        std::string localeName(QLocale::system().name().toStdString());
+#endif
+        loc = std::locale(localeName.c_str());
+    }
+    catch (std::exception &e) {
+        LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
+    }
+    return loc;
 }
 
 QEvent::Type InviwoQtEvent::InviwoQtEventType = QEvent::None;

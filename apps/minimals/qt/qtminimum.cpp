@@ -35,7 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <moduleregistration.h>
 
 using namespace inviwo;

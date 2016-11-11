@@ -24,46 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/openglqt/openglqtmodule.h>
-#include <modules/openglqt/openglqtcapabilities.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/canvasprocessorgl.h>
-#include <modules/openglqt/canvasprocessorwidgetqt.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#ifndef _IVW_QTAPPLICATIONBASE_DEFINE_H_
+#define _IVW_QTAPPLICATIONBASE_DEFINE_H_
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <warn/pop>
+#ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
+// If we are building DLL files we must declare dllexport/dllimport
+#ifdef IVW_QTAPPLICATIONBASE_EXPORTS
+#ifdef _WIN32
+#define IVW_QTAPPLICATIONBASE_API __declspec(dllexport)
+#else //UNIX (GCC)
+#define IVW_QTAPPLICATIONBASE_API __attribute__ ((visibility ("default")))
+#endif
+#else
+#ifdef _WIN32
+#define IVW_QTAPPLICATIONBASE_API __declspec(dllimport)
+#else
+#define IVW_QTAPPLICATIONBASE_API
+#endif
+#endif
+#else //STATIC
+#define IVW_QTAPPLICATIONBASE_API
+#endif
 
-namespace inviwo {
-
-OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "OpenGLQt") {
-    // Create GL Context
-    CanvasQt::defineDefaultContextFormat();
-    sharedCanvas_ = util::make_unique<CanvasQt>();
-
-    sharedCanvas_->defaultGLState();
-    RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
-
-    registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
-    registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
-
-    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
-        auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
-        mainWindow->menuBar()->addMenu(menu.release());
-    }
-}
-
-OpenGLQtModule::~OpenGLQtModule() {
-    if (sharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
-        RenderContext::getPtr()->setDefaultRenderContext(nullptr);
-    }
-}
-
-}  // namespace
+#endif /* _IVW_QTAPPLICATIONBASE_DEFINE_H_ */
