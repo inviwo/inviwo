@@ -36,7 +36,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

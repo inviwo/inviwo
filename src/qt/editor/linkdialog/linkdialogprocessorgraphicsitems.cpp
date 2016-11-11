@@ -31,7 +31,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
 

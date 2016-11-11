@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/lineeditqt.h>
+#include <modules/qtwidgets/lineeditqt.h>
 
 namespace inviwo {
 

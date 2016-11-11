@@ -35,7 +35,7 @@
 * All the code here is free for you.
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/colorwheel.h>
+#include <modules/qtwidgets/colorwheel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

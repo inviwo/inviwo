@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>

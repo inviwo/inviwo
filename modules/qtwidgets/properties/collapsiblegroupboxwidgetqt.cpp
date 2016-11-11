@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

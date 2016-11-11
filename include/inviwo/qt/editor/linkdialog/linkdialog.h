@@ -31,7 +31,7 @@
 #define IVW_LINKDIALOG_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

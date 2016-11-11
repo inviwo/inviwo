@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>

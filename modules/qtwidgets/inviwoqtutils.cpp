@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
 

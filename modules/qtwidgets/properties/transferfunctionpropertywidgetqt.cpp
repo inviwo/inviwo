@@ -27,10 +27,10 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/properties/transferfunctionpropertydialog.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>

@@ -34,9 +34,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 
 #include <warn/push>

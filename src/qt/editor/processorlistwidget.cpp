@@ -36,7 +36,7 @@
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/document.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
 #include <warn/push>

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/imageeditorwidgetqt.h>
+#include <modules/qtwidgets/properties/imageeditorwidgetqt.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {

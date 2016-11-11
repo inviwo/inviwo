@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/eventconverterqt.h>
-#include <inviwo/qt/widgets/keyboardutils.h>
+#include <modules/qtwidgets/eventconverterqt.h>
+#include <modules/qtwidgets/keyboardutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

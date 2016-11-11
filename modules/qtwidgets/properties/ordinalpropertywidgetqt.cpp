@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 
 namespace inviwo {
 

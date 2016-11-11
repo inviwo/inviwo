@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -35,10 +35,10 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/common/moduleaction.h>
 
-#include <inviwo/qt/widgets/propertylistwidget.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

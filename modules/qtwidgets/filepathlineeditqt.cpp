@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/filepathlineeditqt.h>
+#include <modules/qtwidgets/filepathlineeditqt.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>

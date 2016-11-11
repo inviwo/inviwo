@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/keyboardutils.h>
+#include <modules/qtwidgets/keyboardutils.h>
 
 #ifdef _WIN32
  // needed for virtual key codes on Windows

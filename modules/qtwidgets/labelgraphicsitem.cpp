@@ -35,7 +35,7 @@
 #include <QTextCursor>
 #include <warn/pop>
 
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 
 namespace inviwo {
 

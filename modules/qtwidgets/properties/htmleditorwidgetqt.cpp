@@ -27,9 +27,9 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/htmleditorwidgetqt.h>
-#include <inviwo/qt/widgets/properties/htmllistwidgetqt.h>
-#include <inviwo/qt/widgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/properties/htmleditorwidgetqt.h>
+#include <modules/qtwidgets/properties/htmllistwidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
 #include <inviwo/core/util/logcentral.h>
 

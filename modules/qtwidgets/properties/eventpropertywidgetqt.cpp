@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/eventpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
 #include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-#include <inviwo/qt/widgets/eventconverterqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/eventconverterqt.h>
 
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>

@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
 namespace inviwo {
 

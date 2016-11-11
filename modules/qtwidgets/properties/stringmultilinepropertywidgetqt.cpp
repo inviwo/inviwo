@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>

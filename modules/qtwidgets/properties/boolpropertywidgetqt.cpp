@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/boolpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

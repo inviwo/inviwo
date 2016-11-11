@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/rangesliderqt.h>
+#include <modules/qtwidgets/rangesliderqt.h>
 
 namespace inviwo {
 

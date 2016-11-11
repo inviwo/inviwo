@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>

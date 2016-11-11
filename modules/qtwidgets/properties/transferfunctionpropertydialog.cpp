@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/transferfunctionpropertydialog.h>
-#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layer.h>

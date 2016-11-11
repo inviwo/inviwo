@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwodockwidgettitlebar.h>
+#include <modules/qtwidgets/inviwodockwidgettitlebar.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

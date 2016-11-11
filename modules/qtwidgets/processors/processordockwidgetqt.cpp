@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/processors/processordockwidgetqt.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
+#include <modules/qtwidgets/processors/processordockwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>

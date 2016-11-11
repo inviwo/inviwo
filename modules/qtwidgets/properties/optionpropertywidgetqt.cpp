@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/optionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 #include <typeinfo>
 namespace inviwo {
 OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property) 

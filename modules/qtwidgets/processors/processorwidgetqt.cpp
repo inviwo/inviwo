@@ -28,8 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/qt/widgets/processors/processorwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

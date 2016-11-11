@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/qt/widgets/inviwodockwidgettitlebar.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidgettitlebar.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QKeyEvent>

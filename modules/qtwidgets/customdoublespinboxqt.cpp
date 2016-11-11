@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/customdoublespinboxqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

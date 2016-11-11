@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>

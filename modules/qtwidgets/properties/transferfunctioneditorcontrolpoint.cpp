@@ -27,11 +27,11 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
-#include <inviwo/qt/widgets/properties/transferfunctioneditor.h>
-#include <inviwo/qt/widgets/properties/transferfunctioneditorview.h>
+#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorview.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QTextStream>

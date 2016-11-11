@@ -29,8 +29,8 @@
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/propertyselectiontreewidget.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/propertyselectiontreewidget.h>
 
 
 #include <warn/push>

@@ -5,67 +5,67 @@ ivw_module(QtWidgets)
 #--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/angleradiuswidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/colorwheel.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/customdoublespinboxqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/editablelabelqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/filepathlineeditqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/sliderwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidgettitlebar.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lightpositionwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lineeditqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/ordinaleditorwidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertylistwidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rangesliderqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/spinboxrangesliderwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processordockwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processorwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/anglepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/buttonpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/colorpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/compositepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/eventpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/filepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/htmleditorwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/htmllistwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/imageeditorwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/lightpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/multifilepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/optionpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalminmaxpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/propertysettingswidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/propertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/stringpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/syntaxhighlighter.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/texteditorwidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditor.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditorview.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctionpropertydialog.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertyselectiontreewidget.h
+    angleradiuswidget.h
+    colorwheel.h
+    customdoublespinboxqt.h
+    editablelabelqt.h
+    filepathlineeditqt.h
+    sliderwidgetqt.h
+    inviwodockwidget.h
+    inviwodockwidgettitlebar.h
+    inviwofiledialog.h
+    lightpositionwidgetqt.h
+    lineeditqt.h
+    ordinaleditorwidget.h
+    propertylistwidget.h
+    rangesliderqt.h
+    spinboxrangesliderwidgetqt.h
+    processors/processordockwidgetqt.h
+    processors/processorwidgetqt.h
+    properties/anglepropertywidgetqt.h
+    properties/boolcompositepropertywidgetqt.h
+    properties/buttonpropertywidgetqt.h
+    properties/collapsiblegroupboxwidgetqt.h
+    properties/colorpropertywidgetqt.h
+    properties/compositepropertywidgetqt.h
+    properties/eventpropertywidgetqt.h
+    properties/filepropertywidgetqt.h
+    properties/htmleditorwidgetqt.h
+    properties/htmllistwidgetqt.h
+    properties/imageeditorwidgetqt.h
+    properties/lightpropertywidgetqt.h
+    properties/multifilepropertywidgetqt.h
+    properties/optionpropertywidgetqt.h
+    properties/ordinalminmaxpropertywidgetqt.h
+    properties/ordinalminmaxtextpropertywidgetqt.h
+    properties/ordinalpropertywidgetqt.h
+    properties/propertysettingswidgetqt.h
+    properties/propertywidgetqt.h
+    properties/stringmultilinepropertywidgetqt.h
+    properties/stringpropertywidgetqt.h
+    properties/syntaxhighlighter.h
+    properties/texteditorwidgetqt.h
+    properties/transferfunctioneditor.h
+    properties/transferfunctioneditorview.h
+    properties/transferfunctionpropertydialog.h
+    properties/transferfunctionpropertywidgetqt.h
+    propertyselectiontreewidget.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/eventconverterqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
+    eventconverterqt.h
+    inviwoqtutils.h
     qtwidgetsmoduledefine.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/keyboardutils.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/labelgraphicsitem.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qstringhelper.h
+    keyboardutils.h
+    labelgraphicsitem.h
+    properties/boolpropertywidgetqt.h
+    properties/transferfunctioncontrolpointconnection.h
+    properties/transferfunctioneditorcontrolpoint.h
+    qstringhelper.h
     qtwidgetsmodule.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rawdatareaderdialogqt.h
+    rawdatareaderdialogqt.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})

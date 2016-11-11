@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/propertysettingswidgetqt.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 
 namespace inviwo {
 

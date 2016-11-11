@@ -44,8 +44,8 @@
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 

@@ -31,7 +31,7 @@
 #define IVW_EDITORGRAPHICSITEM_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsItem>

@@ -43,30 +43,30 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
-#include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/boolpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <inviwo/qt/widgets/properties/colorpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/eventpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/imageeditorwidgetqt.h>
-#include <inviwo/qt/widgets/properties/lightpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/multifilepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/optionpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/ordinalminmaxpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/texteditorwidgetqt.h>
-#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/colorpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/imageeditorwidgetqt.h>
+#include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <inviwo/core/io/rawvolumereader.h>
-#include <inviwo/qt/widgets/rawdatareaderdialogqt.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/rawdatareaderdialogqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 
 namespace inviwo {
 

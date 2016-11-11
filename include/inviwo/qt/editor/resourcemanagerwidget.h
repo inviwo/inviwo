@@ -31,7 +31,7 @@
 #define IVW_RESOURCE_MANAGER_WIDGET_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/resources/resourcemanagerobserver.h>
 
 #include <warn/push>

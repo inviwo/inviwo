@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/ordinaleditorwidget.h>
+#include <modules/qtwidgets/ordinaleditorwidget.h>
 
 namespace inviwo {
 

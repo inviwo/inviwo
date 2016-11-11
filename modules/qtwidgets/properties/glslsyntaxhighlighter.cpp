@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>

@@ -30,8 +30,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/filedialogstate.h>
-#include <inviwo/qt/widgets/properties/multifilepropertywidgetqt.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <warn/push>

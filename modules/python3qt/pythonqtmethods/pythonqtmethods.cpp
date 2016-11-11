@@ -41,8 +41,8 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorpreview.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <modules/python3/pyinviwo.h>
 

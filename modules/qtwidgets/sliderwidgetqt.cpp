@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/sliderwidgetqt.h>
+#include <modules/qtwidgets/sliderwidgetqt.h>
 
 #include <limits>
 #include <warn/push>

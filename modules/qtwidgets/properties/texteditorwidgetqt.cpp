@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -40,13 +40,13 @@
 #include <QFileInfo>
 #include <warn/pop>
 
-#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/htmleditorwidgetqt.h>
+#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/htmleditorwidgetqt.h>
 
 namespace inviwo {
 

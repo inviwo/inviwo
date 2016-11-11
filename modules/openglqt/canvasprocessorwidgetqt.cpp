@@ -33,7 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/rawdatareaderdialogqt.h>
+#include <modules/qtwidgets/rawdatareaderdialogqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

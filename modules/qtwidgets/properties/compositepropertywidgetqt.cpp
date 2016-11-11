@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {

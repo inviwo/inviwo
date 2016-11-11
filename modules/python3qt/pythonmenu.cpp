@@ -30,7 +30,7 @@
 #include <modules/python3qt/pythonmenu.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

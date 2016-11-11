@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/spinboxrangesliderwidgetqt.h>
+#include <modules/qtwidgets/spinboxrangesliderwidgetqt.h>
 
 namespace inviwo {
 

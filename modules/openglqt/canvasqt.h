@@ -38,8 +38,8 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/qt/widgets/eventconverterqt.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/eventconverterqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/openglqt/canvasqglwidget.h>

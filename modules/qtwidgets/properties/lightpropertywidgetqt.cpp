@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/lightpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
 namespace inviwo {
 

@@ -32,7 +32,7 @@
 
 #include <modules/opengl/shader/shaderresource.h>
 
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/openglqt/shaderwidget.h>

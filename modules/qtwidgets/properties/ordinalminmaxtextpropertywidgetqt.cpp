@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>
 
 namespace inviwo {
 

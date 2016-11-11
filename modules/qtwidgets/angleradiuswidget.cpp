@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/qt/widgets/angleradiuswidget.h>
+#include <modules/qtwidgets/angleradiuswidget.h>
 #include <cmath>
 #include <iostream>
 #include <sstream>

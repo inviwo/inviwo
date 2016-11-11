@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h>
-#include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPainterPathStroker>

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/lightpositionwidgetqt.h>
+#include <modules/qtwidgets/lightpositionwidgetqt.h>
 
 namespace inviwo {
 

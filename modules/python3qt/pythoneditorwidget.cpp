@@ -35,10 +35,10 @@
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/python3module.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <modules/python3/pyinviwo.h>
 

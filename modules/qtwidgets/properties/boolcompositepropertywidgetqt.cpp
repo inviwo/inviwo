@@ -27,9 +27,9 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
