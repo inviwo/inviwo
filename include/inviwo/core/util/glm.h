@@ -280,6 +280,16 @@ struct glmtype<T, 4, 3, P> { typedef glm::tmat3x4<T, P> type; };
 template <typename T, glm::precision P>
 struct glmtype<T, 4, 4, P> { typedef glm::tmat4x4<T, P> type; };
 
+
+
+template <typename T>
+struct value_type { using type = T; };
+
+template <typename T, glm::precision P, template <typename, glm::precision> class G>
+struct value_type<G<T, P>> {
+    using type = typename G<T, P>::value_type;
+};
+
 template <typename T, typename U>
 struct same_extent { typedef U type; };
 
