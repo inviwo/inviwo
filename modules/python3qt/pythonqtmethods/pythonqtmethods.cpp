@@ -222,8 +222,6 @@ PyObject* py_showHelp(PyObject* self, PyObject* args) {
 
     std::string classIdentifier;
     if (tester.parse<std::string>(args, classIdentifier) == 1) {
-        auto app = InviwoApplication::getPtr();
-
         try {
             if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
 
