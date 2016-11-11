@@ -281,13 +281,7 @@ bool has_key(T& map, const typename T::key_type& key) {
 }
 template <typename T>
 bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_type& value) {
-    auto it = map.find(key);
-    if (it == map.end()) {
-        map.insert(it, std::make_pair(key, value));
-        return true;
-    } else {
-        return false;
-    };
+    return map.insert(std::make_pair(key, value)).second;
 }
 
 template <typename T, typename V>
