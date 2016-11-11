@@ -97,6 +97,26 @@ IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
 
+/** 
+ * \brief Moves point to become relative to the main window and thereby visible.
+ * 
+ * Positions saved for one screen setup may end up outside on other setups.
+ * Apply this function to make sure that the widget ends up visible on the screen.
+ * @see CanvasProcessorWidgetQt
+ * @param point The previous screen position of the widget
+ * @param size The size of the widget
+ * @param bool decorationOffset Offset widget below top horizontal window bar 
+ * @return The adapted point on the screen, same as input point if no adjustment was necessary
+ */
+IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset = true);
+
+/** 
+ * \brief Offset widgets based on order added such that they do not end up on top of each other.
+ * Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is called.
+ * Furthermore, the horizontal offset will be increased by 200 every tenth time.
+ * @return  
+ */
+IVW_MODULE_QTWIDGETS_API QPoint offsetWidget();
 } // namespace utilqt
 
 

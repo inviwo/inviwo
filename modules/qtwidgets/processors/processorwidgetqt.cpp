@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 
 #include <warn/push>
@@ -46,14 +45,14 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
 
     QWidget::resize(dim.x, dim.y);
 
-    if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), this->size());
-
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        // Move widget relative to main window to make sure that it is visible on screen.
+        QPoint newPos = utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), this->size(), true);
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             QWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
-            newPos = app->getMainWindow()->pos();
-            newPos += app->offsetWidget();
+            newPos = mainWindow->pos();
+            newPos += utilqt::offsetWidget();
             QWidget::move(newPos);
         }
     }

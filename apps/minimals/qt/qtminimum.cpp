@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->registerLogger(logger);
 
     std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
-    InviwoApplicationQt inviwoApp(appName, argc, argv, false);
+    InviwoApplicationQt inviwoApp(appName, argc, argv);
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     inviwoApp.setProgressCallback([](std::string m) {
         LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);

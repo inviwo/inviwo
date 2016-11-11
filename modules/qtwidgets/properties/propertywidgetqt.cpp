@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/common/moduleaction.h>
 
@@ -43,6 +42,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QApplication>
 #include <QDesktopWidget>
 #include <QStyleOption>
 #include <QPainter>
@@ -523,22 +523,23 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
         // Validates editor widget position
         PropertyEditorWidgetQt* propertyEditorWidget =
             dynamic_cast<PropertyEditorWidgetQt*>(getEditorWidget());
-        InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
+
+        
         if (!propertyEditorWidget) return;
 
         // set widget meta data stuff
 
         PropertyEditorWidgetDockStatus docStatus = propertyEditorWidget->getEditorDockStatus();
-
-        if (app) {
+        auto mainWindow = utilqt::getApplicationMainWindow();
+        if (mainWindow) {
             if (docStatus == PropertyEditorWidgetDockStatus::DockedLeft) {
-                app->getMainWindow()->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
+                mainWindow->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(false);
             } else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
-                app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
+                mainWindow->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(false);
             } else {
-                app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
+                mainWindow->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(true);
             }
         }
@@ -550,15 +551,16 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
 
         ivec2 pos = getEditorWidget()->getEditorPositionMetaData();
 
-        if (app) {
-            QPoint newPos = app->movePointOntoDesktop(
+        if (mainWindow) {
+            // Move widget relative to main window to make sure that it is visible on screen.
+            QPoint newPos = utilqt::movePointOntoDesktop(
                 QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
 
             if (!(newPos.x() == 0 && newPos.y() == 0)) {
                 propertyEditorWidget->move(newPos);
             } else {  // We guess that this is a new widget and give a new position
-                newPos = app->getMainWindow()->pos();
-                newPos += app->offsetWidget();
+                newPos = mainWindow->pos();
+                newPos += utilqt::offsetWidget();
                 propertyEditorWidget->move(newPos);
             }
         }

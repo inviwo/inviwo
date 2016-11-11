@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -44,7 +43,7 @@
 namespace inviwo {
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
-    : QWidget(dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr()) ? dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow() : nullptr)
+    : QWidget(utilqt::getApplicationMainWindow())
     , CanvasProcessorWidget(p)
     , canvas_(nullptr) {
 
@@ -76,14 +75,15 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     setWindowFlags(Qt::Tool);
     setDimensions(dim);
 
-    if (auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        // Move widget relative to main window to make sure that it is visible on screen.
+        QPoint newPos = utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             QWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
-            newPos = app->getMainWindow()->pos();
-            newPos += app->offsetWidget();
+            newPos = mainWindow->pos();
+            newPos += utilqt::offsetWidget();
             QWidget::move(newPos);
         }
     }

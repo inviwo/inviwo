@@ -36,6 +36,7 @@
 #include <warn/ignore/all>
 #include <QLocale>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <warn/pop>
 #include <ios>
 #include <exception>
@@ -120,6 +121,81 @@ QMainWindow* getApplicationMainWindow() {
     else {
         return nullptr;
     }
+}
+
+QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset /*= true*/) {
+#ifdef WIN32
+    // Only non zero on windows, due to a QT bug in window decoration handling.
+    static QPoint windowDecorationOffset = []() {
+        // Fix window offset when restoring positions saved during shutdown.
+        // Determined the window frame/border size once.
+        QWidget w(nullptr, Qt::Tool);
+        // Move the widget out of sight.
+        w.move(-5000, -5000);
+        // Need to show the widget, otherwise no border exists, i.e. this->pos() ==
+        // this->geometry().topLeft()
+        w.show();
+        QPoint widgetPos = w.pos();
+        QRect widgetGeo = w.geometry();
+        QPoint offset(widgetGeo.left() - widgetPos.x(), widgetGeo.top() - widgetPos.y());
+        w.hide();
+        return offset;
+    }();
+#else 
+    static QPoint windowDecorationOffset = QPoint(0, 0);
+#endif
+
+    QPoint pos(point);
+    QDesktopWidget* desktop = QApplication::desktop();
+    int primaryScreenIndex = desktop->primaryScreen();
+    QRect wholeScreen = desktop->screenGeometry(primaryScreenIndex);
+
+    for (int i = 0; i < desktop->screenCount(); i++) {
+        if (i != primaryScreenIndex)
+            wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
+    }
+
+    wholeScreen.setRect(wholeScreen.x() - 10, wholeScreen.y() - 10, wholeScreen.width() + 20,
+        wholeScreen.height() + 20);
+    QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
+    auto mainWindow = getApplicationMainWindow();
+    QPoint appPos;
+    if (mainWindow) {
+        appPos = mainWindow->pos();
+    }
+
+    if (decorationOffset) {
+        QPoint offset = windowDecorationOffset;
+        pos -= offset;
+    }
+
+    if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {
+        // If the widget is outside visible screen
+        pos = appPos;
+        pos += offsetWidget();
+    }
+    return pos;
+}
+
+QPoint offsetWidget() {
+    static int offsetCounter = 0;
+    static ivec2 baseOffset(350, 100);
+
+    ivec2 pos(0, 0);
+    pos += baseOffset + ivec2(40 * offsetCounter++);
+
+    if (offsetCounter == 10) {  // reset offset
+        offsetCounter = 0;
+        baseOffset.x += 200;
+        if (baseOffset.x >= 800) {
+            baseOffset.x = 350;
+            baseOffset.y += 100;
+            if (baseOffset.y >= 800) {
+                baseOffset.y = 100;
+            }
+        }
+    }
+    return QPoint(pos.x, pos.y);
 }
 
 } // namespace utilqt

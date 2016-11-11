@@ -69,7 +69,7 @@ class IVW_MODULE_QTWIDGETS_API InviwoApplicationQt : public QApplication, public
 #include <warn/pop>
 
 public:
-    InviwoApplicationQt(std::string displayName, int& argc, char** argv, bool movePointsOn = true);
+    InviwoApplicationQt(std::string displayName, int& argc, char** argv);
     virtual ~InviwoApplicationQt() =  default;
 
     virtual void registerFileObserver(FileObserver* fileObserver) override;
@@ -90,12 +90,6 @@ public:
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }
 
-    QPoint getWindowDecorationOffset() const;
-    void setWindowDecorationOffset(QPoint windowDecorationOffset);
-
-    QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset=true);
-    QPoint offsetWidget();
-
     virtual bool event(QEvent* e) override;
 
 public slots:
@@ -110,13 +104,10 @@ private:
     static void logQtMessages(QtMsgType type, const QMessageLogContext& context,
                               const QString& msg);
 
-    bool movePointsOn_;
     QMainWindow* mainWindow_;
     std::vector<FileObserver*> fileObservers_;
     QFileSystemWatcher* fileWatcher_;
 
-    // Only non zero on windows, due to a QT bug in window decoration handling.
-    QPoint windowDecorationOffset_;
     std::locale uiLocal_;
 };
 
