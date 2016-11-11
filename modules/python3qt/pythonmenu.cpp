@@ -30,7 +30,7 @@
 #include <modules/python3qt/pythonmenu.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +43,7 @@
 namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
-    if (auto win = dynamic_cast<InviwoApplicationQt*>(app)->getMainWindow()) {
+    if (auto win = utilqt::getApplicationMainWindow()) {
         if (auto ivwwin = dynamic_cast<InviwoMainWindow*>(win)) {
             QMenu* menu = win->menuBar()->addMenu("Python");
             QAction* pythonEditorOpen =

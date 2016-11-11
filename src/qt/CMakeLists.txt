@@ -1,14 +1,13 @@
-if(IVW_QT_APPLICATION AND NOT IVW_QT_EDITOR)
-    set(IVW_QT_EDITOR ON CACHE BOOL "Build Inviwo Qt Editor" FORCE)
-    ivw_message("IVW_QT_EDITOR was set to build, due to dependency towards IVW_QT_APPLICATION")
+if(IVW_QT_APPLICATION AND NOT IVW_MODULE_QTWIDGETS)
+    set(IVW_MODULE_QTWIDGETS ON CACHE BOOL "Build Inviwo Qt Widgets" FORCE)
+    ivw_message("IVW_MODULE_QTWIDGETS was set to build, due to dependency towards IVW_QT_APPLICATION")
+endif()
+if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
+    set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. Used by Qt network editor and Qt minimal application" FORCE)
+    ivw_message("IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
 endif()
 
-if(IVW_QT_EDITOR AND NOT IVW_QT_WIDGETS)
-    set(IVW_QT_WIDGETS ON CACHE BOOL "Build Inviwo Qt Widgets" FORCE)
-    ivw_message("IVW_QT_WIDGETS was set to build, due to dependency towards IVW_QT_EDITOR")
-endif()
-
-if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
+if(IVW_QT_APPLICATION OR IVW_QT_APPLICATION_BASE)
     if(NOT QT_QMAKE_EXECUTABLE)
         find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
                PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
@@ -77,11 +76,11 @@ if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
         endif()
     endif()
 
-    if(IVW_QT_WIDGETS)
-        add_subdirectory(widgets)
+    if(IVW_QT_APPLICATION_BASE)
+        add_subdirectory(applicationbase)
     endif()
 
-    if(IVW_QT_EDITOR)
+    if(IVW_QT_APPLICATION)
         add_subdirectory(editor)
     endif()
 

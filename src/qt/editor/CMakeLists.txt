@@ -105,7 +105,7 @@ foreach(qtarget Qt5Sql Qt5Network)
     ivw_qt_add_to_install(${qtarget} qt_editor)
 endforeach()
 
-ivw_add_dependencies(InviwoQtWidgets)
+ivw_add_dependencies(InviwoQtWidgetsModule)
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core

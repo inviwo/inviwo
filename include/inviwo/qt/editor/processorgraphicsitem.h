@@ -34,7 +34,7 @@
 #include <inviwo/core/util/clock.h>
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <warn/push>
 #include <warn/ignore/all>

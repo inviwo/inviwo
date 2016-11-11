@@ -28,9 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/settingswidget.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
-#include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/propertylistwidget.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/settings.h>
