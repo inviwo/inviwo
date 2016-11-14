@@ -270,6 +270,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatial4dsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
@@ -495,6 +496,7 @@ set(SOURCE_FILES
     util/settings/settings.cpp
     util/settings/systemsettings.cpp
     util/shuntingyard.cpp
+    util/singlefileobserver.cpp
     util/singleton.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
