@@ -226,9 +226,13 @@ void PythonEditorWidget::updateStyle() {
     syntaxHighligther_->rehighlight();
 }
 
-PythonEditorWidget::~PythonEditorWidget() = default;
+PythonEditorWidget::~PythonEditorWidget() {
+    if (app_) {
+        app_->unRegisterFileObserver(this);
+    }
+}
 
-void PythonEditorWidget::closeEvent(QCloseEvent *event) {
+void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (unsavedChanges_) {
         int ret =
             QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
