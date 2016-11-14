@@ -56,7 +56,6 @@ void main() {
     value.x = X_VALUE(pos.x,pos.y,pos.z);
     value.y = Y_VALUE(pos.x,pos.y,pos.z);
     value.z = Z_VALUE(pos.x,pos.y,pos.z);
-    value.w = length(value.xyz);
 
     FragData0 = value;
 }
