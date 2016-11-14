@@ -79,6 +79,7 @@ public:
     void setFullScreen(bool fullscreen);
 
 protected:
+    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
 
     void performEvaluationAtNextShow();
@@ -91,6 +92,7 @@ protected:
     IntVec2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
+    IntVec2Property position_;
     TemplateOptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
     OptionPropertyString imageTypeExt_;
