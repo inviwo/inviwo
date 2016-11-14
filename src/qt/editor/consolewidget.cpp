@@ -193,7 +193,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         statusBar->addWidget(level.label);
         statusBar->addSpacing(5);
         levelGroup->addAction(level.action);
-        connect(level.action, &QAction::triggered, levelCallback);
+        connect(level.action, &QAction::toggled, levelCallback);
     }
     auto viewAction = new QAction("Log Level", this);
     viewAction->setMenu(levelGroup);
@@ -256,26 +256,29 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("console");
 
-    auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
-    auto columnsWidth = settings.value("columnsWidth", QVariant(QList<QVariant>()));
+    {
+        auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
+        auto columnsWidth = settings.value("columnsWidth", QVariant(QList<QVariant>()));
 
-    int i = 0;
-    for (const auto& col : columnsActive.toList()) {
-        tableView_->horizontalHeader()->setSectionHidden(i++, col.toBool());
-    }
-
-    i = 0;
-    for (const auto& col : columnsWidth.toList()) {
-        if (!tableView_->horizontalHeader()->isHidden()) {
-            tableView_->horizontalHeader()->resizeSection(i++, col.toInt());
+        auto active = columnsActive.toList();
+        auto widths = columnsWidth.toList();
+        auto count = std::min(active.size(), widths.size());
+    
+        for (int i = 0; i<count; ++i) {
+            auto hidden = active[i].toBool();
+            tableView_->horizontalHeader()->setSectionHidden(i, hidden);
+            if (!hidden) tableView_->horizontalHeader()->resizeSection(i, widths[i].toInt());
         }
     }
-
-    auto levelsActive = settings.value("levelsActive", QVariant(QList<QVariant>()));
-    i = 0;
-    for (const auto& level : levelsActive.toList()) {
-        levels[i++].action->setChecked(level.toBool());
+    
+    {
+        auto levelsActive = settings.value("levelsActive", QVariant(QList<QVariant>()));
+        int i = 0;
+        for (const auto& level : levelsActive.toList()) {
+            levels[i++].action->setChecked(level.toBool());
+        }
     }
+    
     auto filterText = settings.value("filterText", "");
     filterPattern_->setText(filterText.toString());
 
@@ -481,6 +484,8 @@ void ConsoleWidget::closeEvent(QCloseEvent *event) {
     settings.setValue("levelsActive", QVariant(levelsActive));
     settings.setValue("filterText", QVariant(filterPattern_->text()));
     settings.endGroup();
+    
+    InviwoDockWidget::closeEvent(event);
 }
 
 LogTableModel::LogTableModel(QTableView* view)
