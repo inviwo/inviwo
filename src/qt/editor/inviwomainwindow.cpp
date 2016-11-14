@@ -72,10 +72,6 @@
 
 #include <warn/pop>
 
-
-// enable menu entry to reload the application stylesheet
-//#define IVW_STYLESHEET_RELOAD
-
 namespace inviwo {
 
 InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
@@ -537,14 +533,6 @@ void InviwoMainWindow::addActions() {
         connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
         helpMenuItem->addAction(aboutBoxAction);
     }
-
-#if defined(IVW_STYLESHEET_RELOAD)
-    {
-        QAction* action = new QAction(tr("&Reload Stylesheet"), this);
-        QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
-        helpMenuItem->addAction(action);
-    }
-#endif
 }
 
 void InviwoMainWindow::updateWindowTitle() {
@@ -1114,20 +1102,6 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     }
 
     return continueOperation;
-}
-
-void InviwoMainWindow::reloadStyleSheet() {
-    // The following code snippet allows to reload the Qt style sheets during runtime,
-    // which is handy while we change them. once the style sheets have been finalized,
-    // this code should be removed.
-
-    auto app = InviwoApplication::getPtr();
-    QString resourcePath = app->getPath(PathType::Resources).c_str();
-    QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(app)->setStyleSheet(styleSheet);
-    styleSheetFile.close();
 }
 
 SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }

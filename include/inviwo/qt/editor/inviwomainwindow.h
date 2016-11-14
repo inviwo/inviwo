@@ -118,8 +118,6 @@ public slots:
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
 
-    void reloadStyleSheet();
-
 private:
     void addActions();
 
