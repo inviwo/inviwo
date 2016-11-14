@@ -32,6 +32,7 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
 namespace inviwo {
 
@@ -95,6 +96,14 @@ namespace inviwo {
         std::string filename_;
         void* byteCode_;
         bool isCompileNeeded_;
+    };
+
+
+    class IVW_MODULE_PYTHON3_API PythonScriptDisk : public PythonScript , public SingleFileObserver {
+    public:
+        PythonScriptDisk(std::string filename);
+    private:
+        void readFileAndSetSource();
     };
 
 } // namespace
