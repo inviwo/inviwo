@@ -105,10 +105,6 @@ endif()
 add_subdirectory(src/core)
 
 #--------------------------------------------------------------------
-# Add Qt
-add_subdirectory(src/qt)
-
-#--------------------------------------------------------------------
 # Add default modules
 set(ivw_default_modules
     "Assimp" 
@@ -156,6 +152,10 @@ if(IVW_USE_GLFW_NOT_OPENGLQT)
 else()
     ivw_enable_module(OpenGLQt)
 endif()
+
+#--------------------------------------------------------------------
+# Add Qt
+add_subdirectory(src/qt)
 
 #--------------------------------------------------------------------
 # Add applications
