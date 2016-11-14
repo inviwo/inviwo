@@ -1054,8 +1054,6 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    emit closingMainWindow();
-
     QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
     // save window state
@@ -1071,7 +1069,10 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
     settings.endGroup();
 
-    consoleWidget_->close();
+    // pass a close event to all children to let the same state etc.
+    for (auto& child : children()) {
+        QApplication::sendEvent(child, new QCloseEvent());
+    }
 
     QMainWindow::closeEvent(event);
 }

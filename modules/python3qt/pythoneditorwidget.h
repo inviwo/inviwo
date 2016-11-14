@@ -59,7 +59,6 @@ public:
 };
 
 class InviwoApplication;
-class InviwoMainWindow;
 class SyntaxHighligther;
 
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
@@ -71,7 +70,7 @@ class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
 #include <warn/pop>
 
 public:
-    PythonEditorWidget(InviwoMainWindow* parent, InviwoApplication* app);
+    PythonEditorWidget(QWidget* parent, InviwoApplication* app);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
@@ -94,6 +93,9 @@ public:
 
 public slots:
     void onTextChange();
+
+protected:
+    virtual void closeEvent(QCloseEvent *event) override;
 
 private:
     void setFileName(const std::string filename);
