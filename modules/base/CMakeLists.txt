@@ -50,6 +50,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
@@ -120,6 +121,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
