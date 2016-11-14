@@ -136,8 +136,8 @@ CanvasProcessor::CanvasProcessor()
         fileDialog->setAcceptMode(AcceptMode::Save);
         fileDialog->setFileMode(FileMode::AnyFile);
 
-        auto wf = InviwoApplication::getPtr()->getDataWriterFactory();
-        fileDialog->addExtensions(wf->getExtensionsForType<Layer>());
+        auto writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
+        fileDialog->addExtensions(writerFactory->getExtensionsForType<Layer>());
 
         if (fileDialog->show()) {
             saveImageLayer(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());

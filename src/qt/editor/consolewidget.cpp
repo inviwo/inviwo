@@ -128,9 +128,10 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setVisible(false);
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
     tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    auto height = 2 + QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
-    tableView_->verticalHeader()->setMinimumSectionSize(height);
-    tableView_->verticalHeader()->setDefaultSectionSize(height);
+    const auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+    const int margin = 2;
+    tableView_->verticalHeader()->setMinimumSectionSize(height + margin);
+    tableView_->verticalHeader()->setDefaultSectionSize(height + margin);
     
     QHBoxLayout *statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
@@ -156,16 +157,15 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return action;
     };
 
-    auto updateRowsHeights = [this]() {
+    auto updateRowsHeights = [this, height, margin]() {
         tableView_->setUpdatesEnabled(false);
-        auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
 
         auto vrows = tableView_->verticalHeader()->count();
         for (int i = 0; i < vrows; ++i) {
             auto mind = mapToSource(i, static_cast<int>(LogTableModel::Columns::Message));
             auto message = mind.data(Qt::DisplayRole).toString();
             auto lines = std::count(message.begin(), message.end(), '\n') + 1;
-            tableView_->verticalHeader()->resizeSection(i, 2 + lines * height);
+            tableView_->verticalHeader()->resizeSection(i, margin + lines * height);
         }
         tableView_->setUpdatesEnabled(true);
     };
