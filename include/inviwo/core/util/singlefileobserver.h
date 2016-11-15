@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/callback.h>
 
 namespace inviwo {
 
