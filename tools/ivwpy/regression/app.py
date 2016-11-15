@@ -221,8 +221,13 @@ class App:
 
 	def linkImages(self, oldimg, newimg):
 		if os.path.exists(oldimg) and os.path.exists(newimg) and filecmp.cmp(oldimg, newimg):
-			os.remove(newimg)
-			os.link(oldimg, newimg)
+			try:
+				os.remove(newimg)
+				os.link(oldimg, newimg)
+			except OSError as err:
+				print("OS error: {0}".format(err))
+			except:
+				print("Unknown error removing file and create link")
 
 	def printTestList(self, testrange = slice(0,None), testfilter = lambda x: True, printfun = print):
 		printfun("List of regression tests")

@@ -216,7 +216,8 @@ void IntegralLineVectorToMesh::process() {
                 }
             }
             else {
-                c = colors_.getData()->at(idx);
+                //c = colors_.getData()->at(idx);
+                c = colors_.getData()->at(line.getIndex());
             }
         }
         idx++;
