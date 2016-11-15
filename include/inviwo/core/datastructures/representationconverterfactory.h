@@ -103,9 +103,9 @@ template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
     RepresentationConverter<BaseRepr>* converter) {
     size_t removed = util::map_erase_remove_if(
-        converters_, [converter](RepMap::value_type& elem) { return elem.second == converter; });
+        converters_, [converter](typename RepMap::value_type& elem) { return elem.second == converter; });
 
-    util::map_erase_remove_if(packages_, [converter](PackageMap::value_type& elem) {
+    util::map_erase_remove_if(packages_, [converter](typename PackageMap::value_type& elem) {
         for (auto& conv : elem.second->getConverters()) {
             if (conv == converter) return true;
         }

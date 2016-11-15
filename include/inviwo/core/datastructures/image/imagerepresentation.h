@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
 
