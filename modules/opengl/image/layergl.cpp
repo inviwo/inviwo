@@ -47,7 +47,6 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
                                                    GL_DEPTH_COMPONENT24, glFormat.type, GL_NEAREST);
         } else {
             texture_ = std::make_shared<Texture2D>(getDimensions(), glFormat, GL_LINEAR);
-            //texture_ = std::make_shared<Texture2D>(getDimensions(), glFormat, GL_NEAREST);
         }
     }
     texture_->setSwizzleMask(swizzleMask_);

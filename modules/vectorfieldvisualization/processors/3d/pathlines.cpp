@@ -153,8 +153,7 @@ void PathLines::process() {
             auto size = line.getPositions().size();
             if (size>1) {  
                 #pragma omp critical
-                //lines->push_back(line, startID + j);
-                lines->push_back(line, lines->size());
+                lines->push_back(line,startID + j);
             };
         }
         startID += seeds->size();
