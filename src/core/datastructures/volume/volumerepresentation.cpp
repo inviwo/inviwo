@@ -32,21 +32,8 @@
 
 namespace inviwo {
 
-VolumeRepresentation::VolumeRepresentation() : DataRepresentation() {}
 
 VolumeRepresentation::VolumeRepresentation(const DataFormatBase* format)
     : DataRepresentation(format) {}
-
-VolumeRepresentation::VolumeRepresentation(const VolumeRepresentation& rhs)
-    : DataRepresentation(rhs) {}
-
-VolumeRepresentation& VolumeRepresentation::operator=(const VolumeRepresentation& that) {
-    if (this != &that) {
-        DataRepresentation::operator=(that);
-    }
-    return *this;
-}
-
-VolumeRepresentation::~VolumeRepresentation() {}
 
 }  // namespace

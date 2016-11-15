@@ -31,6 +31,4 @@
 
 namespace inviwo {
 
-std::string BaseData::getDataInfo() const { return ""; }
-
 } // namespace

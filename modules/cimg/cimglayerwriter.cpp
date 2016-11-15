@@ -65,8 +65,7 @@ std::unique_ptr<std::vector<unsigned char>> CImgLayerWriter::writeDataToBuffer(
     return cimgutil::saveLayerToBuffer(fileExtension, data);
 }
 
-bool CImgLayerWriter::writeDataToRepresentation(const DataRepresentation* src,
-                                                DataRepresentation* dst) const {
+bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) const {
     const LayerRAM* source = dynamic_cast<const LayerRAM*>(src);
     LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
 

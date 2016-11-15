@@ -80,7 +80,7 @@ CImgLayerRAMLoader* CImgLayerRAMLoader::clone() const {
     return new CImgLayerRAMLoader(*this);
 }
 
-std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() const {
+std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() const {
     void* data = nullptr;
 
     uvec2 dimensions = layerDisk_->getDimensions();
@@ -113,7 +113,7 @@ std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() c
     return layerDisk_->getDataFormat()->dispatch(*this, data);
 }
 
-void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<LayerRepresentation> dest) const {
     auto layerDst = std::static_pointer_cast<LayerRAM>(dest);
 
     if (layerDisk_->getDimensions() != layerDst->getDimensions()) {

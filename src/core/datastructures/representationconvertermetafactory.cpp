@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,32 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAMCONVERTER_H
-#define IVW_IMAGERAMCONVERTER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/datastructures/image/imagedisk.h>
+#include <inviwo/core/datastructures/representationconvertermetafactory.h>
 
 namespace inviwo {
 
-class IVW_CORE_API ImageDisk2RAMConverter : public RepresentationConverterType<ImageRAM> {
+bool RepresentationConverterMetaFactory::registerObject(
+    BaseRepresentationConverterFactory* factory) {
+    if (!util::insert_unique(map_, factory->getBaseReprId(), factory))
+        throw(ConverterException(
+            "RepresentationConverterFactory with supplied ID already registered", IvwContext));
+    return true;
+}
 
-public:
-    ImageDisk2RAMConverter();
-    virtual ~ImageDisk2RAMConverter();
+bool RepresentationConverterMetaFactory::unRegisterObject(
+    BaseRepresentationConverterFactory* factory) {
 
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const ImageDisk*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
-};
+    size_t removed = util::map_erase_remove_if(
+        map_, [factory](const auto& elem) { return elem.second == factory; });
 
-} // namespace
+    return removed > 0;
+}
 
-#endif // IVW_IMAGERAMCONVERTER_H
+}  // namespace

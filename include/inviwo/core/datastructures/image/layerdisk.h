@@ -39,7 +39,8 @@ namespace inviwo {
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
+class IVW_CORE_API LayerDisk : public LayerRepresentation,
+                               public DiskRepresentation<LayerRepresentation> {
 public:
     LayerDisk(LayerType type = LayerType::Color,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba);
@@ -54,7 +55,7 @@ public:
     /**
      * Copy and resize the representations of this onto the target.
      */
-    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
 
     /**
      * \brief Updates the data format retrieved during loading

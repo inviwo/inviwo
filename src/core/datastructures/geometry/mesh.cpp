@@ -33,10 +33,16 @@
 namespace inviwo {
 
 Mesh::Mesh(DrawType dt, ConnectivityType ct)
-    : DataGroup(), SpatialEntity<3>(), meshInfo_(MeshInfo(dt, ct)) {}
+    : DataGroup<Mesh, MeshRepresentation>()
+    , SpatialEntity<3>()
+    , MetaDataOwner()
+    , meshInfo_(MeshInfo(dt, ct)) {}
 
 Mesh::Mesh(const Mesh& rhs)
-    : DataGroup(rhs), SpatialEntity<3>(rhs), meshInfo_(rhs.meshInfo_) {
+    : DataGroup<Mesh, MeshRepresentation>(rhs)
+    , SpatialEntity<3>(rhs)
+    , MetaDataOwner(rhs)
+    , meshInfo_(rhs.meshInfo_) {
     for (const auto& elem : rhs.buffers_) {
         buffers_.emplace_back(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
     }
@@ -47,8 +53,9 @@ Mesh::Mesh(const Mesh& rhs)
 
 Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
-        DataGroup::operator=(that);
+        DataGroup<Mesh, MeshRepresentation>::operator=(that);
         SpatialEntity<3>::operator=(that);
+        MetaDataOwner::operator=(that);
 
         BufferVector buffers;
         IndexVector indices;

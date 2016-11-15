@@ -36,27 +36,19 @@
 namespace inviwo {
 
 Volume::Volume(size3_t dimensions, const DataFormatBase* format)
-    : Data<VolumeRepresentation>(format), StructuredGridEntity<3>(dimensions), dataMap_(format) {}
-
-Volume::Volume(const Volume& rhs)
-    : Data<VolumeRepresentation>(rhs), StructuredGridEntity<3>(rhs), dataMap_(rhs.dataMap_) {}
+    : Data<Volume, VolumeRepresentation>(format)
+    , StructuredGridEntity<3>(dimensions)
+    , MetaDataOwner()
+    , dataMap_(format) {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
-    : Data<VolumeRepresentation>(in->getDataFormat())
+    : Data<Volume, VolumeRepresentation>(in->getDataFormat())
     , StructuredGridEntity<3>(in->getDimensions())
+    , MetaDataOwner()
     , dataMap_(in->getDataFormat()) {
     addRepresentation(in);
 }
 
-Volume& Volume::operator=(const Volume& that) {
-    if (this != &that) {
-        Data<VolumeRepresentation>::operator=(that);
-        StructuredGridEntity<3>::operator=(that);
-        dataMap_ = that.dataMap_;
-    }
-
-    return *this;
-}
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
 
@@ -176,7 +168,7 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     return ds;
 }
 
-inviwo::uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);
+uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);
 const std::string Volume::CLASS_IDENTIFIER = "org.inviwo.Volume";
 
 const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(

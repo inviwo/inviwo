@@ -76,13 +76,6 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
             checkChannels(image_->getDataFormat()->getComponents());
         }
         activeRenderLayerIdx_ = (imageGL_->getLayerGL(layerType_, idx) != nullptr) ? idx : 0;
-
-        // Faster async download of textures sampled on interaction
-        if (imageGL_->getDepthLayerGL()) imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
-        if (pickingController_.pickingEnabled() && imageGL_->getPickingLayerGL()) {
-            imageGL_->getPickingLayerGL()->getTexture()->downloadToPBO();
-        }
-
     } else {
         imageGL_ = nullptr;
     }
@@ -215,6 +208,17 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
 
 double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate,
                                                 const LayerRAM* depthLayerRAM) const {
+    
+    if (!depthLayerRAM && imageGL_) {
+        const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
+        const dvec2 depthDims{ imageGL_->getDimensions() - size2_t(1, 1) };
+        const size2_t coordDepth{ depthDims * coords };        
+        auto depth = imageGL_->readPixel(coordDepth, LayerType::Depth).x;
+
+        // Convert to normalized device coordinates
+        return 2.0 * depth - 1.0;
+    }
+
     if (!depthLayerRAM) depthLayerRAM = getDepthLayerRAM();
 
     if (depthLayerRAM) {

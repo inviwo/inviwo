@@ -30,10 +30,9 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
-
-MeshRAM::MeshRAM() : MeshRepresentation() {}
 
 MeshRAM::MeshRAM(const MeshRAM& rhs) : MeshRepresentation(rhs) { update(true); }
 
@@ -46,6 +45,10 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
 }
 
 std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
+
+bool MeshRAM::isValid() const {
+    return util::all_of(bufferRAM_, [](const auto& b) { return b->isValid(); }); 
+}
 
 MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
 

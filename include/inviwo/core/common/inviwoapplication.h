@@ -41,6 +41,8 @@
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/interaction/interactionstatemanager.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/representationconvertermetafactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -64,7 +66,6 @@ class MeshDrawerFactory;
 class MetaDataFactory;
 class ProcessorFactory;
 class PropertyConverterManager;
-class RepresentationConverterFactory;
 class ProcessorWidgetFactory;
 class DialogFactory;
 class PropertyFactory;
@@ -174,7 +175,11 @@ public:
     PropertyConverterManager* getPropertyConverterManager() const;
     PropertyFactory* getPropertyFactory() const;
     PropertyWidgetFactory* getPropertyWidgetFactory() const;
-    RepresentationConverterFactory* getRepresentationConverterFactory() const;
+
+    template <typename BaseRepr>
+    RepresentationConverterFactory<BaseRepr>* getRepresentationConverterFactory() const;
+
+    RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() const;
     ProcessorWidgetFactory* getProcessorWidgetFactory() const;
 
     // Methods to be implemented by deriving classes
@@ -233,7 +238,7 @@ protected:
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
-    std::unique_ptr<RepresentationConverterFactory> representationConverterFactory_;
+    std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
@@ -338,9 +343,15 @@ inline PropertyWidgetFactory* InviwoApplication::getPropertyWidgetFactory() cons
     return propertyWidgetFactory_.get();
 }
 
-inline RepresentationConverterFactory* InviwoApplication::getRepresentationConverterFactory()
+template <typename BaseRepr>
+RepresentationConverterFactory<BaseRepr>* InviwoApplication::getRepresentationConverterFactory()
     const {
-    return representationConverterFactory_.get();
+    return representationConverterMetaFactory_->getConverterFactory<BaseRepr>();
+}
+
+inline RepresentationConverterMetaFactory*
+InviwoApplication::getRepresentationConverterMetaFactory() const {
+    return representationConverterMetaFactory_.get();
 }
 
 inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() const {

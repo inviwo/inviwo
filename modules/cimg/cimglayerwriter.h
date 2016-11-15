@@ -53,8 +53,7 @@ public:
     virtual void writeData(const Layer* data, const std::string filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const Layer* data, const std::string& fileExtension) const override;
-    virtual bool writeDataToRepresentation(const DataRepresentation* src,
-                                           DataRepresentation* dst) const override;
+    virtual bool writeDataToRepresentation(const repr* src, repr* dst) const override;
 };
 
 }  // namespace

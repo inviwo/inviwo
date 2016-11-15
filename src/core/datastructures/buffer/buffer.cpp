@@ -36,7 +36,7 @@ namespace inviwo {
 
 BufferBase::BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage,
                        BufferTarget target)
-    : Data<BufferRepresentation>(format), size_(size), usage_(usage), target_(target) {}
+    : Data<BufferBase, BufferRepresentation>(format), size_(size), usage_(usage), target_(target) {}
 
 size_t BufferBase::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
 

@@ -55,14 +55,18 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     opengl::addShaderResources(shaderManager_.get(), {getPath(ModulePath::GLSL)});
 
     registerDrawer(util::make_unique<MeshDrawerGL>());
-    registerRepresentationConverter(util::make_unique<LayerRAM2GLConverter>());
-    registerRepresentationConverter(util::make_unique<LayerGL2RAMConverter>());
+    registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerRAM2GLConverter>());
+    registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerGL2RAMConverter>());
 
-    registerRepresentationConverter(util::make_unique<VolumeRAM2GLConverter>());
-    registerRepresentationConverter(util::make_unique<VolumeGL2RAMConverter>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        util::make_unique<VolumeRAM2GLConverter>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        util::make_unique<VolumeGL2RAMConverter>());
 
-    registerRepresentationConverter(util::make_unique<BufferRAM2GLConverter>());
-    registerRepresentationConverter(util::make_unique<BufferGL2RAMConverter>());
+    registerRepresentationConverter<BufferRepresentation>(
+        util::make_unique<BufferRAM2GLConverter>());
+    registerRepresentationConverter<BufferRepresentation>(
+        util::make_unique<BufferGL2RAMConverter>());
 
     registerProcessor<CanvasProcessorGL>();
 

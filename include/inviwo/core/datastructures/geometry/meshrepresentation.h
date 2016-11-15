@@ -36,16 +36,28 @@
 
 namespace inviwo {
 
+class Mesh;
+
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation {
+class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation<Mesh> {
 public:
-    MeshRepresentation();
-    MeshRepresentation(const MeshRepresentation& rhs);
-    MeshRepresentation& operator=(const MeshRepresentation& that);
+    MeshRepresentation() = default;
+    MeshRepresentation(const MeshRepresentation& rhs) = default;
+    MeshRepresentation& operator=(const MeshRepresentation& that) = default;
     virtual MeshRepresentation* clone() const override = 0;
-    virtual ~MeshRepresentation();
+    virtual ~MeshRepresentation() = default;
+
+    virtual std::type_index getTypeIndex() const override = 0;
+    virtual void setOwner(Mesh*) override;
+    virtual Mesh* getOwner() override;
+    virtual const Mesh* getOwner() const override;
+    virtual bool isValid() const override = 0;
+    virtual void update(bool) override = 0;
+
+protected:
+    Mesh* owner_;
 };
 
 }  // namespace

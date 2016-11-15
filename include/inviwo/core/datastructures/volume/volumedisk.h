@@ -40,7 +40,8 @@ namespace inviwo {
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API VolumeDisk : public VolumeRepresentation, public DiskRepresentation {
+class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
+                                public DiskRepresentation<VolumeRepresentation> {
 public:
     VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),
                const DataFormatBase* format = DataUInt8::get());

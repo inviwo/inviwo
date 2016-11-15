@@ -39,7 +39,7 @@ namespace inviwo {
 LayerRAM::LayerRAM(size2_t dimensions, LayerType type, const DataFormatBase* format)
     : LayerRepresentation(dimensions, type, format) {}
 
-bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
+bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
     static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
                                                      ->getDataWriterFactory()
                                                      ->getWriterForTypeAndExtension<Layer>("png")

@@ -31,20 +31,5 @@
 
 namespace inviwo {
 
-const std::vector<const RepresentationConverter*>& inviwo::RepresentationConverterPackage::getConverters()
-    const {
-    return converters_;
-}
-
-size_t inviwo::RepresentationConverterPackage::steps() const { return converters_.size(); }
-
-RepresentationConverter::ConverterID RepresentationConverterPackage::getConverterID() const {
-    return ConverterID(converters_.front()->getConverterID().first,
-                       converters_.back()->getConverterID().second);
-}
-
-void RepresentationConverterPackage::addConverter(const RepresentationConverter* converter) {
-    converters_.push_back(converter);
-}
 
 }  // namespace

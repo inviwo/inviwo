@@ -63,11 +63,9 @@ public:
 
     size_t getIndexBufferCount() const;
 
-    virtual Mesh* getOwner() override;
-    virtual const Mesh* getOwner() const override;
-    virtual std::type_index getTypeIndex() const override final;
 
-protected:
+    virtual std::type_index getTypeIndex() const override final;
+    virtual bool isValid() const override;
     virtual void update(bool editable) override;
 
 private:

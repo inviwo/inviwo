@@ -29,7 +29,6 @@
 
 #include "imagesource.h"
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/imagedisk.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>

@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-const GLenum FrameBufferObject::colorAttachmentEnums_[] = {
+const std::array<GLenum, 16> FrameBufferObject::colorAttachmentEnums_ = {
     GL_COLOR_ATTACHMENT0_EXT,  GL_COLOR_ATTACHMENT1_EXT,  GL_COLOR_ATTACHMENT2_EXT,
     GL_COLOR_ATTACHMENT3_EXT,  GL_COLOR_ATTACHMENT4_EXT,  GL_COLOR_ATTACHMENT5_EXT,
     GL_COLOR_ATTACHMENT6_EXT,  GL_COLOR_ATTACHMENT7_EXT,  GL_COLOR_ATTACHMENT8_EXT,
@@ -47,8 +47,8 @@ FrameBufferObject::FrameBufferObject()
     , prevFbo_(0u)
     , prevDrawFbo_(0u)
     , prevReadFbo_(0u) {
+
     glGenFramebuffersEXT(1, &id_);
-    
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &maxColorattachments_);
 
     drawBuffers_.reserve(maxColorattachments_);
@@ -95,24 +95,20 @@ void FrameBufferObject::attachTexture(Texture2D* texture, GLenum attachmentID) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachmentID, GL_TEXTURE_2D, texture->getID(),
                                   0);
     }
-
     return attachmentID;
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachmentID, GL_TEXTURE_2D, texture->getID(),
                                   0);
     }
-
     return attachmentID;
 }
 
@@ -125,38 +121,32 @@ void FrameBufferObject::attachTexture(Texture2DArray* texture, GLenum attachment
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0);
     }
-
     return attachmentID;
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0);
     }
-
     return attachmentID;
 }
 
-void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attachmentID,
-                                           int layer, int level) {
+void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer,
+                                           int level) {
     performAttachTexture(attachmentID);
     glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), level, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int layer) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0, layer);
     }
-
     return attachmentID;
 }
 
@@ -164,11 +154,9 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int a
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0, layer);
     }
-
     return attachmentID;
 }
 
@@ -181,22 +169,18 @@ void FrameBufferObject::attachTexture(Texture3D* texture, GLenum attachmentID) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0);
     }
-
     return attachmentID;
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, attachmentID, texture->getID(), 0);
     }
-
     return attachmentID;
 }
 
@@ -208,12 +192,10 @@ void FrameBufferObject::attachTextureLayer(Texture3D* texture, GLenum attachment
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, attachmentID, GL_TEXTURE_3D, texture->getID(),
                                   0, layer);
     }
-
     return attachmentID;
 }
 
@@ -221,30 +203,27 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attach
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
     GLenum attachmentID;
-
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, attachmentID, GL_TEXTURE_3D, texture->getID(),
                                   0, layer);
     }
-
     return attachmentID;
 }
 
 void FrameBufferObject::detachTexture(GLenum attachmentID) {
-    if (attachmentID == GL_DEPTH_ATTACHMENT)
+    if (attachmentID == GL_DEPTH_ATTACHMENT) {
         hasDepthAttachment_ = false;
-    else if (attachmentID == GL_STENCIL_ATTACHMENT)
+    } else if (attachmentID == GL_STENCIL_ATTACHMENT) {
         hasStencilAttachment_ = false;
-	else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
-		hasDepthAttachment_ = false;
-		hasStencilAttachment_ = false;
-	}
-    else {
+    } else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
+        hasDepthAttachment_ = false;
+        hasStencilAttachment_ = false;
+    } else {
         // check for valid attachmentID
         if ((attachmentID < colorAttachmentEnums_[0]) ||
             (attachmentID > colorAttachmentEnums_[0] + maxColorattachments_ - 1)) {
             LogError("Attachments ID " << attachmentID
-                     << " exceeds maximum amount of color attachments");
+                                       << " exceeds maximum amount of color attachments");
             return;
         }
         // check whether given ID is already attached
@@ -263,10 +242,8 @@ void FrameBufferObject::detachAllTextures() {
     detachTexture(GL_DEPTH_ATTACHMENT);
     detachTexture(GL_STENCIL_ATTACHMENT);
 
-    std::vector<GLenum>::iterator it = drawBuffers_.begin();
-    while (it != drawBuffers_.end()) {
-        glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, *it, 0, 0);
-        ++it;
+    for (const auto& buffer : drawBuffers_) {
+        glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, buffer, 0, 0);
     }
     drawBuffers_.clear();
     std::fill(buffersInUse_.begin(), buffersInUse_.end(), false);
@@ -326,8 +303,7 @@ void FrameBufferObject::checkStatus() {
 }
 
 void FrameBufferObject::setRead_Blit(bool set) const {
-    if (set) {
-        // store currently bound draw FBO
+    if (set) { // store currently bound draw FBO
         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING_EXT, &prevReadFbo_);
         glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, id_);
     } else {
@@ -340,8 +316,7 @@ void FrameBufferObject::setRead_Blit(bool set) const {
 }
 
 void FrameBufferObject::setDraw_Blit(bool set) {
-    if (set) {
-        // store currently bound draw FBO
+    if (set) { // store currently bound draw FBO
         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &prevDrawFbo_);
         glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, id_);
     } else {
@@ -354,15 +329,14 @@ void FrameBufferObject::setDraw_Blit(bool set) {
 }
 
 void FrameBufferObject::performAttachTexture(GLenum attachmentID) {
-    if (attachmentID == GL_DEPTH_ATTACHMENT)
+    if (attachmentID == GL_DEPTH_ATTACHMENT) {
         hasDepthAttachment_ = true;
-    else if (attachmentID == GL_STENCIL_ATTACHMENT)
+    } else if (attachmentID == GL_STENCIL_ATTACHMENT) {
         hasStencilAttachment_ = true;
-	else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
-		hasDepthAttachment_ = true;
-		hasStencilAttachment_ = true;
-	}
-    else {
+    } else if (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT) {
+        hasDepthAttachment_ = true;
+        hasStencilAttachment_ = true;
+    } else {
         // check for valid attachmentID
         if ((attachmentID < colorAttachmentEnums_[0]) ||
             (attachmentID > colorAttachmentEnums_[0] + maxColorattachments_ - 1)) {
@@ -379,37 +353,19 @@ void FrameBufferObject::performAttachTexture(GLenum attachmentID) {
 }
 
 bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber) {
-    if (drawBuffers_.empty()) {
-        // no draw buffers attached as of now, use first attachment
-        outAttachNumber = colorAttachmentEnums_[0];
-        drawBuffers_.push_back(colorAttachmentEnums_[0]);
-        buffersInUse_[outAttachNumber - colorAttachmentEnums_[0]] = true;
-        return true;
-    } else if (static_cast<long>(drawBuffers_.size()) == maxColorattachments_) {
-        // cannot attach texture, maximum number of color attachments reached
+    // identify first unused color attachment ID
+    auto itUnUsed = util::find_if(buffersInUse_, [](const auto& used){ return !used;});
+
+    if (itUnUsed == buffersInUse_.end()) {
         LogError("Maximum number of color attachments reached.");
         outAttachNumber = GL_NONE;
         return false;
     }
-
-    // identify first unused color attachment ID
-    std::vector<bool>::iterator itUsed = buffersInUse_.begin();
-    while (itUsed != buffersInUse_.end()) {
-        if (!*itUsed) break;
-        ++itUsed;
-    }
-
-    // check for (itUsed == buffersUsed.end()) unnecessary, since already
-    // handled above (drawBuffers_.size() == maxColorattachments_)
-    if (itUsed == buffersInUse_.end()) {
-        LogError("invalid state? (FBO " << id_ << ")");
-    }
     GLenum target = static_cast<GLenum>(colorAttachmentEnums_[0] +
-                                        std::distance(buffersInUse_.begin(), itUsed));
+                                        std::distance(buffersInUse_.begin(), itUnUsed));
     drawBuffers_.push_back(target);
+    *itUnUsed = true;
     outAttachNumber = target;
-    buffersInUse_[target - colorAttachmentEnums_[0]] = true;
-
     return true;
 }
 
@@ -458,13 +414,13 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber, int a
 int FrameBufferObject::getAttachmentLocation(GLenum attachmentID) const {
     if ((attachmentID == GL_DEPTH_ATTACHMENT) || (attachmentID == GL_STENCIL_ATTACHMENT) || (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT)) return 0;
 
-    std::vector<GLenum>::const_iterator it = drawBuffers_.begin();
-    while (it != drawBuffers_.end()) {
-        if (*it == attachmentID) return static_cast<int>(std::distance(drawBuffers_.begin(), it));
-        ++it;
+    auto it = util::find_if(drawBuffers_, [&](const auto& b) { return b == attachmentID; });
+    if (it != drawBuffers_.end()) {
+        return static_cast<int>(std::distance(drawBuffers_.begin(), it));
+    } else {
+        // given ID not attached
+        return -1;
     }
-    // given ID not attached
-    return -1;
 }
 
 std::string FrameBufferObject::printBuffers() const {

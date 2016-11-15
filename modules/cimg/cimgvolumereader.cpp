@@ -76,7 +76,7 @@ CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const {
     return new CImgVolumeRAMLoader(*this);
 }
 
-std::shared_ptr<DataRepresentation> CImgVolumeRAMLoader::createRepresentation() const {
+std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation() const {
     void* data = nullptr;
 
     size3_t dimensions = volumeDisk_->getDimensions();
@@ -100,7 +100,7 @@ std::shared_ptr<DataRepresentation> CImgVolumeRAMLoader::createRepresentation() 
     return volumeDisk_->getDataFormat()->dispatch(*this, data);
 }
 
-void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     size3_t dimensions = volumeDisk_->getDimensions();

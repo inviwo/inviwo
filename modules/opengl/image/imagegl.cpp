@@ -101,7 +101,7 @@ void ImageGL::activateBuffer(ImageType type) {
             --numBuffersToDrawTo;
         }
 
-        glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
+        glDrawBuffers(numBuffersToDrawTo, drawBuffers.data());
         LGL_ERROR;
     }
 
@@ -137,7 +137,11 @@ void ImageGL::deactivateBuffer() {
     prevViewport_.set();
 }
 
-bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+size2_t ImageGL::getDimensions() const {
+    return colorLayersGL_.front()->getDimensions();
+}
+
+bool ImageGL::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     return copyRepresentationsTo(dynamic_cast<ImageGL*>(targetRep));
 }
 
@@ -146,6 +150,8 @@ size_t ImageGL::priority() const {
 }
 
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
+    if(!target) return false;
+    
     const ImageGL* source = this;
 
     auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
@@ -445,6 +451,44 @@ void ImageGL::renderImagePlaneRect() const {
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
+
+bool ImageGL::isValid() const {
+    return depthLayerGL_->isValid() && pickingLayerGL_->isValid() &&
+        util::all_of(colorLayersGL_, [](const auto& l) { return l->isValid(); });
+}
+
+dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
+    frameBufferObject_.setRead_Blit(true);
+
+    const auto layergl = getLayerGL(layer, index);
+    const auto tex = layergl->getTexture();
+
+    switch (layer) {
+        case LayerType::Depth:
+            break;
+        case LayerType::Picking:
+            glReadBuffer(pickingAttachmentID_);
+            break;
+        case LayerType::Color:
+        default:
+            glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + static_cast<GLenum>(index));
+            break;
+    }
+
+    // Make a buffer that can hold the largest possible pixel type
+    std::array<char, DataFormat<dvec4>::typesize> buffer;
+    GLvoid* ptr = static_cast<GLvoid*>(buffer.data());
+    const auto x = static_cast<GLint>(pos.x);
+    const auto y = static_cast<GLint>(pos.y);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glReadPixels(x, y, 1, 1, tex->getFormat(), tex->getDataType(), ptr);
+
+    // restore
+    glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+    frameBufferObject_.setRead_Blit(false);
+
+    return layergl->getDataFormat()->valueToVec4Double(ptr);
+}
 
 GLenum ImageGL::getPickingAttachmentID() const { return pickingAttachmentID_; }
 

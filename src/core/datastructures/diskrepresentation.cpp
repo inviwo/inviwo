@@ -31,29 +31,4 @@
 
 namespace inviwo {
 
-DiskRepresentation::DiskRepresentation() : sourceFile_(""), loader_() {}
-
-DiskRepresentation::DiskRepresentation(std::string srcFile, DiskRepresentationLoader* loader)
-    : sourceFile_(srcFile), loader_(loader) {}
-
-DiskRepresentation* DiskRepresentation::clone() const { return new DiskRepresentation(*this); }
-
-const std::string& DiskRepresentation::getSourceFile() const { return sourceFile_; }
-
-bool DiskRepresentation::hasSourceFile() const { return !sourceFile_.empty(); }
-
-void DiskRepresentation::setLoader(DiskRepresentationLoader* loader) {
-    loader_.reset(loader);
-}
-
-std::shared_ptr<DataRepresentation> DiskRepresentation::createRepresentation() const {
-    if (!loader_) throw Exception("No loader available to create representation", IvwContext);
-    return loader_->createRepresentation();
-}
-
-void DiskRepresentation::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
-    if (!loader_) throw Exception("No loader available to update representation", IvwContext);
-    loader_->updateRepresentation(dest);
-}
-
 }  // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/geometry/meshdisk.h>
+#ifndef IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+#define IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
 
 namespace inviwo {
 
-MeshDisk::MeshDisk(std::string srcFile) : MeshRepresentation(), DiskRepresentation(srcFile) {}
+/**
+ * \class RepresentationConverterMetaFactory
+ * \brief A class to manage RepresentationConverterFactories
+ */
+class IVW_CORE_API RepresentationConverterMetaFactory { 
+public:
+    using BaseReprId = BaseRepresentationConverterFactory::BaseReprId;
+    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
+    
+    RepresentationConverterMetaFactory() = default;
+    virtual ~RepresentationConverterMetaFactory() = default;
 
-MeshDisk* MeshDisk::clone() const { return new MeshDisk(*this); }
+    bool registerObject(BaseRepresentationConverterFactory* factory);
+    bool unRegisterObject(BaseRepresentationConverterFactory* factory);
 
-std::type_index MeshDisk::getTypeIndex() const {
-    return std::type_index(typeid(MeshDisk));
+    template <typename BaseRepr>
+    RepresentationConverterFactory<BaseRepr>* getConverterFactory() const;
+
+private:
+     FactoryMap map_;
+};
+
+template <typename BaseRepr>
+RepresentationConverterFactory<BaseRepr>*
+RepresentationConverterMetaFactory::getConverterFactory() const {
+    if (auto ptr = util::map_find_or_null(map_, BaseReprId(typeid(BaseRepr)))) {
+        return static_cast<RepresentationConverterFactory<BaseRepr>*>(ptr);
+    }
+    return nullptr;
 }
 
-void MeshDisk::update(bool editable) {}
+} // namespace
 
-}  // namespace
+#endif // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+

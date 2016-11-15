@@ -45,16 +45,16 @@ class BufferRAM;
 class IVW_CORE_API MeshRAM : public MeshRepresentation {
 
 public:
-    MeshRAM();
+    MeshRAM() = default;
     MeshRAM(const MeshRAM& rhs);
     MeshRAM& operator=(const MeshRAM& that);
     virtual MeshRAM* clone() const override;
     virtual ~MeshRAM() = default;
     virtual std::type_index getTypeIndex() const override final;
-
-protected:
+    virtual bool isValid() const override;
     virtual void update(bool editable) override;
 
+protected:
     std::vector<BufferRAM*> bufferRAM_;
 };
 

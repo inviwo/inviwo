@@ -90,12 +90,11 @@ void MeshGL::update(bool editable) {
     }
 }
 
-Mesh* MeshGL::getOwner() { return static_cast<Mesh*>(DataRepresentation::getOwner()); }
-
-const Mesh* MeshGL::getOwner() const {
-    return static_cast<const Mesh*>(DataRepresentation::getOwner());
-}
 
 std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }
+
+bool MeshGL::isValid() const {
+    return util::all_of(bufferGLs_, [](const auto& b) { return b->isValid(); });
+}
 
 }  // namespace

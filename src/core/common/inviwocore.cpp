@@ -37,7 +37,7 @@
 //Data Structures
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
 #include <inviwo/core/datastructures/image/layerramconverter.h>
-#include <inviwo/core/datastructures/geometry/meshdisk2ramconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
 
 //Meta Data
 #include <inviwo/core/metadata/metadata.h>
@@ -98,10 +98,20 @@
 namespace inviwo {
 
 InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
+    // Register Converter Factories
+    registerRepresentationConverterFactory(util::make_unique<
+                                           RepresentationConverterFactory<VolumeRepresentation>>());
+    registerRepresentationConverterFactory(util::make_unique<
+                                           RepresentationConverterFactory<LayerRepresentation>>());
+    registerRepresentationConverterFactory(util::make_unique<
+                                           RepresentationConverterFactory<BufferRepresentation>>());
+
     // Register Converters
-    registerRepresentationConverter(util::make_unique<VolumeDisk2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<LayerDisk2RAMConverter>());
-    registerRepresentationConverter(util::make_unique<MeshDisk2RAMConverter>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        util::make_unique<VolumeDisk2RAMConverter>());
+    registerRepresentationConverter<LayerRepresentation>(
+        util::make_unique<LayerDisk2RAMConverter>());
+
     // Register MetaData
     registerMetaData(util::make_unique<BoolMetaData>());
     registerMetaData(util::make_unique<IntMetaData>());

@@ -30,9 +30,6 @@
 #ifndef IVW_REPRESENTATIONTRAITS_H
 #define IVW_REPRESENTATIONTRAITS_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 namespace inviwo {
 
 /**
