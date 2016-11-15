@@ -74,23 +74,19 @@ public:
 };
 
 /**
-* \class NiftiVolumeRAMLoader
-*
 * \brief A loader of Nifti files. Used to create VolumeRAM representations.
-*
 * This class us used by the NiftiReader.
 */
-
-class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader : public DiskRepresentationLoader {
+class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader
+    : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_,
                          std::array<int, 7> region_size_);
     virtual NiftiVolumeRAMLoader* clone() const override;
-
     virtual ~NiftiVolumeRAMLoader() = default;
 
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
 
@@ -98,8 +94,8 @@ public:
     std::shared_ptr<VolumeRAM> dispatch() const {
         typedef typename T::type F;
 
-        std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
-                           region_size[4] * region_size[5] * region_size[6];
+        const std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
+                                 region_size[4] * region_size[5] * region_size[6];
         auto data = util::make_unique<F[]>(size);
 
         if (!data) {
