@@ -33,10 +33,9 @@
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
-
-class Layer;
 
 /**
  * \ingroup dataio

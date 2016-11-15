@@ -30,7 +30,6 @@
 #include <modules/cimg/cimglayerwriter.h>
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 
