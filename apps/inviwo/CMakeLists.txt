@@ -61,7 +61,7 @@ ivw_register_use_of_modules(${package_list})
 set(${core_dependencies} InviwoQtEditor)
 list(APPEND core_dependencies InviwoQtEditor)
 list(APPEND core_dependencies InviwoCore)
-list(APPEND core_dependencies InviwoQtWidgets)
+list(APPEND core_dependencies InviwoQtApplicationBase)
 ivw_add_dependency_directories(${core_dependencies})
 
 set(RES_FILES "")
