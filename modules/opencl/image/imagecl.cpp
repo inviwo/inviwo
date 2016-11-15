@@ -40,11 +40,19 @@ ImageCL::~ImageCL() {}
 
 ImageCL* ImageCL::clone() const { return new ImageCL(*this); }
 
+size2_t ImageCL::getDimensions() const {
+    return layerCL_->getDimensions();
+}
+
 LayerCL* ImageCL::getLayerCL() { return layerCL_; }
 
 const LayerCL* ImageCL::getLayerCL() const { return layerCL_; }
 
-bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+dvec4 ImageCL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+    return layerCL_->readPixel(pos, layer, index);
+}
+
+bool ImageCL::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     ImageCL* targetCL = dynamic_cast<ImageCL*>(targetRep);
 
     if (!targetCL) return false;
@@ -57,6 +65,10 @@ size_t ImageCL::priority() const {
 }
 
 std::type_index ImageCL::getTypeIndex() const { return std::type_index(typeid(ImageCL)); }
+
+bool ImageCL::isValid() const {
+    return layerCL_->isValid();
+}
 
 void ImageCL::update(bool editable) {
     // TODO: Convert more then just first color layer

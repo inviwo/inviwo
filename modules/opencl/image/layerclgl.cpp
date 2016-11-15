@@ -110,7 +110,7 @@ void LayerCLGL::setDimensions(size2_t dimensions) {
     updateBaseMetaFromRepresentation();
 }
 
-bool LayerCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+bool LayerCLGL::copyRepresentationsTo(LayerRepresentation* targetRep) const {
     // ivwAssert(false, "Not implemented");
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // TODO: Implement copying in addition to the resizing
@@ -160,6 +160,16 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 }
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
+
+dvec4 LayerCLGL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+    std::array<char, DataFormat<dvec4>::typesize> buffer;
+    auto ptr = static_cast<void *>(buffer.data());
+
+    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(pos, 0),
+                                                  glm::size3_t(1, 1, 1), 0, 0, ptr);
+
+    return getDataFormat()->valueToVec4Double(ptr);
+}
 
 void LayerCLGL::setSwizzleMask(const SwizzleMask &mask) {
     if (texture_) {

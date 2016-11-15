@@ -39,7 +39,7 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENCL_API BufferRAM2CLConverter
-    : public RepresentationConverterType<BufferRAM, BufferCL> {
+    : public RepresentationConverterType<BufferRepresentation, BufferRAM, BufferCL> {
 public:
     virtual std::shared_ptr<BufferCL> createFrom(
         std::shared_ptr<const BufferRAM> source) const override;
@@ -48,7 +48,7 @@ public:
 };
 
 class IVW_MODULE_OPENCL_API BufferCL2RAMConverter
-    : public RepresentationConverterType<BufferCL, BufferRAM> {
+    : public RepresentationConverterType<BufferRepresentation, BufferCL, BufferRAM> {
 public:
     virtual std::shared_ptr<BufferRAM> createFrom(
         std::shared_ptr<const BufferCL> source) const override;
