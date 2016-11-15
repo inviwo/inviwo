@@ -303,12 +303,7 @@ set(SOURCE_FILES
     datastructures/camera.cpp
     datastructures/camerafactory.cpp
     datastructures/camerafactoryobject.cpp
-    datastructures/data.cpp
-    datastructures/datagroup.cpp
-    datastructures/datagrouprepresentation.cpp
     datastructures/datamapper.cpp
-    datastructures/datarepresentation.cpp
-    datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshram.cpp
@@ -327,8 +322,6 @@ set(SOURCE_FILES
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
     datastructures/light/baselightsource.cpp
-    datastructures/representationconverter.cpp
-    datastructures/representationconverterfactory.cpp
     datastructures/representationconvertermetafactory.cpp
     datastructures/spatialdata.cpp
     datastructures/transferfunction.cpp
