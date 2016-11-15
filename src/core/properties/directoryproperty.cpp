@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/util/filedialogstate.h>
 
 namespace inviwo {
 
@@ -38,8 +39,8 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(FileProperty::AcceptMode::Open);
-    this->setFileMode(FileProperty::FileMode::DirectoryOnly);
+    this->setAcceptMode(AcceptMode::Open);
+    this->setFileMode(FileMode::DirectoryOnly);
 }
 
 DirectoryProperty::~DirectoryProperty() {}

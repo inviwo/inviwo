@@ -45,9 +45,9 @@
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
-#include <inviwo/qt/widgets/processors/processorwidgetqt.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

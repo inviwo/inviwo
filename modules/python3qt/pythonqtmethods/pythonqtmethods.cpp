@@ -41,9 +41,8 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorpreview.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <modules/python3/pyinviwo.h>
 
@@ -99,10 +98,8 @@ PyObject* py_getPathCurrentWorkspace(PyObject* self, PyObject* args) {
         return nullptr;
     }
 
-    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-            return PyValueParser::toPyObject(mw->getNetworkEditor()->getCurrentFilename());
-        }
+    if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
+        return PyValueParser::toPyObject(mw->getNetworkEditor()->getCurrentFilename());
     }
     return nullptr;
 }
@@ -123,10 +120,8 @@ PyObject* py_loadWorkspace(PyObject* self, PyObject* args) {
         }
     }
 
-    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-            mw->getNetworkEditor()->loadNetwork(filename);
-        }
+    if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
+        mw->getNetworkEditor()->loadNetwork(filename);
     }
 
     Py_RETURN_NONE;
@@ -139,11 +134,9 @@ PyObject* py_saveWorkspace(PyObject* self, PyObject* args) {
     if (tester.parse(args, filename , setAsFilename) == -1) {
         return nullptr;
     }
-    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-            filename = filesystem::cleanupPath(filename);
-            mw->getNetworkEditor()->saveNetwork(filename, setAsFilename);
-        }
+    if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
+        filename = filesystem::cleanupPath(filename);
+        mw->getNetworkEditor()->saveNetwork(filename, setAsFilename);
     }
 
     Py_RETURN_NONE;
@@ -154,11 +147,9 @@ PyObject* py_quitInviwo(PyObject* self, PyObject* args) {
     if (tester.parse(args) == -1) {
         return nullptr;
     }
-    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-            mw->getNetworkEditor()->setModified(false);
-            mw->close();
-        }
+    if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
+        mw->getNetworkEditor()->setModified(false);
+        mw->close();
     }
     Py_RETURN_NONE;
 }
@@ -187,9 +178,7 @@ PyObject* py_update(PyObject* self, PyObject* args) {
     if (tester.parse(args) == -1) {
         return nullptr;
     }
-    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        qt->processEvents();
-    }
+    qApp->processEvents();
     Py_RETURN_NONE;
 }
 
@@ -233,19 +222,14 @@ PyObject* py_showHelp(PyObject* self, PyObject* args) {
 
     std::string classIdentifier;
     if (tester.parse<std::string>(args, classIdentifier) == 1) {
-        auto app = InviwoApplication::getPtr();
-
         try {
+            if (auto mw = dynamic_cast<InviwoMainWindow*>(utilqt::getApplicationMainWindow())) {
 
-            if (auto qt = dynamic_cast<InviwoApplicationQt*>(app)) {
-                if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
-
-                    auto help = mw->getHelpWidget();
-                    help->showDocForClassName(classIdentifier);
-                    if (!help->isVisible()) help->show();
-                    help->raise();
-                    Py_RETURN_NONE;
-                }
+                auto help = mw->getHelpWidget();
+                help->showDocForClassName(classIdentifier);
+                if (!help->isVisible()) help->show();
+                help->raise();
+                Py_RETURN_NONE;
             }
         } catch (Exception& exception) {
             std::string msg = "Unable to show help for processor " + classIdentifier + " due to " +

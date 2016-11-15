@@ -17,6 +17,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoCore)
+list(APPEND package_list InviwoQtApplicationBase)
 
 #--------------------------------------------------------------------
 # Only include one OpenGL context creation module

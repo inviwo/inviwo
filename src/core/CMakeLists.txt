@@ -85,16 +85,17 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mousebuttons.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseinteractionevent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/pickingevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
@@ -239,6 +240,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialog.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialogstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
@@ -352,15 +355,16 @@ set(SOURCE_FILES
     interaction/events/keyboardevent.cpp
     interaction/events/mouseevent.cpp
     interaction/events/mouseinteractionevent.cpp
+    interaction/events/pickingevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
     interaction/interactionstatemanager.cpp
-    interaction/pickingcontainer.cpp
+    interaction/pickingaction.cpp
+    interaction/pickingcontroller.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
-    interaction/pickingobject.cpp
     interaction/trackball.cpp
     interaction/trackballobject.cpp
     io/bytereaderutil.cpp
@@ -470,6 +474,7 @@ set(SOURCE_FILES
     util/dialogfactoryobject.cpp
     util/document.cpp
     util/exception.cpp
+    util/filedialog.cpp
     util/fileextension.cpp
     util/fileobserver.cpp
     util/filesystem.cpp

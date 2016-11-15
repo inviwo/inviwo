@@ -43,9 +43,9 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 
@@ -72,10 +72,6 @@
 
 #include <warn/pop>
 
-
-// enable menu entry to reload the application stylesheet
-//#define IVW_STYLESHEET_RELOAD
-
 namespace inviwo {
 
 InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
@@ -93,7 +89,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
-    // make sure, tooltips are always shown (this includes prot inspectors as well)
+    // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
     networkEditor_ = std::make_shared<NetworkEditor>(this);
@@ -178,26 +174,6 @@ void InviwoMainWindow::initialize() {
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
-
-#ifdef WIN32
-    // Fix window offset when restoring old position for correct positioning
-    // The frame size should be determined only once before starting up the
-    // main application and stored in InviwoApplicationQt
-    // determine size of window border (frame size)
-    // as long as widget is not shown, no border exists, i.e. this->pos() ==
-    // this->geometry().topLeft()
-
-    QWidget* w = new QWidget(nullptr, Qt::Tool);
-    w->move(-5000, -5000);
-    w->show();
-    QPoint widgetPos = w->pos();
-    QRect widgetGeo = w->geometry();
-    QPoint offset(widgetGeo.left() - widgetPos.x(), widgetGeo.top() - widgetPos.y());
-    w->hide();
-    delete w;
-
-    app_->setWindowDecorationOffset(offset);
-#endif
 }
 
 void InviwoMainWindow::showWindow() {
@@ -304,8 +280,8 @@ void InviwoMainWindow::addActions() {
         connect(fileMenuItem->addAction("Save Network Image"), &QAction::triggered,
             [&](bool state) {
             InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
-            saveFileDialog.setFileMode(QFileDialog::AnyFile);
-            saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+            saveFileDialog.setFileMode(FileMode::AnyFile);
+            saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setConfirmOverwrite(true);
 
             saveFileDialog.addSidebarPath(PathType::Workspaces);
@@ -406,6 +382,7 @@ void InviwoMainWindow::addActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem->addAction(copyAction);
+        consoleWidget_->view()->addAction(copyAction);
         copyAction->setEnabled(false);
     }
 
@@ -457,11 +434,9 @@ void InviwoMainWindow::addActions() {
     editMenuItem->addSeparator();
 
     {
-        auto clearLogAction = new QAction(tr("&Clear Log"), this);
+        auto clearLogAction = consoleWidget_->getClearAction();
         actions_["Clear Log"] = clearLogAction;
-        clearLogAction->setShortcut(Qt::ControlModifier + Qt::Key_E);
         editMenuItem->addAction(clearLogAction);
-        connect(clearLogAction, &QAction::triggered, [&]() { consoleWidget_->clear(); });
     }
 
     // View
@@ -558,14 +533,6 @@ void InviwoMainWindow::addActions() {
         connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
         helpMenuItem->addAction(aboutBoxAction);
     }
-
-#if defined(IVW_STYLESHEET_RELOAD)
-    {
-        QAction* action = new QAction(tr("&Reload Stylesheet"), this);
-        QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
-        helpMenuItem->addAction(action);
-    }
-#endif
 }
 
 void InviwoMainWindow::updateWindowTitle() {
@@ -865,7 +832,7 @@ void InviwoMainWindow::openWorkspace() {
 
         openFileDialog.addExtension("inv", "Inviwo File");
 
-        openFileDialog.setFileMode(QFileDialog::AnyFile);
+        openFileDialog.setFileMode(FileMode::AnyFile);
 
         if (openFileDialog.exec()) {
             QString path = openFileDialog.selectedFiles().at(0);
@@ -911,23 +878,12 @@ void InviwoMainWindow::saveWorkspace() {
         getNetworkEditor()->saveNetwork(currentWorkspaceFileName_.toLocal8Bit().constData());
         updateWindowTitle();
     }
-
-    /*
-    // The following code snippet allows to reload the Qt style sheets during runtime,
-    // which is handy while we change them. once the style sheets have been finalized,
-    // this code should be removed.
-    QFile styleSheetFile("C:/inviwo/resources/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->setStyleSheet(styleSheet);
-    styleSheetFile.close();
-    */
 }
 
 void InviwoMainWindow::saveWorkspaceAs() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
-    saveFileDialog.setFileMode(QFileDialog::AnyFile);
-    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);
@@ -949,8 +905,8 @@ void InviwoMainWindow::saveWorkspaceAs() {
 
 void InviwoMainWindow::saveWorkspaceAsCopy() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
-    saveFileDialog.setFileMode(QFileDialog::AnyFile);
-    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);
@@ -1098,8 +1054,6 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    emit closingMainWindow();
-
     QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
     // save window state
@@ -1114,6 +1068,11 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
     }
     settings.endGroup();
+
+    // pass a close event to all children to let the same state etc.
+    for (auto& child : children()) {
+        QApplication::sendEvent(child, new QCloseEvent());
+    }
 
     QMainWindow::closeEvent(event);
 }
@@ -1144,20 +1103,6 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     }
 
     return continueOperation;
-}
-
-void InviwoMainWindow::reloadStyleSheet() {
-    // The following code snippet allows to reload the Qt style sheets during runtime,
-    // which is handy while we change them. once the style sheets have been finalized,
-    // this code should be removed.
-
-    auto app = InviwoApplication::getPtr();
-    QString resourcePath = app->getPath(PathType::Resources).c_str();
-    QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(app)->setStyleSheet(styleSheet);
-    styleSheetFile.close();
 }
 
 SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }

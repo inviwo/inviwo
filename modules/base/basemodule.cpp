@@ -62,6 +62,7 @@
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/base/processors/orientationindicator.h>
 #include <modules/base/processors/singlevoxel.h>
+#include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/worldtransform.h>
 #include <modules/base/processors/volumeboundingbox.h>
 
@@ -130,6 +131,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     
     registerProcessor<VolumeBoundingBox>();
     registerProcessor<SingleVoxel>();
+    registerProcessor<StereoCameraSyncer>();
 
     registerProcessor<VolumeToSpatialSampler>();
     registerProcessor<OrientationIndicator>();

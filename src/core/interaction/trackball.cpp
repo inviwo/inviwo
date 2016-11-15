@@ -513,24 +513,59 @@ void Trackball::touchGesture(Event* event) {
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
     // Use the two closest points to extract translation, scaling and rotation
-    const std::vector<TouchPoint> touchPoints = touchEvent->getTouchPoints();
+    const auto& touchPoints = touchEvent->touchPoints();
 
-    if (touchPoints.size() > 1) {
-        const TouchPoint touchPoint1 = touchPoints[0];
-        const TouchPoint touchPoint2 = touchPoints[1];
+    if (touchPoints.size() == 1) {
+        const auto& point = touchPoints[0];
+        if (point.state() == TouchState::Finished) return reset(event);
 
-        // Flip y-position to get coordinate system
-        // (0, 1)--(1, 1)
-        //   |        |
-        // (0, 0)--(1, 0)
-        dvec2 prevPos1 = touchPoint1.getPrevPosNormalized();
-        prevPos1.y = 1. - prevPos1.y;
-        dvec2 prevPos2 = touchPoint2.getPrevPosNormalized();
-        prevPos2.y = 1. - prevPos2.y;
-        dvec2 pos1 = touchPoint1.getPosNormalized();
-        pos1.y = 1. - pos1.y;
-        dvec2 pos2 = touchPoint2.getPosNormalized();
-        pos2.y = 1. - pos2.y;
+        if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
+        timer_.stop();
+
+        const auto ndc = static_cast<vec3>(point.ndc());
+        const auto curNDC = vec3(allowHorizontalRotation_ ? ndc.x : 0.0f,
+                                 allowVerticalRotation_ ? ndc.y : 0.0f, ndc.z);
+
+        const auto& to = getLookTo();
+        const auto& from = getLookFrom();
+        const auto& up = getLookUp();
+
+        // disable movements on first press
+        if (!isMouseBeingPressedAndHold_) {
+            isMouseBeingPressedAndHold_ = true;
+            gestureStartNDCDepth_ = curNDC.z;
+            trackBallWorldSpaceRadius_ =
+                glm::distance(to, object_->getWorldPosFromNormalizedDeviceCoords(curNDC));
+        } else {
+            // Compute coordinates on a sphere to rotate from and to
+            const auto lastTBI = getTrackBallIntersection(lastNDC_.xy());
+            const auto curTBI = getTrackBallIntersection(curNDC.xy());
+
+            if (lastTBI.first && curTBI.first && gestureStartNDCDepth_ < 1) {
+                const auto Pa = glm::normalize(lastTBI.second - to);
+                const auto Pc = glm::normalize(curTBI.second - to);
+                lastRot_ = glm::quat(Pc, Pa);
+            } else {
+                const auto rot = glm::half_pi<float>() * (curNDC - lastNDC_);
+                const auto Pa = glm::normalize(from - to);
+                const auto Pc = glm::rotate(glm::rotate(Pa, rot.y, glm::cross(Pa, up)), rot.x, up);
+                lastRot_ = glm::quat(Pc, Pa);
+            }
+            lastRotTime_ = std::chrono::system_clock::now();
+            setLook(getLookTo() + glm::rotate(lastRot_, from - to), to, glm::rotate(lastRot_, up));
+        }
+        // update mouse positions
+        lastNDC_ = curNDC;
+        event->markAsUsed();
+
+    } else if (touchPoints.size() > 1) {
+        const auto& touchPoint1 = touchPoints[0];
+        const auto& touchPoint2 = touchPoints[1];
+
+        const auto prevPos1 = touchPoint1.prevPosNormalized();
+        const auto prevPos2 = touchPoint2.prevPosNormalized();
+        const auto pos1 = touchPoint1.posNormalized();
+        const auto pos2 = touchPoint2.posNormalized();
 
         auto v1(prevPos2 - prevPos1);
         auto v2(pos2 - pos1);
@@ -541,24 +576,23 @@ void Trackball::touchGesture(Event* event) {
         // Roll our own angle calculation
         auto v1Normalized = glm::normalize(v1);
         auto v2Normalized = glm::normalize(v2);
-        auto angle = acos(glm::clamp(glm::dot(v1Normalized, v2Normalized), -1., 1.));
+        auto angle = acos(glm::clamp(glm::dot(v1Normalized, v2Normalized), -1.0, 1.0));
         // Check orientation using cross product.
         if (v1Normalized.x * v2Normalized.y - v2Normalized.x * v1Normalized.y < 0) {
             angle = -angle;
         }
 
         auto zoom = 1 - glm::length(v1) / glm::length(v2);
-
         if (!std::isfinite(zoom) || !allowZooming_) {
             zoom = 0;
         }
         // Difference between midpoints before and after
-        auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
-        auto centerPoint = glm::mix(pos1, pos2, 0.5);
+        const auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
+        const auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
         if (touchPoint1.state() == TouchState::Stationary ||
             touchPoint2.state() == TouchState::Stationary) {
-            gestureStartNDCDepth_ = std::min(touchPoint1.getDepth(), touchPoint2.getDepth());
+            gestureStartNDCDepth_ = std::min(touchPoint1.depth(), touchPoint2.depth());
             if (gestureStartNDCDepth_ >= 1.) {
                 gestureStartNDCDepth_ =
                     object_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(pos1).z;
@@ -566,32 +600,27 @@ void Trackball::touchGesture(Event* event) {
         }
 
         // Compute translation in world space
-        vec3 fromNormalizedDeviceCoord(2. * prevCenterPoint - 1., gestureStartNDCDepth_);
-        vec3 toNormalizedDeviceCoord(2. * centerPoint - 1., gestureStartNDCDepth_);
-        if (!allowHorizontalPanning_) toNormalizedDeviceCoord.x = fromNormalizedDeviceCoord.x;
-        if (!allowVerticalPanning_) toNormalizedDeviceCoord.y = fromNormalizedDeviceCoord.y;
+        vec3 fromNDC(2. * prevCenterPoint - 1., gestureStartNDCDepth_);
+        vec3 toNDC(2. * centerPoint - 1., gestureStartNDCDepth_);
+        if (!allowHorizontalPanning_) toNDC.x = fromNDC.x;
+        if (!allowVerticalPanning_) toNDC.y = fromNDC.y;
 
-        vec3 worldSpaceTranslation(getWorldSpaceTranslationFromNDCSpace(fromNormalizedDeviceCoord,
-                                                                         toNormalizedDeviceCoord));
+        const vec3 worldSpaceTranslation(getWorldSpaceTranslationFromNDCSpace(fromNDC, toNDC));
 
         // Zoom based on the closest point to the object
         // Use the look at point if the closest point is unknown
-        auto depth = std::min(touchPoint1.getDepth(), touchPoint2.getDepth());
+        auto depth = std::min(touchPoint1.depth(), touchPoint2.depth());
         if (depth <= -1 || depth >= 1) {
             // Get NDC depth of the lookTo position
             depth = object_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(vec2(0.f)).z;
         }
-        auto zoomToWorldPos(object_->getWorldPosFromNormalizedDeviceCoords(vec3(0.f, 0.f, depth)));
+        const auto zoomToWorldPos(object_->getWorldPosFromNormalizedDeviceCoords(vec3(0.f, 0.f, depth)));
         auto direction = zoomToWorldPos - getLookFrom();
         zoom *= glm::length(direction);
         direction = glm::normalize(direction);
         zoom = getBoundedZoom(getLookFrom(), getLookTo(), static_cast<float>(zoom));
-        vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom) * (direction);
-        // LogInfo("New lookFrom: " << newLookFrom << " Direction: " << direction << " Zoom: " <<
-        // zoom);
+        const vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom) * (direction);
 
-        // vec3 boundedWorldSpaceTranslation(getBoundedTranslation(dvec3(newLookFrom),
-        // dvec3(getLookTo()), worldSpaceTranslation));
         vec3 boundedWorldSpaceTranslation(
             getBoundedTranslation(newLookFrom, getLookTo(), worldSpaceTranslation));
         // Rotating using angle from screen space is equivalent to rotating
@@ -607,8 +636,6 @@ void Trackball::touchGesture(Event* event) {
         setLook(newLookFrom - boundedWorldSpaceTranslation,
                 getLookTo() - boundedWorldSpaceTranslation, newLookUp);
 
-        // LogInfo("\nTwo fingers: Scale: " << scale << "\nAngle: " << angle << "\nTranslation: " <<
-        // worldSpaceTranslation);
         isMouseBeingPressedAndHold_ = false;
         touchEvent->markAsUsed();
     }

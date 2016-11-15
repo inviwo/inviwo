@@ -36,6 +36,12 @@
 
 namespace inviwo {
 
+class MouseEvent;
+class GestureEvent;
+class TouchEvent;
+class PickingEvent;
+class WheelEvent;
+
 /**
  * \class ViewManager
  *
@@ -58,35 +64,33 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ViewManager {
 public:
+    using Propagator = std::function<void(Event*, size_t ind)>;
+
+    struct View {
+        View(const ivec2& p, const ivec2& s) : pos(p), size(s) {}; 
+        View(const ivec4& m) : pos(m.xy()), size(m.zw()) {};
+
+        ivec2 pos;
+        ivec2 size;
+    };
+    using ViewList = std::vector<View>;
+    using ViewId = size_t;
+
     ViewManager();
 
     /**
-     * \brief Creates a new event for the currently active viewport.
-     * Sets the viewport that the event lie in as active when starting an action
-     * (pressing/touching).
-     * Further events will be propagated to the active viewport until a release appears.
-     * Returns null if the initiating (pressing/touching) event is outside the added viewports.
-     *
-     * @param event The event to transform.
-     * @return An event transformed to the active viewport or null if initiated outside of
-     * added views.
+     * \brief maps a propagates event to the selected view
+     * return whether the event found a view was found
      */
-    Event* registerEvent(const Event* event);
-    /**
-     * \brief Get the untransformed position, relative to the original viewport size, in the
-     * coordinate system of the ViewManager.
-     *
-     * @return The pixel position in the same coordinate system as the ViewManager.
-     */
-    dvec2 getActivePosition() const { return activePosition_; }
-    /** 
-     * \brief Returns the index of the last active view. Returns -1 if no active view has been set.
-     * 
-     * @return Index of active view, -1 if not set.
-     */
-    int getActiveView() const { return activeView_; }
+    bool propagateEvent(Event* event, Propagator propagator);
 
-    const std::vector<ivec4>& getViews() const;
+    /**
+     * \brief Returns a pair with a bool of whether a view was found, and the index of the found
+     * view.
+     */
+    std::pair<bool, ViewId> getSelectedView() const;
+
+    const ViewList& getViews() const;
 
     /** 
      * \brief Add a viewport (x,y width,height) using the following coordinate system:
@@ -96,29 +100,27 @@ public:
      *   ------> x
      *
      * @see ViewManager
-     * @param view Position and size of viewport (x,y width,height)
      */
-    void push_back(ivec4 view);
+    void push_back(View view);
 
     /**
     * \brief Erase a previously defined viewport (x,y width,height). If the viewport was not added
     * before, nothing happens.
     *
     * @see ViewManager
-    * @param view Position and size of viewport (x,y width,height)
     */
-    void erase(ivec4 view);
+    void erase(View view);
 
     /**
     * \brief Erase a previously defined viewport using index ind.
     *
     * @param ind Viewport index [0 size()-1]
     */
-    void erase(size_t ind);
+    void erase(ViewId ind);
 
     /**
-    * \brief replace a previously defined viewport at index ind with a new viewport (x,y
-    * width,height) using the following coordinate system:
+    * \brief replace a previously defined viewport at index ind with a new viewport using the
+    * following coordinate system:
     * y ^
     *   |
     *   |
@@ -126,9 +128,8 @@ public:
     *
     * @see ViewManager
     * @param ind Viewport index [0 size()-1]
-    * @param view Position and size of viewport (x,y width,height)
     */
-    void replace(size_t ind, ivec4 view);
+    void replace(ViewId ind, View view);
 
     /** 
      * \brief Return viewport using index ind.
@@ -136,19 +137,33 @@ public:
      * @param ind Viewport index [0 size()-1]
      * @return ivec4& 
      */
-    ivec4& operator[](size_t ind);
+    View& operator[](ViewId ind);
     size_t size() const;
     void clear();
 
 private:
-    int findView(ivec2 pos) const;
+    struct EventState {
+        std::pair<bool, ViewId> getView(ViewManager&  m, const MouseEvent* me);
+        std::pair<bool, ViewId> getView(ViewManager&  m, const GestureEvent* ge);
+        std::unordered_map<int, ViewManager::ViewId> getView(ViewManager&  m, const TouchEvent* te);
 
-    static bool inView(const ivec4& view, const ivec2& pos);
+        bool pressing_ = false;
+        std::pair<bool, ViewId> pressedView_ = {false, 0};
+        std::unordered_map<int, ViewId> touchpointIdToViewId_;
+    };
 
-    bool viewportActive_;
-    dvec2 activePosition_;
-    int activeView_;
-    std::vector<ivec4> views_;
+    bool propagatePickingEvent(PickingEvent* pe, Propagator propagator); 
+    bool propagateMouseEvent(MouseEvent* me, Propagator propagator); 
+    bool propagateWheelEvent(WheelEvent* we, Propagator propagator); 
+    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator); 
+    bool propagateTouchEvent(TouchEvent* te, Propagator propagator);
+
+    std::pair<bool, ViewId> findView(ivec2 pos) const;
+    static bool inView(const View& view, const ivec2& pos);
+
+    EventState eventState_;
+    std::pair<bool, ViewId> selectedView_ = {false, 0};
+    ViewList views_;
 };
 
 }  // namespace

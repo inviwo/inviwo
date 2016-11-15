@@ -66,7 +66,7 @@ void CanvasGL::defaultGLState() {
 void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {   
     image_ = image;
     layerType_ = layerType;
-    pickingContainer_.setPickingSource(image);
+    pickingController_.setPickingSource(image);
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
         
@@ -79,7 +79,7 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
 
         // Faster async download of textures sampled on interaction
         if (imageGL_->getDepthLayerGL()) imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
-        if (pickingContainer_.pickingEnabled() && imageGL_->getPickingLayerGL()) {
+        if (pickingController_.pickingEnabled() && imageGL_->getPickingLayerGL()) {
             imageGL_->getPickingLayerGL()->getTexture()->downloadToPBO();
         }
 
@@ -91,7 +91,7 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
 
 void CanvasGL::resize(size2_t size) {
     imageGL_ = nullptr;
-    pickingContainer_.setPickingSource(nullptr);
+    pickingController_.setPickingSource(nullptr);
     Canvas::resize(size);
 }
 
@@ -234,7 +234,7 @@ void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     // Clear internal state
     image_.reset();
     imageGL_ = nullptr;
-    pickingContainer_.setPickingSource(nullptr);
+    pickingController_.setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);
 }
 

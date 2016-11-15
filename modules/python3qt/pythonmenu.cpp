@@ -29,8 +29,7 @@
 
 #include <modules/python3qt/pythonmenu.h>
 #include <modules/python3qt/pythoneditorwidget.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,19 +42,16 @@
 namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
-    if (auto win = dynamic_cast<InviwoApplicationQt*>(app)->getMainWindow()) {
-        if (auto ivwwin = dynamic_cast<InviwoMainWindow*>(win)) {
-            QMenu* menu = win->menuBar()->addMenu("Python");
-            QAction* pythonEditorOpen =
-                menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
-            editor_ = new PythonEditorWidget(ivwwin, app);
-            win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
-        }
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        QMenu* menu = win->menuBar()->addMenu("Python");
+        QAction* pythonEditorOpen =
+            menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
+        editor_ = new PythonEditorWidget(win, app);
+        win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
     }
 }
 
-PythonMenu::~PythonMenu() {
-}
+PythonMenu::~PythonMenu() = default;
 
 PythonEditorWidget* PythonMenu::getEditor() const {
     return editor_;

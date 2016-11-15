@@ -107,7 +107,10 @@ void RBFVectorFieldGenerator3D::process() {
 
     std::vector<std::pair<dvec3, dvec3>> samples(seeds_.get());
     std::generate(samples.begin(), samples.end(), [&]() {
-        return std::make_pair(dvec3(x_(mt_), x_(mt_), x_(mt_)), randomVector());
+        auto x = x_(mt_);
+        auto y = x_(mt_);
+        auto z = x_(mt_);
+        return std::make_pair(dvec3(x,y,z), randomVector());
     });
 
     if (mesh_.isConnected()) {

@@ -33,7 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/interaction/pickingcontainer.h>
+#include <inviwo/core/interaction/pickingcontroller.h>
 
 namespace inviwo {
 
@@ -83,7 +83,7 @@ protected:
 
     size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
-    PickingContainer pickingContainer_;
+    PickingController pickingController_;
     ProcessorWidget* ownerWidget_;  //< non-owning reference
 };
 

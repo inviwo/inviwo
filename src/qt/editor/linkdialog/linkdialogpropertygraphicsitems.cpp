@@ -39,7 +39,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <numeric>
 

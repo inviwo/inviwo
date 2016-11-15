@@ -47,6 +47,7 @@
 namespace inviwo {
 
 class MeshDrawerGL;
+class PickingEvent;
 
 /** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
  * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
@@ -82,7 +83,9 @@ public:
 
     virtual void process() override;
 
-    void updateWidgetPositionFromPicking(const PickingObject*);
+    void handlePickingEvent(PickingEvent*);
+
+    void updatePosition(PickingEvent* p);
 
 private:
     MeshInport meshInport_;

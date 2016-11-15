@@ -75,9 +75,8 @@ include(cmake/globalconfig.cmake)
 
 #--------------------------------------------------------------------
 # Applications/Qt
-option(IVW_QT_APPLICATION "Build Inviwo Qt Application" ON)
-option(IVW_QT_EDITOR "Build Inviwo Qt Editor" ON)
-option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
+option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
+option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
 #--------------------------------------------------------------------
 # Add externals
@@ -106,10 +105,6 @@ endif()
 add_subdirectory(src/core)
 
 #--------------------------------------------------------------------
-# Add Qt
-add_subdirectory(src/qt)
-
-#--------------------------------------------------------------------
 # Add default modules
 set(ivw_default_modules
     "Assimp" 
@@ -120,9 +115,10 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
+    "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
-	"Nifti" 
+    "Nifti" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
@@ -156,6 +152,10 @@ if(IVW_USE_GLFW_NOT_OPENGLQT)
 else()
     ivw_enable_module(OpenGLQt)
 endif()
+
+#--------------------------------------------------------------------
+# Add Qt
+add_subdirectory(src/qt)
 
 #--------------------------------------------------------------------
 # Add applications

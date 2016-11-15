@@ -30,12 +30,14 @@
 #include "meshpicking.h"
 
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 #include <opengl/shader/shaderutils.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
@@ -43,13 +45,11 @@ namespace inviwo {
 const ProcessorInfo MeshPicking::processorInfo_{
     "org.inviwo.GeometryPicking",  // Class identifier
     "Mesh Picking",                // Display name
-    "Mesh Rendering",          // Category
+    "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo MeshPicking::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MeshPicking::getProcessorInfo() const { return processorInfo_; }
 
 MeshPicking::MeshPicking()
     : Processor()
@@ -67,7 +67,7 @@ MeshPicking::MeshPicking()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_)
-    , picking_(this, 1, [&](const PickingObject* p) { updateWidgetPositionFromPicking(p); })
+    , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
     , shader_("standard.vert", "picking.frag") {
     
     imageInport_.setOptional(true);
@@ -91,36 +91,28 @@ MeshPicking::MeshPicking()
 
 MeshPicking::~MeshPicking() = default;
 
-void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
+void MeshPicking::handlePickingEvent(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = static_cast<MouseEvent*>(p->getEvent());
+        auto me = p->getEventAs<MouseEvent>();
         if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-            p->getEvent()->markAsUsed();
+            updatePosition(p);
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
 
-            auto currNDC = p->getNDC();
-            auto prevNDC = p->getPreviousNDC();
-
-            // Use depth of initial press as reference to move in the image plane.
-            auto refDepth = p->getPressDepth();
-            currNDC.z = refDepth;
-            prevNDC.z = refDepth;
-
-            auto corrWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-            auto prevWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-
-            position_.set(position_.get() + (corrWorld - prevWorld));
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+            updatePosition(p);
         }
     } else if (auto we = p->getEventAs<WheelEvent>()) {
-        p->getEvent()->markAsUsed();
+        p->markAsUsed();
 
         double Zn = camera_.getNearPlaneDist();
         double Zf = camera_.getFarPlaneDist();
-        
+
         dvec3 camDir(glm::normalize(camera_.get().getDirection()));
 
-        position_.set(position_.get() + vec3(0.01*(Zf-Zn)*we->delta().y * camDir));
+        position_.set(position_.get() + vec3(0.01 * (Zf - Zn) * we->delta().y * camDir));
     }
 
     if (p->getState() == PickingState::Started) {
@@ -128,8 +120,27 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
         invalidate(InvalidationLevel::InvalidOutput);
     } else if (p->getState() == PickingState::Finished) {
         highlight_ = false;
-        invalidate(InvalidationLevel::InvalidOutput);   
+        invalidate(InvalidationLevel::InvalidOutput);
     }
+}
+
+void MeshPicking::updatePosition(PickingEvent* p) {
+    p->markAsUsed();
+
+    auto currNDC = p->getNDC();
+    auto prevNDC = p->getPreviousNDC();
+
+    // Use depth of initial press as reference to move in the image plane.
+    auto refDepth = p->getPressedDepth();
+    currNDC.z = refDepth;
+    prevNDC.z = refDepth;
+
+    auto corrWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    auto prevWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+
+    position_.set(position_.get() + (corrWorld - prevWorld));
 }
 
 void MeshPicking::process() {
@@ -141,7 +152,7 @@ void MeshPicking::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
-    shader_.setUniform("pickingColor", picking_.getPickingObject()->getColor());
+    shader_.setUniform("pickingColor", picking_.getColor());
     shader_.setUniform("highlight", highlight_);
     utilgl::setShaderUniforms(shader_, highlightColor_);
 

@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
@@ -51,133 +52,135 @@ public:
      * @param depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1
      * if no depth is available.
      */
-    TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized,
-               TouchState touchState, double depth = 1.0);
-    virtual ~TouchPoint() = default;
+    TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
+               dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth = 1.0);
 
     TouchState state() const;
     /**
     * \brief Retrieve touch point id
     * @return int
     */
-    int getId() const;
+    int id() const;
     void setId(int id);
     /**
      * \brief Retrieve position in screen coordinates [0 dim-1]^2
-     * Coordinate system:
-     *     (0,0)    --     (width-1,0)
-     *       |                   |
-     * (0,height-1) -- (width-1,height-1)
-     * @return vec2
      */
-    vec2 getPos() const;
-    void setPos(vec2 val);
+    dvec2 pos() const;
+    void setPos(dvec2 val);
     /**
     * \brief Retrieve position normalized to the size of the screen [0 1]^2.
-    * Coordinate system:
-    * (0,0)--(1,0)
-    *   |      |
-    * (0,1)--(1,1)
-    * @return vec2
     */
-    vec2 getPosNormalized() const;
-    void setPosNormalized(vec2 val);
+    dvec2 posNormalized() const;
+    void setPosNormalized(dvec2 val);
     /**
     * \brief Retrieve the previous event position in screen coordinates [0 dim-1]^2
-    * Coordinate system:
-    *     (0,0)    --     (width-1,0)
-    *       |                   |
-    * (0,height-1) -- (width-1,height-1)
-    * @return vec2
     */
-    vec2 getPrevPos() const;
-    void setPrevPos(vec2 val);
+    dvec2 prevPos() const;
+    void setPrevPos(dvec2 val);
     /**
     * \brief Retrieve the previous position normalized to the size of the screen [0 1]^2.
-    * Coordinate system:
-    * (0,0)--(1,0)
-    *   |      |
-    * (0,1)--(1,1)
-    * @return vec2
     */
-    vec2 getPrevPosNormalized() const;
-    void setPrevPosNormalized(vec2 val);
+    dvec2 prevPosNormalized() const;
+    void setPrevPosNormalized(dvec2 val);
+
+    /**
+    * \brief Retrieve the pressed event position in screen coordinates [0 dim-1]^2
+    */
+    dvec2 pressedPos() const;
+    void setPressedPos(dvec2 val);
+
+    /**
+    * \brief Retrieve the pressed position normalized to the size of the screen [0 1]^2.
+    */
+    dvec2 pressedPosNormalized() const;
+    void setPressedPosNormalized(dvec2 val);
+
     /**
     * Retrieve depth value in normalized device coordinates at touch point.
     * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
     * Will be 1 if no depth value is available.
     */
-    double getDepth() const;
+    double depth() const;
     void setDepth(double val);
+
+    double pressure() const;
+    void setPressure(double val);
+
+    uvec2 canvasSize() const;
+    void setCanvasSize(uvec2 size);
+
+    /**
+     * Returns the normalized device coordinates. Position and depth normalized to the range of
+     * (-1,1) In in a left handed coordinate system.  The lower left near will be (-1,-1,-1)
+     * And the upper right far (1,1,1)
+     */
+    dvec3 ndc() const;
 
 protected:
     int id_;
-
-    vec2 pos_;
-    vec2 posNormalized_;
-
-    vec2 prevPos_;
-    vec2 prevPosNormalized_;
-
     TouchState state_;
+    dvec2 posNormalized_;
+    dvec2 prevPosNormalized_;
+    dvec2 pressedPosNormalized_;
+    double pressure_;
+    uvec2 canvasSize_;
     double depth_;
 };
 
 class IVW_CORE_API TouchEvent : public InteractionEvent {
 public:
-    TouchEvent(uvec2 canvasSize = uvec2(0));
-    TouchEvent(std::vector<TouchPoint> touchPoints, uvec2 canvasSize);
+    TouchEvent();
+    TouchEvent(const std::vector<TouchPoint>& touchPoints);
 
     virtual TouchEvent* clone() const override;
     virtual ~TouchEvent() = default;
 
     bool hasTouchPoints() const;
 
-    const std::vector<TouchPoint>& getTouchPoints() const;
-    std::vector<TouchPoint>& getTouchPoints();
+    const std::vector<TouchPoint>& touchPoints() const;
+    std::vector<TouchPoint>& touchPoints();
 
     void setTouchPoints(std::vector<TouchPoint> val);
 
     uvec2 canvasSize() const;
 
     /**
-     * \brief Computes average position. Returns vec2(0) if no touch points exist.
-     *
-     * @return vec2 sum(touch points) / nPoints
+     * \brief Computes average position. Returns dvec2(0) if no touch points exist.
+     * @return dvec2 sum(touch points) / nPoints
      */
-    vec2 getCenterPoint() const;
+    dvec2 centerPoint() const;
 
     /**
-    * \brief Computes average normalized position. Returns vec2(0) if no touch points exist.
-    *
-    * @return vec2 sum(touch points) / nPoints
+    * \brief Computes average normalized position. Returns dvec2(0) if no touch points exist.
+    * @return dvec2 sum(touch points) / nPoints
     */
-    vec2 getCenterPointNormalized() const;
+    dvec2 centerPointNormalized() const;
 
     /**
-    * \brief Computes previous average normalized position. Returns vec2(0) if no touch points
+    * \brief Computes previous average normalized position. Returns dvec2(0) if no touch points
     * exist.
-    *
-    * @return vec2 sum(touch points) / nPoints
+    * @return dvec2 sum(touch points) / nPoints
     */
-    vec2 getPrevCenterPointNormalized() const;
+    dvec2 prevCenterPointNormalized() const;
+
+    dvec3 centerNDC() const;
+
+    double averageDepth() const;
+
+    static PickingState getPickingState(const std::vector<TouchPoint>& points);
 
     /**
     * \brief Retrieve pointers to the two closest touch points
-    *
     * @return std::vector<const TouchPoint*>, pointers to the two closest touch points
     *  vector can have less then two elements, which indicate that not enough points exist
     */
     std::vector<const TouchPoint*> findClosestTwoTouchPoints() const;
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.TouchEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.TouchEvent"); }
 
 private:
     std::vector<TouchPoint> touchPoints_;
-    uvec2 canvasSize_;
 };
 
 }  // namespace

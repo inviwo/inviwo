@@ -65,7 +65,7 @@ public:
     ivec2 getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(std::string filePath);
+    void saveImageLayer(std::string filePath, const FileExtension &extension=FileExtension());
     const Layer* getVisibleLayer() const;
 
     std::shared_ptr<const Image> getImage() const;
@@ -79,6 +79,7 @@ public:
     void setFullScreen(bool fullscreen);
 
 protected:
+    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
 
     void performEvaluationAtNextShow();
@@ -91,17 +92,18 @@ protected:
     IntVec2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
+    IntVec2Property position_;
     TemplateOptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
+    OptionPropertyString imageTypeExt_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
+    ButtonProperty saveLayerToFileButton_;
     CompositeProperty inputSize_;
     ButtonProperty toggleFullscreen_;
     EventProperty fullscreen_;
 
 private:
-    std::shared_ptr<DataWriterType<Layer>> getWriter(const std::string& fileExtension) const;
-
     void sizeChanged();
     ivec2 calcSize();
 

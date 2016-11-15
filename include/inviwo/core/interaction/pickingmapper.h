@@ -37,37 +37,71 @@
 namespace inviwo {
 
 class Processor;
-class PickingObject;
+class PickingEvent;
+class PickingAction;
 
 /**
  * \class PickingMapper
- * \brief RAII tool for PickingObjects
+ * \brief RAII tool for PickingActions
  */
 class IVW_CORE_API PickingMapper {
 public:
     PickingMapper(PickingManager* manager = PickingManager::getPtr());
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingObject*)> callback,
+
+    /**
+     * Construct a picking mapper. This will register a range of colors in the PickingMangaer and
+     * create a PickingAction to associate those indices the the supplied action. The processor
+     * argument should be the processor where the picking colors are drawn.
+     */
+    PickingMapper(Processor* p, size_t size, std::function<void(PickingEvent*)> callback,
                   PickingManager* manager = PickingManager::getPtr());
+   
     PickingMapper(const PickingMapper& rhs) = delete;
     PickingMapper& operator=(const PickingMapper& that) = delete;
-
     PickingMapper(PickingMapper&& rhs);
     PickingMapper& operator=(PickingMapper&& that);
     ~PickingMapper();
 
-    // this will invalidate all old indices/colors
+    /**
+     * Resize the underlaying PickingAction. This will invalidate all old indices/colors
+     */	
     void resize(size_t newSize);
 
+    /**
+     * Enable or disable calling of the callback action.   
+     */
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
-    const PickingObject* getPickingObject() const;
+    /**
+     * Returns the global picking index, the global index can be used with the
+     * PickingManager::indexToColor(size_t index) function to get a picking color.
+     * \param id the local picking index
+     */
+    size_t getPickingId(size_t id = 0) const;
+
+    /**
+     *	The picking color to use for the object with local index id.
+     *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
+     * \param id the local picking index 
+     */
+    vec3 getColor(size_t id = 0) const;
+
+    /**
+     *	The number of picking indices in this picking object.
+     */
+    size_t getSize() const;
+
+    /**
+     *	Retrieve the underlaying picking action.
+     */
+    const PickingAction* getPickingAction() const;
 
 private:
-    PickingManager* manager_ = nullptr;
+    PickingManager* manager_ = nullptr; // Should never be null.
     Processor* processor_ = nullptr;
-    std::function<void(const PickingObject*)> callback_;
-    PickingObject* pickingObject_ = nullptr;
+    std::function<void(PickingEvent*)> callback_;
+    PickingAction* pickingAction_ = nullptr;
 };
 
 } // namespace

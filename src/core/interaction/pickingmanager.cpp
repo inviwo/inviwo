@@ -33,16 +33,20 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+
 namespace inviwo {
+
+PickingManager::PickingManager() = default;
 
 PickingManager::~PickingManager() = default;
 
-PickingObject* PickingManager::registerPickingCallback(PickingObject::Action action, size_t size) {
-    PickingObject* pickObj = nullptr;
+PickingAction* PickingManager::registerPickingAction(Processor* processor,
+                                                     PickingAction::Callback action, size_t size) {
+    PickingAction* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
     auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
-                               [](PickingObject* p, size_t s) { return p->getCapacity() < s; });
+                               [](PickingAction* p, size_t s) { return p->getCapacity() < s; });
 
     if (it != unusedObjects_.end()) {
         pickObj = *it;
@@ -51,26 +55,29 @@ PickingObject* PickingManager::registerPickingCallback(PickingObject::Action act
     }
 
     if (!pickObj) {
-        pickingObjects_.push_back(util::make_unique<PickingObject>(lastIndex_, size));
+        pickingActions_.push_back(util::make_unique<PickingAction>(lastIndex_, size));
         lastIndex_ += size;
-        pickObj = pickingObjects_.back().get();
+        pickObj = pickingActions_.back().get();
     }
     pickObj->setAction(std::move(action));
+    pickObj->setProcessor(processor);
     return pickObj;
 }
 
-bool PickingManager::unregisterPickingObject(const PickingObject* p) {
+bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     auto it1 = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
     if (it1 == unusedObjects_.end()) {
+        
         auto it2 = util::find_if(
-            pickingObjects_, [p](const std::unique_ptr<PickingObject>& o) { return p == o.get(); });
+            pickingActions_, [p](const std::unique_ptr<PickingAction>& o) { return p == o.get(); });
 
-        if (it2 != pickingObjects_.end()) {
+        if (it2 != pickingActions_.end()) {
             (*it2)->setAction(nullptr);
+            (*it2)->setProcessor(nullptr);
 
             auto insit = std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(),
                                           (*it2)->getCapacity(),
-                                          [](const size_t& capacity, PickingObject* po) {
+                                          [](const size_t& capacity, PickingAction* po) {
                                               return capacity < po->getCapacity();
                                           });
 
@@ -80,6 +87,27 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
     }
 
     return false;
+}
+
+PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c) {
+    auto index = colorToIndex(c);
+    if (index == 0) return {index, nullptr}; 
+
+    // This will find the first picking object with an start greater then index.
+    auto pIt = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
+                                [](const size_t& i, const std::unique_ptr<PickingAction>& p) {
+                                    return i < p->getPickingId(0);
+                                });
+
+    if (std::distance(pickingActions_.begin(), pIt) > 0) {
+        auto po = (*(--pIt)).get();
+        const auto start = po->getPickingId(0);
+        if (index >= start && index < start + po->getSize()) {
+            return {index, po};
+        }
+    }
+
+    return {index, nullptr};
 }
 
 bool PickingManager::pickingEnabled() {
@@ -106,7 +134,7 @@ std::uint8_t reverse(std::uint8_t b) {
 }
 
 uvec3 PickingManager::indexToColor(size_t id) {
-    std::uint32_t index = static_cast<std::uint32_t>(id + 1);
+    std::uint32_t index = static_cast<std::uint32_t>(id);
 
     std::uint8_t r = 0;
     std::uint8_t g = 0;
@@ -132,28 +160,8 @@ size_t PickingManager::colorToIndex(uvec3 color) {
         index |= (((g & (1 << i)) << (1 + 2 * i)));
         index |= (((r & (1 << i)) << (2 + 2 * i)));
     }
-    return index - 1;
+    return index;
 }
 
-PickingObject* PickingManager::getPickingObjectFromColor(const uvec3& c) {
-    auto index = colorToIndex(c);
-
-    // This will find the first picking object with an start greater then index.
-    auto pit = std::upper_bound(pickingObjects_.begin(), pickingObjects_.end(), index,
-                                [](const size_t& i, const std::unique_ptr<PickingObject>& p) {
-                                    return i < p->getPickingId(0);
-                                });
-
-    if (std::distance(pickingObjects_.begin(), pit) > 0) {
-        auto po = (*(--pit)).get();
-        const auto start = po->getPickingId(0);
-        if (index >= start && index < start + po->getSize()) {
-            po->setPickedId(index - start);
-            return po;
-        }
-    }
-
-    return nullptr;
-}
 
 }  // namespace

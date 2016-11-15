@@ -38,7 +38,7 @@ uint reverseByte(uint b) {
 }
 
 vec3 pickingIndexToColor(uint id) {
-    uint index = id + 1;
+    uint index = id;
 
     uint r = 0;
     uint g = 0;
@@ -64,7 +64,7 @@ uint pickingColorToIndex(vec3 color) {
         index |= (((g & (1 << i)) << (1 + 2 * i)));
         index |= (((r & (1 << i)) << (2 + 2 * i)));
     }
-    return index - 1;
+    return index;
 }
 
 

@@ -146,7 +146,7 @@ def commitInfo(commit):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('ul'):
 		val = html.escape(commit.message)
-		vabr = abr(val)
+		vabr = html.escape(abr(commit.message))
 		gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
 
 		doc.asis(listItem(keyval("Message", vabr), val, toggle = vabr != val))
@@ -309,7 +309,7 @@ class TestRun:
 	def testRunInfo(self, key, testrun):
 		if testrun is not None:
 			date = testrun.commit.date.strftime('%Y-%m-%d %H:%M:%S')
-			self.doc.asis(listItem(keyval(key, date + " " + abr(testrun.commit.message, 50)),
+			self.doc.asis(listItem(keyval(key, date + " " + html.escape(abr(testrun.commit.message, 50))),
 				commitInfo(testrun.commit)))
 		else:
 			self.doc.asis(listItem(keyval(key, "None"), toggle=False)) 	

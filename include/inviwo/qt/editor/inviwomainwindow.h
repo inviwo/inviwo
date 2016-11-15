@@ -95,9 +95,6 @@ public:
     InviwoApplication* getInviwoApplication() const;
     const std::unordered_map<std::string, QAction*>& getActions() const;
 
-signals:
-    void closingMainWindow();
-
 public slots:
     void newWorkspace();
     void openWorkspace();
@@ -117,8 +114,6 @@ public slots:
     void saveWorkspaceAsCopy();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
-
-    void reloadStyleSheet();
 
 private:
     void addActions();

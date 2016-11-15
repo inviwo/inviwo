@@ -36,9 +36,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
-
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,6 +44,7 @@
 #include <QGraphicsView>
 #include <QToolTip>
 #include <QBuffer>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
@@ -220,7 +219,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     // Need to make sure that we have not pending qt stuff before showing tooltip
     // otherwise we might loose focus and the tooltip will go away...
-    static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->processEvents();
+    qApp->processEvents();
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));
 }

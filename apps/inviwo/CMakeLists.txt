@@ -38,6 +38,8 @@ ivw_define_qt_definitions()
 ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoQtEditor)
 list(APPEND package_list InviwoCore)
+list(APPEND package_list InviwoQtApplicationBase)
+
 # Only include one OpenGL context creation module
 if(IVW_USE_GLFW_NOT_OPENGLQT)
     list(REMOVE_ITEM package_list InviwoOpenGLQtModule)

@@ -40,8 +40,8 @@ MultiFileProperty::MultiFileProperty(std::string identifier, std::string display
                            InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : TemplateProperty<std::vector<std::string> >(identifier, displayName, value, invalidationLevel, semantics)
-    , acceptMode_(FileProperty::AcceptMode::Open)
-    , fileMode_(FileProperty::FileMode::ExistingFiles)
+    , acceptMode_(AcceptMode::Open)
+    , fileMode_(FileMode::ExistingFiles)
     , contentType_(contentType) {
     addNameFilter(FileExtension::all());
 }
@@ -192,10 +192,10 @@ void MultiFileProperty::deserialize(Deserializer& d) {
         d.deserialize("nameFilter", nameFilters_, "filter");
         int acceptMode = static_cast<int>(acceptMode_);
         d.deserialize("acceptMode", acceptMode);
-        acceptMode_ = static_cast<FileProperty::AcceptMode>(acceptMode);
+        acceptMode_ = static_cast<AcceptMode>(acceptMode);
         int fileMode = static_cast<int>(fileMode_);
         d.deserialize("fileMode", fileMode);
-        fileMode_ = static_cast<FileProperty::FileMode>(fileMode);
+        fileMode_ = static_cast<FileMode>(fileMode);
     }
     catch (SerializationException& e) {
         LogInfo("Problem deserializing file Property: " << e.getMessage());
@@ -225,19 +225,19 @@ std::vector<FileExtension> MultiFileProperty::getNameFilters() {
     return nameFilters_; 
 }
 
-void MultiFileProperty::setAcceptMode(FileProperty::AcceptMode mode) {
+void MultiFileProperty::setAcceptMode(AcceptMode mode) {
     acceptMode_ = mode; 
 }
 
-FileProperty::AcceptMode MultiFileProperty::getAcceptMode() const {
+AcceptMode MultiFileProperty::getAcceptMode() const {
     return acceptMode_;
 }
 
-void MultiFileProperty::setFileMode(FileProperty::FileMode mode) {
+void MultiFileProperty::setFileMode(FileMode mode) {
     fileMode_ = mode; 
 }
 
-FileProperty::FileMode MultiFileProperty::getFileMode() const {
+FileMode MultiFileProperty::getFileMode() const {
     return fileMode_; 
 }
 
@@ -283,15 +283,15 @@ Document MultiFileProperty::getDescription() const {
 
     utildoc::TableBuilder tb(table);
     switch (fileMode_) {
-        case FileProperty::FileMode::AnyFile:
-        case FileProperty::FileMode::ExistingFile:
-        case FileProperty::FileMode::ExistingFiles: {
+        case FileMode::AnyFile:
+        case FileMode::ExistingFile:
+        case FileMode::ExistingFiles: {
             tb(H("Files"), files);
             break;
         }
 
-        case FileProperty::FileMode::Directory:
-        case FileProperty::FileMode::DirectoryOnly: {
+        case FileMode::Directory:
+        case FileMode::DirectoryOnly: {
             tb(H("Directories"), files);
             break;
         }

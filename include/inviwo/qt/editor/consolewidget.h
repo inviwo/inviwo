@@ -32,13 +32,78 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-class QTextEdit;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QAbstractTableModel>
+#include <QTableView>
+#include <QVariant>
+#include <QStandardItemModel>
+#include <warn/pop>
+
+#include <chrono>
+
+class QTableView;
 class QLabel;
 class QKeyEvent;
+class QAction;
+class QSortFilterProxyModel;
+class QLineEdit;
 
 namespace inviwo {
+
+class InviwoMainWindow;
+
+class IVW_QTEDITOR_API LogTableModel {
+public:
+    enum class Columns {
+        Date = 0,
+        Time,
+        Source,
+        Level,
+        Audience,
+        Path,
+        File,
+        Line,
+        Function,
+        Message
+    };
+
+    struct Entry {
+        std::chrono::system_clock::time_point time;
+        std::string source;
+        LogLevel level;
+        LogAudience audience;
+        std::string fileName;
+        int lineNumber;
+        std::string funcionName;
+        std::string message;
+
+        std::string getDate() const;
+        std::string getTime() const;
+        static constexpr size_t size() { return 10; }
+        QStandardItem*  get(Columns ind) const;
+    };
+
+    LogTableModel(QTableView* view);
+
+    QString getName(Columns ind) const;
+    QStandardItemModel* model();
+    
+    void clear();    
+    void log(Entry entry);
+
+
+private:
+    QColor infoTextColor_ = {153, 153, 153};
+    QColor warnTextColor_ = {221, 165, 8};
+    QColor errorTextColor_ = {255, 107, 107};
+
+    QTableView* view_;
+    QStandardItemModel model_;
+};
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
     #include <warn/push>
@@ -46,7 +111,7 @@ class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
     Q_OBJECT
     #include <warn/pop>
 public:
-    ConsoleWidget(QWidget* parent);
+    ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
@@ -59,32 +124,54 @@ public:
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line) override;
 
-private:
-    void keyPressEvent(QKeyEvent* keyEvent) override;
-
-
-    QTextEdit* textField_;
-    /// Log level colors
-    QColor infoTextColor_;
-    QColor warnTextColor_;
-    QColor errorTextColor_;
-
-    QLabel* errorsLabel_;
-    QLabel* warningsLabel_;
-    QLabel* infoLabel_;
-    unsigned int numErrors_;
-    unsigned int numWarnings_;
-    unsigned int numInfos_;
+    QAction* getClearAction();
+    QTableView* view() {return tableView_;}
 
 public slots:
-    void logMessage(LogLevel level, QString message);
-    void logMessage(int level, QString message);
-    void showContextMenu(const QPoint& pos);
+    void updateIndicators(LogLevel level);
     void clear();
 
 signals:
-    void logMessageSignal(int logLevel, QString message);
+    void logSignal(LogTableModel::Entry level);
     void clearSignal();
+
+protected:
+    void log(LogTableModel::Entry);
+
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual bool eventFilter(QObject *object, QEvent *event) override;
+    virtual void closeEvent(QCloseEvent *event) override;
+
+private:
+    QModelIndex mapToSource(int row, int col);
+    QModelIndex mapFromSource(int row, int col);
+
+
+    QTableView* tableView_;
+    LogTableModel model_;
+    QSortFilterProxyModel* filter_;
+    QSortFilterProxyModel* levelFilter_;
+
+    struct Level {
+        LogLevel level;
+        std::string name;
+        std::string icon;
+        int count;
+        QAction* action;
+        QLabel* label;
+    };
+
+    std::array<Level, 3> levels = {{{LogLevel::Error, "Errors", "error", 0, nullptr, nullptr},
+                                    {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
+                                    {LogLevel::Info, "Info", "info", 0, nullptr, nullptr}}};
+
+    QLineEdit* filterPattern_;
+    QAction* clearAction_;
+    InviwoMainWindow* mainwindow_;
+    std::unordered_map<std::string, QMetaObject::Connection> connections_;
+    
+    bool hover_ = false;
+    bool focus_ = false;
 };
 
 }  // namespace
