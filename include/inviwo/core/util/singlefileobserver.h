@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SINGLEFILEOBSERVER_H
@@ -49,19 +49,35 @@ public:
     SingleFileObserver(std::string filename);
     virtual ~SingleFileObserver();
 
+    /**
+     * Start observing the file, not only needed to call if stop has been called in the first
+     * place since the constructor calls start()
+     */
     void start();
+    /**
+     * Stop observing the file. This is useful if you know the file will change and a callback is
+     * not needed, for example if you write to it yourself or if you know it will be updated several
+     * times
+     */
     void stop();
 
+    /**
+     * Register a callback that will be called once the file has changed on disk.
+     */
     const BaseCallBack* onChange(std::function<void()> callback);
+    /**
+     * Remove a callback from the list of callbacks
+     */
     void removeOnChange(const BaseCallBack* callback);
     const std::string& getFilename() const;
+
 private:
-    virtual void fileChanged(const std::string& filename); 
+    virtual void fileChanged(const std::string& filename);
 
     std::string filename_;
     CallBackList onChangeCallbacks_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_SIMPLEFILEOBSERVER_H
+#endif  // IVW_SIMPLEFILEOBSERVER_H
