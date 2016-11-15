@@ -217,15 +217,15 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
 
     PythonScriptDisk::PythonScriptDisk(std::string filename)
         : PythonScript(), SingleFileObserver(filename) {
-        PythonScript::setFilename(filename);
-        SingleFileObserver::onFileChange([this]() { readFileAndSetSource(); });
+        setFilename(filename);
+        onChange([this]() { readFileAndSetSource(); });
         readFileAndSetSource();
     }
 
     void PythonScriptDisk::readFileAndSetSource() {
-        std::ifstream inFile(SingleFileObserver::getFilename());
+        std::ifstream inFile(getFilename());
         std::string src((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-        PythonScript::setSource(src);
+        setSource(src);
     }
 
 } // namespace

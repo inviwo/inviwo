@@ -98,7 +98,13 @@ namespace inviwo {
         bool isCompileNeeded_;
     };
 
-
+    /**
+    * Class for handling PythonScripts that exists as files on disk. PythonScriptDisk will observe
+    * the file and reload it from disk when it detects it has changed. 
+    *
+    * @see PythonScript
+    * @see SingleFileObserver
+    */
     class IVW_MODULE_PYTHON3_API PythonScriptDisk : public PythonScript , public SingleFileObserver {
     public:
         PythonScriptDisk(std::string filename);

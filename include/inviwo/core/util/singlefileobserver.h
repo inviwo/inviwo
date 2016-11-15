@@ -35,22 +35,31 @@
 
 namespace inviwo {
 
+/**
+ * \class SingleFileObserver
+ * \brief SingleFileObserver observes a single file for changes on disk.
+ * SingleFileObserver observes a single file for changes on disk. When the application detects the
+ * file has been modified it will invoke all lambda functions registered with onChange(...)
+ */
 class IVW_CORE_API SingleFileObserver : public FileObserver {
 public:
+    /**
+     * Creates a file observer for filename and start observing that file
+     */
     SingleFileObserver(std::string filename);
     virtual ~SingleFileObserver();
 
     void start();
     void stop();
-    const BaseCallBack* onFileChange(std::function<void()> callback);
-    void removeInFileChange(const BaseCallBack* callback);
-    const std::string& getFilename() const;
 
+    const BaseCallBack* onChange(std::function<void()> callback);
+    void removeOnChange(const BaseCallBack* callback);
+    const std::string& getFilename() const;
 private:
-    virtual void fileChanged(const std::string& filename);
+    virtual void fileChanged(const std::string& filename); 
 
     std::string filename_;
-    CallBackList onFileChangeCallback_;
+    CallBackList onChangeCallbacks_;
 };
 
 } // namespace

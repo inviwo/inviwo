@@ -46,18 +46,18 @@ void SingleFileObserver::start() { startFileObservation(filename_); }
 
 void SingleFileObserver::stop() { stopFileObservation(filename_); }
 
-const inviwo::BaseCallBack* SingleFileObserver::onFileChange(std::function<void()> callback) {
-    return onFileChangeCallback_.addLambdaCallback(callback);
+const inviwo::BaseCallBack* SingleFileObserver::onChange(std::function<void()> callback) {
+    return onChangeCallbacks_.addLambdaCallback(callback);
 }
 
-void SingleFileObserver::removeInFileChange(const BaseCallBack* callback) {
-    onFileChangeCallback_.remove(callback);
+void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
+    onChangeCallbacks_.remove(callback);
 }
 
 const std::string& SingleFileObserver::getFilename() const { return filename_; }
 
 void SingleFileObserver::fileChanged(const std::string& filename) {
-    onFileChangeCallback_.invokeAll();
+    onChangeCallbacks_.invokeAll();
 }
 
 }  // namespace
