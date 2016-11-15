@@ -31,9 +31,9 @@
 #define IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 #include <inviwo/core/links/propertylink.h>
 

@@ -38,7 +38,6 @@
 #include <warn/pop>
 
 #include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 
 namespace inviwo {
 

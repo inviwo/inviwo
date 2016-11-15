@@ -41,10 +41,22 @@ PickingAction::PickingAction(size_t id, size_t size)
 PickingAction::~PickingAction() = default;
 
 size_t PickingAction::getPickingId(size_t id) const {
-    if (id < size_)
+    if (id < size_) {
         return start_ + id;
-    else 
+    } else {
         throw Exception("Out of range", IvwContext);
+    }
+}
+
+size_t PickingAction::getLocalPickingId(size_t id) const {
+    if (id < start_) {
+        throw Exception("Out of range", IvwContext);
+    }
+    auto localID = id - start_;
+    if (localID >= size_) {
+        throw Exception("Out of range", IvwContext);
+    }
+    return localID;
 }
 
 vec3 PickingAction::getColor(size_t id) const {

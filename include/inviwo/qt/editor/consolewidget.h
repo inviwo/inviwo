@@ -32,8 +32,8 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

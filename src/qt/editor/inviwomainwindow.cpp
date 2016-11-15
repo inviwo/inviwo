@@ -43,9 +43,9 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 
@@ -71,10 +71,6 @@
 #include <algorithm>
 
 #include <warn/pop>
-
-
-// enable menu entry to reload the application stylesheet
-//#define IVW_STYLESHEET_RELOAD
 
 namespace inviwo {
 
@@ -178,26 +174,6 @@ void InviwoMainWindow::initialize() {
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
-
-#ifdef WIN32
-    // Fix window offset when restoring old position for correct positioning
-    // The frame size should be determined only once before starting up the
-    // main application and stored in InviwoApplicationQt
-    // determine size of window border (frame size)
-    // as long as widget is not shown, no border exists, i.e. this->pos() ==
-    // this->geometry().topLeft()
-
-    QWidget* w = new QWidget(nullptr, Qt::Tool);
-    w->move(-5000, -5000);
-    w->show();
-    QPoint widgetPos = w->pos();
-    QRect widgetGeo = w->geometry();
-    QPoint offset(widgetGeo.left() - widgetPos.x(), widgetGeo.top() - widgetPos.y());
-    w->hide();
-    delete w;
-
-    app_->setWindowDecorationOffset(offset);
-#endif
 }
 
 void InviwoMainWindow::showWindow() {
@@ -557,14 +533,6 @@ void InviwoMainWindow::addActions() {
         connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
         helpMenuItem->addAction(aboutBoxAction);
     }
-
-#if defined(IVW_STYLESHEET_RELOAD)
-    {
-        QAction* action = new QAction(tr("&Reload Stylesheet"), this);
-        QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
-        helpMenuItem->addAction(action);
-    }
-#endif
 }
 
 void InviwoMainWindow::updateWindowTitle() {
@@ -1086,8 +1054,6 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    emit closingMainWindow();
-
     QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
     // save window state
@@ -1103,7 +1069,10 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
     settings.endGroup();
 
-    consoleWidget_->close();
+    // pass a close event to all children to let the same state etc.
+    for (auto& child : children()) {
+        QApplication::sendEvent(child, new QCloseEvent());
+    }
 
     QMainWindow::closeEvent(event);
 }
@@ -1134,20 +1103,6 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     }
 
     return continueOperation;
-}
-
-void InviwoMainWindow::reloadStyleSheet() {
-    // The following code snippet allows to reload the Qt style sheets during runtime,
-    // which is handy while we change them. once the style sheets have been finalized,
-    // this code should be removed.
-
-    auto app = InviwoApplication::getPtr();
-    QString resourcePath = app->getPath(PathType::Resources).c_str();
-    QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(app)->setStyleSheet(styleSheet);
-    styleSheetFile.close();
 }
 
 SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }

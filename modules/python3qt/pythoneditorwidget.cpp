@@ -35,10 +35,9 @@
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/python3module.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <modules/python3/pyinviwo.h>
 
@@ -66,8 +65,8 @@ const static std::string defaultSource =
 "#Inviwo Python script \nimport inviwo \nimport inviwoqt \n\nhelp('inviwo') \nhelp('inviwoqt') "
     "\n";
 
-PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplication* app)
-    : InviwoDockWidget(tr("Python Editor"), ivwwin)
+PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
+    : InviwoDockWidget(tr("Python Editor"), parent)
     , settings_("Inviwo", "Inviwo")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
@@ -194,8 +193,6 @@ PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplicati
     mainWindow->setCentralWidget(splitter);
 
     QObject::connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
-    // close this window before the main window is closed
-    QObject::connect(ivwwin, &InviwoMainWindow::closingMainWindow, [this]() { delete this; });
 
     this->updateStyle();
 
@@ -230,13 +227,21 @@ void PythonEditorWidget::updateStyle() {
 }
 
 PythonEditorWidget::~PythonEditorWidget() {
+    if (app_) {
+        app_->unRegisterFileObserver(this);
+    }
+}
+
+void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (unsavedChanges_) {
         int ret =
             QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
                                      "Save", "Discard");
         if (ret == 0) save();
     }
+    InviwoDockWidget::closeEvent(event);
 }
+
 
 void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
     pythonOutput_->setTextColor(error ? errorTextColor_ : infoTextColor_);

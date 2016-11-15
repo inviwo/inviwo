@@ -33,7 +33,7 @@
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/openglqt/canvasprocessorwidgetqt.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,11 +54,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
 
-    if (auto qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
-        if (auto win = qtApp->getMainWindow()) {
-            auto menu = util::make_unique<OpenGLQtMenu>(win);
-            win->menuBar()->addMenu(menu.release());
-        }
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
+        mainWindow->menuBar()->addMenu(menu.release());
     }
 }
 

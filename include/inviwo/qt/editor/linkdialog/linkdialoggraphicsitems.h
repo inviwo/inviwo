@@ -32,9 +32,9 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

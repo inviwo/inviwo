@@ -32,7 +32,7 @@
 
 #include <modules/opengl/shader/shaderresource.h>
 
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/openglqt/shaderwidget.h>
@@ -96,13 +96,13 @@ void OpenGLQtMenu::addShaderObjects(Shader* shader, QMenu* menuItem) {
 }
 
 void OpenGLQtMenu::showShader(const ShaderObject* obj) {
-    auto win = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
+    auto mainWindow = utilqt::getApplicationMainWindow();
 
     auto editor = [&]() {
         if (auto res = util::map_find_or_null(editors_, obj->getID())) {
             return res;
         } else {
-            res = new ShaderWidget(obj, win);
+            res = new ShaderWidget(obj, mainWindow);
             editors_[obj->getID()] = res;
             res->resize(900, 800);
             return res;
