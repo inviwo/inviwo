@@ -52,7 +52,7 @@ namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty,
                                                                QWidget* parent)
-    : PropertyEditorWidgetQt("Transfer Function Editor", parent)
+    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", parent)
     , TransferFunctionObserver()
     , sliderRange_(1000)
     , tfProperty_(tfProperty)
@@ -217,10 +217,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     mainPanel->setLayout(mainLayout);
 
     setWidget(mainPanel);
-    connect(this, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this,
-            SLOT(dockLocationChanged(Qt::DockWidgetArea)));
 
-    initialize(tfProperty_);
     setFloating(true);
     setVisible(false);
 }
@@ -488,36 +485,14 @@ void TransferFunctionPropertyDialog::showHistogram(int type) {
 }
 
 void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {
-    setEditorDimensions(ivec2(event->size().width(), event->size().height()));
-    QWidget::resizeEvent(event);
+    PropertyEditorWidgetQt::resizeEvent(event);
     updateTFPreview();
 }
 
 void TransferFunctionPropertyDialog::showEvent(QShowEvent* event) {
     updateTFPreview();
     tfEditorView_->update();
-    showEditor();
-}
-
-void TransferFunctionPropertyDialog::closeEvent(QCloseEvent* event) { hideEditor(); }
-
-void TransferFunctionPropertyDialog::moveEvent(QMoveEvent* event) {
-    ivec2 pos = ivec2(event->pos().x(), event->pos().y());
-    moveEditor(pos);
-
-    if (isFloating() && !(getEditorDockStatus() == PropertyEditorWidgetDockStatus::Floating))
-        setDockStatus(PropertyEditorWidgetDockStatus::Floating);
-
-    QWidget::moveEvent(event);
-}
-
-void TransferFunctionPropertyDialog::dockLocationChanged(Qt::DockWidgetArea dockArea) {
-    if (dockArea == Qt::LeftDockWidgetArea)
-        setDockStatus(PropertyEditorWidgetDockStatus::DockedLeft);
-    else if (dockArea == Qt::RightDockWidgetArea)
-        setDockStatus(PropertyEditorWidgetDockStatus::DockedRight);
-    else
-        setDockStatus(PropertyEditorWidgetDockStatus::Floating);
+    PropertyEditorWidgetQt::showEvent(event);
 }
 
 void TransferFunctionPropertyDialog::onControlPointAdded(TransferFunctionDataPoint* p) {

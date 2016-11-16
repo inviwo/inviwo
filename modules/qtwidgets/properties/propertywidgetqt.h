@@ -49,6 +49,10 @@
 class QMenu;
 class QAction;
 class QActionGroup;
+class QResizeEvent;
+class QShowEvent;
+class QCloseEvent;
+class QMoveEvent;
 
 namespace inviwo {
 
@@ -201,10 +205,14 @@ class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
     Q_OBJECT
 #include <warn/pop>
 public:
-    PropertyEditorWidgetQt(std::string widgetName, QWidget* parent);
+    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget* parent);
     virtual ~PropertyEditorWidgetQt();
-    virtual void initialize(Property* property);
-    virtual void deinitialize();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void showEvent(QShowEvent *) override;
+    virtual void closeEvent(QCloseEvent *) override;
+    virtual void moveEvent(QMoveEvent *event) override;
 };
 
 }  // namespace

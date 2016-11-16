@@ -49,6 +49,8 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
     QObject::connect(this, SIGNAL(topLevelChanged(bool)), titleBarWidget(), SLOT(floating(bool)));
     QObject::connect(this, SIGNAL(windowTitleChanged(const QString &)), this,
                      SLOT(updateWindowTitle(const QString &)));
+    QObject::connect(dockWidgetTitleBar_, SIGNAL(stickyFlagChanged(bool)), this,
+                     SIGNAL(stickyFlagChanged(bool)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() {}

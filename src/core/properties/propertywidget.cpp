@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -53,22 +54,19 @@ void PropertyWidget::initializeEditorWidgetsMetaData() {}
 
 // Additional widgets owned by property
 
-PropertyEditorWidget::PropertyEditorWidget() : metaData_(nullptr) {}
-
-PropertyEditorWidget::~PropertyEditorWidget() {}
-
-void PropertyEditorWidget::initialize(Property* property) {
+PropertyEditorWidget::PropertyEditorWidget(Property* property) : property_(property), metaData_(nullptr) {
+    ivwAssert(property != nullptr, "property must not be null");
     metaData_ = property->createMetaData<PropertyEditorWidgetMetaData>(
         PropertyEditorWidgetMetaData::CLASS_IDENTIFIER);
 }
 
-void PropertyEditorWidget::deinitialize() {}
+PropertyEditorWidget::~PropertyEditorWidget() = default;
 
-void PropertyEditorWidget::setEditorVisibility(bool visible) { metaData_->setVisibile(visible); }
+void PropertyEditorWidget::setEditorVisibility(bool visible) { metaData_->setVisible(visible); }
 
-void PropertyEditorWidget::showEditor() { metaData_->setVisibile(true); }
+void PropertyEditorWidget::showEditor() { metaData_->setVisible(true); }
 
-void PropertyEditorWidget::hideEditor() { metaData_->setVisibile(false); }
+void PropertyEditorWidget::hideEditor() { metaData_->setVisible(false); }
 
 void PropertyEditorWidget::setEditorDimensions(const ivec2& dimensions) {
     metaData_->setDimensions(dimensions);
@@ -79,6 +77,11 @@ void PropertyEditorWidget::moveEditor(const ivec2& pos) { metaData_->setWidgetPo
 void PropertyEditorWidget::setDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
     metaData_->setDockStatus(dockStatus);
 }
+
+void PropertyEditorWidget::setEditorStickyFlag(bool sticky) {
+    metaData_->setSticky(sticky);
+}
+
 bool PropertyEditorWidget::getEditorVisibilityMetaData() const { return metaData_->isVisible(); }
 
 ivec2 PropertyEditorWidget::getEditorPositionMetaData() const {
@@ -90,7 +93,11 @@ ivec2 PropertyEditorWidget::getEditorDimensionMetaData() const {
 }
 
 PropertyEditorWidgetDockStatus PropertyEditorWidget::getEditorDockStatus() const {
-    return metaData_->getDocStatus();
+    return metaData_->getDockStatus();
+}
+
+bool PropertyEditorWidget::getEditorStickyFlag() const {
+    return metaData_->isSticky();
 }
 
 }  // namespace

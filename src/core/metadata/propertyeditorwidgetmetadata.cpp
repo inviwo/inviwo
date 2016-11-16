@@ -44,9 +44,7 @@ PropertyEditorWidgetDockStatus& PropertyEditorWidgetDockStatus::operator=(
     return *this;
 }
 bool PropertyEditorWidgetDockStatus::operator==(const PropertyEditorWidgetDockStatus& that) {
-    if (this->getString() == that.getString()) return true;
-
-    return false;
+    return (this->getString() == that.getString());
 }
 const std::string& PropertyEditorWidgetDockStatus::getString() const { return dockStatus_; }
 const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::Floating("Floating");
@@ -55,17 +53,22 @@ const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::DockedRight
 
 //////////////////////////////////////////////////////////////////////////
 
+
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData()
     : position_(0,0)
     , dimensions_(256,256)
     , visibility_(false)
-    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString()) {}
+    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString())
+    , stickyFlag_(false)
+{}
 
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData(const PropertyEditorWidgetMetaData& rhs)
     : position_(rhs.position_)
     , dimensions_(rhs.dimensions_)
     , visibility_(rhs.visibility_)
-    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString()) {}
+    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString())
+    , stickyFlag_(rhs.stickyFlag_) {
+}
 
 PropertyEditorWidgetMetaData& PropertyEditorWidgetMetaData::operator=(
     const PropertyEditorWidgetMetaData& that) {
@@ -74,6 +77,7 @@ PropertyEditorWidgetMetaData& PropertyEditorWidgetMetaData::operator=(
         dimensions_ = that.dimensions_;
         visibility_ = that.visibility_;
         dockStatus_ = that.dockStatus_;
+        stickyFlag_ = that.stickyFlag_;
     }
 
     return *this;
@@ -101,7 +105,7 @@ ivec2 PropertyEditorWidgetMetaData::getDimensions() const {
     return dimensions_;
 }
 
-void PropertyEditorWidgetMetaData::setVisibile(bool visibility) {
+void PropertyEditorWidgetMetaData::setVisible(bool visibility) {
     visibility_ = visibility;
 }
 
@@ -113,8 +117,16 @@ void PropertyEditorWidgetMetaData::setDockStatus(PropertyEditorWidgetDockStatus&
     dockStatus_ = dockStatus.getString();
 }
 
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDocStatus() const {
+const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
     return PropertyEditorWidgetDockStatus(dockStatus_);
+}
+
+void PropertyEditorWidgetMetaData::setSticky(bool sticky) {
+    stickyFlag_ = sticky;
+}
+
+bool PropertyEditorWidgetMetaData::isSticky() const {
+    return stickyFlag_;
 }
 
 void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
@@ -123,6 +135,7 @@ void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
     s.serialize("dockstatus", dockStatus_);
+    s.serialize("stickyflag", stickyFlag_);
 }
 
 void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
@@ -130,13 +143,15 @@ void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
     d.deserialize("dimensions", dimensions_);
     d.deserialize("visibility", visibility_);
     d.deserialize("dockstatus", dockStatus_);
+    d.deserialize("stickyflag", stickyFlag_);
     if (dockStatus_.empty()) dockStatus_="Floating";
 }
 
 bool PropertyEditorWidgetMetaData::equal(const MetaData& rhs) const {
     if (auto tmp = dynamic_cast<const PropertyEditorWidgetMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
-               tmp->visibility_ == visibility_ && tmp->dockStatus_ == dockStatus_;
+               tmp->visibility_ == visibility_ && tmp->dockStatus_ == dockStatus_ &&
+               tmp->stickyFlag_ == stickyFlag_;
     } else {
         return false;
     }
