@@ -369,7 +369,7 @@ void InviwoMainWindow::addActions() {
     editMenuItem->addSeparator();
     
     {
-        auto cutAction = new QAction(tr("&Cut"), this);
+        auto cutAction = new QAction(tr("Cu&t"), this);
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
         editMenuItem->addAction(cutAction);
@@ -382,7 +382,16 @@ void InviwoMainWindow::addActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem->addAction(copyAction);
-        consoleWidget_->view()->addAction(copyAction);
+        // add copy action to console widget
+        auto widget = consoleWidget_->view();
+        auto actions = widget->actions();
+        if (actions.isEmpty()) {
+            widget->addAction(copyAction);
+        }
+        else {
+            // insert copy action at the beginning
+            widget->insertAction(actions.front(), copyAction);
+        }
         copyAction->setEnabled(false);
     }
 
