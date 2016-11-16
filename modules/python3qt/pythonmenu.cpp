@@ -37,21 +37,32 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QAction>
+#include <QLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        QMenu* menu = win->menuBar()->addMenu("Python");
+        menu_ = win->menuBar()->addMenu("Python");
         QAction* pythonEditorOpen =
-            menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
+            menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
         editor_ = new PythonEditorWidget(win, app);
         win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
     }
 }
 
-PythonMenu::~PythonMenu() = default;
+PythonMenu::~PythonMenu() {
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        win->disconnect(editor_);
+        win->layout()->removeWidget(editor_);
+        win->removeDockWidget(editor_);
+        
+        win->menuBar()->removeAction(menu_->menuAction());
+        delete menu_;
+        delete editor_;
+    }
+}
 
 PythonEditorWidget* PythonMenu::getEditor() const {
     return editor_;

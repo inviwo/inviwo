@@ -60,7 +60,7 @@ SharedLibrary::SharedLibrary(std::string filePath)
     // executable directory
     //SetDllDirectoryA(nullptr);
     //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-    handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
+    handle_ = LoadLibraryExA(filePath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
     
     //handle_ = LoadLibraryExA(filesystem::getFileNameWithExtension(dstPath).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
     //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr);
@@ -139,20 +139,16 @@ void InviwoModuleFactoryObject::setSharedLibrary(std::unique_ptr<SharedLibrary>&
     //    startFileObservation(library_->getFilePath());
     //}
 }
-ModuleLibraryObserver::ModuleLibraryObserver() {
-    InviwoApplication::getPtr()->registerFileObserver(this);
-}
+
 ModuleLibraryObserver::ModuleLibraryObserver(std::string moduleName) : observedModuleName(moduleName) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
 };
 
-ModuleLibraryObserver::ModuleLibraryObserver(ModuleLibraryObserver&& other): FileObserver(other), observedModuleName(std::move(other.observedModuleName)) {
-    InviwoApplication::getPtr()->unRegisterFileObserver(&other);
-    InviwoApplication::getPtr()->registerFileObserver(this);
+ModuleLibraryObserver::ModuleLibraryObserver(ModuleLibraryObserver&& other): FileObserver(std::move(other)), observedModuleName(std::move(other.observedModuleName)) {
 }
 ModuleLibraryObserver::~ModuleLibraryObserver() {
-    stopFileObservation(observedModuleName);
-    InviwoApplication::getPtr()->unRegisterFileObserver(this);
+    //for (auto filePath : getFiles()) {
+    //    stopFileObservation(filePath);
+    //}
 }
 
 typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
@@ -175,15 +171,9 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
         return;
     }
     app->clearModules();
-    auto observedFiles = getFiles();
-    for (auto file: observedFiles) {
-        stopFileObservation(file);
-    }
 
-    app->registerModulesFromDynamicLibraries(std::vector<std::string>(1, filesystem::getExecutablePath()));
-    for (auto file : observedFiles) {
-        startFileObservation(file);
-    }
+    app->registerModulesFromDynamicLibraries(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
+
     //// Unregister dependent modules
     //const auto& moduleFactories = app->getModuleFactoryObjects();
     ////auto toDeregister = app->findDependentModules(toLower(observedModule_->name_));

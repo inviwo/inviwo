@@ -59,6 +59,9 @@
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
 
+#include <locale>
+#include <codecvt>
+#include <string>
 namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
@@ -88,13 +91,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , modules_()
     , clearModules_([&]() {
-        ResourceManager::getPtr()->clearAllResources();
-        // Need to clear the modules in reverse order since the might depend on each other.
-        // The destruction order of vector is undefined.
-        for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
-            it->reset();
-        }
-        modules_.clear();
+        //ResourceManager::getPtr()->clearAllResources();
+        //// Need to clear the modules in reverse order since the might depend on each other.
+        //// The destruction order of vector is undefined.
+        //for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+        //    it->reset();
+        //}
+        //modules_.clear();
     })
     , moudleCallbackActions_()
 
@@ -144,19 +147,23 @@ InviwoApplication::~InviwoApplication() {
     resizePool(0);
     portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
+    moduleLibraryObservers_.clear();
+    clearModules();
 }
 
 void InviwoApplication::clearModules() {
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destuction order of vector is undefined.
-    for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+    auto coreModule = modules_.rend()-1;
+    for (auto it = modules_.rbegin(); it != coreModule; ++it) {
         it->reset();
     }
-    modules_.clear();
+    modules_.erase(modules_.begin() + 1, modules_.end());
+    //modules_.clear();
     modulesFactoryObjects_.clear();
     moduleSharedLibraries_.clear();
-    //moduleLibraryObservers_.clear();
+
 }
 
 void topologicalSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& graph,
@@ -421,7 +428,17 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
         for (auto dep = moduleObj->depends_.cbegin();
             dep != moduleObj->depends_.end(); ++dep, ++versionIt) {
             if (!checkDepencyVersion(*dep, *versionIt)) {
-                dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but another version was loaded" << std::endl;
+                // Find module
+                auto name = *dep;
+                auto dependencyIt = util::find_if(modulesFactoryObjects_, [name](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
+                    return toLower(module->name_) == name;
+                });
+                if (dependencyIt != modulesFactoryObjects_.end()) {
+                    dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but version " << (*dependencyIt)->version_ << " was loaded" << std::endl;
+                }
+                else {
+                    dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but version no such module was loaded" << std::endl;
+                }
             };
         }
         if (dependencyVersionError.str().size() > 0) {
@@ -502,36 +519,77 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
     //std::string libraryType = "so";
     std::string libraryType = "dylib";
 #endif
+    std::vector<std::string> tmpFiles;
+    std::vector<std::string> paths;
     for (const auto& filePath : files) {
         if (filesystem::getFileExtension(filePath) == libraryType) {
             std::string tmpDir = filesystem::getWorkingDirectory();
-            //std::string tmpDir = dir + "/tmp";
-            if (!filesystem::directoryExists(tmpDir)) {
-                filesystem::createDirectoryRecursively(tmpDir);
+            std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
+            if (filesystem::getFileNameWithoutExtension(filePath) == "inviwo-module-qtwidgetsd") {
+                dstPath = filePath;
+            }
+            else {
+                //std::string tmpDir = dir + "/tmp";
+                if (!filesystem::directoryExists(tmpDir)) {
+                    filesystem::createDirectoryRecursively(tmpDir);
+                }
+
+
+                if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
+                    // Load a copy of the file to make sure that
+                    // we can overwrite the file.
+                    filesystem::copyFile(filePath, dstPath);
+                }
             }
 
-            std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
-                // Load a copy of the file to make sure that
-                // we can overwrite the file.
-                filesystem::copyFile(filePath, dstPath);
-            }
+            tmpFiles.emplace_back(dstPath);
+            paths.emplace_back(filePath);
         }
+
     }
     std::string tmpDir = filesystem::getWorkingDirectory();
+    //auto err = _putenv_s("HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/inviwo.exe/Path", "C:\\inviwo-dev\\build\\apps\\inviwo\\");
     AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
-    for (const auto& filePath : files) {
+    if (const char* env_p = std::getenv("PATH")) {
+        std::string s(env_p);
+        char delim = ';';
+        std::vector<std::string> elems;
+        std::stringstream ss;
+        ss.str(s);
+        std::string item;
+        while (std::getline(ss, item, delim)) {
+            elems.push_back(item);
+        }
+        for (auto path : elems) {
+            std::wstring dd;
+            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+            //std::string narrow = converter.to_bytes(wide_utf16_source_string);
+            std::wstring wide = converter.from_bytes(path);
+            AddDllDirectory(converter.from_bytes(path).c_str());
+        }
+    }
+    auto filePathIt = paths.cbegin();
+    for (auto tmpFilePathIt = tmpFiles.cbegin();
+        tmpFilePathIt != tmpFiles.end(); ++tmpFilePathIt, ++filePathIt) {
+        auto filePath = *filePathIt;
+        auto tmpPath = *tmpFilePathIt;
+    //for (const auto& filePath : tmpFiles) {
         std::string pattern = "inviwo-cored.dll";
         if (filesystem::getFileExtension(filePath) == libraryType &&
             (std::mismatch(pattern.rbegin(), pattern.rend(), filePath.rbegin(), filePath.rend()).first != pattern.rend())) {
             try {
-                std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(filePath));
+                std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
                 f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
                 if (moduleFunc) {
                     modules.emplace_back(moduleFunc());
+                    auto moduleName = toLower(modules.back()->name_);
                     moduleSharedLibraries_.emplace_back(std::move(sharedLib));
-                    moduleLibraryObservers_.emplace_back(toLower(modules.back()->name_));
-                    moduleLibraryObservers_.back().startFileObservation(filePath);
+                    auto observerIt = std::find_if(std::begin(moduleLibraryObservers_), std::end(moduleLibraryObservers_), [moduleName](const auto& observer) { return observer.observedModuleName.compare(moduleName) == 0; });
+                    if (observerIt == std::end(moduleLibraryObservers_)) {
+                        moduleLibraryObservers_.emplace_back(toLower(modules.back()->name_));
+                        moduleLibraryObservers_.back().startFileObservation(filePath);
+                    }
+
                 }
             }
             catch (Exception ex) {
