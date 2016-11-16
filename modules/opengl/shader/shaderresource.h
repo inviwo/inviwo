@@ -67,7 +67,7 @@ ShaderResource::onChange(T&& callback) const {
 class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource,  public FileObserver {
 public:
     FileShaderResource(const std::string& key, const std::string& fileName);
-    virtual ~FileShaderResource();
+    virtual ~FileShaderResource() = default;
     
     virtual std::unique_ptr<ShaderResource> clone() override;
     

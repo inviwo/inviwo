@@ -34,14 +34,7 @@
 namespace inviwo {
 
 FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : key_(key), fileName_(fileName) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
-    startFileObservation(fileName_);
-}
-
-FileShaderResource::~FileShaderResource() {
-    stopFileObservation(fileName_);
-    InviwoApplication::getPtr()->unRegisterFileObserver(this);
+    : FileObserver(fileName), key_(key), fileName_(fileName) {
 }
 
 std::unique_ptr<ShaderResource> FileShaderResource::clone() {

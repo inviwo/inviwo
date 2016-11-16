@@ -38,13 +38,42 @@
 
 namespace inviwo {
 
+/** \class FileObserver
+ * Calls fileChanged when an observed file changes.
+ * One or multiple files can be observed.
+ */
 class IVW_CORE_API FileObserver {
 
 public:
-    FileObserver() = default;
-    virtual ~FileObserver() = default;
+    /** 
+     * \brief Starts observing file if existing.
+     *
+     * @note Registers as a file observer in InviwoApplication.
+     * 
+     * @param filePath Full path to file to observe
+     */
+    FileObserver(const std::string& filePath = "");
+    /**
+     * Moves observed files in other, unregisters other and registers this observer. 
+     */
+    FileObserver(FileObserver&& other);
+    /**
+     * Unregisters file observer in InviwoApplication and stops observing all files.
+     */
+    virtual ~FileObserver();
 
-    void startFileObservation(const std::string& fileName);
+    /** 
+     * \brief Starts observing file if it exists.
+     * Each call to startFileObservation should be matched with stopFileObservation
+     * @param filePath Full path to file
+     */
+    void startFileObservation(const std::string& filePath);
+    /** 
+     * \brief Stops observing the file if being observed.
+     * 
+     * @param filePath Full path to file
+     * @return void 
+     */
     void stopFileObservation(const std::string& fileName);
     std::vector<std::string> getFiles() const;
     bool isObserved(const std::string& fileName) const;

@@ -84,12 +84,14 @@ void InviwoApplicationQt::unRegisterFileObserver(FileObserver* fileObserver) {
 
 void InviwoApplicationQt::startFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
-    if (!fileWatcher_->files().contains(qFileName)) fileWatcher_->addPath(qFileName);
+    // Will add the path if file exists and is not already being watched.
+    fileWatcher_->addPath(qFileName);
 }
 
 void InviwoApplicationQt::stopFileObservation(std::string fileName) {
-    QString qFileName = QString::fromStdString(fileName);
-    if (fileWatcher_->files().contains(qFileName)) fileWatcher_->removePath(qFileName);
+    auto it = std::find_if(std::begin(fileObservers_), std::end(fileObservers_), [fileName](const auto observer) { return observer->isObserved(fileName); });
+    // Make sure that no observer is observing the file
+    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
 }
 
 void InviwoApplicationQt::fileChanged(QString fileName) {

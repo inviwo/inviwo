@@ -204,7 +204,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
             this, &PythonEditorWidget::updateStyle);
         app_->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(
             this, &PythonEditorWidget::updateStyle);
-        app_->registerFileObserver(this);
     }
     unsavedChanges_ = false;
 
@@ -224,12 +223,6 @@ void PythonEditorWidget::updateStyle() {
     ss << "font-size: " << size << "px;";
     pythonCode_->setStyleSheet(ss.str().c_str());
     syntaxHighligther_->rehighlight();
-}
-
-PythonEditorWidget::~PythonEditorWidget() {
-    if (app_) {
-        app_->unRegisterFileObserver(this);
-    }
 }
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
