@@ -81,15 +81,16 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     levelFilter_->setSourceModel(filter_);
     levelFilter_->setFilterKeyColumn(static_cast<int>(LogTableModelEntry::Columns::Level));
 
+    filterPattern_->setClearButtonEnabled(true);
+
     tableView_->setModel(levelFilter_);
     tableView_->setGridStyle(Qt::NoPen);
     tableView_->setCornerButtonEnabled(false);
     
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
-    clearAction_ = new QAction(tr("&Clear Log"), this);
+    clearAction_ = new QAction(QIcon(":/icons/clear-consolelog.png"), tr("&Clear Log"), this);
     clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
-    tableView_->addAction(clearAction_);
    
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::Columns::Date));
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::Columns::Level));
@@ -106,7 +107,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     auto viewColGroup = new QMenu(this);
     for (int i = 0; i < cols; ++i) {
         auto viewCol = new QAction(
-            QString("View ") + model_.getName(static_cast<LogTableModelEntry::Columns>(i)), this);
+            model_.getName(static_cast<LogTableModelEntry::Columns>(i)), this);
         viewCol->setCheckable(true);
         viewCol->setChecked(!tableView_->isColumnHidden(i));
         connect(viewCol, &QAction::triggered, [this, i](bool state) {
@@ -119,9 +120,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         tableView_->horizontalHeader()->addAction(viewCol);
         viewColGroup->addAction(viewCol);
     }
-    auto viewColAction = new QAction("View", this);
-    viewColAction->setMenu(viewColGroup);
-    tableView_->addAction(viewColAction);
+    auto visibleColumnsAction = new QAction("Visible Columns", this);
+    visibleColumnsAction->setMenu(viewColGroup);
 
     tableView_->horizontalHeader()->setResizeContentsPrecision(0);
     tableView_->horizontalHeader()->setSectionResizeMode(cols - 1, QHeaderView::Stretch);
@@ -138,19 +138,23 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     QHBoxLayout *statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
 
-    auto makeToolButton = [this, statusBar](const QString& label, const QString& file,
-                                            bool checkable = true) {
-        auto button = new QToolButton(this);
+    auto makeIcon = [](const QString &file, bool checkable = false) {
         auto icon = QIcon();
-        if(checkable) {
+        if (checkable) {
             icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::On);
             icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Normal, QIcon::Off);
-        } else {
+        }
+        else {
             icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::Off);
             icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Disabled, QIcon::Off);
         }
+        return icon;
+    };
 
-        auto action = new QAction(icon, label, this);
+    auto makeToolButton = [this, statusBar, makeIcon](const QString& label, const QString& file,
+                                                      bool checkable = true) {
+        auto button = new QToolButton(this);
+        auto action = new QAction(makeIcon(file, checkable), label, this);
         action->setCheckable(checkable);
         if (checkable) action->setChecked(true);
 
@@ -199,24 +203,21 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     }
     auto viewAction = new QAction("Log Level", this);
     viewAction->setMenu(levelGroup);
-    tableView_->addAction(viewAction);
+    
+    auto clearButton = new QToolButton(this);
+    clearButton->setDefaultAction(clearAction_);
+    statusBar->addWidget(clearButton);
+    statusBar->addSpacing(5);
 
     statusBar->addStretch(3);
     statusBar->addWidget(new QLabel("Filter", this));
 
     filterPattern_->setMinimumWidth(200);
     statusBar->addWidget(filterPattern_, 1);
-    auto clearFilter = makeToolButton("Clear Filter", "button_cancel", false);
+    statusBar->addSpacing(5);
+
+    auto clearFilter = new QAction(makeIcon("clear-filter"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
-
-    tableView_->addAction(clearFilter);
-
-    statusBar->addSpacing(5);
-
-    auto clearButton = new QToolButton(this);
-    clearButton->setDefaultAction(clearAction_);
-    statusBar->addWidget(clearButton);
-    statusBar->addSpacing(5);
 
     connect(filterPattern_, &QLineEdit::textChanged,
             [this, updateRowsHeights, clearFilter](const QString& text) {
@@ -229,14 +230,30 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         filterPattern_->setText("");
     });
 
-    auto filterAction = new QAction("Filter", this);
+    auto filterAction = new QAction(makeIcon("filter"), "&Filter", this);
     filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this](){
         raise();
         filterPattern_->setFocus();
         filterPattern_->selectAll();
     });
+
+    // add actions for context menu
+    auto createSeparator = [this]() {
+        auto separator = new QAction(this);
+        separator->setSeparator(true);
+        return separator;
+    };
+
+    // add separator at the beginning as the "copy" action will be inserted later at the front
+    tableView_->addAction(createSeparator());
+    tableView_->addAction(visibleColumnsAction);
+    tableView_->addAction(viewAction);
+    tableView_->addAction(createSeparator());
+    tableView_->addAction(clearAction_);
+    tableView_->addAction(createSeparator());
     tableView_->addAction(filterAction);
+    tableView_->addAction(clearFilter);
 
 
     QVBoxLayout *layout = new QVBoxLayout();
