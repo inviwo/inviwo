@@ -37,11 +37,7 @@ uniform sampler2D picking_;
 in vec3 texCoord_;
 
 void main() {
-#ifdef SINGLE_CHANNEL
-    FragData0 = vec4(vec3(texture(color_, texCoord_.xy).r), 1.0);
-#else
     FragData0 = texture(color_, texCoord_.xy);
-#endif
 
 #ifdef ADDITIONAL_COLOR_LAYERS
     ADDITIONAL_COLOR_LAYER_WRITE

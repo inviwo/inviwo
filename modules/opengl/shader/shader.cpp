@@ -267,7 +267,9 @@ bool Shader::isReady() const {
 }
 
 void Shader::activate() {
-    if (!ready_) throw OpenGLException("Shader Id: " + toString(id_) + " not ready: " + shaderNames(), IvwContext);
+    if (!ready_)
+        throw OpenGLException("Shader Id: " + toString(id_) + " not ready: " + shaderNames(),
+                              IvwContext);
     glUseProgram(id_);
     LGL_ERROR;
 }

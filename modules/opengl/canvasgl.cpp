@@ -37,20 +37,14 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-CanvasGL::CanvasGL(size2_t dimensions)
-    : Canvas(dimensions)
-    , imageGL_(nullptr)
-    , image_()
-    , layerType_(LayerType::Color)
-    , textureShader_(nullptr)
-    , noiseShader_(nullptr)
-    , channels_(0)
-    , activeRenderLayerIdx_(0) {}
+CanvasGL::CanvasGL(size2_t dimensions) : Canvas(dimensions) {}
 
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
@@ -60,24 +54,18 @@ void CanvasGL::defaultGLState() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    LGL_ERROR;
 }
 
-void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {   
+void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {
     image_ = image;
     layerType_ = layerType;
     pickingController_.setPickingSource(image);
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
-        
-        if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
-            checkChannels(imageGL_->getLayerGL(layerType_, idx)->getDataFormat()->getComponents());
-        } else {
-            checkChannels(image_->getDataFormat()->getComponents());
-        }
         activeRenderLayerIdx_ = (imageGL_->getLayerGL(layerType_, idx) != nullptr) ? idx : 0;
     } else {
         imageGL_ = nullptr;
+        activeRenderLayerIdx_ = 0;
     }
     update();
 }
@@ -108,32 +96,16 @@ bool CanvasGL::ready() {
         return true;
     } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
         ready_ = true;
-        LGL_ERROR;
 
         defaultGLState();
         square_ = utilgl::planeRect();
         squareGL_ = square_->getRepresentation<MeshGL>();
-        textureShader();
-        noiseShader();
-
-        LGL_ERROR;
+        textureShader_ = SharedOpenGLResources::getPtr()->getTextureShader();
+        noiseShader_ = SharedOpenGLResources::getPtr()->getNoiseShader();
         return true;
     } else {
         return false;
     }
-}
-
-Shader* CanvasGL::textureShader() {
-    if (!textureShader_) {
-        textureShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
-    }
-    return textureShader_.get();
-}
-Shader* CanvasGL::noiseShader() {
-    if (!noiseShader_) {
-        noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
-    }
-    return noiseShader_.get();
 }
 
 void CanvasGL::renderNoise() {
@@ -142,7 +114,6 @@ void CanvasGL::renderNoise() {
 
     glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
                static_cast<GLsizei>(getCanvasDimensions().y));
-    LGL_ERROR;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     noiseShader_->activate();
     drawSquare();
@@ -178,39 +149,15 @@ void CanvasGL::drawSquare() {
     glDepthFunc(GL_LESS);
 }
 
-void CanvasGL::checkChannels(std::size_t channels) {
-    if (channels_ == channels) return;
-
-    if (channels == 1) {
-        textureShader()->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
-    } else {
-        textureShader()->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-    }
-    
-    channels_ = channels;
-    textureShader_->getFragmentShaderObject()->build();
-    textureShader_->link();
-}
-
-const LayerRAM* CanvasGL::getDepthLayerRAM() const {
-    if (image_) {
-        if (auto depthLayer = image_->getDepthLayer()) {
-            return depthLayer->getRepresentation<LayerRAM>();
-        }
-    }
-    return nullptr;
-}
-
-double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM) const {
+double CanvasGL::getDepthValueAtCoord(ivec2 coord) const {
     const dvec2 canvasDims{getCanvasDimensions() - size2_t(1)};
-    return getDepthValueAtNormalizedCoord(dvec2(coord) / canvasDims, depthLayerRAM);
+    return getDepthValueAtNormalizedCoord(dvec2(coord) / canvasDims);
 }
 
-double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate,
-                                                const LayerRAM* depthLayerRAM) const {
-    
-    if (!depthLayerRAM && imageGL_) {
-        const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
+double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const {
+    const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
+
+    if (imageGL_) {        
         const dvec2 depthDims{ imageGL_->getDimensions() - size2_t(1, 1) };
         const size2_t coordDepth{ depthDims * coords };        
         auto depth = imageGL_->readPixel(coordDepth, LayerType::Depth).x;
@@ -219,19 +166,19 @@ double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate
         return 2.0 * depth - 1.0;
     }
 
-    if (!depthLayerRAM) depthLayerRAM = getDepthLayerRAM();
+    // RAM fallback
+    if (!image_) return 1.0;
+    auto depthLayer = image_->getDepthLayer();
+    if (!depthLayer) return 1.0;
+    auto depthLayerRAM = depthLayer->getRepresentation<LayerRAM>();
+    if (!depthLayerRAM) return 1.0;   
+        
+    const dvec2 depthDims{ depthLayerRAM->getDimensions() - size2_t(1, 1) };
+    const size2_t coordDepth{ depthDims * coords };      
+    const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
 
-    if (depthLayerRAM) {
-        const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
-        const dvec2 depthDims{ depthLayerRAM->getDimensions() - size2_t(1, 1) };
-        const size2_t coordDepth{ depthDims * coords };      
-        const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
-
-        // Convert to normalized device coordinates
-        return 2.0 * depthValue - 1.0;
-    } else {
-        return 1.0;
-    }
+    // Convert to normalized device coordinates
+    return 2.0 * depthValue - 1.0;
 }
 
 void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
@@ -243,11 +190,7 @@ void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
 }
 
 size2_t CanvasGL::getImageDimensions() const {
-    if (image_) {
-        return image_->getDimensions();
-    } else {
-        return size2_t(0, 0);
-    }
+    return image_ ? image_->getDimensions() : size2_t(0, 0);
 }
 
 }  // namespace

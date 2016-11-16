@@ -104,9 +104,9 @@ private:
 
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
-    mutable Shader shader_;
+
+    mutable Shader* shader_ = nullptr;    //< non-owning reference
     mutable size_t colorLayerCopyCount_;
-    mutable bool singleChannelCopy_;
 
     GLboolean prevDepthTest_;
     GLboolean prevDepthMask_;

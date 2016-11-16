@@ -46,11 +46,11 @@ namespace inviwo {
 
 OpenGLModule::OpenGLModule(InviwoApplication* app)
     : InviwoModule(app, "OpenGL")
-    , sharedResources_{util::make_unique<SharedOpenGLResources>()}
-    , shaderManager_{util::make_unique<ShaderManager>()} {
+    , shaderManager_{util::make_unique<ShaderManager>()} 
+    , sharedResources_{util::make_unique<SharedOpenGLResources>()} {
     
-    SharedOpenGLResources::init(sharedResources_.get());
     ShaderManager::init(shaderManager_.get());
+    SharedOpenGLResources::init(sharedResources_.get());
 
     opengl::addShaderResources(shaderManager_.get(), {getPath(ModulePath::GLSL)});
 

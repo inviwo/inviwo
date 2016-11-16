@@ -39,6 +39,7 @@ namespace inviwo {
 
 class Mesh;
 class MeshGL;
+class Shader;
 
 /**
  * \class SharedOpenGLResources
@@ -49,10 +50,18 @@ public:
     virtual ~SharedOpenGLResources() = default;
     
     const MeshGL* imagePlaneRect();
+
+    Shader* getTextureShader();
+    Shader* getNoiseShader(); 
+    Shader* getImageCopyShader(size_t colorLayers);
     
 private:
     std::unique_ptr<Mesh> planeRectMesh_;
     const MeshGL* planeRectMeshGl_ = nullptr;
+
+    std::unique_ptr<Shader> textureShader_;
+    std::unique_ptr<Shader> noiseShader_;
+    std::unordered_map<std::size_t, std::unique_ptr<Shader>> imgCopyShaders_;
 };
 
 } // namespace
