@@ -194,7 +194,7 @@ template <typename Self, typename Repr>
 template<typename T>
 bool DataGroup<Self, Repr>::hasRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
-    return representations_.find(std::type_index(typeid(T))) != representation.end();
+    return representations_.find(std::type_index(typeid(T))) != representations_.end();
 }
 
 } // namespace
