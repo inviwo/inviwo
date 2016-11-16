@@ -155,12 +155,9 @@ void InviwoMainWindow::initialize() {
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     // load settings and restore window state
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
-    restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
-    restoreState(settings.value("state", saveState()).toByteArray());
-    maximized_ = settings.value("maximized", false).toBool();
+    loadWindowState();
 
+    QSettings settings("Inviwo", "Inviwo");
     QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
@@ -1053,9 +1050,36 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
     // settings.setValue("recentFileList", recentFileList_);
-    settings.endGroup();
+
+    // save sticky flags for main dock widgets
+    settings.beginGroup("dialogs");
+    settings.setValue("settingswidgetSticky", settingsWidget_->isSticky());
+    settings.setValue("processorwidgetSticky", processorTreeWidget_->isSticky());
+    settings.setValue("propertywidgetSticky", propertyListWidget_->isSticky());
+    settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
+    settings.setValue("helpwidgetSticky", resourceManagerWidget_->isSticky());
+    settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
+    settings.endGroup(); // dialogs
+
+    settings.endGroup(); // mainwindow
 }
-void InviwoMainWindow::loadWindowState() {}
+void InviwoMainWindow::loadWindowState() {
+    // load settings and restore window state
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("mainwindow");
+    restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
+    restoreState(settings.value("state", saveState()).toByteArray());
+    maximized_ = settings.value("maximized", false).toBool();
+
+    // restore sticky flags for main dock widgets
+    settings.beginGroup("dialogs");
+    settingsWidget_->setSticky(settings.value("settingswidgetSticky", true).toBool());
+    processorTreeWidget_->setSticky(settings.value("processorwidgetSticky", true).toBool());
+    propertyListWidget_->setSticky(settings.value("propertywidgetSticky", true).toBool());
+    consoleWidget_->setSticky(settings.value("consolewidgetSticky", true).toBool());
+    resourceManagerWidget_->setSticky(settings.value("resourcemanagerwidgetSticky", true).toBool());
+    helpWidget_->setSticky(settings.value("helpwidgetSticky", true).toBool());
+}
 
 void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     if (!askToSaveWorkspaceChanges()) {
