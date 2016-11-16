@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
 #include <type_traits>
+#include <typeindex>
 
 namespace inviwo {
 /** 
@@ -83,7 +84,7 @@ protected:
     DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& rhs);
 
     mutable std::mutex mutex_;
-    mutable std::vector<std::shared_ptr<Repr>> representations_;
+    mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
 
 private:
     template<typename T>
@@ -91,7 +92,6 @@ private:
 };
 
 namespace detail {
-
 template <typename Repr, typename T,
           typename std::enable_if<!std::is_abstract<T>::value &&
                                       std::is_default_constructible<T>::value &&
@@ -113,10 +113,10 @@ std::shared_ptr<T> createGroupRepresentation() {
 
 template <typename Self, typename Repr>
 DataGroup<Self, Repr>::DataGroup(const DataGroup<Self, Repr>& rhs) {
-    for(const auto& rep : rhs.representations_) {
-        auto clone = std::shared_ptr<Repr>(rep->clone());
+    for (const auto& rep : rhs.representations_) {
+        auto clone = std::shared_ptr<Repr>(rep.second->clone());
         clone->setOwner(static_cast<Self*>(this));
-        representations_.push_back(clone);
+        representations_[clone->getTypeIndex()] = std::move(clone);
     }
 }
 
@@ -125,9 +125,9 @@ DataGroup<Self, Repr>& DataGroup<Self, Repr>::operator=(const DataGroup<Self, Re
     if (this != &that) {
         decltype(representations_) newrepresentation;
         for (const auto& rep : that.representations_) {
-            auto clone = std::shared_ptr<Repr>(rep->clone());
+            auto clone = std::shared_ptr<Repr>(rep.second->clone());
             clone->setOwner(static_cast<Self*>(this));
-            newrepresentation.push_back(clone);
+            representations_[clone->getTypeIndex()] = std::move(clone);
         }
         std::swap(representations_, newrepresentation);
     }
@@ -149,28 +149,31 @@ void DataGroup<Self, Repr>::clearRepresentations() {
 template <typename Self, typename Repr>
 template <typename T>
 T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
+    static_assert(std::is_base_of<Repr, T>::value,
+                  "Can only ask for representations that derive from the base representation");
+
     // check if a representation exists and return it
     std::unique_lock<std::mutex> lock(mutex_);
-    for (size_t i = 0; i < representations_.size(); ++i) {
-        if (auto representation = std::dynamic_pointer_cast<T>(representations_[i])) {
-            representation->update(editable);
-            return representation.get();
-        }
+    auto it = representations_.find(std::type_index(typeid(T)));
+    if (it != representations_.end()) {
+        it->second->update(editable);
+        return dynamic_cast<T*>(it->second.get());
     }
 
     // no representation exists, create one
+    lock.unlock();
     auto representation = detail::createGroupRepresentation<Repr, T>();
-
     if (!representation) {
         throw Exception("Trying to create an invalid group representation: " +
                             std::string(typeid(T).name()) + " for data: " +
                             std::string(typeid(this).name()),
                         IvwContext);
     }
-
     representation->setOwner(static_cast<Self*>(const_cast<DataGroup<Self, Repr>*>(this)));
     representation->update(editable);
-    representations_.push_back(representation);
+    
+    lock.lock();
+    representations_[representation->getTypeIndex()] = representation;
 
     return representation.get();
 }
@@ -190,10 +193,8 @@ T* DataGroup<Self, Repr>::getEditableRepresentation() {
 template <typename Self, typename Repr>
 template<typename T>
 bool DataGroup<Self, Repr>::hasRepresentation() const {
-    for (size_t i=0; i<representations_.size(); i++) {
-        if (std::dynamic_pointer_cast<T>(representations_[i])) return true;
-    }
-    return false;
+    std::unique_lock<std::mutex> lock(mutex_);
+    return representations_.find(std::type_index(typeid(T))) != representation.end();
 }
 
 } // namespace

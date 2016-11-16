@@ -218,18 +218,21 @@ std::unique_ptr<std::vector<unsigned char>> Image::getPickingLayerAsCodedBuffer(
 }
 
 void Image::copyRepresentationsTo(Image* targetImage) const {
-    auto& targets = targetImage->representations_;
-
     // Scheme: Only ask for one editable representations to resize
     // Thus all others can update from one resized version
     // Do the resizing on the representation with the highest priority
-    auto ordering = util::ordering(
-        targets, [](const auto& a, const auto& b) { return a->priority() > b->priority(); });
 
-    for (size_t i = 0; i < targets.size(); i++) {
-        for (size_t j = 0; j < representations_.size(); j++) {
-            auto sourceRepr = representations_[j].get();
-            auto targetRepr = targets[ordering[i]].get();
+    auto& targets = targetImage->representations_;
+    std::vector<std::pair<size_t, std::type_index>> order;
+    for(const auto& elem: targets) order.emplace_back(elem.second->priority(), elem.first);
+    std::sort(order.begin(), order.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    for (const auto& item : order) {
+        const auto sIt = representations_.find(item.second);
+        if (sIt != representations_.end()) {
+            auto sourceRepr = sIt->second.get();
+            auto targetRepr = targets[item.second].get();
             if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                 sourceRepr->update(false);
                 targetRepr->update(true);
@@ -254,13 +257,16 @@ const DataFormatBase* Image::getDataFormat() const {
 }
 
 dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
-    auto ordering = util::ordering(representations_, [](const auto& a, const auto& b) {
-        return a->priority() > b->priority();
-    });
-    auto it =
-        util::find_if(ordering, [&](const auto& i) { return representations_[i]->isValid(); });
-    if (it != ordering.end()) {
-        return representations_[*it]->readPixel(pos, layer, index);
+    std::vector<std::pair<size_t, ImageRepresentation*>> order;
+    for (const auto& elem : representations_) {
+        order.emplace_back(elem.second->priority(), elem.second.get());
+    }
+    std::sort(order.begin(), order.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    auto it = util::find_if(order, [&](const auto& elem) { return elem.second->isValid(); });
+    if (it != order.end()) {
+        return it->second->readPixel(pos, layer, index);
     }
     return dvec4(0.0);
 }

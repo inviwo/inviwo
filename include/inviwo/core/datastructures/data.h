@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <typeindex>
 
 namespace inviwo {
 
