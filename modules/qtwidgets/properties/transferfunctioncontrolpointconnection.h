@@ -44,6 +44,12 @@ class TransferFunctionEditorControlPoint;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionControlPointConnection : public QGraphicsItem {
 public:
+    enum InviwoWidgetGraphicsItemType {
+        TransferFunctionEditorControlPointType = 30,
+        TransferFunctionControlPointConnectionType,
+        Number_of_InviwoWidgetGraphicsItemTypes
+    };
+
     TransferFunctionControlPointConnection();
     virtual ~TransferFunctionControlPointConnection();
 

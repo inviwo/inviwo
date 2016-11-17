@@ -31,6 +31,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/eventconverterqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>

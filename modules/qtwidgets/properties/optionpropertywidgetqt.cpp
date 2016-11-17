@@ -28,8 +28,13 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+
 #include <typeinfo>
+
 namespace inviwo {
+
 OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property) 
     : PropertyWidgetQt(property)
     , property_(property) {

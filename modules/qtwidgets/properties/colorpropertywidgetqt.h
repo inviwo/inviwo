@@ -30,21 +30,22 @@
 #ifndef IVW_COLORPROPERTYWDIGETQT_H
 #define IVW_COLORPROPERTYWDIGETQT_H
 
-
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
-#include <inviwo/core/properties/buttonproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QColorDialog>
-#include <QLabel>
-#include <QPushButton>
+#include <QColor>
 #include <warn/pop>
 
+
+class QColorDialog;
+
 namespace inviwo {
+
+class Property;
+class IvwPushButton;
+class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API ColorPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
@@ -59,9 +60,13 @@ public:
     void updateFromProperty();
     const QColor& getCurrentColor() const;
 
+public slots:
+    void setPropertyValue();
+    void openColorDialog();
+
 private:
     Property* property_;
-    QPushButton* btnColor_;
+    IvwPushButton* btnColor_;
     QColorDialog* colorDialog_;
     QColor currentColor_;
     EditableLabelQt* label_;
@@ -71,10 +76,6 @@ private:
     void createColorDialog();
 
     void offsetColorDialog();
-
-public slots:
-    void setPropertyValue();
-    void openColorDialog();
 };
 
 }  // namespace

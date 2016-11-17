@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,62 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_OPTIONPROPERTYWIDGETQT_H
-#define IVW_OPTIONPROPERTYWIDGETQT_H
+#ifndef IVW_INVIWOWIDGETSQT_H
+#define IVW_INVIWOWIDGETSQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QComboBox>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IvwComboBox;
-class EditableLabelQt;
-
-class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
-    OptionPropertyWidgetQt(BaseOptionProperty* property);
-    void updateFromProperty();
+    IvwLineEdit(QWidget* parent);
+    virtual ~IvwLineEdit();
 
-private:
-    BaseOptionProperty* property_;
-    IvwComboBox* comboBox_;
-    EditableLabelQt* label_;
-    void generateWidget();
-
-public slots:
-    void optionChanged();
+    QSize sizeHint() const;
 };
 
-} // namespace
+class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    IvwPushButton(QWidget* parent);
+    virtual ~IvwPushButton();
 
-#endif // IVW_OPTIONPROPERTYWIDGETQT_H
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+};
+
+class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    IvwComboBox(QWidget* parent);
+    virtual ~IvwComboBox();
+
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+};
+
+} // namespace inviwo
+
+#endif // IVW_INVIWOWIDGETSQT_H
