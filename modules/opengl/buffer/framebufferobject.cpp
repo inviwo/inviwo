@@ -60,6 +60,14 @@ FrameBufferObject::~FrameBufferObject() {
     glDeleteFramebuffersEXT(1, &id_);
 }
 
+void FrameBufferObject::activate() {
+    // store currently bound FBO
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &prevFbo_);
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id_);
+    LGL_ERROR;
+}
+
 void FrameBufferObject::defineDrawBuffers() {
     // TODO: how to handle empty drawBuffers_ ? Do nothing or activate GL_COLOR_ATTACHMENT0 ?
     if (drawBuffers_.empty()) return;
@@ -67,60 +75,16 @@ void FrameBufferObject::defineDrawBuffers() {
     LGL_ERROR;
 }
 
-
-void FrameBufferObject::activate() {
-    // store currently bound FBO
-    GLint currentFbo = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &currentFbo);
-    if (currentFbo != static_cast<GLint>(id_)) {
-        prevFbo_ = currentFbo;
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id_);
-    }
-}
-
 void FrameBufferObject::deactivate() {
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &currentFbo);
     if (currentFbo == static_cast<GLint>(id_)) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, prevFbo_);
+        LGL_ERROR;
     }
 }
 
 void FrameBufferObject::deactivateFBO() { glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0); }
-
-void FrameBufferObject::setRead_Blit(bool set) const {
-    if (set) {  // store currently bound draw FBO
-        GLint currentReadFbo = 0;
-        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING_EXT, &currentReadFbo);
-        if (currentReadFbo != static_cast<GLint>(id_)) {
-            prevReadFbo_ = currentReadFbo;
-            glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, id_);
-        }
-    } else {
-        GLint currentReadFbo = 0;
-        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &currentReadFbo);
-        if (currentReadFbo == static_cast<GLint>(id_)) {
-            glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, prevReadFbo_);
-        }
-    }
-}
-
-void FrameBufferObject::setDraw_Blit(bool set) {
-    if (set) {  // store currently bound draw FBO
-        GLint currentDrawFbo = 0;
-        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &currentDrawFbo);
-        if (currentDrawFbo != static_cast<GLint>(id_)) {
-            prevDrawFbo_ = currentDrawFbo;
-            glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, id_);
-        }
-    } else {
-        GLint currentDrawFbo = 0;
-        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &currentDrawFbo);
-        if (currentDrawFbo == static_cast<GLint>(id_)) {
-            glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, prevDrawFbo_);
-        }
-    }
-}
 
 /******************************* 2D Texture *****************************************/
 
@@ -335,6 +299,32 @@ void FrameBufferObject::checkStatus() {
 
         default:
             break;
+    }
+}
+
+void FrameBufferObject::setRead_Blit(bool set) const {
+    if (set) { // store currently bound draw FBO
+        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING_EXT, &prevReadFbo_);
+        glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, id_);
+    } else {
+        GLint currentReadFbo;
+        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &currentReadFbo);
+        if (currentReadFbo == prevReadFbo_) {
+            glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, prevFbo_);
+        }
+    }
+}
+
+void FrameBufferObject::setDraw_Blit(bool set) {
+    if (set) { // store currently bound draw FBO
+        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &prevDrawFbo_);
+        glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, id_);
+    } else {
+        GLint currentDrawFbo;
+        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &currentDrawFbo);
+        if (currentDrawFbo == prevDrawFbo_) {
+            glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, prevFbo_);
+        }
     }
 }
 
