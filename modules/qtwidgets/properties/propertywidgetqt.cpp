@@ -591,18 +591,22 @@ void PropertyWidgetQt::paintEvent(QPaintEvent* pe) {
 PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string widgetName,
                                                QWidget* parent)
     : InviwoDockWidget(QString(widgetName.c_str()), parent), PropertyEditorWidget(property) {
-    QObject::connect(this, &InviwoDockWidget::dockLocationChanged,
-                     [this](Qt::DockWidgetArea dockArea) {
-        if (dockArea == Qt::LeftDockWidgetArea)
+
+    auto dockingChanged = [this](Qt::DockWidgetArea dockArea) {
+        if (dockArea == Qt::LeftDockWidgetArea) {
             setDockStatus(PropertyEditorWidgetDockStatus::DockedLeft);
-        else if (dockArea == Qt::RightDockWidgetArea)
+        }
+        else if (dockArea == Qt::RightDockWidgetArea) {
             setDockStatus(PropertyEditorWidgetDockStatus::DockedRight);
-        else
+        }
+        else {
             setDockStatus(PropertyEditorWidgetDockStatus::Floating);
-    });
-    QObject::connect(this, &InviwoDockWidget::stickyFlagChanged, [this, widgetName](bool sticky) {
-        setEditorStickyFlag(sticky);
-    });
+        }
+    };
+
+    QObject::connect(this, &InviwoDockWidget::dockLocationChanged, dockingChanged);
+    QObject::connect(this, &InviwoDockWidget::stickyFlagChanged,
+                     [this, widgetName](bool sticky) { setEditorStickyFlag(sticky); });
 }
 
 PropertyEditorWidgetQt::~PropertyEditorWidgetQt() = default;
