@@ -36,6 +36,7 @@ set(MOC_FILES
     properties/ordinalminmaxpropertywidgetqt.h
     properties/ordinalminmaxtextpropertywidgetqt.h
     properties/ordinalpropertywidgetqt.h
+    properties/propertyeditorwidgetqt.h
     properties/propertysettingswidgetqt.h
     properties/propertywidgetqt.h
     properties/stringmultilinepropertywidgetqt.h
@@ -111,6 +112,7 @@ set(SOURCE_FILES
     properties/ordinalminmaxpropertywidgetqt.cpp
     properties/ordinalminmaxtextpropertywidgetqt.cpp
     properties/ordinalpropertywidgetqt.cpp
+    properties/propertyeditorwidgetqt.cpp
     properties/propertysettingswidgetqt.cpp
     properties/propertywidgetqt.cpp
     properties/pythonsyntaxhighlighter.cpp

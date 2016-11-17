@@ -49,10 +49,6 @@
 class QMenu;
 class QAction;
 class QActionGroup;
-class QResizeEvent;
-class QShowEvent;
-class QCloseEvent;
-class QMoveEvent;
 
 namespace inviwo {
 
@@ -62,13 +58,12 @@ using BaseCallBack = std::function<void()>;
 
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
-                                           public PropertyWidget,
-                                           public PropertyObserver {
+                                                  public PropertyWidget,
+                                                  public PropertyObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
     PropertyWidgetQt();
     PropertyWidgetQt(Property* property);
@@ -123,7 +118,6 @@ protected:
     void generateContextMenu();
     void generateModuleMenuActions();
     void updateModuleMenuActions();
-    virtual void initializeEditorWidgetsMetaData() override;
 
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
 
@@ -154,24 +148,6 @@ private:
     int nestedDepth_;
 };
 
-// PropertyEditorWidget owned by PropertyWidget
-class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
-                                                 public PropertyEditorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget* parent);
-    virtual ~PropertyEditorWidgetQt();
-
-protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void showEvent(QShowEvent *) override;
-    virtual void closeEvent(QCloseEvent *) override;
-    virtual void moveEvent(QMoveEvent *event) override;
-};
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYWIDGETQT_H

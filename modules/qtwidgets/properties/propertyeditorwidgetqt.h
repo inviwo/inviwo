@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,62 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
-#define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#ifndef IVW_PROPERTYEDITORWIDGETQT_H
+#define IVW_PROPERTYEDITORWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/propertywidget.h>
+
+
+class QResizeEvent;
+class QShowEvent;
+class QCloseEvent;
+class QMoveEvent;
 
 namespace inviwo {
 
-class EditableLabelQt;
-class TransferFunctionPropertyDialog;
-class TransferFunctionProperty;
-class TFPushButton;
-
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
-    #include <warn/push>
-    #include <warn/ignore/all>
+// PropertyEditorWidget owned by PropertyWidget
+class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
+                                                        public PropertyEditorWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
-
+#include <warn/pop>
 public:
-    TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
-    virtual ~TransferFunctionPropertyWidgetQt();
+    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
+    virtual ~PropertyEditorWidgetQt();
 
-    void updateFromProperty();
-
-private:
-    EditableLabelQt* label_;
-    TFPushButton* btnOpenTF_;
-    TransferFunctionPropertyDialog* transferFunctionDialog_;
-
-    void generateWidget();
-
-public slots:
-    void setPropertyValue();
-    void openTransferFunctionDialog();
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void showEvent(QShowEvent *) override;
+    virtual void closeEvent(QCloseEvent *) override;
+    virtual void moveEvent(QMoveEvent *event) override;
 };
 
-class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-public:
-    TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
-                 QWidget* parent = nullptr);
-    virtual ~TFPushButton() {}
-    void updateFromProperty();
+} // namespace inviwo
 
-private:
-    void resizeEvent(QResizeEvent* event) override;
-
-    TransferFunctionProperty* tfProperty_;
-    TransferFunctionPropertyDialog* tfDialog_;
-};
-
-}  // namespace
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#endif // IVW_PROPERTYEDITORWIDGETQT_H

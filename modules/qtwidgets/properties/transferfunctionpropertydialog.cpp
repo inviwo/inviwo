@@ -32,6 +32,9 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/colorwheel.h>
+#include <modules/qtwidgets/rangesliderqt.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -42,10 +45,13 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QImage>
-#include <QDockWidget>
 #include <QGraphicsItem>
 #include <QPushButton>
 #include <QSizePolicy>
+#include <QComboBox>
+#include <QGradientStops>
+#include <QColorDialog>
+#include <QPixmap>
 #include <warn/pop>
 
 namespace inviwo {
@@ -58,9 +64,9 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr)
-    , tfPixmap_(nullptr) {
-    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    generateWidget();
+    , tfPixmap_(nullptr) 
+    , gradient_(0, 0, 100, 20)
+{
     tfProperty_->get().addObserver(this);
 
     std::stringstream ss;
@@ -70,7 +76,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
     if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
 
-    gradient_ = new QLinearGradient(0, 0, 100, 20);
+    generateWidget();
     updateTFPreview();
     updateFromProperty();
 }
@@ -80,7 +86,6 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
     delete tfPixmap_;
     delete tfEditor_;
     delete colorWheel_;
-    delete gradient_;
     delete colorDialog_;
 }
 
@@ -217,9 +222,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     mainPanel->setLayout(mainLayout);
 
     setWidget(mainPanel);
-
-    setFloating(true);
-    setVisible(false);
 }
 
 // Connected to the cmbInterpolation_ button
@@ -233,7 +235,7 @@ void TransferFunctionPropertyDialog::switchInterpolationType(int interpolationTy
 
 void TransferFunctionPropertyDialog::updateTFPreview() {
     int gradientWidth = tfPreview_->width();
-    gradient_->setFinalStop(gradientWidth, 0);
+    gradient_.setFinalStop(gradientWidth, 0);
 
     if (!tfPixmap_ || gradientWidth != tfPixmap_->width()) {
         if (tfPixmap_) {
@@ -251,7 +253,7 @@ void TransferFunctionPropertyDialog::updateTFPreview() {
     checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
     checkerBoardPainter.end();
     tfPainter.fillRect(0, 0, gradientWidth, 20, QBrush(checkerBoard));
-    tfPainter.fillRect(0, 0, gradientWidth, 20, *gradient_);
+    tfPainter.fillRect(0, 0, gradientWidth, 20, gradient_);
 
     // draw masking indicators
     if (tfProperty_->getMask().x > 0.0f) {
@@ -298,7 +300,7 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
                           QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
     }
 
-    gradient_->setStops(gradientStops);
+    gradient_.setStops(gradientStops);
     updateTFPreview();
 }
 
@@ -510,9 +512,9 @@ void TransferFunctionPropertyDialog::onControlPointChanged(const TransferFunctio
     updateFromProperty();
 }
 
-QLinearGradient* TransferFunctionPropertyDialog::getTFGradient() { return gradient_; }
+const QLinearGradient& TransferFunctionPropertyDialog::getTFGradient() const { return gradient_; }
 
-TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() {
+TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {
     return tfEditorView_;
 }
 

@@ -55,7 +55,6 @@ public:
     virtual Property* getProperty();
 
 protected:
-    virtual void initializeEditorWidgetsMetaData() = 0;
     Property* property_;  //< Non owning reference, can be null
 
     // Reference to additional widget (not necessarily owned always)
