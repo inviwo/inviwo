@@ -65,14 +65,16 @@ class IVW_CORE_API FactoryBase {
 public:
     FactoryBase() {}
     virtual ~FactoryBase() {}
+    FactoryBase(const FactoryBase&) = delete;
+    FactoryBase& operator=(const FactoryBase&) = delete;
+    FactoryBase(FactoryBase&&) = default;
+    FactoryBase& operator=(FactoryBase&&) = default;
 };
 
 template <typename T, typename K = const std::string&, typename... Args>
 class Factory : public FactoryBase {
 public:
     Factory() = default;
-    virtual ~Factory() = default;
-
     virtual std::unique_ptr<T> create(K key, Args... args) const = 0;
     virtual bool hasKey(K key) const = 0;
 };
@@ -88,12 +90,7 @@ public:
     using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
     using Map = std::unordered_map<Key, M*>;
     StandardFactory() = default;
-    virtual ~StandardFactory() = default;
-    StandardFactory(const StandardFactory&) = delete;
-    StandardFactory& operator=(const StandardFactory&) = delete;
-    //StandardFactory(StandardFactory&&) = default; TODO enable... No support in VS2013!!! 
-    //StandardFactory& operator=(StandardFactory&&) = default;
-
+   
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
     virtual bool registerObject(M* obj);
@@ -157,11 +154,6 @@ public:
     using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
     using Map = std::unordered_map<Key, T*>;
     CloningFactory() = default;
-    virtual ~CloningFactory() = default;
-    CloningFactory(const CloningFactory&) = delete;
-    CloningFactory& operator=(const CloningFactory&) = delete;
-    //CloningFactory(CloningFactory&&) = default;
-    //CloningFactory& operator=(CloningFactory&&) = default;
 
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
