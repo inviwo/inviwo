@@ -96,14 +96,11 @@ public slots:
     void importTransferFunction();
     void exportTransferFunction();
     void showHistogram(int type);
-    void dockLocationChanged(Qt::DockWidgetArea dockArea);
     void changeMoveMode(int i);
 
 protected:
     virtual void resizeEvent(QResizeEvent*);
-    virtual void closeEvent(QCloseEvent*);
     virtual void showEvent(QShowEvent*);
-    virtual void moveEvent(QMoveEvent*);
 
 private:
     void setColorDialogColor(QColor c);

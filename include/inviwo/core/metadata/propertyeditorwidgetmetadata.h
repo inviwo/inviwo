@@ -43,7 +43,7 @@ public:
     PropertyEditorWidgetDockStatus();
     PropertyEditorWidgetDockStatus(const std::string& dockStatus);
     PropertyEditorWidgetDockStatus(const PropertyEditorWidgetDockStatus& rhs);
-    virtual ~PropertyEditorWidgetDockStatus() {}
+    ~PropertyEditorWidgetDockStatus() {}
     PropertyEditorWidgetDockStatus& operator=(const PropertyEditorWidgetDockStatus& rhs);
     bool operator==(const PropertyEditorWidgetDockStatus& that);
     const std::string& getString() const;
@@ -58,9 +58,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 
 class IVW_CORE_API PropertyEditorWidgetMetaData : public MetaData {
-
 public:
-
     PropertyEditorWidgetMetaData();
     PropertyEditorWidgetMetaData(const PropertyEditorWidgetMetaData& rhs);
     PropertyEditorWidgetMetaData& operator=(const PropertyEditorWidgetMetaData& that);
@@ -77,10 +75,13 @@ public:
     ivec2 getWidgetPosition()const;
     void setDimensions(const ivec2 &dim);
     ivec2 getDimensions() const;
-    void setVisibile(bool visibility);
+    void setVisible(bool visibility);
     bool isVisible() const;
     void setDockStatus(PropertyEditorWidgetDockStatus& dockStatus);
-    const PropertyEditorWidgetDockStatus getDocStatus() const;
+    const PropertyEditorWidgetDockStatus getDockStatus() const;
+
+    void setSticky(bool sticky);
+    bool isSticky() const;
 
     static const std::string CLASS_IDENTIFIER;
 
@@ -89,6 +90,7 @@ private:
     ivec2 dimensions_;
     bool visibility_;
     std::string dockStatus_;
+    bool stickyFlag_;
 };
 
 } // namespace

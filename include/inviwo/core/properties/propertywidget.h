@@ -66,10 +66,8 @@ protected:
 
 class IVW_CORE_API PropertyEditorWidget {
 public:
-    PropertyEditorWidget();
+    PropertyEditorWidget(Property* property);
     virtual ~PropertyEditorWidget();
-    virtual void initialize(Property* property) = 0;
-    virtual void deinitialize() = 0;
     // set functions
     virtual void setEditorVisibility(bool visible);
     virtual void showEditor();
@@ -77,14 +75,17 @@ public:
     virtual void setEditorDimensions(const ivec2& dimensions);
     virtual void moveEditor(const ivec2& pos);
     virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus);
+    virtual void setEditorStickyFlag(bool sticky);
     // get functions
     virtual bool getEditorVisibilityMetaData() const;
     virtual ivec2 getEditorPositionMetaData() const;
     virtual ivec2 getEditorDimensionMetaData() const;
     virtual PropertyEditorWidgetDockStatus getEditorDockStatus() const;
+    virtual bool getEditorStickyFlag() const;
 
 protected:
     // Non owning reference to a metadata that belongs to property.
+    Property* property_;
     PropertyEditorWidgetMetaData* metaData_;  
 };
 

@@ -53,6 +53,9 @@
 #include <QMenu>
 #include <QLayout>
 #include <QMimeData>
+#include <QMoveEvent>
+#include <QShowEvent>
+#include <QResizeEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -565,6 +568,9 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
             }
         }
 
+        bool sticky = getEditorWidget()->getEditorStickyFlag();
+        propertyEditorWidget->setSticky(sticky);
+
         bool visible = getEditorWidget()->getEditorVisibilityMetaData();
         if (!visible)
             propertyEditorWidget->hide();
@@ -582,18 +588,47 @@ void PropertyWidgetQt::paintEvent(QPaintEvent* pe) {
 
 //////////////////////////////////////////////////////////////////////////
 
-PropertyEditorWidgetQt::PropertyEditorWidgetQt(std::string widgetName, QWidget* parent)
-    : InviwoDockWidget(QString(widgetName.c_str()), parent), PropertyEditorWidget() {}
+PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string widgetName,
+                                               QWidget* parent)
+    : InviwoDockWidget(QString(widgetName.c_str()), parent), PropertyEditorWidget(property) {
 
-PropertyEditorWidgetQt::~PropertyEditorWidgetQt() {}
+    auto dockingChanged = [this](Qt::DockWidgetArea dockArea) {
+        if (dockArea == Qt::LeftDockWidgetArea) {
+            setDockStatus(PropertyEditorWidgetDockStatus::DockedLeft);
+        }
+        else if (dockArea == Qt::RightDockWidgetArea) {
+            setDockStatus(PropertyEditorWidgetDockStatus::DockedRight);
+        }
+        else {
+            setDockStatus(PropertyEditorWidgetDockStatus::Floating);
+        }
+    };
 
-void PropertyEditorWidgetQt::initialize(Property* property) {
-    PropertyEditorWidget::initialize(property);
+    QObject::connect(this, &InviwoDockWidget::dockLocationChanged, dockingChanged);
+    QObject::connect(this, &InviwoDockWidget::stickyFlagChanged,
+                     [this, widgetName](bool sticky) { setEditorStickyFlag(sticky); });
 }
 
-void PropertyEditorWidgetQt::deinitialize() {
-    PropertyEditorWidget::deinitialize();
-    hide();
+PropertyEditorWidgetQt::~PropertyEditorWidgetQt() = default;
+
+void PropertyEditorWidgetQt::resizeEvent(QResizeEvent* event) {
+    setEditorDimensions(ivec2(event->size().width(), event->size().height()));
+    InviwoDockWidget::resizeEvent(event);
+}
+
+void PropertyEditorWidgetQt::showEvent(QShowEvent*) { showEditor(); }
+
+void PropertyEditorWidgetQt::closeEvent(QCloseEvent*) { hideEditor(); }
+
+void PropertyEditorWidgetQt::moveEvent(QMoveEvent* event) {
+    ivec2 pos = ivec2(event->pos().x(), event->pos().y());
+    moveEditor(pos);
+
+    if (isFloating() && !(getEditorDockStatus() == PropertyEditorWidgetDockStatus::Floating)) {
+        setDockStatus(PropertyEditorWidgetDockStatus::Floating);
+    }
+
+    InviwoDockWidget::moveEvent(event);
 }
 
 }  // namespace

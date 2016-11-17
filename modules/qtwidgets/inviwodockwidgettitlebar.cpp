@@ -112,6 +112,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
         // no docking, disable all areas
         parent_->setAllowedAreas(Qt::NoDockWidgetArea);
     }
+    emit stickyFlagChanged(toggle);
 }
 
 void InviwoDockWidgetTitleBar::floatBtnClicked() {

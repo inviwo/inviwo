@@ -70,6 +70,9 @@ public:
     void setSticky(bool toggle);
     bool isSticky() const;
 
+signals:
+    void stickyFlagChanged(bool sticky);
+
 public slots:
     void floating(bool floating);
 protected slots:
