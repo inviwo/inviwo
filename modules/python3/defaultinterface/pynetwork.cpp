@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 
