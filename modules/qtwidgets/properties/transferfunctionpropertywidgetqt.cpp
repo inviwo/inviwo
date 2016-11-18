@@ -90,8 +90,6 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
 
     setLayout(hLayout);
     updateFromProperty();
-    // initializes position, visibility,size of the widget from meta data
-    initializeEditorWidgetsMetaData();
 
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
@@ -117,8 +115,8 @@ TFPushButton::TFPushButton(Property* property, TransferFunctionPropertyDialog* t
 void TFPushButton::updateFromProperty() {
     QSize gradientSize = this->size() - QSize(2, 2);
 
-    QLinearGradient* gradient = tfDialog_->getTFGradient();
-    gradient->setFinalStop(gradientSize.width(), 0);
+    auto gradient = tfDialog_->getTFGradient();
+    gradient.setFinalStop(gradientSize.width(), 0);
     QPixmap tfPixmap(gradientSize);
     QPainter tfPainter(&tfPixmap);
     QPixmap checkerBoard(10, 10);
@@ -129,7 +127,7 @@ void TFPushButton::updateFromProperty() {
     checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
     checkerBoardPainter.end();
     tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), QBrush(checkerBoard));
-    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), *gradient);
+    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), gradient);
     
     // draw masking indicators
     if (tfProperty_->getMask().x > 0.0f) {

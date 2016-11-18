@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 
 namespace inviwo {
 

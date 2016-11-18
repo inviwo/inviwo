@@ -48,8 +48,6 @@ PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return propertyE
 
 bool PropertyWidget::hasEditorWidget() const { return (propertyEditor_ != nullptr); }
 
-void PropertyWidget::initializeEditorWidgetsMetaData() {}
-
 //////////////////////////////////////////////////////////////////////////
 
 // Additional widgets owned by property

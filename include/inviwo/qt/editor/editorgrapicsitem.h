@@ -45,7 +45,7 @@ namespace inviwo {
 class NetworkEditor;
 
 enum IVW_QTEDITOR_API InviwoUserGraphicsItemType {
-    ProcessorGraphicsType = Number_of_InviwoWidgetGraphicsItemTypes,
+    ProcessorGraphicsType = 1,
     CurveGraphicsType,
     ConnectionDragGraphicsType,
     ConnectionGraphicsType,

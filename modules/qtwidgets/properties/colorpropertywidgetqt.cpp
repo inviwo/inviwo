@@ -28,15 +28,19 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/colorpropertywidgetqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
+#include <QColorDialog>
 #include <warn/pop>
 
 namespace inviwo {

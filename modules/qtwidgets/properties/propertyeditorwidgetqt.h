@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,44 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_OPTIONPROPERTYWIDGETQT_H
-#define IVW_OPTIONPROPERTYWIDGETQT_H
+#ifndef IVW_PROPERTYEDITORWIDGETQT_H
+#define IVW_PROPERTYEDITORWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/propertywidget.h>
+
+
+class QResizeEvent;
+class QShowEvent;
+class QCloseEvent;
+class QMoveEvent;
 
 namespace inviwo {
 
-class IvwComboBox;
-class EditableLabelQt;
-
-class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
+// PropertyEditorWidget owned by PropertyWidget
+class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
+                                                        public PropertyEditorWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
-    OptionPropertyWidgetQt(BaseOptionProperty* property);
-    void updateFromProperty();
+    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
+    virtual ~PropertyEditorWidgetQt();
 
-private:
-    BaseOptionProperty* property_;
-    IvwComboBox* comboBox_;
-    EditableLabelQt* label_;
-    void generateWidget();
-
-public slots:
-    void optionChanged();
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void showEvent(QShowEvent *) override;
+    virtual void closeEvent(QCloseEvent *) override;
+    virtual void moveEvent(QMoveEvent *event) override;
 };
 
-} // namespace
+} // namespace inviwo
 
-#endif // IVW_OPTIONPROPERTYWIDGETQT_H
+#endif // IVW_PROPERTYEDITORWIDGETQT_H

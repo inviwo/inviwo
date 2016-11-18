@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,50 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_OPTIONPROPERTYWIDGETQT_H
-#define IVW_OPTIONPROPERTYWIDGETQT_H
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSizePolicy>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IvwComboBox;
-class EditableLabelQt;
+IvwLineEdit::IvwLineEdit(QWidget* parent) : QLineEdit(parent) {}
 
-class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+IvwLineEdit::~IvwLineEdit() = default;
 
-public:
-    OptionPropertyWidgetQt(BaseOptionProperty* property);
-    void updateFromProperty();
+QSize IvwLineEdit::sizeHint() const { return QSize(18, 18); }
 
-private:
-    BaseOptionProperty* property_;
-    IvwComboBox* comboBox_;
-    EditableLabelQt* label_;
-    void generateWidget();
 
-public slots:
-    void optionChanged();
-};
+IvwPushButton::IvwPushButton(QWidget* parent) : QPushButton(parent) {
+    QSizePolicy sp = sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    sp.setHorizontalStretch(3);
+    setSizePolicy(sp);
+}
 
-} // namespace
+IvwPushButton::~IvwPushButton() = default;
 
-#endif // IVW_OPTIONPROPERTYWIDGETQT_H
+QSize IvwPushButton::sizeHint() const { return QSize(18, 18); }
+
+QSize IvwPushButton::minimumSizeHint() const { return sizeHint(); }
+
+
+IvwComboBox::IvwComboBox(QWidget* parent) : QComboBox(parent) {
+    QSizePolicy sp = sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    sp.setHorizontalStretch(3);
+    setSizePolicy(sp);
+}
+
+IvwComboBox::~IvwComboBox() = default;
+
+QSize IvwComboBox::sizeHint() const { return QSize(18, QComboBox::sizeHint().height()); }
+
+QSize IvwComboBox::minimumSizeHint() const { return sizeHint(); }
+
+}  // namespace inviwo

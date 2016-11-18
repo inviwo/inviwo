@@ -38,24 +38,20 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyEditorWidgetDockStatus {
-public:
-    PropertyEditorWidgetDockStatus();
-    PropertyEditorWidgetDockStatus(const std::string& dockStatus);
-    PropertyEditorWidgetDockStatus(const PropertyEditorWidgetDockStatus& rhs);
-    ~PropertyEditorWidgetDockStatus() {}
-    PropertyEditorWidgetDockStatus& operator=(const PropertyEditorWidgetDockStatus& rhs);
-    bool operator==(const PropertyEditorWidgetDockStatus& that);
-    const std::string& getString() const;
-    static const PropertyEditorWidgetDockStatus Floating;
-    static const PropertyEditorWidgetDockStatus DockedLeft;
-    static const PropertyEditorWidgetDockStatus DockedRight;
-
-private:
-    std::string dockStatus_;
+enum class PropertyEditorWidgetDockStatus {
+    Floating,
+    DockedLeft,
+    DockedRight
 };
 
-//////////////////////////////////////////////////////////////////////////
+namespace util {
+
+IVW_CORE_API std::string mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus);
+IVW_CORE_API PropertyEditorWidgetDockStatus mapStringToDockStatus(const std::string &str);
+
+} // namespace util
+
+
 
 class IVW_CORE_API PropertyEditorWidgetMetaData : public MetaData {
 public:
@@ -89,7 +85,7 @@ private:
     ivec2 position_;
     ivec2 dimensions_;
     bool visibility_;
-    std::string dockStatus_;
+    PropertyEditorWidgetDockStatus dockStatus_;
     bool stickyFlag_;
 };
 

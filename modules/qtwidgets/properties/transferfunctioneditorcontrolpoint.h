@@ -46,11 +46,18 @@ class QPainter;
 
 namespace inviwo {
 
+
 class TransferFunctionControlPointConnection;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint : public QGraphicsItem,
                                                              public TransferFunctionPointObserver {
 public:
+    enum InviwoWidgetGraphicsItemType {
+        TransferFunctionEditorControlPointType = 30,
+        TransferFunctionControlPointConnectionType,
+        Number_of_InviwoWidgetGraphicsItemTypes
+    };
+
     TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
                                        const DataMapper& dataMap);
     ~TransferFunctionEditorControlPoint() = default;
