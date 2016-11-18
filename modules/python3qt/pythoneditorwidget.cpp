@@ -410,7 +410,7 @@ void PythonEditorWidget::run() {
         runAction_->setEnabled(true);
     });
     PyInviwo::getPtr()->addObserver(this);
-    if (!appendLog_.isChecked()) {
+    if (!appendLog_->isChecked()) {
         clearOutput();
     }
 
