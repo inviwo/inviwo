@@ -59,6 +59,7 @@ public:
 
 public slots:
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);
+    virtual void closeEvent(QCloseEvent *event) override;
 
 protected:
     InviwoMainWindow* mainwindow_;

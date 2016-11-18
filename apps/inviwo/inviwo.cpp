@@ -60,10 +60,9 @@ int main(int argc, char** argv) {
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);
-    // setup core application
-    inviwoApp.setMainWindow(&mainWin);
+
     // initialize and show splash screen
-    inviwo::InviwoSplashScreen splashScreen(&mainWin, clp.getShowSplashScreen());
+    inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());
     inviwoApp.setProgressCallback([&splashScreen](std::string s) { splashScreen.showMessage(s); });
 
     splashScreen.show();
@@ -78,7 +77,7 @@ int main(int argc, char** argv) {
     clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // setup main window
-    mainWin.initialize();
+    mainWin.updateForNewModules();
     inviwoApp.processEvents();
     splashScreen.showMessage("Loading workspace...");
     inviwoApp.processEvents();

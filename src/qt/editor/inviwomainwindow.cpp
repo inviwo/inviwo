@@ -89,6 +89,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
+    app_->setMainWindow(this);
+
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
@@ -127,11 +129,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                                       screenGrabArg_.getValue());
                                     },
                                     1000);
-}
 
-InviwoMainWindow::~InviwoMainWindow() = default;
-
-void InviwoMainWindow::initialize() {
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
     setCentralWidget(networkEditorView_);
@@ -158,19 +156,26 @@ void InviwoMainWindow::initialize() {
     loadWindowState();
 
     QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("mainwindow");
     QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
-            .toString();
+        .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
-    settingsWidget_->updateSettingsWidget();
 
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
+}
+
+InviwoMainWindow::~InviwoMainWindow() = default;
+
+void InviwoMainWindow::updateForNewModules() {
+    settingsWidget_->updateSettingsWidget();
+    processorTreeWidget_->addProcessorsToTree();
 }
 
 void InviwoMainWindow::showWindow() {
@@ -1040,7 +1045,7 @@ NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
     if(!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
-    InviwoApplication::getPtr()->closeInviwoApplication();
+    app_->closeInviwoApplication();
 }
 
 void InviwoMainWindow::saveWindowState() {
@@ -1087,16 +1092,13 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
-    // save window state
     saveWindowState();
-    settingsWidget_->saveSettings();
 
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
-    if (!loadedNetwork.contains("untitled.inv")) {
-        settings.setValue("workspaceOnLastSuccessfulExit", loadedNetwork);
+    if (!currentWorkspaceFileName_.contains("untitled.inv")) {
+        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     } else {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
     }

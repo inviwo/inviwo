@@ -41,11 +41,10 @@
 
 namespace inviwo {
 
-InviwoSplashScreen::InviwoSplashScreen(QWidget* parent, bool enable)
-    : QSplashScreen(parent, QPixmap(":/images/splashscreen.png"))
-    , showSplashScreen_(enable) {}
+InviwoSplashScreen::InviwoSplashScreen(bool enable)
+    : QSplashScreen(QPixmap(":/images/splashscreen.png")), showSplashScreen_(enable) {}
 
-InviwoSplashScreen::~InviwoSplashScreen() {}
+InviwoSplashScreen::~InviwoSplashScreen() = default;
 
 void InviwoSplashScreen::show() {
     if (showSplashScreen_) QSplashScreen::show();
@@ -64,8 +63,8 @@ void InviwoSplashScreen::showMessage(std::string message) {
     if (showSplashScreen_) QSplashScreen::showMessage(QString::fromStdString(message));
 }
 
-void InviwoSplashScreen::finish(QWidget* mainWindow) {
-    if (showSplashScreen_) QSplashScreen::finish(mainWindow);
+void InviwoSplashScreen::finish(QWidget* waitFor) {
+    if (showSplashScreen_) QSplashScreen::finish(waitFor);
 }
 
 }  // namespace

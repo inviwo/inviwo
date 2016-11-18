@@ -131,4 +131,9 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     }
 }
 
+void SettingsWidget::closeEvent(QCloseEvent *event) {
+    saveSettings();
+    InviwoDockWidget::closeEvent(event);
+}
+
 }  // namespace

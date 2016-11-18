@@ -76,13 +76,14 @@ public:
     void focusSearch();
     void addSelectedProcessor();
 
+public slots:
+    void addProcessorsToTree();
+
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private slots:
-    void addProcessorsToTree();
-
     void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 
 private:

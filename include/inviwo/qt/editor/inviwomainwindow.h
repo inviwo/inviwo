@@ -73,7 +73,7 @@ public:
     InviwoMainWindow(InviwoApplicationQt* app);
     virtual ~InviwoMainWindow();
 
-    void initialize();
+    void updateForNewModules();
     void showWindow();
 
     void openLastWorkspace(std::string workspace = "");
