@@ -47,87 +47,130 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string w
 
     auto dockingChanged = [this](Qt::DockWidgetArea dockArea) {
         if (dockArea == Qt::LeftDockWidgetArea) {
-            setDockStatus(PropertyEditorWidgetDockStatus::DockedLeft);
-        }
-        else if (dockArea == Qt::RightDockWidgetArea) {
-            setDockStatus(PropertyEditorWidgetDockStatus::DockedRight);
-        }
-        else {
-            setDockStatus(PropertyEditorWidgetDockStatus::Floating);
+            PropertyEditorWidget::updateDockStatus(PropertyEditorWidgetDockStatus::DockedLeft);
+        } else if (dockArea == Qt::RightDockWidgetArea) {
+            PropertyEditorWidget::updateDockStatus(PropertyEditorWidgetDockStatus::DockedRight);
+        } else {
+            PropertyEditorWidget::updateDockStatus(PropertyEditorWidgetDockStatus::Floating);
         }
     };
 
     QObject::connect(this, &InviwoDockWidget::dockLocationChanged, dockingChanged);
     QObject::connect(this, &InviwoDockWidget::stickyFlagChanged,
-                     [this, widgetName](bool sticky) { setEditorStickyFlag(sticky); });
+                     [this, widgetName](bool sticky) { updateSticky(sticky); });
 
     // restore editor state from metadata (position, docking state, sticky flag, etc.)
     auto mainWindow = utilqt::getApplicationMainWindow();
 
     // adjust docking status (floating or docked)
     if (mainWindow) {
-        auto docStatus = this->getEditorDockStatus();
-        switch (this->getEditorDockStatus()) {
+        switch (PropertyEditorWidget::getDockStatus()) {
             case PropertyEditorWidgetDockStatus::DockedLeft:
                 mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
-                this->setFloating(false);
+                InviwoDockWidget::setFloating(false);
                 break;
             case PropertyEditorWidgetDockStatus::DockedRight:
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
-                this->setFloating(false);
+                InviwoDockWidget::setFloating(false);
                 break;
             default:
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
-                this->setFloating(true);
+                InviwoDockWidget::setFloating(true);
                 break;
         }
     }
 
     // adjust window size
-    const ivec2 widgetDimension = getEditorDimensionMetaData();
-    resize(QSize(widgetDimension.x, widgetDimension.y));
+    const ivec2 widgetDimension = PropertyEditorWidget::getDimensions();
+    InviwoDockWidget::resize(utilqt::toQSize(widgetDimension));
 
     // adjust window position
-    if (mainWindow) {
-        const ivec2 pos = getEditorPositionMetaData();
-        // move widget relative to main window to make sure that it is visible on screen.
-        QPoint newPos = utilqt::movePointOntoDesktop(
-            QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
-
-        if (!(newPos.x() == 0 && newPos.y() == 0)) {
-            move(newPos);
-        } else {  // We assume that this is a new widget and give it a new position
-            newPos = mainWindow->pos();
-            newPos += utilqt::offsetWidget();
-            move(newPos);
-        }
+    // move widget relative to main window to make sure that it is visible on screen.
+    QPoint newPos =
+        utilqt::movePointOntoDesktop(utilqt::toQPoint(PropertyEditorWidget::getPosition()),
+                                     utilqt::toQSize(widgetDimension), false);
+    if (!(newPos.x() == 0 && newPos.y() == 0)) {
+        InviwoDockWidget::move(newPos);
+    } else if (mainWindow) {  // We assume that this is a new widget and give it a new position
+        newPos = mainWindow->pos();
+        newPos += utilqt::offsetWidget();
+        InviwoDockWidget::move(newPos);
     }
 
     // set sticky flag
-    bool sticky = getEditorStickyFlag();
-    setSticky(sticky);
+    InviwoDockWidget::setSticky(PropertyEditorWidget::isSticky());
 
     // adjust visibility
-    setVisible(getEditorVisibilityMetaData());
+    InviwoDockWidget::setVisible(PropertyEditorWidget::isVisible());
 }
 
 PropertyEditorWidgetQt::~PropertyEditorWidgetQt() = default;
 
+void PropertyEditorWidgetQt::setVisibility(bool visible) {
+    InviwoDockWidget::setVisible(visible);
+    PropertyEditorWidget::setVisibility(visible);
+}
+
+void PropertyEditorWidgetQt::setDimensions(const ivec2& dimensions) {
+    InviwoDockWidget::resize(utilqt::toQSize(dimensions));
+    PropertyEditorWidget::setDimensions(dimensions);
+}
+
+void PropertyEditorWidgetQt::setPosition(const ivec2& pos) {
+    InviwoDockWidget::move(utilqt::toQPoint(pos));
+    PropertyEditorWidget::setPosition(pos);
+}
+
+void PropertyEditorWidgetQt::setDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
+    auto mainWindow = utilqt::getApplicationMainWindow();
+
+    // adjust docking status (floating or docked)
+    if (mainWindow) {
+        switch (dockStatus) {
+            case PropertyEditorWidgetDockStatus::DockedLeft:
+                mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
+                InviwoDockWidget::setFloating(false);
+                break;
+            case PropertyEditorWidgetDockStatus::DockedRight:
+                mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
+                InviwoDockWidget::setFloating(false);
+                break;
+            default:
+                mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
+                InviwoDockWidget::setFloating(true);
+                break;
+        }
+    }
+    PropertyEditorWidgetQt::setDockStatus(dockStatus);
+}
+
+void PropertyEditorWidgetQt::setSticky(bool sticky) {
+    InviwoDockWidget::setSticky(sticky);
+    PropertyEditorWidget::setSticky(sticky);
+}
+
+
 void PropertyEditorWidgetQt::resizeEvent(QResizeEvent* event) {
-    setEditorDimensions(ivec2(event->size().width(), event->size().height()));
+    PropertyEditorWidget::updateDimensions(ivec2(event->size().width(), event->size().height()));
     InviwoDockWidget::resizeEvent(event);
 }
 
-void PropertyEditorWidgetQt::showEvent(QShowEvent*) { showEditor(); }
+void PropertyEditorWidgetQt::showEvent(QShowEvent* e) { 
+   PropertyEditorWidget::updateVisibility(true); 
+   InviwoDockWidget::showEvent(e);
+}
 
-void PropertyEditorWidgetQt::closeEvent(QCloseEvent*) { hideEditor(); }
+void PropertyEditorWidgetQt::closeEvent(QCloseEvent* e) { 
+    PropertyEditorWidget::updateVisibility(false);
+    InviwoDockWidget::closeEvent(e);
+}
 
 void PropertyEditorWidgetQt::moveEvent(QMoveEvent* event) {
     ivec2 pos = ivec2(event->pos().x(), event->pos().y());
-    moveEditor(pos);
+    PropertyEditorWidget::updatePosition(pos);
 
-    if (isFloating() && !(getEditorDockStatus() == PropertyEditorWidgetDockStatus::Floating)) {
-        setDockStatus(PropertyEditorWidgetDockStatus::Floating);
+    if (isFloating() && !(getDockStatus() == PropertyEditorWidgetDockStatus::Floating)) {
+        updateDockStatus(PropertyEditorWidgetDockStatus::Floating);
     }
 
     InviwoDockWidget::moveEvent(event);

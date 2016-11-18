@@ -41,36 +41,29 @@ namespace inviwo {
 
 TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     TransferFunctionProperty* property)
-    : PropertyWidgetQt(property), transferFunctionDialog_(nullptr) {
+    : PropertyWidgetQt(property) {
     generateWidget();
 }
 
 TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
-    transferFunctionDialog_->hide();
-    setEditorWidget(nullptr);
+    if(transferFunctionDialog_) transferFunctionDialog_->hide();
     delete transferFunctionDialog_;
     delete btnOpenTF_;
 }
 
 void TransferFunctionPropertyWidgetQt::generateWidget() {
-    auto mainWindow = utilqt::getApplicationMainWindow();
-    transferFunctionDialog_ = new TransferFunctionPropertyDialog(
-        static_cast<TransferFunctionProperty*>(property_), mainWindow);
-    setEditorWidget(transferFunctionDialog_);
-    // notify the transfer function dialog that the volume with the histogram is already there
-    // TODO: Make sure that this work without notify. Can we do this in another way? It seems very
-    // weird...
-    transferFunctionDialog_->getEditorView()->onTransferFunctionChange();
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    btnOpenTF_ = new TFPushButton(property_, transferFunctionDialog_, this);
-
+    btnOpenTF_ = new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this);
     label_ = new EditableLabelQt(this, property_);
+
     hLayout->addWidget(label_);
 
-    connect(btnOpenTF_, SIGNAL(clicked()), this, SLOT(openTransferFunctionDialog()));
+    connect(btnOpenTF_, &TFPushButton::clicked, [this](){
+        getEditorWidget()->setVisibility(true);
+    });
 
     btnOpenTF_->setEnabled(!property_->getReadOnly());
 
@@ -100,23 +93,51 @@ void TransferFunctionPropertyWidgetQt::updateFromProperty() {
     btnOpenTF_->updateFromProperty();
 }
 
-void TransferFunctionPropertyWidgetQt::setPropertyValue() {}
+TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
+    if (!transferFunctionDialog_) {
+        auto mainWindow = utilqt::getApplicationMainWindow();
+        transferFunctionDialog_ = new TransferFunctionPropertyDialog(
+            static_cast<TransferFunctionProperty*>(property_), mainWindow);
 
-void TransferFunctionPropertyWidgetQt::openTransferFunctionDialog() {
-    transferFunctionDialog_->setVisible(true);
+        // notify the transfer function dialog that the volume with the histogram is already there
+        // TODO: Make sure that this work without notify. Can we do this in another way? It seems
+        // very weird...
+        transferFunctionDialog_->getEditorView()->onTransferFunctionChange();
+    }
+    return transferFunctionDialog_;
 }
 
-TFPushButton::TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
-                           QWidget* parent)
+bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
+    return true;
+}
+
+TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , tfProperty_(static_cast<TransferFunctionProperty*>(property))
-    , tfDialog_(tfDialog) {}
+    , tfProperty_(property) {}
 
 void TFPushButton::updateFromProperty() {
     QSize gradientSize = this->size() - QSize(2, 2);
 
-    auto gradient = tfDialog_->getTFGradient();
+    TransferFunction& transFunc = tfProperty_->get();
+    QVector<QGradientStop> gradientStops;
+    for (int i = 0; i < transFunc.getNumPoints(); i++) {
+        TransferFunctionDataPoint* curPoint = transFunc.getPoint(i);
+        vec4 curColor = curPoint->getRGBA();
+
+        // increase alpha to allow better visibility by 1 - (a - 1)^4
+        float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
+        curColor.a = 1.0f - factor * factor;
+
+        gradientStops.append(
+            QGradientStop(curPoint->getPos().x,
+                          QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+    }
+
+    QLinearGradient gradient;
+    gradient.setStops(gradientStops);
     gradient.setFinalStop(gradientSize.width(), 0);
+
+
     QPixmap tfPixmap(gradientSize);
     QPainter tfPainter(&tfPixmap);
     QPixmap checkerBoard(10, 10);

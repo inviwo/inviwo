@@ -121,7 +121,15 @@ static PyMethodDef Inviwo_METHODS[] =
     {"getPropertyMaxValue", py_getPropertyMaxValue, METH_VARARGS, "Returns the max value for a property (scalar or tuple)." },
     {"getPropertyMinValue", py_getPropertyMinValue, METH_VARARGS, "Returns the min value for a property (scalar or tuple)." },
     {"clickButton",         py_clickButton,         METH_VARARGS, "Simulates a click on a button property." },
-    {"showPropertyEditor",  py_showPropertyEditor,  METH_VARARGS, "Show the property editor for given property."},
+  
+    {"hasPropertyEditor",           py_hasPropertyEditor,           METH_VARARGS, "Dose the property have a property editor."},
+    {"setPropertyEditorVisible",    py_setPropertyEditorVisible,    METH_VARARGS, "Show/Hide the property editor for given property."},
+    {"isPropertyEditorVisible",     py_isPropertyEditorVisible,     METH_VARARGS, "Is Property Dditor visible"},
+    {"setPropertyEditorPosition",   py_setPropertyEditorPosition,   METH_VARARGS, "Set Property Dditor position"},
+    {"getPropertyEditorPosition",   py_getPropertyEditorPosition,   METH_VARARGS, "Get Property Dditor position"},
+    {"setPropertyEditorDimensions", py_setPropertyEditorDimensions, METH_VARARGS, "Set Property Dditor dimensions"},
+    {"getPropertyEditorDimensions", py_getPropertyEditorDimensions, METH_VARARGS, "Get Property Dditor dimensions"},
+
 
     // Defined in pycamera.h
     {"setCameraFocus", py_setCameraFocus, METH_VARARGS, "Function to set the cameras focal point." },

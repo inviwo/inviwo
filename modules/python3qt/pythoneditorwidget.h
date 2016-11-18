@@ -121,7 +121,7 @@ private:
     static PythonEditorWidget* instance_;
 
     InviwoApplication *app_;
-    bool appendLog_;
+    QAction* appendLog_;
 };
 
 }  // namespace

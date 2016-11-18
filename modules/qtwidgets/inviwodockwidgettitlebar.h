@@ -79,6 +79,7 @@ protected slots:
     void stickyBtnToggled(bool toggle);
     void floatBtnClicked();
 
+    virtual void showEvent(QShowEvent *event) override;
 private:
     QDockWidget *parent_;
 

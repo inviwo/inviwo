@@ -512,8 +512,6 @@ void TransferFunctionPropertyDialog::onControlPointChanged(const TransferFunctio
     updateFromProperty();
 }
 
-const QLinearGradient& TransferFunctionPropertyDialog::getTFGradient() const { return gradient_; }
-
 TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {
     return tfEditorView_;
 }

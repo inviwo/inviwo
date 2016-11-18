@@ -33,20 +33,15 @@
 
 namespace inviwo {
 
-PropertyWidget::PropertyWidget() : property_(nullptr), propertyEditor_(nullptr) {}
+PropertyWidget::PropertyWidget() = default;
 
-PropertyWidget::PropertyWidget(Property* property)
-    : property_(property), propertyEditor_(nullptr) {}
+PropertyWidget::PropertyWidget(Property* property) : property_(property) {}
 
 Property* PropertyWidget::getProperty() { return property_; }
 
-void PropertyWidget::setEditorWidget(PropertyEditorWidget* propertyEditorWidget) {
-    propertyEditor_ = propertyEditorWidget;
-}
+PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return nullptr; }
 
-PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return propertyEditor_; }
-
-bool PropertyWidget::hasEditorWidget() const { return (propertyEditor_ != nullptr); }
+bool PropertyWidget::hasEditorWidget() const { return false; }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -60,42 +55,57 @@ PropertyEditorWidget::PropertyEditorWidget(Property* property) : property_(prope
 
 PropertyEditorWidget::~PropertyEditorWidget() = default;
 
-void PropertyEditorWidget::setEditorVisibility(bool visible) { metaData_->setVisible(visible); }
+void PropertyEditorWidget::setVisibility(bool visible) { updateVisibility(visible); }
 
-void PropertyEditorWidget::showEditor() { metaData_->setVisible(true); }
 
-void PropertyEditorWidget::hideEditor() { metaData_->setVisible(false); }
-
-void PropertyEditorWidget::setEditorDimensions(const ivec2& dimensions) {
-    metaData_->setDimensions(dimensions);
+void PropertyEditorWidget::setDimensions(const ivec2& dimensions) {
+    updateDimensions(dimensions);
 }
 
-void PropertyEditorWidget::moveEditor(const ivec2& pos) { metaData_->setWidgetPosition(pos); }
+void PropertyEditorWidget::setPosition(const ivec2& pos) { updatePosition(pos); }
 
 void PropertyEditorWidget::setDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
-    metaData_->setDockStatus(dockStatus);
+    updateDockStatus(dockStatus);
 }
 
-void PropertyEditorWidget::setEditorStickyFlag(bool sticky) {
-    metaData_->setSticky(sticky);
+void PropertyEditorWidget::setSticky(bool sticky) {
+    updateSticky(sticky);
 }
 
-bool PropertyEditorWidget::getEditorVisibilityMetaData() const { return metaData_->isVisible(); }
+bool PropertyEditorWidget::isVisible() const { return metaData_->isVisible(); }
 
-ivec2 PropertyEditorWidget::getEditorPositionMetaData() const {
+ivec2 PropertyEditorWidget::getPosition() const {
     return metaData_->getWidgetPosition();
 }
 
-ivec2 PropertyEditorWidget::getEditorDimensionMetaData() const {
+ivec2 PropertyEditorWidget::getDimensions() const {
     return metaData_->getDimensions();
 }
 
-PropertyEditorWidgetDockStatus PropertyEditorWidget::getEditorDockStatus() const {
+PropertyEditorWidgetDockStatus PropertyEditorWidget::getDockStatus() const {
     return metaData_->getDockStatus();
 }
 
-bool PropertyEditorWidget::getEditorStickyFlag() const {
+bool PropertyEditorWidget::isSticky() const {
     return metaData_->isSticky();
 }
+
+void PropertyEditorWidget::updateVisibility(bool visible) { metaData_->setVisible(visible); }
+
+
+void PropertyEditorWidget::updateDimensions(const ivec2& dimensions) {
+    metaData_->setDimensions(dimensions);
+}
+
+void PropertyEditorWidget::updatePosition(const ivec2& pos) { metaData_->setWidgetPosition(pos); }
+
+void PropertyEditorWidget::updateDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
+    metaData_->setDockStatus(dockStatus);
+}
+
+void PropertyEditorWidget::updateSticky(bool sticky) {
+    metaData_->setSticky(sticky);
+}
+
 
 }  // namespace

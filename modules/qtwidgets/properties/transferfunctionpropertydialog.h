@@ -75,7 +75,6 @@ public:
     ~TransferFunctionPropertyDialog();
 
     void updateFromProperty();
-    const QLinearGradient& getTFGradient() const;
     TransferFunctionEditorView* getEditorView() const;
 
     virtual void onControlPointAdded(TransferFunctionDataPoint* p);

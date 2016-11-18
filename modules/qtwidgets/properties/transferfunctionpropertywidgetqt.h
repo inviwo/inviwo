@@ -32,12 +32,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
 namespace inviwo {
 
 class EditableLabelQt;
-class TransferFunctionPropertyDialog;
 class TransferFunctionProperty;
 class TFPushButton;
 
@@ -52,17 +52,15 @@ public:
     virtual ~TransferFunctionPropertyWidgetQt();
 
     void updateFromProperty();
+    virtual TransferFunctionPropertyDialog* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
 
 private:
-    EditableLabelQt* label_;
-    TFPushButton* btnOpenTF_;
-    TransferFunctionPropertyDialog* transferFunctionDialog_;
+    EditableLabelQt* label_ = nullptr;
+    TFPushButton* btnOpenTF_ = nullptr;
+    mutable TransferFunctionPropertyDialog* transferFunctionDialog_ = nullptr;
 
     void generateWidget();
-
-public slots:
-    void setPropertyValue();
-    void openTransferFunctionDialog();
 };
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
@@ -71,16 +69,14 @@ class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
     Q_OBJECT
     #include <warn/pop>
 public:
-    TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
-                 QWidget* parent = nullptr);
-    virtual ~TFPushButton() {}
+    TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
+    virtual ~TFPushButton() = default;
     void updateFromProperty();
 
 private:
     void resizeEvent(QResizeEvent* event) override;
 
-    TransferFunctionProperty* tfProperty_;
-    TransferFunctionPropertyDialog* tfDialog_;
+    TransferFunctionProperty* tfProperty_ = nullptr;
 };
 
 }  // namespace

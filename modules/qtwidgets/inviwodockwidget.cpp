@@ -53,7 +53,7 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
                      SIGNAL(stickyFlagChanged(bool)));
 }
 
-InviwoDockWidget::~InviwoDockWidget() {}
+InviwoDockWidget::~InviwoDockWidget() = default;
 
 void InviwoDockWidget::showEvent(QShowEvent *showEvent) {
     raise();
@@ -69,14 +69,9 @@ void InviwoDockWidget::keyPressEvent(QKeyEvent *keyEvent) {
     QDockWidget::keyPressEvent(keyEvent);
 }
 
-void InviwoDockWidget::setSticky(bool sticky) {
-    auto titleBar = dynamic_cast<InviwoDockWidgetTitleBar *>(this->titleBarWidget());
-    if (titleBar) {
-        titleBar->setSticky(sticky);
-    }
-}
+void InviwoDockWidget::setSticky(bool sticky) { dockWidgetTitleBar_->setSticky(sticky); }
 
-bool InviwoDockWidget::isSticky() const { return (this->allowedAreas() != Qt::NoDockWidgetArea); }
+bool InviwoDockWidget::isSticky() const { return dockWidgetTitleBar_->isSticky(); }
 
 void InviwoDockWidget::setContents(QWidget *widget) {
     QWidget *oldWidget = this->widget();

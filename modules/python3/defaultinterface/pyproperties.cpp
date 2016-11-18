@@ -48,6 +48,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/python3/pythoninterface/pythonparameterparser.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/defaultinterface/utilities.h>
 
 namespace inviwo {
 
@@ -309,28 +310,84 @@ PyObject* py_clickButton(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_showPropertyEditor(PyObject* self, PyObject* args) {
-    static PythonParameterParser tester;
-
-    std::string path;
-    if (tester.parse(args, path) == -1) {
-        return nullptr;
-    }
-
-    Property* theProperty =
-        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
-
-    if (!theProperty) {
-        std::string msg = "showPropertyEditor: no property with path: " + path;
-        PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return nullptr;
-    }
-    for (auto w : theProperty->getWidgets()) {
-        if (auto editor = w->getEditorWidget()) {
-            editor->showEditor();
-        } 
-    }
-    Py_RETURN_NONE;
+PyObject* py_hasPropertyEditor(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<>(args, [](Property* p) {
+        for (auto w : p->getWidgets()) {
+            if (w->hasEditorWidget()) {
+                return PyValueParser::toPyObject(true);
+            }
+        }
+        return PyValueParser::toPyObject(false);
+    });
 }
+
+PyObject* py_setPropertyEditorVisible(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<bool>(args, [](Property* p, bool visible) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                editor->setVisibility(visible);
+            }
+        }
+        Py_RETURN_NONE;
+    });
+}
+
+PyObject* py_isPropertyEditorVisible(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<>(args, [](Property* p) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                if (editor->isVisible()) {
+                    return PyValueParser::toPyObject(true);
+                }
+            }
+        }
+        return PyValueParser::toPyObject(false);
+    });
+}
+
+PyObject* py_setPropertyEditorPosition(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<ivec2>(args, [](Property* p, ivec2 pos) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                editor->setPosition(pos);
+            }
+        }
+        Py_RETURN_NONE;
+    });
+}
+
+PyObject* py_getPropertyEditorPosition(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<>(args, [](Property* p) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                return PyValueParser::toPyObject(editor->getPosition());
+            }
+        }
+        return PyValueParser::toPyObject(false);
+    });
+}
+
+PyObject* py_setPropertyEditorDimensions(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<ivec2>(args, [](Property* p, ivec2 size) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                editor->setDimensions(size);
+            }
+        }
+        Py_RETURN_NONE;
+    });
+}
+
+PyObject* py_getPropertyEditorDimensions(PyObject* self, PyObject* args) {
+    return utilpy::propertyCallback<>(args, [](Property* p) {
+        for (auto w : p->getWidgets()) {
+            if (auto editor = w->getEditorWidget()) {
+                return PyValueParser::toPyObject(editor->getDimensions());
+            }
+        }
+        return PyValueParser::toPyObject(false);
+    });
+}
+
 
 }
