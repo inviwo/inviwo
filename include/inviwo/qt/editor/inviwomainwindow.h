@@ -191,6 +191,7 @@ private:
     // command line switches
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
+    TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     
     GlobalEventFilter eventFilter_;
     UndoManager undoManager_;

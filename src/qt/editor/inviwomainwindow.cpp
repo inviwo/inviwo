@@ -37,6 +37,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
@@ -86,6 +87,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                    false, "", "file name")
     , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
                      "file name")
+    , saveProcessorPreviews_("", "save-previews", "Save processor previews to the supplied path",
+                             false, "", "path")
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
@@ -129,6 +132,15 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                                       screenGrabArg_.getValue());
                                     },
                                     1000);
+
+    app->getCommandLineParser().add(&saveProcessorPreviews_,
+                                    [this]() {
+                                        utilqt::saveProcessorPreviews(
+                                            saveProcessorPreviews_.getValue(),
+                                            app_->getProcessorFactory()->getKeys());
+
+                                    },
+                                    1200);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
