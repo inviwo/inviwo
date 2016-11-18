@@ -188,6 +188,8 @@ InviwoMainWindow::~InviwoMainWindow() = default;
 void InviwoMainWindow::updateForNewModules() {
     settingsWidget_->updateSettingsWidget();
     processorTreeWidget_->addProcessorsToTree();
+    fillExampleWorkspaceMenu();
+    fillTestWorkspaceMenu();
 }
 
 void InviwoMainWindow::showWindow() {
@@ -348,16 +350,16 @@ void InviwoMainWindow::addActions() {
 
     {
         // create list of all example workspaces
-        auto exampleWorkspaceMenu = fileMenuItem->addMenu(tr("&Example Workspaces"));
-        fillExampleWorkspaceMenu(exampleWorkspaceMenu);
+        exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
+        fillExampleWorkspaceMenu();
     }
 
     {
         // TODO: need a DEVELOPER flag here!
         // create list of all test workspaces, inviwo-dev and other external modules, i.e.
         // "research"
-        auto testWorkspaceMenu = fileMenuItem->addMenu(tr("&Test Workspaces"));
-        fillTestWorkspaceMenu(testWorkspaceMenu);
+        testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
+        fillTestWorkspaceMenu();
     }
 
     {
@@ -637,7 +639,8 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
     updateWindowTitle();
 }
 
-void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
+void InviwoMainWindow::fillExampleWorkspaceMenu() {
+    exampleMenu_->clear();
     for (const auto& module : app_->getModules()) {
         QMenu* moduleMenu = nullptr;
         auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
@@ -646,7 +649,7 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
                 // only accept inviwo workspace files
                 if (filesystem::getFileExtension(item) == "inv") {
                     if(!moduleMenu)
-                        moduleMenu = menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                        moduleMenu = exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
                 
                     QString filename(QString::fromStdString(item));
                     QAction* action = moduleMenu->addAction(filename);
@@ -660,10 +663,11 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
             }
         }
     }
-    menu->menuAction()->setVisible(!menu->isEmpty());
+    exampleMenu_->menuAction()->setVisible(!exampleMenu_->isEmpty());
 }
 
-void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
+void InviwoMainWindow::fillTestWorkspaceMenu() {
+    testMenu_->clear();
     for (const auto& module : app_->getModules()) {
         auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
         if (filesystem::directoryExists(moduleTestPath)) {
@@ -678,7 +682,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
                         if (filesystem::getFileExtension(item) == "inv") {
                             if (!moduleMenu) {
                                 moduleMenu =
-                                    menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                                    testMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
                             }
                             QAction* action = moduleMenu->addAction(QString::fromStdString(item));
                             action->setData(QString::fromStdString(testdir + "/" + item));
@@ -761,10 +765,10 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
 
     // add menu entries
     for (auto& elem : paths) {
-        QMenu* baseMenu = menu;
+        QMenu* baseMenu = testMenu_;
         // add module name as submenu folder for better organization, if it exists
         if (!elem.second.empty()) {
-            baseMenu = menu->addMenu(QString::fromStdString(elem.second));
+            baseMenu = testMenu_->addMenu(QString::fromStdString(elem.second));
         }
 
         // add test workspaces to submenu
@@ -782,7 +786,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
             }
         }
     }
-    menu->menuAction()->setVisible(!menu->isEmpty());
+    testMenu_->menuAction()->setVisible(!testMenu_->isEmpty());
 }
 
 std::string InviwoMainWindow::getCurrentWorkspace() {
@@ -1074,7 +1078,7 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("processorwidgetSticky", processorTreeWidget_->isSticky());
     settings.setValue("propertywidgetSticky", propertyListWidget_->isSticky());
     settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
-    settings.setValue("helpwidgetSticky", resourceManagerWidget_->isSticky());
+    settings.setValue("resourcemanagerwidgetSticky", resourceManagerWidget_->isSticky());
     settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
     settings.endGroup(); // dialogs
 

@@ -148,12 +148,12 @@ private:
     /**
      * \brief compile a list of example workspaces and update the menu
      */
-    void fillExampleWorkspaceMenu(QMenu* menu);
+    void fillExampleWorkspaceMenu();
     /**
     * \brief compile a list of test workspaces from inviwo-dev and external
     * modules and update the menu
     */
-    void fillTestWorkspaceMenu(QMenu* menu);
+    void fillTestWorkspaceMenu();
 
     InviwoApplicationQt* app_;
     std::shared_ptr<NetworkEditor> networkEditor_;
@@ -177,6 +177,9 @@ private:
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
+
+    QMenu* exampleMenu_ = nullptr;
+    QMenu* testMenu_ = nullptr;
 
     // settings
     bool maximized_;
