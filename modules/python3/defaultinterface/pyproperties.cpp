@@ -280,7 +280,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
+PyObject* py_clickButton(PyObject* self, PyObject* args) {
     static PythonParameterParser tester;
 
     std::string path;
@@ -308,4 +308,29 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     button->pressButton();
     Py_RETURN_NONE;
 }
+
+PyObject* py_showPropertyEditor(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+
+    std::string path;
+    if (tester.parse(args, path) == -1) {
+        return nullptr;
+    }
+
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
+    if (!theProperty) {
+        std::string msg = "showPropertyEditor: no property with path: " + path;
+        PyErr_SetString(PyExc_TypeError, msg.c_str());
+        return nullptr;
+    }
+    for (auto w : theProperty->getWidgets()) {
+        if (auto editor = w->getEditorWidget()) {
+            editor->showEditor();
+        } 
+    }
+    Py_RETURN_NONE;
+}
+
 }

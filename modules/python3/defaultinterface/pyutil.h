@@ -34,6 +34,7 @@
 
 namespace inviwo {
 
+PyObject* py_quit(PyObject* self, PyObject* args);
 PyObject* py_wait(PyObject* self, PyObject* args);
 PyObject* py_snapshot(PyObject* self, PyObject* args);
 PyObject* py_snapshotCanvas(PyObject* self, PyObject* args);

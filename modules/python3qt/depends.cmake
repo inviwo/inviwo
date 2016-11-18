@@ -4,5 +4,4 @@
 set(dependencies
     InviwoPython3Module
     InviwoQtWidgetsModule
-    InviwoQtEditor
 )

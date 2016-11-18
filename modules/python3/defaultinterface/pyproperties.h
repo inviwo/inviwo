@@ -41,7 +41,7 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_clickButton(PyObject* /*self*/, PyObject* /*args*/);
-
+PyObject* py_showPropertyEditor(PyObject* /*self*/, PyObject* /*args*/);
 
 }  // namespace
 
