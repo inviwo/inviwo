@@ -88,11 +88,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual bool isReady() const override {
-        // only the mesh input port is mandatory
-        return inport_.isReady(); 
-    }
-
 protected:
     virtual void process() override;
 
