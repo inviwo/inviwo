@@ -34,13 +34,18 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/openglqtmenu.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule {
+class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule,
+                                               public ProcessorNetworkEvaluationObserver {
 public:
     OpenGLQtModule(InviwoApplication* app);
     virtual ~OpenGLQtModule();
+
+    virtual void onProcessorNetworkEvaluationBegin() override;
+    virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
     std::unique_ptr<CanvasQt> sharedCanvas_;

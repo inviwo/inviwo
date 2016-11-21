@@ -34,6 +34,7 @@
 #include <modules/openglqt/canvasprocessorwidgetqt.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +44,8 @@
 
 namespace inviwo {
 
-OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "OpenGLQt") {
+OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
+    : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
     sharedCanvas_ = util::make_unique<CanvasQt>();
@@ -58,6 +60,8 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
         auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
         mainWindow->menuBar()->addMenu(menu.release());
     }
+
+    app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
@@ -65,5 +69,37 @@ OpenGLQtModule::~OpenGLQtModule() {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
+
+void OpenGLQtModule::onProcessorNetworkEvaluationBegin() {
+    // This is called before the network is evaluated, here we make sure that the default context is
+    // active
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
+void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
+    // This is called after the network is evaluated, here we make sure that the gpu is done with
+    // its work before we continue. This is needed to make sure that we have textures that are upto
+    // data when we render the canvases.
+    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+    
+    switch (res) {
+        case GL_ALREADY_SIGNALED:
+            LogWarn("GL_ALREADY_SIGNALED");
+            break;
+        case GL_TIMEOUT_EXPIRED:
+            LogWarn("GL_TIMEOUT_EXPIRED");
+            break;
+        case GL_WAIT_FAILED:
+            LogWarn("GL_WAIT_FAILED");
+            break;
+        case GL_CONDITION_SATISFIED:
+            break;
+    }
+    
+    glDeleteSync(syncObj);
+}
+
+
 
 }  // namespace
