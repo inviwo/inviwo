@@ -170,6 +170,16 @@ void InviwoApplicationQt::wait(int ms) {
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {
 #ifdef IVW_DEBUG
+   
+    
+    #if defined(__APPLE__) 
+    // There is some weird bug on mac that sets compains about
+    // QWidgetWindow(...) Attempt to set a screen on a child window
+    // Does not seem to be a reall problem lets, ignore it.
+    //http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
+    if (msg.contains("Attempt to set a screen on a child window")) return;
+    #endif
+
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
         case QtDebugMsg:
