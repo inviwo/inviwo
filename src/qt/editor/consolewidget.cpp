@@ -73,7 +73,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
-    int id = qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
+    qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
     filter_->setSourceModel(model_.model());
     filter_->setFilterKeyColumn(static_cast<int>(LogTableModelEntry::Columns::Message));

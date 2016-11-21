@@ -351,7 +351,7 @@ PyObject* py_saveNetwork(PyObject* self, PyObject* args) {
     } catch (SerializationException& exception) {
         PyErr_SetString(PyExc_TypeError, std::string("Unable to save network " + filename +
                                                      " due to " + exception.getMessage()).c_str());
-        return false;
+        return nullptr;
     }
 
     Py_RETURN_NONE;

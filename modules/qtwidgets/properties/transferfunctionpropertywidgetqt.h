@@ -51,7 +51,7 @@ public:
     TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
     virtual ~TransferFunctionPropertyWidgetQt();
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
     virtual TransferFunctionPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
 
