@@ -98,6 +98,12 @@ void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
+void Mesh::reserveSizeInVertexBuffer(size_t size) {
+    for (auto& buf : buffers_) {
+        buf.second->getEditableRepresentation<BufferRAM>()->reserve(size);
+    }
+}
+
 void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
 
 const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
