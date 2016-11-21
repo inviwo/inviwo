@@ -61,7 +61,7 @@ namespace inviwo {
  * @see ProgressBar
  * @see ProgressBarObservable
  */
-class IVW_CORE_API ProgressBarOwner  {
+class ProgressBarOwner  {
 public:
     ProgressBarOwner() = default;
     virtual ~ProgressBarOwner() = default;
