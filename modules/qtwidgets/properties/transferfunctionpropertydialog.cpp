@@ -74,11 +74,11 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
        << tfProperty_->getOwner()->getProcessor() << ")";
     setWindowTitle(ss.str().c_str());
 
-    if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
-
     generateWidget();
     updateTFPreview();
     updateFromProperty();
+
+    if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
 }
 
 TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
