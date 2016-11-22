@@ -49,42 +49,42 @@ public:
     // Overload this function to update the widget after property modified has been called.
     virtual void updateFromProperty() = 0;
 
-    void setEditorWidget(PropertyEditorWidget* processorWidget);
-    PropertyEditorWidget* getEditorWidget() const;
-    bool hasEditorWidget() const;
+    virtual PropertyEditorWidget* getEditorWidget() const;
+    virtual bool hasEditorWidget() const;
     virtual Property* getProperty();
 
 protected:
-    virtual void initializeEditorWidgetsMetaData() = 0;
-    Property* property_;  //< Non owning reference, can be null
-
-    // Reference to additional widget (not necessarily owned always)
-    PropertyEditorWidget* propertyEditor_;  
+    Property* property_ = nullptr;  //< Non owning reference, can be null
 };
 
 // Additional widget owned by property widget
 
 class IVW_CORE_API PropertyEditorWidget {
 public:
-    PropertyEditorWidget();
+    PropertyEditorWidget(Property* property);
     virtual ~PropertyEditorWidget();
-    virtual void initialize(Property* property) = 0;
-    virtual void deinitialize() = 0;
     // set functions
-    virtual void setEditorVisibility(bool visible);
-    virtual void showEditor();
-    virtual void hideEditor();
-    virtual void setEditorDimensions(const ivec2& dimensions);
-    virtual void moveEditor(const ivec2& pos);
+    virtual void setVisibility(bool visible);
+    virtual void setDimensions(const ivec2& dimensions);
+    virtual void setPosition(const ivec2& pos);
     virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus);
+    virtual void setSticky(bool sticky);
     // get functions
-    virtual bool getEditorVisibilityMetaData() const;
-    virtual ivec2 getEditorPositionMetaData() const;
-    virtual ivec2 getEditorDimensionMetaData() const;
-    virtual PropertyEditorWidgetDockStatus getEditorDockStatus() const;
+    virtual bool isVisible() const;
+    virtual ivec2 getPosition() const;
+    virtual ivec2 getDimensions() const;
+    virtual PropertyEditorWidgetDockStatus getDockStatus() const;
+    virtual bool isSticky() const;
 
 protected:
+    void updateVisibility(bool visible);
+    void updateDimensions(const ivec2& dimensions);
+    void updatePosition(const ivec2& pos);
+    void updateDockStatus(PropertyEditorWidgetDockStatus dockStatus);
+    void updateSticky(bool sticky);
+
     // Non owning reference to a metadata that belongs to property.
+    Property* property_;
     PropertyEditorWidgetMetaData* metaData_;  
 };
 

@@ -68,8 +68,7 @@ public:
 
     virtual void set(const Property* src) override;
     void set(const CompositeProperty* src);
-    virtual void setModified(bool modified) override;
-    virtual bool isModified() const override;
+    virtual void setValid() override;
     virtual InvalidationLevel getInvalidationLevel() const override;
 
     virtual void setCurrentStateAsDefault() override;
@@ -78,7 +77,7 @@ public:
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = 0) override;
-    void setValid() override;
+                            
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;

@@ -32,28 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/metadata/metadatamap.h>
-#include <inviwo/core/metadata/metadataowner.h>
+#include <typeindex>
 
 namespace inviwo {
-
-/**
- *	\defgroup datastructures Data Structures
- *  \brief Various data structures used in inviwo
- */
-
-class IVW_CORE_API BaseData : public MetaDataOwner {
-public:
-    BaseData() = default;
-    BaseData(const BaseData& rhs) = default;
-    BaseData& operator=(const BaseData& rhs) = default;
-    virtual BaseData* clone() const = 0;
-    virtual ~BaseData() = default;
-    virtual std::string getDataInfo() const;
-};
 
 /**
  * \ingroup datastructures
@@ -97,13 +80,13 @@ public:
  * another one has edited the representation.
  * @see Representation and RepresentationConverter
  */
-template <class Repr>
-class Data : public BaseData {
+template <typename Self, typename Repr>
+class Data {
 public:
-    Data(const DataFormatBase*);
-    Data(const Data<Repr>& rhs);
-    Data<Repr>& operator=(const Data<Repr>& rhs);
-    virtual Data<Repr>* clone() const = 0;
+    using self = Self;
+    using repr = Repr;
+
+    virtual Data<Self, Repr>* clone() const = 0;
     virtual ~Data() = default;
 
     /**
@@ -184,10 +167,16 @@ public:
     const DataFormatBase* getDataFormat() const;
 
 protected:
+    Data(const DataFormatBase*);
+    Data(const Data<Self, Repr>& rhs);
+    Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
+
     virtual std::shared_ptr<Repr> createDefaultRepresentation() const = 0;
     template <typename T>
     const T* getValidRepresentation() const;
-    void copyRepresentationsTo(Data* targetData) const;
+    void copyRepresentationsTo(Data<Self, Repr>* targetData) const;
+
+    std::shared_ptr<Repr> addRepresentationInternal(std::shared_ptr<Repr> representation) const;
 
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
@@ -196,74 +185,66 @@ protected:
     const DataFormatBase* dataFormatBase_;
 };
 
-template <class Repr>
-Data<Repr>::Data(const DataFormatBase* format)
-    : BaseData(), lastValidRepresentation_(), dataFormatBase_(format) {}
+template <typename Self, typename Repr>
+Data<Self, Repr>::Data(const DataFormatBase* format)
+    : lastValidRepresentation_(), dataFormatBase_(format) {}
 
-template <class Repr>
-Data<Repr>::Data(const Data<Repr>& rhs)
-    : BaseData(rhs), lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
+template <typename Self, typename Repr>
+Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
+    : lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
     rhs.copyRepresentationsTo(this);
 }
 
-template <class Repr>
-Data<Repr>& Data<Repr>::operator=(const Data<Repr>& that) {
+template <typename Self, typename Repr>
+Data<Self, Repr>& Data<Self, Repr>::operator=(const Data<Self, Repr>& that) {
     if (this != &that) {
-        BaseData::operator=(that);
         that.copyRepresentationsTo(this);
         dataFormatBase_ = that.dataFormatBase_;
     }
-
     return *this;
 }
 
-template <class Repr>
+template <typename Self, typename Repr>
 template <typename T>
-const T* Data<Repr>::getRepresentation() const {
-    if (!hasRepresentations()) {
+const T* Data<Self, Repr>::getRepresentation() const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (representations_.empty()) {
+        lock.unlock();
         auto repr = createDefaultRepresentation();
+        lock.lock();
         if (!repr) throw Exception("Failed to create default representation", IvwContext);
-        const_cast<Data*>(this)->addRepresentation(repr);
+        lastValidRepresentation_ = addRepresentationInternal(repr);
     }
 
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        auto it = representations_.find(std::type_index(typeid(T)));
-        if (it != representations_.end() && it->second->isValid()) {
-            lastValidRepresentation_ = it->second;
-            return dynamic_cast<const T*>(lastValidRepresentation_.get());
-        } else {
-            return getValidRepresentation<T>();
-        }
+    auto it = representations_.find(std::type_index(typeid(T)));
+    if (it != representations_.end() && it->second->isValid()) {
+        lastValidRepresentation_ = it->second;
+        return dynamic_cast<const T*>(lastValidRepresentation_.get());
+    } else {
+        return getValidRepresentation<T>();
     }
 }
 
-template <class Repr>
+template <typename Self, typename Repr>
 template <typename T>
-const T* Data<Repr>::getValidRepresentation() const {
-    auto factory = InviwoApplication::getPtr()->getRepresentationConverterFactory();
+const T* Data<Self, Repr>::getValidRepresentation() const {
+    auto factory = InviwoApplication::getPtr()->getRepresentationConverterFactory<Repr>();
     auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
                                                        std::type_index(typeid(T)));
 
     if (package) {
         for (auto converter : package->getConverters()) {
-            std::shared_ptr<Repr> result;
-
             auto dest = converter->getConverterID().second;
             auto it = representations_.find(dest);
             if (it != representations_.end()) {  // Next repr. already exist, just update it
-                result = it->second;
-                converter->update(lastValidRepresentation_, result);
+                converter->update(lastValidRepresentation_, it->second);
+                lastValidRepresentation_ = it->second;
+                lastValidRepresentation_->setValid(true);
             } else {  // No representation found, create it
-                // TODO remove static cast here with template factory...
-                result = std::dynamic_pointer_cast<Repr>(
-                    converter->createFrom(lastValidRepresentation_));
+                auto result = converter->createFrom(lastValidRepresentation_);
                 if (!result) throw ConverterException("Converter failed to create", IvwContext);
-                result->setOwner(const_cast<Data*>(this));
-                representations_[result->getTypeIndex()] = result;
+                lastValidRepresentation_ = addRepresentationInternal(result);
             }
-            result->setValid(true);
-            lastValidRepresentation_ = result;
         }
         return dynamic_cast<const T*>(lastValidRepresentation_.get());
     } else {
@@ -271,23 +252,23 @@ const T* Data<Repr>::getValidRepresentation() const {
     }
 }
 
-template <class Repr>
+template <typename Self, typename Repr>
 template <typename T>
-T* Data<Repr>::getEditableRepresentation() {
+T* Data<Self, Repr>::getEditableRepresentation() {
     auto repr = getRepresentation<T>();
     invalidateAllOther(repr);
     return const_cast<T*>(repr);
 }
 
-template <class Repr>
+template <typename Self, typename Repr>
 template <typename T>
-bool Data<Repr>::hasRepresentation() const {
+bool Data<Self, Repr>::hasRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
     return util::has_key(representations_, std::type_index(typeid(T)));
 }
 
-template <class Repr>
-void Data<Repr>::invalidateAllOther(const Repr* repr) {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::invalidateAllOther(const Repr* repr) {
     bool found = false;
     std::unique_lock<std::mutex> lock(mutex_);
     for (auto& elem : representations_) {
@@ -299,17 +280,17 @@ void Data<Repr>::invalidateAllOther(const Repr* repr) {
             lastValidRepresentation_ = elem.second;
         }
     }
-    if(!found) throw Exception("Called with representation not in representations.", IvwContext);
+    if (!found) throw Exception("Called with representation not in representations.", IvwContext);
 }
 
-template <class Repr>
-void Data<Repr>::clearRepresentations() {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::clearRepresentations() {
     std::unique_lock<std::mutex> lock(mutex_);
     representations_.clear();
 }
 
-template <class Repr>
-void Data<Repr>::copyRepresentationsTo(Data* targetData) const {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::copyRepresentationsTo(Data<Self, Repr>* targetData) const {
     targetData->clearRepresentations();
 
     if (lastValidRepresentation_) {
@@ -318,19 +299,22 @@ void Data<Repr>::copyRepresentationsTo(Data* targetData) const {
     }
 }
 
-template <class Repr>
-void Data<Repr>::addRepresentation(std::shared_ptr<Repr> repr) {
+template <typename Self, typename Repr>
+std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(std::shared_ptr<Repr> repr) const {
     repr->setValid(true);
-    repr->setOwner(this);
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        representations_[repr->getTypeIndex()] = repr;
-        lastValidRepresentation_ = repr;
-    }
+    repr->setOwner(static_cast<Self*>(const_cast<Data<Self, Repr>*>(this)));
+    representations_[repr->getTypeIndex()] = repr;
+    return repr;
 }
 
-template <class Repr>
-void Data<Repr>::removeRepresentation(const Repr* representation) {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::addRepresentation(std::shared_ptr<Repr> representation) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    lastValidRepresentation_ = addRepresentationInternal(representation);
+}
+
+template <typename Self, typename Repr>
+void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
     std::unique_lock<std::mutex> lock(mutex_);
 
     for (auto& elem : representations_) {
@@ -351,8 +335,8 @@ void Data<Repr>::removeRepresentation(const Repr* representation) {
     }
 }
 
-template <class Repr>
-void Data<Repr>::removeOtherRepresentations(const Repr* representation) {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::removeOtherRepresentations(const Repr* representation) {
     std::unique_lock<std::mutex> lock(mutex_);
 
     std::unordered_map<std::type_index, std::shared_ptr<Repr>> repr;
@@ -372,19 +356,19 @@ void Data<Repr>::removeOtherRepresentations(const Repr* representation) {
     std::swap(repr, representations_);
 }
 
-template <class Repr>
-bool Data<Repr>::hasRepresentations() const {
+template <typename Self, typename Repr>
+bool Data<Self, Repr>::hasRepresentations() const {
     std::unique_lock<std::mutex> lock(mutex_);
     return !representations_.empty();
 }
 
-template <class Repr>
-void Data<Repr>::setDataFormat(const DataFormatBase* format) {
+template <typename Self, typename Repr>
+void Data<Self, Repr>::setDataFormat(const DataFormatBase* format) {
     dataFormatBase_ = format;
 }
 
-template <class Repr>
-const DataFormatBase* Data<Repr>::getDataFormat() const {
+template <typename Self, typename Repr>
+const DataFormatBase* Data<Self, Repr>::getDataFormat() const {
     return dataFormatBase_;
 }
 

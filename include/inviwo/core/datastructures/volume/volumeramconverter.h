@@ -39,7 +39,7 @@
 namespace inviwo {
 
 class IVW_CORE_API VolumeDisk2RAMConverter
-    : public RepresentationConverterType<VolumeDisk, VolumeRAM> {
+    : public RepresentationConverterType<VolumeRepresentation, VolumeDisk, VolumeRAM> {
 public:
     virtual std::shared_ptr<VolumeRAM> createFrom(
         std::shared_ptr<const VolumeDisk> source) const override;

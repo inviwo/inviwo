@@ -31,18 +31,10 @@
 
 namespace inviwo {
 
-MeshRepresentation::MeshRepresentation() : DataGroupRepresentation() {}
+void MeshRepresentation::setOwner(Mesh* mesh) { owner_ = mesh; }
 
-MeshRepresentation::MeshRepresentation(const MeshRepresentation& rhs)
-    : DataGroupRepresentation(rhs) {}
+Mesh* MeshRepresentation::getOwner() { return owner_; }
 
-MeshRepresentation::~MeshRepresentation() {}
-
-MeshRepresentation& MeshRepresentation::operator=(const MeshRepresentation& that) {
-    if (this != &that) {
-        DataGroupRepresentation::operator=(that);
-    }
-    return *this;
-}
+const Mesh* MeshRepresentation::getOwner() const { return owner_; }
 
 }  // namespace

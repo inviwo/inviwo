@@ -31,11 +31,13 @@
 #define IVW_VOLUME_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 namespace inviwo {
 
@@ -44,16 +46,18 @@ class CameraProperty;
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API Volume : public Data<VolumeRepresentation>, public StructuredGridEntity<3> {
+class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
+                            public StructuredGridEntity<3>,
+                            public MetaDataOwner {
 public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),
            const DataFormatBase* format = DataUInt8::get());
-    Volume(const Volume&);
     Volume(std::shared_ptr<VolumeRepresentation>);
-    Volume& operator=(const Volume& that);
+    Volume(const Volume&) = default;
+    Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
-    virtual std::string getDataInfo() const override;
+    std::string getDataInfo() const;
 
     size3_t getDimensions() const override;
     

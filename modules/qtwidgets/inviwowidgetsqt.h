@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,62 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/datagroup.h>
+#ifndef IVW_INVIWOWIDGETSQT_H
+#define IVW_INVIWOWIDGETSQT_H
+
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QComboBox>
+#include <warn/pop>
 
 namespace inviwo {
 
-} // namespace
+class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    IvwLineEdit(QWidget* parent);
+    virtual ~IvwLineEdit();
+
+    QSize sizeHint() const;
+};
+
+class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    IvwPushButton(QWidget* parent);
+    virtual ~IvwPushButton();
+
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+};
+
+class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    IvwComboBox(QWidget* parent);
+    virtual ~IvwComboBox();
+
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+};
+
+} // namespace inviwo
+
+#endif // IVW_INVIWOWIDGETSQT_H

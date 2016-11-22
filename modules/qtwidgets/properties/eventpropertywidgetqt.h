@@ -40,6 +40,7 @@
 
 namespace inviwo {
 
+class IvwPushButton;
 class EditableLabelQt;
 class EventProperty;
 class EventMatcher;

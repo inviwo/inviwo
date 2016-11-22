@@ -30,11 +30,6 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/canvas.h>
-#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/networkutils.h>
@@ -103,8 +98,6 @@ void ProcessorNetworkEvaluator::evaluate() {
 
     notifyObserversProcessorNetworkEvaluationBegin();
 
-    RenderContext::getPtr()->activateDefaultRenderContext();
-
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
@@ -151,7 +144,7 @@ void ProcessorNetworkEvaluator::evaluate() {
             }
         }
     }
-
+    
     notifyObserversProcessorNetworkEvaluationEnd();
 }
 

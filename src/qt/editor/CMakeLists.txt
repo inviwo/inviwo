@@ -106,6 +106,7 @@ foreach(qtarget Qt5Sql Qt5Network)
 endforeach()
 
 ivw_add_dependencies(InviwoQtWidgetsModule)
+ivw_add_dependencies(InviwoQtApplicationBase)
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core

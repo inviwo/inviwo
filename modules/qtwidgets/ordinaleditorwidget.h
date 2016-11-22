@@ -33,7 +33,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/sliderwidgetqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/qstringhelper.h>
 
 namespace inviwo {

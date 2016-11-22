@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/representationconverter.h>
+#ifndef IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+#define IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
 
 namespace inviwo {
 
-const std::vector<const RepresentationConverter*>& inviwo::RepresentationConverterPackage::getConverters()
-    const {
-    return converters_;
+/**
+ * \class RepresentationConverterMetaFactory
+ * \brief A class to manage RepresentationConverterFactories
+ */
+class IVW_CORE_API RepresentationConverterMetaFactory { 
+public:
+    using BaseReprId = BaseRepresentationConverterFactory::BaseReprId;
+    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
+    
+    RepresentationConverterMetaFactory() = default;
+    virtual ~RepresentationConverterMetaFactory() = default;
+
+    bool registerObject(BaseRepresentationConverterFactory* factory);
+    bool unRegisterObject(BaseRepresentationConverterFactory* factory);
+
+    template <typename BaseRepr>
+    RepresentationConverterFactory<BaseRepr>* getConverterFactory() const;
+
+private:
+     FactoryMap map_;
+};
+
+template <typename BaseRepr>
+RepresentationConverterFactory<BaseRepr>*
+RepresentationConverterMetaFactory::getConverterFactory() const {
+    if (auto ptr = util::map_find_or_null(map_, BaseReprId(typeid(BaseRepr)))) {
+        return static_cast<RepresentationConverterFactory<BaseRepr>*>(ptr);
+    }
+    return nullptr;
 }
 
-size_t inviwo::RepresentationConverterPackage::steps() const { return converters_.size(); }
+} // namespace
 
-RepresentationConverter::ConverterID RepresentationConverterPackage::getConverterID() const {
-    return ConverterID(converters_.front()->getConverterID().first,
-                       converters_.back()->getConverterID().second);
-}
+#endif // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
 
-void RepresentationConverterPackage::addConverter(const RepresentationConverter* converter) {
-    converters_.push_back(converter);
-}
-
-}  // namespace

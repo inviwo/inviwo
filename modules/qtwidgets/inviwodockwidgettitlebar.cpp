@@ -112,10 +112,21 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
         // no docking, disable all areas
         parent_->setAllowedAreas(Qt::NoDockWidgetArea);
     }
+    emit stickyFlagChanged(toggle);
 }
 
 void InviwoDockWidgetTitleBar::floatBtnClicked() {
     parent_->setFloating(!parent_->isFloating());
+}
+
+void InviwoDockWidgetTitleBar::showEvent(QShowEvent *event) {
+    if (isSticky()) {
+        // docking allowed, restore docking areas
+        parent_->setAllowedAreas(allowedDockAreas_);
+    } else {
+        // no docking, disable all areas
+        parent_->setAllowedAreas(Qt::NoDockWidgetArea);
+    }
 }
 
 void InviwoDockWidgetTitleBar::floating(bool floating) {

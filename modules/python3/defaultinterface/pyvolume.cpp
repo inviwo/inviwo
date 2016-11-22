@@ -141,7 +141,7 @@ PyObject* py_addPointTransferFunction(PyObject* /*self*/, PyObject* args) {
     if (!tf) { return nullptr; }
     
     tf->get().addPoint(pos, vec4(color, pos.y));
-    tf->setModified(true);
+    tf->setModified();
     Py_RETURN_NONE;
 }
 

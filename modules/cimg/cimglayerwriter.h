@@ -33,10 +33,9 @@
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
-
-class Layer;
 
 /**
  * \ingroup dataio
@@ -53,8 +52,7 @@ public:
     virtual void writeData(const Layer* data, const std::string filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const Layer* data, const std::string& fileExtension) const override;
-    virtual bool writeDataToRepresentation(const DataRepresentation* src,
-                                           DataRepresentation* dst) const override;
+    virtual bool writeDataToRepresentation(const repr* src, repr* dst) const override;
 };
 
 }  // namespace

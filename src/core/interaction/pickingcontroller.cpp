@@ -173,14 +173,9 @@ void PickingController::setPickingSource(const std::shared_ptr<const Image>& src
 
 PickingManager::Result PickingController::findPickingAction(const uvec2& coord) {
     if (src_ && pickingEnabled()) {
-        if (const auto pickingLayer = src_->getPickingLayer()) {
-            if (const auto pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>()) {
-                const auto value = pickingLayerRAM->getAsNormalizedDVec4(coord);
-                if (value.a > 0.0) {
-                    return PickingManager::getPtr()->getPickingActionFromColor(
-                        uvec3(value.rgb() * 255.0));
-                }
-            }
+        auto value = src_->readPixel(size2_t(coord), LayerType::Picking);
+        if (value.a > 0.0) {
+            return PickingManager::getPtr()->getPickingActionFromColor(uvec3(value.rgb()));
         }
     }
     return {0, nullptr};

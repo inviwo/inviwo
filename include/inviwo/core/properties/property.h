@@ -174,7 +174,8 @@ public:
     virtual void resetToDefaultState();
 
     virtual void propertyModified();
-    virtual void setModified(bool modified);
+    virtual void setValid();
+    virtual void setModified();
     virtual bool isModified() const;
     virtual void set(const Property* src);
 

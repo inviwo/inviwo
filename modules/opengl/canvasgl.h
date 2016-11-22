@@ -33,7 +33,6 @@
 #include <inviwo/core/util/canvas.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
@@ -43,6 +42,7 @@ class LayerRAM;
 class MeshGL;
 class BufferObjectArray;
 class ProcessorWidget;
+class Shader;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
@@ -60,11 +60,6 @@ public:
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
     virtual size2_t getImageDimensions() const override;
-     /**
-     * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
-     * @return Depth layer RAM representation if existing, nullptr otherwise.
-     */
-    const LayerRAM* getDepthLayerRAM() const;
     /**
      * \brief Retrieve depth value in normalized device coordinates at screen coordinate.
      *
@@ -74,10 +69,8 @@ public:
      * @param canvasCoordinate Canvas coordinates [0 dim-1]^2
      * @return NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(ivec2 canvasCoordinate,
-                                const LayerRAM* depthLayerRAM = nullptr) const;
-    double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate,
-                                const LayerRAM* depthLayerRAM = nullptr) const;
+    double getDepthValueAtCoord(ivec2 canvasCoordinate) const;
+    double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const;
 
 protected:
     void renderLayer(size_t idx = 0);
@@ -87,10 +80,8 @@ protected:
 
     void renderTexture(int);
 
-    void checkChannels(std::size_t);
-
     std::shared_ptr<const Image> image_;
-    const ImageGL* imageGL_;
+    const ImageGL* imageGL_ = nullptr;
     std::unique_ptr<Mesh> square_;
     /**
      * Each canvas must have its own MeshGL
@@ -98,6 +89,7 @@ protected:
      * and the vertex array in MeshGL cannot be shared.
      */
     const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
+
 private:
     /**
      * Sometime on OSX in renderNoise when on the first time using
@@ -108,15 +100,12 @@ private:
     bool ready();
     bool ready_ = false;
 
-    Shader* textureShader();
-    Shader* noiseShader();
+    LayerType layerType_ = LayerType::Color;
+    Shader* textureShader_ = nullptr; ///< non-owning reference
+    Shader* noiseShader_ = nullptr;   ///< non-owning reference
 
-    LayerType layerType_;
-    std::unique_ptr<Shader> textureShader_;
-    std::unique_ptr<Shader> noiseShader_;
-
-    size_t channels_;
-    size_t activeRenderLayerIdx_;
+    size_t channels_ = 0;
+    size_t activeRenderLayerIdx_ = 0;
 };
 
 }  // namespace

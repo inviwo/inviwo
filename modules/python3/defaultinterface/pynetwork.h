@@ -48,6 +48,10 @@ PyObject* py_getLinks(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_addLink(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_removeLink(PyObject* /*self*/, PyObject* /*args*/);
 
+PyObject* py_clearNetwork(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_loadNetwork(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_saveNetwork(PyObject* /*self*/, PyObject* /*args*/);
+
 } // namespace
 
 #endif // IVW_PYNETWORK_H

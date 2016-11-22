@@ -31,22 +31,19 @@
 #define IVW_BUFFER_REPRESENTATION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 
 namespace inviwo {
 
+class BufferBase;
+
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API BufferRepresentation : public DataRepresentation {
+class IVW_CORE_API BufferRepresentation : public DataRepresentation<BufferBase> {
 public:
-    BufferRepresentation(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
-                         BufferTarget target = BufferTarget::Data);
-
-    BufferRepresentation(const BufferRepresentation& rhs) = default;
-    BufferRepresentation& operator=(const BufferRepresentation& that) = default;
     virtual BufferRepresentation* clone() const override = 0;
     virtual ~BufferRepresentation() = default;
     virtual void setSize(size_t size) = 0;
@@ -63,6 +60,11 @@ public:
     BufferTarget getBufferTarget() const;
 
 protected:
+    BufferRepresentation(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
+                         BufferTarget target = BufferTarget::Data);
+    BufferRepresentation(const BufferRepresentation& rhs) = default;
+    BufferRepresentation& operator=(const BufferRepresentation& that) = default;
+
     BufferUsage usage_;
     BufferTarget target_;
 };

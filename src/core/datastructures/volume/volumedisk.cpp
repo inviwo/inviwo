@@ -32,10 +32,14 @@
 namespace inviwo {
 
 VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(format), DiskRepresentation(), dimensions_(dimensions) {}
+    : VolumeRepresentation(format)
+    , DiskRepresentation<VolumeRepresentation>()
+    , dimensions_(dimensions) {}
 
 VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(format), DiskRepresentation(srcFile), dimensions_(dimensions) {}
+    : VolumeRepresentation(format)
+    , DiskRepresentation<VolumeRepresentation>(srcFile)
+    , dimensions_(dimensions) {}
 
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 

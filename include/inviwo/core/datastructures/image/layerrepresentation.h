@@ -37,17 +37,15 @@
 
 namespace inviwo {
 
+class Layer;
+
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API LayerRepresentation : public DataRepresentation {
+class IVW_CORE_API LayerRepresentation : public DataRepresentation<Layer> {
 public:
-    LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
-                        const DataFormatBase* format = DataVec4UInt8::get());
-    LayerRepresentation(const LayerRepresentation& rhs);
-    LayerRepresentation& operator=(const LayerRepresentation& that);
     virtual LayerRepresentation* clone() const = 0;
-    virtual ~LayerRepresentation();
+    virtual ~LayerRepresentation() = default;
 
     size2_t getDimensions() const;
     
@@ -70,11 +68,16 @@ public:
     /**
      * Copy and resize the representations of this onto the target.
      */
-    virtual bool copyRepresentationsTo(DataRepresentation*) const = 0;
+    virtual bool copyRepresentationsTo(LayerRepresentation*) const = 0;
 
     LayerType getLayerType() const;
 
 protected:
+    LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
+                        const DataFormatBase* format = DataVec4UInt8::get());
+    LayerRepresentation(const LayerRepresentation& rhs) = default;
+    LayerRepresentation& operator=(const LayerRepresentation& that) = default;
+
     void updateBaseMetaFromRepresentation();
 
     size2_t dimensions_;

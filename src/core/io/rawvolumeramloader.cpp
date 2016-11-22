@@ -42,11 +42,11 @@ RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
-std::shared_ptr<DataRepresentation> RawVolumeRAMLoader::createRepresentation() const {
+std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation() const {
     return format_->dispatch(*this);
 }
 
-void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (dimensions_ != volumeDst->getDimensions()) {

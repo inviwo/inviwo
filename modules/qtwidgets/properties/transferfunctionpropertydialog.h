@@ -38,33 +38,33 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorview.h>
-#include <modules/qtwidgets/colorwheel.h>
-#include <modules/qtwidgets/rangesliderqt.h>
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/util/observer.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QCheckBox>
-#include <QColorDialog>
 #include <QGradientStops>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QPainter>
-#include <QPixmap>
-#include <QSpinBox>
-#include <QWheelEvent>
 #include <warn/pop>
 
+class QPushButton;
+class QComboBox;
+class QLabel;
+class QPixmap;
+class QColorDialog;
+class QResizeEvent;
+class QShowEvent;
 
 namespace inviwo {
 
+class ColorWheel;
+class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                         public TransferFunctionObserver {
+                                                                public TransferFunctionObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -75,8 +75,7 @@ public:
     ~TransferFunctionPropertyDialog();
 
     void updateFromProperty();
-    QLinearGradient* getTFGradient();
-    TransferFunctionEditorView* getEditorView();
+    TransferFunctionEditorView* getEditorView() const;
 
     virtual void onControlPointAdded(TransferFunctionDataPoint* p);
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
@@ -96,14 +95,11 @@ public slots:
     void importTransferFunction();
     void exportTransferFunction();
     void showHistogram(int type);
-    void dockLocationChanged(Qt::DockWidgetArea dockArea);
     void changeMoveMode(int i);
 
 protected:
     virtual void resizeEvent(QResizeEvent*);
-    virtual void closeEvent(QCloseEvent*);
     virtual void showEvent(QShowEvent*);
-    virtual void moveEvent(QMoveEvent*);
 
 private:
     void setColorDialogColor(QColor c);
@@ -124,7 +120,7 @@ private:
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
     QPixmap* tfPixmap_;
 
-    QLinearGradient* gradient_;
+    QLinearGradient gradient_;
 
     QColorDialog* colorDialog_;
     ColorWheel* colorWheel_;

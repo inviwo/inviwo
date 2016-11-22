@@ -31,41 +31,48 @@
 
 namespace inviwo {
 
-PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus() : dockStatus_("Floating") {}
-PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus(const std::string& dockStatus)
-    : dockStatus_(dockStatus) {}
-PropertyEditorWidgetDockStatus::PropertyEditorWidgetDockStatus(
-    const PropertyEditorWidgetDockStatus& rhs)
-    : dockStatus_(rhs.dockStatus_){};
-PropertyEditorWidgetDockStatus& PropertyEditorWidgetDockStatus::operator=(
-    const PropertyEditorWidgetDockStatus& that) {
-    if (this != &that) dockStatus_ = that.dockStatus_;
-
-    return *this;
+std::string mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus) {
+    switch (dockStatus) {
+        case PropertyEditorWidgetDockStatus::Floating:
+            return "Floating";
+        case PropertyEditorWidgetDockStatus::DockedLeft:
+            return "DockedLeft";
+        case PropertyEditorWidgetDockStatus::DockedRight:
+            return "DockedRight";
+        default:
+            return "Floating";
+    }
 }
-bool PropertyEditorWidgetDockStatus::operator==(const PropertyEditorWidgetDockStatus& that) {
-    if (this->getString() == that.getString()) return true;
 
-    return false;
+PropertyEditorWidgetDockStatus mapStringToDockStatus(const std::string& str) {
+    if (str == "Floating") {
+        return PropertyEditorWidgetDockStatus::Floating;
+    } else if (str == "DockedLeft") {
+        return PropertyEditorWidgetDockStatus::DockedLeft;
+    } else if (str == "DockedRight") {
+        return PropertyEditorWidgetDockStatus::DockedRight;
+    }
+    else {
+        return PropertyEditorWidgetDockStatus::Floating;
+    }
 }
-const std::string& PropertyEditorWidgetDockStatus::getString() const { return dockStatus_; }
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::Floating("Floating");
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::DockedLeft("DockedLeft");
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetDockStatus::DockedRight("DockedRight");
 
-//////////////////////////////////////////////////////////////////////////
 
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData()
     : position_(0,0)
     , dimensions_(256,256)
     , visibility_(false)
-    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString()) {}
+    , dockStatus_(PropertyEditorWidgetDockStatus::Floating)
+    , stickyFlag_(false)
+{}
 
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData(const PropertyEditorWidgetMetaData& rhs)
     : position_(rhs.position_)
     , dimensions_(rhs.dimensions_)
     , visibility_(rhs.visibility_)
-    , dockStatus_(PropertyEditorWidgetDockStatus::Floating.getString()) {}
+    , dockStatus_(PropertyEditorWidgetDockStatus::Floating)
+    , stickyFlag_(rhs.stickyFlag_) {
+}
 
 PropertyEditorWidgetMetaData& PropertyEditorWidgetMetaData::operator=(
     const PropertyEditorWidgetMetaData& that) {
@@ -74,6 +81,7 @@ PropertyEditorWidgetMetaData& PropertyEditorWidgetMetaData::operator=(
         dimensions_ = that.dimensions_;
         visibility_ = that.visibility_;
         dockStatus_ = that.dockStatus_;
+        stickyFlag_ = that.stickyFlag_;
     }
 
     return *this;
@@ -101,7 +109,7 @@ ivec2 PropertyEditorWidgetMetaData::getDimensions() const {
     return dimensions_;
 }
 
-void PropertyEditorWidgetMetaData::setVisibile(bool visibility) {
+void PropertyEditorWidgetMetaData::setVisible(bool visibility) {
     visibility_ = visibility;
 }
 
@@ -110,11 +118,19 @@ bool PropertyEditorWidgetMetaData::isVisible() const {
 }
 
 void PropertyEditorWidgetMetaData::setDockStatus(PropertyEditorWidgetDockStatus& dockStatus) {
-    dockStatus_ = dockStatus.getString();
+    dockStatus_ = dockStatus;
 }
 
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDocStatus() const {
-    return PropertyEditorWidgetDockStatus(dockStatus_);
+const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
+    return dockStatus_;
+}
+
+void PropertyEditorWidgetMetaData::setSticky(bool sticky) {
+    stickyFlag_ = sticky;
+}
+
+bool PropertyEditorWidgetMetaData::isSticky() const {
+    return stickyFlag_;
 }
 
 void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
@@ -122,21 +138,26 @@ void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
-    s.serialize("dockstatus", dockStatus_);
+    s.serialize("dockstatus", mapDockStatusToString(dockStatus_));
+    s.serialize("stickyflag", stickyFlag_);
 }
 
 void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
+    std::string strDockStatus;
     d.deserialize("position", position_);
     d.deserialize("dimensions", dimensions_);
     d.deserialize("visibility", visibility_);
-    d.deserialize("dockstatus", dockStatus_);
-    if (dockStatus_.empty()) dockStatus_="Floating";
+    d.deserialize("dockstatus", strDockStatus);
+    d.deserialize("stickyflag", stickyFlag_);
+    
+    dockStatus_ = mapStringToDockStatus(strDockStatus);
 }
 
 bool PropertyEditorWidgetMetaData::equal(const MetaData& rhs) const {
     if (auto tmp = dynamic_cast<const PropertyEditorWidgetMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
-               tmp->visibility_ == visibility_ && tmp->dockStatus_ == dockStatus_;
+               tmp->visibility_ == visibility_ && tmp->dockStatus_ == dockStatus_ &&
+               tmp->stickyFlag_ == stickyFlag_;
     } else {
         return false;
     }

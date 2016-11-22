@@ -57,18 +57,6 @@ void CompositeProperty::setOwner(PropertyOwner* owner) {
     for (Property* property: properties_) property->setOwner(this);
 }
 
-void CompositeProperty::setModified(bool modified) {
-    for (Property* property: properties_) property->setModified(modified);
-    Property::setModified(modified);
-}
-
-bool CompositeProperty::isModified() const {
-    for (Property* property : properties_)
-        if (property->isModified()) return true;
-
-    return false;
-}
-
 void CompositeProperty::set(const Property* srcProperty) {
     if (const auto compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty)) {
         set(compositeSrcProp);
@@ -101,6 +89,7 @@ void CompositeProperty::invalidate(InvalidationLevel invalidationLevel,
 }
 
 void CompositeProperty::setValid() {
+    Property::setValid();
     PropertyOwner::setValid();
     subPropertyInvalidationLevel_ = InvalidationLevel::Valid;
 }

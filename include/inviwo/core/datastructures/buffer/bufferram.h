@@ -52,6 +52,8 @@ public:
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
 
+    virtual void reserve(size_t size) = 0;
+
     // uniform getters and setters
     virtual double getAsDouble(const size_t& pos) const = 0;
     virtual dvec2 getAsDVec2(const size_t& pos) const = 0;

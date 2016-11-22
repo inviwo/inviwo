@@ -32,6 +32,8 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/texture/textureutils.h>
 
+#include <modules/opengl/shader/shader.h>
+
 namespace inviwo {
 
 const MeshGL* SharedOpenGLResources::imagePlaneRect() {
@@ -40,6 +42,55 @@ const MeshGL* SharedOpenGLResources::imagePlaneRect() {
         planeRectMeshGl_ = planeRectMesh_->getRepresentation<MeshGL>();
     }
     return planeRectMeshGl_;
+}
+
+Shader* SharedOpenGLResources::getTextureShader() {
+    if (!textureShader_) {
+        textureShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
+    }
+    return textureShader_.get();
+}
+
+Shader* SharedOpenGLResources::getNoiseShader() {
+    if (!noiseShader_) {
+        noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
+    }
+    return noiseShader_.get();
+}
+
+Shader* SharedOpenGLResources::getImageCopyShader(size_t colorLayers) {
+    auto& elem = imgCopyShaders_[colorLayers];
+    if (!elem) {
+        auto shader = util::make_unique<Shader>("standard.vert", "img_copy.frag", false);
+
+        std::stringstream ssUniform;
+        for (size_t i = 1; i < colorLayers; ++i) {
+            ssUniform << "layout(location = " << i + 1 << ") out vec4 FragData" << i << ";";
+        }
+        for (size_t i = 1; i < colorLayers; ++i) {
+            ssUniform << "uniform sampler2D color" << i << ";";
+        }
+        shader->getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
+                                                           ssUniform.str());
+
+        std::stringstream ssWrite;
+        for (size_t i = 1; i < colorLayers; ++i) {
+            ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
+        }
+        shader->getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
+                                                           ssWrite.str());
+
+        if (colorLayers > 1) {
+            shader->getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        } else {
+            shader->getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        }
+
+        shader->build();
+
+        elem = std::move(shader);
+    }
+    return elem.get();
 }
 
 } // namespace

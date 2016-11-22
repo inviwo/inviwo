@@ -125,6 +125,16 @@ private:
 #endif
 
 #if IVW_PROFILING
+#define IVW_CPU_PROFILING_CUSTOM(src,message)                                                     \
+    std::ostringstream ADDLINE(__stream);                                              \
+    ADDLINE(__stream) << message;                                                      \
+    ScopedClockCPU ADDLINE(__clock)(src, \
+                                    ADDLINE(__stream).str());
+#else
+#define IVW_CPU_PROFILING_CUSTOM(src,message)
+#endif
+
+#if IVW_PROFILING
 #define IVW_CPU_PROFILING_IF(time, message)                                            \
     std::ostringstream ADDLINE(__stream);                                              \
     ADDLINE(__stream) << message;                                                      \
@@ -132,6 +142,16 @@ private:
                                     ADDLINE(__stream).str(), time);
 #else
 #define IVW_CPU_PROFILING_IF(time, message)
+#endif
+
+#if IVW_PROFILING
+#define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)                                            \
+    std::ostringstream ADDLINE(__stream);                                              \
+    ADDLINE(__stream) << message;                                                      \
+    ScopedClockCPU ADDLINE(__clock)(src, \
+                                    ADDLINE(__stream).str(), time);
+#else
+#define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)
 #endif
 
 };  // namespace inviwo

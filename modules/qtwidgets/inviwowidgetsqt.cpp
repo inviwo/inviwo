@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/geometry/meshdisk.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSizePolicy>
+#include <warn/pop>
 
 namespace inviwo {
 
-MeshDisk::MeshDisk(std::string srcFile) : MeshRepresentation(), DiskRepresentation(srcFile) {}
+IvwLineEdit::IvwLineEdit(QWidget* parent) : QLineEdit(parent) {}
 
-MeshDisk* MeshDisk::clone() const { return new MeshDisk(*this); }
+IvwLineEdit::~IvwLineEdit() = default;
 
-std::type_index MeshDisk::getTypeIndex() const {
-    return std::type_index(typeid(MeshDisk));
+QSize IvwLineEdit::sizeHint() const { return QSize(18, 18); }
+
+
+IvwPushButton::IvwPushButton(QWidget* parent) : QPushButton(parent) {
+    QSizePolicy sp = sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    sp.setHorizontalStretch(3);
+    setSizePolicy(sp);
 }
 
-void MeshDisk::update(bool editable) {}
+IvwPushButton::~IvwPushButton() = default;
 
-}  // namespace
+QSize IvwPushButton::sizeHint() const { return QSize(18, 18); }
+
+QSize IvwPushButton::minimumSizeHint() const { return sizeHint(); }
+
+
+IvwComboBox::IvwComboBox(QWidget* parent) : QComboBox(parent) {
+    QSizePolicy sp = sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    sp.setHorizontalStretch(3);
+    setSizePolicy(sp);
+}
+
+IvwComboBox::~IvwComboBox() = default;
+
+QSize IvwComboBox::sizeHint() const { return QSize(18, QComboBox::sizeHint().height()); }
+
+QSize IvwComboBox::minimumSizeHint() const { return sizeHint(); }
+
+}  // namespace inviwo

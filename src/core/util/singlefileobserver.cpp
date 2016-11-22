@@ -24,45 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEDISK_H
-#define IVW_IMAGEDISK_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/datastructures/image/imagerepresentation.h>
+#include <inviwo/core/util/singlefileobserver.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-class IVW_CORE_API ImageDisk : public ImageRepresentation, public DiskRepresentation {
+SingleFileObserver::SingleFileObserver(std::string filename) : FileObserver(), filename_(filename) {
+    InviwoApplication::getPtr()->registerFileObserver(this);
+    start();
+}
 
-public:
-    ImageDisk();
-    ImageDisk(std::string url);
-    virtual ~ImageDisk();
-    virtual void initialize();
-    virtual void deinitialize();
-    virtual void resize(uvec2 dimensions);
-    virtual DataRepresentation* clone() const;
-    virtual std::string getClassName() const { return "ImageDisk"; };
-    virtual bool copyAndResizeImage(DataRepresentation*) { return false;};
-    /**
-     * \brief loads data from url.
-     *
-     * @return void* return the raw data
-     */
-    void* loadFileData() const;
-    /**
-     * \brief loads and rescales data from url.
-     *
-     * @param dst_dimesion destination dimension
-     * @return void* returns the raw data that has been rescaled to dst_dimension
-     */
-    void* loadFileDataAndRescale(uvec2 dst_dimesion) const;
-};
+SingleFileObserver::~SingleFileObserver() {
+    stop();
+    InviwoApplication::getPtr()->unRegisterFileObserver(this);
+}
 
-} // namespace
+void SingleFileObserver::start() { startFileObservation(filename_); }
 
-#endif // IVW_IMAGEDISK_H
+void SingleFileObserver::stop() { stopFileObservation(filename_); }
+
+const inviwo::BaseCallBack* SingleFileObserver::onChange(std::function<void()> callback) {
+    return onChangeCallbacks_.addLambdaCallback(callback);
+}
+
+void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
+    onChangeCallbacks_.remove(callback);
+}
+
+const std::string& SingleFileObserver::getFilename() const { return filename_; }
+
+void SingleFileObserver::fileChanged(const std::string& filename) {
+    onChangeCallbacks_.invokeAll();
+}
+
+}  // namespace

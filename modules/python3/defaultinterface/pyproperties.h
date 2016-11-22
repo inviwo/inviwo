@@ -42,6 +42,13 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_clickButton(PyObject* /*self*/, PyObject* /*args*/);
 
+PyObject* py_hasPropertyEditor(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_setPropertyEditorVisible(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_isPropertyEditorVisible(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_setPropertyEditorPosition(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getPropertyEditorPosition(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_setPropertyEditorDimensions(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_getPropertyEditorDimensions(PyObject* /*self*/, PyObject* /*args*/);
 
 }  // namespace
 

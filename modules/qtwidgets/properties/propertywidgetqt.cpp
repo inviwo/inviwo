@@ -57,30 +57,6 @@
 
 namespace inviwo {
 
-IvwLineEdit::IvwLineEdit(QWidget* parent) : QLineEdit(parent) {}
-IvwLineEdit::~IvwLineEdit() {}
-QSize IvwLineEdit::sizeHint() const { return QSize(18, 18); }
-
-IvwPushButton::IvwPushButton(QWidget* parent) : QPushButton(parent) {
-    QSizePolicy sp = sizePolicy();
-    sp.setHorizontalPolicy(QSizePolicy::Minimum);
-    sp.setHorizontalStretch(3);
-    setSizePolicy(sp);
-}
-IvwPushButton::~IvwPushButton() {}
-QSize IvwPushButton::sizeHint() const { return QSize(18, 18); }
-QSize IvwPushButton::minimumSizeHint() const { return sizeHint(); }
-
-IvwComboBox::IvwComboBox(QWidget* parent) : QComboBox(parent) {
-    QSizePolicy sp = sizePolicy();
-    sp.setHorizontalPolicy(QSizePolicy::Minimum);
-    sp.setHorizontalStretch(3);
-    setSizePolicy(sp);
-}
-IvwComboBox::~IvwComboBox() {}
-QSize IvwComboBox::sizeHint() const { return QSize(18, QComboBox::sizeHint().height()); }
-QSize IvwComboBox::minimumSizeHint() const { return sizeHint(); }
-
 int PropertyWidgetQt::MINIMUM_WIDTH = 250;
 int PropertyWidgetQt::SPACING = 7;
 int PropertyWidgetQt::MARGIN = 0;
@@ -518,82 +494,11 @@ void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoD
     baseContainer_ = widget;
 }
 
-void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
-    if (hasEditorWidget()) {
-        // Validates editor widget position
-        PropertyEditorWidgetQt* propertyEditorWidget =
-            dynamic_cast<PropertyEditorWidgetQt*>(getEditorWidget());
-
-        
-        if (!propertyEditorWidget) return;
-
-        // set widget meta data stuff
-
-        PropertyEditorWidgetDockStatus docStatus = propertyEditorWidget->getEditorDockStatus();
-        auto mainWindow = utilqt::getApplicationMainWindow();
-        if (mainWindow) {
-            if (docStatus == PropertyEditorWidgetDockStatus::DockedLeft) {
-                mainWindow->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
-                propertyEditorWidget->setFloating(false);
-            } else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
-                mainWindow->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
-                propertyEditorWidget->setFloating(false);
-            } else {
-                mainWindow->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
-                propertyEditorWidget->setFloating(true);
-            }
-        }
-
-        propertyEditorWidget->hide();
-
-        ivec2 widgetDimension = getEditorWidget()->getEditorDimensionMetaData();
-        propertyEditorWidget->resize(QSize(widgetDimension.x, widgetDimension.y));
-
-        ivec2 pos = getEditorWidget()->getEditorPositionMetaData();
-
-        if (mainWindow) {
-            // Move widget relative to main window to make sure that it is visible on screen.
-            QPoint newPos = utilqt::movePointOntoDesktop(
-                QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
-
-            if (!(newPos.x() == 0 && newPos.y() == 0)) {
-                propertyEditorWidget->move(newPos);
-            } else {  // We guess that this is a new widget and give a new position
-                newPos = mainWindow->pos();
-                newPos += utilqt::offsetWidget();
-                propertyEditorWidget->move(newPos);
-            }
-        }
-
-        bool visible = getEditorWidget()->getEditorVisibilityMetaData();
-        if (!visible)
-            propertyEditorWidget->hide();
-        else
-            propertyEditorWidget->show();
-    }
-}
-
 void PropertyWidgetQt::paintEvent(QPaintEvent* pe) {
     QStyleOption o;
     o.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 };
-
-//////////////////////////////////////////////////////////////////////////
-
-PropertyEditorWidgetQt::PropertyEditorWidgetQt(std::string widgetName, QWidget* parent)
-    : InviwoDockWidget(QString(widgetName.c_str()), parent), PropertyEditorWidget() {}
-
-PropertyEditorWidgetQt::~PropertyEditorWidgetQt() {}
-
-void PropertyEditorWidgetQt::initialize(Property* property) {
-    PropertyEditorWidget::initialize(property);
-}
-
-void PropertyEditorWidgetQt::deinitialize() {
-    PropertyEditorWidget::deinitialize();
-    hide();
-}
 
 }  // namespace

@@ -67,7 +67,7 @@ public:
     void deinitialize();
 
     virtual void setDimensions(size2_t dimensions) override;
-    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
 
     virtual cl::Image2DGL& getEditable() override { return *clImage_; }
     virtual const cl::Image2DGL& get() const override { return *clImage_; }
@@ -95,6 +95,13 @@ public:
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncLayers, syncEvents, event);
     }
     virtual std::type_index getTypeIndex() const override final;
+
+    
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
     /**
     * \brief update the swizzle mask of the channels for sampling color layers

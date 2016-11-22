@@ -30,15 +30,9 @@
 #ifndef IVW_DATAGROUPREPRESENTATION_H
 #define IVW_DATAGROUPREPRESENTATION_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/datastructures/datarepresentation.h>
+#include <typeindex>
 
 namespace inviwo {
-
-template<typename Repr>
-class DataGroup;
 
 /** 
  * \ingroup datastructures
@@ -52,21 +46,24 @@ class DataGroup;
  *    - DataGroupRepresentation does not own DataRepresentation, does should never delete them.
  *    - DataGroupRepresentation becomes invalid when a child DataRepresentation is invalid.
  */
-class IVW_CORE_API DataGroupRepresentation : public DataRepresentation {
 
-    template<typename Repr>
-    friend class DataGroup;
-
+template <typename Owner>
+class DataGroupRepresentation {
 public:
+    virtual DataGroupRepresentation* clone() const = 0;
+    virtual ~DataGroupRepresentation() = default;
+
+    virtual std::type_index getTypeIndex() const = 0;
+    virtual void setOwner(Owner*) = 0;
+    virtual Owner* getOwner() = 0;
+    virtual const Owner* getOwner() const = 0;
+    virtual bool isValid() const = 0;
+    virtual void update(bool) = 0;
+
+protected:
     DataGroupRepresentation() = default;
     DataGroupRepresentation(const DataGroupRepresentation& rhs) = default;
     DataGroupRepresentation& operator=(const DataGroupRepresentation& that) = default;
-    virtual DataGroupRepresentation* clone() const override = 0;
-    virtual ~DataGroupRepresentation() = default;
-
-protected:
-    //Update representations_ with DataRepresentation from each Data and DataGroup object
-    virtual void update(bool) = 0;
 };
 
 } // namespace

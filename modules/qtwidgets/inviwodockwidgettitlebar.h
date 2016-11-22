@@ -70,12 +70,16 @@ public:
     void setSticky(bool toggle);
     bool isSticky() const;
 
+signals:
+    void stickyFlagChanged(bool sticky);
+
 public slots:
     void floating(bool floating);
 protected slots:
     void stickyBtnToggled(bool toggle);
     void floatBtnClicked();
 
+    virtual void showEvent(QShowEvent *event) override;
 private:
     QDockWidget *parent_;
 

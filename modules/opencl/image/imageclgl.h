@@ -45,17 +45,24 @@ public:
     virtual ~ImageCLGL();
     virtual ImageCLGL* clone() const override;
 
+    virtual size2_t getDimensions() const override;
+    virtual bool copyRepresentationsTo(ImageRepresentation*) const override;
+    virtual size_t priority() const override;
+
     LayerCLGL* getLayerCL();
     const LayerCLGL* getLayerCL() const;
 
-    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
-    virtual size_t priority() const override;
-    
-    virtual std::type_index getTypeIndex() const override final;
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const override;
 
-protected:
+    virtual std::type_index getTypeIndex() const override final;
+    virtual bool isValid() const override;
     virtual void update(bool) override;
 
+private:
     LayerCLGL* layerCLGL_;
 };
 

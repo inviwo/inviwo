@@ -73,7 +73,7 @@ public:
     InviwoMainWindow(InviwoApplicationQt* app);
     virtual ~InviwoMainWindow();
 
-    void initialize();
+    void updateForNewModules();
     void showWindow();
 
     void openLastWorkspace(std::string workspace = "");
@@ -148,12 +148,12 @@ private:
     /**
      * \brief compile a list of example workspaces and update the menu
      */
-    void fillExampleWorkspaceMenu(QMenu* menu);
+    void fillExampleWorkspaceMenu();
     /**
     * \brief compile a list of test workspaces from inviwo-dev and external
     * modules and update the menu
     */
-    void fillTestWorkspaceMenu(QMenu* menu);
+    void fillTestWorkspaceMenu();
 
     InviwoApplicationQt* app_;
     std::shared_ptr<NetworkEditor> networkEditor_;
@@ -178,6 +178,9 @@ private:
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
 
+    QMenu* exampleMenu_ = nullptr;
+    QMenu* testMenu_ = nullptr;
+
     // settings
     bool maximized_;
     bool exampleWorkspaceOpen_;
@@ -191,6 +194,7 @@ private:
     // command line switches
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
+    TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     
     GlobalEventFilter eventFilter_;
     UndoManager undoManager_;

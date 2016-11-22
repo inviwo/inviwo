@@ -41,19 +41,17 @@ namespace inviwo {
 
 /**
  * \class RawVolumeRAMLoader
- *
  * \brief A loader of raw files. Used to create VolumeRAM representations.
- *
  * This class us used by the DatVolumeReader, IvfVolumeReader and RawVolumeReader.
  */
 
-class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader {
+class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     RawVolumeRAMLoader(const std::string& rawFile, size_t offset, size3_t dimensions,
                        bool littleEndian, const DataFormatBase* format);
     virtual RawVolumeRAMLoader* clone() const override;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
 
@@ -74,7 +72,7 @@ public:
 
         auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimensions_);
         data.release();
-        return repr; 
+        return repr;
     }
 
 private:

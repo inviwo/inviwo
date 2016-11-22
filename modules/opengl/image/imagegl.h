@@ -61,7 +61,8 @@ public:
     void activateBuffer(ImageType type = ImageType::AllLayers);
     void deactivateBuffer();
 
-    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual size2_t getDimensions() const override;
+    virtual bool copyRepresentationsTo(ImageRepresentation* target) const override;
     virtual size_t priority() const override;
     
     bool copyRepresentationsTo(ImageGL* target) const;
@@ -85,9 +86,15 @@ public:
 
     void updateExistingLayers() const;
     void renderImagePlaneRect() const;
-    virtual std::type_index getTypeIndex() const override final;
 
-protected:
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const override;
+
+    virtual std::type_index getTypeIndex() const override final;
+    virtual bool isValid() const override;
     virtual void update(bool editable) override;
 
 private:
@@ -97,9 +104,9 @@ private:
 
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
-    mutable Shader shader_;
+
+    mutable Shader* shader_ = nullptr;    //< non-owning reference
     mutable size_t colorLayerCopyCount_;
-    mutable bool singleChannelCopy_;
 
     GLboolean prevDepthTest_;
     GLboolean prevDepthMask_;

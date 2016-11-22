@@ -52,62 +52,18 @@ class QActionGroup;
 
 namespace inviwo {
 
-enum IVW_MODULE_QTWIDGETS_API InviwoWidgetGraphicsItemType {
-    TransferFunctionEditorControlPointType = 1,
-    TransferFunctionControlPointConnectionType,
-    Number_of_InviwoWidgetGraphicsItemTypes
-};
-
 class PropertyListWidget;
 class Property;
 using BaseCallBack = std::function<void()>;
 
-class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-public:
-    IvwLineEdit(QWidget* parent);
-    virtual ~IvwLineEdit();
-
-    QSize sizeHint() const;
-};
-
-class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    IvwPushButton(QWidget* parent);
-    virtual ~IvwPushButton();
-
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
-};
-
-class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    IvwComboBox(QWidget* parent);
-    virtual ~IvwComboBox();
-
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
-};
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
-                                           public PropertyWidget,
-                                           public PropertyObserver {
+                                                  public PropertyWidget,
+                                                  public PropertyObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
     PropertyWidgetQt();
     PropertyWidgetQt(Property* property);
@@ -162,7 +118,6 @@ protected:
     void generateContextMenu();
     void generateModuleMenuActions();
     void updateModuleMenuActions();
-    virtual void initializeEditorWidgetsMetaData() override;
 
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
 
@@ -193,20 +148,6 @@ private:
     int nestedDepth_;
 };
 
-// PropertyEditorWidget owned by PropertyWidget
-class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
-                                                 public PropertyEditorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    PropertyEditorWidgetQt(std::string widgetName, QWidget* parent);
-    virtual ~PropertyEditorWidgetQt();
-    virtual void initialize(Property* property);
-    virtual void deinitialize();
-};
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYWIDGETQT_H

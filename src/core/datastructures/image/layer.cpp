@@ -39,13 +39,13 @@ namespace inviwo {
 
 Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type,
              const SwizzleMask& swizzleMask)
-    : Data<LayerRepresentation>(format)
+    : Data<Layer, LayerRepresentation>(format)
     , StructuredGridEntity<2>(dimensions)
     , layerType_(type)
     , swizzleMask_(swizzleMask) {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
-    : Data<LayerRepresentation>(in->getDataFormat())
+    : Data<Layer, LayerRepresentation>(in->getDataFormat())
     , StructuredGridEntity<2>(in->getDimensions())
     , layerType_(in->getLayerType())
     , swizzleMask_(in->getSwizzleMask()) {

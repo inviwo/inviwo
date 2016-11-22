@@ -29,20 +29,21 @@
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/datastructures/image/imagedisk.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format)
-    : DataGroup()
+    : DataGroup<Image, ImageRepresentation>()
+    , MetaDataOwner()
     , depthLayer_{createDepthLayer(dimensions)}
     , pickingLayer_{createPickingLayer(dimensions, format)} {
     colorLayers_.push_back(createColorLayer(dimensions, format));
 }
 
-Image::Image(std::shared_ptr<Layer> layer) : DataGroup() {
+Image::Image(std::shared_ptr<Layer> layer)
+    : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
     if (layer) {
         auto dimensions = layer->getDimensions();
 
@@ -57,7 +58,7 @@ Image::Image(std::shared_ptr<Layer> layer) : DataGroup() {
             case LayerType::Depth: {
                 colorLayers_.push_back(createColorLayer(dimensions));
                 depthLayer_ = layer;
-                pickingLayer_ =createPickingLayer(dimensions);
+                pickingLayer_ = createPickingLayer(dimensions);
                 break;
             }
             case LayerType::Picking: {
@@ -74,7 +75,7 @@ Image::Image(std::shared_ptr<Layer> layer) : DataGroup() {
     }
 }
 
-Image::Image(const Image& rhs) : DataGroup(rhs) {
+Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), MetaDataOwner(rhs) {
     for (const auto& elem : rhs.colorLayers_) {
         colorLayers_.push_back(std::shared_ptr<Layer>(elem->clone()));
     }
@@ -87,7 +88,8 @@ Image::Image(const Image& rhs) : DataGroup(rhs) {
 
 Image& Image::operator=(const Image& that) {
     if (this != &that) {
-        DataGroup::operator=(that);
+        DataGroup<Image, ImageRepresentation>::operator=(that);
+        MetaDataOwner::operator=(that);
 
         std::vector<std::shared_ptr<Layer>> colorLayers;
         for (const auto& color : that.colorLayers_) {
@@ -127,14 +129,11 @@ const Layer* Image::getLayer(LayerType type, size_t idx) const {
     switch (type) {
         case LayerType::Color:
             return getColorLayer(idx);
-
         case LayerType::Depth:
             return getDepthLayer();
-
         case LayerType::Picking:
             return getPickingLayer();
     }
-
     return nullptr;
 }
 
@@ -142,14 +141,11 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
     switch (type) {
         case LayerType::Color:
             return getColorLayer(idx);
-
         case LayerType::Depth:
             return getDepthLayer();
-
         case LayerType::Picking:
             return getPickingLayer();
     }
-
     return nullptr;
 }
 
@@ -200,11 +196,9 @@ std::unique_ptr<std::vector<unsigned char>> Image::getLayerAsCodedBuffer(
 
     if (auto layer = this->getLayer(layerType, idx)) {
         return layer->getAsCodedBuffer(fileExtension);
-    }
-    else {
+    } else {
         LogError("Requested layer does not exist");
     }
-
     return nullptr;
 }
 
@@ -224,20 +218,21 @@ std::unique_ptr<std::vector<unsigned char>> Image::getPickingLayerAsCodedBuffer(
 }
 
 void Image::copyRepresentationsTo(Image* targetImage) const {
-    auto& targets = targetImage->representations_;
-
     // Scheme: Only ask for one editable representations to resize
     // Thus all others can update from one resized version
     // Do the resizing on the representation with the highest priority
-    auto ordering = util::ordering(targets, [](const std::shared_ptr<ImageRepresentation>& a,
-                                               const std::shared_ptr<ImageRepresentation>& b) {
-        return a->priority() > b->priority();
-    });
 
-    for (size_t i = 0; i < targets.size(); i++) {
-        for (size_t j = 0; j < representations_.size(); j++) {
-            auto sourceRepr = static_cast<ImageRepresentation*>(representations_[j].get());
-            auto targetRepr = static_cast<ImageRepresentation*>(targets[ordering[i]].get());
+    auto& targets = targetImage->representations_;
+    std::vector<std::pair<size_t, std::type_index>> order;
+    for(const auto& elem: targets) order.emplace_back(elem.second->priority(), elem.first);
+    std::sort(order.begin(), order.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    for (const auto& item : order) {
+        const auto sIt = representations_.find(item.second);
+        if (sIt != representations_.end()) {
+            auto sourceRepr = sIt->second.get();
+            auto targetRepr = targets[item.second].get();
             if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                 sourceRepr->update(false);
                 targetRepr->update(true);
@@ -261,7 +256,22 @@ const DataFormatBase* Image::getDataFormat() const {
     return getColorLayer()->getDataFormat();
 }
 
-inviwo::uvec3 Image::COLOR_CODE  = uvec3(90, 127, 183);
+dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
+    std::vector<std::pair<size_t, ImageRepresentation*>> order;
+    for (const auto& elem : representations_) {
+        order.emplace_back(elem.second->priority(), elem.second.get());
+    }
+    std::sort(order.begin(), order.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    auto it = util::find_if(order, [&](const auto& elem) { return elem.second->isValid(); });
+    if (it != order.end()) {
+        return it->second->readPixel(pos, layer, index);
+    }
+    return dvec4(0.0);
+}
+
+inviwo::uvec3 Image::COLOR_CODE = uvec3(90, 127, 183);
 
 const std::string Image::CLASS_IDENTIFIER = "org.inviwo.Image";
 

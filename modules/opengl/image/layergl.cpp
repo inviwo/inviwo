@@ -67,7 +67,7 @@ LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     return *this;
 }
 
-LayerGL::~LayerGL() {}
+LayerGL::~LayerGL() = default;
 
 LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
 
@@ -87,7 +87,7 @@ void LayerGL::unbindTexture() const {
     glActiveTexture(GL_TEXTURE0);
 }
 
-bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
+bool LayerGL::copyRepresentationsTo(LayerRepresentation* targetLayerGL) const {
     /*const LayerGL* source = this;
     LayerGL* target = dynamic_cast<LayerGL*>(targetLayerGL);
     if(!target){

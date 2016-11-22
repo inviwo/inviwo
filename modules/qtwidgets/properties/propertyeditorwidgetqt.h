@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,50 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEDISK_H
-#define IVW_IMAGEDISK_H
+#ifndef IVW_PROPERTYEDITORWIDGETQT_H
+#define IVW_PROPERTYEDITORWIDGETQT_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/image/imagerepresentation.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/propertywidget.h>
+
+
+class QResizeEvent;
+class QShowEvent;
+class QCloseEvent;
+class QMoveEvent;
 
 namespace inviwo {
 
-/**
- * \ingroup datastructures	
- */
-class IVW_CORE_API ImageDisk : public ImageRepresentation {
-
+// PropertyEditorWidget owned by PropertyWidget
+class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
+                                                        public PropertyEditorWidget {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    ImageDisk();
-    ImageDisk(const ImageDisk& rhs);
-    ImageDisk& operator=(const ImageDisk& that);
-    virtual ImageDisk* clone() const override;
-    virtual ~ImageDisk();
+    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
+    virtual ~PropertyEditorWidgetQt();
 
-    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
-    virtual size_t priority() const override;
-    virtual std::type_index getTypeIndex() const override final;
-    
+    virtual void setVisibility(bool visible) override;
+    virtual void setDimensions(const ivec2& dimensions) override;
+    virtual void setPosition(const ivec2& pos) override;
+    virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus) override;
+    virtual void setSticky(bool sticky) override;
 
 protected:
-    virtual void update(bool editable) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void showEvent(QShowEvent *) override;
+    virtual void closeEvent(QCloseEvent *) override;
+    virtual void moveEvent(QMoveEvent *event) override;
 };
 
-} // namespace
+} // namespace inviwo
 
-#endif // IVW_IMAGEDISK_H
+#endif // IVW_PROPERTYEDITORWIDGETQT_H

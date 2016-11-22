@@ -75,6 +75,8 @@ private:
 template <typename T>
 class DataWriterType : public DataWriter {
 public:
+    using repr = typename T::repr;
+
     DataWriterType() = default;
     DataWriterType(const DataWriterType& rhs) = default;
     DataWriterType& operator=(const DataWriterType& that) = default;
@@ -86,8 +88,7 @@ public:
         const T* data, const std::string& fileExtension) const {
         return nullptr;
     }
-    virtual bool writeDataToRepresentation(const DataRepresentation* src,
-                                           DataRepresentation* dst) const {
+    virtual bool writeDataToRepresentation(const repr* src, repr* dst) const {
         return false;
     }
 };

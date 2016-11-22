@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/representationtraits.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
@@ -41,19 +42,20 @@ class Volume;
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API VolumeRepresentation : public DataRepresentation {
+class IVW_CORE_API VolumeRepresentation : public DataRepresentation<Volume> {
 public:
-    VolumeRepresentation();
-    VolumeRepresentation(const DataFormatBase* format);
-    VolumeRepresentation(const VolumeRepresentation& rhs);
-    VolumeRepresentation& operator=(const VolumeRepresentation& that);
     virtual VolumeRepresentation* clone() const override = 0;
-    virtual ~VolumeRepresentation();
+    virtual ~VolumeRepresentation() = default;
 
     // Removes old data and reallocate for new dimensions.
     // Needs to be overloaded by child classes.
     virtual void setDimensions(size3_t dimensions) = 0;
     virtual const size3_t& getDimensions() const = 0;
+protected:
+    VolumeRepresentation() = default;
+    VolumeRepresentation(const DataFormatBase* format);
+    VolumeRepresentation(const VolumeRepresentation& rhs) = default;
+    VolumeRepresentation& operator=(const VolumeRepresentation& that) = default;
 };
 
 template <>

@@ -283,37 +283,33 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
 
 }
 
+NiftiVolumeRAMLoader::NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_,
+                                           std::array<int, 7> start_index_,
+                                           std::array<int, 7> region_size_)
+    : DiskRepresentationLoader(), nim{nim_}, start_index(start_index_), region_size(region_size_) {}
 
-
-NiftiVolumeRAMLoader::NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_, std::array<int, 7> region_size_)
-    : DiskRepresentationLoader(), nim{ nim_ }, start_index(start_index_), region_size(region_size_) {
-
+NiftiVolumeRAMLoader* NiftiVolumeRAMLoader::clone() const {
+    return new NiftiVolumeRAMLoader(*this);
 }
 
-NiftiVolumeRAMLoader* NiftiVolumeRAMLoader::clone() const  { return new NiftiVolumeRAMLoader(*this); }
-
-
-std::shared_ptr<DataRepresentation> NiftiVolumeRAMLoader::createRepresentation() const  {
+std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation() const {
     return NiftiReader::niftiDataTypeToInviwoDataFormat(nim->datatype)->dispatch(*this);
 }
 
-
-void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const  {
+void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    if (size3_t{ region_size[0], region_size[1], region_size[2] } != volumeDst->getDimensions()) {
+    if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {
         throw Exception("Mismatching volume dimensions, can't update", IvwContext);
     }
     auto data = volumeDst->getData();
-    auto readBytes = nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()), const_cast<int*>(region_size.data()), &data);
+    auto readBytes = nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()),
+                                                const_cast<int*>(region_size.data()), &data);
     if (readBytes < 0) {
         throw DataReaderException(
-            "Error: Could not read data from file: " + std::string(nim->fname),
-            IvwContext);
+            "Error: Could not read data from file: " + std::string(nim->fname), IvwContext);
     }
 }
-
-
 
 } // namespace
 

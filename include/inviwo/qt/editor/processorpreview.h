@@ -46,6 +46,9 @@ namespace utilqt {
  */
 IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 
+IVW_QTEDITOR_API void saveProcessorPreviews(const std::string& path,
+                                            const std::vector<std::string>& classIdentifiers);
+
 } // namespace
 
 } // namespace

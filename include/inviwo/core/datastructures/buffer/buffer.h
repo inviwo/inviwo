@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API BufferBase : public Data<BufferRepresentation> {
+class IVW_CORE_API BufferBase : public Data<BufferBase, BufferRepresentation> {
 public:
     BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target);
     BufferBase(const BufferBase& rhs) = default;

@@ -96,7 +96,7 @@ public:
                                                const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
                                                const float& radius = 1.0f,
                                                const size_t& segments = 16,
-                                               bool caps = true);
+                                               bool caps = true, std::shared_ptr<BasicMesh> mesh  = nullptr);
     static std::shared_ptr<BasicMesh> line(const vec3& start, const vec3& stop, const vec3& normal,
                                            const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
                                            const float& width = 1.0f, const ivec2& res = ivec2(1));
@@ -107,8 +107,8 @@ public:
                                             const float& arrowRadius = 2.0f,
                                             const size_t& segments = 16);
 
-    static std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius);
-    static std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4 &color);
+    static std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius, std::shared_ptr<BasicMesh> mesh = nullptr);
+    static std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4 &color , std::shared_ptr<BasicMesh> mesh = nullptr);
 
     static std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal,
                                              const vec2& extent,

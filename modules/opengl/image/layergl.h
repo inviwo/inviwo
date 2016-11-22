@@ -32,7 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureunit.h>
 
@@ -70,7 +70,7 @@ public:
     void bindTexture(const TextureUnit &texUnit) const;
     void unbindTexture() const;
 
-    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
+    virtual bool copyRepresentationsTo(LayerRepresentation*) const override;
 
     std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     virtual std::type_index getTypeIndex() const override final;

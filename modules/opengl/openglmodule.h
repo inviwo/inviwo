@@ -45,8 +45,8 @@ public:
     OpenGLModule(InviwoApplication* app);
     
 private:
-    std::unique_ptr<SharedOpenGLResources> sharedResources_;
     std::unique_ptr<ShaderManager> shaderManager_;
+    std::unique_ptr<SharedOpenGLResources> sharedResources_;
 };
 
 } // namespace

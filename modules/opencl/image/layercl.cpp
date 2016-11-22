@@ -96,7 +96,7 @@ void LayerCL::download(void* data) const {
                                                   glm::size3_t(dimensions_, 1), 0, 0, data);
 }
 
-bool LayerCL::copyRepresentationsTo(DataRepresentation* target) const {
+bool LayerCL::copyRepresentationsTo(LayerRepresentation* target) const {
     LayerCL* targetCL = dynamic_cast<LayerCL*>(target);
 
     if (!targetCL) return false;
@@ -106,6 +106,16 @@ bool LayerCL::copyRepresentationsTo(DataRepresentation* target) const {
 }
 
 std::type_index LayerCL::getTypeIndex() const { return std::type_index(typeid(LayerCL)); }
+
+dvec4 LayerCL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+    std::array<char, DataFormat<dvec4>::typesize> buffer;
+    auto ptr = static_cast<void *>(buffer.data());
+
+    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(pos, 0),
+                                                  glm::size3_t(1, 1, 1), 0, 0, ptr);
+    
+    return getDataFormat()->valueToVec4Double(ptr);
+}
 
 void LayerCL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {

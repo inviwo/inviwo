@@ -37,6 +37,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
@@ -86,8 +87,12 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                    false, "", "file name")
     , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
                      "file name")
+    , saveProcessorPreviews_("", "save-previews", "Save processor previews to the supplied path",
+                             false, "", "path")
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
+
+    app_->setMainWindow(this);
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
@@ -127,11 +132,16 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                                       screenGrabArg_.getValue());
                                     },
                                     1000);
-}
 
-InviwoMainWindow::~InviwoMainWindow() = default;
+    app->getCommandLineParser().add(&saveProcessorPreviews_,
+                                    [this]() {
+                                        utilqt::saveProcessorPreviews(
+                                            saveProcessorPreviews_.getValue(),
+                                            app_->getProcessorFactory()->getKeys());
 
-void InviwoMainWindow::initialize() {
+                                    },
+                                    1200);
+
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
     setCentralWidget(networkEditorView_);
@@ -155,25 +165,31 @@ void InviwoMainWindow::initialize() {
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     // load settings and restore window state
+    loadWindowState();
+
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
-    restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
-    restoreState(settings.value("state", saveState()).toByteArray());
-    maximized_ = settings.value("maximized", false).toBool();
-
     QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
-            .toString();
+        .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
-    settingsWidget_->updateSettingsWidget();
 
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
+}
+
+InviwoMainWindow::~InviwoMainWindow() = default;
+
+void InviwoMainWindow::updateForNewModules() {
+    settingsWidget_->updateSettingsWidget();
+    processorTreeWidget_->addProcessorsToTree();
+    fillExampleWorkspaceMenu();
+    fillTestWorkspaceMenu();
 }
 
 void InviwoMainWindow::showWindow() {
@@ -334,16 +350,16 @@ void InviwoMainWindow::addActions() {
 
     {
         // create list of all example workspaces
-        auto exampleWorkspaceMenu = fileMenuItem->addMenu(tr("&Example Workspaces"));
-        fillExampleWorkspaceMenu(exampleWorkspaceMenu);
+        exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
+        fillExampleWorkspaceMenu();
     }
 
     {
         // TODO: need a DEVELOPER flag here!
         // create list of all test workspaces, inviwo-dev and other external modules, i.e.
         // "research"
-        auto testWorkspaceMenu = fileMenuItem->addMenu(tr("&Test Workspaces"));
-        fillTestWorkspaceMenu(testWorkspaceMenu);
+        testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
+        fillTestWorkspaceMenu();
     }
 
     {
@@ -369,7 +385,7 @@ void InviwoMainWindow::addActions() {
     editMenuItem->addSeparator();
     
     {
-        auto cutAction = new QAction(tr("&Cut"), this);
+        auto cutAction = new QAction(tr("Cu&t"), this);
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
         editMenuItem->addAction(cutAction);
@@ -382,7 +398,16 @@ void InviwoMainWindow::addActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem->addAction(copyAction);
-        consoleWidget_->view()->addAction(copyAction);
+        // add copy action to console widget
+        auto widget = consoleWidget_->view();
+        auto actions = widget->actions();
+        if (actions.isEmpty()) {
+            widget->addAction(copyAction);
+        }
+        else {
+            // insert copy action at the beginning
+            widget->insertAction(actions.front(), copyAction);
+        }
         copyAction->setEnabled(false);
     }
 
@@ -614,7 +639,8 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
     updateWindowTitle();
 }
 
-void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
+void InviwoMainWindow::fillExampleWorkspaceMenu() {
+    exampleMenu_->clear();
     for (const auto& module : app_->getModules()) {
         QMenu* moduleMenu = nullptr;
         auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
@@ -623,7 +649,7 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
                 // only accept inviwo workspace files
                 if (filesystem::getFileExtension(item) == "inv") {
                     if(!moduleMenu)
-                        moduleMenu = menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                        moduleMenu = exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
                 
                     QString filename(QString::fromStdString(item));
                     QAction* action = moduleMenu->addAction(filename);
@@ -637,10 +663,11 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
             }
         }
     }
-    menu->menuAction()->setVisible(!menu->isEmpty());
+    exampleMenu_->menuAction()->setVisible(!exampleMenu_->isEmpty());
 }
 
-void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
+void InviwoMainWindow::fillTestWorkspaceMenu() {
+    testMenu_->clear();
     for (const auto& module : app_->getModules()) {
         auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
         if (filesystem::directoryExists(moduleTestPath)) {
@@ -655,7 +682,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
                         if (filesystem::getFileExtension(item) == "inv") {
                             if (!moduleMenu) {
                                 moduleMenu =
-                                    menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                                    testMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
                             }
                             QAction* action = moduleMenu->addAction(QString::fromStdString(item));
                             action->setData(QString::fromStdString(testdir + "/" + item));
@@ -738,10 +765,10 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
 
     // add menu entries
     for (auto& elem : paths) {
-        QMenu* baseMenu = menu;
+        QMenu* baseMenu = testMenu_;
         // add module name as submenu folder for better organization, if it exists
         if (!elem.second.empty()) {
-            baseMenu = menu->addMenu(QString::fromStdString(elem.second));
+            baseMenu = testMenu_->addMenu(QString::fromStdString(elem.second));
         }
 
         // add test workspaces to submenu
@@ -759,7 +786,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
             }
         }
     }
-    menu->menuAction()->setVisible(!menu->isEmpty());
+    testMenu_->menuAction()->setVisible(!testMenu_->isEmpty());
 }
 
 std::string InviwoMainWindow::getCurrentWorkspace() {
@@ -1034,7 +1061,7 @@ NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
     if(!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
-    InviwoApplication::getPtr()->closeInviwoApplication();
+    app_->closeInviwoApplication();
 }
 
 void InviwoMainWindow::saveWindowState() {
@@ -1044,9 +1071,36 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
     // settings.setValue("recentFileList", recentFileList_);
-    settings.endGroup();
+
+    // save sticky flags for main dock widgets
+    settings.beginGroup("dialogs");
+    settings.setValue("settingswidgetSticky", settingsWidget_->isSticky());
+    settings.setValue("processorwidgetSticky", processorTreeWidget_->isSticky());
+    settings.setValue("propertywidgetSticky", propertyListWidget_->isSticky());
+    settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
+    settings.setValue("resourcemanagerwidgetSticky", resourceManagerWidget_->isSticky());
+    settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
+    settings.endGroup(); // dialogs
+
+    settings.endGroup(); // mainwindow
 }
-void InviwoMainWindow::loadWindowState() {}
+void InviwoMainWindow::loadWindowState() {
+    // load settings and restore window state
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("mainwindow");
+    restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
+    restoreState(settings.value("state", saveState()).toByteArray());
+    maximized_ = settings.value("maximized", false).toBool();
+
+    // restore sticky flags for main dock widgets
+    settings.beginGroup("dialogs");
+    settingsWidget_->setSticky(settings.value("settingswidgetSticky", true).toBool());
+    processorTreeWidget_->setSticky(settings.value("processorwidgetSticky", true).toBool());
+    propertyListWidget_->setSticky(settings.value("propertywidgetSticky", true).toBool());
+    consoleWidget_->setSticky(settings.value("consolewidgetSticky", true).toBool());
+    resourceManagerWidget_->setSticky(settings.value("resourcemanagerwidgetSticky", true).toBool());
+    helpWidget_->setSticky(settings.value("helpwidgetSticky", true).toBool());
+}
 
 void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     if (!askToSaveWorkspaceChanges()) {
@@ -1054,16 +1108,13 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    QString loadedNetwork = currentWorkspaceFileName_;
     getNetworkEditor()->clearNetwork();
-    // save window state
     saveWindowState();
-    settingsWidget_->saveSettings();
 
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
-    if (!loadedNetwork.contains("untitled.inv")) {
-        settings.setValue("workspaceOnLastSuccessfulExit", loadedNetwork);
+    if (!currentWorkspaceFileName_.contains("untitled.inv")) {
+        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     } else {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
     }

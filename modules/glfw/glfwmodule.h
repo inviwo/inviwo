@@ -33,13 +33,17 @@
 #include <modules/glfw/glfwmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/glfw/canvasglfw.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 namespace inviwo {
 
-class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule {
+class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule, public ProcessorNetworkEvaluationObserver {
 public:
     GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
+
+    virtual void onProcessorNetworkEvaluationBegin() override;
+    virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
     std::unique_ptr<CanvasGLFW> GLFWSharedCanvas_;

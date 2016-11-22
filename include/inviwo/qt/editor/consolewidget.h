@@ -41,6 +41,8 @@
 #include <QTableView>
 #include <QVariant>
 #include <QStandardItemModel>
+#include <QMetaType>
+
 #include <warn/pop>
 
 #include <chrono>
@@ -56,8 +58,7 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API LogTableModel {
-public:
+struct LogTableModelEntry {
     enum class Columns {
         Date = 0,
         Time,
@@ -71,29 +72,34 @@ public:
         Message
     };
 
-    struct Entry {
-        std::chrono::system_clock::time_point time;
-        std::string source;
-        LogLevel level;
-        LogAudience audience;
-        std::string fileName;
-        int lineNumber;
-        std::string funcionName;
-        std::string message;
+    LogTableModelEntry() = default;
+    LogTableModelEntry(const LogTableModelEntry &other) = default;
+    ~LogTableModelEntry() = default;
 
-        std::string getDate() const;
-        std::string getTime() const;
-        static constexpr size_t size() { return 10; }
-        QStandardItem*  get(Columns ind) const;
-    };
+    std::chrono::system_clock::time_point time;
+    std::string source;
+    LogLevel level;
+    LogAudience audience;
+    std::string fileName;
+    int lineNumber;
+    std::string funcionName;
+    std::string message;
 
+    std::string getDate() const;
+    std::string getTime() const;
+    static constexpr size_t size() { return 10; }
+    QStandardItem*  get(Columns ind) const;
+};
+
+class IVW_QTEDITOR_API LogTableModel {
+public:
     LogTableModel(QTableView* view);
 
-    QString getName(Columns ind) const;
+    QString getName(LogTableModelEntry::Columns ind) const;
     QStandardItemModel* model();
     
     void clear();    
-    void log(Entry entry);
+    void log(LogTableModelEntry entry);
 
 
 private:
@@ -128,16 +134,15 @@ public:
     QTableView* view() {return tableView_;}
 
 public slots:
+    void logEntry(LogTableModelEntry);
     void updateIndicators(LogLevel level);
     void clear();
 
 signals:
-    void logSignal(LogTableModel::Entry level);
+    void logSignal(LogTableModelEntry level);
     void clearSignal();
 
 protected:
-    void log(LogTableModel::Entry);
-
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual bool eventFilter(QObject *object, QEvent *event) override;
     virtual void closeEvent(QCloseEvent *event) override;
@@ -175,5 +180,7 @@ private:
 };
 
 }  // namespace
+
+Q_DECLARE_METATYPE(inviwo::LogTableModelEntry)
 
 #endif  // IVW_CONSOLELISTWIDGET_H

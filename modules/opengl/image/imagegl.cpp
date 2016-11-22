@@ -34,22 +34,19 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/canvasgl.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <modules/opengl/sharedopenglresources.h>
 
 namespace inviwo {
 
 ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag", false)
-    , colorLayerCopyCount_(0)
-    , singleChannelCopy_(false) {}
+    , colorLayerCopyCount_(0) {}
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag", false)
-    , colorLayerCopyCount_(0)
-    , singleChannelCopy_(false) {}
+    , colorLayerCopyCount_(0) {}
 
 ImageGL::~ImageGL() {
     LGL_ERROR;
@@ -101,7 +98,7 @@ void ImageGL::activateBuffer(ImageType type) {
             --numBuffersToDrawTo;
         }
 
-        glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
+        glDrawBuffers(numBuffersToDrawTo, drawBuffers.data());
         LGL_ERROR;
     }
 
@@ -137,7 +134,11 @@ void ImageGL::deactivateBuffer() {
     prevViewport_.set();
 }
 
-bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+size2_t ImageGL::getDimensions() const {
+    return colorLayersGL_.front()->getDimensions();
+}
+
+bool ImageGL::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     return copyRepresentationsTo(dynamic_cast<ImageGL*>(targetRep));
 }
 
@@ -146,50 +147,14 @@ size_t ImageGL::priority() const {
 }
 
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
+    if(!target) return false;
+    
     const ImageGL* source = this;
 
-    auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
-
     // Set shader to copy all color layers
-    if (!shader_.isReady() || singleChannelCopy_ != singleChannel ||
-        colorLayerCopyCount_ != colorLayersGL_.size()) {
-        std::stringstream ssUniform;
-        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
-            ssUniform << "layout(location = " << i + 1 << ") out vec4 FragData" << i << ";";
-        }
-        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
-            ssUniform << "uniform sampler2D color" << i << ";";
-        }
-        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
-                                                           ssUniform.str());
-
-        std::stringstream ssWrite;
-        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
-            if (singleChannel) {
-                ssWrite << "FragData" << i << " = vec4(texture(color" << i << ", texCoord_.xy).r);";
-            } else {
-                ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
-            }
-        }
-        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
-                                                           ssWrite.str());
-
-        if (colorLayersGL_.size() > 1) {
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
-        } else {
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
-        }
-
-        if (singleChannel) {
-            shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
-        } else {
-            shader_.getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-        }
-
+    if (!shader_ || colorLayerCopyCount_ != colorLayersGL_.size()) {
+        shader_ = SharedOpenGLResources::getPtr()->getImageCopyShader(colorLayersGL_.size());
         colorLayerCopyCount_ = colorLayersGL_.size();
-        singleChannelCopy_ = singleChannel;
-
-        shader_.build();
     }
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
@@ -213,8 +178,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
             // TODO: what image format should be used for new layers?
             // reuse first color layer for now
             std::size_t delta = this->colorLayersGL_.size() - target->colorLayersGL_.size();
-            for (std::size_t i=0; i < delta; ++i) {
-                targetImage->addColorLayer(std::shared_ptr<Layer>(targetImage->getColorLayer(0)->clone()));
+            for (std::size_t i = 0; i < delta; ++i) {
+                targetImage->addColorLayer(
+                    std::shared_ptr<Layer>(targetImage->getColorLayer(0)->clone()));
             }
             target->update(true);
         }
@@ -228,32 +194,30 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     float ratioTarget = (float)target->getDimensions().x / (float)target->getDimensions().y;
     glm::mat4 scale;
 
-    if (ratioTarget < ratioSource)
+    if (ratioTarget < ratioSource) {
         scale = glm::scale(glm::vec3(1.0f, ratioTarget / ratioSource, 1.0f));
-    else
+    } else {
         scale = glm::scale(glm::vec3(ratioSource / ratioTarget, 1.0f, 1.0f));
+    }
 
     GLint prog;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
 
-    shader_.activate();
-    shader_.setUniform("color_", colorUnit.getUnitNumber());
+    shader_->activate();
+    shader_->setUniform("color_", colorUnit.getUnitNumber());
     if (source->getDepthLayerGL()) {
-        shader_.setUniform("depth_", depthUnit.getUnitNumber());
+        shader_->setUniform("depth_", depthUnit.getUnitNumber());
     }
     if (source->getPickingLayerGL()) {
-        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+        shader_->setUniform("picking_", pickingUnit.getUnitNumber());
     }
     for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
-        shader_.setUniform("color" + toString<size_t>(i + 1),
-                           additionalColorUnits[i].getUnitNumber());
+        shader_->setUniform("color" + toString<size_t>(i + 1),
+                            additionalColorUnits[i].getUnitNumber());
     }
-    shader_.setUniform("dataToClip", scale);
-
-    LGL_ERROR;
+    shader_->setUniform("dataToClip", scale);
     target->renderImagePlaneRect();
-    LGL_ERROR;
-    shader_.deactivate();
+    shader_->deactivate();
     target->deactivateBuffer();
     LGL_ERROR;
 
@@ -445,6 +409,44 @@ void ImageGL::renderImagePlaneRect() const {
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
+
+bool ImageGL::isValid() const {
+    return depthLayerGL_->isValid() && pickingLayerGL_->isValid() &&
+        util::all_of(colorLayersGL_, [](const auto& l) { return l->isValid(); });
+}
+
+dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
+    frameBufferObject_.setRead_Blit(true);
+
+    const auto layergl = getLayerGL(layer, index);
+    const auto tex = layergl->getTexture();
+
+    switch (layer) {
+        case LayerType::Depth:
+            break;
+        case LayerType::Picking:
+            glReadBuffer(pickingAttachmentID_);
+            break;
+        case LayerType::Color:
+        default:
+            glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + static_cast<GLenum>(index));
+            break;
+    }
+
+    // Make a buffer that can hold the largest possible pixel type
+    std::array<char, DataFormat<dvec4>::typesize> buffer;
+    GLvoid* ptr = static_cast<GLvoid*>(buffer.data());
+    const auto x = static_cast<GLint>(pos.x);
+    const auto y = static_cast<GLint>(pos.y);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glReadPixels(x, y, 1, 1, tex->getFormat(), tex->getDataType(), ptr);
+
+    // restore
+    glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+    frameBufferObject_.setRead_Blit(false);
+
+    return layergl->getDataFormat()->valueToVec4Double(ptr);
+}
 
 GLenum ImageGL::getPickingAttachmentID() const { return pickingAttachmentID_; }
 

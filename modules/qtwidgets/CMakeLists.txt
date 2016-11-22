@@ -10,16 +10,13 @@ set(MOC_FILES
     customdoublespinboxqt.h
     editablelabelqt.h
     filepathlineeditqt.h
-    sliderwidgetqt.h
     inviwodockwidget.h
     inviwodockwidgettitlebar.h
     inviwofiledialog.h
+    inviwowidgetsqt.h
     lightpositionwidgetqt.h
     lineeditqt.h
     ordinaleditorwidget.h
-    propertylistwidget.h
-    rangesliderqt.h
-    spinboxrangesliderwidgetqt.h
     processors/processordockwidgetqt.h
     processors/processorwidgetqt.h
     properties/anglepropertywidgetqt.h
@@ -39,6 +36,7 @@ set(MOC_FILES
     properties/ordinalminmaxpropertywidgetqt.h
     properties/ordinalminmaxtextpropertywidgetqt.h
     properties/ordinalpropertywidgetqt.h
+    properties/propertyeditorwidgetqt.h
     properties/propertysettingswidgetqt.h
     properties/propertywidgetqt.h
     properties/stringmultilinepropertywidgetqt.h
@@ -49,15 +47,19 @@ set(MOC_FILES
     properties/transferfunctioneditorview.h
     properties/transferfunctionpropertydialog.h
     properties/transferfunctionpropertywidgetqt.h
+    propertylistwidget.h
     propertyselectiontreewidget.h
+    rangesliderqt.h
+    sliderwidgetqt.h
+    spinboxrangesliderwidgetqt.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${MOC_FILES}
     eventconverterqt.h
     inviwoqtutils.h
-    qtwidgetsmoduledefine.h
     keyboardutils.h
     labelgraphicsitem.h
     properties/boolpropertywidgetqt.h
@@ -65,8 +67,8 @@ set(HEADER_FILES
     properties/transferfunctioneditorcontrolpoint.h
     qstringhelper.h
     qtwidgetsmodule.h
+    qtwidgetsmoduledefine.h
     rawdatareaderdialogqt.h
-    ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -83,6 +85,7 @@ set(SOURCE_FILES
     inviwodockwidgettitlebar.cpp
     inviwofiledialog.cpp
     inviwoqtutils.cpp
+    inviwowidgetsqt.cpp
     keyboardutils.cpp
     labelgraphicsitem.cpp
     lightpositionwidgetqt.cpp
@@ -109,6 +112,7 @@ set(SOURCE_FILES
     properties/ordinalminmaxpropertywidgetqt.cpp
     properties/ordinalminmaxtextpropertywidgetqt.cpp
     properties/ordinalpropertywidgetqt.cpp
+    properties/propertyeditorwidgetqt.cpp
     properties/propertysettingswidgetqt.cpp
     properties/propertywidgetqt.cpp
     properties/pythonsyntaxhighlighter.cpp

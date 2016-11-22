@@ -85,9 +85,7 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
     vLayout->setContentsMargins(7, 7, 7, 7);
     lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     lineEdit_->setClearButtonEnabled(true);
-#endif  // QT_VERSION
 
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(addProcessorsToTree()));
     vLayout->addWidget(lineEdit_);

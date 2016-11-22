@@ -61,6 +61,8 @@ public:
     std::vector<T>& getDataContainer();
     const std::vector<T>& getDataContainer() const;
 
+    virtual void reserve(size_t size);
+
     virtual double getAsDouble(const size_t& pos) const override;
     virtual dvec2 getAsDVec2(const size_t& pos) const override;
     virtual dvec3 getAsDVec3(const size_t& pos) const override;
@@ -162,6 +164,12 @@ std::vector<T>& inviwo::BufferRAMPrecision<T, Target>::getDataContainer() {
 template <typename T, BufferTarget Target>
 const std::vector<T>& BufferRAMPrecision<T, Target>::getDataContainer() const {
     return data_;
+}
+
+
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::reserve(size_t size){
+    data_.reserve(size);
 }
 
 template <typename T, BufferTarget Target>

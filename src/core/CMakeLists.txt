@@ -32,8 +32,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrytype.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/mesh.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk2ramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/plane.h
@@ -42,7 +40,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagedisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imageram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagerepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagetypes.h
@@ -59,6 +56,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverterfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconvertermetafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
@@ -270,6 +268,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatial4dsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
@@ -305,16 +304,9 @@ set(SOURCE_FILES
     datastructures/camera.cpp
     datastructures/camerafactory.cpp
     datastructures/camerafactoryobject.cpp
-    datastructures/data.cpp
-    datastructures/datagroup.cpp
-    datastructures/datagrouprepresentation.cpp
     datastructures/datamapper.cpp
-    datastructures/datarepresentation.cpp
-    datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/mesh.cpp
-    datastructures/geometry/meshdisk.cpp
-    datastructures/geometry/meshdisk2ramconverter.cpp
     datastructures/geometry/meshram.cpp
     datastructures/geometry/meshrepresentation.cpp
     datastructures/geometry/plane.cpp
@@ -322,7 +314,6 @@ set(SOURCE_FILES
     datastructures/geometry/simplemeshcreator.cpp
     datastructures/histogram.cpp
     datastructures/image/image.cpp
-    datastructures/image/imagedisk.cpp
     datastructures/image/imageram.cpp
     datastructures/image/imagerepresentation.cpp
     datastructures/image/layer.cpp
@@ -332,8 +323,7 @@ set(SOURCE_FILES
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
     datastructures/light/baselightsource.cpp
-    datastructures/representationconverter.cpp
-    datastructures/representationconverterfactory.cpp
+    datastructures/representationconvertermetafactory.cpp
     datastructures/spatialdata.cpp
     datastructures/transferfunction.cpp
     datastructures/transferfunctiondatapoint.cpp
@@ -495,6 +485,7 @@ set(SOURCE_FILES
     util/settings/settings.cpp
     util/settings/systemsettings.cpp
     util/shuntingyard.cpp
+    util/singlefileobserver.cpp
     util/singleton.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp

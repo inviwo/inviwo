@@ -32,26 +32,9 @@
 
 namespace inviwo {
 
-LayerRepresentation::LayerRepresentation(size2_t dimensions, LayerType type, const DataFormatBase* format)
-    : DataRepresentation(format), dimensions_(dimensions), layerType_(type) {
-}
-
-LayerRepresentation::LayerRepresentation(const LayerRepresentation& rhs)
-    : DataRepresentation(rhs)
-    , dimensions_(rhs.dimensions_)
-    , layerType_(rhs.layerType_) {
-}
-LayerRepresentation& LayerRepresentation::operator=(const LayerRepresentation& that) {
-    if (this != &that) {
-        dimensions_ = that.dimensions_;
-        layerType_ = that.layerType_;
-        DataRepresentation::operator=(that);
-    }
-
-    return *this;
-}
-
-LayerRepresentation::~LayerRepresentation() {}
+LayerRepresentation::LayerRepresentation(size2_t dimensions, LayerType type,
+                                         const DataFormatBase* format)
+    : DataRepresentation(format), dimensions_(dimensions), layerType_(type) {}
 
 size2_t LayerRepresentation::getDimensions() const {
     return dimensions_;
@@ -62,8 +45,7 @@ LayerType LayerRepresentation::getLayerType() const {
 }
 
 void LayerRepresentation::updateBaseMetaFromRepresentation() {
-    auto base = static_cast<Layer *>(getOwner());
-    base->updateMetaFromRepresentation(this);
+    getOwner()->updateMetaFromRepresentation(this);
 }
 
 } // namespace

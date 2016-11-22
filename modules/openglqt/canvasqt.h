@@ -236,13 +236,9 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
-    // Optimization, do not sample depth value when hovering,
-    // i.e. move without holding a mouse button
-    const auto buttons = utilqt::getMouseButtons(e);
-    const auto depth = buttons != MouseButton::None ? this->getDepthValueAtNormalizedCoord(pos) : 1.0;
-
-    MouseEvent mouseEvent(MouseButton::None, MouseState::Move, buttons,
-                          utilqt::getModifiers(e), pos, this->getImageDimensions(), depth);
+    MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
+                          utilqt::getModifiers(e), pos, this->getImageDimensions(),
+                          this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
     return true;

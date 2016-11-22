@@ -52,7 +52,7 @@ public:
     /**
      * Copy and resize the representations of this onto the target.
      */
-    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
+    virtual bool copyRepresentationsTo(LayerRepresentation*) const override;
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;

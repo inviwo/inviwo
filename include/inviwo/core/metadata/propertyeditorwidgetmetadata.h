@@ -38,29 +38,23 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyEditorWidgetDockStatus {
-public:
-    PropertyEditorWidgetDockStatus();
-    PropertyEditorWidgetDockStatus(const std::string& dockStatus);
-    PropertyEditorWidgetDockStatus(const PropertyEditorWidgetDockStatus& rhs);
-    virtual ~PropertyEditorWidgetDockStatus() {}
-    PropertyEditorWidgetDockStatus& operator=(const PropertyEditorWidgetDockStatus& rhs);
-    bool operator==(const PropertyEditorWidgetDockStatus& that);
-    const std::string& getString() const;
-    static const PropertyEditorWidgetDockStatus Floating;
-    static const PropertyEditorWidgetDockStatus DockedLeft;
-    static const PropertyEditorWidgetDockStatus DockedRight;
-
-private:
-    std::string dockStatus_;
+enum class PropertyEditorWidgetDockStatus {
+    Floating,
+    DockedLeft,
+    DockedRight
 };
 
-//////////////////////////////////////////////////////////////////////////
+namespace util {
+
+IVW_CORE_API std::string mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus);
+IVW_CORE_API PropertyEditorWidgetDockStatus mapStringToDockStatus(const std::string &str);
+
+} // namespace util
+
+
 
 class IVW_CORE_API PropertyEditorWidgetMetaData : public MetaData {
-
 public:
-
     PropertyEditorWidgetMetaData();
     PropertyEditorWidgetMetaData(const PropertyEditorWidgetMetaData& rhs);
     PropertyEditorWidgetMetaData& operator=(const PropertyEditorWidgetMetaData& that);
@@ -77,10 +71,13 @@ public:
     ivec2 getWidgetPosition()const;
     void setDimensions(const ivec2 &dim);
     ivec2 getDimensions() const;
-    void setVisibile(bool visibility);
+    void setVisible(bool visibility);
     bool isVisible() const;
     void setDockStatus(PropertyEditorWidgetDockStatus& dockStatus);
-    const PropertyEditorWidgetDockStatus getDocStatus() const;
+    const PropertyEditorWidgetDockStatus getDockStatus() const;
+
+    void setSticky(bool sticky);
+    bool isSticky() const;
 
     static const std::string CLASS_IDENTIFIER;
 
@@ -88,7 +85,8 @@ private:
     ivec2 position_;
     ivec2 dimensions_;
     bool visibility_;
-    std::string dockStatus_;
+    PropertyEditorWidgetDockStatus dockStatus_;
+    bool stickyFlag_;
 };
 
 } // namespace

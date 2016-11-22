@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
+GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW"){
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
     GLFWSharedCanvas_ = util::make_unique<CanvasGLFW>(app->getDisplayName());
@@ -48,12 +48,45 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
 
     RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
+    
+    app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
 GLFWModule::~GLFWModule() {
     if (GLFWSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
+}
+
+
+void GLFWModule::onProcessorNetworkEvaluationBegin() {
+    // This is called before the network is evaluated, here we make sure that the default context is
+    // active
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
+void GLFWModule::onProcessorNetworkEvaluationEnd() {
+    // This is called after the network is evaluated, here we make sure that the gpu is done with
+    // its work before we continue. This is needed to make sure that we have textures that are upto
+    // data when we render the canvases.
+    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+    
+    switch (res) {
+        case GL_ALREADY_SIGNALED:
+            LogWarn("GL_ALREADY_SIGNALED");
+            break;
+        case GL_TIMEOUT_EXPIRED:
+            LogWarn("GL_TIMEOUT_EXPIRED");
+            break;
+        case GL_WAIT_FAILED:
+            LogWarn("GL_WAIT_FAILED");
+            break;
+        case GL_CONDITION_SATISFIED:
+            break;
+    }
+    
+    glDeleteSync(syncObj);
 }
 
 } // namespace

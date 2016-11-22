@@ -33,49 +33,86 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/cloneableptr.h>
-#include <inviwo/core/datastructures/datarepresentation.h>
 
 namespace inviwo {
 
+template <typename Repr>
 class DiskRepresentationLoader;
 
 /**
  * \ingroup datastructures
  * Base class for all DiskRepresentations \see Data, DataRepresentation
  */
-class IVW_CORE_API DiskRepresentation {
+template <typename Repr>
+class DiskRepresentation {
 public:
-    DiskRepresentation();
-    DiskRepresentation(std::string, DiskRepresentationLoader* loader = nullptr);
+    DiskRepresentation() = default;
+    DiskRepresentation(const std::string& srcFile,
+                       DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
-    virtual ~DiskRepresentation() = default;    
+    virtual ~DiskRepresentation() = default;
     virtual DiskRepresentation* clone() const;
 
     const std::string& getSourceFile() const;
     bool hasSourceFile() const;
 
-    void setLoader(DiskRepresentationLoader* loader);
+    void setLoader(DiskRepresentationLoader<Repr>* loader);
 
-    std::shared_ptr<DataRepresentation> createRepresentation() const;
-    void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const;
+    std::shared_ptr<Repr> createRepresentation() const;
+    void updateRepresentation(std::shared_ptr<Repr> dest) const;
 
 private:
-#include <warn/push>
-#include <warn/ignore/dll-interface>
     std::string sourceFile_;
-#include <warn/pop>
 
     // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
-    util::cloneable_ptr<DiskRepresentationLoader> loader_;
+    util::cloneable_ptr<DiskRepresentationLoader<Repr>> loader_;
 };
 
-class IVW_CORE_API DiskRepresentationLoader {
+template <typename Repr>
+DiskRepresentation<Repr>::DiskRepresentation(const std::string& srcFile,
+                                             DiskRepresentationLoader<Repr>* loader)
+    : sourceFile_(srcFile), loader_(loader) {}
+
+template <typename Repr>
+DiskRepresentation<Repr>* DiskRepresentation<Repr>::clone() const {
+    return new DiskRepresentation<Repr>(*this);
+}
+
+template <typename Repr>
+const std::string& DiskRepresentation<Repr>::getSourceFile() const {
+    return sourceFile_;
+}
+
+template <typename Repr>
+bool DiskRepresentation<Repr>::hasSourceFile() const {
+    return !sourceFile_.empty();
+}
+
+template <typename Repr>
+void DiskRepresentation<Repr>::setLoader(DiskRepresentationLoader<Repr>* loader) {
+    loader_.reset(loader);
+}
+
+template <typename Repr>
+std::shared_ptr<Repr> DiskRepresentation<Repr>::createRepresentation() const {
+    if (!loader_) throw Exception("No loader available to create representation", IvwContext);
+    return loader_->createRepresentation();
+}
+
+template <typename Repr>
+void DiskRepresentation<Repr>::updateRepresentation(std::shared_ptr<Repr> dest) const {
+    if (!loader_) throw Exception("No loader available to update representation", IvwContext);
+    loader_->updateRepresentation(dest);
+}
+
+template <typename Repr>
+class DiskRepresentationLoader {
 public:
     virtual ~DiskRepresentationLoader() = default;
     virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
+    virtual std::shared_ptr<Repr> createRepresentation() const = 0;
+    virtual void updateRepresentation(std::shared_ptr<Repr> dest) const = 0;
 };
 
 }  // namespace

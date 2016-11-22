@@ -42,6 +42,10 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsPathItem>
 #include <QGraphicsRectItem>
+#include <QImageWriter>
+#include <QBuffer>
+#include <QImage>
+#include <QByteArray>
 #include <warn/pop>
 
 namespace inviwo {
@@ -125,6 +129,26 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     } catch (Exception&) {
         // We will just ignore this...
         return QImage();
+    }
+}
+
+IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
+    const std::string& path, const std::vector<std::string>& classIdentifiers) {
+    for (const auto& classIdentifier : classIdentifiers) {
+        QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
+        QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
+        if (!img.isNull()) {
+            QByteArray data;
+            QBuffer buffer(&data);
+            buffer.open(QIODevice::WriteOnly);
+            img.save(&buffer, "PNG");
+
+            QImageWriter writer(imgname);
+            writer.write(img);
+        } else {
+            LogWarnCustom("saveProcessorPreviews",
+                          "No preview generated for: \"" + classIdentifier + "\"");
+        }
     }
 }
 

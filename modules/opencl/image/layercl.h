@@ -58,7 +58,7 @@ public:
      */
     void download(void* data) const;
     virtual void setDimensions(size2_t dimensions) override;
-    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
     cl::ImageFormat getFormat() const { return layerFormat_; }
 
     virtual cl::Image2D& getEditable() override {    return *clImage_;   }
@@ -66,6 +66,12 @@ public:
 
     virtual std::type_index getTypeIndex() const override final;
     
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
+
     /**
     * \brief update the swizzle mask of the channels for sampling color layers
     * Needs to be overloaded by child classes.

@@ -34,10 +34,11 @@
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/property.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 
 namespace inviwo {
+
+class IvwComboBox;
+class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
 #include <warn/push>

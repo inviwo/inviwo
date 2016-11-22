@@ -160,6 +160,29 @@ PyObject* getProcessorPropertyList(PyObject* args, Callable func) {
     return nullptr;
 }
 
+template <typename Callable, typename T, size_t... S>
+PyObject* PropertyCallbackHelper(PyObject* args, Callable func, T vars, detail::IntSequence<S...>) {
+    static PythonParameterParser tester;
+
+    std::string path;
+    if (tester.parse<std::string, tuple_element_t<S, T>...>(args, path, std::get<S>(vars)...) ==
+        1 + std::tuple_size<T>::value) {
+        if (auto p = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(
+                splitString(path, '.'))) {
+            return func(p, std::get<S>(vars)...);
+        }
+    }
+
+    std::string msg = std::string("Could not find a property with path: ") + path;
+    PyErr_SetString(PyExc_ValueError, msg.c_str());
+    return nullptr;
+}
+
+template <typename... Ts, typename Callable>
+PyObject* propertyCallback(PyObject* args, Callable func) {
+    return PropertyCallbackHelper(args, func, std::tuple<Ts...>(),
+                                  detail::GenerateIntSequence_t<sizeof...(Ts)>());
+}
 
 }  // namespace
 

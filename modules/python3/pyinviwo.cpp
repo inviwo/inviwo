@@ -121,12 +121,20 @@ static PyMethodDef Inviwo_METHODS[] =
     {"getPropertyMaxValue", py_getPropertyMaxValue, METH_VARARGS, "Returns the max value for a property (scalar or tuple)." },
     {"getPropertyMinValue", py_getPropertyMinValue, METH_VARARGS, "Returns the min value for a property (scalar or tuple)." },
     {"clickButton",         py_clickButton,         METH_VARARGS, "Simulates a click on a button property." },
+  
+    {"hasPropertyEditor",           py_hasPropertyEditor,           METH_VARARGS, "Dose the property have a property editor."},
+    {"setPropertyEditorVisible",    py_setPropertyEditorVisible,    METH_VARARGS, "Show/Hide the property editor for given property."},
+    {"isPropertyEditorVisible",     py_isPropertyEditorVisible,     METH_VARARGS, "Is Property Dditor visible"},
+    {"setPropertyEditorPosition",   py_setPropertyEditorPosition,   METH_VARARGS, "Set Property Dditor position"},
+    {"getPropertyEditorPosition",   py_getPropertyEditorPosition,   METH_VARARGS, "Get Property Dditor position"},
+    {"setPropertyEditorDimensions", py_setPropertyEditorDimensions, METH_VARARGS, "Set Property Dditor dimensions"},
+    {"getPropertyEditorDimensions", py_getPropertyEditorDimensions, METH_VARARGS, "Get Property Dditor dimensions"},
+
 
     // Defined in pycamera.h
     {"setCameraFocus", py_setCameraFocus, METH_VARARGS, "Function to set the cameras focal point." },
     {"setCameraUp",    py_setCameraUp,    METH_VARARGS, "Function to set the cameras up direction." },
     {"setCameraPos",   py_setCameraPos,   METH_VARARGS, "Function to set the cameras position." },
-
 
     // Defined in pycanvas.h
     {"canvascount",  py_canvascount,  METH_VARARGS, "Returns the number of canvases in the current network." },
@@ -136,7 +144,9 @@ static PyMethodDef Inviwo_METHODS[] =
     {"listProperties" , py_listProperties, METH_VARARGS, "List all properties for a processor." },
     {"listProcessors" , py_listProcessors, METH_VARARGS, "Lists all processors in the current network." },
     { "listCanvases"  , py_listCanvases,   METH_NOARGS,  "Lists all canvas processors in the current network." },
+    
     // Defined in pyutil.h
+    {"quit",                 py_quit,                 METH_VARARGS, "Quit Inviwo."},
     {"wait" ,                py_wait,                 METH_VARARGS, "Make the script wait for all processors in the network to finish their work." },
     {"snapshot",             py_snapshot,             METH_VARARGS, "Saves a snapshot of the specified canvas to the given file. If no canvas name is "
                                                                     "passed, the first canvas in the network is chosen." },
@@ -203,6 +213,9 @@ static PyMethodDef Inviwo_METHODS[] =
     {"addLink",          py_addLink,          METH_VARARGS, "Add a link using two property paths"},
     {"removeLink",       py_removeLink,       METH_VARARGS, "Remove a link using two property paths"},
 
+    {"clearNetwork", py_clearNetwork, METH_VARARGS, "Clears the current network."},
+    {"loadNetwork",  py_loadNetwork,  METH_VARARGS, "Load a new workspace into the network."},
+    {"saveNetwork",  py_saveNetwork,  METH_VARARGS, "Saves the current workspace."},
     nullptr
 };
 

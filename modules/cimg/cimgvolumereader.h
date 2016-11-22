@@ -57,13 +57,13 @@ public:
 
 };
 
-class IVW_MODULE_CIMG_API CImgVolumeRAMLoader : public DiskRepresentationLoader {
+class IVW_MODULE_CIMG_API CImgVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     CImgVolumeRAMLoader(VolumeDisk* volumeDisk);
     virtual CImgVolumeRAMLoader* clone() const override;
     virtual ~CImgVolumeRAMLoader() = default;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
     template <class T>

@@ -33,15 +33,16 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
+
 class Image;
 
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation {
-    friend class Image;
+class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation<Image> {
 public:
     ImageRepresentation() = default;
     ImageRepresentation(const ImageRepresentation& rhs) = default;
@@ -49,22 +50,35 @@ public:
     virtual ImageRepresentation* clone() const override = 0;
     virtual ~ImageRepresentation() = default;
 
-    size2_t getDimensions() const;
+    virtual size2_t getDimensions() const = 0;
 
     /**
      * Copy and resize the representations of this onto the target.
      */
-    virtual bool copyRepresentationsTo(DataRepresentation* target) const = 0;
+    virtual bool copyRepresentationsTo(ImageRepresentation* target) const = 0;
     
     /**
-     * returns a number representing the general efficiency of the representation.
+     * Returns a number representing the general efficiency of the representation.
      * Larger value means more efficient representation. Used for selection which representation
      * to operate on when resizing for example.
      */
     virtual size_t priority() const = 0;
+    
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const = 0;
+
+    virtual std::type_index getTypeIndex() const override = 0;
+    virtual void setOwner(Image* image) override;
+    virtual Image* getOwner() override;
+    virtual const Image* getOwner() const override;
+    virtual bool isValid() const override = 0;
+    virtual void update(bool) override = 0;
 
 protected:
-    virtual void update(bool) override = 0;
+    Image* owner_;
 };
 
 } // namespace

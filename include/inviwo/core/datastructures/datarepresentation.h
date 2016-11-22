@@ -30,28 +30,21 @@
 #ifndef IVW_DATAREPRESENTATION_H
 #define IVW_DATAREPRESENTATION_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/formats.h>
 #include <typeindex>
 
 namespace inviwo {
 
-class DataFormatBase;
-class BaseData;
-
-class IVW_CORE_API DataRepresentation {
 
 /**
  * \ingroup datastructures
  * \brief Base class for all DataRepresentations \see Data
  */
+template <typename Owner>
+class DataRepresentation {
 public:
-    DataRepresentation();
-    DataRepresentation(const DataFormatBase* format);
-    DataRepresentation(const DataRepresentation& rhs);
-    DataRepresentation& operator=(const DataRepresentation& that);
     virtual DataRepresentation* clone() const = 0;
-    virtual ~DataRepresentation();
+    virtual ~DataRepresentation() = default;
 
     const DataFormatBase* getDataFormat() const;
     std::string getDataFormatString() const;
@@ -59,19 +52,75 @@ public:
 
     virtual std::type_index getTypeIndex() const = 0;
 
-    virtual void setOwner(BaseData*);
-    virtual BaseData* getOwner();
-    virtual const BaseData* getOwner() const;
+    void setOwner(Owner* owner);
+    Owner* getOwner();
+    const Owner* getOwner() const;
 
-    bool isValid();
+    bool isValid() const;
     void setValid(bool valid);
 
 protected:
+    DataRepresentation() = default;
+    DataRepresentation(const DataFormatBase* format);
+    DataRepresentation(const DataRepresentation& rhs) = default;
+    DataRepresentation& operator=(const DataRepresentation& that) = default;
     void setDataFormat(const DataFormatBase* format);
-    bool isValid_;
-    const DataFormatBase* dataFormatBase_;
-    BaseData *owner_;
+   
+    bool isValid_ = true;
+    const DataFormatBase* dataFormatBase_ = DataUInt8::get();
+    Owner *owner_ = nullptr;
 };
+
+template <typename Owner>
+DataRepresentation<Owner>::DataRepresentation(const DataFormatBase* format)
+    : isValid_(true), dataFormatBase_(format), owner_(nullptr) {}
+
+
+template <typename Owner>
+const DataFormatBase* DataRepresentation<Owner>::getDataFormat() const {
+    return dataFormatBase_;
+}
+
+template <typename Owner>
+std::string DataRepresentation<Owner>::getDataFormatString() const {
+    return std::string(dataFormatBase_->getString());
+}
+
+template <typename Owner>
+DataFormatId DataRepresentation<Owner>::getDataFormatId() const {
+    return dataFormatBase_->getId();
+}
+
+template <typename Owner>
+void DataRepresentation<Owner>::setDataFormat(const DataFormatBase* format) {
+    dataFormatBase_ = format;
+}
+
+template <typename Owner>
+void DataRepresentation<Owner>::setOwner(Owner* owner) {
+    owner_ = owner;
+}
+
+template <typename Owner>
+Owner* DataRepresentation<Owner>::getOwner() {
+    return owner_;
+}
+
+template <typename Owner>
+const Owner* DataRepresentation<Owner>::getOwner() const {
+    return owner_;
+}
+
+template <typename Owner>
+bool DataRepresentation<Owner>::isValid() const {
+    return isValid_;
+}
+
+template <typename Owner>
+void DataRepresentation<Owner>::setValid(bool valid) {
+    isValid_ = valid;
+}
+
 
 } // namespace
 

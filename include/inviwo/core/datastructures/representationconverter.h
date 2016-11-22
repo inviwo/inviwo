@@ -45,33 +45,38 @@ public:
     virtual ~ConverterException() throw() {}
 };
 
-class DataRepresentation;
+class IVW_CORE_API BaseRepresentationConverter {
+public:
+    BaseRepresentationConverter() = default;
+    virtual ~BaseRepresentationConverter() = default;
+};
 
-class IVW_CORE_API RepresentationConverter {
+template <typename BaseRepr>
+class RepresentationConverter : public BaseRepresentationConverter {
 public:
     RepresentationConverter() = default;
     virtual ~RepresentationConverter() = default;
     using ConverterID = std::pair<std::type_index, std::type_index>;
     virtual ConverterID getConverterID() const = 0;
 
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const = 0;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const = 0;
+    virtual std::shared_ptr<BaseRepr> createFrom(std::shared_ptr<const BaseRepr> source) const = 0;
+    virtual void update(std::shared_ptr<const BaseRepr> source,
+                        std::shared_ptr<BaseRepr> destination) const = 0;
 };
 
-template <typename From, typename To>
-class RepresentationConverterType : public RepresentationConverter {
+template <typename BaseRepr, typename From, typename To>
+class RepresentationConverterType : public RepresentationConverter<BaseRepr> {
 public:
+    using ConverterID = typename RepresentationConverter<BaseRepr>::ConverterID;
     virtual ConverterID getConverterID() const override;
 
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override final {
+    virtual std::shared_ptr<BaseRepr> createFrom(
+        std::shared_ptr<const BaseRepr> source) const override final {
         return createFrom(std::static_pointer_cast<const From>(source));
     }
 
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override final {
+    virtual void update(std::shared_ptr<const BaseRepr> source,
+                        std::shared_ptr<BaseRepr> destination) const override final {
         update(std::static_pointer_cast<const From>(source),
                std::static_pointer_cast<To>(destination));
     };
@@ -81,24 +86,47 @@ public:
                         std::shared_ptr<To> destination) const = 0;
 };
 
-class IVW_CORE_API RepresentationConverterPackage {
+template <typename BaseRepr>
+class RepresentationConverterPackage {
 public:
-    using ConverterID = std::pair<std::type_index, std::type_index>;
+    using ConverterID = typename RepresentationConverter<BaseRepr>::ConverterID;
+    using ConverterList = std::vector<const RepresentationConverter<BaseRepr>*>;
 
     size_t steps() const;
     ConverterID getConverterID() const;
 
-    void addConverter(const RepresentationConverter* converter);
-    const std::vector<const RepresentationConverter*>& getConverters() const;
+    void addConverter(const RepresentationConverter<BaseRepr>* converter);
+    const ConverterList& getConverters() const;
 
 private:
-    std::vector<const RepresentationConverter*> converters_;
+    ConverterList converters_;
 };
 
-template <typename From, typename To>
-RepresentationConverter::ConverterID inviwo::RepresentationConverterType<From, To>::getConverterID()
-    const {
+template <typename BaseRepr, typename From, typename To>
+auto RepresentationConverterType<BaseRepr, From, To>::getConverterID() const -> ConverterID {
     return ConverterID(typeid(From), typeid(To));
+}
+
+template <typename BaseRepr>
+auto RepresentationConverterPackage<BaseRepr>::getConverters() const -> const ConverterList& {
+    return converters_;
+}
+
+template <typename BaseRepr>
+size_t RepresentationConverterPackage<BaseRepr>::steps() const {
+    return converters_.size();
+}
+
+template <typename BaseRepr>
+auto RepresentationConverterPackage<BaseRepr>::getConverterID() const -> ConverterID {
+    return ConverterID(converters_.front()->getConverterID().first,
+                       converters_.back()->getConverterID().second);
+}
+
+template <typename BaseRepr>
+void RepresentationConverterPackage<BaseRepr>::addConverter(
+    const RepresentationConverter<BaseRepr>* converter) {
+    converters_.push_back(converter);
 }
 
 }  // namespace

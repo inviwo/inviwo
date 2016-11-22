@@ -45,13 +45,12 @@
 
 namespace inviwo {
 
-InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
-                                         char** argv)
+InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, char** argv)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
-    , uiLocal_ (  getCurrentStdLocale() )
-{
+    , uiLocal_(getCurrentStdLocale()) {
+
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
@@ -72,8 +71,8 @@ void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
 }
 
 void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
-    ivwAssert(std::find(fileObservers_.begin(), fileObservers_.end(), fileObserver) ==
-                  fileObservers_.end(),
+    ivwAssert(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
+                  fileObservers_.cend(),
               "File observer already registered.");
     fileObservers_.push_back(fileObserver);
 }
@@ -174,6 +173,16 @@ void InviwoApplicationQt::wait(int ms) {
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {
 #ifdef IVW_DEBUG
+   
+    
+    #if defined(__APPLE__) 
+    // There is some weird bug on mac that sets compains about
+    // QWidgetWindow(...) Attempt to set a screen on a child window
+    // Does not seem to be a reall problem lets, ignore it.
+    //http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
+    if (msg.contains("Attempt to set a screen on a child window")) return;
+    #endif
+
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
         case QtDebugMsg:

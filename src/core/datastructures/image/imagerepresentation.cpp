@@ -32,8 +32,11 @@
 
 namespace inviwo {
 
-size2_t ImageRepresentation::getDimensions() const {
-    return dynamic_cast<const Image*>(getOwner())->getDimensions();
-}
+void ImageRepresentation::setOwner(Image* image) { owner_ = image; }
+
+Image* ImageRepresentation::getOwner() { return owner_; }
+
+const Image* ImageRepresentation::getOwner() const { return owner_; }
+
 
 }  // namespace

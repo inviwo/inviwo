@@ -33,17 +33,8 @@
 #include <modules/python3qt/python3qtmoduledefine.h>
 
 namespace inviwo {
-
-    PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_update(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_showHelp(PyObject* /*self*/, PyObject* /*args*/);
-    PyObject* py_saveProcessorPreview(PyObject* /*self*/, PyObject* /*args*/);
-
     void IVW_MODULE_PYTHON3QT_API initPythonQT();
 }
 

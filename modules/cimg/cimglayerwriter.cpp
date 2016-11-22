@@ -30,7 +30,6 @@
 #include <modules/cimg/cimglayerwriter.h>
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 
@@ -65,8 +64,7 @@ std::unique_ptr<std::vector<unsigned char>> CImgLayerWriter::writeDataToBuffer(
     return cimgutil::saveLayerToBuffer(fileExtension, data);
 }
 
-bool CImgLayerWriter::writeDataToRepresentation(const DataRepresentation* src,
-                                                DataRepresentation* dst) const {
+bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) const {
     const LayerRAM* source = dynamic_cast<const LayerRAM*>(src);
     LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
 

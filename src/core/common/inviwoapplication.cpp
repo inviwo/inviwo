@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/datastructures/camerafactory.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriterfactory.h>
@@ -87,7 +86,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyConverterManager_{util::make_unique<PropertyConverterManager>()}
     , propertyFactory_{util::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{util::make_unique<PropertyWidgetFactory>()}
-    , representationConverterFactory_{util::make_unique<RepresentationConverterFactory>()}
+    , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
 
     , modules_()
     , clearModules_([&]() {

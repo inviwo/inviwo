@@ -4,17 +4,22 @@
         <file>icons/arrow_bidirectional.png</file>
         <file>icons/arrow_left.png</file>
         <file>icons/arrow_right.png</file>
-        <file>icons/button_cancel.png</file>
         <file>icons/button_cancel-bw.png</file>
+        <file>icons/button_cancel.png</file>
         <file>icons/button_ok.png</file>
+        <file>icons/clear-consolelog.png</file>
+        <file>icons/clear-filter-bw.png</file>
+        <file>icons/clear-filter.png</file>
         <file>icons/edit-undo-icon.png</file>
         <file>icons/edit.png</file>
-        <file>icons/error.png</file>
         <file>icons/error-bw.png</file>
+        <file>icons/error.png</file>
         <file>icons/filewarning.png</file>
+        <file>icons/filter-bw.png</file>
+        <file>icons/filter.png</file>
         <file>icons/html.png</file>
-        <file>icons/info.png</file>
         <file>icons/info-bw.png</file>
+        <file>icons/info.png</file>
         <file>icons/inviwo_dark.png</file>
         <file>icons/inviwo_light.png</file>
         <file>icons/inviwo_tmp.png</file>
@@ -33,8 +38,8 @@
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
-        <file>icons/python.png</file>
         <file>icons/python-run.png</file>
+        <file>icons/python.png</file>
         <file>icons/reset-dark.png</file>
         <file>icons/reset.png</file>
         <file>icons/reveal.png</file>
@@ -47,8 +52,8 @@
         <file>icons/view_choose.png</file>
         <file>icons/view_statistics.png</file>
         <file>icons/wallet_open.png</file>
-        <file>icons/warning.png</file>
         <file>icons/warning-bw.png</file>
+        <file>icons/warning.png</file>
         <file>images/splashscreen.png</file>
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>

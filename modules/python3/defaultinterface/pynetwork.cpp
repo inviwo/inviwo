@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 
@@ -281,6 +282,79 @@ PyObject* py_removeLink(PyObject* self, PyObject* args) {
         }
     }
     return nullptr;
+}
+
+PyObject* py_clearNetwork(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    if (tester.parse(args) == -1) {
+        return nullptr;
+    }
+    auto app = InviwoApplication::getPtr();
+    auto network = app->getProcessorNetwork();
+    network->clear();
+    Py_RETURN_NONE;
+}
+
+PyObject* py_loadNetwork(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    std::string filename;
+    if (tester.parse(args, filename) == -1) {
+        return nullptr;
+    }
+    if (!filesystem::fileExists(filename)) {
+        filename = filesystem::getPath(PathType::Workspaces) + "/" + filename;
+
+        if (!filesystem::fileExists(filename)) {
+            std::string msg = std::string("loadWorkspace() could not find file") + filename;
+            PyErr_SetString(PyExc_TypeError, msg.c_str());
+            return nullptr;
+        }
+    }
+
+    auto app = InviwoApplication::getPtr();
+    auto network = app->getProcessorNetwork();
+
+    network->clear();
+    // Deserialize processor network
+    try {
+        Deserializer xmlDeserializer(app, filename);
+        network->deserialize(xmlDeserializer);
+    } catch (const AbortException& exception) {
+        PyErr_SetString(PyExc_TypeError, std::string("Unable to load network " + filename +
+                                                     " due to " + exception.getMessage()).c_str());
+        network->clear();
+        return nullptr;
+    } catch (const IgnoreException& exception) {
+        util::log(exception.getContext(),
+                  "Incomplete network loading " + filename + " due to " + exception.getMessage(),
+                  LogLevel::Error);
+    }
+
+    Py_RETURN_NONE;
+}
+
+PyObject* py_saveNetwork(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester(1);
+    std::string filename;
+    bool setAsFilename;
+    if (tester.parse(args, filename, setAsFilename) == -1) {
+        return nullptr;
+    }
+
+    auto app = InviwoApplication::getPtr();
+    auto network = app->getProcessorNetwork();
+
+    try {
+        Serializer xmlSerializer(filename);
+        network->serialize(xmlSerializer);
+        xmlSerializer.writeFile();
+    } catch (SerializationException& exception) {
+        PyErr_SetString(PyExc_TypeError, std::string("Unable to save network " + filename +
+                                                     " due to " + exception.getMessage()).c_str());
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
 }
 
 }  // namespace

@@ -33,18 +33,25 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
 #include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/datastructures/camerafactoryobject.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portfactoryobject.h>
+
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
+
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
+
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
 
@@ -56,7 +63,6 @@ class Settings;
 class MetaData;
 class Capabilities;
 class Resource;
-class RepresentationConverter;
 class DataReader;
 class DataWriter;
 class PortInspectorFactoryObject;
@@ -150,7 +156,9 @@ public:
     const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
     const std::vector<PropertyFactoryObject*> getProperties() const;
     const std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
-    const std::vector<RepresentationConverter*> getRepresentationConverters() const;
+    const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
+    const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
+        const;
     const std::vector<Resource*> getResources() const;
     const std::vector<Settings*> getSettings() const;
 
@@ -174,7 +182,7 @@ protected:
     template <typename T>
     void registerProcessor();
 
-template <typename T, typename P>
+    template <typename T, typename P>
     void registerProcessorWidget();
 
     void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
@@ -186,7 +194,14 @@ template <typename T, typename P>
     void registerProperty();
 
     void registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter);
-    void registerRepresentationConverter(std::unique_ptr<RepresentationConverter> converter);
+
+    template <typename BaseRepr>
+    void registerRepresentationConverter(
+        std::unique_ptr<RepresentationConverter<BaseRepr>> converter);
+
+    void registerRepresentationConverterFactory(
+        std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
+
     void registerResource(std::unique_ptr<Resource> resource);
     void registerSettings(std::unique_ptr<Settings> settings);
 
@@ -239,13 +254,15 @@ private:
     std::vector<std::unique_ptr<PropertyConverter>> propertyConverters_;
     std::vector<std::unique_ptr<PropertyFactoryObject>> properties_;
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
-    std::vector<std::unique_ptr<RepresentationConverter>> representationConverters_;
+    std::vector<std::unique_ptr<BaseRepresentationConverter>> representationConverters_;
+    std::vector<std::function<void()>> representationConvertersUnRegFunctors_;
+    std::vector<std::unique_ptr<BaseRepresentationConverterFactory>>
+        representationConverterFactories_;
     std::vector<std::unique_ptr<Resource>> resources_;
     std::vector<std::unique_ptr<Settings>> settings_;
 
 
 };
-
 
 
 template <typename T>
@@ -305,6 +322,19 @@ void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
 template <typename T, typename P>
 void InviwoModule::registerPropertyWidget(std::string semantics) {
     registerPropertyWidget<T,P>(PropertySemantics(semantics));
+}
+
+template <typename BaseRepr>
+void InviwoModule::registerRepresentationConverter(
+    std::unique_ptr<RepresentationConverter<BaseRepr>> converter) {
+
+    if (auto factory = app_->getRepresentationConverterFactory<BaseRepr>()) {
+        if (factory->registerObject(converter.get())) {
+            representationConvertersUnRegFunctors_.push_back(
+                [ factory, conv = converter.get() ]() { factory->unRegisterObject(conv); });
+            representationConverters_.push_back(std::move(converter));
+        }
+    }
 }
 
 }  // namespace

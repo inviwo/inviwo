@@ -44,6 +44,16 @@
 
 namespace inviwo {
 
+PyObject* py_quit(PyObject* self, PyObject* args) {
+    static PythonParameterParser tester;
+    if (tester.parse(args) == -1) {
+        return nullptr;
+    }
+
+    InviwoApplication::getPtr()->closeInviwoApplication();
+    Py_RETURN_NONE;
+}
+
 PyObject* py_wait(PyObject* self, PyObject* args) {
     InviwoApplication::getPtr()->waitForPool();
     Py_RETURN_NONE;

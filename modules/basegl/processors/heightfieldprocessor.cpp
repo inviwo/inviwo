@@ -54,6 +54,10 @@ HeightFieldProcessor::HeightFieldProcessor()
     shader_ = Shader("heightfield.vert", "heightfield.frag", false);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
+    inportHeightfield_.setOptional(true);
+    inportTexture_.setOptional(true);
+    inportNormalMap_.setOptional(true);
+
     inportHeightfield_.onChange(this, &HeightFieldProcessor::heightfieldChanged);
     addPort(inportHeightfield_);
     addPort(inportTexture_);

@@ -35,14 +35,17 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 namespace inviwo {
 
 /**
  * \ingroup datastructures	
  */
-class IVW_CORE_API Image : public DataGroup<ImageRepresentation> {
+class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public MetaDataOwner {
 public:
+    using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
+
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
     Image(std::shared_ptr<Layer> layer);
     Image(const Image&);
@@ -74,20 +77,16 @@ public:
      */
     void setDimensions(size2_t dimensions);
 
-
-    /** 
+    /**
      * \brief encode the requested layer contents to a buffer considering the given image extension
-     *
-     * @param fileExtension   file extension of the requested image format
+     * @param fileExtension file extension of the requested image format
      * @return encoded layer contents as std::vector
      */
-    std::unique_ptr<std::vector<unsigned char>> getLayerAsCodedBuffer(LayerType layerType,
-                                                                      const std::string& fileExtension,
-                                                                      size_t idx = 0) const;
-    std::unique_ptr<std::vector<unsigned char>> getColorLayerAsCodedBuffer(const std::string& fileExtension,
-                                                                           size_t idx = 0) const;
-    std::unique_ptr<std::vector<unsigned char>> getDepthLayerAsCodedBuffer(const std::string& fileExtension) const;
-    std::unique_ptr<std::vector<unsigned char>> getPickingLayerAsCodedBuffer(const std::string& fileExtension) const;
+    DataBuffer getLayerAsCodedBuffer(LayerType layerType, const std::string& fileExtension,
+                                     size_t idx = 0) const;
+    DataBuffer getColorLayerAsCodedBuffer(const std::string& fileExtension, size_t idx = 0) const;
+    DataBuffer getDepthLayerAsCodedBuffer(const std::string& fileExtension) const;
+    DataBuffer getPickingLayerAsCodedBuffer(const std::string& fileExtension) const;
 
     /**
      * Copy and resize the representation of this onto the representations of target.
@@ -96,6 +95,12 @@ public:
     void copyRepresentationsTo(Image* target) const;
 
     const DataFormatBase* getDataFormat() const;
+
+    /**
+     * Read a single pixel value out of the specified layer at pos. Should only be used to read
+     * single values not entire images.
+     */
+    dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
     static uvec3 COLOR_CODE;
     static const std::string CLASS_IDENTIFIER;

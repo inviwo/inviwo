@@ -61,6 +61,9 @@ public:
     void setContents(QWidget *widget);
     void setContents(QLayout *layout);
 
+signals:
+    void stickyFlagChanged(bool sticky);
+
 protected slots:
     void updateWindowTitle(const QString &string);
 

@@ -31,10 +31,11 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-ImageRAM::ImageRAM() : ImageRepresentation() {}
+ImageRAM::ImageRAM() = default;
 
 ImageRAM::ImageRAM(const ImageRAM& rhs) : ImageRepresentation(rhs) { update(true); }
 
@@ -47,9 +48,13 @@ ImageRAM& ImageRAM::operator=(const ImageRAM& that) {
 
     return *this;
 }
-ImageRAM::~ImageRAM() {}
+ImageRAM::~ImageRAM() = default;
 
-bool ImageRAM::copyRepresentationsTo(DataRepresentation* targetRep) const {
+size2_t ImageRAM::getDimensions() const {
+    return colorLayersRAM_.front()->getDimensions();
+}
+
+bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     const ImageRAM* source = this;
     ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
 
@@ -136,5 +141,22 @@ const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const { return colorLayer
 const LayerRAM* ImageRAM::getDepthLayerRAM() const { return depthLayerRAM_; }
 
 const LayerRAM* ImageRAM::getPickingLayerRAM() const { return pickingLayerRAM_; }
+
+bool ImageRAM::isValid() const {
+    return depthLayerRAM_->isValid() && pickingLayerRAM_->isValid() &&
+           util::all_of(colorLayersRAM_, [](const auto& l) { return l->isValid(); });
+}
+
+dvec4 ImageRAM::readPixel(size2_t pos, LayerType layer, size_t index) const {
+    switch (layer) {
+        case LayerType::Depth:
+            return depthLayerRAM_->getAsDVec4(pos);
+        case LayerType::Picking:
+            return pickingLayerRAM_->getAsDVec4(pos);
+        case LayerType::Color:
+        default:
+            return colorLayersRAM_[index]->getAsDVec4(pos);
+    }
+}
 
 }  // namespace
