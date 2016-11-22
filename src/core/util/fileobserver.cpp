@@ -52,7 +52,7 @@ FileObserver::~FileObserver() {
     }
 }
 
-void FileObserver::startFileObservation(const std::string& fileName) {
+void FileObserver::startFileObservation(const std::string fileName) {
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
         if (filesystem::fileExists(fileName)) {
@@ -64,7 +64,7 @@ void FileObserver::startFileObservation(const std::string& fileName) {
     }
 }
 
-void FileObserver::stopFileObservation(const std::string& fileName) {
+void FileObserver::stopFileObservation(const std::string fileName) {
     auto it = observedFiles_.find(fileName);
     if (it != observedFiles_.end()) {
         --(it->second);
