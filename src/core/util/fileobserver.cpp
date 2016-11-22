@@ -51,7 +51,7 @@ FileObserver::~FileObserver() {
     // may erase items.
     std::vector<std::string> fileNames;
     for (auto file : observedFiles_) {
-        fileNames.push_back(file);
+        fileNames.push_back(file.first);
     }
     for (auto file: fileNames) {
         stopFileObservation(file);
