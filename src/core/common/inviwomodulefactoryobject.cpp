@@ -163,6 +163,7 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
 
         InviwoApplication::getPtr()->getProcessorNetwork()->serialize(xmlSerializer);
         xmlSerializer.writeFile(stream);
+        InviwoApplication::getPtr()->getProcessorNetwork()->clear();
     }
     catch (SerializationException& exception) {
         util::log(exception.getContext(),

@@ -70,7 +70,7 @@
 
 namespace inviwo {
 
-QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidget") {
+QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidgets") {
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");

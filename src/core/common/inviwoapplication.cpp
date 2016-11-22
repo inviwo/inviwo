@@ -154,12 +154,17 @@ InviwoApplication::~InviwoApplication() {
 void InviwoApplication::clearModules() {
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
-    // The destuction order of vector is undefined.
-    auto coreModule = modules_.rend()-1;
-    for (auto it = modules_.rbegin(); it != coreModule; ++it) {
-        it->reset();
+    // The destruction order of vector is undefined.
+    //auto coreModule = modules_.rend()-1;
+    auto coreModuleIt = std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("Core") == 0; });
+    auto qtWidgetsModuleIt = std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; });
+    for (auto it = std::rbegin(modules_); it != std::rend(modules_); ++it) {
+        if (it->get() != coreModuleIt->get() && it->get() != qtWidgetsModuleIt->get()) {
+            it->reset();
+        }
     }
-    modules_.erase(modules_.begin() + 1, modules_.end());
+    modules_.erase(coreModuleIt + 1, qtWidgetsModuleIt);
+    modules_.erase(std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; }) + 1, std::end(modules_));
     //modules_.clear();
     modulesFactoryObjects_.clear();
     moduleSharedLibraries_.clear();
@@ -409,6 +414,9 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
 
 
     for (auto& moduleObj : modulesFactoryObjects_) {
+        if (util::contains_if(modules_, [&](const auto& module) { return module->getIdentifier().compare(moduleObj->name_) == 0; })) {
+            continue;
+        }
         postProgress("Loading module: " + moduleObj->name_);
         // Make sure that the module supports the current inviwo core version
         if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
