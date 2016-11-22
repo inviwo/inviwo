@@ -67,14 +67,14 @@ public:
      * Each call to startFileObservation should be matched with stopFileObservation
      * @param filePath Full path to file
      */
-    void startFileObservation(const std::string& filePath);
+    void startFileObservation(const std::string filePath);
     /** 
      * \brief Stops observing the file if being observed.
      * 
      * @param filePath Full path to file
      * @return void 
      */
-    void stopFileObservation(const std::string& fileName);
+    void stopFileObservation(const std::string fileName);
     std::vector<std::string> getFiles() const;
     bool isObserved(const std::string& fileName) const;
 
