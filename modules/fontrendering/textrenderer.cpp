@@ -220,12 +220,12 @@ void TextRenderer::initMesh() {
 
     auto indices = util::makeIndexBuffer({0, 1, 2, 3});
 
-    mesh_.reset(new Mesh());
+    mesh_ = util::make_unique<Mesh>();
     mesh_->addBuffer(BufferType::PositionAttrib, verticesBuffer);
     mesh_->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
     mesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices);
 
-    drawer_.reset(new MeshDrawerGL(mesh_.get()));
+    drawer_ = util::make_unique<MeshDrawerGL>(mesh_.get());
 }
 
 void TextRenderer::setFontSize(int val) {
