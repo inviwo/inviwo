@@ -49,8 +49,12 @@ FileObserver::~FileObserver() {
     InviwoApplication::getPtr()->unRegisterFileObserver(this);
     // Do not use iterators here since stopFileObservation
     // may erase items.
-    for (auto i = 0; i < observedFiles_.size(); ++i) {
-        stopFileObservation(observedFiles_[i].first);
+    std::vector<std::string> fileNames;
+    for (auto file : observedFiles_) {
+        fileNames.push_back(file);
+    }
+    for (auto file: fileNames) {
+        stopFileObservation(file);
     }
 }
 
