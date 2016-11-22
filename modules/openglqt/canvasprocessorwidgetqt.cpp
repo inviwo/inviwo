@@ -90,6 +90,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     processor_->ProcessorObservable::addObserver(this);
     canvas_->setVisible(ProcessorWidget::isVisible());
     QWidget::setVisible(ProcessorWidget::isVisible());
+    RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
