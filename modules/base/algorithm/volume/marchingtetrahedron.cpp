@@ -30,17 +30,19 @@
 #include "marchingtetrahedron.h"
 namespace inviwo {
 
-std::shared_ptr<Mesh> MarchingTetrahedron::apply(std::shared_ptr<const Volume> volume, const double &iso,
-                                 const vec4 &color, std::function<void(float)> progressCallback) {
+std::shared_ptr<Mesh> MarchingTetrahedron::apply(
+    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
+    bool enclose, std::function<void(float)> progressCallback) {
     detail::MarchingTetrahedronDispatcher disp;
-    return volume->getDataFormat()->dispatch(disp, volume, iso, color, progressCallback);
+    return volume->getDataFormat()->dispatch(disp, volume, iso, color, invert, enclose,
+                                             progressCallback);
 }
 
 void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                            std::vector<vec3> &positions, std::vector<vec3> &normals,
-                           const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
-                           const double &v1, const glm::vec3 &p2, const double &v2,
-                           const glm::vec3 &p3, const double &v3) {
+                           const glm::vec3 &p0, double v0, const glm::vec3 &p1,
+                           double v1, const glm::vec3 &p2, double v2,
+                           const glm::vec3 &p3, double v3) {
     int index = 0;
     if (v0 >= 0) index += 1;
     if (v1 >= 0) index += 2;
@@ -129,6 +131,49 @@ void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *i
     }
 }
 
+void detail::evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
+                              std::vector<vec3> &positions, std::vector<vec3> &normals,
+                              const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1,
+                              const glm::vec3 &p2, double v2) {
+    int index = 0;
+    if (v0 <= 0.0) index += 1;
+    if (v1 <= 0.0) index += 2;
+    if (v2 <= 0.0) index += 4;
+
+    if (index == 0) {  // FULLY OUTSIDE
+        return;
+    } else if (index == 1) {  // ONLY P0 INSIDE
+        auto p01 = interpolate(p0, v0, p1, v1);
+        auto p02 = interpolate(p0, v0, p2, v2);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p01, p02);
+    } else if (index == 2) {  // ONLY P1 INSIDE
+        auto p10 = interpolate(p1, v1, p0, v0);
+        auto p12 = interpolate(p1, v1, p2, v2);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p1, p12, p10);
+    } else if (index == 3) {  // P0 AND P1 INSIDE
+        auto p02 = interpolate(p0, v0, p2, v2);
+        auto p12 = interpolate(p1, v1, p2, v2);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p1, p12);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p12, p02);
+    } else if (index == 4) {  // ONLY P2 INSIDE
+        auto p20 = interpolate(p2, v2, p0, v0);
+        auto p21 = interpolate(p2, v2, p1, v1);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p2, p20, p21);
+    } else if (index == 5) {  // P0 AND P2 INSIDE
+        auto p01 = interpolate(p0, v0, p1, v1);
+        auto p21 = interpolate(p2, v2, p1, v1);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p01, p21);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p21, p2);
+    } else if (index == 6) {  // P1 AND P2 INSIDE
+        auto p10 = interpolate(p1, v1, p0, v0);
+        auto p20 = interpolate(p2, v2, p0, v0);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p1, p20, p10);
+        addTriangle(vertexTree, indexBuffer, positions, normals, p1, p2, p20);
+    } else if (index == 7) {  // FULLY INSIDE
+        addTriangle(vertexTree, indexBuffer, positions, normals, p0, p1, p2);
+    }
+}
+
 size_t detail::addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &positions,
                          std::vector<vec3> &normals, const vec3 pos) {
     K3DTree<size_t, float>::Node *nearest = vertexTree.findNearest(vec3(pos));
@@ -171,8 +216,8 @@ void detail::addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *ind
     normals[i2] += n;
 }
 
-glm::vec3 detail::interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
-                              const double &v1) {
+glm::vec3 detail::interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1,
+                              double v1) {
     double t = 0;
 
     if (v0 != v1) t = v0 / (v0 - v1);

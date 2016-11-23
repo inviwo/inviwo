@@ -58,7 +58,9 @@ SurfaceExtraction::SurfaceExtraction()
     , volume_("volume")
     , outport_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
+    , invertIso_("invert", "Invert ISO", false)
     , method_("method", "Method")
+    , encloseSurface_("enclose", "Enclose Surface", true)
     , colors_("meshColors", "Mesh Colors")
     , dirty_(false) {
     addPort(volume_);
@@ -66,6 +68,8 @@ SurfaceExtraction::SurfaceExtraction()
 
     addProperty(method_);
     addProperty(isoValue_);
+    addProperty(invertIso_);
+    addProperty(encloseSurface_);
     addProperty(colors_);
 
     getProgressBar().hide();
@@ -102,13 +106,15 @@ void SurfaceExtraction::process() {
 
                 float iso = isoValue_.get();
                 vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
+                bool invert = invertIso_.get();
+                bool enclose = encloseSurface_.get();
                 if (!result_[i].result.valid() &&
-                    (util::contains(changed, data[i].first) || !result_[i].isSame(iso, color))) {
+                    (util::contains(changed, data[i].first) || !result_[i].isSame(iso, color, invert, enclose))) {
                     result_[i].set(
-                        iso, color, 0.0f,
-                        dispatchPool([this, vol, iso, color, i]() -> std::shared_ptr<Mesh> {
+                        iso, color, invert, enclose, 0.0f,
+                        dispatchPool([this, vol, iso, color, invert, enclose, i]() -> std::shared_ptr<Mesh> {
                             auto m =
-                                MarchingTetrahedron::apply(vol, iso, color, [this, i](float s) {
+                                MarchingTetrahedron::apply(vol, iso, color, invert, enclose, [this, i](float s) {
                                     this->result_[i].status = s;
                                     float status = 0;
                                     for (const auto& e : this->result_) status += e.status;
@@ -210,12 +216,14 @@ SurfaceExtraction::task::task(task&& rhs)
     , color(std::move(rhs.color))
     , status(rhs.status) {}
 
-bool SurfaceExtraction::task::isSame(float i, vec4 c) const { return iso == i && color == c; }
+bool SurfaceExtraction::task::isSame(float i, vec4 c, bool inv, bool enc) const { return iso == i && color == c && inv == invert && enc == enclose; }
 
-void SurfaceExtraction::task::set(float i, vec4 c, float s,
+void SurfaceExtraction::task::set(float i, vec4 c, bool inv, bool enc, float s,
                                   std::future<std::shared_ptr<Mesh>>&& r) {
     iso = i;
     color = c;
+    invert = inv;
+    enclose = enc;
     status = s;
     result = std::move(r);
 }
@@ -224,6 +232,8 @@ SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {
     if (this != &that) {
         result = std::move(that.result);
         iso = that.iso;
+        invert = that.invert;
+        enclose = that.enclose;
         color = std::move(that.color);
         status = that.status;
     }
