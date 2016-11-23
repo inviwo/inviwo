@@ -99,6 +99,8 @@ SystemSettings::SystemSettings()
                        ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
                        InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
+    , useDepthForCameraRotation_("useDepthForCameraRotation","Use Depth For Camera Rotation",true)
+
     , allocTest_(nullptr) {
 
     addProperty(applicationUsageMode_);
@@ -114,6 +116,7 @@ SystemSettings::SystemSettings()
     addProperty(logStackTraceProperty_);
     addProperty(pythonSyntax_);
     addProperty(glslSyntax_);
+    addProperty(useDepthForCameraRotation_);
 
     glslSyntax_.addProperty(glslBackgroundColor_);
     glslSyntax_.addProperty(glslTextColor_);
