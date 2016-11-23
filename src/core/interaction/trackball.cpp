@@ -147,9 +147,9 @@ Trackball::Trackball(TrackballObject* object)
     setCollapsed(true);
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
-    systemSettings->useDepthForCameraRotation_.onChange([systemSettings,this]() {
-        followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
+    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    systemSettings->followObjectDuringRotation_.onChange([systemSettings,this]() {
+        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
     });
 }
 
@@ -225,9 +225,9 @@ Trackball::Trackball(const Trackball& rhs)
 
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
-    systemSettings->useDepthForCameraRotation_.onChange( [&](){
-        followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
+    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    systemSettings->followObjectDuringRotation_.onChange( [&](){
+        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
     });
 
 }
