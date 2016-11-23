@@ -14,6 +14,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/debugmessages.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glformats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.h
@@ -61,13 +62,14 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/debugmessages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glformats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glformats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.cpp

@@ -104,4 +104,4 @@ void LogGLError(const char* fileName, const char* functionName, int lineNumber) 
     }
 }
 
-}
+}  // namespace
