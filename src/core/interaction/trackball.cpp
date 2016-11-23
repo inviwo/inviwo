@@ -109,7 +109,7 @@ Trackball::Trackball(TrackballObject* object)
     
     , evaluated_(true)
     , timer_(30, [this]() { animate(); }) 
-    , useDepthWhenRotating_(true)
+    , followObjectDuringRotation_(true)
 {
     
     mouseReset_.setVisible(false);
@@ -147,9 +147,9 @@ Trackball::Trackball(TrackballObject* object)
     setCollapsed(true);
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    useDepthWhenRotating_ = systemSettings->useDepthForCameraRotation_.get();
+    followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
     systemSettings->useDepthForCameraRotation_.onChange([systemSettings,this]() {
-        useDepthWhenRotating_ = systemSettings->useDepthForCameraRotation_.get();
+        followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
     });
 }
 
@@ -185,7 +185,7 @@ Trackball::Trackball(const Trackball& rhs)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
     , timer_(30, [this]() { animate(); }) 
-    , useDepthWhenRotating_(rhs.useDepthWhenRotating_)
+    , followObjectDuringRotation_(rhs.followObjectDuringRotation_)
 {
 
     mouseReset_.setVisible(false);
@@ -225,9 +225,9 @@ Trackball::Trackball(const Trackball& rhs)
 
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    useDepthWhenRotating_ = systemSettings->useDepthForCameraRotation_.get();
+    followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
     systemSettings->useDepthForCameraRotation_.onChange( [&](){
-        useDepthWhenRotating_ = systemSettings->useDepthForCameraRotation_.get();
+        followObjectDuringRotation_ = systemSettings->useDepthForCameraRotation_.get();
     });
 
 }
@@ -262,7 +262,7 @@ Trackball& Trackball::operator=(const Trackball& that) {
         stepPanDown_ = that.stepPanDown_;
         stepPanRight_ = that.stepPanRight_;
         touchGesture_ = that.touchGesture_;
-        useDepthWhenRotating_ = that.useDepthWhenRotating_;
+        followObjectDuringRotation_ = that.followObjectDuringRotation_;
     }
     return *this;
 }
@@ -339,7 +339,7 @@ void Trackball::rotate(Event* event) {
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
     
     const auto curNDC =
-        vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f,useDepthWhenRotating_ ?  ndc.z : 1);
+        vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f,followObjectDuringRotation_ ?  ndc.z : 1);
 
     const auto& to = getLookTo();
     const auto& from = getLookFrom();

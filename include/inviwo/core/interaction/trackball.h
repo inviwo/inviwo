@@ -183,7 +183,7 @@ protected:
     bool evaluated_;
     Timer timer_;
 
-    bool useDepthWhenRotating_;
+    bool followObjectDuringRotation_;
 };
 
 }
