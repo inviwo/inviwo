@@ -402,6 +402,7 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
         {0.0f, 0.0f},
         {std::atan(6.0f), 0.0f},
         {std::atan(5.0f / 2.0f), 0.0f},
+        {std::atan(4.0f / 3.0f), 0.0f},
         {std::atan(3.0f / 4.0f), 0.0f},
         {std::atan(2.0f / 5.0f), 0.0f},
         {std::atan(1.0f / 6.0f), 0.0f},

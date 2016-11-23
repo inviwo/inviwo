@@ -79,6 +79,8 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer &cont) {
         max = glm::max(glm::abs(min), glm::abs(max));
         min = -max;
     }
+    
+     
     auto df = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getDataFormat();
     double typeMax = 1.0;
     double typeMin = 0.0;
@@ -101,6 +103,10 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer &cont) {
     }
 }
 
+void ImageNormalizationProcessor::postProcess() {
+    outport_.getEditableData()->getColorLayer()->setSwizzleMask(
+        inport_.getData()->getColorLayer()->getSwizzleMask());
+}
 void ImageNormalizationProcessor::updateMinMax() {
     if (!inport_.hasData()) return;
 
