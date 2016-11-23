@@ -35,9 +35,15 @@
 #include <string>
 
 namespace inviwo {
-  
+
 IVW_CORE_API void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
                                std::string message);
+
+namespace util {
+
+IVW_CORE_API void debugBreak();
+
+}  // namespace
 
 }  // namespace
 
