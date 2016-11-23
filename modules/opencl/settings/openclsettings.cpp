@@ -60,11 +60,12 @@ OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo) :
     enableOpenGLSharing_.onChange(this, &OpenCLSettings::changeDevice);
 
     addProperty(btnOpenCLInfo_);
-    
-    if (openclInfo){
+
+    if (openclInfo) {
         btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
     }
 
+    load();
 }
 
 void OpenCLSettings::changeDevice() {

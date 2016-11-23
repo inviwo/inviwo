@@ -119,11 +119,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     // Create and register core
     auto ivwCore = util::make_unique<InviwoCore>(this);
-    // Load settings from core
-    auto coreSettings = ivwCore->getSettings();
     registerModule(std::move(ivwCore));
-    
-    for (auto setting : coreSettings) setting->loadFromDisk();
+
     auto sys = getSettingsByType<SystemSettings>();
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
         resizePool(static_cast<size_t>(sys->poolSize_.get()));
@@ -202,11 +199,6 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
             elem->printInfo();
         }
     }
-
-    // Load settings from other modules
-    postProgress("Loading Settings");
-    auto settings = getModuleSettings(1);
-    for (auto setting : settings) setting->loadFromDisk();
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }

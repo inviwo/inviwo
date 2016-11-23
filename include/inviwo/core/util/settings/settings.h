@@ -47,8 +47,17 @@ public:
     virtual void addProperty(Property* property, bool owner = true) override;
     virtual void addProperty(Property& property) override;
 
-    void loadFromDisk();
-    void saveToDisk();
+    /**
+     * Load setting from disk. Each derived class needs to take care of calling this in the
+     * constructor
+     */
+    void load();
+    
+    
+    /**
+     * Save is called automatically whenever a property changes.
+     */
+    void save();
 
     virtual std::string getIdentifier();
 protected:

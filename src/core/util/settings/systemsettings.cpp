@@ -145,6 +145,7 @@ SystemSettings::SystemSettings()
         poolSize_.setCurrentStateAsDefault();
         isDeserializing_ = false;
     }
+    load();
 }
 
 void SystemSettings::logStacktraceCallback() {

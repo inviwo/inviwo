@@ -45,42 +45,52 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 
     addProperty(linkProperties_);
 
+    load();
+
+    for (auto prop : linkProperties_.getProperties()) {
+        propertyMap_[prop->getIdentifier()] = static_cast<BoolProperty*>(prop);
+        prop->setVisible(false);
+    }
+
     auto properties = factory->getKeys();
     std::sort(properties.begin(), properties.end());
-
-    for (auto& property : properties) {
-        //enable camera prop linking by default.
-        bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
-        auto ids = dotSeperatedToPascalCase(property);
-        auto linkPropery = util::make_unique<BoolProperty>("link" + ids, property, enabled);
-        linkProperties_.addProperty(linkPropery.get(), false);
-        propertyMap_[ids] = std::move(linkPropery);
-    }
+    for (auto& property : properties) registerProperty(property);       
     
     factory->addObserver(this);
 }
 
 void LinkSettings::onRegister(PropertyFactoryObject* p) {
     auto property = p->getClassIdentifier();
+    registerProperty(property);
+}
+
+void LinkSettings::registerProperty(std::string property) {
     bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
     // Have to check we we already have a property from deserialization.
-    auto id = dotSeperatedToPascalCase(property);
-    if (linkProperties_.getPropertyByIdentifier("link" + id) == nullptr) {
-        auto linkPropery = util::make_unique<BoolProperty>("link" + id, property, enabled);
-        linkProperties_.addProperty(linkPropery.get(), false);
-        propertyMap_[id] = std::move(linkPropery);
+    auto ids = "link" + dotSeperatedToPascalCase(property);
+
+    auto it = propertyMap_.find(ids);
+    if (it != propertyMap_.end()) {
+        it->second->setVisible(true);
+    } else {
+        auto linkPropery = util::make_unique<BoolProperty>(ids, property, enabled);
+        linkPropery->setSerializationMode(PropertySerializationMode::All);
+        propertyMap_[ids] = linkPropery.get();
+        linkProperties_.addProperty(linkPropery.release(), true);
     }
 }
 
 void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
-    auto id = dotSeperatedToPascalCase(p->getClassIdentifier());
-    linkProperties_.removeProperty("link" + id);
-    propertyMap_.erase(id);
+    auto ids = "link" + dotSeperatedToPascalCase(p->getClassIdentifier());
+    auto it = propertyMap_.find(ids);
+    if (it != propertyMap_.end()) {
+        it->second->setVisible(false);
+    }
 }
 
 bool LinkSettings::isLinkable(const Property* property) const {
-    auto id = dotSeperatedToPascalCase(property->getClassIdentifier());
-    auto it  = propertyMap_.find(id);
+    auto ids = "link" + dotSeperatedToPascalCase(property->getClassIdentifier());
+    auto it  = propertyMap_.find(ids);
     if (it != propertyMap_.end()) {
         return it->second->get();
     }

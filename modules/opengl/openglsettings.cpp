@@ -66,7 +66,7 @@ OpenGLSettings::OpenGLSettings()
     addProperty(uniformWarnings_);
     addProperty(shaderObjectErrors_);
     
-    loadFromDisk();
+    load();
 }
 
 } // namespace
