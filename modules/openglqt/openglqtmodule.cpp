@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -31,10 +31,12 @@
 #include <modules/openglqt/openglqtcapabilities.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/canvasprocessorgl.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <modules/openglqt/canvasprocessorwidgetqt.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+//#include <modules/opengl/inviwoopengl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -65,6 +67,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
+    SharedOpenGLResources::getPtr()->reset();
     if (sharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
@@ -98,6 +101,8 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
     }
     
     glDeleteSync(syncObj);
+
+    LGL_ERROR;
 }
 
 
