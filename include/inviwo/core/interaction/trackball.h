@@ -182,6 +182,8 @@ protected:
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;
+
+    bool followObjectDuringRotation_;
 };
 
 }
