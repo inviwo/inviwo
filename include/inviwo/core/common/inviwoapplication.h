@@ -52,6 +52,7 @@
 #include <condition_variable>
 #include <future>
 #include <locale>
+#include <set>
 #include <warn/pop>
 
 namespace inviwo {
@@ -199,6 +200,7 @@ public:
 
     void clearModules();
 protected:
+    virtual std::set<std::string> getProtectedModules();
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();

@@ -155,18 +155,48 @@ void InviwoApplication::clearModules() {
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destruction order of vector is undefined.
     //auto coreModule = modules_.rend()-1;
-    auto coreModuleIt = std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("Core") == 0; });
-    auto qtWidgetsModuleIt = std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; });
+    auto protectedModules = getProtectedModules();
+    //auto keepModules = std::set<std::string>{ "opengl", "openglqt" };
+    auto keepModules = std::set<std::string>();
     for (auto it = std::rbegin(modules_); it != std::rend(modules_); ++it) {
-        if (it->get() != coreModuleIt->get() && it->get() != qtWidgetsModuleIt->get()) {
+        if (protectedModules.find((*it)->getIdentifier()) == protectedModules.end() &&
+            keepModules.find(toLower((*it)->getIdentifier())) == keepModules.end()) {
             it->reset();
         }
     }
-    modules_.erase(coreModuleIt + 1, qtWidgetsModuleIt);
-    modules_.erase(std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; }) + 1, std::end(modules_));
+    modules_.erase(std::remove_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module == nullptr; }), modules_.end());
+    //modules_.erase(coreModuleIt + 1, qtWidgetsModuleIt);
+    //modules_.erase(std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; }) + 1, std::end(modules_));
     //modules_.clear();
-    modulesFactoryObjects_.clear();
-    moduleSharedLibraries_.clear();
+    //modulesFactoryObjects_.clear();
+    modulesFactoryObjects_.erase(std::remove_if(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_), 
+        [&](const auto& module) { return protectedModules.find(module->name_) == protectedModules.end() && keepModules.find(toLower(module->name_)) == keepModules.end(); }), modulesFactoryObjects_.end());
+    moduleSharedLibraries_.erase(std::remove_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_), 
+        [&](const auto& module) { 
+        // Remove file decoration 
+        auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(module->getFilePath());
+        auto decoration = std::string("inviwo-module-");
+        auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+        if (inviwoModulePos == std::string::npos) {
+            inviwoModulePos = 0;
+        }
+        else {
+            inviwoModulePos = decoration.size();
+        }
+        auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+        // Remove debug ending "d" at end of file name
+        len -= 1;
+#endif 
+        auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+        
+        return std::find_if(std::begin(protectedModules), std::end(protectedModules), 
+            [moduleName](const auto& protectedModule) { 
+            return toLower(protectedModule).compare(moduleName) == 0; 
+        }) == protectedModules.end()
+            && keepModules.find(toLower(moduleName)) == keepModules.end();
+    }), std::end(moduleSharedLibraries_));
+    //moduleSharedLibraries_.clear();
 
 }
 
@@ -528,13 +558,39 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
 #endif
     std::vector<std::string> tmpFiles;
     std::vector<std::string> paths;
+    auto protectedModules = getProtectedModules();
     for (const auto& filePath : files) {
+        if (moduleSharedLibraries_.end() != 
+            std::find_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_), 
+                [filePath](const auto& lib) { return lib->getFilePath().compare(filePath) == 0; })) {
+            continue;
+        }
         if (filesystem::getFileExtension(filePath) == libraryType) {
             std::string tmpDir = filesystem::getWorkingDirectory();
             std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            if (filesystem::getFileNameWithoutExtension(filePath) == "inviwo-module-qtwidgetsd") {
+            auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+            // Remove file decoration 
+            auto decoration = std::string("inviwo-module-");
+            auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+            if (inviwoModulePos == std::string::npos) {
+                inviwoModulePos = 0;
+            }
+            else {
+                inviwoModulePos = decoration.size();
+            }
+            auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+            // Remove debug ending "d" at end of file name
+            len -= 1;
+#endif 
+            auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+            if (protectedModules.end() != std::find_if(std::begin(protectedModules), std::end(protectedModules), [moduleName](const auto& protectedModule) { return toLower(protectedModule).compare(moduleName) == 0; })) {
                 dstPath = filePath;
             }
+            //    
+            //if (filesystem::getFileNameWithoutExtension(filePath) == "inviwo-module-qtwidgetsd") {
+            //    dstPath = filePath;
+            //}
             else {
                 //std::string tmpDir = dir + "/tmp";
                 if (!filesystem::directoryExists(tmpDir)) {
@@ -554,9 +610,11 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
         }
 
     }
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::string tmpDir = filesystem::getWorkingDirectory();
     //auto err = _putenv_s("HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/inviwo.exe/Path", "C:\\inviwo-dev\\build\\apps\\inviwo\\");
-    AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
+    AddDllDirectory(converter.from_bytes(tmpDir).c_str());
+    //AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
     if (const char* env_p = std::getenv("PATH")) {
         std::string s(env_p);
         char delim = ';';
@@ -569,7 +627,7 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
         }
         for (auto path : elems) {
             std::wstring dd;
-            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
             //std::string narrow = converter.to_bytes(wide_utf16_source_string);
             std::wstring wide = converter.from_bytes(path);
             AddDllDirectory(converter.from_bytes(path).c_str());
@@ -659,6 +717,10 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 
 CommandLineParser& InviwoApplication::getCommandLineParser() {
     return commandLineParser_;
+}
+
+std::set<std::string> InviwoApplication::getProtectedModules() {
+    return std::set<std::string>{"Core", "QtWidgets", "OpenGL", "OpenGLQt"};
 }
 
 void InviwoApplication::printApplicationInfo() {
