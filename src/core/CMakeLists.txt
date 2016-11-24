@@ -302,7 +302,6 @@ set(SOURCE_FILES
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
     datastructures/camera.cpp
-    datastructures/camerafactory.cpp
     datastructures/camerafactoryobject.cpp
     datastructures/datamapper.cpp
     datastructures/geometry/basicmesh.cpp
@@ -339,7 +338,6 @@ set(SOURCE_FILES
     interaction/events/eventhandler.cpp
     interaction/events/eventlistener.cpp
     interaction/events/eventmatcher.cpp
-    interaction/events/eventpropagator.cpp
     interaction/events/gestureevent.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
@@ -356,7 +354,6 @@ set(SOURCE_FILES
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
     interaction/trackball.cpp
-    interaction/trackballobject.cpp
     io/bytereaderutil.cpp
     io/datareader.cpp
     io/datareaderdialog.cpp
@@ -382,7 +379,6 @@ set(SOURCE_FILES
     links/linkevaluator.cpp
     links/propertylink.cpp
     metadata/metadata.cpp
-    metadata/metadatafactory.cpp
     metadata/metadatamap.cpp
     metadata/metadataowner.cpp
     metadata/positionmetadata.cpp
@@ -474,12 +470,10 @@ set(SOURCE_FILES
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp
-    util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/observer.cpp
-    util/raiiutils.cpp
     util/rendercontext.cpp
     util/settings/linksettings.cpp
     util/settings/settings.cpp
@@ -489,7 +483,6 @@ set(SOURCE_FILES
     util/singleton.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
-    util/stdextensions.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
