@@ -68,7 +68,7 @@ SettingsWidget::SettingsWidget(QString title, InviwoMainWindow* mainwindow)
 SettingsWidget::SettingsWidget(InviwoMainWindow* mainwindow)
     : SettingsWidget(tr("Settings"), mainwindow) {}
 
-SettingsWidget::~SettingsWidget() {}
+SettingsWidget::~SettingsWidget() = default;
 
 void SettingsWidget::updateSettingsWidget() {
     auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
@@ -101,7 +101,7 @@ void SettingsWidget::updateSettingsWidget() {
 void SettingsWidget::saveSettings() {
     const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
     for (auto& setting : settings) {
-        setting->saveToDisk();
+        setting->save();
     }
 }
 

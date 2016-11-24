@@ -47,11 +47,14 @@ public:
     virtual bool isLinkable(const Property* property) const;
 
     virtual void onRegister(PropertyFactoryObject* p) override;
+
+    void registerProperty(std::string property);
+
     virtual void onUnRegister(PropertyFactoryObject* p) override;
 
 private:
     CompositeProperty linkProperties_;
-    std::unordered_map<std::string, std::unique_ptr<BoolProperty>> propertyMap_;
+    std::unordered_map<std::string, BoolProperty*> propertyMap_;
 };
 
 } // namespace

@@ -280,13 +280,13 @@ std::shared_ptr<BasicMesh> BasicMesh::cone(const vec3& start, const vec3& stop, 
 std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& stop,
                                                const vec4& color, const float& radius,
                                                const size_t& segments, bool caps, std::shared_ptr<BasicMesh> mesh ) {
-    size_t globalIndexOffset = 0;
+    std::uint32_t globalIndexOffset = 0;
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
     }
     else {
-        globalIndexOffset = mesh->getVertices()->getSize();
+        globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
     std::vector<BasicMesh::Vertex> vertices;
     vertices.reserve(segments*2);
@@ -402,6 +402,7 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
         {0.0f, 0.0f},
         {std::atan(6.0f), 0.0f},
         {std::atan(5.0f / 2.0f), 0.0f},
+        {std::atan(4.0f / 3.0f), 0.0f},
         {std::atan(3.0f / 4.0f), 0.0f},
         {std::atan(2.0f / 5.0f), 0.0f},
         {std::atan(1.0f / 6.0f), 0.0f},
@@ -444,13 +445,13 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
         {27, 21, 26}, {29, 24, 28}, {30, 25, 29}, {31, 26, 30}, {33, 29, 32}, {34, 30, 33},
         {36, 33, 35}};
 
-    size_t globalIndexOffset = 0;
+    std::uint32_t globalIndexOffset = 0;
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
     }
     else {
-        globalIndexOffset = mesh->getVertices()->getSize();
+        globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
 
     std::vector<BasicMesh::Vertex> vertices;
@@ -462,7 +463,7 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset = vertices.size() + globalIndexOffset;
+                glm::uint32_t idxOffset = static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
 
                 vec3 normal;
                 vec3 vertex;
@@ -542,12 +543,12 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
         {27, 21, 26}, {29, 24, 28}, {30, 25, 29}, {31, 26, 30}, {33, 29, 32}, {34, 30, 33},
         {36, 33, 35} };
 
-    size_t globalIndexOffset = 0;
+    std::uint32_t globalIndexOffset = 0;
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
     }else{
-        globalIndexOffset = mesh->getVertices()->getSize();
+        globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
 
     std::vector<BasicMesh::Vertex> vertices;
@@ -559,7 +560,7 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset = vertices.size() + globalIndexOffset;
+                glm::uint32_t idxOffset = static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
                 vec3 normal;
                 vec3 vertex;
                 vec3 tcoord;

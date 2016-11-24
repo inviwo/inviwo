@@ -77,6 +77,8 @@ public:
     IntVec4Property pyTypeColor_;
     IntVec4Property pyCommentsColor_;
 
+    BoolProperty followObjectDuringRotation_;
+
 protected:
     void logStacktraceCallback();
     void allocationTest();

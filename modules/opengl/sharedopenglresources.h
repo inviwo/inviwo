@@ -54,6 +54,8 @@ public:
     Shader* getTextureShader();
     Shader* getNoiseShader(); 
     Shader* getImageCopyShader(size_t colorLayers);
+
+    void reset();
     
 private:
     std::unique_ptr<Mesh> planeRectMesh_;

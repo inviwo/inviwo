@@ -42,6 +42,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/opengl/canvasgl.h>
+#include <modules/opengl/debugmessages.h>
 #include <modules/openglqt/canvasqglwidget.h>
 //#include <modules/openglqt/canvasqwindow.h>
 //#include <modules/openglqt/canvasqopenglwidget.h>
@@ -107,8 +108,12 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 //using CanvasQt = CanvasQtBase<CanvasQWindow>;
 //using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
+
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(size2_t dim) : T(nullptr, dim) {}
+CanvasQtBase<T>::CanvasQtBase(size2_t dim) : T(nullptr, dim) {
+    makeCurrent();
+    utilgl::handleOpenGLDebugMode(this->activeContext());
+}
 
 template <typename T>
 std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {

@@ -36,6 +36,8 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 
 namespace inviwo {
@@ -106,7 +108,9 @@ Trackball::Trackball(TrackballObject* object)
                         [](Event* e) { return e->hash() == TouchEvent::chash(); }))
     
     , evaluated_(true)
-    , timer_(30, [this]() { animate(); }) {
+    , timer_(30, [this]() { animate(); }) 
+    , followObjectDuringRotation_(true)
+{
     
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -141,6 +145,12 @@ Trackball::Trackball(TrackballObject* object)
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
+
+    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    systemSettings->followObjectDuringRotation_.onChange([systemSettings,this]() {
+        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    });
 }
 
 Trackball::Trackball(const Trackball& rhs)
@@ -174,7 +184,9 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanRight_(rhs.stepPanRight_)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
-    , timer_(30, [this]() { animate(); }) {
+    , timer_(30, [this]() { animate(); }) 
+    , followObjectDuringRotation_(rhs.followObjectDuringRotation_)
+{
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -210,6 +222,14 @@ Trackball::Trackball(const Trackball& rhs)
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
+
+
+    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    systemSettings->followObjectDuringRotation_.onChange( [&](){
+        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
+    });
+
 }
 
 Trackball& Trackball::operator=(const Trackball& that) {
@@ -242,6 +262,7 @@ Trackball& Trackball::operator=(const Trackball& that) {
         stepPanDown_ = that.stepPanDown_;
         stepPanRight_ = that.stepPanRight_;
         touchGesture_ = that.touchGesture_;
+        followObjectDuringRotation_ = that.followObjectDuringRotation_;
     }
     return *this;
 }
@@ -316,8 +337,9 @@ void Trackball::rotate(Event* event) {
 
     auto mouseEvent = static_cast<MouseEvent*>(event);
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
+    
     const auto curNDC =
-        vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f, ndc.z);
+        vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f,followObjectDuringRotation_ ?  ndc.z : 1);
 
     const auto& to = getLookTo();
     const auto& from = getLookFrom();

@@ -107,6 +107,7 @@ void CanvasQGLWidget::update() {
 }
 
 void CanvasQGLWidget::paintGL() {
+    makeCurrent();
     CanvasGL::update();
 }
 

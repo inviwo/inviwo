@@ -99,6 +99,8 @@ SystemSettings::SystemSettings()
                        ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
                        InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
+    , followObjectDuringRotation_("followObjectDuringRotation","Follow Object During Camera Rotation",true)
+
     , allocTest_(nullptr) {
 
     addProperty(applicationUsageMode_);
@@ -114,6 +116,7 @@ SystemSettings::SystemSettings()
     addProperty(logStackTraceProperty_);
     addProperty(pythonSyntax_);
     addProperty(glslSyntax_);
+    addProperty(followObjectDuringRotation_);
 
     glslSyntax_.addProperty(glslBackgroundColor_);
     glslSyntax_.addProperty(glslTextColor_);
@@ -145,6 +148,7 @@ SystemSettings::SystemSettings()
         poolSize_.setCurrentStateAsDefault();
         isDeserializing_ = false;
     }
+    load();
 }
 
 void SystemSettings::logStacktraceCallback() {

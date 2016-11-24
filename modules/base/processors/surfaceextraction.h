@@ -89,10 +89,12 @@ protected:
         std::future<std::shared_ptr<Mesh>> result;
         float iso = 0.0f;
         vec4 color = vec4(0);
+        bool invert = false;
+        bool enclose = true;
         float status = 0.0f;
 
-        bool isSame(float iso, vec4 color) const;
-        void set(float iso, vec4 color, float status, std::future<std::shared_ptr<Mesh>>&& result);
+        bool isSame(float iso, vec4 color, bool invert, bool enclose) const;
+        void set(float iso, vec4 color, bool invert, bool enclose, float status, std::future<std::shared_ptr<Mesh>>&& result);
     };
 
     DataInport<Volume, 0> volume_;
@@ -100,7 +102,9 @@ protected:
     std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_;
 
     FloatProperty isoValue_;
+    BoolProperty invertIso_;
     OptionPropertyInt method_;
+    BoolProperty encloseSurface_;
     CompositeProperty colors_;
 
     std::vector<task> result_;

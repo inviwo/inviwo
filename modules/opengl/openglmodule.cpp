@@ -49,6 +49,8 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     , shaderManager_{util::make_unique<ShaderManager>()} 
     , sharedResources_{util::make_unique<SharedOpenGLResources>()} {
     
+    auto settings = util::make_unique<OpenGLSettings>();
+
     ShaderManager::init(shaderManager_.get());
     SharedOpenGLResources::init(sharedResources_.get());
 
@@ -70,7 +72,6 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
 
     registerProcessor<CanvasProcessorGL>();
 
-    auto settings = util::make_unique<OpenGLSettings>();
     auto openGLCap = util::make_unique<OpenGLCapabilities>(settings.get());
     shaderManager_.get()->setOpenGLSettings(settings.get());
 

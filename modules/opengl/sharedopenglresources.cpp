@@ -93,5 +93,12 @@ Shader* SharedOpenGLResources::getImageCopyShader(size_t colorLayers) {
     return elem.get();
 }
 
+void SharedOpenGLResources::reset() {
+    planeRectMesh_ = nullptr;
+    textureShader_ = nullptr;
+    noiseShader_ = nullptr;
+    imgCopyShaders_.clear();
+}
+
 } // namespace
 

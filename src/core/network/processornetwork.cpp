@@ -395,7 +395,10 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
-                .setMakeNew([]() { return nullptr; })
+                .setMakeNew([]() {
+                    RenderContext::getPtr()->activateDefaultRenderContext();
+                    return nullptr;
+                })
                 .onNew([&](const std::string& id, Processor*& p) { addProcessor(p); })
                 .onRemove([&](const std::string& id) {
                     removeAndDeleteProcessor(getProcessorByIdentifier(id));

@@ -43,17 +43,24 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
               << "): ";
     std::cout << message << std::endl;
 
-#ifdef WIN32
-    __debugbreak();
-#else
-    raise(SIGTRAP);
-#endif
+    util::debugBreak();
     exit(-1);
 }
 
 #else
 void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
                   std::string message) {}
+
 #endif  // _DEBUG
+
+void util::debugBreak() {
+#ifdef WIN32
+    __debugbreak();
+#else
+    raise(SIGTRAP);
+#endif
+}
+
+
 
 }  // namespace

@@ -81,6 +81,10 @@ public:
     OptionPropertyOption() = default;
     OptionPropertyOption(const std::string& id, const std::string& name, T value)
         : id_(id), name_(name), value_(value) {}
+    template <typename U = T,
+              class = typename std::enable_if<std::is_same<U, std::string>::value, void>::type>
+    OptionPropertyOption(const std::string& id, const std::string& name)
+        : id_(id), name_(name), value_(id) {}
 
     std::string id_;
     std::string name_;

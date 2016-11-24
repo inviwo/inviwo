@@ -105,14 +105,8 @@ void TextOverlayGL::process() {
     }
     
     // check whether a property was modified
-    bool dirty = (cacheTexture_.get() == nullptr);
-    for (auto property : this->getProperties()) {
-        if (property->isModified()) {
-            dirty = true;
-            break;
-        }
-    }
-    if (dirty) {
+    if (!cacheTexture_ ||
+        util::any_of(getProperties(), [](const auto& p) { return p->isModified(); })) {
         updateCache();
     }
 
@@ -149,21 +143,17 @@ std::string TextOverlayGL::getString() const {
     // replace all occurrences of place markers with the corresponding args
     auto args = this->getPropertiesByType<StringProperty>(false);
     // remove default text string property
-    for (auto it=args.begin(); it != args.end(); ++it) {
-        if ((*it)->getIdentifier() == "Text") {
-            args.erase(it);
-            break;
-        }
-    }
-    ivwAssert(numArgs_ == args.size(), "TextOverlayGL: number arguments not matching internal count");
+    util::erase_remove_if(args, [this](const auto& p) { return p == &text_; });
+    ivwAssert(numArgs_ == args.size(),
+              "TextOverlayGL: number arguments not matching internal count");
 
     // parse string for all "%" and try to extract the number following the percent sign
     bool printWarning = false;
 
     std::string matchStr("%");
-    std::size_t offset = str.find(matchStr, 0u);
-    while (offset != std::string::npos) {
-        // extract number substring, 
+    for (std::size_t offset = str.find(matchStr, 0u); offset != std::string::npos;
+         offset = str.find(matchStr, offset)) {
+        // extract number substring,
         // read 3 characters to ensure that the number only has at most 2 digits
         std::string numStr = str.substr(offset + 1, 3);
         if (std::isdigit(numStr[0])) {
@@ -176,18 +166,13 @@ std::string TextOverlayGL::getString() const {
                 // make textual replacement ("%" and number of digits)
                 str.replace(offset, numDigits + 1, args[argNum]->get());
                 offset += args[argNum]->get().size();
-            }
-            else {
-                if (numDigits > 2) {
-                    printWarning = true;
-                }
+            } else {
+                if (numDigits > 2) printWarning = true;
                 offset += 1 + numDigits;
             }
         }
-        // find next occurrence
-        offset = str.find(matchStr, offset);
     }
-        
+
     if (printWarning) {
         LogWarn("Input text contains more than the allowed " << maxNumArgs_ << " place markers.");
     }

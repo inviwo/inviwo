@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLSETTINGS_H
-#define IVW_OPENGLSETTINGS_H
+#ifndef IVW_DEBUGMESSAGES_H
+#define IVW_DEBUGMESSAGES_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/debugmessages.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API OpenGLSettings : public Settings {
+namespace utilgl {
 
-public:
-    enum class BreakOnMessageLevel {Off, Error, Warn, Info};
+enum class OpenGLDebugMode {Off, Debug, DebugSynchronous};
 
-    OpenGLSettings();
+IVW_MODULE_OPENGL_API void APIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
+                                                               GLuint id, GLenum severity,
+                                                               GLsizei length,
+                                                               const GLchar* message,
+                                                               const void* none);
 
-    BoolProperty shaderReloadingProperty_;
-    ButtonProperty btnOpenGLInfo_;
-    OptionPropertyString selectedOpenGLProfile_;
-    TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
-    TemplateOptionProperty<Shader::OnError> shaderObjectErrors_;
 
-    TemplateOptionProperty<utilgl::OpenGLDebugMode> debugMessages_;
-    TemplateOptionProperty<BreakOnMessageLevel> breakOnMessage_;
-};
+IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(OpenGLDebugMode mode);
+
+IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
+IVW_MODULE_OPENGL_API void setOpenGLDebugMode(OpenGLDebugMode mode);
+
+}
 
 } // namespace
 
-#endif // IVW_OPENGLSETTINGS_H
+#endif // IVW_DEBUGMESSAGES_H

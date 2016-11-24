@@ -137,6 +137,8 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
         img->setMetaData<StringMetaData>("name",name);
     }
 
+    img->getColorLayer(0)->setSwizzleMask( swizzlemasks::luminance);
+
     return img;
 }
 }

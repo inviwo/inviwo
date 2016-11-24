@@ -35,21 +35,21 @@ namespace inviwo {
 
 Settings::Settings(const std::string& id) : identifier_(id), isDeserializing_(false) {}
 
-Settings::~Settings() {}
+Settings::~Settings() = default;
 
 void Settings::addProperty(Property* property, bool owner) {
     PropertyOwner::addProperty(property, owner);
-    property->onChange(this, &Settings::saveToDisk);
+    property->onChange(this, &Settings::save);
 }
 
 void Settings::addProperty(Property& property) {
     PropertyOwner::addProperty(&property, false);
-    property.onChange(this, &Settings::saveToDisk);
+    property.onChange(this, &Settings::save);
 }
 
 std::string Settings::getIdentifier() { return identifier_; }
 
-void Settings::loadFromDisk() {
+void Settings::load() {
     std::stringstream ss;
     ss << identifier_ << ".ivs";
     std::string filename = ss.str();
@@ -71,7 +71,7 @@ void Settings::loadFromDisk() {
     isDeserializing_ = false;
 }
 
-void Settings::saveToDisk() {
+void Settings::save() {
     if (isDeserializing_) return;
 
     std::stringstream ss;
@@ -79,8 +79,7 @@ void Settings::saveToDisk() {
     std::string filename = ss.str();
     replaceInString(filename, " ", "_");
     try {
-        Serializer s(
-            filesystem::getPath(PathType::Settings, "/" + filename, true));
+        Serializer s(filesystem::getPath(PathType::Settings, "/" + filename, true));
         serialize(s);
         s.writeFile();
     } catch (std::exception e) {
