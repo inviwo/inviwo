@@ -77,7 +77,7 @@ public:
     IntVec4Property pyTypeColor_;
     IntVec4Property pyCommentsColor_;
 
-    BoolProperty useDepthForCameraRotation_;
+    BoolProperty followObjectDuringRotation_;
 
 protected:
     void logStacktraceCallback();
