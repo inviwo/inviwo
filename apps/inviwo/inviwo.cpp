@@ -38,6 +38,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
@@ -46,6 +47,7 @@ int main(int argc, char** argv) {
     std::string basePath = inviwo::filesystem::findBasePath();
 
     inviwo::LogCentral::init();
+    inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
     auto filelogger = std::make_shared<inviwo::FileLogger>(basePath);
     inviwo::LogCentral::getPtr()->registerLogger(filelogger);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);

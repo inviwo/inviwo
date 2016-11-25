@@ -40,6 +40,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <modules/base/processors/imageexport.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -59,6 +60,7 @@ int main(int argc, char** argv) {
     {
         // scope for ivw app
         inviwo::LogCentral::init();
+        inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
         //inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
 
         LogErrorCounter::init();

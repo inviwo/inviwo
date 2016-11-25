@@ -39,17 +39,8 @@
 
 namespace inviwo {
 
-class IVW_CORE_API SingletonBase {
-protected:
-    static std::unique_ptr<std::vector<SingletonBase*>> instances_;
-
-    SingletonBase();
-    virtual ~SingletonBase();
-    void deleteAllSingeltons();
-};
-
 template <class T>
-class Singleton : public SingletonBase {
+class Singleton {
 public:
     
     Singleton<T>() {};
