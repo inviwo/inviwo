@@ -1122,7 +1122,8 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     // pass a close event to all children to let the same state etc.
     for (auto& child : children()) {
-        QApplication::sendEvent(child, new QCloseEvent());
+        QCloseEvent closeEvent;
+        QApplication::sendEvent(child, &closeEvent);
     }
 
     QMainWindow::closeEvent(event);
