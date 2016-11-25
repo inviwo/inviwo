@@ -90,13 +90,14 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , modules_()
     , clearModules_([&]() {
-        //ResourceManager::getPtr()->clearAllResources();
-        //// Need to clear the modules in reverse order since the might depend on each other.
-        //// The destruction order of vector is undefined.
-        //for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
-        //    it->reset();
-        //}
-        //modules_.clear();
+        ResourceManager::getPtr()->clearAllResources();
+        // Need to clear the modules in reverse order since the might depend on each other.
+        // The destruction order of vector is undefined.
+        for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
+            it->reset();
+        }
+        modules_.clear();
+        modulesFactoryObjects_.clear();
     })
     , moudleCallbackActions_()
 
@@ -144,7 +145,6 @@ InviwoApplication::~InviwoApplication() {
     portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
     moduleLibraryObservers_.clear();
-    clearModules();
 }
 
 void InviwoApplication::clearModules() {
@@ -521,25 +521,12 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             elem->printInfo();
         }
     }
-
-    // Load settings from other modules
-    postProgress("Loading Settings");
-    auto settings = getModuleSettings(1);
-    for (auto setting : settings) setting->loadFromDisk();
 }
 
 typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
 void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<std::string>& librarySearchPaths) {
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
     std::vector<std::string> files;
-    for (auto path : librarySearchPaths) {
-        auto filesInDir = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
-        for (auto& file : filesInDir) {
-            file = path + "/" + file;
-        }
-        files.insert(std::end(files), std::begin(filesInDir), std::end(filesInDir));
-    }
-    
 #if WIN32
     std::string libraryType = "dll";
     // Prevent error mode dialogs from displaying.
@@ -548,63 +535,91 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
     //std::string libraryType = "so";
     std::string libraryType = "dylib";
 #endif
+    for (auto path : librarySearchPaths) {
+        auto filesInDir = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
+        for (auto& file : filesInDir) {
+            file = path + "/" + file;
+        }
+        files.insert(std::end(files), std::begin(filesInDir), std::end(filesInDir));
+    }
+    // Only consider dynamic library file types
+    files.erase(std::remove_if(std::begin(files), std::end(files),
+        [&libraryType](const auto& filePath) {
+        return filesystem::getFileExtension(filePath).compare(libraryType) != 0;
+    }), std::end(files));
+    // Do not consider modules already loaded
+    files.erase(std::remove_if(std::begin(files), std::end(files),
+        [&](const auto& filePath) {
+        return moduleSharedLibraries_.end() != std::find_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_),
+            [filePath](const auto& lib) { return lib->getFilePath().compare(filePath) == 0; });
+    }), std::end(files));
+    auto protectedModules = getProtectedModules();
+    // Compares lower case moduleIdentifier with lower case in protected modules
+    // Returns the iterator to the found module, or end() if not found
+    auto findProtectedModule = [&protectedModules](const std::string& moduleIdentifier) { 
+        return std::find_if(std::begin(protectedModules), std::end(protectedModules), 
+            [moduleIdentifier](const auto& protectedModule) { 
+            return toLower(protectedModule).compare(toLower(moduleIdentifier)) == 0;
+        }); 
+    };
+    auto stripModuleFileNameDecoration = [](const std::string& filePath) {
+        auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+        auto decoration = std::string("inviwo-module-");
+        auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+        if (inviwoModulePos == std::string::npos) {
+            inviwoModulePos = 0;
+        }
+        else {
+            inviwoModulePos = decoration.size();
+        }
+        auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+        // Remove debug ending "d" at end of file name
+        len -= 1;
+#endif 
+        auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+        return moduleName;
+    };
+
+    // Load protected modules first.
+    // The modules which protected modules depend on 
+    // will be loaded from the application dir instead of the temporary dir.
+    std::stable_sort(std::begin(files), std::end(files), 
+        [&](const auto& first, const auto& second) {
+        auto foundFirst = findProtectedModule(stripModuleFileNameDecoration(first));
+        auto foundSecond = findProtectedModule(stripModuleFileNameDecoration(second));
+        return std::distance(protectedModules.begin(), foundFirst) < std::distance(protectedModules.begin(), foundSecond);
+    });
+    
+
     std::vector<std::string> tmpFiles;
     std::vector<std::string> paths;
-    auto protectedModules = getProtectedModules();
+
     for (const auto& filePath : files) {
-        if (moduleSharedLibraries_.end() != 
-            std::find_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_), 
-                [filePath](const auto& lib) { return lib->getFilePath().compare(filePath) == 0; })) {
-            continue;
+        std::string tmpDir = filesystem::getWorkingDirectory();
+        std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
+        if (protectedModules.end() != findProtectedModule(stripModuleFileNameDecoration(filePath))) {
+            // Protected modules are loaded from the application dir
+            dstPath = filePath;
+        } else {
+            if (!filesystem::directoryExists(tmpDir)) {
+                filesystem::createDirectoryRecursively(tmpDir);
+            }
+
+
+            if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
+                // Load a copy of the file to make sure that
+                // we can overwrite the file.
+                filesystem::copyFile(filePath, dstPath);
+            }
         }
-        if (filesystem::getFileExtension(filePath) == libraryType) {
-            std::string tmpDir = filesystem::getWorkingDirectory();
-            std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
-            // Remove file decoration 
-            auto decoration = std::string("inviwo-module-");
-            auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
-            if (inviwoModulePos == std::string::npos) {
-                inviwoModulePos = 0;
-            }
-            else {
-                inviwoModulePos = decoration.size();
-            }
-            auto len = fileNameWithoutExtension.size() - inviwoModulePos;
-#ifdef DEBUG
-            // Remove debug ending "d" at end of file name
-            len -= 1;
-#endif 
-            auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
-            if (protectedModules.end() != std::find_if(std::begin(protectedModules), std::end(protectedModules), [moduleName](const auto& protectedModule) { return toLower(protectedModule).compare(moduleName) == 0; })) {
-                dstPath = filePath;
-            }
-            //    
-            //if (filesystem::getFileNameWithoutExtension(filePath) == "inviwo-module-qtwidgetsd") {
-            //    dstPath = filePath;
-            //}
-            else {
-                //std::string tmpDir = dir + "/tmp";
-                if (!filesystem::directoryExists(tmpDir)) {
-                    filesystem::createDirectoryRecursively(tmpDir);
-                }
 
-
-                if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
-                    // Load a copy of the file to make sure that
-                    // we can overwrite the file.
-                    filesystem::copyFile(filePath, dstPath);
-                }
-            }
-
-            tmpFiles.emplace_back(dstPath);
-            paths.emplace_back(filePath);
-        }
+        tmpFiles.emplace_back(dstPath);
+        paths.emplace_back(filePath);
 
     }
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::string tmpDir = filesystem::getWorkingDirectory();
-    //auto err = _putenv_s("HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/inviwo.exe/Path", "C:\\inviwo-dev\\build\\apps\\inviwo\\");
     AddDllDirectory(converter.from_bytes(tmpDir).c_str());
     //AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
     if (const char* env_p = std::getenv("PATH")) {
