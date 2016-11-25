@@ -300,7 +300,11 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     return allModuleSettings;
 }
 
-void InviwoApplication::cleanupSingletons() { SingletonBase::deleteAllSingeltons(); }
+void InviwoApplication::cleanupSingletons() {
+    PickingManager::deleteInstance();
+    ResourceManager::deleteInstance();
+    RenderContext::deleteInstance();
+}
 
 void InviwoApplication::resizePool(size_t newSize) {
     size_t size = pool_.trySetSize(newSize);

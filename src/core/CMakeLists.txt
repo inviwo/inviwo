@@ -480,7 +480,6 @@ set(SOURCE_FILES
     util/settings/systemsettings.cpp
     util/shuntingyard.cpp
     util/singlefileobserver.cpp
-    util/singleton.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
     util/stringconversion.cpp
