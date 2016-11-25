@@ -44,6 +44,8 @@ namespace inviwo {
     class IVW_MODULE_PYTHON3_API PythonScript {
 
     public:
+        using VariableMap = std::unordered_map<std::string, PyObject*>;
+
         PythonScript();
 
         /**
@@ -67,11 +69,21 @@ namespace inviwo {
         * Runs the script once,
         * if the script has changed since last compile a new compile call will be issued.
         *
-        * If an error occurs, the error message is logged to the inviwo logger and python standard output.
+        * If an error occurs, the error message is logged to the inviwo logger and python standard
+        output.
+        *
+        * @param extraLocalVariables a map of  keys and PyOjbects that will available as local
+        variables in the python scripts, eg {"number" , PyValueParser::toPyObject<int>(123) } will
+        be avaible as the local variable 'number' in the script
+        * @param callback a callback that will be called once the script has finished executing. The
+        callback takes a PyObject representing the python dict of local variables from the script.
+        Can be used to parse results from the script. This callback will only be called of the
+        script executed with out problems
         *
         * @return true, if script execution has been successful
         */
-        bool run(bool outputInfo = true);
+        bool run(const VariableMap& extraLocalVariables = VariableMap(),
+                 std::function<void(PyObject*)> callback = [](PyObject* obj) {});
 
         void setFilename(std::string filename);
 
@@ -80,17 +92,12 @@ namespace inviwo {
         bool checkRuntimeError();
 
         /**
-        * Compiles the script source to byte code, which speeds up script execution
-        * and is generally recommended, since it also produces more clear error messages.
-        *
-        * If an error occurs, the error message is stored and can be retrieved through getLog().
-        *
-        * @param logErrors if true, error messages are also passed to the logger.
-        *  The internal log buffer is not affected by this parameter.
+        * Compiles the script source to byte code, which speeds up script execution. This function
+        * is called by ::run when needed (eg. the source code has changed)
         *
         * @return true, if script compilation has been successful
         */
-        bool compile(bool outputInfo = true);
+        bool compile();
 
         std::string source_;
         std::string filename_;
