@@ -35,8 +35,10 @@
 namespace inviwo {
 
 FileObserver::FileObserver(const std::string& filePath) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
-    startFileObservation(filePath);
+    if (filesystem::fileExists(filePath)) {
+        InviwoApplication::getPtr()->registerFileObserver(this);
+        startFileObservation(filePath);
+    }
 }
 
 FileObserver::FileObserver(FileObserver&& other): observedFiles_(std::move(other.observedFiles_)) {

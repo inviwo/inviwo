@@ -34,53 +34,28 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
-
 #include <inviwo/core/util/fileobserver.h>
-#if WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
+
 namespace inviwo {
 
 class InviwoModule;
 class InviwoApplication;
-
-class IVW_CORE_API SharedLibrary {
-public:
-    SharedLibrary(std::string filePath);
-    virtual ~SharedLibrary();
-
-    std::string getFilePath() { return filePath_; }
-
-    virtual void* findSymbol(std::string name);
-private:
-    std::string filePath_;
-#if WIN32
-    HINSTANCE handle_ = nullptr;
-#else
-    void* handle_ = nullptr;
-#endif
-};
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObject(
         const std::string& name, const std::string& version, const std::string& description, const std::string& inviwoCoreVersion,
         std::vector<std::string> dependencies, std::vector<std::string> dependenciesVersion);
-    virtual ~InviwoModuleFactoryObject();
+    virtual ~InviwoModuleFactoryObject() = default;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
-    void setSharedLibrary(std::unique_ptr<SharedLibrary>& library);
 
     const std::string name_; // Module name
     const std::string version_; // Module version (Major.Minor.Patch)
     const std::string description_; // Module description
     const std::string inviwoCoreVersion_; // Supported inviwo core version (Major.Minor.Patch)
     const std::vector<std::string> depends_; // Module dependencies
-    const std::vector<std::string> dependenciesVersion_; // Major.Minor.Patch version of dependencies
-    //std::unique_ptr<SharedLibrary> library_;
-    
+    const std::vector<std::string> dependenciesVersion_; // Major.Minor.Patch version of dependencies    
 };
 
 template <typename T>
@@ -102,16 +77,11 @@ inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
     : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies, dependenciesVersion) {}
 
 class IVW_CORE_API ModuleLibraryObserver : public FileObserver {
-
 public:
-    ModuleLibraryObserver();
-    ModuleLibraryObserver(std::string moduleName);
-    ModuleLibraryObserver(ModuleLibraryObserver&& other);
-    virtual ~ModuleLibraryObserver();
+    ModuleLibraryObserver() = default;
+    virtual ~ModuleLibraryObserver() = default;
 
     virtual void fileChanged(const std::string& fileName);
-
-    std::string observedModuleName;
 };
 
 }  // namespace

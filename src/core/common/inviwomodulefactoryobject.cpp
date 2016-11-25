@@ -36,87 +36,6 @@
 
 namespace inviwo {
 
-SharedLibrary::SharedLibrary(std::string filePath)
-    : filePath_(filePath)
-{
-#if WIN32
-    std::string dir = filesystem::getFileDirectory(filePath);
-    std::string tmpDir = filesystem::getWorkingDirectory();
-    //std::string tmpDir = dir + "/tmp";
-    if (!filesystem::directoryExists(tmpDir)) {
-        filesystem::createDirectoryRecursively(tmpDir);
-    }
-   
-    std::string dstPath = tmpDir + "/" +  filesystem::getFileNameWithExtension(filePath);
-    //{
-    //    // Load a copy of the file to make sure that
-    //    // we can overwrite the file.
-    //    std::ifstream  src(filePath_, std::ios::binary);
-    //    std::ofstream  dst(dstPath, std::ios::binary);
-
-    //    dst << src.rdbuf();
-    //}
-    // Problem: LOAD_WITH_ALTERED_SEARCH_PATH first looks for dependencies in the 
-    // executable directory
-    //SetDllDirectoryA(nullptr);
-    //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-    handle_ = LoadLibraryExA(filePath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
-    
-    //handle_ = LoadLibraryExA(filesystem::getFileNameWithExtension(dstPath).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-    //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr);
-    //handle_ = LoadLibraryA(dstPath.c_str());
-    //handle_ = LoadLibraryA(filePath.c_str());
-    if (!handle_) {
-        auto error = GetLastError();
-        std::ostringstream errorStream;
-        LPVOID errorText;
-        
-        auto outputSize = FormatMessage(
-            // use system message tables to retrieve error text
-            FORMAT_MESSAGE_FROM_SYSTEM
-            // allocate buffer on local heap for error text
-            | FORMAT_MESSAGE_ALLOCATE_BUFFER
-            // Important! will fail otherwise, since we're not 
-            // (and CANNOT) pass insertion parameters
-            | FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL,
-            error,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPTSTR)&errorText,
-            0, NULL);
-        if (errorText != nullptr) {
-            std::string errorString(static_cast<const char *>(errorText), outputSize + 1);
-            errorStream << errorString;
-            //errorStream << static_cast<const char *>(errorText);
-            // release memory allocated by FormatMessage()
-            LocalFree(errorText);
-        }
-
-        throw Exception("Failed to load library: " + filePath + "\n Error: " + errorStream.str());
-    }
-#else 
-    handle_ = dlopen(filePath.c_str(), RTLD_NOW | RTLD_GLOBAL);
-    if (!handle_) {
-        throw Exception("Failed to load library: " + filePath);
-    }
-#endif
-
-}
-SharedLibrary::~SharedLibrary() {
-#if WIN32
-    FreeLibrary(handle_);
-#else 
-    dlclose(handle_);
-#endif
-}
-
-void* SharedLibrary::findSymbol(std::string name) {
-#if WIN32
-    return GetProcAddress(handle_, "createModule");
-#else 
-    return dlsym(handle_, name.c_str());
-#endif
-}
 
 
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(
@@ -127,28 +46,6 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
         throw Exception("Each module dependency must have a version");
     }
 
-}
-
-InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
-    
-}
-
-void InviwoModuleFactoryObject::setSharedLibrary(std::unique_ptr<SharedLibrary>& library) {
-    //library_ = std::move(library);
-    //if (library_) {
-    //    startFileObservation(library_->getFilePath());
-    //}
-}
-
-ModuleLibraryObserver::ModuleLibraryObserver(std::string moduleName) : observedModuleName(moduleName) {
-};
-
-ModuleLibraryObserver::ModuleLibraryObserver(ModuleLibraryObserver&& other): FileObserver(std::move(other)), observedModuleName(std::move(other.observedModuleName)) {
-}
-ModuleLibraryObserver::~ModuleLibraryObserver() {
-    //for (auto filePath : getFiles()) {
-    //    stopFileObservation(filePath);
-    //}
 }
 
 typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
@@ -171,61 +68,11 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
             LogLevel::Error);
         return;
     }
+    // Unregister modules
     app->clearModules();
-
+    // Register modules again
     app->registerModulesFromDynamicLibraries(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
 
-    //// Unregister dependent modules
-    //const auto& moduleFactories = app->getModuleFactoryObjects();
-    ////auto toDeregister = app->findDependentModules(toLower(observedModule_->name_));
-    //std::vector<std::string> toDeregister;
-    //for (const auto& mod : app->getModules()) {
-    //    if (dynamic_cast<InviwoCore*>(mod.get()) == nullptr)
-    //        toDeregister.push_back(mod->getIdentifier());
-    //}
-    ////std::vector<InviwoModuleFactoryObject*> dependentModuleFactories;
-    ////
-    //
-    ////for (auto m : toDeregister) {
-    ////    auto it = std::find_if(std::begin(moduleFactories), std::end(moduleFactories), [&](const auto& moduleFactory) {
-    ////        return toLower(m) == toLower(moduleFactory->name_);
-    ////    });
-    ////    if (it != std::end(moduleFactories)) {
-    ////        dependentModuleFactories.push_back(it->get());
-    ////    }
-    ////}
-
-    //// Unregister module
-    //for (auto m : toDeregister) {
-    //    app->unregisterModule(toLower(m));
-    //}
-    ////app->unregisterModule(toLower(observedModule_->name_));
-    //// Unload so/dll
-    //auto it = std::find_if(std::begin(moduleFactories), std::end(moduleFactories), [&](const auto& moduleFactory) {
-    //            return toLower(observedModuleName) == toLower(moduleFactory->name_);
-    //        });
-    //if (it != std::end(moduleFactories)) {
-    //    *it = nullptr;
-    //    std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(fileName));
-    //    f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
-    //    *it = moduleFunc();
-    //    //it->setSharedLibrary(sharedLib);
-    //}
-    ////std::map<InviwoModuleFactoryObject*, std::string> dependentModuleLibPaths;
-    ////for (auto mod : dependentModuleFactories) {
-    ////    dependentModuleLibPaths[mod] = mod->library_->getFilePath();
-    ////    mod->library_ = nullptr;
-    ////}
-    //
-    ////std::string modPath = fileName;
-    ////observedModule_->library_ = nullptr;
-    ////// Load so/dll
-    //////for (auto mod : dependentModuleLibPaths) {
-    //////    mod.first->library_ = std::unique_ptr<SharedLibrary>(new SharedLibrary(mod.second));
-    //////}
-    ////observedModule_->library_ = std::unique_ptr<SharedLibrary>(new SharedLibrary(modPath));
-    //// Register modules
-    //app->registerModules(moduleFactories);
     // De-serialize network
     try {
         // Lock the network that so no evaluations are triggered during the de-serialization

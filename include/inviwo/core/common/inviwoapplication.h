@@ -39,6 +39,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
+#include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
@@ -200,7 +201,8 @@ public:
 
     void clearModules();
 protected:
-    virtual std::set<std::string> getProtectedModules();
+    std::string stripModuleFileNameDecoration(std::string filePath) const;
+    virtual std::set<std::string> getProtectedModules() const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();
@@ -250,7 +252,7 @@ protected:
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
     std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
-    std::vector<ModuleLibraryObserver> moduleLibraryObservers_;
+    ModuleLibraryObserver moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes.
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 

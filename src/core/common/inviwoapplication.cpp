@@ -144,7 +144,6 @@ InviwoApplication::~InviwoApplication() {
     resizePool(0);
     portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
-    moduleLibraryObservers_.clear();
 }
 
 void InviwoApplication::clearModules() {
@@ -171,21 +170,7 @@ void InviwoApplication::clearModules() {
     moduleSharedLibraries_.erase(std::remove_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_), 
         [&](const auto& module) { 
         // Remove file decoration 
-        auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(module->getFilePath());
-        auto decoration = std::string("inviwo-module-");
-        auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
-        if (inviwoModulePos == std::string::npos) {
-            inviwoModulePos = 0;
-        }
-        else {
-            inviwoModulePos = decoration.size();
-        }
-        auto len = fileNameWithoutExtension.size() - inviwoModulePos;
-#ifdef DEBUG
-        // Remove debug ending "d" at end of file name
-        len -= 1;
-#endif 
-        auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+        auto moduleName = stripModuleFileNameDecoration(module->getFilePath());
         
         return std::find_if(std::begin(protectedModules), std::end(protectedModules), 
             [moduleName](const auto& protectedModule) { 
@@ -562,24 +547,6 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
             return toLower(protectedModule).compare(toLower(moduleIdentifier)) == 0;
         }); 
     };
-    auto stripModuleFileNameDecoration = [](const std::string& filePath) {
-        auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
-        auto decoration = std::string("inviwo-module-");
-        auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
-        if (inviwoModulePos == std::string::npos) {
-            inviwoModulePos = 0;
-        }
-        else {
-            inviwoModulePos = decoration.size();
-        }
-        auto len = fileNameWithoutExtension.size() - inviwoModulePos;
-#ifdef DEBUG
-        // Remove debug ending "d" at end of file name
-        len -= 1;
-#endif 
-        auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
-        return moduleName;
-    };
 
     // Load protected modules first.
     // The modules which protected modules depend on 
@@ -645,28 +612,20 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
         tmpFilePathIt != tmpFiles.end(); ++tmpFilePathIt, ++filePathIt) {
         auto filePath = *filePathIt;
         auto tmpPath = *tmpFilePathIt;
-    //for (const auto& filePath : tmpFiles) {
-        std::string pattern = "inviwo-cored.dll";
-        if (filesystem::getFileExtension(filePath) == libraryType &&
-            (std::mismatch(pattern.rbegin(), pattern.rend(), filePath.rbegin(), filePath.rend()).first != pattern.rend())) {
-            try {
-                std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
-                f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
-                if (moduleFunc) {
-                    modules.emplace_back(moduleFunc());
-                    auto moduleName = toLower(modules.back()->name_);
-                    moduleSharedLibraries_.emplace_back(std::move(sharedLib));
-                    auto observerIt = std::find_if(std::begin(moduleLibraryObservers_), std::end(moduleLibraryObservers_), [moduleName](const auto& observer) { return observer.observedModuleName.compare(moduleName) == 0; });
-                    if (observerIt == std::end(moduleLibraryObservers_)) {
-                        moduleLibraryObservers_.emplace_back(toLower(modules.back()->name_));
-                        moduleLibraryObservers_.back().startFileObservation(filePath);
-                    }
-
+        try {
+            std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
+            f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
+            if (moduleFunc) {
+                modules.emplace_back(moduleFunc());
+                auto moduleName = toLower(modules.back()->name_);
+                moduleSharedLibraries_.emplace_back(std::move(sharedLib));
+                if (!moduleLibraryObserver_.isObserved(filePath)) {
+                    moduleLibraryObserver_.startFileObservation(filePath);
                 }
             }
-            catch (Exception ex) {
-                //LogError(ex.getMessage());
-            }
+        }
+        catch (Exception ex) {
+            //LogError(ex.getMessage());
         }
     }
     registerModules(modules);
@@ -726,8 +685,27 @@ CommandLineParser& InviwoApplication::getCommandLineParser() {
     return commandLineParser_;
 }
 
-std::set<std::string> InviwoApplication::getProtectedModules() {
-    return std::set<std::string>{"Core", "QtWidgets", "OpenGL", "OpenGLQt"};
+std::string InviwoApplication::stripModuleFileNameDecoration(std::string filePath) const {
+    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+    auto decoration = std::string("inviwo-module-");
+    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+    if (inviwoModulePos == std::string::npos) {
+        inviwoModulePos = 0;
+    }
+    else {
+        inviwoModulePos = decoration.size();
+    }
+    auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+    // Remove debug ending "d" at end of file name
+    len -= 1;
+#endif 
+    auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+    return moduleName;
+}
+
+std::set<std::string> InviwoApplication::getProtectedModules() const {
+    return std::set<std::string>{"Core", "QtWidgets", "OpenGLQt", "OpenGL"};
 }
 
 void InviwoApplication::printApplicationInfo() {
