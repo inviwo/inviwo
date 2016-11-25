@@ -43,12 +43,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <moduleregistration.h>
 
 using namespace inviwo;
 
 int main(int argc, char** argv) {
     LogCentral::init();
+    inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
 
