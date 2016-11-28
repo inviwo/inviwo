@@ -80,10 +80,10 @@ IVW_CORE_API bool directoryExists(const std::string& path);
 IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
 
 /**
- * \brief Copy an existing file to a new file.
- * @param src Path to the file to the existing file
- * @param dst Path to the new file
- * @return bool True if source file exists and the copy is successful, false otherwise
+ * \brief Copy an existing file to a new file. Overwrites existing file.
+ * @param const std::string& src Path to the file to the existing file
+ * @param const std::string& dst Path to the new file
+ * @return True if source file exists and the copy is successful, false otherwise
  */
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst);
 
