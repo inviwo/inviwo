@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -55,12 +56,39 @@ public:
 
     void clearContext();
 
+    void registerContext(Canvas* canvas, const std::string& name);
+    void unRegisterContext(Canvas* canvas);
+
+    Canvas* getCanvas(Canvas::ContextID id) const;
+    std::string getContextName(Canvas::ContextID id) const;
+    void setContextName(Canvas::ContextID id, const std::string& name);
+    std::thread::id getContextThreadId(Canvas::ContextID id) const;
+    void setContextThreadId(Canvas::ContextID id, std::thread::id);
+
+    template <typename C>
+    void forEachContext(C callback);
+
 private:
+    struct ContextInfo {
+        std::string name;
+        Canvas* canvas;
+        std::thread::id threadId;
+    };
+
+    std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
+
     Canvas* defaultContext_ = nullptr;
     std::thread::id mainThread_;
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
 };
+
+template <typename C>
+void RenderContext::forEachContext(C callback) {
+    for (const auto& item : contextRegistry_) {
+        callback(item.first, item.second.name, item.second.canvas, item.second.threadId);
+    } 
+}
 
 }  // namespace
 

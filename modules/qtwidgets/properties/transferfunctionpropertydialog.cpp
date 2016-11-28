@@ -75,6 +75,8 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     setWindowTitle(ss.str().c_str());
 
     generateWidget();
+    if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
+    
     updateTFPreview();
     updateFromProperty();
 

@@ -143,6 +143,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Text");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
+
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyUInt>("Default");
     registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyInt>("Default");
     registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertySize_t>("Default");
     registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyFloat>("Default");

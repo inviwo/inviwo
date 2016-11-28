@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/openglqt/openglqtcapabilities.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
@@ -82,9 +83,12 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
     glfwSetWindowPosCallback(glWindow_, move);
+
+    RenderContext::getPtr()->registerContext(this, windowTitle);
 }
 
 CanvasGLFW::~CanvasGLFW() { 
+    RenderContext::getPtr()->unRegisterContext(this);
     glfwDestroyWindow(glWindow_);
     if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
 }
@@ -119,6 +123,7 @@ void CanvasGLFW::setWindowPosition(ivec2 pos) {
 void CanvasGLFW::setWindowTitle(std::string windowTitle) {
     windowTitle_ = windowTitle;
     glfwSetWindowTitle(glWindow_, windowTitle_.c_str());
+    RenderContext::getPtr()->setContextName(contextId(), windowTitle_);
 }
 
 void CanvasGLFW::closeWindow(GLFWwindow* window) { getCanvasGLFW(window)->hide(); }
@@ -251,13 +256,17 @@ KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront([&]() {
-        return util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
+        return util::make_unique<CanvasGLFW>("Background", screenDimensions_);
     });
     return res.get();
 }
 
 Canvas::ContextID CanvasGLFW::activeContext() const {
     return static_cast<ContextID>(glfwGetCurrentContext());
+}
+
+Canvas::ContextID CanvasGLFW::contextId() const {
+    return static_cast<ContextID>(glWindow_);
 }
 
 bool CanvasGLFW::isFullScreen() const {

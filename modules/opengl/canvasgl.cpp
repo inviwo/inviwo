@@ -41,6 +41,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/shader/shader.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
@@ -157,7 +158,8 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord) const {
 double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const {
     const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
 
-    if (imageGL_) {        
+    if (imageGL_) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         const dvec2 depthDims{ imageGL_->getDimensions() - size2_t(1, 1) };
         const size2_t coordDepth{ depthDims * coords };        
         auto depth = imageGL_->readPixel(coordDepth, LayerType::Depth).x;

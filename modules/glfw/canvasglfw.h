@@ -83,6 +83,7 @@ public:
     
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
 
     virtual bool isFullScreen() const override;
     virtual void setFullScreen(bool fullscreen) override;

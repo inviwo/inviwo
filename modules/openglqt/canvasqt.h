@@ -32,6 +32,7 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
@@ -66,8 +67,8 @@ class CanvasQtBase : public T {
 public:
     using QtBase = typename T::QtBase;
 
-    explicit CanvasQtBase(size2_t dim = size2_t(256,256));
-    virtual ~CanvasQtBase() = default;
+    explicit CanvasQtBase(size2_t dim = size2_t(256,256), const std::string& name = "Canvas");
+    virtual ~CanvasQtBase();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
@@ -110,9 +111,15 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 
 
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(size2_t dim) : T(nullptr, dim) {
-    makeCurrent();
+CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) {
+    QtBase::makeCurrent();
+    RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
+}
+
+template <typename T>
+CanvasQtBase<T>::~CanvasQtBase() {
+    RenderContext::getPtr()->unRegisterContext(this);
 }
 
 template <typename T>
@@ -125,7 +132,11 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
         canvas->context()->moveToThread(thread);
         return canvas;
     });
-    return res.get();
+
+    auto newContext = res.get();
+    RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
+                                                std::this_thread::get_id());
+    return std::move(newContext);
 }
 
 template <typename T>

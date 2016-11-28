@@ -36,151 +36,162 @@ namespace inviwo {
 
 namespace utilgl {
 
-void logDebugMode(OpenGLDebugMode mode, Canvas::ContextID context) {
+void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID context) {
+    const auto rc = RenderContext::getPtr();
     switch (mode) {
-        case OpenGLDebugMode::Off:
-            LogInfoCustom("OpenGL Debug", "Debugging off for context: " << context);
+        case debug::Mode::Off:
+            LogInfoCustom("OpenGL Debug",
+                          "Debugging off for context: " << rc->getContextName(context) << " ("
+                                                        << context << ")");
             break;
-        case OpenGLDebugMode::Debug:
-            LogInfoCustom("OpenGL Debug", "Debugging active for context: " << context);
+        case debug::Mode::Debug:
+            LogInfoCustom("OpenGL Debug", "Debugging active for context: "
+                                              << rc->getContextName(context) << " (" << context
+                                              << ")  at level: " << severity);
             break;
-        case OpenGLDebugMode::DebugSynchronous:
-            LogInfoCustom("OpenGL Debug", "Synchronous debugging active for context: " << context);
+        case debug::Mode::DebugSynchronous:
+            LogInfoCustom("OpenGL Debug", "Synchronous debugging active for context: "
+                                              << rc->getContextName(context) << " (" << context
+                                              << ") at level: " << severity);
             break;
     }
 }
 
-void APIENTRY openGLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
-                                         GLsizei length, const GLchar* message,
-                                         const void* module) {
+void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
+                                           GLenum eseverity, GLsizei length, const GLchar* message,
+                                           const void* module) {
+
+    const auto source = debug::toSouce(esource);
+    const auto type = debug::toType(etype);
+    const auto severity = debug::toSeverity(eseverity);
 
     std::stringstream ss;
-    ss << "message: " << message << "\n";
-    ss << "type: ";
-    switch (type) {
-        case GL_DEBUG_TYPE_ERROR:
-            ss << "ERROR";
-            break;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            ss << "DEPRECATED_BEHAVIOR";
-            break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            ss << "UNDEFINED_BEHAVIOR";
-            break;
-        case GL_DEBUG_TYPE_PORTABILITY:
-            ss << "PORTABILITY";
-            break;
-        case GL_DEBUG_TYPE_PERFORMANCE:
-            ss << "PERFORMANCE";
-            break;
-        case GL_DEBUG_TYPE_OTHER:
-            ss << "OTHER";
-            break;
+    ss << message << "\n";
+    ss << "[Severity: " << severity;
+    ss << ", Type: " << type;
+    ss << ", Source: " << source;
+    ss << ", Id: " << id;
+    if (const auto rc = RenderContext::getPtr()) {
+        const auto context = rc->activeContext();
+        ss << ", Context:  " << rc->getContextName(context) << " (" << context << ")";
     }
-    ss << "\n";
-
-    ss << "source: ";
-    switch (source) {
-        case GL_DEBUG_SOURCE_API:
-            ss << "API";
-            break;
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            ss << "WINDOW_SUSTEM";
-            break;
-        case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            ss << "SHADER COMPILER";
-            break;
-        case GL_DEBUG_SOURCE_THIRD_PARTY:
-            ss << "THIRD PARTY";
-            break;
-        case GL_DEBUG_SOURCE_APPLICATION:
-            ss << "APPLICATION";
-            break;
-        case GL_DEBUG_SOURCE_OTHER:
-            ss << "OTHER";
-            break;
-    }
-    ss << "\n";
-
-    ss << "id: " << id << "\n";
-    ss << "severity: ";
-    LogLevel level = LogLevel::Info;
-    switch (severity) {
-        case GL_DEBUG_SEVERITY_LOW:
-            ss << "LOW";
-            break;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            ss << "MEDIUM";
-            level = LogLevel::Warn;
-            break;
-        case GL_DEBUG_SEVERITY_HIGH:
-            ss << "HIGH";
-            level = LogLevel::Error;
-            break;
-    }
+    ss << "]";
 
     std::string error = ss.str();
-    LogCentral::getPtr()->log("OpenGL Debug", level, LogAudience::Developer, __FILE__, __FUNCTION__,
-                              __LINE__, error);
+    LogCentral::getPtr()->log("OpenGL Debug", toLogLevel(severity), LogAudience::Developer,
+                              __FILE__, __FUNCTION__, __LINE__, error);
 
-    auto openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
-    auto mode = openglSettings->debugMessages_.getSelectedValue();
-    if (mode == OpenGLDebugMode::DebugSynchronous) {
-        auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
-
-        
-        switch (debugbreak) {
-            case OpenGLSettings::BreakOnMessageLevel::Off: 
-                break;
-            case OpenGLSettings::BreakOnMessageLevel::Error:
-                if (level == LogLevel::Error) util::debugBreak();
-                break;
-            case OpenGLSettings::BreakOnMessageLevel::Warn:
-                if (level == LogLevel::Error || level == LogLevel::Warn) util::debugBreak();
-                break;
-            case OpenGLSettings::BreakOnMessageLevel::Info:
-                util::debugBreak();
-                break;
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto openglSettings = app->getSettingsByType<OpenGLSettings>()) {
+            auto mode = openglSettings->debugMessages_.getSelectedValue();
+            if (mode == debug::Mode::DebugSynchronous) {
+                const auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
+                if (severity >= debugbreak) util::debugBreak();
+            }
         }
     }
 }
 
-void handleOpenGLDebugModeChange(OpenGLDebugMode mode) {
+void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     if (RenderContext::getPtr()->getDefaultRenderContext()) {
+        RenderContext::getPtr()->forEachContext(
+            [mode, severity](Canvas::ContextID id, const std::string& name, Canvas* canvas,
+                             std::thread::id threadId) {
+                if (threadId == std::this_thread::get_id()) {
+                    canvas->activate();
+                    setOpenGLDebugMode(mode, severity);
+                    logDebugMode(mode, severity, id);
+                }
+            });
+
         RenderContext::getPtr()->activateDefaultRenderContext();
-        setOpenGLDebugMode(mode);
-        logDebugMode(mode, RenderContext::getPtr()->activeContext());
-        LogInfoCustom(
-            "OpenGL Debug",
-            "To enable/disable debugging on all contexts inviwo might need to be restarted");
     }
 }
 
-void setOpenGLDebugMode(OpenGLDebugMode mode) {
+void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
     if (glDebugMessageCallback) {
-        if (mode == OpenGLDebugMode::Off) {
-            glDisable(GL_DEBUG_OUTPUT);
-        } else if (mode == OpenGLDebugMode::Debug) {
-            glEnable(GL_DEBUG_OUTPUT);
-            glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-            glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
-            GLuint unusedIds = 0;
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, &unusedIds, true);
-        } else if (mode == OpenGLDebugMode::DebugSynchronous) {
-            glEnable(GL_DEBUG_OUTPUT);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-            glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
-            GLuint unusedIds = 0;
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, &unusedIds, true);
+        switch (mode) {
+            case debug::Mode::Off:
+                glDisable(GL_DEBUG_OUTPUT);
+                glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+                break;
+            case debug::Mode::Debug:
+                glEnable(GL_DEBUG_OUTPUT);
+                glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+                glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+                configureOpenGLDebugMessages(severity);
+                break;
+            case debug::Mode::DebugSynchronous:
+                glEnable(GL_DEBUG_OUTPUT);
+                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+                glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+                configureOpenGLDebugMessages(severity);
+                break;
+            default:
+                break;
         }
+    }
+}
+
+IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
+    if (RenderContext::getPtr()->getDefaultRenderContext()) {
+        RenderContext::getPtr()->forEachContext([severity](Canvas::ContextID id,
+                                                           const std::string& name, Canvas* canvas,
+                                                           std::thread::id threadId) {
+            if (threadId == std::this_thread::get_id()) {
+                const auto rc = RenderContext::getPtr();
+                canvas->activate();
+                configureOpenGLDebugMessages(severity);
+                LogInfoCustom("OpenGL Debug", "Debug messages for level: "
+                                                  << severity << " for context: "
+                                                  << rc->getContextName(id) << " (" << id << ")");
+            }
+        });
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    }
+}
+
+IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
+    if (!glDebugMessageControl) return;
+        
+    using namespace debug;
+
+    auto set = [](bool n, bool l, bool m, bool h) {
+        auto g = [](Severity s) { return static_cast<std::underlying_type<Severity>::type>(s); };
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Notification), 0, nullptr, n);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Low), 0, nullptr, l);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Medium), 0, nullptr, m);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::High), 0, nullptr, h);
+    };
+
+    switch (severity) {
+        case Severity::Notification:
+            set(true, true, true, true);
+            break;
+        case Severity::Low:
+            set(false, true, true, true);
+            break;
+        case Severity::Medium:
+            set(false, false, true, true);
+            break;
+        case Severity::High:
+            set(false, false, false, true);
+            break;
+        case Severity::DontCare: {
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
+            break;
+        }
+        default:
+            break;
     }
 }
 
 void handleOpenGLDebugMode(Canvas::ContextID context) {
     auto openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
     auto mode = openglSettings->debugMessages_.getSelectedValue();
-    setOpenGLDebugMode(mode);
-    logDebugMode(mode, context);
+    auto severity = openglSettings->debugSeverity_.getSelectedValue();
+    setOpenGLDebugMode(mode, severity);
+    logDebugMode(mode, severity, context);
 }
 
 } // namespace

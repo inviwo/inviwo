@@ -61,7 +61,7 @@ public:
     std::vector<T>& getDataContainer();
     const std::vector<T>& getDataContainer() const;
 
-    virtual void reserve(size_t size);
+    virtual void reserve(size_t size) override;
 
     virtual double getAsDouble(const size_t& pos) const override;
     virtual dvec2 getAsDVec2(const size_t& pos) const override;

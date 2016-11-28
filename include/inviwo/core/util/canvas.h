@@ -72,6 +72,7 @@ public:
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
     using ContextID = const void*;
     virtual ContextID activeContext() const = 0; 
+    virtual ContextID contextId() const = 0;
 
     virtual void releaseContext() = 0;
 

@@ -36,7 +36,6 @@
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <modules/python3/pyinviwo.h>
 
-#include <modules/python3/pythonincluder.h>
 #include <traceback.h>
 #include <frameobject.h>
 
@@ -50,10 +49,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         Py_XDECREF(BYTE_CODE);
     }
 
-    bool PythonScript::compile(bool outputInfo) {
-        if (outputInfo)
-            LogInfo("Compiling script");
-
+    bool PythonScript::compile() {
         Py_XDECREF(BYTE_CODE);
         byteCode_ = Py_CompileString(source_.c_str(), filename_.c_str(), Py_file_input);
         isCompileNeeded_ = !checkCompileError();
@@ -66,15 +62,14 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         return !isCompileNeeded_;
     }
 
-    bool PythonScript::run(bool outputInfo) {
-        if (isCompileNeeded_ && !compile(outputInfo)) {
+    bool PythonScript::run( const VariableMap& extraLocalVariables,
+                           std::function<void(PyObject*)> callback) {
+        if (isCompileNeeded_ && !compile()) {
             LogError("Failed to run script, script could not be compiled");
             return false;
         }
 
         ivwAssert(byteCode_ != nullptr, "No byte code");
-
-        if (outputInfo) LogInfo("Running compiled script ...");
        
         auto m = PyImport_AddModule("__main__");
         if (m == NULL) return false;
@@ -84,6 +79,10 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         PyObject* copy = PyDict_Copy(d);
         PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
         bool success = checkRuntimeError();
+        if (success) {
+            callback(copy);
+        }
+
         Py_XDECREF(ret);
         Py_XDECREF(copy);
         return success;

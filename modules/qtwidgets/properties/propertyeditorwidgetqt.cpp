@@ -73,6 +73,7 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string w
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
                 InviwoDockWidget::setFloating(false);
                 break;
+            case PropertyEditorWidgetDockStatus::Floating:
             default:
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
                 InviwoDockWidget::setFloating(true);
@@ -135,13 +136,14 @@ void PropertyEditorWidgetQt::setDockStatus(PropertyEditorWidgetDockStatus dockSt
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
                 InviwoDockWidget::setFloating(false);
                 break;
+            case PropertyEditorWidgetDockStatus::Floating:
             default:
                 mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
                 InviwoDockWidget::setFloating(true);
                 break;
         }
     }
-    PropertyEditorWidgetQt::setDockStatus(dockStatus);
+    PropertyEditorWidget::setDockStatus(dockStatus);
 }
 
 void PropertyEditorWidgetQt::setSticky(bool sticky) {

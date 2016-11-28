@@ -56,12 +56,13 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 
-    canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y)), [&](CanvasQt* c){
-        c->activate();
-        layout()->removeWidget(c);
-        delete c;
-        RenderContext::getPtr()->activateDefaultRenderContext();
-    });
+    canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y), processor_->getIdentifier()),
+                         [&](CanvasQt* c) {
+                             c->activate();
+                             layout()->removeWidget(c);
+                             delete c;
+                             RenderContext::getPtr()->activateDefaultRenderContext();
+                         });
 
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
@@ -179,6 +180,7 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
 
 void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
+    RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getIdentifier());
 }
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {

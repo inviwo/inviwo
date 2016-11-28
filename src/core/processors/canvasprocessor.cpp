@@ -57,8 +57,8 @@ CanvasProcessor::CanvasProcessor()
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
                           InvalidationLevel::Valid)
-    , position_("position", "Canvas Position", ivec2(128, 128), ivec2(0, 0), ivec2(1920, 1080),
-        ivec2(1, 1), InvalidationLevel::Valid)
+    , position_("position", "Canvas Position", ivec2(128, 128), ivec2(std::numeric_limits<int>::lowest() ), ivec2(std::numeric_limits<int>::max()),
+        ivec2(1, 1), InvalidationLevel::Valid,PropertySemantics::Text)
     , visibleLayer_("visibleLayer", "Visible Layer")
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , imageTypeExt_("fileExt", "Image Type")
