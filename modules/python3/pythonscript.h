@@ -33,6 +33,7 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singlefileobserver.h>
+#include <modules/python3/pythonincluder.h>
 
 namespace inviwo {
 
