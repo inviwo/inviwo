@@ -57,9 +57,9 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
     }
 }
 
-void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id, GLenum eseverity,
-                                         GLsizei length, const GLchar* message,
-                                         const void* module) {
+void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
+                                           GLenum eseverity, GLsizei length, const GLchar* message,
+                                           const void* module) {
 
     const auto source = debug::toSouce(esource);
     const auto type = debug::toType(etype);
@@ -180,10 +180,6 @@ IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity 
         default:
             break;
     }
-
-    auto e = [](auto s) { return static_cast<std::underlying_type<Severity>::type>(s); };
-    GLuint ids[] = {131185};
-    //glDebugMessageControl(e(Source::Api), e(Type::Other), e(Severity::DontCare), 1, ids, false);
 }
 
 void handleOpenGLDebugMode(Canvas::ContextID context) {

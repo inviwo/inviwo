@@ -33,6 +33,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <inviwo/core/util/canvas.h>
 
 namespace inviwo {
 
@@ -298,7 +299,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 }  // namespace
 
-IVW_MODULE_OPENGL_API void APIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
+IVW_MODULE_OPENGL_API void GLAPIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
                                                                GLuint id, GLenum severity,
                                                                GLsizei length,
                                                                const GLchar* message,

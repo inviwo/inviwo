@@ -112,7 +112,7 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 
 template <typename T>
 CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) {
-    makeCurrent();
+    QtBase::makeCurrent();
     RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
 }
@@ -136,7 +136,7 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto newContext = res.get();
     RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
                                                 std::this_thread::get_id());
-    return newContext;
+    return std::move(newContext);
 }
 
 template <typename T>
