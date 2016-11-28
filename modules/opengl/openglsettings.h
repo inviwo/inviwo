@@ -44,8 +44,6 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API OpenGLSettings : public Settings {
 
 public:
-    enum class BreakOnMessageLevel {Off, Error, Warn, Info};
-
     OpenGLSettings();
 
     BoolProperty shaderReloadingProperty_;
@@ -54,8 +52,9 @@ public:
     TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
     TemplateOptionProperty<Shader::OnError> shaderObjectErrors_;
 
-    TemplateOptionProperty<utilgl::OpenGLDebugMode> debugMessages_;
-    TemplateOptionProperty<BreakOnMessageLevel> breakOnMessage_;
+    TemplateOptionProperty<utilgl::debug::Mode> debugMessages_;
+    TemplateOptionProperty<utilgl::debug::Severity> debugSeverity_;
+    TemplateOptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
 };
 
 } // namespace

@@ -51,17 +51,21 @@ OpenGLSettings::OpenGLSettings()
                           {{"warn", "Print warning", Shader::OnError::Warn},
                            {"throw", "Throw error", Shader::OnError::Throw}},
                           0)
-    , debugMessages_("debugMessages", "Debug", {{"off", "Off", utilgl::OpenGLDebugMode::Off},
-                                                {"debug", "Debug", utilgl::OpenGLDebugMode::Debug},
-                                                {"DebugSynchronous", "Debug Synchronous",
-                                                 utilgl::OpenGLDebugMode::DebugSynchronous}},
+    , debugMessages_("debugMessages", "Debug", {{utilgl::debug::Mode::Off},
+                                                {utilgl::debug::Mode::Debug},
+                                                {utilgl::debug::Mode::DebugSynchronous}},
                      0)
+    , debugSeverity_("debugSeverity", "Severity", {{utilgl::debug::Severity::Notification},
+                                                   {utilgl::debug::Severity::Low},
+                                                   {utilgl::debug::Severity::Medium},
+                                                   {utilgl::debug::Severity::High}},
+                     2)
     , breakOnMessage_("breakOnMessage", "Break on Message",
-                      {{"Off", "Off", BreakOnMessageLevel::Off},
-                       {"Error", "Error", BreakOnMessageLevel::Off},
-                       {"Warn", "Warn", BreakOnMessageLevel::Warn},
-                       {"Info", "Info", BreakOnMessageLevel::Info}
-                      },
+                      {{utilgl::debug::BreakLevel::Off},
+                       {utilgl::debug::BreakLevel::High},
+                       {utilgl::debug::BreakLevel::Medium},
+                       {utilgl::debug::BreakLevel::Low},
+                       {utilgl::debug::BreakLevel::Notification}},
                       0) {
 
     addProperty(shaderReloadingProperty_);
@@ -70,20 +74,24 @@ OpenGLSettings::OpenGLSettings()
     addProperty(uniformWarnings_);
     addProperty(shaderObjectErrors_);
     addProperty(debugMessages_);
+    addProperty(debugSeverity_);
     addProperty(breakOnMessage_);
 
     breakOnMessage_.setVisible(false);
 
-    debugMessages_.onChange(
-        [this]() { 
-        if(debugMessages_.getSelectedValue() == utilgl::OpenGLDebugMode::DebugSynchronous) {
+    debugSeverity_.onChange([&](){
+        utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue());
+    });
+
+    debugMessages_.onChange([this]() {
+        if (debugMessages_.getSelectedValue() == utilgl::debug::Mode::DebugSynchronous) {
             breakOnMessage_.setVisible(true);
         } else {
             breakOnMessage_.setVisible(false);
         }
-        utilgl::handleOpenGLDebugModeChange(debugMessages_.getSelectedValue()); 
+        utilgl::handleOpenGLDebugModeChange(debugMessages_.getSelectedValue(),
+                                            debugSeverity_.getSelectedValue());
     });
-        
 
     load();
 }

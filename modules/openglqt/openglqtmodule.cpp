@@ -36,7 +36,6 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
-//#include <modules/opengl/inviwoopengl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,7 +49,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
-    sharedCanvas_ = util::make_unique<CanvasQt>();
+    sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16,16), "Default");
 
     sharedCanvas_->defaultGLState();
     RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());

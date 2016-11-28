@@ -87,7 +87,63 @@ void RenderContext::clearContext() {
     }
 }
 
-inviwo::Canvas::ContextID RenderContext::activeContext() const {
+void RenderContext::registerContext(Canvas* canvas, const std::string& name) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    contextRegistry_[canvas->contextId()] = {name, canvas, std::this_thread::get_id()};
+}
+
+void RenderContext::unRegisterContext(Canvas* canvas) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    contextRegistry_.erase(canvas->contextId());
+}
+
+std::string RenderContext::getContextName(Canvas::ContextID id) const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextRegistry_.find(id);
+    if (it != contextRegistry_.end()) {
+        return it->second.name;
+    } else {
+        return "";
+    }
+}
+
+void RenderContext::setContextName(Canvas::ContextID id, const std::string& name) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextRegistry_.find(id);
+    if (it != contextRegistry_.end()) {
+        it->second.name = name;
+    }
+}
+
+Canvas* RenderContext::getCanvas(Canvas::ContextID id) const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextRegistry_.find(id);
+    if (it != contextRegistry_.end()) {
+        return it->second.canvas;
+    } else {
+        return nullptr;
+    }
+}
+
+std::thread::id RenderContext::getContextThreadId(Canvas::ContextID id) const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextRegistry_.find(id);
+    if (it != contextRegistry_.end()) {
+        return it->second.threadId;
+    } else {
+        return std::thread::id{};
+    }
+}
+
+void RenderContext::setContextThreadId(Canvas::ContextID id, std::thread::id threadId) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    auto it = contextRegistry_.find(id);
+    if (it != contextRegistry_.end()) {
+        it->second.threadId = threadId;
+    }
+}
+
+Canvas::ContextID RenderContext::activeContext() const {
     return defaultContext_ ? defaultContext_->activeContext() : nullptr;
 }
 
