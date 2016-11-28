@@ -130,9 +130,6 @@ void VolumeRaycaster::onVolumeChange() {
 }
 
 void VolumeRaycaster::process() {
-    utilgl::activateAndClearTarget(outport_);
-    shader_.activate();
-
     if (volumePort_.isChanged()) {
         auto newVolume = volumePort_.getData();
 
@@ -142,7 +139,7 @@ void VolumeRaycaster::process() {
             dispatchPool([this, newVolume]() {
                 RenderContext::getPtr()->activateLocalRenderContext();
                 newVolume->getRep<kind::GL>();
-                glFlush();
+                glFinish();
                 dispatchFront([this, newVolume]() {
                     loadedVolume_ = newVolume;
                     invalidate(InvalidationLevel::InvalidOutput);
@@ -152,11 +149,13 @@ void VolumeRaycaster::process() {
     }
 
     if (!loadedVolume_) return;
-
     if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
-        LogWarn("No GL rep !!! ");
+        LogWarn("No GL rep !!!");
         return;
     }
+
+    utilgl::activateAndClearTarget(outport_);
+    shader_.activate();
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
