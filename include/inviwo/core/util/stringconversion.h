@@ -105,7 +105,6 @@ IVW_CORE_API std::string trim(std::string s);
 IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
 IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 
-
 IVW_CORE_API std::string msToString(double ms, unsigned precision = 2);
 
 }  // namespace
