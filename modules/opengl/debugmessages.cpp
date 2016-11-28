@@ -65,26 +65,30 @@ void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint 
     const auto type = debug::toType(etype);
     const auto severity = debug::toSeverity(eseverity);
 
-    const auto rc = RenderContext::getPtr();
-    const auto context = rc->activeContext();
-
     std::stringstream ss;
-    ss << "message:  " << message << "\n";
-    ss << "severity: " << severity << "\n";
-    ss << "type:     " << type << "\n";
-    ss << "source:   " << source << "\n";
-    ss << "id:       " << id << "\n";
-    ss << "context:  " << rc->getContextName(context) << " (" << context << ")\n";
+    ss << message << "\n";
+    ss << "[Severity: " << severity;
+    ss << ", Type: " << type;
+    ss << ", Source: " << source;
+    ss << ", Id: " << id;
+    if (const auto rc = RenderContext::getPtr()) {
+        const auto context = rc->activeContext();
+        ss << ", Context:  " << rc->getContextName(context) << " (" << context << ")";
+    }
+    ss << "]";
 
     std::string error = ss.str();
     LogCentral::getPtr()->log("OpenGL Debug", toLogLevel(severity), LogAudience::Developer,
                               __FILE__, __FUNCTION__, __LINE__, error);
 
-    auto openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
-    auto mode = openglSettings->debugMessages_.getSelectedValue();
-    if (mode == debug::Mode::DebugSynchronous) {
-        const auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
-        if (severity >= debugbreak) util::debugBreak();
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto openglSettings = app->getSettingsByType<OpenGLSettings>()) {
+            auto mode = openglSettings->debugMessages_.getSelectedValue();
+            if (mode == debug::Mode::DebugSynchronous) {
+                const auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
+                if (severity >= debugbreak) util::debugBreak();
+            }
+        }
     }
 }
 
