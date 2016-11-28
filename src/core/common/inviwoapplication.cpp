@@ -133,6 +133,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
             resizePool(static_cast<size_t>(sys->poolSize_.get()));
         });
     }
+
+    moduleLibraryObserver_ = std::unique_ptr<ModuleLibraryObserver>(new ModuleLibraryObserver());
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
@@ -619,8 +621,8 @@ void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<st
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name_);
                 moduleSharedLibraries_.emplace_back(std::move(sharedLib));
-                if (!moduleLibraryObserver_.isObserved(filePath)) {
-                    moduleLibraryObserver_.startFileObservation(filePath);
+                if (!moduleLibraryObserver_->isObserved(filePath)) {
+                    moduleLibraryObserver_->startFileObservation(filePath);
                 }
             }
         }

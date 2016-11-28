@@ -252,7 +252,8 @@ protected:
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
     std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
-    ModuleLibraryObserver moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes.
+    // Need to be pointer since we cannot initialize the observer before the application.
+    std::unique_ptr<ModuleLibraryObserver> moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes. 
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
