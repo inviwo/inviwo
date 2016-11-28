@@ -260,6 +260,10 @@ Canvas::ContextID CanvasGLFW::activeContext() const {
     return static_cast<ContextID>(glfwGetCurrentContext());
 }
 
+Canvas::ContextID CanvasGLFW::contextId() const {
+    return static_cast<ContextID>(glWindow_);
+}
+
 bool CanvasGLFW::isFullScreen() const {
     return false;
 }

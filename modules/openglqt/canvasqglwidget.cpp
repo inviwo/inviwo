@@ -120,6 +120,10 @@ Canvas::ContextID CanvasQGLWidget::activeContext() const {
     return static_cast<ContextID>(QGLContext::currentContext());
 }
 
+Canvas::ContextID CanvasQGLWidget::contextId() const {
+    return static_cast<ContextID>(context());
+}
+
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) return;
 

@@ -67,6 +67,8 @@ public:
 
     virtual void resize(size2_t size) override;
     virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
+
 protected:
     void initializeGL() override;
     void paintGL() override;
