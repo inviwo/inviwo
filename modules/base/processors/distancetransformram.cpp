@@ -29,6 +29,7 @@
 
 #include "distancetransformram.h"
 #include <modules/base/algorithm/dataminmax.h>
+#include <thread>
 
 namespace inviwo {
 
@@ -54,7 +55,8 @@ DistanceTransformRAM::DistanceTransformRAM()
     , volDim_(1u)
     , dirty_(true)
     , distTransformDirty_(true)
-    , numThreads_(8) {
+    , numThreads_(std::thread::hardware_concurrency()) {
+
     addPort(volumePort_);
     addPort(outport_);
 
@@ -84,11 +86,11 @@ DistanceTransformRAM::DistanceTransformRAM()
 #endif
 }
 
-DistanceTransformRAM::~DistanceTransformRAM() {}
+DistanceTransformRAM::~DistanceTransformRAM() = default;
 
 void DistanceTransformRAM::process() {
     if (!transformEnabled_.get()) {
-        // copy inport to outport
+        // pass inport to outport
         outport_.setData(volumePort_.getData());
         return;
     }
@@ -99,65 +101,44 @@ void DistanceTransformRAM::process() {
         std::shared_ptr<const Volume> srcVolume = volumePort_.getData();
         volDim_ = glm::max(srcVolume->getDimensions(), size3_t(1u));
 
-        if (!volDist_ || (volDist_->getDimensions() != volDim_) || (volDist_ == srcVolume)) {
-            // Volume* volume = new Volume(volDim_, DataUInt32::get());
-            volDist_ = std::make_shared<Volume>(volDim_, DataUInt16::get());
+        if (!dstRepr_ || (dstRepr_->getDimensions() != volDim_) || (volDist_ == srcVolume)) {
+            dstRepr_  = std::make_shared<VolumeRAMPrecision<unsigned short>>(volDim_);
+            volDist_ = std::make_shared<Volume>(dstRepr_);
             volDist_->setModelMatrix(srcVolume->getModelMatrix());
             volDist_->setWorldMatrix(srcVolume->getWorldMatrix());
             // pass meta data on
             volDist_->copyMetaDataFrom(*srcVolume);
             outport_.setData(volDist_);
         }
-
-        
     }
 
     if (!dirty_ && distTransformDirty_) {
-        // progressBar_.resetProgress();
-        // progressBar_.show();
+        progressBar_.resetProgress();
+        progressBar_.show();
 
-        volDist_->dataMap_.dataRange = volDist_->dataMap_.valueRange = dvec2(DataUInt16::min(), DataUInt16::max());
-        distTransformDirty_ = true;
+        volDist_->dataMap_.dataRange = dvec2(DataUInt16::min(), DataUInt16::max());
+        volDist_->dataMap_.valueRange = dvec2(DataUInt16::min(), DataUInt16::max());
         updateOutport();
 
-        // progressBar_.finishProgress();
-        // progressBar_.hide();
+        progressBar_.finishProgress();
+        progressBar_.hide();
     }
 }
 
 void DistanceTransformRAM::updateOutport() {
-    VolumeRAM* vol = volDist_->getEditableRepresentation<VolumeRAM>();
-    DataFormatId dataFormat = vol->getDataFormat()->getId();
-#include <warn/push>
-#include <warn/ignore/switch-enum>
-    switch (dataFormat) {
-        case DataFormatId::NotSpecialized:
-            break;
-//#define DataFormatIdMacro(i) case i: computeDistanceTransform<Data##i::type, Data##i::bits>();
-//break;
-//#include <inviwo/core/util/formatsdefinefunc.h>
-#define DataFormatIdMacro(i) case DataFormatId::i: computeDistanceTransform<Data##i::type>(); break;
-DataFormatIdMacro(Float16)
-DataFormatIdMacro(Float32)
-DataFormatIdMacro(Float64)
-DataFormatIdMacro(Int8)
-DataFormatIdMacro(Int16)
-DataFormatIdMacro(Int32)
-DataFormatIdMacro(Int64)
-DataFormatIdMacro(UInt8)
-DataFormatIdMacro(UInt16)
-DataFormatIdMacro(UInt32)
-DataFormatIdMacro(UInt64)
-#undef DataFormatIdMacro
-
-    default:
-        break;
-    }
-#include <warn/pop>
+    
+    const auto inputVolumeRep = volumePort_.getData()->getRepresentation<VolumeRAM>();
+    inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([this](const auto vrprecision) {
+        using VolumeType = util::PrecsionType<decltype(vrprecision)>;
+        using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
+        computeDistanceTransform(vrprecision, dstRepr_.get());
+    });
     distTransformDirty_ = false;
 
-    auto minMax = util::volumeMinMax(vol, IgnoreSpecialValues::Yes);
-    volDist_->dataMap_.dataRange = volDist_->dataMap_.valueRange = dvec2(minMax.first.x, minMax.second.x);
+    auto minMax = util::volumeMinMax(dstRepr_.get(), IgnoreSpecialValues::Yes);
+    volDist_->dataMap_.dataRange = dvec2(minMax.first.x, minMax.second.x);
+    volDist_->dataMap_.valueRange = dvec2(minMax.first.x, minMax.second.x);
+        
 }
 
 void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
