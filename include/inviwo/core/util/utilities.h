@@ -50,6 +50,27 @@ IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = 
 
 IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
                                      ExceptionContext context, const std::string& extra = "");
+
+/** 
+ * \brief Removes inviwo-module from module library file name.
+ * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
+ * Returns filename without extension if inviwo-module was not found.
+ *
+ * @param std::string filePath Path to module file
+ * @return IVW_CORE_API std::string Module name
+ */
+IVW_CORE_API std::string stripModuleFileNameDecoration(std::string filePath);
+/** 
+ * \brief Split string into substrings based on separating delimiter character.
+ * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
+ * 
+ * @note Empty substrings are not skipped, ";;" will generate an element.
+ * @param const std::string & toSplit Delimiter separated string
+ * @param char delimiter The character use for splitting
+ * @return IVW_CORE_API std::vector<std::string> Sub
+ */
+IVW_CORE_API std::vector<std::string> splitString(const std::string& toSplit, char delimiter);
+
 }
 
 }  // namespace

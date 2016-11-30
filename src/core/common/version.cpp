@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHTYPE_H
-#define IVW_PATHTYPE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/version.h>
 
 namespace inviwo {
 
-enum class PathType {
-    Data,               // /data
-    Volumes,            // /data/volumes
-    Workspaces,         // /data/workspaces
-    Scripts,            // /data/workspaces
-    PortInspectors,     // /data/workspaces/portinspectors
-    Images,             // /data/images
-    Databases,          // /data/databases
-    Resources,          // /resources
-    TransferFunctions,  // /data/transferfunctions
-    Settings,           // path to the current users settings
-    Modules,            // Module libraries folder, i.e. /appdata/inviwo/modules on Windows.
-                        // Install your module there to make it load when runtime loading is enabled.
-    Help,               // /data/help
-    Tests               // /tests
-};
+Version::Version(std::string versionString)  {
+    sscanf(versionString.c_str(), "%u.%u.%u.%u", &major, &minor, &patch, &build);
+}
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_PATHTYPE_H

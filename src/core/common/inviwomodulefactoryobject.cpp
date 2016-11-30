@@ -48,7 +48,6 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
 
 }
 
-typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
 void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
     // Serialize network
     std::stringbuf buf;
@@ -71,7 +70,7 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
     // Unregister modules
     app->clearModules();
     // Register modules again
-    app->registerModulesFromDynamicLibraries(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
+    app->registerModulesFromDynamicLibraries(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())), true);
 
     // De-serialize network
     try {
@@ -86,6 +85,66 @@ void ModuleLibraryObserver::fileChanged(const std::string& fileName) {
             LogLevel::Error);
         return;
     }
+}
+
+/** 
+ * \brief Sorts modules according to their dependencies.
+ *
+ * Recursive function that sorts the input vector according to their dependencies.
+ * Modules depending on other modules will end up last in the list. 
+ *
+ * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>> & graph Objects to sort
+ * @param std::unordered_set<std::string> & explored Modules already searched
+ * @param std::string moduleDependency Module dependency to sort
+ * @param std::vector<std::string> & sorted Module names, sorted after dependencies.
+ * @param size_t & t Number of elements in graph.
+ */
+void recursiveTopologicalModuleFactoryObjectSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start, std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, std::unordered_set<std::string>& explored, std::string i, std::vector<std::string>& sorted, size_t& t) {
+    auto it =
+        std::find_if(start, end,
+            [&](const std::unique_ptr<InviwoModuleFactoryObject>& a) {
+        // Lower case comparison
+        return toLower(a->name_) == toLower(i);
+    });
+    if (it == end) {
+        // This dependency has not been loaded
+        return;
+    }
+    explored.insert(toLower((*it)->name_));
+
+    for (const auto& dependency : (*it)->depends_) {
+        auto lowerCaseDependency = toLower(dependency);
+        if (explored.find(lowerCaseDependency) == explored.end()) {
+            recursiveTopologicalModuleFactoryObjectSort(start, end, explored, lowerCaseDependency, sorted, t);
+        }
+    }
+
+    --t;
+    sorted[t] = i;
+
+    return;
+}
+
+void topologicalModuleFactoryObjectSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start, std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end) {
+    // Topological sort to make sure that we load modules in correct order
+    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+    std::unordered_set<std::string> explored;
+    size_t t = std::distance(start, end);
+    std::vector<std::string> sorted(t);
+    for (auto moduleIt = start; moduleIt != end; ++moduleIt ) {
+        const auto& module = *moduleIt;
+        auto lowerCaseName = toLower(module->name_);
+        if (explored.find(lowerCaseName) == explored.end()) {
+            recursiveTopologicalModuleFactoryObjectSort(start, end, explored, lowerCaseName, sorted, t);
+        }
+    }
+    // Sort modules according to dependency graph
+    std::sort(start, end,
+        [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
+            const std::unique_ptr<InviwoModuleFactoryObject>& b) {
+        return std::find(std::begin(sorted), std::end(sorted), toLower(a->name_)) >
+            std::find(std::begin(sorted), std::end(sorted), toLower(b->name_));
+    });
 }
 
 } // namespace

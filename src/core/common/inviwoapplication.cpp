@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/common/version.h>
 #include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -90,6 +91,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , modules_()
     , clearModules_([&]() {
+        // Note: be careful when changing the order of clearModules
+        // as modules need to be removed before factories for example.
         ResourceManager::getPtr()->clearAllResources();
         // Need to clear the modules in reverse order since the might depend on each other.
         // The destruction order of vector is undefined.
@@ -133,8 +136,12 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
             resizePool(static_cast<size_t>(sys->poolSize_.get()));
         });
     }
-
-    moduleLibraryObserver_ = std::unique_ptr<ModuleLibraryObserver>(new ModuleLibraryObserver());
+    // Make sure that all data formats are initialized in this library.
+    // Need to be done when libraries are loaded at runtime since the
+    // data format may be used first in one of the loaded libraries
+    // but will not be cleaned up when the module is unloaded.
+#define DataFormatIdMacro(i) {const DataFormatBase* dummyInitialization =  Data##i::get();}
+#include <inviwo/core/util/formatsdefinefunc.h>
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
@@ -152,230 +159,45 @@ void InviwoApplication::clearModules() {
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destruction order of vector is undefined.
-    //auto coreModule = modules_.rend()-1;
-    auto protectedModules = getProtectedModules();
-    //auto keepModules = std::set<std::string>{ "opengl", "openglqt" };
-    auto keepModules = std::set<std::string>();
+    auto protectedModules = getProtectedModuleIdentifiers();
     for (auto it = std::rbegin(modules_); it != std::rend(modules_); ++it) {
-        if (protectedModules.find((*it)->getIdentifier()) == protectedModules.end() &&
-            keepModules.find(toLower((*it)->getIdentifier())) == keepModules.end()) {
+        if (protectedModules.find((*it)->getIdentifier()) == protectedModules.end()) {
             it->reset();
         }
     }
     modules_.erase(std::remove_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module == nullptr; }), modules_.end());
-    //modules_.erase(coreModuleIt + 1, qtWidgetsModuleIt);
-    //modules_.erase(std::find_if(std::begin(modules_), std::end(modules_), [](const auto& module) { return module->getIdentifier().compare("QtWidgets") == 0; }) + 1, std::end(modules_));
-    //modules_.clear();
-    //modulesFactoryObjects_.clear();
+    // Remove module factories
     modulesFactoryObjects_.erase(std::remove_if(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_), 
-        [&](const auto& module) { return protectedModules.find(module->name_) == protectedModules.end() && keepModules.find(toLower(module->name_)) == keepModules.end(); }), modulesFactoryObjects_.end());
+        [&](const auto& module) { return protectedModules.find(module->name_) == protectedModules.end(); }), modulesFactoryObjects_.end());
+    
+    // Modules should now have removed all allocated resources and it should be safe to unload shared libraries. 
     moduleSharedLibraries_.erase(std::remove_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_), 
         [&](const auto& module) { 
         // Remove file decoration 
-        auto moduleName = stripModuleFileNameDecoration(module->getFilePath());
+        auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
         
         return std::find_if(std::begin(protectedModules), std::end(protectedModules), 
             [moduleName](const auto& protectedModule) { 
             return toLower(protectedModule).compare(moduleName) == 0; 
-        }) == protectedModules.end()
-            && keepModules.find(toLower(moduleName)) == keepModules.end();
+        }) == protectedModules.end();
     }), std::end(moduleSharedLibraries_));
-    //moduleSharedLibraries_.clear();
 
 }
 
-void topologicalSort(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& graph,
-                      std::unordered_set<std::string>& explored, std::string i,
-                      std::vector<std::string>& sorted, size_t& t) {
-    auto it =
-        std::find_if(std::begin(graph), std::end(graph),
-                     [&](const std::unique_ptr<InviwoModuleFactoryObject>& a) {
-                        // Lower case comparison
-                         return toLower(a->name_) == toLower(i);
-                     });
-    if (it == std::end(graph)) {
-        // This dependency has not been loaded
-        return;
-    }
-    explored.insert(toLower((*it)->name_));
 
-    for (const auto& dependency : (*it)->depends_) {
-        auto lowerCaseDependency = toLower(dependency);
-        if (explored.find(lowerCaseDependency) == explored.end()) {
-            topologicalSort(graph, explored, lowerCaseDependency, sorted, t);
-        }
-    }
-
-    --t;
-    sorted[t] = i;
-
-    return;
-}
 void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
-    printApplicationInfo();
-
-    // Create and register other modules
-    modulesFactoryObjects_ = regModuleFunc();
-    // Topological sort to make sure that we load modules in correct order
-    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-    std::unordered_set<std::string> explored;
-    auto t = modulesFactoryObjects_.size();
-    std::vector<std::string> sorted(modulesFactoryObjects_.size());
-    for (const auto& module : modulesFactoryObjects_) {
-        auto lowerCaseName = toLower(module->name_); 
-        if (explored.find(lowerCaseName) == explored.end()) {
-            topologicalSort(modulesFactoryObjects_, explored, lowerCaseName, sorted, t);
-        }
-    }
-    // Sort modules according to dependency graph
-    std::sort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_),
-              [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
-                  const std::unique_ptr<InviwoModuleFactoryObject>& b) {
-                  return std::find(std::begin(sorted), std::end(sorted), toLower(a->name_)) >
-                         std::find(std::begin(sorted), std::end(sorted), toLower(b->name_));
-              });
-
-    std::vector<std::string> failed;
-    auto checkdepends = [&](const std::vector<std::string>& deps) {
-        for (const auto& dep : deps) {
-            auto it = util::find(failed, dep);
-            if (it != failed.end()) return it;
-        }
-        return failed.end();
-    };
-
-    auto checkVersionCompability = [](const std::string referenceVersion, const std::string toCompare) {
-        istringstream refSS(referenceVersion);
-        std::string refMajor, refMinor, refPatch;
-        std::getline(refSS, refMajor, '.'); std::getline(refSS, refMinor, '.'); std::getline(refSS, refPatch, '.');
-        istringstream toCompSS(toCompare);
-        std::string toCompMajor, toCompMinor, toCompPatch;
-        std::getline(toCompSS, toCompMajor, '.');
-        std::getline(toCompSS, toCompMinor, '.');
-        std::getline(toCompSS, toCompPatch, '.');
-        // Major and minor versions need to be the same.
-        if (refMajor != toCompMajor || refMinor != toCompMinor) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-
-    auto checkDepencyVersion = [&](const std::string& dep, const std::string& depVersions) {
-        std::map<std::string, std::string> incorrectDepencencyVersions;
-        auto lowerCaseDep = toLower(dep);
-        // Find module
-        auto it = util::find_if(modulesFactoryObjects_, [&](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
-            return toLower(module->name_) == lowerCaseDep;
-        });
-        // Check if dependent module is of correct version
-        if (it != modulesFactoryObjects_.end() && checkVersionCompability((*it)->version_, depVersions)) {
-            return true;
-        }
-        else {
-            return false;
-        };
-    };
-
-
-    for (auto& moduleObj : modulesFactoryObjects_) {
-        postProgress("Loading module: " + moduleObj->name_);
-        // Make sure that the module supports the current inviwo core version
-        if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
-            auto errorMsg = "Failed to register module: " + moduleObj->name_ +
-                " since the module was built for Inviwo version " +
-                moduleObj->inviwoCoreVersion_ + " but current version is " +
-                IVW_VERSION;
-            LogError(errorMsg);
-            util::push_back_unique(failed, toLower(moduleObj->name_));
-            continue;
-        }
-        // Check if dependency modules have correct versions.
-        // Note that the module version only need to be increased 
-        // when changing and the inviwo core version has not changed
-        // since we are ensuring the they must be built for the 
-        // same core version. 
-        auto versionIt = moduleObj->dependenciesVersion_.cbegin();
-        auto anyIncorrectDependencyVersions = false;
-        std::stringstream dependencyVersionError;
-        for (auto dep = moduleObj->depends_.cbegin();
-            dep != moduleObj->depends_.end(); ++dep, ++versionIt) {
-            if (!checkDepencyVersion(*dep, *versionIt)) {                
-                dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but another version was loaded" << std::endl;
-            };
-        }
-        if (dependencyVersionError.str().size() > 0) {
-            LogError("Failed to register module: " + moduleObj->name_);
-            LogError("Reason: " + dependencyVersionError.str());
-            util::push_back_unique(failed, toLower(moduleObj->name_));
-            continue;
-        }
-        try {
-            auto it = checkdepends(moduleObj->depends_);
-            if (it == failed.end()) {
-                registerModule(moduleObj->create(this));
-            } else {
-                LogError("Could not register module: " + moduleObj->name_ + " since dependency: " +
-                         *it + " failed to register");
-            }
-        } catch (const ModuleInitException& e) {
-            LogError("Failed to register module: " + moduleObj->name_);
-            LogError("Reason: " + e.getMessage());
-            util::push_back_unique(failed, toLower(moduleObj->name_));
-
-            std::vector<std::string> toDeregister;
-            for (const auto& m : e.getModulesToDeregister()) {
-                util::append(toDeregister, findDependentModules(m));
-                toDeregister.push_back(toLower(m));
-            }
-            for (const auto& dereg : toDeregister) {
-                util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
-                    if (toLower(m->getIdentifier()) == dereg) {
-                        LogError("De-registering " + m->getIdentifier() + " because " +
-                                 moduleObj->name_ + " failed to register");
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-                util::push_back_unique(failed, dereg);
-            }
-        }
-    }
-
-    postProgress("Loading Capabilities");
-    for (auto& module : modules_) {
-        for (auto& elem : module->getCapabilities()) {
-            elem->retrieveStaticInfo();
-            elem->printInfo();
-        }
-    }
+    registerModules(regModuleFunc());
 }
 
 void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories) {
+    printApplicationInfo();
     for(auto& mod: moduleFactories) {
         modulesFactoryObjects_.emplace_back(std::move(mod));
     }
     
     // Topological sort to make sure that we load modules in correct order
-    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-    std::unordered_set<std::string> explored;
-    auto t = modulesFactoryObjects_.size();
-    std::vector<std::string> sorted(modulesFactoryObjects_.size());
-    for (const auto& module : modulesFactoryObjects_) {
-        auto lowerCaseName = toLower(module->name_);
-        if (explored.find(lowerCaseName) == explored.end()) {
-            topologicalSort(modulesFactoryObjects_, explored, lowerCaseName, sorted, t);
-        }
-    }
-    // Sort modules according to dependency graph
-    std::sort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_),
-        [&](const std::unique_ptr<InviwoModuleFactoryObject>& a,
-            const std::unique_ptr<InviwoModuleFactoryObject>& b) {
-        return std::find(std::begin(sorted), std::end(sorted), toLower(a->name_)) >
-            std::find(std::begin(sorted), std::end(sorted), toLower(b->name_));
-    });
+    topologicalModuleFactoryObjectSort(std::begin(modulesFactoryObjects_), std::end(modulesFactoryObjects_));
+
 
     std::vector<std::string> failed;
     auto checkdepends = [&](const std::vector<std::string>& deps) {
@@ -386,40 +208,21 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
         return failed.end();
     };
 
-    auto checkVersionCompability = [](const std::string referenceVersion, const std::string toCompare) {
-        istringstream refSS(referenceVersion);
-        std::string refMajor, refMinor, refPatch;
-        std::getline(refSS, refMajor, '.'); std::getline(refSS, refMinor, '.'); std::getline(refSS, refPatch, '.');
-        istringstream toCompSS(toCompare);
-        std::string toCompMajor, toCompMinor, toCompPatch;
-        std::getline(toCompSS, toCompMajor, '.');
-        std::getline(toCompSS, toCompMinor, '.');
-        std::getline(toCompSS, toCompPatch, '.');
-        // Major and minor versions need to be the same.
-        if (refMajor != toCompMajor || refMinor != toCompMinor) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-
-    auto checkDepencyVersion = [&](const std::string& dep, const std::string& depVersions) {
+    auto checkDepencyVersion = [&](const std::string& moduleName, const std::string& depVersions) {
         std::map<std::string, std::string> incorrectDepencencyVersions;
-        auto lowerCaseDep = toLower(dep);
+        auto lowerCaseDep = toLower(moduleName);
         // Find module
         auto it = util::find_if(modulesFactoryObjects_, [&](const std::unique_ptr<InviwoModuleFactoryObject>& module) {
             return toLower(module->name_) == lowerCaseDep;
         });
         // Check if dependent module is of correct version
-        if (it != modulesFactoryObjects_.end() && checkVersionCompability((*it)->version_, depVersions)) {
+        if (it != modulesFactoryObjects_.end() && Version((*it)->version_) == Version(depVersions)) {
             return true;
         }
         else {
             return false;
         };
     };
-
 
     for (auto& moduleObj : modulesFactoryObjects_) {
         if (util::contains_if(modules_, [&](const auto& module) { return module->getIdentifier().compare(moduleObj->name_) == 0; })) {
@@ -427,7 +230,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
         }
         postProgress("Loading module: " + moduleObj->name_);
         // Make sure that the module supports the current inviwo core version
-        if (!checkVersionCompability(IVW_VERSION, moduleObj->inviwoCoreVersion_)) {
+        if (Version(IVW_VERSION) != Version(moduleObj->inviwoCoreVersion_)) {
             LogError("Failed to register module: " + moduleObj->name_);
             LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion_ + ", current version is " + IVW_VERSION);
             util::push_back_unique(failed, toLower(moduleObj->name_));
@@ -467,8 +270,6 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             auto it = checkdepends(moduleObj->depends_);
             if (it == failed.end()) {
                 registerModule(moduleObj->create(this));
-                //moduleLibraryObservers_.emplace_back(ModuleLibraryObserver(toLower(moduleObj->name_)));
-                //moduleLibraryObservers_.back().startFileObservation(moduleObj->library_->getFilePath());
             }
             else {
                 LogError("Could not register module: " + moduleObj->name_ + " since dependency: " +
@@ -510,124 +311,207 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
     }
 }
 
-typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
-void InviwoApplication::registerModulesFromDynamicLibraries(const std::vector<std::string>& librarySearchPaths) {
+void InviwoApplication::registerModulesFromDynamicLibraries(
+    const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged) {
+    // Perform the following steps
+    // 1. Recursively get all library files and the folders they are in
+    // 2. Sort them according to protected modules (done by std::set).
+    //    Prevents dependent modules from being loaded from temporary directory.
+    //    Only necessary when libraries can be reloaded.
+    // 3. Load libraries and see if createModule function exist.
+    // 4. Start observing file if reloadLibrariesWhenChanged
+    // 5. Pass module factories to registerModules
+
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-    std::vector<std::string> files;
-#if WIN32
-    std::string libraryType = "dll";
-    // Prevent error mode dialogs from displaying.
-    SetErrorMode(SEM_FAILCRITICALERRORS);
-#else
-    //std::string libraryType = "so";
-    std::string libraryType = "dylib";
-#endif
-    for (auto path : librarySearchPaths) {
-        auto filesInDir = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
-        for (auto& file : filesInDir) {
-            file = path + "/" + file;
-        }
-        files.insert(std::end(files), std::begin(filesInDir), std::end(filesInDir));
-    }
-    // Only consider dynamic library file types
-    files.erase(std::remove_if(std::begin(files), std::end(files),
-        [&libraryType](const auto& filePath) {
-        return filesystem::getFileExtension(filePath).compare(libraryType) != 0;
-    }), std::end(files));
-    // Do not consider modules already loaded
-    files.erase(std::remove_if(std::begin(files), std::end(files),
-        [&](const auto& filePath) {
-        return moduleSharedLibraries_.end() != std::find_if(std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_),
-            [filePath](const auto& lib) { return lib->getFilePath().compare(filePath) == 0; });
-    }), std::end(files));
-    auto protectedModules = getProtectedModules();
+    //std::stable_sort(std::begin(files), std::end(files), [&](const auto& first, const auto& second) {
+    //    auto foundFirst = findProtectedModule(util::stripModuleFileNameDecoration(first));
+    //    auto foundSecond = findProtectedModule(util::stripModuleFileNameDecoration(second));
+    //    return std::distance(protectedModules.begin(), foundFirst) <
+    //        std::distance(protectedModules.begin(), foundSecond);
+    //});
+    auto protectedModules = getProtectedModuleIdentifiers();
     // Compares lower case moduleIdentifier with lower case in protected modules
     // Returns the iterator to the found module, or end() if not found
-    auto findProtectedModule = [&protectedModules](const std::string& moduleIdentifier) { 
-        return std::find_if(std::begin(protectedModules), std::end(protectedModules), 
-            [moduleIdentifier](const auto& protectedModule) { 
+    auto findProtectedModule = [&protectedModules](const std::string& moduleIdentifier) {
+        return std::find_if(
+            std::begin(protectedModules), std::end(protectedModules),
+            [moduleIdentifier](const auto& protectedModule) {
             return toLower(protectedModule).compare(toLower(moduleIdentifier)) == 0;
-        }); 
+        });
     };
-
-    // Load protected modules first.
-    // The modules which protected modules depend on 
-    // will be loaded from the application dir instead of the temporary dir.
-    std::stable_sort(std::begin(files), std::end(files), 
-        [&](const auto& first, const auto& second) {
-        auto foundFirst = findProtectedModule(stripModuleFileNameDecoration(first));
-        auto foundSecond = findProtectedModule(stripModuleFileNameDecoration(second));
-        return std::distance(protectedModules.begin(), foundFirst) < std::distance(protectedModules.begin(), foundSecond);
-    });
-    
-
-    std::vector<std::string> tmpFiles;
-    std::vector<std::string> paths;
-
-    for (const auto& filePath : files) {
-        std::string tmpDir = filesystem::getWorkingDirectory();
-        std::string dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-        if (protectedModules.end() != findProtectedModule(stripModuleFileNameDecoration(filePath))) {
-            // Protected modules are loaded from the application dir
-            dstPath = filePath;
+    auto comparer = [&](std::string first, std::string second)->bool {
+        auto foundFirst = findProtectedModule(util::stripModuleFileNameDecoration(first));
+        auto foundSecond = findProtectedModule(util::stripModuleFileNameDecoration(second));
+        if (foundFirst == protectedModules.end() && foundSecond == protectedModules.end()) {
+            return first < second;
+        }
+        else {
+            return std::distance(protectedModules.begin(), foundFirst) <
+                std::distance(protectedModules.begin(), foundSecond);
+        }
+    };
+    // Load protected modules first, necessary when library reloading is enabled 
+    // since dependent modules can exist in both tmp and application directory.
+    // The modules which protected modules depend on will be
+    // loaded from the application dir instead of the temporary dir.
+    // Note: OpenGL module will fail to load if OpenGLQt is enabled and sorting is removed.
+    std::set<std::string, decltype(comparer)> files(comparer); // Recursively found libraries
+    std::set<std::string> libraryDirectories; // Recursively found directories
+#if WIN32
+    std::set<std::string> libraryTypes{ "dll" };
+    // Prevent error mode dialogs from displaying.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
+    // Get AddDllDirectory function.
+    // This function is only available after installing KB2533623
+    typedef DLL_DIRECTORY_COOKIE(WINAPI * addDllDirectory_func)(PCWSTR);
+    addDllDirectory_func lpfnAdllDllDirectory = (addDllDirectory_func)GetProcAddress(
+        GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory");
+#else
+    std::set<std::string> libraryTypes{ "so", "dylib", "bundle" };
+#endif
+    std::function<std::pair<std::vector<std::string>, std::vector<std::string>>(std::string)>
+        recursivelyRetrieveFilesAndDirectories =
+            [&recursivelyRetrieveFilesAndDirectories](std::string directory) {
+                auto filesInDir =
+                    filesystem::getDirectoryContents(directory, filesystem::ListMode::Files);
+                auto directories =
+                    filesystem::getDirectoryContents(directory, filesystem::ListMode::Directories);
+                for (auto& file : filesInDir) {
+                    file = directory + "/" + file;
+                }
+                for (auto& dir : directories) {
+                    dir = directory + "/" + dir;
+                }
+                for (auto& dir : directories) {
+                    auto filesAndDirectories = recursivelyRetrieveFilesAndDirectories(dir);
+                    filesInDir.insert(filesInDir.end(),
+                                      std::make_move_iterator(filesAndDirectories.first.begin()),
+                                      std::make_move_iterator(filesAndDirectories.first.end()));
+                    directories.insert(directories.end(),
+                                       std::make_move_iterator(filesAndDirectories.second.begin()),
+                                       std::make_move_iterator(filesAndDirectories.second.end()));
+                }
+                return std::pair<std::vector<std::string>, std::vector<std::string>>(filesInDir,
+                                                                                     directories);
+    };
+    for (auto path : librarySearchPaths) {
+        auto filesAndDirectories = recursivelyRetrieveFilesAndDirectories(path);
+        files.insert(
+            std::make_move_iterator(filesAndDirectories.first.begin()),
+            std::make_move_iterator(filesAndDirectories.first.end())
+        );
+        libraryDirectories.insert(
+            std::make_move_iterator(filesAndDirectories.second.begin()),
+            std::make_move_iterator(filesAndDirectories.second.end())
+        );
+    }
+    auto isModuleLibraryLoaded = [&](const std::string path) {
+        return moduleSharedLibraries_.end() !=
+            std::find_if(
+                std::begin(moduleSharedLibraries_),
+                std::end(moduleSharedLibraries_),
+                [path](const auto& lib) {
+            return lib->getFilePath().compare(path) == 0;
+        });
+    };
+    // Only consider dynamic library file types and modules not loaded
+    // erase-remove idiom can't be used with set so we have to loop 
+    for (auto it = files.begin(); it != files.end();) {
+        if (libraryTypes.find(filesystem::getFileExtension(*it)) == libraryTypes.end()
+            || isModuleLibraryLoaded(*it)) {
+            files.erase(it++);
         } else {
-            if (!filesystem::directoryExists(tmpDir)) {
-                filesystem::createDirectoryRecursively(tmpDir);
-            }
-
-
-            if (filesystem::fileModificationTime(filePath) != filesystem::fileModificationTime(dstPath)) {
-                // Load a copy of the file to make sure that
-                // we can overwrite the file.
-                filesystem::copyFile(filePath, dstPath);
-            }
-        }
-
-        tmpFiles.emplace_back(dstPath);
-        paths.emplace_back(filePath);
-
-    }
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::string tmpDir = filesystem::getWorkingDirectory();
-    AddDllDirectory(converter.from_bytes(tmpDir).c_str());
-    //AddDllDirectory(L"C:\\inviwo-dev\\build\\apps\\inviwo\\");
-    if (const char* env_p = std::getenv("PATH")) {
-        std::string s(env_p);
-        char delim = ';';
-        std::vector<std::string> elems;
-        std::stringstream ss;
-        ss.str(s);
-        std::string item;
-        while (std::getline(ss, item, delim)) {
-            elems.push_back(item);
-        }
-        for (auto path : elems) {
-            std::wstring dd;
-
-            //std::string narrow = converter.to_bytes(wide_utf16_source_string);
-            std::wstring wide = converter.from_bytes(path);
-            AddDllDirectory(converter.from_bytes(path).c_str());
+            ++it;
         }
     }
-    auto filePathIt = paths.cbegin();
-    for (auto tmpFilePathIt = tmpFiles.cbegin();
-        tmpFilePathIt != tmpFiles.end(); ++tmpFilePathIt, ++filePathIt) {
+
+
+    std::vector<std::string> tmpSharedLibraryFiles;
+    std::vector<std::string> originalLibraryFiles;
+
+    if (reloadLibrariesWhenChanged
+#if WIN32
+        // AdllDllDirectory must be supported on windows
+        && lpfnAdllDllDirectory
+#endif
+        ) {
+        std::string tmpLibraryDir =
+            filesystem::getInviwoApplicationPath() + "/TemporaryModuleLibraries";
+        if (!filesystem::directoryExists(tmpLibraryDir)) {
+            filesystem::createDirectoryRecursively(tmpLibraryDir);
+        }
+        for (const auto& filePath : files) {
+
+            std::string dstPath =
+                tmpLibraryDir + "/" + filesystem::getFileNameWithExtension(filePath);
+            if (protectedModules.end() !=
+                findProtectedModule(util::stripModuleFileNameDecoration(filePath))) {
+                // Protected modules are loaded from the application dir
+                dstPath = filePath;
+            } else {
+                if (filesystem::fileModificationTime(filePath) !=
+                    filesystem::fileModificationTime(dstPath)) {
+                    // Load a copy of the file to make sure that
+                    // we can overwrite the file.
+                    filesystem::copyFile(filePath, dstPath);
+                }
+            }
+
+            tmpSharedLibraryFiles.emplace_back(dstPath);
+            originalLibraryFiles.emplace_back(filePath);
+        }
+#if WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        AddDllDirectory(converter.from_bytes(tmpLibraryDir).c_str());
+#endif
+    } else {
+        // Libraries will not be reloaded, we can use the original files
+        std::copy(std::begin(files), std::end(files), std::back_inserter(originalLibraryFiles));
+        std::copy(std::begin(files), std::end(files), std::back_inserter(tmpSharedLibraryFiles));
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+#if WIN32
+        if (lpfnAdllDllDirectory) {
+            // Add search paths to find module dll dependencies
+            for (auto searchPath : librarySearchPaths) {
+                AddDllDirectory(converter.from_bytes(searchPath).c_str());
+            }
+            // Recursively found directories
+            for (auto searchPath : libraryDirectories) {
+                AddDllDirectory(converter.from_bytes(searchPath).c_str());
+            }
+        }
+
+#endif
+    }
+
+    auto filePathIt = originalLibraryFiles.cbegin();
+    for (auto tmpFilePathIt = tmpSharedLibraryFiles.cbegin();
+         tmpFilePathIt != tmpSharedLibraryFiles.end(); ++tmpFilePathIt, ++filePathIt) {
         auto filePath = *filePathIt;
         auto tmpPath = *tmpFilePathIt;
         try {
-            std::unique_ptr<SharedLibrary> sharedLib = std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
+            std::unique_ptr<SharedLibrary> sharedLib =
+                std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
             f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
             if (moduleFunc) {
+                // Inviwo module was found in the library
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name_);
                 moduleSharedLibraries_.emplace_back(std::move(sharedLib));
-                if (!moduleLibraryObserver_->isObserved(filePath)) {
-                    moduleLibraryObserver_->startFileObservation(filePath);
+                if (reloadLibrariesWhenChanged) {
+                    // Start observing file 
+                    if (!moduleLibraryObserver_) {
+                        moduleLibraryObserver_ =
+                            std::unique_ptr<ModuleLibraryObserver>(new ModuleLibraryObserver());
+                    }
+                    if (!moduleLibraryObserver_->isObserved(filePath)) {
+                        moduleLibraryObserver_->startFileObservation(filePath);
+                    }
                 }
             }
-        }
-        catch (Exception ex) {
-            //LogError(ex.getMessage());
+        } catch (Exception ex) {
+            // Dependencies missing?
         }
     }
     registerModules(modules);
@@ -687,26 +571,11 @@ CommandLineParser& InviwoApplication::getCommandLineParser() {
     return commandLineParser_;
 }
 
-std::string InviwoApplication::stripModuleFileNameDecoration(std::string filePath) const {
-    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
-    auto decoration = std::string("inviwo-module-");
-    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
-    if (inviwoModulePos == std::string::npos) {
-        inviwoModulePos = 0;
-    }
-    else {
-        inviwoModulePos = decoration.size();
-    }
-    auto len = fileNameWithoutExtension.size() - inviwoModulePos;
-#ifdef DEBUG
-    // Remove debug ending "d" at end of file name
-    len -= 1;
-#endif 
-    auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
-    return moduleName;
-}
-
-std::set<std::string> InviwoApplication::getProtectedModules() const {
+std::set<std::string> InviwoApplication::getProtectedModuleIdentifiers() const {
+    // Core:      Statically linked and should not be unloaded
+    // QtWidgets: Statically linked and should not be unloaded
+    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded 
+    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded 
     return std::set<std::string>{"Core", "QtWidgets", "OpenGLQt", "OpenGL"};
 }
 

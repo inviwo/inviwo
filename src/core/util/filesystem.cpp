@@ -111,6 +111,54 @@ std::string getExecutablePath() {
     return std::string(executablePath.get());
 }
 
+IVW_CORE_API std::string getInviwoApplicationPath() {
+    std::stringstream ss;
+#ifdef _WIN32
+    PWSTR path;
+    HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
+    std::string s = "";
+    if (SUCCEEDED(hr)) {
+        char ch[1024];
+        static const char DefChar = ' ';
+        WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, nullptr);
+        s = std::string(ch);
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        auto tstConv = converter.to_bytes(path);
+}
+    else {
+        LogErrorCustom("filesystem::getUserSettingsPath",
+            "SHGetKnownFolderPath failed to get settings folder");
+    }
+
+    CoTaskMemFree(path);
+    ss << s;
+    ss << "/Inviwo";
+#elif defined(__unix__)
+    ss << std::getenv("HOME");
+    ss << "/.inviwo";
+#elif defined(__APPLE__)
+    // Taken from:
+    // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
+    // A depricated solution, but a solution...
+
+    FSRef ref;
+    OSType folderType = kApplicationSupportFolderType;
+    int MAX_PATH = 512;
+    char path[PATH_MAX];
+
+#include <warn/push>
+#include <warn/ignore/deprecated-declarations>
+    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
+    FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
+#include <warn/pop>
+    ss << path << "/org.inviwo.network-editor";
+
+#else
+    LogWarnCustom("", "Get User Setting Path is not implemented for current system");
+#endif
+    return ss.str();
+}
+
 bool fileExists(const std::string& filePath) {
     // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
     struct stat buffer;
@@ -153,8 +201,9 @@ std::time_t fileModificationTime(const std::string& filePath) {
 
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
 #ifdef WIN32
-    // Copy file and overwrite if it exists
-    return CopyFileA(src.c_str(), dst.c_str(), 0);
+    // Copy file and overwrite if it exists. 
+    // != 0 to get rid of bool comparison warning (C4800)
+    return CopyFileA(src.c_str(), dst.c_str(), 0) != 0;
 #else 
     int source = open(src.c_str(), O_RDONLY, 0);
     if (source < 0) { return false; }
@@ -411,9 +460,11 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, c
             break;
 
         case PathType::Settings:
-            result = getInviwoUserSettingsPath();
+            result = getInviwoApplicationPath();
             break;
-
+        case PathType::Modules:
+            result = getInviwoApplicationPath() + "/modules";
+            break;
         case PathType::Help:
             result += "/data/help";
             break;
@@ -477,37 +528,6 @@ static std::string helperSHGetKnownFolderPath(const KNOWNFOLDERID& id) {
     return s;
 }
 #endif
-
-std::string getInviwoUserSettingsPath() {
-    std::stringstream ss;
-#ifdef _WIN32
-    ss << helperSHGetKnownFolderPath(FOLDERID_RoamingAppData);
-    ss << "/Inviwo";
-#elif defined(__unix__)
-    ss << std::getenv("HOME");
-    ss << "/.inviwo";
-#elif defined(__APPLE__)
-    // Taken from:
-    // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
-    // A depricated solution, but a solution...
-
-    FSRef ref;
-    OSType folderType = kApplicationSupportFolderType;
-    int MAX_PATH = 512;
-    char path[PATH_MAX];
-
-    #include <warn/push>
-    #include <warn/ignore/deprecated-declarations>
-    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
-    FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
-    #include <warn/pop>
-    ss << path << "/org.inviwo.network-editor";
-
-#else
-    LogWarnCustom("", "Get User Setting Path is not implemented for current system");
-#endif
-    return ss.str();
-}
 
 std::string addBasePath(const std::string& url) {
     if (url.empty()) return findBasePath();

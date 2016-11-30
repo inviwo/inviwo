@@ -101,6 +101,18 @@ public slots:
     void fileChanged(QString fileName);
 
 protected:
+    /**
+     * \brief List of modules to keep during runtime library reloading.
+     *
+     * Adds the following modules to the list:
+     * QtWidgets: Statically linked and should not be unloaded
+     * OpenGLQt:  Crashes when canvas is shown after library has been reloaded
+     * OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
+     *
+     * @see InviwoApplication::getProtectedModuleIdentifiers()
+     * @return std::set<std::string> Module identifiers of modules
+     */
+    virtual std::set<std::string> getProtectedModuleIdentifiers() const;
     virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
     void wait(int);

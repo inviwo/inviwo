@@ -29,39 +29,62 @@
 
 #include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/utilities.h> // splitString
+#include <codecvt>
+#include <locale>
 
 namespace inviwo {
 
 SharedLibrary::SharedLibrary(std::string filePath)
     : filePath_(filePath)
 {
-#if WIN32
-    std::string dir = filesystem::getFileDirectory(filePath);
-    std::string tmpDir = filesystem::getWorkingDirectory();
-    //std::string tmpDir = dir + "/tmp";
-    if (!filesystem::directoryExists(tmpDir)) {
-        filesystem::createDirectoryRecursively(tmpDir);
-    }
-   
-    std::string dstPath = tmpDir + "/" +  filesystem::getFileNameWithExtension(filePath);
-    //{
-    //    // Load a copy of the file to make sure that
-    //    // we can overwrite the file.
-    //    std::ifstream  src(filePath_, std::ios::binary);
-    //    std::ofstream  dst(dstPath, std::ios::binary);
 
-    //    dst << src.rdbuf();
-    //}
-    // Problem: LOAD_WITH_ALTERED_SEARCH_PATH first looks for dependencies in the 
-    // executable directory
-    //SetDllDirectoryA(nullptr);
-    //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-    handle_ = LoadLibraryExA(filePath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
+#if WIN32
     
-    //handle_ = LoadLibraryExA(filesystem::getFileNameWithExtension(dstPath).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-    //handle_ = LoadLibraryExA(dstPath.c_str(), nullptr);
-    //handle_ = LoadLibraryA(dstPath.c_str());
-    //handle_ = LoadLibraryA(filePath.c_str());
+    // Search for dlls in directories specified by the path environment variable 
+    // Need to be done since we are using a non-standard call to LoadLibrary
+    static auto addDirectoriesInPath = []() { // Lambda executed once
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        const char* environmentPath = std::getenv("PATH");
+        if (environmentPath &&
+            GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
+            auto elems = util::splitString(std::string(environmentPath), ';');
+            for (auto path : elems) {
+                std::wstring dd;
+
+                //std::string narrow = converter.to_bytes(wide_utf16_source_string);
+                std::wstring wide = converter.from_bytes(path);
+                AddDllDirectory(converter.from_bytes(path).c_str());
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }();
+
+    // Load library and search for dependencies in 
+    // 1. The directory that contains the DLL (LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR).
+    // 2. Paths explicitly added with the AddDllDirectory function (LOAD_LIBRARY_SEARCH_USER_DIRS)
+    // or the SetDllDirectory function. If more than one path has been added, the order in which the
+    // paths are searched is unspecified.
+    // 3. The System directory (LOAD_LIBRARY_SEARCH_SYSTEM32)
+    //
+    // Note 1: The directory containing the application executable is not searched filePath is in
+    // that directory. This enables us to use a temporary directory when loading dlls and thereby
+    // allow the original ones to be overwritten while the application is running.
+    // Note 2: LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR and LOAD_LIBRARY_SEARCH_USER_DIRS requires KB2533623
+    // to be installed.
+    // Note 3: Not supported on Windows XP and Server 2003
+    if (GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
+        handle_ = LoadLibraryExA(filePath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
+    } else {
+        // LOAD_LIBRARY_SEARCH_* flags are not supported
+        // Fall back to LoadLibrary
+        handle_ = LoadLibraryA(filePath.c_str());
+    }
+
+    
     if (!handle_) {
         auto error = GetLastError();
         std::ostringstream errorStream;

@@ -86,4 +86,34 @@ void util::validateIdentifier(const std::string& identifier, const std::string& 
     }
 }
 
+std::string util::stripModuleFileNameDecoration(std::string filePath) {
+    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+    auto decoration = std::string("inviwo-module-");
+    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+    if (inviwoModulePos == std::string::npos) {
+        inviwoModulePos = 0;
+    }
+    else {
+        inviwoModulePos = decoration.size();
+    }
+    auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+    // Remove debug ending "d" at end of file name
+    len -= 1;
+#endif 
+    auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+    return moduleName;
+}
+
+std::vector<std::string> util::splitString(const std::string& toSplit, char delimiter) {
+    std::vector<std::string> elems;
+    std::stringstream ss;
+    ss.str(toSplit);
+    std::string item;
+    while (std::getline(ss, item, delimiter)) {
+        elems.emplace_back(item);
+    }
+    return elems;
+}
+
 }  // namespace

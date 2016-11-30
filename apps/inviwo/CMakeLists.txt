@@ -58,11 +58,22 @@ ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
-set(${core_dependencies} InviwoQtEditor)
-list(APPEND core_dependencies InviwoQtEditor)
-list(APPEND core_dependencies InviwoCore)
-list(APPEND core_dependencies InviwoQtApplicationBase)
-ivw_add_dependency_directories(${core_dependencies})
+if(IVW_RUNTIME_MODULE_LOADING)
+	# Application does not need to depend on all modules
+	# if they are loaded at runtime.
+	set(${core_dependencies} InviwoQtEditor)
+	list(APPEND core_dependencies InviwoQtEditor)
+	list(APPEND core_dependencies InviwoCore)
+	list(APPEND core_dependencies InviwoQtApplicationBase)
+	ivw_add_dependency_directories(${core_dependencies})
+	
+	add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
+	if (IVW_RUNTIME_MODULE_RELOADING)
+		add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
+	endif()
+else()
+	ivw_add_dependency_directories(${package_list})
+endif()
 
 set(RES_FILES "")
 if(WIN32)

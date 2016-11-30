@@ -72,9 +72,19 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.registerModulesFromDynamicLibraries(std::vector<std::string>(
-        1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
-    //inviwoApp.registerModules(&inviwo::registerAllModules);
+    bool runtimeReloading = false; 
+#ifdef IVW_RUNTIME_MODULE_RELOADING
+    runtimeReloading = true;
+#endif
+#ifdef IVW_RUNTIME_MODULE_LOADING
+    auto moduleLibrarySearchPaths = std::vector<std::string>{ inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
+        inviwo::filesystem::getPath(inviwo::PathType::Modules) };
+    inviwoApp.registerModulesFromDynamicLibraries(moduleLibrarySearchPaths, runtimeReloading);
+#else 
+    inviwoApp.registerModules(&inviwo::registerAllModules);
+#endif
+
+    //
     inviwoApp.processEvents();
 
     // Do this after registerModules if some arguments were added

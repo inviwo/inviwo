@@ -56,6 +56,18 @@ IVW_CORE_API std::string getWorkingDirectory();
 IVW_CORE_API std::string getExecutablePath();
 
 /**
+ * Get application path for Inviwo, i.e. a folder where we have write-access.
+ * Will be:
+ * - Windows: /AppData/Inviwo/
+ * - Linux:   /home/.inviwo
+ * - Mac:     /Library/Application Support/org.inviwo.network-editor
+ *
+ * Not to be confused with the path where the executable is.
+ * @return std::string Inviwo application folder
+ */
+IVW_CORE_API std::string getInviwoApplicationPath();
+
+/**
  * \brief Check if a file exists.
  * @see directoryExists for directories
  * @param std::string fileName The path to the file
@@ -171,14 +183,6 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = 
                                  const bool& createFolder = false);
 
 IVW_CORE_API void createDirectoryRecursively(std::string path);
-
-/**
- * Get inviwo settings folder for current user
- * Will for instance be AppData/Inviwo/ on windows.
- *
- * @return std::string Inviwo user settings folder
- */
-IVW_CORE_API std::string getInviwoUserSettingsPath();
 
 /**
  * \brief Adds the InviwoApplication base path before the url

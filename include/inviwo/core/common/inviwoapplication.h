@@ -105,8 +105,28 @@ public:
     virtual ~InviwoApplication();
 
     virtual void registerModules(RegisterModuleFunc func);
-    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories);
-    virtual void registerModulesFromDynamicLibraries(const std::vector<std::string>& librarySearchPaths);
+    /**
+     * \brief Registers modules from factories and takes ownership of input module factories.
+     *
+     * Module is registered if dependencies exist and they have correct version.
+     *
+     * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>> & moduleFactories
+     */
+    virtual void registerModules(
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories);
+    /**
+     * \brief Load modules from dynamic library files in the specified search paths.
+     *
+     * Will recursively search for all dll/so/dylib files.
+     *
+     * @param const std::vector<std::string> & librarySearchPaths Path to directories to recursively
+     * search.
+     * @param bool reloadLibrariesWhenChanged Add file watchers and reload libraries without
+     * restarting the application.
+     * @return void
+     */
+    virtual void registerModulesFromDynamicLibraries(
+        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged);
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
@@ -201,8 +221,16 @@ public:
 
     void clearModules();
 protected:
-    std::string stripModuleFileNameDecoration(std::string filePath) const;
-    virtual std::set<std::string> getProtectedModules() const;
+
+    /** 
+     * \brief List of modules to keep during runtime library reloading.
+     * 
+     * Some modules such as Core can cause errors if unloaded.
+     * Append them to this list in your application to prevent them from 
+     * being unloaded.
+     * @return std::set<std::string> Module identifiers of modules
+     */
+    virtual std::set<std::string> getProtectedModuleIdentifiers() const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();
