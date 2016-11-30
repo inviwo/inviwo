@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/indexmapper.h>
 
 #ifndef __clang__
 #include <omp.h>
@@ -74,7 +75,7 @@ namespace inviwo {
  *
  */
 class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
-public:
+public:  
     DistanceTransformRAM();
     virtual ~DistanceTransformRAM();
 
@@ -85,20 +86,24 @@ protected:
     virtual void process() override;
 
 private:
+    using int64 = glm::int64;
+    using i64vec3 = glm::tvec3<int64>;
+
     void updateOutport();
     void paramChanged();
 
-    template <typename T>
-    void computeDistanceTransform(); 
+    template <typename T, typename U>
+    void computeDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
+                                  VolumeRAMPrecision<U> *outDistanceField);
 
     VolumeInport volumePort_;
     VolumeOutport outport_;
+    std::shared_ptr<VolumeRAMPrecision<unsigned short>> dstRepr_;
     std::shared_ptr<Volume> volDist_;
 
     BoolProperty transformEnabled_;
-    BoolProperty resultSquaredDist_; //determines whether output uses squared euclidean distances
+    BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
     FloatProperty resultDistScale_;  // scaling factor for distances
-
 
     ButtonProperty btnForceUpdate_;
 
@@ -109,51 +114,46 @@ private:
     int numThreads_;
 };
 
-template <typename Type>
-Type Square(Type a) { return (a * a); }
+/**
+ *	implementation of Euclidean Distance Transform according to Saito's algorithm
+ *  T. Saito and J.I. Toriwaki. New algorithms for Euclidean distance transformations
+ *  of an n-dimensional digitized picture with applications. Pattern Recognition, 27(11).
+ *  pp. 1551-1565, 1994.
+ */ 
+template <typename T, typename U>
+void DistanceTransformRAM::computeDistanceTransform(
+    const VolumeRAMPrecision<T> *inVolume, VolumeRAMPrecision<U> *outDistanceField) {
 
-template <typename T>
-void DistanceTransformRAM::computeDistanceTransform() {
-#include <warn/push>
-#include <warn/ignore/conversion>
+    auto square = [](auto a) { return (a * a); };
 
-    const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
-    VolumeRAM *vol = volDist_->getEditableRepresentation<VolumeRAM>();
+    const T* src = inVolume->getDataTyped();
+    U* dst = outDistanceField->getDataTyped();
 
-    size3_t dataDim = vol->getDimensions();
-    if (dataDim != srcVol->getDimensions())
+    const i64vec3 srcDim{inVolume->getDimensions()};
+    const i64vec3 dstDim{outDistanceField->getDimensions()};
+    
+    if (srcDim != dstDim)
         return;
 
-    auto dataRange = volDist_->dataMap_.dataRange;
-    T lowVal = static_cast<T>(dataRange.x);
-    T highVal = static_cast<T>(dataRange.y);
-    T *data = static_cast<T *>(vol->getData());
-    // alternative data access
-    //VolumeRAMPrecision<T>* volume = dynamic_cast<VolumeRAMPrecision<T> *>(vol);
-    //T *data2 = static_cast<T *>(volume->getData());
-
-    // implementation of Euclidean Distance Transform according to Saito's algorithm
-    //  T. Saito and J.I. Toriwaki. New algorithms for Euclidean distance transformations 
-    //    of an n-dimensional digitized picture with applications. Pattern Recognition, 27(11). 
-    //    pp. 1551-1565, 1994.
-
+    const auto lowVal = std::numeric_limits<U>::min();
+    const auto highVal = std::numeric_limits<U>::max();
+    
     double totalTime = 0.0;
-
     Clock clock;
     clock.start();
 
+    util::IndexMapper3D srcInd(srcDim);
+    util::IndexMapper3D dstInd(dstDim);
+
     // prepare data based on volume source data
-#pragma omp parallel for
-    for (int z=0; z<static_cast<int>(dataDim.z); ++z) {
-        for (int y=0; y<static_cast<int>(dataDim.y); ++y) {
-            for (std::size_t x=0; x<dataDim.x; ++x) {
-                size3_t pos(x, y, z);
-                if (srcVol->getAsNormalizedDouble(pos) > 0.5) {
-                    // set distance to zero
-                    data[(z * dataDim.y + y) * dataDim.x + x] = lowVal;
-                }
-                else {
-                    data[(z * dataDim.y + y) * dataDim.x + x] = highVal;
+    #pragma omp parallel for
+    for (int64 z = 0; z < dstDim.z; ++z) {
+        for (int64 y = 0; y < dstDim.y; ++y) {
+            for (int64 x = 0; x < dstDim.x; ++x) {
+                if (util::glm_convert_normalized<double>(src[srcInd(x,y,z)]) > 0.5) {
+                    dst[dstInd(x,y,z)] = lowVal;
+                } else {
+                    dst[dstInd(x,y,z)] = highVal;
                 }
             }
         }
@@ -165,36 +165,30 @@ void DistanceTransformRAM::computeDistanceTransform() {
     // first pass, forward and backward scan along x
     // result: min distance in x direction
     clock.start();
-#pragma omp parallel for
-    for (int z=0; z<static_cast<int>(dataDim.z); ++z) {
-        for (int y=0; y<static_cast<int>(dataDim.y); ++y) {
-            unsigned int offset = (z * dataDim.y + y) * dataDim.x;
-
+    #pragma omp parallel for
+    for (int64 z = 0; z < dstDim.z; ++z) {
+        for (int64 y = 0; y < dstDim.y; ++y) {
             // forward
-            unsigned int minIndex = 1;
-            bool feature = (data[offset] == lowVal);
-            for (unsigned int x=1; x<dataDim.x; ++x) {
-                unsigned int index = offset + x;
-                if (data[index] == lowVal) {
+            U minIndex = 1;
+            bool feature = (dst[dstInd(0,y,z)] == lowVal);
+            for (int64 x = 1; x < dstDim.x; ++x) {
+                if (dst[dstInd(x,y,z)] == lowVal) {
                     minIndex = 0;
                     feature = true;
-                }
-                else if (feature) { 
-                    data[index] = static_cast<T>(minIndex * minIndex);
+                } else if (feature) {
+                    dst[dstInd(x,y,z)] = minIndex * minIndex;
                 }
                 ++minIndex;
             }
             // backward
             minIndex = 1;
-            feature = (data[offset + dataDim.x - 1] == lowVal);
-            for (unsigned int x=dataDim.x - 1; x>0; --x) {
-                unsigned int index = offset + x - 1;
-                if (data[index] == lowVal) {
+            feature = (dst[dstInd(dstDim.x - 1, y, z)] == lowVal);
+            for (int64 x = dstDim.x - 2; x >= 0; --x) {
+                if (dst[dstInd(x, y, z)] == lowVal) {
                     minIndex = 0;
                     feature = true;
-                }
-                else if (feature) { 
-                    data[index] = std::min(data[index], static_cast<T>(minIndex * minIndex));
+                } else if (feature) {
+                    dst[dstInd(x, y, z)] = std::min<U>(dst[dstInd(x, y, z)], minIndex * minIndex);
                 }
                 ++minIndex;
             }
@@ -209,30 +203,27 @@ void DistanceTransformRAM::computeDistanceTransform() {
     //   for each voxel v(x,y,z) find min_i(data(x,i,z) + (y - i)^2), 0 <= i < dimY
     // result: min distance in x and y direction
     clock.start();
-#pragma omp parallel
+    #pragma omp parallel
     {
-        std::vector<std::size_t> colResult;
-        std::vector<std::size_t> colTmp;
-        colResult.resize(dataDim.y);
-        colTmp.resize(dataDim.y);
-#pragma omp for
-        for (int z=0; z<static_cast<int>(dataDim.z); ++z) {
-            for (int x=0; x<static_cast<int>(dataDim.x); ++x) {
-                unsigned int offset = z * dataDim.y * dataDim.x + x;
+        std::vector<U> colTmp;
+        colTmp.resize(dstDim.y);
+        #pragma omp for
+        for (int64 z = 0; z < dstDim.z; ++z) {
+            for (int64 x = 0; x < dstDim.x; ++x) {
 
                 // cache column data into temporary buffer
-                for (unsigned int y=0; y<dataDim.y; ++y) {
-                    colTmp[y] = static_cast<std::size_t>(data[offset + y * dataDim.x]);
+                for (int64 y = 0; y < dstDim.y; ++y) {
+                    colTmp[y] = dst[dstInd(x, y, z)];
                 }
 
-                for (unsigned int y=0; y<dataDim.y; ++y) {
+                for (int64 y = 0; y < dstDim.y; ++y) {
                     // find minimum in y direction
-                    std::size_t minVal = static_cast<std::size_t>(highVal);
-                    for (unsigned int i=0; i<dataDim.y; ++i) {
-                        std::size_t val = colTmp[i] + static_cast<std::size_t>(Square((glm::i64)y - (glm::i64)i));
-                        minVal = std::min(minVal, val);
+                    auto minVal = highVal;
+                    for (int64 i = 0; i < dstDim.y; ++i) {
+                        auto val = colTmp[i] + static_cast<U>(square(y - i));
+                        minVal = std::min<U>(minVal, val);
                     }
-                    data[offset + y * dataDim.x] = static_cast<T>(minVal);
+                    dst[dstInd(x, y, z)] = minVal;
                 }
             }
         }
@@ -246,30 +237,26 @@ void DistanceTransformRAM::computeDistanceTransform() {
     //   for each voxel v(x,y,z) find min_i(data(x,y,i) + (z - i)^2), 0 <= i < dimZ
     // result: min distance in x and y direction
     clock.start();
-#pragma omp parallel
+    #pragma omp parallel
     {
-        std::vector<std::size_t> colResult;
-        std::vector<std::size_t> colTmp;
-        colResult.resize(dataDim.z);
-        colTmp.resize(dataDim.z);
-#pragma omp for
-        for (int y=0; y<static_cast<int>(dataDim.y); ++y) {
-            for (int x=0; x<static_cast<int>(dataDim.x); ++x) {
-                unsigned int offset = y * dataDim.x + x;
-
+        std::vector<U> colTmp;
+        colTmp.resize(dstDim.z);
+        #pragma omp for
+        for (int64 y = 0; y < dstDim.y; ++y) {
+            for (int64 x = 0; x < dstDim.x; ++x) {
                 // cache column data into temporary buffer
-                for (unsigned int z=0; z<dataDim.z; ++z) {
-                    colTmp[z] = static_cast<std::size_t>(data[offset + z * dataDim.y * dataDim.x]);
+                for (int64 z = 0; z < dstDim.z; ++z) {
+                    colTmp[z] = (dst[dstInd(x, y, z)]);
                 }
 
-                for (unsigned int z=0; z<dataDim.z; ++z) {
+                for (int64 z = 0; z < dstDim.z; ++z) {
                     // find minimum in z direction
-                    std::size_t minVal = static_cast<std::size_t>(highVal);
-                    for (unsigned int i=0; i<dataDim.z; ++i) {
-                        std::size_t val = colTmp[i] + static_cast<std::size_t>(Square((glm::i64)z - (glm::i64)i));
-                        minVal = std::min(minVal, val);
+                    auto minVal = highVal;
+                    for (int64 i = 0; i < dstDim.z; ++i) {
+                        auto val = colTmp[i] + static_cast<U>(square(z - i));
+                        minVal = std::min<U>(minVal, val);
                     }
-                    data[offset + z * dataDim.y * dataDim.x] = static_cast<T>(minVal);
+                    dst[dstInd(x, y, z)] = minVal;
                 }
             }
         }
@@ -282,19 +269,19 @@ void DistanceTransformRAM::computeDistanceTransform() {
 
     // scale data
     clock.start();
-    std::size_t volSize = dataDim.x * dataDim.y * dataDim.z;
-    float scale = resultDistScale_.get();
+    int64 volSize = dstDim.x * dstDim.y * dstDim.z;
+    auto scale = resultDistScale_.get();
     if (resultSquaredDist_.get()) {
-#pragma omp parallel for
-        for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
-            data[i] = static_cast<T>(data[i] * scale);
+        #pragma omp parallel for
+        for (int64 i=0; i < volSize; ++i) {
+            dst[i] = static_cast<U>(dst[i] * scale);
         }
     }
     else {
         // update data to regular distances by applying the square root
-#pragma omp parallel for
-        for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
-            data[i] = static_cast<T>(std::sqrt(static_cast<float>(data[i])) * scale);
+        #pragma omp parallel for
+        for (int64 i = 0; i < volSize; ++i) {
+            dst[i] = static_cast<U>(std::sqrt(static_cast<double>(dst[i])) * scale);
         }
     }
     clock.tick();
@@ -303,7 +290,6 @@ void DistanceTransformRAM::computeDistanceTransform() {
 
 
     LogInfo("Total Time: " << totalTime);
-#include <warn/pop>
 }
 
 } // namespace
