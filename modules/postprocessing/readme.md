@@ -1,0 +1,1 @@
+The idea is to bundle up some useful postprocessing techniques in this module that can be applied to just about anything.
