@@ -113,6 +113,10 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataS
     samples[2] = getVoxel(indexPos + size3_t(0, 1, 0));
     samples[3] = getVoxel(indexPos + size3_t(1, 1, 0));
 
+    if (interpolants.z < std::numeric_limits<double>::epsilon()) {
+        return Interpolation<Vector<DataDims, T>, P>::bilinear(samples, interpolants.xy());
+    }
+
     samples[4] = getVoxel(indexPos + size3_t(0, 0, 1));
     samples[5] = getVoxel(indexPos + size3_t(1, 0, 1));
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
