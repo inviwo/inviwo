@@ -379,6 +379,10 @@ void InviwoApplication::registerModulesFromDynamicLibraries(
                 for (auto& file : filesInDir) {
                     file = directory + "/" + file;
                 }
+                // Remove . and ..
+                directories.erase(std::remove_if(directories.begin(), directories.end(), [](const auto& dir) {
+                    return dir.compare(".") == 0 || dir.compare("..") == 0;
+                }), directories.end());
                 for (auto& dir : directories) {
                     dir = directory + "/" + dir;
                 }
