@@ -227,6 +227,13 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
 }
 
+PythonEditorWidget::~PythonEditorWidget() {
+    // Remove added callbacks 
+    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    systemSettings->pythonSyntax_.removeOnChange(this);
+    systemSettings->pyFontSize_.removeOnChange(this);
+}
+
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (unsavedChanges_) {
         int ret =

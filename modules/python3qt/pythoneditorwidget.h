@@ -71,7 +71,7 @@ class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
 
 public:
     PythonEditorWidget(QWidget* parent, InviwoApplication* app);
-    virtual ~PythonEditorWidget() = default;
+    virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
     virtual void fileChanged(const std::string& fileName) override;

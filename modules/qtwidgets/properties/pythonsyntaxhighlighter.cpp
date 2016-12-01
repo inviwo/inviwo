@@ -120,9 +120,9 @@ void SyntaxHighligther::loadConfig<Python>() {
     typeformat.setForeground(ivec4toQtColor(sysSettings->pyTypeColor_.get()));
     commentformat.setBackground(bgColor);
     commentformat.setForeground(ivec4toQtColor(sysSettings->pyCommentsColor_.get()));
-    if (formaters_.empty())
+    if (formaters_.empty()) {
         sysSettings->pythonSyntax_.onChange(this, &SyntaxHighligther::loadConfig<Python>);
-    else {
+    } else {
         while (!formaters_.empty()) {
             delete formaters_.back();
             formaters_.pop_back();

@@ -258,9 +258,9 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     preprocessorformat.setBackground(bgColor);
     preprocessorformat.setForeground(ivec4toQtColor(sysSettings->glslPreProcessorColor_.get()));
 
-    if (formaters_.empty())
+    if (formaters_.empty()) {
         sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
-    else{
+    } else {
         while (!formaters_.empty()) {
             delete formaters_.back();
             formaters_.pop_back();
@@ -274,8 +274,6 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat));
     formaters_.push_back(new GLSLCommentFormater(commentformat));
 }
-
-
 
 } // namespace
 
