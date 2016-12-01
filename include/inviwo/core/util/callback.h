@@ -41,6 +41,8 @@ namespace inviwo {
 // Example usage
 // CallBackList list;
 // list.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
+// or 
+// list.addLambdaCallback([](){});
 
 using BaseCallBack = std::function<void()>;
 
@@ -75,10 +77,13 @@ public:
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        return util::erase_remove_if(callBackList_,
-                                     [&](const std::shared_ptr<std::function<void()>>& ptr) {
-                                         return ptr.get() == callback;
-                                     }) > 0;
+        auto callBackRemoved = util::erase_remove_if(callBackList_,
+            [&](const std::shared_ptr<std::function<void()>>& ptr) {
+            return ptr.get() == callback;
+        }) > 0;
+        // Remove callbacks from dispatcher after they have been destroyed
+        dispatcher_.removeInvalidCallbacks();
+        return callBackRemoved;
     }
     /** 
      * \brief Removes all added callbacks.
