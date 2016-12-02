@@ -220,8 +220,8 @@ const std::vector<Settings*> InviwoModule::getSettings() const { return uniqueTo
 
 std::string InviwoModule::getDescription() const {
     for (auto& item : app_->getModuleFactoryObjects()) {
-        if (item->name_ == identifier_) {
-            return item->description_;
+        if (item->name == identifier_) {
+            return item->description;
         }
     }
     return "No description available";

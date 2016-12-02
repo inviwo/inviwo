@@ -80,7 +80,7 @@ class Settings;
 class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
-class ModuleLibraryObserver; // Observer for module dll/so files
+class InviwoModuleLibraryObserver; // Observer for module dll/so files
 
 
 /**
@@ -104,6 +104,15 @@ public:
 
     virtual ~InviwoApplication();
 
+    /** 
+     * \brief Registers modules returned from function.
+     *
+     * DESCRIBE_THE_METHOD
+     * @see InviwoApplication::registerModules(
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories)
+     * @param RegisterModuleFunc func 
+     * @return void 
+     */
     virtual void registerModules(RegisterModuleFunc func);
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
@@ -117,16 +126,28 @@ public:
     /**
      * \brief Load modules from dynamic library files in the specified search paths.
      *
-     * Will recursively search for all dll/so/dylib files.
+     * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
      *
-     * @param const std::vector<std::string> & librarySearchPaths Path to directories to recursively
+     * @param const std::vector<std::string> & librarySearchPaths Paths to directories to recursively
      * search.
      * @param bool reloadLibrariesWhenChanged Add file watchers and reload libraries without
      * restarting the application.
      * @return void
      */
-    virtual void registerModulesFromDynamicLibraries(
+    virtual void registerModules(
         const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged);
+    /**
+     * \brief Removes all modules not marked as protected by the application.
+     *
+     * Use this function with care since all modules will be destroyed.
+     * 1. Network will be cleared.
+     * 2. Non-protected modules will be removed.
+     * 3. Loaded dynamic module libraries will be unloaded (unless marked as protected).
+     *
+     * @see InviwoApplication::getProtectedModuleIdentifiers
+     * @see InviwoModuleLibraryObserver
+     */
+    void unregisterModules();
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
@@ -149,7 +170,6 @@ public:
                         const bool& createFolder = false);
 
     void registerModule(std::unique_ptr<InviwoModule> module);
-    void unregisterModule(std::string module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
@@ -219,7 +239,7 @@ public:
 
     std::vector<std::string> findDependentModules(std::string module) const;
 
-    void clearModules();
+    
 protected:
 
     /** 
@@ -281,7 +301,7 @@ protected:
     std::vector<std::unique_ptr<InviwoModule>> modules_;
     std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
     // Need to be pointer since we cannot initialize the observer before the application.
-    std::unique_ptr<ModuleLibraryObserver> moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes. 
+    std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes. 
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 

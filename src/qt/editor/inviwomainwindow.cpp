@@ -998,7 +998,7 @@ void InviwoMainWindow::showAboutBox() {
     }
     const auto& mfos = InviwoApplication::getPtr()->getModuleFactoryObjects();
     auto names = util::transform(
-        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name_; });
+        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
     std::sort(names.begin(), names.end());
     aboutText << "<p><b>Modules:</b><br>\n" << joinString(names, ", ") << "</p>\n";
     aboutText << "</body></html>";

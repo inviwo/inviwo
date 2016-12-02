@@ -126,7 +126,7 @@ IVW_CORE_API std::string getInviwoApplicationPath() {
         auto tstConv = converter.to_bytes(path);
 }
     else {
-        LogErrorCustom("filesystem::getUserSettingsPath",
+        LogErrorCustom("filesystem::getInviwoApplicationPath",
             "SHGetKnownFolderPath failed to get settings folder");
     }
 
@@ -154,7 +154,7 @@ IVW_CORE_API std::string getInviwoApplicationPath() {
     ss << path << "/org.inviwo.network-editor";
 
 #else
-    LogWarnCustom("", "Get User Setting Path is not implemented for current system");
+    LogWarnCustom("filesystem::getInviwoApplicationPath", "Get User Setting Path is not implemented for current system");
 #endif
     return ss.str();
 }

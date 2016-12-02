@@ -77,9 +77,7 @@ int main(int argc, char** argv) {
     runtimeReloading = true;
 #endif
 #ifdef IVW_RUNTIME_MODULE_LOADING
-    auto moduleLibrarySearchPaths = std::vector<std::string>{ inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
-        inviwo::filesystem::getPath(inviwo::PathType::Modules) };
-    inviwoApp.registerModulesFromDynamicLibraries(moduleLibrarySearchPaths, runtimeReloading);
+    inviwoApp.registerModules(inviwo::registerAllModules(), runtimeReloading);
 #else 
     inviwoApp.registerModules(&inviwo::registerAllModules);
 #endif

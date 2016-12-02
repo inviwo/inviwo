@@ -12,6 +12,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
@@ -299,6 +300,7 @@ set(SOURCE_FILES
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/inviwomodulefactoryobject.cpp
+    common/inviwomodulelibraryobserver.cpp
     common/moduleaction.cpp
     common/version.cpp
     datastructures/buffer/buffer.cpp
