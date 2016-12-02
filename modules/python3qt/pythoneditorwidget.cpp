@@ -39,7 +39,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <inviwo/core/util/settings/systemsettings.h>
+#include <modules/qtwidgets/qtwidgetssettings.h>
 #include <modules/python3/pyinviwo.h>
 
 #include <warn/push>
@@ -191,9 +191,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     this->resize(500, 700);
 
     if (app_) {
-        app_->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
+        app_->getSettingsByType<QtWidgetsSettings>()->pythonSyntax_.onChange(
             this, &PythonEditorWidget::updateStyle);
-        app_->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(
+        app_->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.onChange(
             this, &PythonEditorWidget::updateStyle);
     }
     unsavedChanges_ = false;
@@ -229,9 +229,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 
 PythonEditorWidget::~PythonEditorWidget() {
     // Remove added callbacks 
-    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    systemSettings->pythonSyntax_.removeOnChange(this);
-    systemSettings->pyFontSize_.removeOnChange(this);
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
+    settings->pythonSyntax_.removeOnChange(this);
+    settings->pyFontSize_.removeOnChange(this);
 }
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
@@ -254,8 +254,8 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
 }
 
 void PythonEditorWidget::updateStyle() {
-    auto color = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyBGColor_.get();
-    auto size = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyFontSize_.get();
+    auto color = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyBGColor_.get();
+    auto size = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.get();
     std::stringstream ss;
     ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");"
         << std::endl;
