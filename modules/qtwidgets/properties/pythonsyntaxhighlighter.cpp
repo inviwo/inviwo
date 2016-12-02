@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
+#include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -109,7 +109,7 @@ static inline QColor ivec4toQtColor(const ivec4& i) { return QColor(i.r, i.g, i.
 
 template <>
 void SyntaxHighligther::loadConfig<Python>() {
-    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
 
     QColor textColor = ivec4toQtColor(sysSettings->pyTextColor_.get());
     QColor bgColor = ivec4toQtColor(sysSettings->pyBGColor_.get());

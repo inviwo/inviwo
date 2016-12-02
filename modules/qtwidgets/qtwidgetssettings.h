@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,50 +24,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#ifndef IVW_QTWIDGETSSETTINGS_H
+#define IVW_QTWIDGETSSETTINGS_H
 
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-class IVW_CORE_API SystemSettings : public Settings {
-
+/**
+ * \class QtWidgetsSettings
+ * \brief Text editor syntax highlighting settings
+ */
+class IVW_MODULE_QTWIDGETS_API QtWidgetsSettings : public Settings {
 public:
-    SystemSettings();
+    QtWidgetsSettings();
+    virtual ~QtWidgetsSettings() = default;
 
-    UsageMode getApplicationUsageMode() const;
+    CompositeProperty glslSyntax_;
+    IntVec4Property glslTextColor_;
+    IntVec4Property glslBackgroundColor_;
+    IntVec4Property glslQualifierColor_;
+    IntVec4Property glslBuiltinsColor_;
+    IntVec4Property glslTypeColor_;
+    IntVec4Property glslGlslBuiltinsColor_;
+    IntVec4Property glslCommentColor_;
+    IntVec4Property glslPreProcessorColor_;
 
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntProperty poolSize_;
-    BoolProperty txtEditor_;
-    BoolProperty enablePortInformation_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    IntProperty  useRAMPercentProperty_;
-    BoolProperty  logStackTraceProperty_;
-    ButtonProperty btnAllocTestProperty_;
-    ButtonProperty btnSysInfoProperty_;
-
-    BoolProperty followObjectDuringRotation_;
-
-protected:
-    void logStacktraceCallback();
-    void allocationTest();
-    glm::u32* allocTest_;
+    CompositeProperty pythonSyntax_;
+    IntProperty pyFontSize_;
+    IntVec4Property pyBGColor_;
+    IntVec4Property pyTextColor_;
+    IntVec4Property pyTypeColor_;
+    IntVec4Property pyCommentsColor_;
 };
 
 } // namespace
 
-#endif // IVW_SYSTEMSETTINGS_H
+#endif // IVW_QTWIDGETSSETTINGS_H
+

@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
+#include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,7 +49,7 @@ SyntaxHighligther::~SyntaxHighligther() {
     // A workaround since we do not know which loadConfig template 
     // that was used after creation... 
     // Preferably, the loadConfig should return an object that can be destroyed.
-    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
     sysSettings->pythonSyntax_.removeOnChange(this);
     sysSettings->glslSyntax_.removeOnChange(this);
 }
