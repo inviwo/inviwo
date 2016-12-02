@@ -68,9 +68,17 @@
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QApplication>
+#include <warn/pop>
+
 namespace inviwo {
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidgets") {
+    if (!qApp) {
+        throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
+    }
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");

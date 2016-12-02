@@ -39,6 +39,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QApplication>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <warn/pop>
@@ -47,6 +48,9 @@ namespace inviwo {
 
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
+    if (!qApp) {
+        throw ModuleInitException("QApplication must be constructed before OpenGLQtModule");
+    }
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
     sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16,16), "Default");
