@@ -72,15 +72,11 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    bool runtimeReloading = false; 
-#ifdef IVW_RUNTIME_MODULE_RELOADING
-    runtimeReloading = true;
+    inviwoApp.registerModules(inviwo::registerAllModules() 
+#ifdef IVW_RUNTIME_MODULE_RELOADING 
+        , true
 #endif
-#ifdef IVW_RUNTIME_MODULE_LOADING
-    inviwoApp.registerModules(inviwo::registerAllModules(), runtimeReloading);
-#else 
-    inviwoApp.registerModules(&inviwo::registerAllModules);
-#endif
+    );
 
     //
     inviwoApp.processEvents();

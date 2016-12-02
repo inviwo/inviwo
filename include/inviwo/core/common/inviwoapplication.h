@@ -135,7 +135,7 @@ public:
      * @return void
      */
     virtual void registerModules(
-        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged);
+        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged = false);
     /**
      * \brief Removes all modules not marked as protected by the application.
      *

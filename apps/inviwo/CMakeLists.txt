@@ -36,9 +36,11 @@ ivw_define_qt_definitions()
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
-list(APPEND package_list InviwoQtEditor)
-list(APPEND package_list InviwoCore)
-list(APPEND package_list InviwoQtApplicationBase)
+
+set(core_dependencies InviwoCore)
+list(APPEND core_dependencies InviwoQtEditor)
+list(APPEND core_dependencies InviwoQtApplicationBase)
+list(APPEND package_list ${core_dependencies})
 
 # Only include one OpenGL context creation module
 if(IVW_USE_GLFW_NOT_OPENGLQT)
@@ -57,23 +59,24 @@ list(REMOVE_ITEM package_list InviwoSDLModule)
 ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
-# Need to add dependent directories before creating application
+# Determine dendendencies
+set(dependencies "")
 if(IVW_RUNTIME_MODULE_LOADING)
 	# Application does not need to depend on all modules
 	# if they are loaded at runtime.
-	set(${core_dependencies} InviwoQtEditor)
-	list(APPEND core_dependencies InviwoQtEditor)
-	list(APPEND core_dependencies InviwoCore)
-	list(APPEND core_dependencies InviwoQtApplicationBase)
-	ivw_add_dependency_directories(${core_dependencies})
-	
+	set(dependencies ${core_dependencies})
 	add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
 	if (IVW_RUNTIME_MODULE_RELOADING)
 		add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
 	endif()
 else()
-	ivw_add_dependency_directories(${package_list})
+	set(dependencies ${package_list})
 endif()
+
+# Need to add dependent directories before creating application
+ivw_add_dependency_directories(${dependencies})
+
+#--------------------------------------------------------------------
 
 set(RES_FILES "")
 if(WIN32)
@@ -165,7 +168,8 @@ endif()
 
 #--------------------------------------------------------------------
 # Add dependencies
-ivw_add_dependencies(${core_dependencies})
+ivw_add_dependencies(${dependencies})
+
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
@@ -192,7 +196,7 @@ if(WIN32)
 
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
-    ivw_add_dependencies(${package_list})
+    ivw_add_dependencies(${dependencies})
     ivw_memleak_setup(inviwo-cli)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
