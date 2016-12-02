@@ -57,22 +57,6 @@ public:
         return shared;
     }
 
-    /** 
-     * \brief Remove all destroyed callbacks.
-     *
-     * Only performed if we are not currently dispatching.
-     * @return bool True if any callbacks where removed, false otherwise.
-     */
-    bool removeInvalidCallbacks() {
-        // Remove all callbacks that are gone, only if we are not dispatching.
-        if (0 == concurrent_dispatcher_count) {
-            return util::erase_remove_if(callbacks, [](std::weak_ptr<std::function<C>> callback) {
-                return callback.expired();
-            }) > 0;
-        }
-        else { return 0; }
-    }
-
     template <typename... A>
     void invoke(A&&... args) {
         concurrent_dispatcher_count++;

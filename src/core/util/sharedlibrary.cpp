@@ -29,9 +29,17 @@
 
 #include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/utilities.h> // splitString
+#include <inviwo/core/util/stringconversion.h> // splitString
 #include <codecvt>
 #include <locale>
+
+#if WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 
 namespace inviwo {
 
@@ -48,7 +56,7 @@ SharedLibrary::SharedLibrary(std::string filePath)
         const char* environmentPath = std::getenv("PATH");
         if (environmentPath &&
             GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
-            auto elems = util::splitString(std::string(environmentPath), ';');
+            auto elems = splitString(std::string(environmentPath), ';');
             for (auto path : elems) {
                 std::wstring dd;
 

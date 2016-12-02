@@ -57,8 +57,10 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <locale>
 #include <codecvt>
@@ -157,6 +159,7 @@ InviwoApplication::~InviwoApplication() {
 }
 
 void InviwoApplication::unregisterModules() {
+    onModulesWillUnregister_.invoke();
     getProcessorNetwork()->clear();
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
@@ -165,7 +168,7 @@ void InviwoApplication::unregisterModules() {
     for (auto it = std::rbegin(modules_); it != std::rend(modules_);) {
         if (protectedModules.find((*it)->getIdentifier()) == protectedModules.end()) {
             // Erase does not take reverse_iterator so we need to convert it
-            it = std::vector<std::unique_ptr<InviwoModule>>::reverse_iterator(modules_.erase((++it).base()));
+            it = decltype(it)(modules_.erase((++it).base()));
         } else {
             ++it;
         }
@@ -178,7 +181,7 @@ void InviwoApplication::unregisterModules() {
     // Modules should now have removed all allocated resources and it should be safe to unload shared libraries. 
     util::erase_remove_if(moduleSharedLibraries_,
         [&](const auto& module) {
-        // Remove file decoration 
+        // Figure out module identifier from file name
         auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
 
         return std::find_if(std::begin(protectedModules), std::end(protectedModules),
@@ -189,12 +192,7 @@ void InviwoApplication::unregisterModules() {
 
 }
 
-
-void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
-    registerModules(regModuleFunc());
-}
-
-void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories) {
+void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
     printApplicationInfo();
     for(auto& mod: moduleFactories) {
         modulesFactoryObjects_.emplace_back(std::move(mod));
@@ -314,6 +312,8 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             elem->printInfo();
         }
     }
+
+    onModulesDidRegister_.invoke();
 }
 
 void InviwoApplication::registerModules(
@@ -328,12 +328,7 @@ void InviwoApplication::registerModules(
     // 5. Pass module factories to registerModules
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-    //std::stable_sort(std::begin(files), std::end(files), [&](const auto& first, const auto& second) {
-    //    auto foundFirst = findProtectedModule(util::stripModuleFileNameDecoration(first));
-    //    auto foundSecond = findProtectedModule(util::stripModuleFileNameDecoration(second));
-    //    return std::distance(protectedModules.begin(), foundFirst) <
-    //        std::distance(protectedModules.begin(), foundSecond);
-    //});
+
     auto protectedModules = getProtectedModuleIdentifiers();
     // Compares lower case moduleIdentifier with lower case in protected modules
     // Returns the iterator to the found module, or end() if not found
@@ -493,18 +488,20 @@ void InviwoApplication::registerModules(
 
 #endif
     }
-
+    // Load libraries from temporary directory 
+    // but observe the original file
     auto filePathIt = originalLibraryFiles.cbegin();
     for (auto tmpFilePathIt = tmpSharedLibraryFiles.cbegin();
          tmpFilePathIt != tmpSharedLibraryFiles.end(); ++tmpFilePathIt, ++filePathIt) {
         auto filePath = *filePathIt;
         auto tmpPath = *tmpFilePathIt;
         try {
-            std::unique_ptr<SharedLibrary> sharedLib =
+            // Load library. Will throw exception if failed to load
+            auto sharedLib =
                 std::unique_ptr<SharedLibrary>(new SharedLibrary(tmpPath));
-            f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
-            if (moduleFunc) {
-                // Inviwo module was found in the library
+            // Only consider libraries with Inviwo module creation function
+            if (auto moduleFunc = (f_getModule)sharedLib->findSymbol("createModule")) {
+                // Add module factory object
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
                 moduleSharedLibraries_.emplace_back(std::move(sharedLib));
@@ -524,10 +521,12 @@ void InviwoApplication::registerModules(
                 }
             }
         } catch (Exception ex) {
-            // Dependencies missing?
+            // Library dependency is probably missing.
+            // We silently skip this library. 
+            // Outputting message would 
         }
     }
-    registerModules(modules);
+    registerModules(std::move(modules));
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
@@ -577,10 +576,7 @@ CommandLineParser& InviwoApplication::getCommandLineParser() {
 
 std::set<std::string> InviwoApplication::getProtectedModuleIdentifiers() const {
     // Core:      Statically linked and should not be unloaded
-    // QtWidgets: Statically linked and should not be unloaded
-    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded 
-    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded 
-    return std::set<std::string>{"Core", "QtWidgets", "OpenGLQt", "OpenGL"};
+    return std::set<std::string>{"Core"};
 }
 
 void InviwoApplication::printApplicationInfo() {
@@ -666,6 +662,14 @@ std::vector<std::string> InviwoApplication::findDependentModules(std::string mod
         util::push_back_unique(unique, item);
     }
     return unique;
+}
+
+std::shared_ptr<std::function<void()>> InviwoApplication::onModulesDidRegister(std::function<void()> callback) {
+    return onModulesDidRegister_.add(callback);
+}
+
+std::shared_ptr<std::function<void()>> InviwoApplication::onModulesWillUnregister(std::function<void()> callback) {
+    return onModulesWillUnregister_.add(callback);
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }

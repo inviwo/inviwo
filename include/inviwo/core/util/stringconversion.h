@@ -58,6 +58,15 @@ T stringTo(const std::string& str) {
     return result;
 }
 
+/** 
+ * \brief Split string into substrings based on separating delimiter character.
+ * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
+ * 
+ * @note Empty substrings are not skipped, ";;" will generate an element.
+ * @param toSplit Delimiter separated string
+ * @param delimiter The character use for splitting
+ * @return Substrings
+ */
 IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char delimeter = ' ');
 
 template <typename T>

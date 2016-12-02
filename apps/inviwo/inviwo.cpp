@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.registerModules(inviwo::registerAllModules() 
+    inviwoApp.registerModules(std::move(inviwo::registerAllModules())
 #ifdef IVW_RUNTIME_MODULE_RELOADING 
         , true
 #endif
@@ -84,9 +84,7 @@ int main(int argc, char** argv) {
     // Do this after registerModules if some arguments were added
     clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
-    // setup main window
-    mainWin.updateForNewModules();
-    inviwoApp.processEvents();
+    inviwoApp.processEvents(); // Update GUI
     splashScreen.showMessage("Loading workspace...");
     inviwoApp.processEvents();
     mainWin.showWindow();

@@ -105,15 +105,4 @@ std::string util::stripModuleFileNameDecoration(std::string filePath) {
     return moduleName;
 }
 
-std::vector<std::string> util::splitString(const std::string& toSplit, char delimiter) {
-    std::vector<std::string> elems;
-    std::stringstream ss;
-    ss.str(toSplit);
-    std::string item;
-    while (std::getline(ss, item, delimiter)) {
-        elems.emplace_back(item);
-    }
-    return elems;
-}
-
 }  // namespace

@@ -181,16 +181,18 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
+
+    onModulesDidRegister_ = app->onModulesDidRegister([&]() {
+        fillExampleWorkspaceMenu();
+        fillTestWorkspaceMenu();
+    });
+    onModulesWillUnregister_ = app->onModulesWillUnregister([&]() {
+        exampleMenu_->clear();
+        testMenu_->clear();
+    });
 }
 
 InviwoMainWindow::~InviwoMainWindow() = default;
-
-void InviwoMainWindow::updateForNewModules() {
-    settingsWidget_->updateSettingsWidget();
-    processorTreeWidget_->addProcessorsToTree();
-    fillExampleWorkspaceMenu();
-    fillTestWorkspaceMenu();
-}
 
 void InviwoMainWindow::showWindow() {
     if (maximized_)

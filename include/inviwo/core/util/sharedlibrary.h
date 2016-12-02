@@ -32,10 +32,13 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+
 #if WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
+// Forward declare HINSTANCE
+#ifndef _WINDEF_
+struct HINSTANCE__; // Forward or never
+typedef HINSTANCE__* HINSTANCE;
+#endif
 #endif
 
 namespace inviwo {

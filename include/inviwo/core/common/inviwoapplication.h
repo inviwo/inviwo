@@ -39,7 +39,6 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
-#include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
@@ -81,7 +80,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 class InviwoModuleLibraryObserver; // Observer for module dll/so files
-
+class SharedLibrary;
 
 /**
  * \class InviwoApplication
@@ -93,9 +92,6 @@ class InviwoModuleLibraryObserver; // Observer for module dll/so files
  */
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
-    using RegisterModuleFunc =
-        std::function<std::vector<std::unique_ptr<InviwoModuleFactoryObject>>()>;
-
     InviwoApplication();
     InviwoApplication(std::string displayName);
     InviwoApplication(int argc, char** argv, std::string displayName);
@@ -104,16 +100,6 @@ public:
 
     virtual ~InviwoApplication();
 
-    /** 
-     * \brief Registers modules returned from function.
-     *
-     * DESCRIBE_THE_METHOD
-     * @see InviwoApplication::registerModules(
-        std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories)
-     * @param RegisterModuleFunc func 
-     * @return void 
-     */
-    virtual void registerModules(RegisterModuleFunc func);
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
      *
@@ -122,7 +108,7 @@ public:
      * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>> & moduleFactories
      */
     virtual void registerModules(
-        std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& moduleFactories);
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
     /**
      * \brief Load modules from dynamic library files in the specified search paths.
      *
@@ -239,7 +225,16 @@ public:
 
     std::vector<std::string> findDependentModules(std::string module) const;
 
-    
+    /** 
+     * \brief Register callback for monitoring when modules have been registered.
+     * Invoked in registerModules.
+     */
+    std::shared_ptr< std::function<void()> > onModulesDidRegister(std::function<void()> callback);
+    /** 
+     * \brief Register callback for monitoring when modules have been registered.
+     * Invoked in unregisterModules.
+     */
+    std::shared_ptr< std::function<void()> > onModulesWillUnregister(std::function<void()> callback);
 protected:
 
     /** 
@@ -272,6 +267,9 @@ protected:
     std::string binaryPath_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
+    Dispatcher<void()> onModulesDidRegister_; ///< Called after modules have been registered
+    Dispatcher<void()> onModulesWillUnregister_; ///< Called before modules have been unregistered
+
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
@@ -302,6 +300,7 @@ protected:
     std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
     // Need to be pointer since we cannot initialize the observer before the application.
     std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes. 
+       
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
