@@ -39,6 +39,10 @@
 namespace inviwo {
 
 GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW"){
+    if (app->getModuleByIdentifier("OpenGLQt")) {
+        throw ModuleInitException(
+            "GLFW could not be initialized because OpenGLQt is already used for OpenGL context.");
+    }
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
     GLFWSharedCanvas_ = util::make_unique<CanvasGLFW>(app->getDisplayName());

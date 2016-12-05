@@ -51,6 +51,11 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before OpenGLQtModule");
     }
+    if (app->getModuleByIdentifier("GLFW")) {
+        throw ModuleInitException(
+            "OpenGLQt could not be initialized because GLWF is already used for OpenGL context.");
+    }
+
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
     sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16,16), "Default");
