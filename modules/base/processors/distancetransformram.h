@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
 
 #ifndef __clang__
@@ -52,6 +52,7 @@
 #endif
 
 namespace inviwo {
+
 
 /** \docpage{org.inviwo.DistanceTransformRAM, Distance Transform}
  * ![](org.inviwo.DistanceTransformRAM.png?classIdentifier=org.inviwo.DistanceTransformRAM)
@@ -149,8 +150,8 @@ void DistanceTransformRAM::computeDistanceTransform(const VolumeRAMPrecision<T> 
     Clock clock;
     clock.start();
 
-    util::IndexMapper3D srcInd(srcDim);
-    util::IndexMapper3D dstInd(dstDim);
+    util::IndexMapper<3, int64> srcInd(srcDim);
+    util::IndexMapper<3, int64> dstInd(dstDim);
 
     // prepare data based on volume source data
     
