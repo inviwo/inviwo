@@ -129,7 +129,7 @@ void DistanceTransformRAM::updateOutport() {
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([this](const auto vrprecision) {
         using VolumeType = util::PrecsionType<decltype(vrprecision)>;
         using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
-        computeDistanceTransform(vrprecision, dstRepr_.get(), upsample_.get());
+        this->computeDistanceTransform(vrprecision, dstRepr_.get(), upsample_.get());
         volDist_->invalidateAllOther(dstRepr_.get());
     });
     distTransformDirty_ = false;
