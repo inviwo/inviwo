@@ -113,6 +113,13 @@ enum class ListMode {
  */
 IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode = ListMode::Files);
 
+/**
+ * Recursively searches and returns full path to files/directories in specified directory and its subdirectories.
+ * @param path Files are listed for this directory and its subdirectories
+ * @return List of files residing in the given path and its subdirectories
+ */
+IVW_CORE_API std::vector<std::string> getDirectoryContentsRecursively(
+    const std::string& path, ListMode mode = ListMode::Files);
 
 /** 
  * Checks whether a given string matches a pattern. The pattern

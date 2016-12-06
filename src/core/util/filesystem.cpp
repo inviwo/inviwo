@@ -243,6 +243,36 @@ std::vector<std::string> getDirectoryContents(const std::string& path, ListMode 
     return tinydir.getContents();
 }
 
+std::vector<std::string> getDirectoryContentsRecursively(const std::string& path,
+                                                         ListMode mode /*= ListMode::Files*/) {
+    auto content = filesystem::getDirectoryContents(path, mode);
+    auto directories = filesystem::getDirectoryContents(path, filesystem::ListMode::Directories);
+    if (mode == ListMode::Directories || mode == ListMode::FilesAndDirectories) {
+        // Remove . and ..
+        util::erase_remove_if(content, [](const auto& dir) {
+            return dir.compare(".") == 0 || dir.compare("..") == 0;
+        });
+    }
+    
+    for (auto& file : content) {
+        file = path + "/" + file;
+    }
+    // Remove . and ..
+    util::erase_remove_if(directories, [](const auto& dir) {
+        return dir.compare(".") == 0 || dir.compare("..") == 0;
+    });
+
+    for (auto& dir : directories) {
+        dir = path + "/" + dir;
+    }
+    for (auto& dir : directories) {
+        auto directoryContent = getDirectoryContentsRecursively(dir, mode);
+        content.insert(content.end(), std::make_move_iterator(directoryContent.begin()),
+                       std::make_move_iterator(directoryContent.end()));
+    }
+    return content;
+}
+
 bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
     const char* patternPtr = pattern.c_str();
     const char* strPtr = str.c_str();
