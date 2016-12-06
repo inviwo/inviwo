@@ -77,7 +77,7 @@ public:
     static constexpr int AO_RANDOM_TEX_SIZE = 4;
     static constexpr int HBAO_RANDOM_SIZE = AO_RANDOM_TEX_SIZE;
     static constexpr int HBAO_RANDOM_ELEMENTS = HBAO_RANDOM_SIZE * HBAO_RANDOM_SIZE;
-    static constexpr int MAX_SAMPLES = 8;
+    static constexpr int MAX_SAMPLES = 1; // CHANGE TO 8 WHEN IMPLEMENTING MSAA
 
 private:
     struct ProjectionParam {
@@ -125,6 +125,9 @@ private:
     FloatProperty radius_;
     FloatProperty intensity_;
     FloatProperty bias_;
+	IntProperty directions_;
+	IntProperty steps_;
+	BoolProperty useNormal_;
     BoolProperty enableBlur_;
     FloatProperty blurSharpness_;
     CameraProperty camera_;
