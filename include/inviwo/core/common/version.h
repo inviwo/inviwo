@@ -48,7 +48,8 @@ namespace inviwo {
  * 4. BUILD version can be used as metadata.
  * 
  * Major and minor versions are used during equal comparison since 
- * API changes should not exist in patch and build version changes.
+ * API changes should not exist in patch and build version changes 
+ * (unless major version is zero).
  *
  * @note Module versions are tied to the Inviwo core version, which means
  *       that there is no need to update module version if it is built for 
@@ -66,7 +67,7 @@ public:
 
     /** 
      * \brief Compares major, minor, patch and build versions in order.
-     * @return friend bool true if lhs is less than rhs, false otherwise.
+     * @return bool true if lhs is less than rhs, false otherwise.
      */
     friend bool operator<(const Version& lhs, const Version& rhs) {
         // Keep ordering using lexicographical comparison provided by std::tie:
@@ -74,23 +75,27 @@ public:
             < std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
     }
 
-    /** 
-     * \brief Returns true if major and minor versions are equal, false otherwise.
-     *
+    /**
+     * Major version >= 1: Return true if major and minor versions are equal, false otherwise.
+     * Major version < 1: Return true if major, minor and patch versions are equal, false otherwise.
+     * @note Major version zero (0.y.z) is for initial development. Anything may change at any time.
+     * The public API should not be considered stable.
      * Patch and build versions are ignored since API should not have changed in those cases.
-     * @return friend bool true if major and minor versions are equal, false otherwise.
+     * @return bool true if major and minor versions are equal, false otherwise.
      */
     friend bool operator==(const Version& lhs, const Version& rhs) {
-        return std::tie(lhs.major, lhs.minor)
-            == std::tie(rhs.major, rhs.minor);
+        if (lhs.major < 1 || rhs.major < 1) {
+            // Each version increment is a breaking change
+            // when major version is 0
+            return std::tie(lhs.major, lhs.minor, lhs.patch) ==
+                   std::tie(rhs.major, rhs.minor, rhs.patch);
+        } else {
+            return std::tie(lhs.major, lhs.minor) == std::tie(rhs.major, rhs.minor);
+        }
     }
 
     /**
-     * \brief Returns true if major and minor versions are not equal, false otherwise.
-     *
-     * Patch and build versions are ignored since API should not have changed in those cases.
      * @see operator==
-     * @return friend bool true if major and minor versions are not equal, false otherwise.
      */
     friend bool operator!=(const Version& lhs, const Version& rhs) {
         return !(lhs == rhs);
