@@ -107,6 +107,7 @@ SSAO::SSAO()
     , option_("option", "SSAO Technique")
     , radius_("radius", "Radius", 2.f, 0.f, 128.f, 0.05f)
     , intensity_("intensity", "Intensity", 1.5f, 0.f, 5.f)
+    , bias_("bias", "Angle Bias", 0.1f, 0.f, 0.5f, 0.01f)
     , enableBlur_("enable-blur", "Enable Blur", true)
     , blurSharpness_("blur-sharpness", "Blur Sharpness", 40.f, 0.f, 200.f)
     , camera_("camera", "Camera")
@@ -127,6 +128,7 @@ SSAO::SSAO()
     addProperty(option_);
     addProperty(radius_);
     addProperty(intensity_);
+    addProperty(bias_);
     addProperty(blurSharpness_);
     addProperty(enableBlur_);
     addProperty(camera_);
@@ -358,7 +360,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
 
     // ao
     hbaoUboData_.PowExponent = std::max(intensity_.get(), 0.0f);
-    hbaoUboData_.NDotVBias = std::min(std::max(0.0f, 0.1f), 1.0f);
+    hbaoUboData_.NDotVBias = glm::clamp(bias_.get(), 0.0f, 1.0f);
     hbaoUboData_.AOMultiplier = 1.0f / (1.0f - hbaoUboData_.NDotVBias);
 
     // resolution

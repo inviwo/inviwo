@@ -124,6 +124,7 @@ private:
     OptionPropertyInt option_;
     FloatProperty radius_;
     FloatProperty intensity_;
+    FloatProperty bias_;
     BoolProperty enableBlur_;
     FloatProperty blurSharpness_;
     CameraProperty camera_;

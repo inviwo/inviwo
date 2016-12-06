@@ -187,7 +187,8 @@ float ComputeCoarseAO(vec2 FullResUV, float RadiusPixels, vec4 Rand, vec3 ViewPo
   }
 
   AO *= control.AOMultiplier / (NUM_DIRECTIONS * NUM_STEPS);
-  return clamp(1.0 - AO * 2.0,0,1);
+
+  return clamp(1.0 - AO, 0, 1);
 }
 
 //----------------------------------------------------------------------------------
