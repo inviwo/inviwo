@@ -82,8 +82,8 @@ private:
     const IndexType dimxy;
 };
 
-using IndexMapper2D = typename IndexMapper<2, size_t>;
-using IndexMapper3D = typename IndexMapper<3, size_t>;
+using IndexMapper2D = IndexMapper<2, size_t>;
+using IndexMapper3D = IndexMapper<3, size_t>;
 
 template <size_t N, typename IndexType = size_t>
 auto makeIndexMapper(const Vector<N, IndexType> &dim) {
