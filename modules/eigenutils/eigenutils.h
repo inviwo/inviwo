@@ -44,7 +44,7 @@ namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glm2eigen(T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
-    Eigen::Vector<typename T::value_type, util::extent<T, 0>::value> a;
+    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
     }
@@ -63,12 +63,10 @@ auto glm2eigen(T& elem)
     return a;
 }
 
-
-
-template <typename T, unsigned Rows, unsigned Cols
-    , typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4), int>::type = 0 >
-auto eigen2glm(const Eigen::Matrix<T, Rows, Cols> &m)
-{
+template <
+    typename T, unsigned Rows, unsigned Cols,
+    typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4), int>::type = 0>
+auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
     GlmMatrix outm;
     for (size_t i = 0; i < Rows; i++) {
@@ -79,11 +77,9 @@ auto eigen2glm(const Eigen::Matrix<T, Rows, Cols> &m)
     return outm;
 }
 
-
-template <typename T, unsigned Rows, unsigned Cols
-    , typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols == 1), int>::type = 0 >
-    auto eigen2glm(const Eigen::Matrix<T, Rows, Cols> &m)
-{
+template <typename T, unsigned Rows, unsigned Cols,
+          typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols == 1), int>::type = 0>
+auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Rows, 1>::type;
     GlmVector outv;
     for (size_t i = 0; i < Rows; i++) {
@@ -92,12 +88,9 @@ template <typename T, unsigned Rows, unsigned Cols
     return outv;
 }
 
-
-
-template <typename T, unsigned Rows, unsigned Cols
-    , typename std::enable_if<(Cols >= 2 && Cols <= 4 && Rows == 1), int>::type = 0 >
-    auto eigen2glm(const Eigen::Matrix<T, Cols, Cols> &m)
-{
+template <typename T, unsigned Rows, unsigned Cols,
+          typename std::enable_if<(Cols >= 2 && Cols <= 4 && Rows == 1), int>::type = 0>
+auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Cols, 1>::type;
     GlmVector outv;
     for (size_t i = 0; i < Cols; i++) {
@@ -106,10 +99,9 @@ template <typename T, unsigned Rows, unsigned Cols
     return outv;
 }
 
-
-
 template <typename T>
-std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m , bool flippY = false , std::string name = "") {
+std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m,
+                                       bool flippY = false, std::string name = "") {
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
 
     auto rep = dynamic_cast<LayerRAMPrecision<T>*>(
@@ -118,26 +110,25 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
 
     size_t idx = 0;
 
-    if(flippY){
-    for (int i = m.rows() - 1; i >= 0; i--) {
-        for (int j = 0; j < m.cols(); j++) {
-            data[idx++] = m(i, j);
+    if (flippY) {
+        for (int i = m.rows() - 1; i >= 0; i--) {
+            for (int j = 0; j < m.cols(); j++) {
+                data[idx++] = m(i, j);
+            }
         }
-    }
-    }else{
+    } else {
         for (int i = 0; i < m.rows(); i++) {
             for (int j = 0; j < m.cols(); j++) {
-            data[idx++] = m(i, j);
+                data[idx++] = m(i, j);
+            }
         }
     }
+
+    if (name != "") {
+        img->setMetaData<StringMetaData>("name", name);
     }
 
-
-    if(name != ""){
-        img->setMetaData<StringMetaData>("name",name);
-    }
-
-    img->getColorLayer(0)->setSwizzleMask( swizzlemasks::luminance);
+    img->getColorLayer(0)->setSwizzleMask(swizzlemasks::luminance);
 
     return img;
 }
