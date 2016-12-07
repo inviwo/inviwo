@@ -236,9 +236,11 @@ VolumeSliceGL::VolumeSliceGL()
 
     normalizedSample_.setSemantics(PropertySemantics::Text);
     normalizedSample_.setReadOnly(true);
+    normalizedSample_.setSerializationMode(PropertySerializationMode::None);
     normalizedSample_.setCurrentStateAsDefault();
     volumeSample_.setSemantics(PropertySemantics::Text);
     volumeSample_.setReadOnly(true);
+    volumeSample_.setSerializationMode(PropertySerializationMode::None);
     volumeSample_.setCurrentStateAsDefault();
 
     sampleQuery_.addProperty(normalizedSample_);
