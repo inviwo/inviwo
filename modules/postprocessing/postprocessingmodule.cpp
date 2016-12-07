@@ -29,6 +29,7 @@
 
 #include <modules/postprocessing/postprocessingmodule.h>
 #include <modules/PostProcessing/processors/ssao.h>
+#include <modules/PostProcessing/processors/fxaa.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
@@ -42,6 +43,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app) : InviwoModul
     
     // Processors
     registerProcessor<SSAO>();
+    registerProcessor<FXAA>();
     
     // Properties
     // registerProperty<PostProcessingProperty>();
