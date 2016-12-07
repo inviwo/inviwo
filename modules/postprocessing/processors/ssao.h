@@ -30,12 +30,13 @@
 #ifndef IVW_SSAO_H
 #define IVW_SSAO_H
 
-#include <modules/PostProcessing/PostProcessingmoduledefine.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
