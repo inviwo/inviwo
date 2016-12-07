@@ -41,26 +41,26 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SSAO, SSAO}
- * ![](org.inviwo.SSAO.png?classIdentifier=org.inviwo.SSAO)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.FXAA, FXAA}
+ * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
+ * Applies anti-aliasing as a postprocessing operation
+ * 
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __ImageInport__ Input image.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __ImageOutport__ Output image.
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Dither__ Sets amount of dithering.
+ *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
  */
 
 
 /**
- * \class SSAO
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \class FXAA
+ * \brief Anti-aliasing post process
  */
 class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
 public:

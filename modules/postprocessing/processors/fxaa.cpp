@@ -165,7 +165,6 @@ void FXAA::process() {
     glBindTexture(GL_TEXTURE_2D, prepassFbo_.tex);
     glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
-    //utilgl::activateTarget(outport_);
     fxaa_.activate();
     fxaa_.setUniform("tex_", 0);
     fxaa_.setUniform("oneOverRes_", vec2(1.f / static_cast<float>(width), 1.f / static_cast<float>(height)));

@@ -104,7 +104,7 @@ SSAO::SSAO()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , option_("option", "SSAO Technique")
+    , technique_("option", "SSAO Technique")
     , radius_("radius", "Radius", 2.f, 0.f, 128.f, 0.05f)
     , intensity_("intensity", "Intensity", 1.5f, 0.f, 5.f)
     , bias_("bias", "Angle Bias", 0.1f, 0.f, 0.5f, 0.01f)
@@ -121,14 +121,14 @@ SSAO::SSAO()
     , hbaoBlurVert_("fullscreenquad.vert", "hbao_blur.frag", false)
     , hbaoUbo_(0) {
     
-    option_.addOption("none", "None", 0);
-    option_.addOption("hbao-classic", "HBAO Classic", 1);
-    option_.set(1);
-    option_.setCurrentStateAsDefault();
+    technique_.addOption("none", "None", 0);
+    technique_.addOption("hbao-classic", "HBAO Classic", 1);
+    technique_.set(1);
+    technique_.setCurrentStateAsDefault();
 
     addPort(inport_);
     addPort(outport_);
-    addProperty(option_);
+    addProperty(technique_);
     addProperty(radius_);
     addProperty(intensity_);
     addProperty(bias_);
@@ -230,10 +230,10 @@ void SSAO::process() {
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
     auto outFbo = outImageGL->getFBO()->getID();
 
-    if (option_.get() == 0) {
+    if (technique_.get() == 0) {
         return;
     }
-    else if (option_.get() == 1) {
+    else if (technique_.get() == 1) {
         // This geometry is actually never used, but a valid VAO and VBO is required in 3.30 to kick off the drawcalls
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
         utilgl::Enable<MeshGL> enable(rect);
