@@ -52,7 +52,7 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  -----------------------------------------------------------------------*/
 
-#include <modules/PostProcessing/processors/ssao.h>
+#include <modules/postprocessing/processors/ssao.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/PostProcessing/processors/fxaa.h>
+#include <modules/postprocessing/processors/fxaa.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
