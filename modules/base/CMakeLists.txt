@@ -16,6 +16,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
@@ -55,8 +56,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
@@ -90,6 +91,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
@@ -124,8 +126,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
