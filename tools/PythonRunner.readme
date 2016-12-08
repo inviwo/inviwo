@@ -1,0 +1,7 @@
+This tool supplies a GUI to run the python scripts contained in this folder to create processors/modules.
+
+It assumes that you have your inviwo repos on the same folder depth (e.g. C:\inviwo\inviwo-dev and C:\inviwo\research-dev) and that the executable is stored in inviwo-dev/tools.
+
+As of now, the module list does not update if you create a module from this application and switch back to the processor creation view. Just restart the application.
+
+You are very welcome to modify the program. If you want to fiddle with the code you can find it here: https://github.com/JochenJankowai/PythonRunner
