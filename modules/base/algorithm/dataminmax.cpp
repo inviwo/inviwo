@@ -37,28 +37,6 @@
 
 namespace inviwo {
 
-template <typename ValueType>
-std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size, IgnoreSpecialValues ignore) {
-    using Res = std::pair<ValueType, ValueType>;
-    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
-
-    if (ignore == IgnoreSpecialValues::Yes) {
-        minmax = std::accumulate(data, data + size, minmax,
-                                 [](const Res& mm, const ValueType& v) -> Res {
-                                     return util::all(v != v + ValueType(1))
-                                                ? Res{glm::min(mm.first, v), glm::max(mm.second, v)}
-                                                : mm;
-                                 });
-    } else {
-        minmax = std::accumulate(data, data + size, minmax,
-                                 [](const Res& mm, const ValueType& v) -> Res {
-                                     return {glm::min(mm.first, v), glm::max(mm.second, v)};
-                                 });
-    }
-
-    return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
-}
-
 std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
     return volume->dispatch<std::pair<dvec4, dvec4>>([&ignore](auto vr) -> std::pair<dvec4, dvec4> {
         const auto dim = vr->getDimensions();

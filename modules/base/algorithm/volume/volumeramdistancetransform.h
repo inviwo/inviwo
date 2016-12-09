@@ -241,7 +241,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
         [](const U &squareDist) {
             return static_cast<U>(std::sqrt(static_cast<double>(squareDist)));
         },
-        [](double f) {})
+        [](double f) {});
 }
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
