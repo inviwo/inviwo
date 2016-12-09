@@ -299,11 +299,11 @@ TemplateOptionProperty<T>::TemplateOptionProperty(
 
 template <typename T>
 template <typename U, class>
-TemplateOptionProperty<T>::TemplateOptionProperty(
-    std::string identifier, std::string displayName, const std::vector<T>& options,
-    size_t selectedIndex = 0,
-    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-    PropertySemantics semantics = PropertySemantics::Default)
+TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
+                                                  const std::vector<T>& options,
+                                                  size_t selectedIndex,
+                                                  InvalidationLevel invalidationLevel,
+                                                  PropertySemantics semantics)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedIndex_(std::min(selectedIndex, options.size() - 1))
     , options_()
@@ -318,7 +318,7 @@ TemplateOptionProperty<T>::TemplateOptionProperty(
 
 template <typename T>
 void TemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
-                                              T value) {
+                                          T value) {
     options_.push_back(OptionPropertyOption<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it

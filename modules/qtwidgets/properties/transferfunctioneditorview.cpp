@@ -212,19 +212,19 @@ const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() 
             } else if (!histCalculation_.valid()) {
 
                 const auto done = [this]() {
-                    bool val = histCalculation_.get();
+                    histCalculation_.get();
                     updateHistogram();
                     resetCachedContent();
                     update();
                 };
 
                 const auto histcalc =
-                    [& stop = stopHistCalculation_, volume = volumeInport_->getData(), done ]()->bool {
+                    [& stop = stopHistCalculation_, volume = volumeInport_->getData(), done ]()
+                        ->void {
                     auto ram = volume->getRepresentation<VolumeRAM>();
                     ram->calculateHistograms(2048, size3_t(1), stop);
-                    return !stop;
-
                     dispatchFront(done);
+                    return;
                 };
                 stopHistCalculation_ = false;
                 histCalculation_ = dispatchPool(histcalc);

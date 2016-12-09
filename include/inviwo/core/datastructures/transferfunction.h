@@ -33,10 +33,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/util/fileextension.h>
+
 
 namespace inviwo {
 
 class Layer;
+
 template <typename T>
 class LayerRAMPrecision;
 
@@ -69,8 +72,8 @@ public:
     TransferFunction(const TransferFunction& rhs);
     TransferFunction& operator=(const TransferFunction& rhs);
 
-    virtual ~TransferFunction() = default;
-
+    virtual ~TransferFunction();
+    
     const Layer* getData() const;
     int getNumPoints() const;
     int getTextureSize();

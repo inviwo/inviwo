@@ -31,10 +31,18 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/interpolation.h>
-#include <math.h>
+#include <inviwo/core/util/filesystem.h>
+
+#include <cmath>
 
 namespace inviwo {
 
@@ -79,6 +87,8 @@ TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
     invalidate();
     return *this;
 }
+
+TransferFunction::~TransferFunction() = default;
 
 const TransferFunctionDataPoint* TransferFunction::getPoint(int i) const {
     return points_[i].get();
@@ -166,33 +176,33 @@ void TransferFunction::calcTransferValues() const {
     const auto size = dataRepr_->getDimensions().x;
 
     ivwAssert(
-        std::is_sorted(points.begin(), points_.end(), compareUniquePtr<TransferFunctionDataPoint>),
+        std::is_sorted(points_.begin(), points_.end(), compareUniquePtr<TransferFunctionDataPoint>),
         "Should be sorted");
 
     // We assume the the points a sorted here.
     if (points_.size() == 0) {  // in case of 0 points
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             dataArray[i] =
                 vec4((float)i / (size - 1), (float)i / (size - 1), (float)i / (size - 1), 1.0);
         }
     } else if (points_.size() == 1) {  // in case of 1 point
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             dataArray[i] = points_[0]->getRGBA();
         }
     } else {  // in case of more than 1 points
-        int leftX = static_cast<int>(ceil(points_.front()->getPos().x * (size - 1)));
-        int rightX = static_cast<int>(ceil(points_.back()->getPos().x * (size - 1)));
+        size_t leftX = static_cast<size_t>(ceil(points_.front()->getPos().x * (size - 1)));
+        size_t rightX = static_cast<size_t>(ceil(points_.back()->getPos().x * (size - 1)));
 
-        for (int i = 0; i <= leftX; i++) dataArray[i] = points_.front()->getRGBA();
-        for (int i = rightX; i < size; i++) dataArray[i] = points_.back()->getRGBA();
+        for (size_t i = 0; i <= leftX; i++) dataArray[i] = points_.front()->getRGBA();
+        for (size_t i = rightX; i < size; i++) dataArray[i] = points_.back()->getRGBA();
 
         auto pLeft = points_.begin();
         auto pRight = points_.begin() + 1;
 
         while (pRight != points_.end()) {
-            int n = static_cast<int>(ceil((*pLeft)->getPos().x * (size - 1)));
+            size_t n = static_cast<size_t>(ceil((*pLeft)->getPos().x * (size - 1)));
 
-            while (n < ceil((*pRight)->getPos().x * (size - 1))) {
+            while (n < static_cast<size_t>(ceil((*pRight)->getPos().x * (size - 1)))) {
                 vec4 lrgba = (*pLeft)->getRGBA();
                 vec4 rrgba = (*pRight)->getRGBA();
                 float lx = (*pLeft)->getPos().x * (size - 1);
@@ -207,8 +217,8 @@ void TransferFunction::calcTransferValues() const {
         }
     }
 
-    for (int i = 0; i < int(maskMin_ * size); i++) dataArray[i].a = 0.0;
-    for (int i = int(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
+    for (size_t i = 0; i < size_t(maskMin_ * size); i++) dataArray[i].a = 0.0;
+    for (size_t i = size_t(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
 
     data_->invalidateAllOther(dataRepr_.get());
 

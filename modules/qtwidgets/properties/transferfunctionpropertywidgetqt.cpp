@@ -31,6 +31,7 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>

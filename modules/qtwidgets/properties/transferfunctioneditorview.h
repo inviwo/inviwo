@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/histogram.h>
 
@@ -57,9 +58,9 @@ protected:
     const HistogramContainer* getNormalizedHistograms();
 
     void onVolumeInportInvalid();
-    void resizeEvent(QResizeEvent* event);
-    void drawForeground(QPainter* painter, const QRectF& rect);
-    void drawBackground(QPainter* painter, const QRectF& rect);
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
+    virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     void updateHistogram();
     void updateZoom();
 
@@ -77,7 +78,7 @@ private:
     std::vector<QPolygonF> histograms_;
 
     bool stopHistCalculation_ = false;
-    std::future<bool> histCalculation_;
+    std::future<void> histCalculation_;
 
     vec2 maskHorizontal_;
 };

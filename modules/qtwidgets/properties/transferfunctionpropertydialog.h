@@ -105,7 +105,8 @@ private:
 
     const int sliderRange_;
 
-    TransferFunctionProperty* tfProperty_;  ///< Pointer to property, for get and invalidation in the widget
+    TransferFunctionProperty*
+        tfProperty_;  ///< Pointer to property, for get and invalidation in the widget
     TransferFunctionEditor* tfEditor_;  ///< TransferFunctionEditor inherited from QGraphicsScene
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
     QPushButton* btnClearTF_;

@@ -172,14 +172,14 @@ struct LayerRamConstDispatcher {
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto inviwo::LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
+auto LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
     detail::LayerRamDispatcher dispatcher;
     return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
                                                     std::forward<Callable>(callable), this,
                                                     std::forward<Args>(args)...);
 }
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto inviwo::LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
+auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
     detail::LayerRamConstDispatcher dispatcher;
     return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
                                                     std::forward<Callable>(callable), this,

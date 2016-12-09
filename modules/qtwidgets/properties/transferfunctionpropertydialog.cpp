@@ -35,12 +35,10 @@
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datawriter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -396,7 +394,7 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
             NetworkLock lock(tfProperty_);
             tfProperty_->get().load(file.toLocal8Bit().constData(),
                                     importFileDialog.getSelectedFileExtension());
-        } catch (DataWriterException& e) {
+        } catch (DataReaderException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
     }

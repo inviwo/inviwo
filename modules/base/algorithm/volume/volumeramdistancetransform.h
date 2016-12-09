@@ -318,7 +318,7 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
 template <typename U>
 void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U> *outDistanceField,
-                             const size3_t upsample, double threshold, bool normlize, bool flip,
+                             const size3_t upsample, double threshold, bool normalize, bool flip,
                              bool square, double scale) {
     util::volumeDistanceTransform(inVolume, outDistanceField, upsample, threshold, normalize, flip,
                             square, scale, [](double d){});
