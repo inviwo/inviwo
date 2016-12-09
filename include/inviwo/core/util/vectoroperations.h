@@ -87,10 +87,34 @@ bool hasTypeInVector(const std::vector<U> vec) {
 }
 
 template <typename T>
-bool comparePtr(T* a, T* b) { return (*a < *b); }
+bool comparePtr(T* a, T* b) {
+    return (*a < *b);
+}
 
 template <typename T>
-bool equalPtr(T* a, T* b) { return (*a == *b); }
+bool compareUniquePtr(const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) {
+    return (*a < *b);
+}
+
+template <typename T>
+bool compareSharedPtr(const std::shared_ptr<T>& a, const std::shared_ptr<T>& b) {
+    return (*a < *b);
+}
+
+template <typename T>
+bool equalPtr(T* a, T* b) {
+    return (*a == *b);
+}
+
+template <typename T>
+bool equalUniquePtr(const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) {
+    return (*a == *b);
+}
+
+template <typename T>
+bool equalSharedPtr(const std::shared_ptr<T>& a, const std::shared_ptr<T>& b) {
+    return (*a == *b);
+}
 
 } // namespace
 
