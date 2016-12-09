@@ -419,7 +419,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             uniquePoints.emplace_back(std::ptrdiff_t(size - 1), points.back());
 
             for (const auto &p : uniquePoints ) {
-                addPoint(vec2(float(p.first)/size, p.second.a), p.second);
+                this->addPoint(vec2(float(p.first)/size, p.second.a), p.second);
             }
         });
     }
