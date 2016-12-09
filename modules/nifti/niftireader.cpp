@@ -231,15 +231,17 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     if (niftiImage->cal_min != 0 || niftiImage->cal_max != 0) {
         volume->dataMap_.dataRange.x = niftiImage->cal_min;
         volume->dataMap_.dataRange.y = niftiImage->cal_max;
+        volume->dataMap_.valueRange.x = niftiImage->cal_min;
+        volume->dataMap_.valueRange.y = niftiImage->cal_max;
     } else if (niftiImage->scl_slope != 0) {
         // If the scl_slope field is nonzero, then each voxel value in the dataset
         // should be scaled as
         //     y = scl_slope  x + scl_inter
         // where x = voxel value stored
         // y = "true" voxel value
-        volume->dataMap_.dataRange.x = static_cast<double>(niftiImage->scl_inter);
-        volume->dataMap_.dataRange.y = volume->dataMap_.dataRange.x + static_cast<double>(niftiImage->scl_slope)*(volume->dataMap_.dataRange.y - volume->dataMap_.dataRange.x);
-        volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+        // Note: Only tested on 8-bit data, other types might need to change data range as well.
+        volume->dataMap_.valueRange.x = static_cast<double>(niftiImage->scl_inter);
+        volume->dataMap_.valueRange.y = volume->dataMap_.valueRange.x + static_cast<double>(niftiImage->scl_slope)*(volume->dataMap_.valueRange.y - volume->dataMap_.valueRange.x);
     } else if(format->getId() == DataFormatId::Float32) {
         // These formats do not contain information about data range
         // so we need to compute it for valid display ranges
