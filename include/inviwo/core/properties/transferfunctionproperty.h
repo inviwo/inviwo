@@ -39,13 +39,31 @@
 
 namespace inviwo {
 
+class IVW_CORE_API TransferFunctionPropertyObserver : public Observer {
+public:
+    virtual void onMaskChange(const vec2& mask) {};
+    virtual void onZoomHChange(const vec2& zoomH) {};
+    virtual void onZoomVChange(const vec2& zoomV) {};
+    virtual void onHistogramModeChange(HistogramMode mode) {};
+};
+class IVW_CORE_API TransferFunctionPropertyObservable : public Observable<TransferFunctionPropertyObserver> {
+protected:
+    virtual void notifyMaskChange(const vec2& mask);
+    virtual void notifyZoomHChange(const vec2& zoomH);
+    virtual void notifyZoomVChange(const vec2& zoomV);
+    virtual void notifyHistogramModeChange(HistogramMode mode);
+};
+
+
+
 /**
  * \ingroup properties
  * A property holding a TransferFunction data structure
  */
 class IVW_CORE_API TransferFunctionProperty 
     : public TemplateProperty<TransferFunction>
-    , public TransferFunctionObserver {
+    , public TransferFunctionObserver
+    , public TransferFunctionPropertyObservable {
 
 public:
     InviwoPropertyInfo();
@@ -71,8 +89,8 @@ public:
     const vec2& getZoomV() const;
     void setZoomV(float zoomVMin, float zoomVMax);
 
-    void setShowHistogram(int type);
-    int getShowHistogram();
+    void setHistogramMode(HistogramMode type);
+    HistogramMode getHistogramMode();
     VolumeInport* getVolumeInport();
 
     virtual void setCurrentStateAsDefault() override;
@@ -91,7 +109,7 @@ public:
 private:
     ValueWrapper<vec2> zoomH_;
     ValueWrapper<vec2> zoomV_;
-    ValueWrapper<int> showHistogram_;
+    ValueWrapper<HistogramMode> histogramMode_;
 
     VolumeInport* volumeInport_;
 };

@@ -47,6 +47,7 @@ class QGraphicsPathItem;
 namespace inviwo {
 
 class TransferFunction;
+class TransferFunctionProperty;
 class TransferFunctionEditorControlPoint;
 class TransferFunctionControlPointConnection;
 class TransferFunctionDataPoint;
@@ -57,7 +58,7 @@ class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
     Q_OBJECT
 #include <warn/pop>
 public:
-    TransferFunctionEditor(TransferFunction* transferFunction, QGraphicsView* view);
+    TransferFunctionEditor(TransferFunctionProperty* tfProperty);
     virtual ~TransferFunctionEditor();
 
     float getZoomRangeXMin() const;
@@ -69,12 +70,6 @@ public:
 
     float getZoomRangeYMax() const;
     void setZoomRangeYMax(float max);
-
-    QGraphicsView* getView();
-
-    void setDataMap(const DataMapper& dataMap);
-    DataMapper getDataMap() const;
-
     void updateConnections();
     int getMoveMode() const;
     void setMoveMode(int i);
@@ -130,11 +125,10 @@ private :
     float zoomRangeYMin_;
     float zoomRangeYMax_;
 
-    QGraphicsView* view_;
     TransferFunction* transferFunction_; ///< Pointer to widget's member variable
 
-    typedef std::vector<TransferFunctionEditorControlPoint*> PointVec;
-    typedef std::vector<TransferFunctionControlPointConnection*> ConnectionVec;
+    using PointVec = std::vector<TransferFunctionEditorControlPoint*>;
+    using ConnectionVec = std::vector<TransferFunctionControlPointConnection*>;
     PointVec points_;
     ConnectionVec connections_;
     QList<QGraphicsItem *> selectedItemsAtPress_; // The items selected when user pressed mouse button.

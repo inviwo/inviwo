@@ -94,18 +94,18 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
 void TransferFunctionPropertyDialog::generateWidget() {
     ivec2 minEditorDims = vec2(255, 100);
 
+    tfEditor_ = new TransferFunctionEditor(tfProperty_);
+    connect(tfEditor_, SIGNAL(doubleClick()), this, SLOT(showColorDialog()));
+    connect(tfEditor_, SIGNAL(selectionChanged()), this, SLOT(updateColorWheel()));
+
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
-    tfProperty_->get().addObserver(tfEditorView_);
+    
     // put origin to bottom left corner
     tfEditorView_->scale(1.0, -1.0);
     tfEditorView_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
     tfEditorView_->setMinimumSize(minEditorDims.x, minEditorDims.y);
     tfEditorView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    tfEditor_ = new TransferFunctionEditor(&tfProperty_->get(), tfEditorView_);
-    connect(tfEditor_, SIGNAL(doubleClick()), this, SLOT(showColorDialog()));
-    connect(tfEditor_, SIGNAL(selectionChanged()), this, SLOT(updateColorWheel()));
     tfEditorView_->setScene(tfEditor_);
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this);
@@ -153,13 +153,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     sliderPol.setHorizontalStretch(3);
     tfPreview_->setSizePolicy(sliderPol);
 
-    cmbInterpolation_ = new QComboBox();
-    cmbInterpolation_->addItem("Interpolation: Linear");
-    // cmbInterpolation_->addItem("Interpolation: Cubic"); // Not implemented... (yet)
-    cmbInterpolation_->setCurrentIndex(tfProperty_->get().getInterpolationType());
-    connect(cmbInterpolation_, SIGNAL(currentIndexChanged(int)), this,
-            SLOT(switchInterpolationType(int)));
-
     chkShowHistogram_ = new QComboBox();
     chkShowHistogram_->addItem("Histogram: Off");
     chkShowHistogram_->addItem("Histogram: 100%");
@@ -167,7 +160,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     chkShowHistogram_->addItem("Histogram: 95%");
     chkShowHistogram_->addItem("Histogram: 90%");
     chkShowHistogram_->addItem("Histogram: Log");
-    chkShowHistogram_->setCurrentIndex(tfProperty_->getShowHistogram());
+    chkShowHistogram_->setCurrentIndex(static_cast<int>(tfProperty_->getHistogramMode()));
     connect(chkShowHistogram_, SIGNAL(currentIndexChanged(int)), this, SLOT(showHistogram(int)));
 
     pointMoveMode_ = new QComboBox();
@@ -203,7 +196,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     rightLayout->setSpacing(7);
     rightLayout->setAlignment(Qt::AlignTop);
     rightLayout->addWidget(colorWheel_);
-    rightLayout->addWidget(cmbInterpolation_);
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
     rightLayout->addStretch(3);
@@ -224,15 +216,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     mainPanel->setLayout(mainLayout);
 
     setWidget(mainPanel);
-}
-
-// Connected to the cmbInterpolation_ button
-void TransferFunctionPropertyDialog::switchInterpolationType(int interpolationType) {
-    if (interpolationType == 0) {
-        tfProperty_->get().setInterpolationType(TransferFunction::InterpolationLinear);
-    } else {
-        tfProperty_->get().setInterpolationType(TransferFunction::InterpolationCubic);
-    }
 }
 
 void TransferFunctionPropertyDialog::updateTFPreview() {
@@ -379,7 +362,6 @@ void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax
     float zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
 
     tfProperty_->setZoomV(zoomMinF, zoomMaxF);
-    tfEditorView_->updateZoom();
 }
 
 void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
@@ -387,7 +369,6 @@ void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomM
     float zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
     tfProperty_->setZoomH(zoomMinF, zoomMaxF);
-    tfEditorView_->updateZoom();
 }
 
 // Connected to valuesChanged on the maskSlider
@@ -395,7 +376,6 @@ void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
     float maskMinF = static_cast<float>(maskMin) / sliderRange_;
     float maskMaxF = static_cast<float>(maskMax) / sliderRange_;
     tfProperty_->setMask(maskMinF, maskMaxF);
-    tfEditorView_->setMask(maskMinF, maskMaxF);
 
     updateTFPreview();
 }
@@ -407,15 +387,18 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
     importFileDialog.addExtension("itf", "Inviwo Transfer Function");
+    importFileDialog.addExtension("png", "Transfer Function Image");
+    importFileDialog.addExtension("", "All files");  // this will add "All files (*)"
 
     if (importFileDialog.exec()) {
         QString file = importFileDialog.selectedFiles().at(0);
-        // TODO: we need to check whether it is a valid itf file!
-        Deserializer deserializer(InviwoApplication::getPtr(), file.toLocal8Bit().constData());
-        TransferFunction tf;
-        tf.deserialize(deserializer);
-        tfProperty_->set(tf);
-        updateFromProperty();
+        try {
+            NetworkLock lock(tfProperty_);
+            tfProperty_->get().load(file.toLocal8Bit().constData(),
+                                    importFileDialog.getSelectedFileExtension());
+        } catch (DataWriterException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+        }
     }
 }
 
@@ -431,61 +414,19 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
 
     if (exportFileDialog.exec()) {
         std::string file = exportFileDialog.selectedFiles().at(0).toLocal8Bit().constData();
-        std::string extension = filesystem::getFileExtension(file);
-
         FileExtension fileExt = exportFileDialog.getSelectedFileExtension();
-
-        if (fileExt.extension_.empty()) {
-            // fall-back to standard inviwo TF format
-            fileExt.extension_ = "itf";
-        }
-
-        // check whether file extension matches the selected one
-        if (fileExt.extension_ != extension) {
-            file.append(fileExt.extension_);
-        }
-
-        if (fileExt.extension_ == "png") {
-            TransferFunction& tf = tfProperty_->get();
-            const Layer* layer = tf.getData();
-            vec2 texSize(tf.getTextureSize(), 1);
-            const vec4* readData =
-                static_cast<const vec4*>(layer->getRepresentation<LayerRAM>()->getData());
-            Layer writeLayer(layer->getDimensions(), DataVec4UInt8::get());
-            glm::u8vec4* writeData = static_cast<glm::u8vec4*>(
-                writeLayer.getEditableRepresentation<LayerRAM>()->getData());
-
-            for (std::size_t i = 0; i < texSize.x * texSize.y; ++i) {
-                for (int c = 0; c < 4; ++c) {
-                    writeData[i][c] = static_cast<glm::u8>(
-                        std::min(std::max(readData[i][c] * 255.0f, 0.0f), 255.0f));
-                }
-            }
-
-            auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
-
-            if (auto writer = factory->getWriterForTypeAndExtension<Layer>(extension)) {
-                try {
-                    writer->setOverwrite(true);
-                    writer->writeData(&writeLayer, file);
-                } catch (DataWriterException const& e) {
-                    util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-                }
-            } else {
-                LogError(
-                    "Error: Cound not find a writer for the specified extension and data type");
-            }
-        } else if (fileExt.extension_ == "itf") {
-            Serializer serializer(file);
-            tfProperty_->get().serialize(serializer);
-            serializer.writeFile();
+        try {
+            tfProperty_->get().save(file, fileExt);
+            util::log(IvwContext, "Data exported to disk: " + file, LogLevel::Info,
+                      LogAudience::User);
+        } catch (DataWriterException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
     }
 }
 
 void TransferFunctionPropertyDialog::showHistogram(int type) {
-    tfProperty_->setShowHistogram(type);
-    tfEditorView_->setShowHistogram(type);
+    tfProperty_->setHistogramMode(static_cast<HistogramMode>(type));
 }
 
 void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {

@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
+enum class HistogramMode {Off, All, P99, P95, P90, Log};
+
 /**
  *The NormalizedHistogram has a array of bins and all bins are normalized.
  *It can be de-normalized using the maxiumBinValue_.

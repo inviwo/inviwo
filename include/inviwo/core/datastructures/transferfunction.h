@@ -37,55 +37,49 @@
 namespace inviwo {
 
 class Layer;
+template <typename T>
+class LayerRAMPrecision;
 
-class IVW_CORE_API TransferFunctionObserver: public Observer {
+class IVW_CORE_API TransferFunctionObserver : public Observer {
 public:
-    TransferFunctionObserver() = default;
-
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p) {};
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) {};
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) {};
+    virtual void onControlPointAdded(TransferFunctionDataPoint* p){};
+    virtual void onControlPointRemoved(TransferFunctionDataPoint* p){};
+    virtual void onControlPointChanged(const TransferFunctionDataPoint* p){};
 };
-class IVW_CORE_API TransferFunctionObservable: public Observable<TransferFunctionObserver> {
-public:
-    TransferFunctionObservable() = default;
+class IVW_CORE_API TransferFunctionObservable : public Observable<TransferFunctionObserver> {
+protected:
     void notifyControlPointAdded(TransferFunctionDataPoint* p);
     void notifyControlPointRemoved(TransferFunctionDataPoint* p);
     void notifyControlPointChanged(const TransferFunctionDataPoint* p);
 };
-
 
 /** 
  * \ingroup datastructures 
  * \brief for holding transfer function data.
  *  This class holds transfer function data, currently one parameter in the variable data_.
  */
-class IVW_CORE_API TransferFunction
-    : public Serializable
-    , public TransferFunctionObservable
-    , public TransferFunctionPointObserver {
-    
+class IVW_CORE_API TransferFunction : public Serializable,
+                                      public TransferFunctionObservable,
+                                      public TransferFunctionPointObserver {
+
 public:
+    using TFPoints = std::vector<std::unique_ptr<TransferFunctionDataPoint>>;
 
-    enum InterpolationType {
-        InterpolationLinear = 0,
-        InterpolationCubic
-    };
-
-    TransferFunction(int textureSize=1024);
+    TransferFunction(int textureSize = 1024);
     TransferFunction(const TransferFunction& rhs);
     TransferFunction& operator=(const TransferFunction& rhs);
 
-    virtual ~TransferFunction();
+    virtual ~TransferFunction() = default;
 
     const Layer* getData() const;
     int getNumPoints() const;
     int getTextureSize();
 
-    TransferFunctionDataPoint* getPoint(int i) const;
+    TransferFunctionDataPoint* getPoint(int i);
+    const TransferFunctionDataPoint* getPoint(int i) const;
 
     void addPoint(const vec2& pos, const vec4& color);
-    void addPoint(TransferFunctionDataPoint* dataPoint);
+    void addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint);
     void addPoint(const vec2& pos);
     void removePoint(TransferFunctionDataPoint* dataPoint);
 
@@ -95,36 +89,36 @@ public:
     void setMaskMin(float maskMin);
     float getMaskMax() const;
     void setMaskMax(float maskMax);
-    void setInterpolationType(InterpolationType interpolationType);
-    InterpolationType getInterpolationType() const;
 
-    /** 
+    /**
      * Notify that the layer data (texture) needs to be updated next time it is requested.
      */
     void invalidate();
-    
+
     virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
-    
+
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
-    vec4 sample(double v)const;
-    vec4 sample(float v)const;
+    vec4 sample(double v) const;
+    vec4 sample(float v) const;
 
-    typedef std::vector<TransferFunctionDataPoint*> TFPoints;
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
+
+    void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
+    void load(const std::string& filename, const FileExtension& ext = FileExtension());
+
 protected:
-    void calcTransferValues();
+    void calcTransferValues() const;
 
 private:
     float maskMin_;
     float maskMax_;
     TFPoints points_;
-    InterpolationType interpolationType_;
 
-    int textureSize_;
-    bool invalidData_;
-    Layer* data_;
+    mutable bool invalidData_;
+    std::shared_ptr<LayerRAMPrecision<vec4>> dataRepr_;
+    std::unique_ptr<Layer> data_;
 };
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);

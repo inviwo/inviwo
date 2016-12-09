@@ -86,7 +86,6 @@ public slots:
     void setPointColorDialog(QColor color);
     void updateColorWheel();
     void showColorDialog();
-    void switchInterpolationType(int interpolationType);
     void changeMask(int maskMin, int maskMax);
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
@@ -112,7 +111,6 @@ private:
     QPushButton* btnClearTF_;
     QPushButton* btnImportTF_;
     QPushButton* btnExportTF_;
-    QComboBox* cmbInterpolation_;
     QComboBox* chkShowHistogram_;
 
     QComboBox* pointMoveMode_;
