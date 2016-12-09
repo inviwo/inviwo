@@ -72,6 +72,9 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
 public:  
+    enum class DataRangeMode {Diagonal, MinMax, Custom};
+
+
     DistanceTransformRAM();
     virtual ~DistanceTransformRAM();
 
@@ -90,22 +93,40 @@ private:
 
     std::future<std::shared_ptr<const Volume>> newVolume_;
 
-    std::shared_ptr<VolumeRAMPrecision<float>> dstRepr_;
-    std::shared_ptr<Volume> volDist_;
-
-    BoolProperty transformEnabled_;
     DoubleProperty threshold_;
     BoolProperty flip_;
     BoolProperty normalize_;
     DoubleProperty resultDistScale_; // scaling factor for distances
     BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
     IntSize3Property upsample_;      // Upscale the output field 
+    
+    DoubleMinMaxProperty dataRange_;
+    TemplateOptionProperty<DataRangeMode> dataRangeMode_;
+    DoubleMinMaxProperty customDataRange_;
+
     ButtonProperty btnForceUpdate_;
 
-    size3_t volDim_;
     bool distTransformDirty_;
 };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             DistanceTransformRAM::DataRangeMode m) {
+    switch (m) {
+        case DistanceTransformRAM::DataRangeMode::Diagonal:
+            ss << "Diagonal";
+            break;
+        case DistanceTransformRAM::DataRangeMode::MinMax:
+            ss << "MinMax";
+            break;
+        case DistanceTransformRAM::DataRangeMode::Custom:
+            ss << "Custom";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
 
 } // namespace
 

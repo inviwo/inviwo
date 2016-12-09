@@ -48,30 +48,46 @@ DistanceTransformRAM::DistanceTransformRAM()
     : Processor()
     , volumePort_("inputVolume")
     , outport_("outputVolume")
-    , transformEnabled_("transformActive", "Enabled", true)
     , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
     , flip_("flip", "Flip", false)
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
     , upsample_("upsample", "Up sample", size3_t(1), size3_t(1), size3_t(10))
+    , dataRange_("dataRange", "Data Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
+                 0.0, InvalidationLevel::Valid, PropertySemantics::Text)
+    , dataRangeMode_("dataRangeMode", "Data Range",
+                     {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
+    , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
+                       std::numeric_limits<double>::max(), 0.01, 0.0,
+                       InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , btnForceUpdate_("forceUpdate", "Update Distance Map")
-    , volDim_(1u)
     , distTransformDirty_(true) {
 
     addPort(volumePort_);
     addPort(outport_);
 
-    addProperty(transformEnabled_);
     addProperty(threshold_);
     addProperty(flip_);
     addProperty(normalize_);
     addProperty(resultDistScale_);
     addProperty(resultSquaredDist_);
     addProperty(upsample_);
+
+    dataRange_.setSerializationMode(PropertySerializationMode::None);
+    dataRange_.setReadOnly(true);
+
+    addProperty(dataRange_);
+    addProperty(dataRangeMode_);
+
+    addProperty(customDataRange_);
+
+    dataRangeMode_.onChange([&](){
+        customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
+    });
+
     addProperty(btnForceUpdate_);
 
-    transformEnabled_.onChange(this, &DistanceTransformRAM::paramChanged);
     btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
 
     progressBar_.hide();
@@ -80,14 +96,10 @@ DistanceTransformRAM::DistanceTransformRAM()
 DistanceTransformRAM::~DistanceTransformRAM() = default;
 
 void DistanceTransformRAM::process() {
-    if (!transformEnabled_.get()) {
-        // pass inport to outport
-        outport_.setData(volumePort_.getData());
-        return;
-    }
-
     if (util::is_future_ready(newVolume_)) {
-        outport_.setData(newVolume_.get());
+        auto vol = newVolume_.get();
+        dataRange_.set(vol->dataMap_.dataRange);
+        outport_.setData(vol);
     } else if (!newVolume_.valid()) {  // We are not waiting for a calculation
         if (volumePort_.isChanged() || distTransformDirty_) {
             updateOutport();
@@ -104,7 +116,8 @@ void DistanceTransformRAM::updateOutport() {
         [
           pb = &progressBar_, upsample = upsample_.get(), threshold = threshold_.get(),
           normalize = normalize_.get(), flip = flip_.get(), square = resultSquaredDist_.get(),
-          scale = resultDistScale_.get(), done
+          scale = resultDistScale_.get(), dataRangeMode = dataRangeMode_.get(),
+          customDataRange = customDataRange_.get(), done
         ](std::shared_ptr<const Volume> volume)
             ->std::shared_ptr<const Volume> {
 
@@ -126,10 +139,30 @@ void DistanceTransformRAM::updateOutport() {
         dstVol->setWorldMatrix(volume->getWorldMatrix());
         dstVol->copyMetaDataFrom(*volume);
 
-        const dvec3 dim{dstRepr->getDimensions()};
-        const auto maxDist = square ? glm::length2(dim) : glm::length(dim);
-        dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
-        dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
+        switch (dataRangeMode) {
+            case DistanceTransformRAM::DataRangeMode::Diagonal: {
+                const dvec3 dim{ dstRepr->getDimensions() };
+                const auto maxDist = square ? glm::length2(dim) : glm::length(dim);
+                dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
+                dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
+                break;
+            }
+            case DistanceTransformRAM::DataRangeMode::MinMax: {
+                auto minmax = util::dataMinMax(dstRepr->getDataTyped(),
+                                               glm::compMul(dstRepr->getDimensions()));
+
+                dstVol->dataMap_.dataRange = dvec2(minmax.first[0], minmax.second[0]);
+                dstVol->dataMap_.valueRange = dvec2(minmax.first[0], minmax.second[0]);
+                break;
+            }
+            case DistanceTransformRAM::DataRangeMode::Custom: {
+                dstVol->dataMap_.dataRange = customDataRange;
+                dstVol->dataMap_.valueRange = customDataRange;
+                break;
+            }
+            default:
+                break;
+        }
 
         done();
         return dstVol;
