@@ -103,6 +103,15 @@ public:
     virtual ~TextRenderer();
 
     /**
+     * \brief replace the currently loaded font face with a new one
+     *
+     * @param fontPath   full path to the new font face
+     * @throws Exception      if the font file could not be opened
+     * @throws FileException  if the font format is unsupported
+     */
+    void setFont(const std::string &fontPath);
+
+    /**
      * \brief renders the given string with the specified color at position x, y in normalized
      * device coordinates [-1,1] using the scaling factor.
      *
@@ -158,13 +167,20 @@ public:
     void setLineHeight(int lineHeight);
     int getLineHeight() const;
 
-    /** 
+    /**
      * \brief returns the offset of the baseline, which corresponds to ascent
      *
      * @return baseline offset
      */
     int getBaseLineOffset() const;
-    
+
+    /**
+     * \brief returns the size of the font part below the baseline, which corresponds to descent
+     *
+     * @return baseline offset
+     */
+    int getBaseLineDescent() const;
+
 protected:
     void initMesh();
 
