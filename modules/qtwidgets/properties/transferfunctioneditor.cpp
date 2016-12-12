@@ -302,12 +302,10 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
         std::vector<TransferFunctionEditorControlPoint*> points;
         for (auto& selitem : selitems) {
-            TransferFunctionEditorControlPoint* p =
-                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem);
-            if (p) points.push_back(p);
+            if (auto p = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem))
+                points.push_back(p);
         }
-        std::stable_sort(points.begin(), points.end(),
-                         comparePtr<TransferFunctionEditorControlPoint>);
+        std::stable_sort(points.begin(), points.end(), comparePtr{});
 
         switch (k) {
             case Qt::Key_Left:
@@ -350,12 +348,12 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 }
                 break;
         }
-    
-    } else if ((k >= '0' && k <= '9') ||                               // Groups selection
-               k == '!' || k =='"' || k =='#' || k ==Qt::Key_paragraph || k =='%' || k =='&' || k =='(' ||
-               k ==')' || k =='=') {                                                                
+
+    } else if ((k >= '0' && k <= '9') ||  // Groups selection
+               k == '!' || k == '"' || k == '#' || k == Qt::Key_paragraph || k == '%' || k == '&' ||
+               k == '(' || k == ')' || k == '=') {
         int group = 0;
-        switch(k) {
+        switch (k) {
             case '0':
             case '=':
                 group = 0;
@@ -464,10 +462,9 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
     QList<QGraphicsItem*> graphicsItems = items(pos);
 
     for (auto& graphicsItem : graphicsItems) {
-        TransferFunctionEditorControlPoint* controlPointGraphicsItem =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem);
-
-        if (controlPointGraphicsItem) return controlPointGraphicsItem;
+        if (auto item = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem)) {
+            return item;
+        }
     }
 
     return nullptr;
@@ -475,8 +472,7 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
 
 void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
     auto newpoint = new TransferFunctionEditorControlPoint(p, dataMap_, controlPointSize_);
-    auto it = std::lower_bound(points_.begin(), points_.end(), newpoint,
-                               comparePtr<TransferFunctionEditorControlPoint>);
+    auto it = std::lower_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
     it = points_.insert(it, newpoint);
 
     updateConnections();
@@ -502,15 +498,15 @@ void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p)
 }
 
 void TransferFunctionEditor::updateConnections() {
-    std::stable_sort(points_.begin(), points_.end(), comparePtr<TransferFunctionEditorControlPoint>);
+    std::stable_sort(points_.begin(), points_.end(), comparePtr{});
     
     while (connections_.size() < points_.size() + 1){
-        TransferFunctionControlPointConnection* c = new TransferFunctionControlPointConnection();
+        auto c = new TransferFunctionControlPointConnection();
         connections_.push_back(c);
         addItem(c);
     }
     while (connections_.size() > points_.size() + 1){
-        TransferFunctionControlPointConnection* c = connections_.back();
+        auto c = connections_.back();
         removeItem(c);
         delete c;
         connections_.pop_back();

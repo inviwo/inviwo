@@ -48,7 +48,7 @@ class IVW_CORE_API TransferFunctionDataPoint : public Observable<TransferFunctio
 public:
     TransferFunctionDataPoint(const vec2& pos = vec2(0), const vec4& rgba = vec4(0));
     TransferFunctionDataPoint(const TransferFunctionDataPoint& rhs) = default;
-    TransferFunctionDataPoint& operator=(const TransferFunctionDataPoint& that) = default;
+    TransferFunctionDataPoint& operator=(const TransferFunctionDataPoint& that);
     virtual ~TransferFunctionDataPoint() = default;
 
     inline const vec2& getPos() const { return pos_; }

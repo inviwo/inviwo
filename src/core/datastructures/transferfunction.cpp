@@ -77,11 +77,18 @@ TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
             dataRepr_ = std::make_shared<LayerRAMPrecision<vec4>>(rhs.dataRepr_->getDimensions());
             data_ = util::make_unique<Layer>(dataRepr_);
         }
-        clearPoints();
         maskMin_ = rhs.maskMin_;
         maskMax_ = rhs.maskMax_;
-        for (int i = 0; i < rhs.getNumPoints(); i++) {
+        for (size_t i = 0; i < std::min(points_.size(), rhs.points_.size()); i++) {
+            *points_[i] = *rhs.points_[i];
+        }
+        for (size_t i = std::min(points_.size(), rhs.points_.size()); i < rhs.points_.size(); i++) {
             addPoint(rhs.getPoint(i)->getPos(), rhs.getPoint(i)->getRGBA());
+        }
+        while (points_.size() > rhs.points_.size()) {
+            auto dp = std::move(points_.back());
+            points_.pop_back();
+            notifyControlPointRemoved(dp.get());
         }
     }
     invalidate();
@@ -133,53 +140,46 @@ void TransferFunction::addPoint(const vec2& pos, const vec4& color) {
 
 void TransferFunction::addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint) {
     dataPoint->addObserver(this);
-    auto it = std::lower_bound(points_.begin(), points_.end(), dataPoint,
-                               compareUniquePtr<TransferFunctionDataPoint>);
-
-    auto dp = dataPoint.get();
-    points_.insert(it, std::move(dataPoint));
-
+    auto it = std::lower_bound(points_.begin(), points_.end(), dataPoint, comparePtr{});
+    it = points_.insert(it, std::move(dataPoint));
     invalidate();
-    notifyControlPointAdded(dp);
+    notifyControlPointAdded(it->get());
 }
 
 void TransferFunction::removePoint(TransferFunctionDataPoint* dataPoint) {
-    auto it = std::find_if(
-        points_.begin(), points_.end(),
-        [&](const std::unique_ptr<TransferFunctionDataPoint>& p) { return dataPoint == p.get(); });
+    auto it = std::find_if(points_.begin(), points_.end(),
+                           [&](const auto& p) { return dataPoint == p.get(); });
     if (it != points_.end()) {
+        // make sure we call the destuctor after we have removed the point from points_
         auto dp = std::move(*it);
         points_.erase(it);
-        invalidate();
         notifyControlPointRemoved(dp.get());
+        invalidate();
     }
 }
 
 void TransferFunction::clearPoints() {
     invalidate();
     while (points_.size() > 0) {
-        auto dataPoint = std::move(points_.back());
+        auto dp = std::move(points_.back());
         points_.pop_back();
-        notifyControlPointRemoved(dataPoint.get());
+        notifyControlPointRemoved(dp.get());
     }
 }
 
 void TransferFunction::onTransferFunctionPointChange(const TransferFunctionDataPoint* p){
-    std::stable_sort(points_.begin(), points_.end(), compareUniquePtr<TransferFunctionDataPoint>);
+    std::stable_sort(points_.begin(), points_.end(), comparePtr{});
     invalidate();
     notifyControlPointChanged(p);
 }
 
 void TransferFunction::calcTransferValues() const {
-    auto dataArray = dataRepr_->getDataTyped();
-
-    const auto size = dataRepr_->getDimensions().x;
-
-    ivwAssert(
-        std::is_sorted(points_.begin(), points_.end(), compareUniquePtr<TransferFunctionDataPoint>),
-        "Should be sorted");
+    ivwAssert(std::is_sorted(points_.begin(), points_.end(), comparePtr{}), "Should be sorted");
 
     // We assume the the points a sorted here.
+    auto dataArray = dataRepr_->getDataTyped();
+    const auto size = dataRepr_->getDimensions().x;
+
     if (points_.size() == 0) {  // in case of 0 points
         for (size_t i = 0; i < size; i++) {
             dataArray[i] =
@@ -240,7 +240,7 @@ void TransferFunction::deserialize(Deserializer& d) {
 
     auto desPoints =
         util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
-            .setMakeNew([]() { return std::unique_ptr<TransferFunctionDataPoint>(); })
+            .setMakeNew([this]() { return std::unique_ptr<TransferFunctionDataPoint>(); })
             .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
                 toAdd.push_back(std::move(point));
             })
@@ -268,9 +268,7 @@ vec4 TransferFunction::sample(float v) const {
     }
 
     auto it = std::upper_bound(points_.begin(), points_.end(), v,
-                               [](float val, const std::unique_ptr<TransferFunctionDataPoint>& p) {
-                                   return val < p->getPos().x;
-                               });
+                               [](float val, const auto& p) { return val < p->getPos().x; });
 
     if (it == points_.begin()) {
         return points_.front()->getRGBA();
@@ -348,6 +346,8 @@ void TransferFunction::save(const std::string& filename, const FileExtension& ex
         serialize(serializer);
         serializer.writeFile();
     } else {
+        if (invalidData_) calcTransferValues();
+        
         // Convert layer to UINT8
         auto uint8DataRepr =
             std::make_shared<LayerRAMPrecision<glm::u8vec4>>(dataRepr_->getDimensions());
@@ -409,17 +409,18 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             if (points.empty()) return;
 
             std::vector<std::pair<std::ptrdiff_t, vec4>> uniquePoints;
-            uniquePoints.emplace_back(0,points.front());
-            for (auto p = points.begin(), c = std::next(p), n = std::next(c); n != points.end();
-                 ++p, ++c, ++n) {
-                if (glm::all(glm::lessThan(glm::abs(*c - 0.5f * (*c + *n)), vec4(0.000001f)))) {
+            uniquePoints.emplace_back(0, points.front());
+            for (auto p = points.begin(), c = std::next(points.begin()),
+                      n = std::next(points.begin(), 2);
+                 n != points.end(); ++p, ++c, ++n) {
+                if (!glm::all(glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(0.001f)))) {
                     uniquePoints.emplace_back(std::distance(points.begin(), c), *c);
                 }
             }
             uniquePoints.emplace_back(std::ptrdiff_t(size - 1), points.back());
 
             for (const auto &p : uniquePoints ) {
-                this->addPoint(vec2(float(p.first)/size, p.second.a), p.second);
+                this->addPoint(vec2(float(p.first)/(size-1), p.second.a), p.second);
             }
         });
     }

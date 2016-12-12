@@ -34,6 +34,16 @@ namespace inviwo {
 TransferFunctionDataPoint::TransferFunctionDataPoint(const vec2& pos, const vec4& rgba)
     : pos_(pos), rgba_(rgba) {}
 
+TransferFunctionDataPoint& TransferFunctionDataPoint::operator=(
+    const TransferFunctionDataPoint& that) {
+    if (pos_ != that.pos_ || rgba_ != that.rgba_) {
+        pos_ = that.pos_;
+        rgba_ = that.rgba_;
+        notifyTransferFunctionPointObservers();
+    }
+    return *this;
+}
+
 void TransferFunctionDataPoint::setPos(const vec2& pos) {
     if (pos == pos_ && pos.y == rgba_.a) return;
     pos_ = pos;

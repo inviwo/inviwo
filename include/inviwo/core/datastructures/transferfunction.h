@@ -82,7 +82,6 @@ public:
     const TransferFunctionDataPoint* getPoint(int i) const;
 
     void addPoint(const vec2& pos, const vec4& color);
-    void addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint);
     void addPoint(const vec2& pos);
     void removePoint(TransferFunctionDataPoint* dataPoint);
 
@@ -112,6 +111,9 @@ public:
     void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
 protected:
+
+    void addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint);
+
     void calcTransferValues() const;
 
 private:
