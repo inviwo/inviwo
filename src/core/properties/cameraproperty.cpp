@@ -326,11 +326,16 @@ void CameraProperty::adjustCameraToData(const mat4& prevDataToWorldMatrix,
         farPlane_.set(farPlane);
         nearPlane_.setMaxValue(nearPlane_.getMaxValue() * depthRatio);
         nearPlane_.set(nearPlane);
-
-        lookFrom_.setMinValue((toNewSpace * vec4(lookFrom_.getMinValue(), 1.f)).xyz());
-        lookFrom_.setMaxValue((toNewSpace * vec4(lookFrom_.getMaxValue(), 1.f)).xyz());
-        lookTo_.setMinValue((toNewSpace * vec4(lookTo_.getMinValue(), 1.f)).xyz());
-        lookTo_.setMaxValue((toNewSpace * vec4(lookTo_.getMaxValue(), 1.f)).xyz());
+        // Choose min and max values in new space.
+        // Rotation/mirroring may change the sign so apply min/max in new space
+        vec3 minLookFrom(toNewSpace * vec4(lookFrom_.getMinValue(), 1.f));
+        vec3 maxLookFrom(toNewSpace * vec4(lookFrom_.getMaxValue(), 1.f));
+        lookFrom_.setMinValue(glm::min(minLookFrom, maxLookFrom));
+        lookFrom_.setMaxValue(glm::max(minLookFrom, maxLookFrom));
+        vec3 minLookTo(toNewSpace * vec4(lookTo_.getMinValue(), 1.f));
+        vec3 maxLookTo(toNewSpace * vec4(lookTo_.getMaxValue(), 1.f));
+        lookTo_.setMinValue(glm::min(minLookTo, maxLookTo));
+        lookTo_.setMaxValue(glm::max(minLookTo, maxLookTo));
 
         setLookFrom(newLookFrom);
         setLookTo(newLookTo);
