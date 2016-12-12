@@ -107,7 +107,7 @@ private:
 
     TransferFunctionProperty*
         tfProperty_;  ///< Pointer to property, for get and invalidation in the widget
-    TransferFunctionEditor* tfEditor_;  ///< TransferFunctionEditor inherited from QGraphicsScene
+    std::unique_ptr<TransferFunctionEditor> tfEditor_;  ///< TransferFunctionEditor inherited from QGraphicsScene
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
     QPushButton* btnClearTF_;
     QPushButton* btnImportTF_;
@@ -117,12 +117,12 @@ private:
     QComboBox* pointMoveMode_;
 
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
-    QPixmap* tfPixmap_;
+    std::unique_ptr<QPixmap> tfPixmap_;
 
     QLinearGradient gradient_;
 
-    QColorDialog* colorDialog_;
-    ColorWheel* colorWheel_;
+    std::unique_ptr<QColorDialog> colorDialog_;
+    std::unique_ptr<ColorWheel> colorWheel_;
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
