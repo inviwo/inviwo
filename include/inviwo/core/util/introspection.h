@@ -44,6 +44,9 @@ namespace inviwo {
 
 namespace util {
 
+template <class... >
+using void_t = void;
+
 template <class T>
 class has_class_identifier {
     template <class U, class = typename std::enable_if<
@@ -126,6 +129,14 @@ class is_stream_insertable {
 public:
     static const bool value = decltype(check<T>(0))::value;
 };
+
+// primary template handles types that do not support dereferencing:
+template< class, class = void_t<> >
+struct is_dereferenceable : std::false_type { };
+// specialization recognizes types that do support dereferencing:
+template< class T >
+struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_type { };
+
 
 } // namespace
 

@@ -220,8 +220,8 @@ public:
     template <class T>
     void deserialize(const std::string& key, T*& data);
 
-    template <class T>
-    void deserialize(const std::string& key, std::unique_ptr<T>& data);
+    template <class T, class D>
+    void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
 
     void setExceptionHandler(ExceptionHandler handler);
 
@@ -1021,8 +1021,8 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
     }
 }
 
-template <class T>
-void Deserializer::deserialize(const std::string& key, std::unique_ptr<T>& data) {
+template <class T, class D>
+void Deserializer::deserialize(const std::string& key, std::unique_ptr<T, D>& data) {
     if (auto ptr = data.get()) {
         deserialize(key, ptr);
     } else {
