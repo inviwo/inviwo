@@ -413,7 +413,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             for (auto p = points.begin(), c = std::next(points.begin()),
                       n = std::next(points.begin(), 2);
                  n != points.end(); ++p, ++c, ++n) {
-                if (!glm::all(glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(0.001f)))) {
+                if (!glm::all(glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(1.0f/255.0f)))) {
                     uniquePoints.emplace_back(std::distance(points.begin(), c), *c);
                 }
             }
