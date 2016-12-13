@@ -7,6 +7,8 @@ ivw_module(PostProcessing)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -15,6 +17,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -36,6 +40,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/Fxaa3_11.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fxaa.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/huesaturationluminance.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
