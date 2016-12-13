@@ -62,7 +62,8 @@ DistanceTransformRAM::DistanceTransformRAM()
                        std::numeric_limits<double>::max(), 0.01, 0.0,
                        InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , btnForceUpdate_("forceUpdate", "Update Distance Map")
-    , distTransformDirty_(true) {
+    , distTransformDirty_(true)
+    , hasNewData_(false) {
 
     addPort(volumePort_);
     addPort(outport_);
@@ -95,12 +96,28 @@ DistanceTransformRAM::DistanceTransformRAM()
 
 DistanceTransformRAM::~DistanceTransformRAM() = default;
 
+void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Property* source) {
+    notifyObserversInvalidationBegin(this);
+    PropertyOwner::invalidate(invalidationLevel, source);
+    if (!isValid() && hasNewData_) {
+        for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
+    }
+    notifyObserversInvalidationEnd(this);
+
+    if (!isValid() && isSink()) {
+        performEvaluateRequest();
+    }
+}
+
 void DistanceTransformRAM::process() {
     if (util::is_future_ready(newVolume_)) {
         auto vol = newVolume_.get();
         dataRange_.set(vol->dataMap_.dataRange);
         outport_.setData(vol);
+        hasNewData_ = false;
+        btnForceUpdate_.setDisplayName("Update Distance Map");
     } else if (!newVolume_.valid()) {  // We are not waiting for a calculation
+        btnForceUpdate_.setDisplayName("Update Distance Map (dirty)");
         if (volumePort_.isChanged() || distTransformDirty_) {
             updateOutport();
         }
@@ -109,7 +126,11 @@ void DistanceTransformRAM::process() {
 
 void DistanceTransformRAM::updateOutport() {
     auto done = [this]() {
-        dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+        dispatchFront([this]() { 
+            distTransformDirty_ = false;
+            hasNewData_ = true;
+            invalidate(InvalidationLevel::InvalidOutput); 
+        });
     };
 
     auto calc =
@@ -141,8 +162,9 @@ void DistanceTransformRAM::updateOutport() {
 
         switch (dataRangeMode) {
             case DistanceTransformRAM::DataRangeMode::Diagonal: {
-                const dvec3 dim{ dstRepr->getDimensions() };
-                const auto maxDist = square ? glm::length2(dim) : glm::length(dim);
+                const auto basis = volume->getBasis();
+                const auto diagonal = basis[0]+basis[1]+basis[2];
+                const auto maxDist = square ? glm::length2(diagonal) : glm::length(diagonal);
                 dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
                 dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
                 break;
@@ -169,8 +191,6 @@ void DistanceTransformRAM::updateOutport() {
     };
 
     newVolume_ = dispatchPool(calc, volumePort_.getData());
-
-    distTransformDirty_ = false;
 }
 
 void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
