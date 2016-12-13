@@ -61,6 +61,9 @@ private:
 
 public slots:
     void handleButton();
+
+    virtual void onSetDisplayName(const std::string& displayName) override;
+
 };
 
 } //namespace
