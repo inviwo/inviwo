@@ -29,6 +29,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/exception.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -40,22 +41,21 @@
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string &fontPath)
-    : textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true)
-    , fontSize_(-1)
-    , lineSpacing_(0.2) {
-    if (FT_Init_FreeType(&fontlib_)) LogWarnCustom("TextRenderer", "FreeType: Major error.");
+    : fontface_(nullptr)
+    , fontSize_(10)
+    , lineSpacing_(0.2)
+    , textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true)
+{
 
-    int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
-    if (error == FT_Err_Unknown_File_Format) {
-        LogWarnCustom("TextRenderer", "FreeType: File opened and read, format unsupported.");
-    } else if (error) {
-        LogWarnCustom("TextRenderer", "FreeType:  Could not read/open the font file.");
+    if (FT_Init_FreeType(&fontlib_)) {
+        throw Exception("Could not initialize FreeType library");
     }
+
+    setFont(fontPath);
 
     glGenTextures(1, &texCharacter_);
 
     initMesh();
-    setFontSize(10);
 
     fbo_.activate();
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -65,6 +65,22 @@ TextRenderer::TextRenderer(const std::string &fontPath)
 TextRenderer::~TextRenderer() {
     FT_Done_Face(fontface_);
     glDeleteTextures(1, &texCharacter_);
+}
+
+void TextRenderer::setFont(const std::string &fontPath) {
+    // free previous font face
+    FT_Done_Face(fontface_);
+    fontface_ = nullptr;
+
+    int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
+    if (error == FT_Err_Unknown_File_Format) {
+        throw Exception(std::string("Unsupported font format: \"") + fontPath + "\"");
+    }
+    else if (error) {
+        throw FileException(std::string("Could not open font file: \"") + fontPath + "\"");
+    }
+
+    FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
 void TextRenderer::render(const std::string &str, float x, float y, const vec2 &scale,
@@ -248,6 +264,8 @@ int TextRenderer::getLineHeight() const {
 }
 
 int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscent()); }
+
+int TextRenderer::getBaseLineDescent() const { return static_cast<int>(getFontDescent()); }
 
 double TextRenderer::getFontAscent() const {
     return (fontface_->ascender * fontSize_ / static_cast<double>(fontface_->units_per_EM));

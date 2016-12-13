@@ -32,9 +32,8 @@
 #define IVW_TEXTRENDERER_H
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <modules/fontrendering/fontrenderingmodule.h>
+#include <modules/fontrendering/util/fontutils.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
@@ -96,11 +95,17 @@ class Texture2D;
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(
-        const std::string& fontPath =
-            InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
-            "/fonts/arial.ttf");
+    TextRenderer(const std::string &fontPath = util::getDefaultFontPath() + "/arial.ttf");
     virtual ~TextRenderer();
+
+    /**
+     * \brief replace the currently loaded font face with a new one
+     *
+     * @param fontPath   full path to the new font face
+     * @throws Exception      if the font file could not be opened
+     * @throws FileException  if the font format is unsupported
+     */
+    void setFont(const std::string &fontPath);
 
     /**
      * \brief renders the given string with the specified color at position x, y in normalized
@@ -158,13 +163,20 @@ public:
     void setLineHeight(int lineHeight);
     int getLineHeight() const;
 
-    /** 
+    /**
      * \brief returns the offset of the baseline, which corresponds to ascent
      *
      * @return baseline offset
      */
     int getBaseLineOffset() const;
-    
+
+    /**
+     * \brief returns the size of the font part below the baseline, which corresponds to descent
+     *
+     * @return baseline offset
+     */
+    int getBaseLineDescent() const;
+
 protected:
     void initMesh();
 
