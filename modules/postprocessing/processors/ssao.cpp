@@ -234,10 +234,9 @@ void SSAO::process() {
         return;
     }
     else if (technique_.get() == 1) {
-        // This geometry is actually never used, but a valid VAO and VBO is required in 3.30 to kick off the drawcalls
+        // This geometry is actually never used, but a valid VAO and VBO is required to kick off the drawcalls
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
         utilgl::Enable<MeshGL> enable(rect);
-
         drawHbaoClassic(outFbo, depthTex, projParam_, width, height);
     }
 }
@@ -413,6 +412,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
 
     glBindFramebuffer(GL_FRAMEBUFFER, fboOut);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    glColorMask(1, 1, 1, 0);
 
     if (blur) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers_.hbaoCalc);
@@ -463,6 +463,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
+    glColorMask(1, 1, 1, 1);
 
     glUseProgram(0);
 }

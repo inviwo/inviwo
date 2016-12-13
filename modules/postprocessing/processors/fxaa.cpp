@@ -162,6 +162,7 @@ void FXAA::process() {
     prepass_.deactivate();
 
     // --- FXAA PASS ---
+    glColorMask(1, 1, 1, 0);
     glBindTexture(GL_TEXTURE_2D, prepassFbo_.tex);
     glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -171,6 +172,7 @@ void FXAA::process() {
     glDrawArrays(GL_TRIANGLES, 0, 3);
     fxaa_.deactivate();
     
+    glColorMask(1, 1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glEnable(GL_DEPTH_TEST);
 }
