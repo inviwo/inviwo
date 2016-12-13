@@ -61,13 +61,15 @@ namespace util {
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
-                                VolumeRAMPrecision<U> *outDistanceField, const size3_t upsample,
+                                VolumeRAMPrecision<U> *outDistanceField,
+                                const Matrix<3, U> basis, const size3_t upsample,
                                 Predicate predicate, ValueTransform valueTransform,
                                 ProgressCallback callback);
 
 template <typename T, typename U>
 void volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
-                                VolumeRAMPrecision<U> *outDistanceField, const size3_t upsample);
+                                VolumeRAMPrecision<U> *outDistanceField,
+                                const Matrix<3, U> basis, const size3_t upsample);
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U> *outDistanceField,
@@ -91,11 +93,11 @@ template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
                                       VolumeRAMPrecision<U> *outDistanceField,
-                                      const size3_t upsample, Predicate predicate,
-                                      ValueTransform valueTransform, ProgressCallback callback) {
+                                      const Matrix<3, U> basis, const size3_t upsample,
+                                      Predicate predicate, ValueTransform valueTransform,
+                                      ProgressCallback callback) {
 
-
-    #ifndef __clang__
+#ifndef __clang__
     omp_set_num_threads(std::thread::hardware_concurrency());
     #endif    
 
@@ -112,6 +114,32 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     const i64vec3 srcDim{inVolume->getDimensions()};
     const i64vec3 dstDim{outDistanceField->getDimensions()};
     const i64vec3 sm{upsample};
+
+    const auto squareBasis = glm::transpose(basis)*basis;
+    const Vector<3,U> squareBasisDiag{squareBasis[0][0], squareBasis[1][1], squareBasis[2][2]};
+    const Vector<3,U> squareVoxelSize{squareBasisDiag / Vector<3,U>{dstDim*dstDim}};
+    const Vector<3,U> invSquareVoxelSize{Vector<3,U>{1.0f} / squareVoxelSize};
+
+    {
+        const auto maxdist = glm::compMax(squareBasisDiag);
+        bool orthogonal = true;
+        for (size_t i = 0; i < squareBasis.length(); i++) {
+            for (size_t j = 0; j < squareBasis.length(); j++) {
+                if (i != j) {
+                    if (std::abs(squareBasis[i][j]) > 10.0e-8 * maxdist) {
+                        orthogonal = false;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!orthogonal) {
+            LogWarnCustom(
+                "volumeRAMDistanceTransform",
+                "Calculating the distance transform on a non-orthogonal volume will not give "
+                "correct values");
+        }
+    }
 
     if (srcDim * sm != dstDim) {
         throw Exception("DistanceTransformRAM: Dimensions does not match src = " +
@@ -135,21 +163,27 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
             // forward
             U dist = dstDim.x;
             for (int64 x = 0; x < dstDim.x; ++x) {
-                if (!is_feature(x,y,z)) ++dist;
-                else dist = U(0);
-                dst[dstInd(x, y, z)] = square(dist);
+                if (!is_feature(x, y, z)) {
+                    ++dist;
+                } else {
+                    dist = U(0);
+                }
+                dst[dstInd(x, y, z)] = squareVoxelSize.x * square(dist);
             }
 
             // backward
             dist = dstDim.x;
             for (int64 x = dstDim.x - 1; x >= 0; --x) {
-                if (!is_feature(x,y,z)) ++dist;
-                else dist = U(0);
-                dst[dstInd(x, y, z)] = std::min<U>(dst[dstInd(x, y, z)], square(dist));
+                if (!is_feature(x, y, z)) {
+                    ++dist;
+                } else {
+                    dist = U(0);
+                }
+                dst[dstInd(x, y, z)] =
+                    std::min<U>(dst[dstInd(x, y, z)], squareVoxelSize.x * square(dist));
             }
         }
     }
-
 
     // second pass, scan y direction
     // for each voxel v(x,y,z) find min_i(data(x,i,z) + (y - i)^2), 0 <= i < dimY
@@ -171,11 +205,11 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
                 for (int64 y = 0; y < dstDim.y; ++y) {
                     auto d = buff[y];
                     if (d != U(0)) {
-                        const auto rMax = static_cast<int64>(std::sqrt(d)) + 1;
+                        const auto rMax = static_cast<int64>(std::sqrt(d*invSquareVoxelSize.y)) + 1;
                         const auto rStart = std::min(rMax, y - 1);
                         const auto rEnd = std::min(rMax, dstDim.y - y);
                         for (int64 n = -rStart; n < rEnd; ++n) {
-                            const auto w = buff[y + n] + square(n);
+                            const auto w = buff[y + n] + squareVoxelSize.y * square(n);
                             if (w < d) d = w;
                         }
                     }
@@ -205,11 +239,11 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
                 for (int64 z = 0; z < dstDim.z; ++z) {
                     auto d = buff[z];
                     if (d != U(0)) {
-                        const auto rMax = static_cast<int64>(std::sqrt(d)) + 1;
+                        const auto rMax = static_cast<int64>(std::sqrt(d*invSquareVoxelSize.z)) + 1;
                         const auto rStart = std::min(rMax, z - 1);
                         const auto rEnd = std::min(rMax, dstDim.z - z);
                         for (int64 n = -rStart; n < rEnd; ++n) {
-                            const auto w = buff[z + n] + square(n);
+                            const auto w = buff[z + n] + squareVoxelSize.z * square(n);
                             if (w < d) d = w;
                         }
                     }
@@ -233,10 +267,10 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
 template <typename T, typename U>
 void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
                                       VolumeRAMPrecision<U> *outDistanceField,
-                                      const size3_t upsample) {
+                                      const Matrix<3, U> basis, const size3_t upsample) {
 
     util::volumeRAMDistanceTransform(
-        inVolume, outDistanceField, upsample,
+        inVolume, outDistanceField, basis, upsample,
         [](const T &val) { return util::glm_convert_normalized<double>(val) > 0.5; },
         [](const U &squareDist) {
             return static_cast<U>(std::sqrt(static_cast<double>(squareDist)));
@@ -254,8 +288,8 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
         using VolumeType = util::PrecsionType<decltype(vrprecision)>;
         using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
 
-        volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample, predicate,
-                                   valueTransform, callback);
+        volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(), upsample,
+                                   predicate, valueTransform, callback);
 
     });
 }
@@ -289,29 +323,29 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
         };
 
         if (normalize && square && flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample,
-                                             normPredicateIn, valTransIdent, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, normPredicateIn, valTransIdent, progress);
         } else if (normalize && square && !flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample,
-                                             normPredicateOut, valTransIdent, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, normPredicateOut, valTransIdent, progress);
         } else if (normalize && !square && flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample,
-                                             normPredicateIn, valTransSqrt, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, normPredicateIn, valTransSqrt, progress);
         } else if (normalize && !square && !flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample,
-                                             normPredicateOut, valTransSqrt, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, normPredicateOut, valTransSqrt, progress);
         } else if (!normalize && square && flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample, predicateIn,
-                                             valTransIdent, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, predicateIn, valTransIdent, progress);
         } else if (!normalize && square && !flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample, predicateOut,
-                                             valTransIdent, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, predicateOut, valTransIdent, progress);
         } else if (!normalize && !square && flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample, predicateIn,
-                                             valTransSqrt, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, predicateIn, valTransSqrt, progress);
         } else if (!normalize && !square && !flip) {
-            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, upsample, predicateOut,
-                                             valTransSqrt, progress);
+            util::volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(),
+                                             upsample, predicateOut, valTransSqrt, progress);
         }
     });
 }

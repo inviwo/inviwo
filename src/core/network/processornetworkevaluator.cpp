@@ -134,13 +134,11 @@ void ProcessorNetworkEvaluator::evaluate() {
                 processor->notifyObserversFinishedProcess(processor);
 
             } else {
-                processor->notifyObserversAboutToProcess(processor);
                 try {
                     processor->doIfNotReady();
                 } catch (...) {
                     exceptionHandler_(IvwContext);
                 }
-                processor->notifyObserversFinishedProcess(processor);
             }
         }
     }

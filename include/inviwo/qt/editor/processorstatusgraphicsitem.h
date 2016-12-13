@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,7 +49,7 @@ class Processor;
 
 class IVW_QTEDITOR_API ProcessorStatusGraphicsItem : public EditorGraphicsItem,
                                                      public ProcessorWidgetObserver,
-                                                     public ProcessorObserver,
+                                                     public ProcessorNetworkEvaluationObserver,
                                                      public ActivityIndicatorObserver {
 public:
     ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
@@ -70,7 +71,7 @@ protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual void activityIndicatorChanged(bool active) override;
 
-    virtual void onProcessorAboutToProcess(Processor*) override;
+    virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
     enum class State {Invalid, Running, Ready};
