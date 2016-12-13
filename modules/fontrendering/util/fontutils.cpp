@@ -29,6 +29,7 @@
 
 #include <modules/fontrendering/util/fontutils.h>
 #include <modules/fontrendering/fontrenderingmodule.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 
@@ -38,13 +39,13 @@ namespace inviwo {
 
 namespace util {
 
-std::vector<std::pair<std::string, std::string>> getAvailableFonts() {
+std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string &fontPath) {
     const std::vector<std::string> supportedExt ={ "ttf", "otf", "cff", "pcf" };
 
-    // scan for available fonts in the fontrendering module
-    const std::string fontPath =
-        InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() + "/fonts/";
-    auto fonts = filesystem::getDirectoryContents(fontPath, filesystem::ListMode::Files);
+    const std::string path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
+
+    // scan for available fonts in the given path
+    auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
     std::remove_if(fonts.begin(), fonts.end(), [supportedExt](const std::string &str) {
@@ -77,11 +78,16 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts() {
     std::vector<std::pair<std::string, std::string>> result;
     // create readable font names from file names and add full path to each file
     std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
-        [fontPath, makeReadable](const std::string &str) -> std::pair<std::string, std::string> {
-        return{ makeReadable(filesystem::getFileNameWithoutExtension(str)), fontPath + str };
+        [path, makeReadable](const std::string &str) -> std::pair<std::string, std::string> {
+        return{ makeReadable(filesystem::getFileNameWithoutExtension(str)), path + str };
     });
 
     return result;
+}
+
+std::string getDefaultFontPath() {
+    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
+           "/fonts";
 }
 
 } // namespace util

@@ -39,13 +39,27 @@ namespace inviwo {
 
 namespace util {
 
-/** 
- * \brief returns a list of all fonts found in the font directory of the fontrendering module
- * 
- * @return font list containing pairs for all available fonts. Each pair holds the font name 
+/**
+ * \brief returns a list of all fonts found in the given directory,  font directory of the
+ * fontrendering module
+ *
+ * @param  fontPath   path to fonts. If empty, the directory returned by getDefaultPath() will be
+ * used.
+ *
+ * @return font list containing pairs for all available fonts. Each pair holds the font name
  *     and the full path. Fonts are sorted alphabetically
  */
-std::vector<std::pair<std::string, std::string>> IVW_MODULE_FONTRENDERING_API getAvailableFonts();
+std::vector<std::pair<std::string, std::string>> IVW_MODULE_FONTRENDERING_API
+getAvailableFonts(const std::string &fontPath = std::string());
+
+/**
+ * \brief returns the default font directory of Inviwo
+ *
+ * @return default path containing fonts shipped with Inviwo. Corresponds to the font directory
+ *                 located in the font rendering module directory.
+ *
+ */
+std::string IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
 
 } // namespace util
 

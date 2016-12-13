@@ -32,9 +32,8 @@
 #define IVW_TEXTRENDERER_H
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <modules/fontrendering/fontrenderingmodule.h>
+#include <modules/fontrendering/util/fontutils.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
@@ -96,10 +95,7 @@ class Texture2D;
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(
-        const std::string& fontPath =
-            InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
-            "/fonts/arial.ttf");
+    TextRenderer(const std::string &fontPath = util::getDefaultFontPath() + "/arial.ttf");
     virtual ~TextRenderer();
 
     /**
