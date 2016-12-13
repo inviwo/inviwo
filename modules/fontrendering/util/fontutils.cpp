@@ -79,7 +79,7 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     // create readable font names from file names and add full path to each file
     std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
         [path, makeReadable](const std::string &str) -> std::pair<std::string, std::string> {
-        return{ makeReadable(filesystem::getFileNameWithoutExtension(str)), path + str };
+        return{ makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str };
     });
 
     return result;
