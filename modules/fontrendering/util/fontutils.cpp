@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <algorithm>
 
@@ -48,8 +49,8 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    std::remove_if(fonts.begin(), fonts.end(), [supportedExt](const std::string &str) {
-        return !util::contains(supportedExt, str);
+    util::erase_remove_if(fonts, [supportedExt](const std::string &str) {
+        return !util::contains(supportedExt, filesystem::getFileExtension(str));
     });
 
     // sort file names case insensitive
