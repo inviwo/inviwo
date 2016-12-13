@@ -118,8 +118,8 @@ protected:
 
     void zoomIn(Event* event);
     void zoomOut(Event* event);
-    void dblClick(Event *event);
 
+    void recenterFocusPoint(Event *event);
 
     /**
      * \brief Rotates around the direction vector,
@@ -153,12 +153,15 @@ protected:
     // Enable/disable rotation around view direction axis
     BoolProperty  allowViewDirectionRotation_;  
 
+    BoolProperty allowRecenterView_; ///< recenter the camera focus point with a double click
+
     BoolProperty animate_;
 
     // Event Properties.
     EventProperty mouseRotate_;
     EventProperty mouseZoom_;
     EventProperty mousePan_;
+    EventProperty mouseRecenterFocusPoint_;
     EventProperty mouseReset_;
 
     EventProperty stepRotateUp_;
