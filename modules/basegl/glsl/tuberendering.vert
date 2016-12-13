@@ -33,13 +33,14 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-out vec4 worldPosition_;
+out vec3 worldPosition_;
 out vec3 normal_;
 out vec4 vColor_;
  
 void main() {
     vColor_ = in_Color;
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    vec4 wp = geometry.dataToWorld * in_Vertex;
+    worldPosition_ = wp.xyz / wp.w;
     normal_ = in_Normal;
-    gl_Position = worldPosition_;
+    gl_Position = wp;
 }  
