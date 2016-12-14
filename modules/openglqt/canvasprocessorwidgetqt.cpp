@@ -81,6 +81,9 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         QPoint newPos = utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
+            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            // prevent move events, since this will automatically save the "adjusted" position.
+            // The processor widget already has its correct pos, i.e. the one deserialized from file.
             QWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
@@ -90,7 +93,13 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     }
     processor_->ProcessorObservable::addObserver(this);
     canvas_->setVisible(ProcessorWidget::isVisible());
-    QWidget::setVisible(ProcessorWidget::isVisible());
+    {
+        // ignore internal state updates, i.e. position, when showing the widget
+        // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the 
+        // decoration offset, i.e. the "adjusted" position.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        QWidget::setVisible(ProcessorWidget::isVisible());
+    }
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
