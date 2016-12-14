@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,54 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#include <modules/postprocessing/processors/imagesharpen.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+namespace inviwo {
 
-uniform float brightness;
-uniform float contrast;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ImageSharpen::processorInfo_{
+    "org.inviwo.ImageSharpen",  // Class identifier
+    "Image Sharpen",            // Display name
+    "Image Operation",          // Category
+    CodeState::Experimental,    // Code state
+    Tags::None,                 // Tags
+};
+const ProcessorInfo ImageSharpen::getProcessorInfo() const { return processorInfo_; }
 
-vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
-    return vec4((value.rgb - 0.5) * contrast + 0.5 + brightness, value.a);
+ImageSharpen::ImageSharpen()
+    : ImageGLProcessor("imagesharpen.frag")
+    , passes_("passes", "Passes", 1, 1, 10, 1)
+    , sharpen_("sharpen", "Sharpen", true)
+    , filter_("filter", "Filter") {
+
+    filter_.addOption("filter1", "Filter 1", 0);
+    filter_.addOption("filter2", "Filter 2", 1);
+    filter_.setSelectedValue(0);
+    filter_.setCurrentStateAsDefault();
+
+    addProperty(sharpen_);
+    addProperty(filter_);
 }
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
-    FragData0 = brightnessContrast(inColor, brightness, contrast);
+void ImageSharpen::preProcess(TextureUnitContainer &cont) {
+    mat3 kernel;
+
+    if (filter_.get() == 0) {
+        kernel[0] = vec3(-1, -1, -1);
+        kernel[1] = vec3(-1, 8, -1);
+        kernel[2] = vec3(-1, -1, -1);
+    }
+    if (filter_.get() == 1) {
+        kernel[0] = vec3(0, -1, 0);
+        kernel[1] = vec3(-1, 4, -1);
+        kernel[2] = vec3(0, -1, 0);
+    }
+
+    utilgl::setUniforms(shader_, sharpen_);
+    shader_.setUniform("kernel", kernel);
 }
+}  // namespace

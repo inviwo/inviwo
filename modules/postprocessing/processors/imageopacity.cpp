@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#include <modules/postprocessing/processors/imageopacity.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+namespace inviwo {
 
-uniform float brightness;
-uniform float contrast;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ImageOpacity::processorInfo_{
+    "org.inviwo.ImageOpacity",  // Class identifier
+    "Image Opacity",            // Display name
+    "Image Operation",          // Category
+    CodeState::Experimental,    // Code state
+    Tags::None,                 // Tags
+};
+const ProcessorInfo ImageOpacity::getProcessorInfo() const { return processorInfo_; }
 
-vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
-    return vec4((value.rgb - 0.5) * contrast + 0.5 + brightness, value.a);
+ImageOpacity::ImageOpacity()
+    : ImageGLProcessor("imageopacity.frag"), alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.f, 0.01f) {
+    addProperty(alpha_);
 }
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
-    FragData0 = brightnessContrast(inColor, brightness, contrast);
-}
+void ImageOpacity::preProcess(TextureUnitContainer &cont) { utilgl::setUniforms(shader_, alpha_); }
+
+}  // namespace

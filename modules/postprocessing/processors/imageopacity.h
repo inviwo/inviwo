@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,56 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#ifndef IVW_IMAGEOPACITY_H
+#define IVW_IMAGEOPACITY_H
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+#include <modules/postprocessing/postprocessingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
-uniform float brightness;
-uniform float contrast;
+namespace inviwo {
 
-vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
-    return vec4((value.rgb - 0.5) * contrast + 0.5 + brightness, value.a);
-}
+/** \docpage{org.inviwo.ImageOpacity, Image Opacity}
+ * ![](org.inviwo.ImageOpacity.png?classIdentifier=org.inviwo.ImageOpacity)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
-    FragData0 = brightnessContrast(inColor, brightness, contrast);
-}
+/**
+ * \class ImageOpacity
+ * \brief <brief description>
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_POSTPROCESSING_API ImageOpacity : public ImageGLProcessor {
+public:
+    ImageOpacity();
+    virtual ~ImageOpacity() = default; 
+    
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+    
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
+private:
+    FloatProperty alpha_;
+};
+
+}  // namespace
+
+#endif  // IVW_IMAGEOPACITY_H

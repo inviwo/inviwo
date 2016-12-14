@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,58 @@
  * 
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#ifndef IVW_IMAGESHARPEN_H
+#define IVW_IMAGESHARPEN_H
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+#include <modules/postprocessing/postprocessingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
-uniform float brightness;
-uniform float contrast;
+namespace inviwo {
 
-vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
-    return vec4((value.rgb - 0.5) * contrast + 0.5 + brightness, value.a);
-}
+/** \docpage{org.inviwo.ImageSharpen, Image Sharpen}
+ * ![](org.inviwo.ImageSharpen.png?classIdentifier=org.inviwo.ImageSharpen)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
-    FragData0 = brightnessContrast(inColor, brightness, contrast);
-}
+
+/**
+ * \class ImageSharpen
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor { 
+public:
+    ImageSharpen();
+    virtual ~ImageSharpen() = default;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
+private:
+    IntProperty passes_;
+    BoolProperty sharpen_;
+    OptionPropertyInt filter_;
+};
+
+} // namespace
+
+#endif // IVW_IMAGESHARPEN_H
+

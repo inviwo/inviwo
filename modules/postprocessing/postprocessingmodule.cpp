@@ -32,7 +32,9 @@
 #include <modules/postprocessing/processors/fxaa.h>
 #include <modules/postprocessing/processors/imagebrightnesscontrast.h>
 #include <modules/postprocessing/processors/imagehuesaturationluminance.h>
+#include <modules/postprocessing/processors/imageopacity.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/postprocessing/processors/imagesharpen.h>
 
 namespace inviwo {
 
@@ -48,6 +50,8 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app) : InviwoModul
     registerProcessor<FXAA>();
     registerProcessor<ImageBrightnessContrast>();
     registerProcessor<ImageHueSaturationLuminance>();
+    registerProcessor<ImageSharpen>();
+    registerProcessor<ImageOpacity>();
     
     // Properties
     // registerProperty<PostProcessingProperty>();

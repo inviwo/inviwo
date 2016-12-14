@@ -5,20 +5,24 @@ ivw_module(PostProcessing)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -42,6 +46,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/huesaturationluminance.frag
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagesharpen.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imageopacity.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
