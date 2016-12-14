@@ -57,7 +57,11 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setPos(QPointF(64.0f, -15.0f));
 
-    processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()->addObserver(this);
+    if (processor && processor->getNetwork() && processor->getNetwork()->getApplication() &&
+        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()) {
+        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()->addObserver(
+            this);
+    }
 }
 
 void ProcessorStatusGraphicsItem::setRunning(bool running) {
