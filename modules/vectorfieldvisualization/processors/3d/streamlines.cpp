@@ -80,9 +80,6 @@ void StreamLines::process() {
     auto m = streamLineProperties_.getSeedPointTransformationMatrix(
         sampler->getCoordinateTransformer());
 
-
-    ImageSampler tf(tf_.get().getData());
-
     float maxVelocity = 0;
 
 
@@ -144,7 +141,7 @@ void StreamLines::process() {
                 float l = glm::length(vec3(*velocity));
                 float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
                 maxVelocity = std::max(maxVelocity, l);
-                auto c = vec4(tf.sample(dvec2(d, 0.0)));
+                auto c = vec4(tf_.get().sample(d));
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
