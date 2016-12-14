@@ -77,6 +77,8 @@ constexpr SwizzleMask luminanceAlpha = {
 constexpr SwizzleMask redGreen = {
     {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::Zero}};
 
+constexpr SwizzleMask depth = luminance;
+
 }  // namespace swizzlemasks
 
 #include <warn/push>
