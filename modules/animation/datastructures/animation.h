@@ -35,7 +35,9 @@
 
 namespace inviwo {
 
-/**
+namespace animation {
+
+    /**
  * \class Animation
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
@@ -45,6 +47,8 @@ public:
     Animation();
     virtual ~Animation() = default;
 };
+
+} // namespace
 
 } // namespace
 
