@@ -52,6 +52,11 @@ uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
 uniform sampler2D exitDepth;
 
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgPicking;
+uniform sampler2D bgDepth;
+
 uniform ImageParameters outportParameters;
 
 uniform LightParameters lighting;
@@ -78,10 +83,32 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 voxel;
     vec3 samplePos;
     vec3 toCameraDir = normalize((volumeParameters.textureToWorld*vec4(entryPoint, 1.0) - volumeParameters.textureToWorld * vec4(exitPoint, 1.0)).xyz);
+
+
+    float bgTDepth = -1;
+    if(true){ //always on while testing, add better check
+        float depthV = texture(bgDepth,texCoords).x;
+        if(depthV!=1){ // convert to raycasting depth
+            bgTDepth = calculateTValueFromDepthValue(camera, depthV, texture(entryDepth, texCoords).x,
+                                     texture(exitDepth, texCoords).x);
+        }
+    }
+
+    if(bgTDepth<0 ){
+        result = texture(bgColor, texCoords);
+    }
+
+
+
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
+
+
+        result = DRAW_BG(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
+        result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
+
         if (color.a > 0) {
             vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
             gradient = normalize(gradient);
@@ -92,11 +119,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             // the direction towards a lower intensity medium (gradient points in the inreasing direction)
             color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
 
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, raycaster.isoValue,
                 t, tDepth, tIncr);
         } else {
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
         }
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -113,6 +138,11 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
+
+    if(bgTDepth > tEnd){
+        result = DRAW_BG(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
+    }
+
     gl_FragDepth = tDepth;
     return result;
 }
@@ -123,9 +153,20 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    if (entryPoint == exitPoint) discard;
+    vec4 color;
 
-    vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
-    FragData0 = color;
+#ifdef HAS_BG
+    color = texture(bgColor, texCoords);
+    gl_FragDepth = texture(bgDepth, texCoords).x;
+    PickingData = texture(bgPicking, texCoords);
+#else
     PickingData = texture(entryPicking, texCoords);
+    if (entryPoint == exitPoint){
+        discard;
+    }
+#endif
+if (entryPoint != exitPoint){
+    color = rayTraversal(entryPoint, exitPoint, texCoords);   
+}
+    FragData0 = color;
 }

@@ -57,7 +57,8 @@ VolumeRaycaster::VolumeRaycaster()
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
-    , outport_("outport")
+    , backgroundPort_("bg")
+    , outport_("outport" , DataVec4Float32::get())
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
@@ -73,12 +74,16 @@ VolumeRaycaster::VolumeRaycaster()
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+    addPort(backgroundPort_ ,"ImagePortGroup1");
+
+    backgroundPort_.setOptional(true);
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setSerializationMode(PropertySerializationMode::All);
     channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
+    backgroundPort_.onChange([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
     raycasting_.gradientComputationMode_.onChange([this]() {
@@ -110,6 +115,7 @@ void VolumeRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
     utilgl::addShaderDefines(shader_, positionIndicator_);
+    utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
 }
 
@@ -162,6 +168,9 @@ void VolumeRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
+    if(backgroundPort_.isConnected()){
+        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
+    }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_);
 

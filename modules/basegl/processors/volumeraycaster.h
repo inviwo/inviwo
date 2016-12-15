@@ -96,6 +96,7 @@ protected:
     std::shared_ptr<const Volume> loadedVolume_;
     ImageInport entryPort_;
     ImageInport exitPort_;
+    ImageInport backgroundPort_;
     ImageOutport outport_;
 
     TransferFunctionProperty transferFunction_;
