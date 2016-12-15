@@ -31,9 +31,13 @@
 
 namespace inviwo {
 
+namespace animation {
+
 Animation::Animation()  {
     
 }
+
+} // namespace
 
 } // namespace
 
