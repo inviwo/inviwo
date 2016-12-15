@@ -109,7 +109,7 @@ void RBFVectorFieldGenerator2D::process() {
     xy = solverY.solve(by);
 
     auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
-
+    img->getColorLayer()->setSwizzleMask({ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
     auto data =
         static_cast<vec2 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
 
