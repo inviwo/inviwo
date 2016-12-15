@@ -37,17 +37,20 @@ uniform mat3 kernel;
 
 void main() {
     if(sharpen) {
-        vec2 texCoords00 = (gl_FragCoord.xy - vec2( 1, 1)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords10 = (gl_FragCoord.xy - vec2( 0, 1)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords20 = (gl_FragCoord.xy - vec2(-1, 1)) * outportParameters_.reciprocalDimensions;
-
-        vec2 texCoords01 = (gl_FragCoord.xy - vec2(-1, 0)) * outportParameters_.reciprocalDimensions;
+        float x = outportParameters_.reciprocalDimensions.x;
+        float y = outportParameters_.reciprocalDimensions.y;
+        
         vec2 texCoords11 = (gl_FragCoord.xy - vec2( 0, 0)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords21 = (gl_FragCoord.xy - vec2( 1, 0)) * outportParameters_.reciprocalDimensions;
+        vec2 texCoords01 = texCoords11 - vec2(-x, 0.0);
+        vec2 texCoords21 = texCoords11 - vec2(x, 0.0);
 
-        vec2 texCoords02 = (gl_FragCoord.xy - vec2(-1, 1)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords12 = (gl_FragCoord.xy - vec2( 0, 1)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords22 = (gl_FragCoord.xy - vec2( 1, 1)) * outportParameters_.reciprocalDimensions;
+        vec2 texCoords00 = texCoords11 - vec2(x, y);
+        vec2 texCoords10 = texCoords11 - vec2(0.0, y);            
+        vec2 texCoords20 = texCoords11 - vec2(-x, y);
+        
+        vec2 texCoords02 = texCoords11 - vec2(-x, y);
+        vec2 texCoords12 = texCoords11 - vec2(0.0, y);
+        vec2 texCoords22 = texCoords11 - vec2(x, y);
 
         vec4 samples[9];
         const float weights[9] = float[9](
@@ -61,15 +64,15 @@ void main() {
                                         kernel[1][2],
                                         kernel[2][2]);
 
-        samples[0] = texture2D(inport_, texCoords00);
-        samples[1] = texture2D(inport_, texCoords10);
-        samples[2] = texture2D(inport_, texCoords20);
-        samples[3] = texture2D(inport_, texCoords01);
-        samples[4] = texture2D(inport_, texCoords11);
-        samples[5] = texture2D(inport_, texCoords21);
-        samples[6] = texture2D(inport_, texCoords02);
-        samples[7] = texture2D(inport_, texCoords12);
-        samples[8] = texture2D(inport_, texCoords22);
+        samples[0] = texture(inport_, texCoords00);
+        samples[1] = texture(inport_, texCoords10);
+        samples[2] = texture(inport_, texCoords20);
+        samples[3] = texture(inport_, texCoords01);
+        samples[4] = texture(inport_, texCoords11);
+        samples[5] = texture(inport_, texCoords21);
+        samples[6] = texture(inport_, texCoords02);
+        samples[7] = texture(inport_, texCoords12);
+        samples[8] = texture(inport_, texCoords22);
 
         vec4 finalVal = weights[4] * samples[4];
 
@@ -85,6 +88,6 @@ void main() {
     }
 
     else {
-        FragData0 = texture2D(inport_, gl_FragCoord.xy * outportParameters_.reciprocalDimensions);
+        FragData0 = texture(inport_, gl_FragCoord.xy * outportParameters_.reciprocalDimensions);
     }
 }

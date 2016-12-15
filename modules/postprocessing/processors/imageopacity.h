@@ -41,23 +41,24 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageOpacity, Image Opacity}
  * ![](org.inviwo.ImageOpacity.png?classIdentifier=org.inviwo.ImageOpacity)
- * Explanation of how to use the processor.
+ * Controls an image's opacity
+ *
+ *     out.rgb = in.rgb
+ *     out.a = alpha
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __ImageInport__ Input image.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __ImageOutport__ Output image.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Alpha__ Controls the opacity.
  */
 
 /**
  * \class ImageOpacity
- * \brief <brief description>
- * <Detailed description from a developer prespective>
+ * \brief Controls an image's opacity
  */
 class IVW_MODULE_POSTPROCESSING_API ImageOpacity : public ImageGLProcessor {
 public:

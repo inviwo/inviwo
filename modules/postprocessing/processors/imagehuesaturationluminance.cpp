@@ -45,7 +45,7 @@ const ProcessorInfo ImageHueSaturationLuminance::getProcessorInfo() const { retu
 ImageHueSaturationLuminance::ImageHueSaturationLuminance()
     : ImageGLProcessor("huesaturationluminance.frag")
     , hue_("hue", "Hue", 0.f, 0.f, 1.f, .01f)
-    , saturation_("sat", "Saturation", 1.f, -1.f, 1.f, .01f)
+    , saturation_("sat", "Saturation", 0.f, -1.f, 1.f, .01f)
     , luminance_("lum", "Luminance", 0.f, -1.f, 1.f, .01f) {
 
     addProperty(hue_);

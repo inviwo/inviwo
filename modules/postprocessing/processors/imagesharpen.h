@@ -42,24 +42,30 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageSharpen, Image Sharpen}
  * ![](org.inviwo.ImageSharpen.png?classIdentifier=org.inviwo.ImageSharpen)
- * Explanation of how to use the processor.
+ * Applies a laplacian filter to the input image.
+ * Two kernels are available:
+ *
+ *     Filter1: -1  -1  -1
+ *              -1   8  -1
+ *              -1  -1  -1
+ *
+ *     Filter2:  0  -1   0
+ *              -1   4  -1
+ *               0  -1   0
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __ImageInport__ Input image.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __ImageOutport__ Output image.
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Sharpen__ Turn filter on/off.
  */
-
 
 /**
  * \class ImageSharpen
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \brief Applies a laplacian filter to the input image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor { 
 public:

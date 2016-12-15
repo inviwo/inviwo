@@ -39,12 +39,13 @@ uniform float lum;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
+    vec4 inColor = texture(inport_, texCoords);
     
-    vec4 hsl = rgbToHsl(inColor);
-    hsl.r = mod(hsl.r + hue, 1.0);
-    hsl.g = clamp(hsl.g + sat, 0.0, 1.0);
-    hsl.b = clamp(hsl.b + lum, 0.0, 1.0);
+    vec3 hslColor = rgbToHsl(inColor.rgb);
+
+    hslColor.r = mod(hslColor.r + hue, 1.0);
+    hslColor.g = clamp(hslColor.g + sat, 0.0, 1.0);
+    hslColor.b = clamp(hslColor.b + lum, 0.0, 1.0);
     
-    FragData0 = hslToRgb(hsl);
+    FragData0 = vec4(hslToRgb(hslColor), inColor.a);
 }

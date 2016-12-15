@@ -40,7 +40,6 @@ uniform ImageParameters outportParameters_;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 originalColor = texture2D(inport_, texCoords);
-    if(originalColor.a == 0) discard;
-    FragData0 = vec4(originalColor.x,originalColor.y,originalColor.z,alpha);
+    vec4 originalColor = texture(inport_, texCoords);
+    FragData0 = vec4(originalColor.rgb, alpha);
 }

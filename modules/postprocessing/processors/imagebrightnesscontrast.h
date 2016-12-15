@@ -39,23 +39,26 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageBrightnessContrast, Image Brightness Contrast}
  * ![](org.inviwo.ImageBrightnessContrast.png?classIdentifier=org.inviwo.ImageBrightnessContrast)
- * Explanation of how to use the processor.
+ * Controls brightness and contrast of an image.
+ * The following manipulations are applied:
+ *
+ *     out.rgb = in.rgb - 0.5) * contrast + 0.5 + brightness
+ *     out.a = in.a
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __ImageInport__ Input image.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __ImageOutport__ Output image.
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Brightness__ Controls brightness.
+ *   * __Contrast__ Controls contrast.
  */
 
 /**
  * \class ImageBrightnessContrast
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \brief Controls brightness and contrast of an image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageBrightnessContrast : public ImageGLProcessor { 
 public:

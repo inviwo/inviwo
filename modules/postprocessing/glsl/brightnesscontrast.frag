@@ -41,6 +41,6 @@ vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture2D(inport_, texCoords);
+    vec4 inColor = texture(inport_, texCoords);
     FragData0 = brightnessContrast(inColor, brightness, contrast);
 }
