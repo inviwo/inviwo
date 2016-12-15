@@ -32,9 +32,10 @@ if(${MSVC})
     if(${IVW_DOXYGEN_PROJECT})
         ivw_message(STATUS 
             "In Visual Studio the doxygen project will rerun every time you run\n"
-            "\"ALL_BUILD\" even if it is up to date. Hence, you propbably only\n"
-            "want to enable \"IVW_DOXYGEN_PROJECT\" once to generate the\n"
-            "documentation and then then disable it.")
+            "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
+            "to disable generation of doxygen on each build this can be done\n"
+            "by right clicking on the doc folder in the \"Solution Explorer\" and\n"
+            "select \"Unload Project\".")
     endif()
 else()
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ON)
