@@ -39,11 +39,13 @@ namespace inviwo {
 namespace animation {
 
 class Keyframe;
+class KeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserver : public Observer {
 public:
     virtual void onKeyframeAdded(Keyframe* key){};
     virtual void onKeyframeRemoved(Keyframe* key){};
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* key){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserverble
@@ -51,6 +53,7 @@ class IVW_MODULE_ANIMATION_API KeyframeSequenceObserverble
 protected:
     void notifyKeyframeAdded(Keyframe* key);
     void notifyKeyframeRemoved(Keyframe* key);
+    void notifyKeyframeSequenceMoved(KeyframeSequence* seq);
 };
 
 } // namespace

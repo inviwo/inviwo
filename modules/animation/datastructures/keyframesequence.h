@@ -104,6 +104,24 @@ public:
     virtual ~KeyframeSequenceTyped() = default;
 
     virtual size_t getNumberOfKeyframes() { return keyframes_.size(); }
+
+    const Key& getKeyFrame(size_t i) const { return *keyframes_[i]; }
+    Key& getKeyFrame(size_t i) { return *keyframes_[i]; }
+    const Key& getFirst() const { return *keyframes_.front(); }
+    Key& getFirst() { return *keyframes_.front(); }
+    const Key& getLast() const { return *keyframes_.back(); }
+    Key& getLast() { return *keyframes_.back(); }
+
+    void removeKeyFrame(size_t i) { 
+        auto key = std::move(keyframes_[i]);
+        keyframes_.erase(keyframes_.begin+i);
+        notifyKeyframeRemoved(key.get());
+    }
+
+    void addKeyFrame(const Key& key) {
+        addKeyFrame(std::make_unique<Key>(key));
+    }
+
     virtual auto evaluate(Time from, Time to) const -> typename Key::value_type {
         return interpolation_->evaluate(keyframes_, to);
     }
@@ -112,10 +130,7 @@ public:
         interpolation_ = interpolation;
     }
 
-    const Key& getFirst() const { return *keyframes_.front(); }
-    Key& getFirst() { return *keyframes_.front(); }
-    const Key& getLast() const { return *keyframes_.back(); }
-    Key& getLast() { return *keyframes_.back(); }
+
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -128,8 +143,15 @@ private:
     }
 
     virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) override {
+        const auto startTime = keyframes_.front()->getTime();
+        const auto endTime = keyframes_.back()->getTime();
+
         std::stable_sort(keyframes_.begin(), keyframes_.end(),
                          [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
+
+        if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
+            notifyKeyframeSequenceMoved(this);
+        }
     }
 
     std::vector<std::unique_ptr<Key>> keyframes_;

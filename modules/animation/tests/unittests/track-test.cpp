@@ -47,7 +47,6 @@ TEST(AnimationTrack, FloatInterpolation) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     
-  
     TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
 
     KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
@@ -84,19 +83,16 @@ TEST(AnimationTrack, FloatInterpolation) {
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-
     floatTrack.evaluate(Time{ 0.5 }, Time{ 1.0 });
     EXPECT_EQ(0.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-
     floatTrack.evaluate(Time{ 0.5 }, Time{ 2.0 });
     EXPECT_EQ(1.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-
     floatTrack.evaluate(Time{ 0.5 }, Time{ 3.0 });
     EXPECT_EQ(0.0f, floatProperty.get());
 

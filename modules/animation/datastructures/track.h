@@ -48,7 +48,7 @@ namespace animation {
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATION_API Track : public TrackObservable { 
+class IVW_MODULE_ANIMATION_API Track : public TrackObservable, public KeyframeSequenceObserver { 
 public:
     Track() = default;
     virtual ~Track() = default;
@@ -56,9 +56,7 @@ public:
     virtual void setEnabled(bool enabled) = 0;
     virtual bool isEnabled() const = 0;
 
-    virtual void evaluate(Time from, Time to) = 0; 
-
-    // list of sequences
+    virtual void evaluate(Time from, Time to) const = 0; 
 };
 
 template <typename Key>
@@ -67,9 +65,14 @@ public:
     TrackTyped() = default;
     virtual ~TrackTyped() = default;
 
-    virtual void evaluate(Time from, Time to) override = 0;
+    virtual void evaluate(Time from, Time to) const override = 0;
+
+    virtual size_t numberOfSequences() const = 0;
+    virtual KeyframeSequenceTyped<Key>& getSequence(size_t i) = 0;
+    virtual const KeyframeSequenceTyped<Key>& getSequence(size_t i) const = 0;
 
     virtual void addSequence(const KeyframeSequenceTyped<Key>& sequence) = 0;
+    virtual void removeSequence(size_t i) = 0;
 };
 
 
@@ -87,25 +90,25 @@ public:
      * ----------X======X====X-----------X=========X-------X=====X--------
      * 
      */
-    virtual void evaluate(Time from, Time to) override {
+    virtual void evaluate(Time from, Time to) const override {
         if (!enabled_ || sequences_.empty()) return;
 
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), to,
-            [](const auto& time, const auto& seq) { return time < seq.getFirst().getTime(); });
+            [](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
 
-        if (it == sequences_.begin() && from > it->getFirst().getTime()) {
-             property_->set(it->getFirst().getValue());      
+        if (it == sequences_.begin() && from > (*it)->getFirst().getTime()) {
+             property_->set((*it)->getFirst().getValue());      
         } else {
             auto& seq1 = *std::prev(it);
 
-            if (to < seq1.getLast().getTime() ) {
-                property_->set(seq1.evaluate(from, to));
+            if (to < seq1->getLast().getTime() ) {
+                property_->set(seq1->evaluate(from, to));
             } else {
-                if( from < seq1.getLast().getTime() ) {
-                    property_->set(seq1.getLast().getValue());
-                } else if(it != sequences_.end() &&  from > it->getFirst().getTime()) {
-                    property_->set(it->getFirst().getValue());
+                if( from < seq1->getLast().getTime() ) {
+                    property_->set(seq1->getLast().getValue());
+                } else if(it != sequences_.end() &&  from > (*it)->getFirst().getTime()) {
+                    property_->set((*it)->getFirst().getValue());
                 }
             }
         }
@@ -114,27 +117,53 @@ public:
     virtual void addSequence(const KeyframeSequenceTyped<Key>& sequence) {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),
-            [](const auto& time, const auto& seq) { return seq.getFirst().getTime() < time; });
+            [](const auto& time, const auto& seq) { return seq->getFirst().getTime() < time; });
 
-        if(it != sequences_.begin()) {
-            if (std::prev(it)->getLast().getTime() > sequence.getFirst().getTime()) {
+        if (it != sequences_.begin()) {
+            if ((*std::prev(it))->getLast().getTime() > sequence.getFirst().getTime()) {
                 throw Exception("Overlapping Sequence", IvwContext);
             }
         }
-        if(it != sequences_.end() && it->getFirst().getTime() < sequence.getLast().getTime()) {
-            throw Exception("Overlapping Sequence", IvwContext); 
+        if (it != sequences_.end() && (*it)->getFirst().getTime() < sequence.getLast().getTime()) {
+            throw Exception("Overlapping Sequence", IvwContext);
         }
 
-        auto inserted = sequences_.insert(it, sequence);
-        notifyKeyframeSequenceAdded(&(*inserted));
+        auto inserted =
+            sequences_.insert(it, std::make_unique<KeyframeSequenceTyped<Key>>(sequence));
+        notifyKeyframeSequenceAdded(inserted->get());
     };
 
+    virtual size_t numberOfSequences() const override {
+       return sequences_.size();
+    }
+
+    virtual KeyframeSequenceTyped<Key>& getSequence(size_t i) override {
+        return *sequences_[i];
+    }
+
+    virtual const KeyframeSequenceTyped<Key>& getSequence(size_t i) const override {
+        return *sequences_[i];
+    }
+
+    virtual void removeSequence(size_t i) override {
+        auto seq = std::move(sequences_[i]);
+        sequences_.erase(sequences_.begin()+i);
+        notifyKeyframeSequenceRemoved(seq.get());
+    }
+
 private:
-    bool enabled_;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* key) override {
+        std::stable_sort(sequences_.begin(), sequences_.end(), [](const auto& a, const auto& b) {
+            return a->getFirst().getTime() < b->getFirst().getTime();
+        });
+        /// Do validation? 
+    }
+
+    bool enabled_ = true;
     Prop* property_;
 
     // Sorted list of non-overlapping sequences of key frames
-    std::vector<KeyframeSequenceTyped<Key>> sequences_;
+    std::vector<std::unique_ptr<KeyframeSequenceTyped<Key>>> sequences_;
 };
 
 

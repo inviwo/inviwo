@@ -41,6 +41,10 @@ void KeyframeSequenceObserverble::notifyKeyframeRemoved(Keyframe* key) {
     forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeRemoved(key); });
 }
 
+void KeyframeSequenceObserverble::notifyKeyframeSequenceMoved(KeyframeSequence* seq) {
+     forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceMoved(seq); });
+}
+
 }  // namespace
 
 }  // namespace
