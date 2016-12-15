@@ -33,6 +33,11 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPushButton>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSplitter>
+#include <QVBoxLayout>
+#include <QListWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -42,16 +47,54 @@ namespace animation {
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController* animationController, const std::string& widgetName, QWidget* parent) 
     : InviwoDockWidget(QString(widgetName.c_str()), parent)
     , animationController_(animationController) {
+    if (animationController_ == nullptr) {
+        throw Exception("Animation controller cannot be null", IvwContext);
+    }
     generateWidget();
 }
 
 void AnimationEditorDockWidgetQt::generateWidget() {
 
+    
 
     auto btnPlay_ = new QPushButton("Play");
     connect(btnPlay_, &QPushButton::clicked, [&]() {
-        //animationController_->play();
+        animationController_->play();
     });
+    auto btnPause_ = new QPushButton("Pause");
+    connect(btnPause_, &QPushButton::clicked, [&]() {
+        animationController_->pause();
+    });
+    auto btnStop_ = new QPushButton("Stop");
+    connect(btnStop_, &QPushButton::clicked, [&]() {
+        animationController_->stop();
+    });
+
+
+    auto controllerLayout = new QHBoxLayout();
+    controllerLayout->addWidget(btnPlay_);
+    controllerLayout->addWidget(btnPause_);
+    controllerLayout->addWidget(btnStop_);
+
+    auto leftPanel = new QVBoxLayout();
+    leftPanel->addItem(controllerLayout);
+    auto trackNames = new QListWidget();
+    leftPanel->addWidget(trackNames);
+
+    auto rightPanel = new QVBoxLayout();
+    rightPanel->addWidget(new QLabel("Timeline"));
+    rightPanel->addWidget(new QLabel("Tracks"));
+
+    auto hLayout = new QHBoxLayout();
+    hLayout->addItem(leftPanel);
+    //auto splitter = new QSplitter();
+    //splitter->
+    //hLayout->addWidget(new QSplitter());
+    hLayout->addItem(rightPanel);
+
+    QWidget* mainPanel = new QWidget(this);
+    mainPanel->setLayout(hLayout);
+    setWidget(mainPanel);
 }
 
 } // namespace

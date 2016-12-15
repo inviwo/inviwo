@@ -49,6 +49,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         auto animationEditorOpen =
             menu->addAction(QIcon(":/icons/stopwatch.png"), "&Animation Editor");
         auto editor = new animation::AnimationEditorDockWidgetQt(&animationController_, "Animation Editor", win);
+        editor->hide();
         win->connect(animationEditorOpen, SIGNAL(triggered(bool)), editor, SLOT(show(void)));
     }
     // Add a directory to the search path of the Shadermanager
