@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+namespace animation {
+
 /**
  * \class AnimationController
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
@@ -45,6 +47,8 @@ public:
     AnimationController();
     virtual ~AnimationController() = default;
 };
+
+} // namespace
 
 } // namespace
 

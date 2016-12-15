@@ -31,9 +31,14 @@
 
 namespace inviwo {
 
+namespace animation {
+
 AnimationController::AnimationController()  {
     
 }
+
+} // namespace
+
 
 } // namespace
 

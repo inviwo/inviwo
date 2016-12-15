@@ -28,10 +28,28 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationqtmodule.h>
+#include <modules/animationqt/animationeditordockwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMenu>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QAction>
+#include <warn/pop>
 
 namespace inviwo {
 
-AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app, "AnimationQt") {   
+AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app, "AnimationQt") {  
+
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        auto menu = win->menuBar()->addMenu("Animation");
+        auto animationEditorOpen =
+            menu->addAction(QIcon(":/icons/stopwatch.png"), "&Animation Editor");
+        auto editor = new animation::AnimationEditorDockWidgetQt(&animationController_, "Animation Editor", win);
+        win->connect(animationEditorOpen, SIGNAL(triggered(bool)), editor, SLOT(show(void)));
+    }
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 

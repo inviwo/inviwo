@@ -32,13 +32,18 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <modules/animation/animationcontroller.h>
 
 namespace inviwo {
+
 
 class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule() = default;
+    
+
+    animation::AnimationController animationController_;
 };
 
 } // namespace
