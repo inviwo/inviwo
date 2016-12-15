@@ -33,6 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -48,7 +49,9 @@ namespace animation {
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATION_API Track : public TrackObservable, public KeyframeSequenceObserver { 
+class IVW_MODULE_ANIMATION_API Track : public Serializable,
+                                       public TrackObservable,
+                                       public KeyframeSequenceObserver {
 public:
     Track() = default;
     virtual ~Track() = default;
@@ -56,7 +59,10 @@ public:
     virtual void setEnabled(bool enabled) = 0;
     virtual bool isEnabled() const = 0;
 
-    virtual void evaluate(Time from, Time to) const = 0; 
+    virtual void evaluate(Time from, Time to) const = 0;
+
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
 };
 
 template <typename Key>
@@ -67,12 +73,15 @@ public:
 
     virtual void evaluate(Time from, Time to) const override = 0;
 
-    virtual size_t numberOfSequences() const = 0;
-    virtual KeyframeSequenceTyped<Key>& getSequence(size_t i) = 0;
-    virtual const KeyframeSequenceTyped<Key>& getSequence(size_t i) const = 0;
+    virtual size_t size() const = 0;
+    virtual KeyframeSequenceTyped<Key>& operator[](size_t i) = 0;
+    virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const = 0;
 
-    virtual void addSequence(const KeyframeSequenceTyped<Key>& sequence) = 0;
-    virtual void removeSequence(size_t i) = 0;
+    virtual void add(const KeyframeSequenceTyped<Key>& sequence) = 0;
+    virtual void remove(size_t i) = 0;
+
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
 };
 
 
@@ -114,7 +123,7 @@ public:
         }
     };
 
-    virtual void addSequence(const KeyframeSequenceTyped<Key>& sequence) {
+    virtual void add(const KeyframeSequenceTyped<Key>& sequence) {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),
             [](const auto& time, const auto& seq) { return seq->getFirst().getTime() < time; });
@@ -133,23 +142,30 @@ public:
         notifyKeyframeSequenceAdded(inserted->get());
     };
 
-    virtual size_t numberOfSequences() const override {
+    virtual size_t size() const override {
        return sequences_.size();
     }
 
-    virtual KeyframeSequenceTyped<Key>& getSequence(size_t i) override {
+    virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override {
         return *sequences_[i];
     }
 
-    virtual const KeyframeSequenceTyped<Key>& getSequence(size_t i) const override {
+    virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const override {
         return *sequences_[i];
     }
 
-    virtual void removeSequence(size_t i) override {
+    virtual void remove(size_t i) override {
         auto seq = std::move(sequences_[i]);
         sequences_.erase(sequences_.begin()+i);
         notifyKeyframeSequenceRemoved(seq.get());
     }
+
+    virtual void serialize(Serializer& s) const override {
+    
+    };
+    virtual void deserialize(Deserializer& d) override {
+    
+    };
 
 private:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* key) override {

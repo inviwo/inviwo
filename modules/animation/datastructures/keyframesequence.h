@@ -55,7 +55,7 @@ public:
     KeyframeSequence() = default;
     virtual ~KeyframeSequence() = default;
 
-    virtual size_t getNumberOfKeyframes() = 0;
+    virtual size_t size() = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
@@ -103,22 +103,23 @@ public:
 
     virtual ~KeyframeSequenceTyped() = default;
 
-    virtual size_t getNumberOfKeyframes() { return keyframes_.size(); }
+    virtual size_t size() { return keyframes_.size(); }
 
-    const Key& getKeyFrame(size_t i) const { return *keyframes_[i]; }
-    Key& getKeyFrame(size_t i) { return *keyframes_[i]; }
+    const Key& operator[](size_t i) const { return *keyframes_[i]; }
+    Key& operator[](size_t i) { return *keyframes_[i]; }
+
     const Key& getFirst() const { return *keyframes_.front(); }
     Key& getFirst() { return *keyframes_.front(); }
     const Key& getLast() const { return *keyframes_.back(); }
     Key& getLast() { return *keyframes_.back(); }
 
-    void removeKeyFrame(size_t i) { 
+    void remove(size_t i) { 
         auto key = std::move(keyframes_[i]);
         keyframes_.erase(keyframes_.begin+i);
         notifyKeyframeRemoved(key.get());
     }
 
-    void addKeyFrame(const Key& key) {
+    void add(const Key& key) {
         addKeyFrame(std::make_unique<Key>(key));
     }
 
@@ -129,7 +130,6 @@ public:
     void setInterpolation(std::shared_ptr<const InterpolationTyped<Key>> interpolation) {
         interpolation_ = interpolation;
     }
-
 
 
     virtual void serialize(Serializer& s) const override;

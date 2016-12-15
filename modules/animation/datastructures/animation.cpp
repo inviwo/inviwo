@@ -33,8 +33,37 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation()  {
-    
+Animation::Animation() {}
+
+void Animation::evaluate(Time from, Time to) const {
+    for (const auto& track : tracks_) {
+        track->evaluate(from, to);
+    }
+}
+
+size_t Animation::size() const { return tracks_.size(); }
+
+const Track& Animation::operator[](size_t i) const { return *tracks_[i]; }
+
+Track& Animation::operator[](size_t i) { return *tracks_[i]; }
+
+void Animation::add(std::unique_ptr<Track> track) {
+    tracks_.push_back(std::move(track));
+    notifyTrackAdded(tracks_.back().get());
+}
+
+void Animation::remove(size_t i) {
+    auto track = std::move(tracks_[i]);
+    tracks_.erase(tracks_.begin() + i);
+    notifyTrackRemoved(track.get());
+}
+
+void Animation::serialize(Serializer& s) const {
+    s.serialize("tracks", tracks_);
+}
+
+void Animation::deserialize(Deserializer& d) {
+    d.deserialize("tracks", tracks_);
 }
 
 } // namespace

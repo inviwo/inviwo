@@ -32,25 +32,41 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializable.h>
+
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/animationobserver.h>
 
 namespace inviwo {
 
 namespace animation {
 
-    /**
- * \class Animation
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATION_API Animation { 
+class IVW_MODULE_ANIMATION_API Animation : public AnimationObserverble, public Serializable {
 public:
     Animation();
-    virtual ~Animation() = default;
+    Animation(const Animation&) = delete;
+    Animation& operator=(const Animation& that) = delete;
+
+    void evaluate(Time from, Time to) const;
+
+    size_t size() const;
+    Track& operator[](size_t i);
+    const Track& operator[](size_t i) const;
+
+    void add(std::unique_ptr<Track> track);
+    void remove(size_t i);
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+private:
+    std::vector<std::unique_ptr<Track>> tracks_;
 };
 
-} // namespace
+}  // namespace
 
-} // namespace
+}  // namespace
 
 #endif // IVW_ANIMATION_H
 

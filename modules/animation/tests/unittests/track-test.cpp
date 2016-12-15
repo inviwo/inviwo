@@ -38,12 +38,13 @@
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/interpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/animation.h>
 
 
 namespace inviwo {
 namespace animation {
 
-TEST(AnimationTrack, FloatInterpolation) {
+TEST(AnimationTests, FloatInterpolation) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     
@@ -53,7 +54,7 @@ TEST(AnimationTrack, FloatInterpolation) {
         {{Time{1}, 0.0f}, {Time{2}, 1.0f}, {Time{3}, 0.0f}},
         std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
-    floatTrack.addSequence(sequence);
+    floatTrack.add(sequence);
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
@@ -96,6 +97,47 @@ TEST(AnimationTrack, FloatInterpolation) {
     floatTrack.evaluate(Time{ 0.5 }, Time{ 3.0 });
     EXPECT_EQ(0.0f, floatProperty.get());
 
+}
+
+
+TEST(AnimationTests, AnimationTest) {
+
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
+
+    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
+
+    KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
+    { {Time{1}, 0.0f}, {Time{2}, 1.0f}, {Time{3}, 0.0f} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
+    { {Time{1},  dvec3(1.0)}, {Time{2},  dvec3(0.0)}, {Time{3}, dvec3(1.0)} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+
+    Animation animation;
+
+    {
+        auto floatTrack =
+            std::make_unique<TrackProperty<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
+        floatTrack->add(floatSequence);
+        animation.add(std::move(floatTrack));
+    }
+
+    {
+        auto doubleTrack =
+            std::make_unique<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>>(
+                &doubleProperty);
+        doubleTrack->add(doubleSequence);
+        animation.add(std::move(doubleTrack));
+    }
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+    EXPECT_EQ(dvec3(1.0), doubleProperty.get());
+
+    animation.evaluate(Time{0.0}, Time{1.5});
+
+    EXPECT_EQ(0.5f, floatProperty.get());
+    EXPECT_EQ(dvec3(0.5), doubleProperty.get());
 }
 
 }  // namespace

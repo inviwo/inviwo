@@ -35,16 +35,24 @@
 
 namespace inviwo {
 
-/**
- * \class AnimationObserver
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATION_API AnimationObserver { 
+namespace animation {
+
+class Track;
+
+class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
 public:
-    AnimationObserver();
-    virtual ~AnimationObserver() = default;
+    virtual void onTrackAdded(Track* track) {};
+    virtual void onTrackRemoved(Track* track) {};
 };
+
+class IVW_MODULE_ANIMATION_API AnimationObserverble : public Observable<AnimationObserver> {
+protected:
+    void notifyTrackAdded(Track* track);
+    void notifyTrackRemoved(Track* track);
+};
+
+} // namespace
+
 
 } // namespace
 
