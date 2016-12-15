@@ -98,13 +98,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         result = texture(bgColor, texCoords);
     }
 
-
-
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
-
 
         result = DRAW_BG(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
         result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
@@ -121,7 +118,6 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, raycaster.isoValue,
                 t, tDepth, tIncr);
-        } else {
         }
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -160,13 +156,13 @@ void main() {
     gl_FragDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
-    PickingData = texture(entryPicking, texCoords);
+    PickingData = vec4(0);
     if (entryPoint == exitPoint){
         discard;
     }
 #endif
-if (entryPoint != exitPoint){
-    color = rayTraversal(entryPoint, exitPoint, texCoords);   
-}
+    if (entryPoint != exitPoint){
+        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    }
     FragData0 = color;
 }

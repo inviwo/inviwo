@@ -86,7 +86,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SimpleRaycastingProperty& property,
                                              std::string name);
 
-
+IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader,ImageInport port);
 // VolumeIndicatorProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
