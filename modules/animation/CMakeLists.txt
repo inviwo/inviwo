@@ -9,9 +9,12 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationcontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequenceobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.h
@@ -26,9 +29,12 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequenceobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.cpp

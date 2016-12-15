@@ -33,6 +33,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/datastructures/animationtime.h>
 
 #include <chrono>
 
@@ -40,14 +42,12 @@ namespace inviwo {
 
 namespace animation {
 
-using Time = std::chrono::duration<double, std::ratio<1>>;
-
 /**
  * \class Keyframe
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API Keyframe : public Serializable { 
+class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObserverble { 
 public:
     Keyframe() = default;
     virtual ~Keyframe() = default;
@@ -67,15 +67,28 @@ public:
     ValueKeyframe(Time time, const T& value) : time_(time), value_(value) {}
     virtual ~ValueKeyframe() = default;
 
-    
-    virtual void setTime(Time time) override { time_ = time; }
+    ValueKeyframe(const ValueKeyframe& rhs) = default;
+    ValueKeyframe& operator=(const ValueKeyframe& that) {
+        if (this != &that) {
+            value_ = that.value_;
+            setTime(that.time_);
+        }
+        return *this;
+    }
+
+    virtual void setTime(Time time) override {
+        if (time != time_) {
+            auto oldTime = time_;
+            time_ = time;
+            notifKeyframeTimeChanged(this, oldTime);
+        }
+    }
     virtual Time getTime() const override { return time_; }
 
     const T& getValue() const { return value_; }
     T& getValue() { return value_; }
 
     void setValue(const T& value) { value_ = value; }
-
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -86,13 +99,17 @@ private:
 };
 
 template <typename T>
-void ValueKeyframe<T>::deserialize(Deserializer& d) {
-
+void ValueKeyframe<T>::serialize(Serializer& s) const {
+    s.serialize("time", time_.count());
+    s.serialize("value", value_);
 }
 
 template <typename T>
-void ValueKeyframe<T>::serialize(Serializer& s) const {
-
+void ValueKeyframe<T>::deserialize(Deserializer& d) {
+    double tmp = time_.count();
+    d.deserialize("time", tmp);
+    time_ = Time{tmp};
+    d.deserialize("value", value_);
 }
 
 } // namespace

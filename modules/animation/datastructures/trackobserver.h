@@ -33,18 +33,32 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/core/util/observer.h>
+
 namespace inviwo {
+
+namespace animation {
+
+class KeyframeSequence;
 
 /**
  * \class TrackObserver
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API TrackObserver { 
+class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
-    TrackObserver();
-    virtual ~TrackObserver() = default;
+    virtual void onKeyframeSequenceAdded(KeyframeSequence* s) {};
+    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s) {};
 };
+
+class IVW_MODULE_ANIMATION_API TrackObservable : public Observable<TrackObserver> {
+protected:
+    void notifyKeyframeSequenceAdded(KeyframeSequence* s);
+    void notifyKeyframeSequenceRemoved(KeyframeSequence* s);
+};
+
+} // namespace
 
 } // namespace
 

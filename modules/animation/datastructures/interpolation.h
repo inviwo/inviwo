@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/animation/datastructures/keyframe.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 #include <algorithm>
 
@@ -46,52 +47,80 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API Interpolation { 
+class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
 public:
     Interpolation() = default;
     virtual ~Interpolation() = default;
 
+    virtual Interpolation* clone() const = 0;
+
     virtual std::string getClassIdentifier() const = 0;
+
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
 };
 
 template <typename Key>
-class  InterpolationTyped : public Interpolation {
+class InterpolationTyped : public Interpolation {
 public:
     InterpolationTyped() = default;
     virtual ~InterpolationTyped() = default;
 
+    virtual InterpolationTyped* clone() const = 0;
+
     virtual std::string getClassIdentifier() const override = 0;
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
+
 
     // keys should be sorted by time
-    virtual auto evaluate(const std::vector<Key>& key, Time t) const -> typename Key::value_type = 0;
+    virtual auto evaluate(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
+        typename Key::value_type = 0;
 };
 
-
 template <typename Key>
-class  LinearInterpolation : public InterpolationTyped<Key> {
+class LinearInterpolation : public InterpolationTyped<Key> {
 public:
     LinearInterpolation() = default;
     virtual ~LinearInterpolation() = default;
 
-    virtual std::string getClassIdentifier() const override { return "org.inviwo.linearinterpolation"; }
+    virtual LinearInterpolation* clone() const {
+        return new LinearInterpolation(*this);   
+    };
+
+    virtual std::string getClassIdentifier() const override {
+        return "org.inviwo.linearinterpolation";
+    }
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto evaluate(const std::vector<Key>& key, Time t) const ->
+    virtual auto evaluate(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
         typename Key::value_type override {
-        auto it = std::upper_bound(key.begin(), key.end(), t, [](const auto& time, const auto& key) {
-            return time < key.getTime();
-        });
+        auto it = std::upper_bound(
+            keys.begin(), keys.end(), t,
+            [](const auto& time, const auto& key) { return time < key->getTime(); });
 
-        const auto& v1 = std::prev(it)->getValue();
-        const auto& t1 = std::prev(it)->getTime();
+        const auto& v1 = (*std::prev(it))->getValue();
+        const auto& t1 = (*std::prev(it))->getTime();
 
-        const auto& v2 = it->getValue();
-        const auto& t2 = it->getTime();
+        const auto& v2 = (*it)->getValue();
+        const auto& t2 = (*it)->getTime();
 
         return glm::mix(v1, v2, (t - t1) / (t2 - t1));
     }
 };
 
+template <typename Key>
+void LinearInterpolation<Key>::serialize(Serializer& s) const {
+    // TODO
+}
+
+template <typename Key>
+void LinearInterpolation<Key>::deserialize(Deserializer& d) {
+    // TODO
+}
 
 } // namespace
 

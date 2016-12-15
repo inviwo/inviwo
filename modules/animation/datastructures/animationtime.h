@@ -27,21 +27,18 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/trackobserver.h>
+#ifndef IVW_ANIMATIONTIME_H
+#define IVW_ANIMATIONTIME_H
 
 namespace inviwo {
 
 namespace animation {
 
-void TrackObservable::notifyKeyframeSequenceAdded(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceAdded(s); });
-}
-
-void TrackObservable::notifyKeyframeSequenceRemoved(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(s); });
-}
+using Time = std::chrono::duration<double, std::ratio<1>>;
 
 } // namespace
 
 } // namespace
+
+#endif // IVW_ANIMATIONTIME_H
 

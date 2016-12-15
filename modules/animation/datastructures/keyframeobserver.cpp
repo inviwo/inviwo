@@ -27,21 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 
 namespace inviwo {
 
 namespace animation {
 
-void TrackObservable::notifyKeyframeSequenceAdded(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceAdded(s); });
-}
-
-void TrackObservable::notifyKeyframeSequenceRemoved(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(s); });
+void KeyframeObserverble::notifKeyframeTimeChanged(Keyframe* key, Time oldTime) {
+    forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
 }
 
 } // namespace
 
 } // namespace
-

@@ -36,6 +36,7 @@
 
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/trackobserver.h>
 
 namespace inviwo {
 
@@ -47,7 +48,7 @@ namespace animation {
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATION_API Track { 
+class IVW_MODULE_ANIMATION_API Track : public TrackObservable { 
 public:
     Track() = default;
     virtual ~Track() = default;
@@ -124,7 +125,8 @@ public:
             throw Exception("Overlapping Sequence", IvwContext); 
         }
 
-        sequences_.insert(it, sequence);
+        auto inserted = sequences_.insert(it, sequence);
+        notifyKeyframeSequenceAdded(&(*inserted));
     };
 
 private:

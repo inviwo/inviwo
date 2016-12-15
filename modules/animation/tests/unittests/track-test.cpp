@@ -43,25 +43,63 @@
 namespace inviwo {
 namespace animation {
 
-TEST(AnimationTrack, test1) {
+TEST(AnimationTrack, FloatInterpolation) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     
-    EXPECT_EQ(0.0f, floatProperty.get());
-    
+  
     TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
 
     KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
         {{Time{1}, 0.0f}, {Time{2}, 1.0f}, {Time{3}, 0.0f}},
-        std::make_shared<LinearInterpolation<ValueKeyframe<float>>>());
+        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
     floatTrack.addSequence(sequence);
 
-    
+    EXPECT_EQ(0.0f, floatProperty.get());
 
     floatTrack.evaluate(Time{0.0}, Time{1.5});
 
     EXPECT_EQ(0.5f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 1.5 }, Time{ 2.5 });
+
+    EXPECT_EQ(0.5f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 2.5 }, Time{ 3.5 });
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+
+    floatProperty.set(3.0f);
+
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 3.5 }, Time{ 4.5 });
+
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 3.5 }, Time{ 0.5 });
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+
+    floatProperty.set(3.0f);
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 0.5 }, Time{ 1.0 });
+    EXPECT_EQ(0.0f, floatProperty.get());
+
+    floatProperty.set(3.0f);
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 0.5 }, Time{ 2.0 });
+    EXPECT_EQ(1.0f, floatProperty.get());
+
+    floatProperty.set(3.0f);
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatTrack.evaluate(Time{ 0.5 }, Time{ 3.0 });
+    EXPECT_EQ(0.0f, floatProperty.get());
+
 }
 
 }  // namespace

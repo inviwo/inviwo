@@ -27,21 +27,35 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/trackobserver.h>
+#ifndef IVW_KEYFRAMEOBSERVER_H
+#define IVW_KEYFRAMEOBSERVER_H
+
+#include <modules/animation/animationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/observer.h>
+
+#include <modules/animation/datastructures/animationtime.h>
 
 namespace inviwo {
 
 namespace animation {
 
-void TrackObservable::notifyKeyframeSequenceAdded(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceAdded(s); });
-}
+class Keyframe;
 
-void TrackObservable::notifyKeyframeSequenceRemoved(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(s); });
-}
+class IVW_MODULE_ANIMATION_API KeyframeObserver : public Observer {
+public:
+    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) {};
+};
+
+class IVW_MODULE_ANIMATION_API KeyframeObserverble : public Observable<KeyframeObserver> {
+protected:
+    void notifKeyframeTimeChanged(Keyframe* key, Time oldTime);
+};
 
 } // namespace
 
 } // namespace
+
+#endif // IVW_KEYFRAMEOBSERVER_H
 

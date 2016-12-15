@@ -36,6 +36,8 @@
 
 #include <modules/animation/datastructures/interpolation.h>
 #include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
 
 namespace inviwo {
 
@@ -45,35 +47,64 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable { 
+class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
+                                                  public KeyframeSequenceObserverble,
+                                                  public KeyframeObserver {
+        
 public:
     KeyframeSequence() = default;
     virtual ~KeyframeSequence() = default;
 
     virtual size_t getNumberOfKeyframes() = 0;
-    
-    // Interpolation. 
-    // Keyframes.
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
-
 
 // A sequence should always have at least to keyframes.
 template <typename Key>
 class KeyframeSequenceTyped : public KeyframeSequence {
 public:
     KeyframeSequenceTyped(const std::vector<Key>& keyframes,
-                     const std::shared_ptr<const InterpolationTyped<Key>>& interpolation)
-        : KeyframeSequence(), keyframes_(keyframes), interpolation_{interpolation} {}
+                          std::unique_ptr<InterpolationTyped<Key>> interpolation)
+        : KeyframeSequence(), keyframes_(), interpolation_{std::move(interpolation)} {
 
+        for (const auto& key : keyframes) {
+            keyframes_.push_back(util::make_unique<Key>(key));
+        }
+    }
+    KeyframeSequenceTyped(const KeyframeSequenceTyped& rhs)
+        : KeyframeSequence(rhs), interpolation_(rhs.interpolation_->clone()) {
+        for (const auto& key : rhs.keyframes_) {
+            addKeyFrame(util::make_unique<Key>(*key));
+        }
+    }
+    KeyframeSequenceTyped& operator=(const KeyframeSequenceTyped& that) {
+        if (this != &that) {
+            KeyframeSequence::operator=(that);
+            interpolation_.reset(that.interpolation_->clone());
 
+            for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
+                *keyframes_[i] = *that.keyframes_[i];
+            }
+            for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
+                 i < that.keyframes_.size(); i++) {
+                keyframes_.push_back(util::make_unique<Key>(*that.keyframes_[i]));
+                notifyKeyframeAdded(keyframes_.back().get());
+            }
+            while (keyframes_.size() > that.keyframes_.size()) {
+                auto key = std::move(keyframes_.back());
+                keyframes_.pop_back();
+                notifyKeyframeRemoved(key.get());
+            }
+        }
+        return *this;
+    }
 
     virtual ~KeyframeSequenceTyped() = default;
 
     virtual size_t getNumberOfKeyframes() { return keyframes_.size(); }
-    virtual auto evaluate(Time from, Time to) -> typename Key::value_type {
+    virtual auto evaluate(Time from, Time to) const -> typename Key::value_type {
         return interpolation_->evaluate(keyframes_, to);
     }
 
@@ -81,28 +112,41 @@ public:
         interpolation_ = interpolation;
     }
 
-    const Key& getFirst() const { return keyframes_.front(); }
-    Key& getFirst() { return keyframes_.front(); }
-    const Key& getLast() const { return keyframes_.back(); }
-    Key& getLast() { return keyframes_.back(); }
+    const Key& getFirst() const { return *keyframes_.front(); }
+    Key& getFirst() { return *keyframes_.front(); }
+    const Key& getLast() const { return *keyframes_.back(); }
+    Key& getLast() { return *keyframes_.back(); }
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::vector<Key> keyframes_;
-    std::shared_ptr<const InterpolationTyped<Key>> interpolation_;
+    void addKeyFrame(std::unique_ptr<Key> key) {
+        keyframes_.push_back(std::move(key));
+        keyframes_.back()->addObserver(this);
+        notifyKeyframeAdded(keyframes_.back().get());
+    }
+
+    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) override {
+        std::stable_sort(keyframes_.begin(), keyframes_.end(),
+                         [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
+    }
+
+    std::vector<std::unique_ptr<Key>> keyframes_;
+    std::unique_ptr<InterpolationTyped<Key>> interpolation_;
 };
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
-
+    s.serialize("keyframes", keyframes_);
+    s.serialize("interpolation", interpolation_);
 }
 
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
-
+    d.deserialize("keyframes", keyframes_);
+    d.deserialize("interpolation", interpolation_);
 }
 
 
