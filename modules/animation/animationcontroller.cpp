@@ -33,8 +33,21 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationController::AnimationController()  {
+AnimationController::AnimationController(Animation* animation)
+: animation_(animation), state_(AnimationState::Paused) {
     
+}
+
+void AnimationController::play() {
+
+}
+
+void AnimationController::pause() {
+
+}
+
+void AnimationController::stop() {
+
 }
 
 } // namespace

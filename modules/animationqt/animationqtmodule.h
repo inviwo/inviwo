@@ -33,6 +33,7 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/animation/animationcontroller.h>
+#include <modules/animation/datastructures/animation.h>
 
 namespace inviwo {
 
@@ -44,6 +45,7 @@ public:
     
 
     animation::AnimationController animationController_;
+    animation::Animation animation_;
 };
 
 } // namespace

@@ -33,6 +33,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animation/datastructures/animation.h>
+
 namespace inviwo {
 
 namespace animation {
@@ -44,8 +46,26 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API AnimationController { 
 public:
-    AnimationController();
+    enum class AnimationState {
+        Paused = 0,
+        Playing
+    };
+    AnimationController(Animation* animation);
     virtual ~AnimationController() = default;
+
+    // Start animation
+    void play();
+    // Pause animation
+    void pause();
+    // Pause and reset to start
+    void stop();
+
+    const Animation* getAnimation() const { return animation_; }
+
+    const AnimationState& getState() const { return state_; }
+protected:
+    Animation* animation_; ///< non-owning reference
+    AnimationState state_;
 };
 
 } // namespace

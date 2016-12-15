@@ -41,7 +41,8 @@
 
 namespace inviwo {
 
-AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app, "AnimationQt") {  
+AnimationQtModule::AnimationQtModule(InviwoApplication* app) 
+    : InviwoModule(app, "AnimationQt"), animationController_(&animation_) {  
 
     if (auto win = utilqt::getApplicationMainWindow()) {
         auto menu = win->menuBar()->addMenu("Animation");
