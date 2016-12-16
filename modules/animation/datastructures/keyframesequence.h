@@ -57,6 +57,19 @@ public:
 
     virtual size_t size() = 0;
 
+    virtual const Keyframe& operator[](size_t i) const = 0;
+    virtual Keyframe& operator[](size_t i) = 0;
+
+    virtual const Keyframe& getFirst() const = 0;
+    virtual Keyframe& getFirst() = 0;
+    virtual const Keyframe& getLast() const = 0;
+    virtual Keyframe& getLast() = 0;
+
+    virtual void remove(size_t i) = 0;
+    virtual void add(const Keyframe& key) = 0;
+
+    virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
+
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
@@ -65,105 +78,187 @@ public:
 template <typename Key>
 class KeyframeSequenceTyped : public KeyframeSequence {
 public:
+    static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
+
     KeyframeSequenceTyped(const std::vector<Key>& keyframes,
-                          std::unique_ptr<InterpolationTyped<Key>> interpolation)
-        : KeyframeSequence(), keyframes_(), interpolation_{std::move(interpolation)} {
-
-        for (const auto& key : keyframes) {
-            keyframes_.push_back(util::make_unique<Key>(key));
-        }
-    }
-    KeyframeSequenceTyped(const KeyframeSequenceTyped& rhs)
-        : KeyframeSequence(rhs), interpolation_(rhs.interpolation_->clone()) {
-        for (const auto& key : rhs.keyframes_) {
-            addKeyFrame(util::make_unique<Key>(*key));
-        }
-    }
-    KeyframeSequenceTyped& operator=(const KeyframeSequenceTyped& that) {
-        if (this != &that) {
-            KeyframeSequence::operator=(that);
-            interpolation_.reset(that.interpolation_->clone());
-
-            for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
-                *keyframes_[i] = *that.keyframes_[i];
-            }
-            for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
-                 i < that.keyframes_.size(); i++) {
-                keyframes_.push_back(util::make_unique<Key>(*that.keyframes_[i]));
-                notifyKeyframeAdded(keyframes_.back().get());
-            }
-            while (keyframes_.size() > that.keyframes_.size()) {
-                auto key = std::move(keyframes_.back());
-                keyframes_.pop_back();
-                notifyKeyframeRemoved(key.get());
-            }
-        }
-        return *this;
-    }
+                          std::unique_ptr<InterpolationTyped<Key>> interpolation);
+    KeyframeSequenceTyped(const KeyframeSequenceTyped& rhs);
+    KeyframeSequenceTyped& operator=(const KeyframeSequenceTyped& that);
 
     virtual ~KeyframeSequenceTyped() = default;
 
-    virtual size_t size() { return keyframes_.size(); }
+    virtual size_t size() override;
 
-    const Key& operator[](size_t i) const { return *keyframes_[i]; }
-    Key& operator[](size_t i) { return *keyframes_[i]; }
+    virtual const Key& operator[](size_t i) const override;
+    virtual Key& operator[](size_t i) override;
 
-    const Key& getFirst() const { return *keyframes_.front(); }
-    Key& getFirst() { return *keyframes_.front(); }
-    const Key& getLast() const { return *keyframes_.back(); }
-    Key& getLast() { return *keyframes_.back(); }
+    virtual const Key& getFirst() const override;
+    virtual Key& getFirst() override;
+    virtual const Key& getLast() const override;
+    virtual Key& getLast() override;
 
-    void remove(size_t i) { 
-        auto key = std::move(keyframes_[i]);
-        keyframes_.erase(keyframes_.begin+i);
-        notifyKeyframeRemoved(key.get());
-    }
+    virtual void remove(size_t i) override;
+    virtual void add(const Keyframe& key) override;
+    void add(const Key& key);
 
-    void add(const Key& key) {
-        addKeyFrame(std::make_unique<Key>(key));
-    }
+    virtual auto operator()(Time from, Time to) const -> typename Key::value_type;
 
-    virtual auto evaluate(Time from, Time to) const -> typename Key::value_type {
-        return interpolation_->evaluate(keyframes_, to);
-    }
-
-    void setInterpolation(std::shared_ptr<const InterpolationTyped<Key>> interpolation) {
-        interpolation_ = interpolation;
-    }
-
+    virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
+    void setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void addKeyFrame(std::unique_ptr<Key> key) {
-        keyframes_.push_back(std::move(key));
-        keyframes_.back()->addObserver(this);
-        notifyKeyframeAdded(keyframes_.back().get());
-    }
+    void addKeyFrame(std::unique_ptr<Key> key);
 
-    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) override {
-        const auto startTime = keyframes_.front()->getTime();
-        const auto endTime = keyframes_.back()->getTime();
-
-        std::stable_sort(keyframes_.begin(), keyframes_.end(),
-                         [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
-
-        if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
-            notifyKeyframeSequenceMoved(this);
-        }
-    }
+    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) override;
 
     std::vector<std::unique_ptr<Key>> keyframes_;
     std::unique_ptr<InterpolationTyped<Key>> interpolation_;
 };
 
 template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
+    const std::vector<Key>& keyframes, std::unique_ptr<InterpolationTyped<Key>> interpolation)
+    : KeyframeSequence(), keyframes_(), interpolation_{std::move(interpolation)} {
+    for (const auto& key : keyframes) {
+        keyframes_.push_back(util::make_unique<Key>(key));
+    }
+}
+
+template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
+    : KeyframeSequence(rhs), interpolation_(rhs.interpolation_->clone()) {
+    for (const auto& key : rhs.keyframes_) {
+        addKeyFrame(util::make_unique<Key>(*key));
+    }
+}
+
+template <typename Key>
+KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(const KeyframeSequenceTyped<Key>& that) {
+    if (this != &that) {
+        KeyframeSequence::operator=(that);
+        interpolation_.reset(that.interpolation_->clone());
+
+        for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
+            *keyframes_[i] = *that.keyframes_[i];
+        }
+        for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
+             i < that.keyframes_.size(); i++) {
+            keyframes_.push_back(util::make_unique<Key>(*that.keyframes_[i]));
+            notifyKeyframeAdded(keyframes_.back().get());
+        }
+        while (keyframes_.size() > that.keyframes_.size()) {
+            auto key = std::move(keyframes_.back());
+            keyframes_.pop_back();
+            notifyKeyframeRemoved(key.get());
+        }
+    }
+    return *this;
+}
+
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Time oldTime) {
+    const auto startTime = keyframes_.front()->getTime();
+    const auto endTime = keyframes_.back()->getTime();
+
+    std::stable_sort(keyframes_.begin(), keyframes_.end(),
+                     [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
+
+    if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
+        notifyKeyframeSequenceMoved(this);
+    }
+}
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation) {
+    interpolation_ = std::move(interpolation);
+}
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::setInterpolation(
+    std::unique_ptr<Interpolation> interpolation) {
+    if (auto inter = util::dynamic_unique_ptr_cast<InterpolationTyped<Key>>(
+            std::move(interpolation))) {
+        setInterpolation(std::move(inter));
+    } else {
+        throw Exception("Interpolation type does not match key", IvwContext);
+    }
+}
+
+template <typename Key>
+auto KeyframeSequenceTyped<Key>::operator()(Time from, Time to) const -> typename Key::value_type {
+    return (*interpolation_)(keyframes_, to);
+}
+
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::add(const Keyframe& key) {
+    add(dynamic_cast<const Key&>(key));
+}
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::add(const Key& key) {
+    addKeyFrame(std::make_unique<Key>(key));
+}
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::addKeyFrame(std::unique_ptr<Key> key) {
+    keyframes_.push_back(std::move(key));
+    keyframes_.back()->addObserver(this);
+    notifyKeyframeAdded(keyframes_.back().get());
+}
+
+template <typename Key>
+void KeyframeSequenceTyped<Key>::remove(size_t i) {
+
+    auto key = std::move(keyframes_[i]);
+    keyframes_.erase(keyframes_.begin() + i);
+    notifyKeyframeRemoved(key.get());
+}
+
+template <typename Key>
+Key& KeyframeSequenceTyped<Key>::getLast() {
+    return *keyframes_.back();
+}
+
+template <typename Key>
+const Key& KeyframeSequenceTyped<Key>::getLast() const {
+    return *keyframes_.back();
+}
+
+template <typename Key>
+Key& KeyframeSequenceTyped<Key>::getFirst() {
+    return *keyframes_.front();
+}
+
+template <typename Key>
+const Key& animation::KeyframeSequenceTyped<Key>::getFirst() const {
+    return *keyframes_.front();
+}
+
+template <typename Key>
+Key& KeyframeSequenceTyped<Key>::operator[](size_t i) {
+    return *keyframes_[i];
+}
+
+template <typename Key>
+const Key& KeyframeSequenceTyped<Key>::operator[](size_t i) const {
+    return *keyframes_[i];
+}
+
+template <typename Key>
+size_t KeyframeSequenceTyped<Key>::size() {
+    return keyframes_.size();
+}
+
+template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
     s.serialize("keyframes", keyframes_);
     s.serialize("interpolation", interpolation_);
 }
-
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {

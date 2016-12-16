@@ -27,57 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATION_H
-#define IVW_ANIMATION_H
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
-
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/trackobserver.h>
-#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API Animation : public AnimationObserverble,
-                                           public Serializable,
-                                           public TrackObserver {
-public:
-    Animation();
-    Animation(const Animation&) = delete;
-    Animation& operator=(const Animation& that) = delete;
+TrackFactoryObject::TrackFactoryObject(const std::string& classIdentifier)
+    : classIdentifier_(classIdentifier) {}
 
-    void operator()(Time from, Time to) const;
-
-    size_t size() const;
-    Track& operator[](size_t i);
-    const Track& operator[](size_t i) const;
-
-    void add(std::unique_ptr<Track> track);
-    void remove(size_t i);
-    void remove(const std::string& id);
-
-    Time firstTime() const;
-    Time lastTime() const;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    virtual void onPriorityChanged(Track* t) override;
-    void doPrioritySort();
-
-    std::vector<std::unique_ptr<Track>> tracks_;
-    std::vector<Track*> priorityTracks_;
-};
+const std::string& TrackFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
 }  // namespace
 
 }  // namespace
-
-#endif // IVW_ANIMATION_H
-

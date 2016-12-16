@@ -18,7 +18,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactoryobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactoryobject.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -38,7 +40,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactoryobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactoryobject.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

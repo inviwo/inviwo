@@ -31,9 +31,5 @@
 
 namespace inviwo {
 
-InterpolationFactory::InterpolationFactory()  {
-    
-}
-
 } // namespace
 

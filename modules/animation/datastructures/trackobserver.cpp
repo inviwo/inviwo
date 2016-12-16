@@ -41,6 +41,22 @@ void TrackObservable::notifyKeyframeSequenceRemoved(KeyframeSequence* s) {
     forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(s); });
 }
 
+void TrackObservable::notifyEnabledChanged(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onEnabledChanged(t); });
+}
+
+void TrackObservable::notifyIdentifierChanged(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onIdentifierChanged(t); });
+}
+
+void TrackObservable::notifyNameChanged(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onNameChanged(t); });
+}
+
+void TrackObservable::notifyPriorityChanged(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onPriorityChanged(t); });
+}
+
 } // namespace
 
 } // namespace

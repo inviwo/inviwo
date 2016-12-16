@@ -32,20 +32,23 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/factory.h>
+
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
+namespace animation {
 
-/**
- * \class TrackFactory
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATION_API TrackFactory { 
+class IVW_MODULE_ANIMATION_API TrackFactory : public StandardFactory<Track, TrackFactoryObject> { 
 public:
-    TrackFactory();
+    TrackFactory() = default;
     virtual ~TrackFactory() = default;
+
+    using StandardFactory<Track, TrackFactoryObject>::create;
 };
 
+} // namespace
 } // namespace
 
 #endif // IVW_TRACKFACTORY_H

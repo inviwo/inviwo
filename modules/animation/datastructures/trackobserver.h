@@ -40,6 +40,7 @@ namespace inviwo {
 namespace animation {
 
 class KeyframeSequence;
+class Track;
 
 /**
  * \class TrackObserver
@@ -50,12 +51,22 @@ class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
     virtual void onKeyframeSequenceAdded(KeyframeSequence* s) {};
     virtual void onKeyframeSequenceRemoved(KeyframeSequence* s) {};
+
+    virtual void onEnabledChanged(Track* t){};
+    virtual void onIdentifierChanged(Track* t){};
+    virtual void onNameChanged(Track* t){};
+    virtual void onPriorityChanged(Track* t){};
 };
 
 class IVW_MODULE_ANIMATION_API TrackObservable : public Observable<TrackObserver> {
 protected:
     void notifyKeyframeSequenceAdded(KeyframeSequence* s);
     void notifyKeyframeSequenceRemoved(KeyframeSequence* s);
+
+    void notifyEnabledChanged(Track* t);
+    void notifyIdentifierChanged(Track* t);
+    void notifyNameChanged(Track* t);
+    void notifyPriorityChanged(Track* t);
 };
 
 } // namespace

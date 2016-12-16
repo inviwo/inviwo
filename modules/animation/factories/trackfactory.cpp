@@ -31,9 +31,5 @@
 
 namespace inviwo {
 
-TrackFactory::TrackFactory()  {
-    
-}
-
 } // namespace
 

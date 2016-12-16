@@ -33,19 +33,24 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-namespace inviwo {
+#include <inviwo/core/util/factory.h>
+#include <modules/animation/datastructures/interpolation.h>
 
-/**
- * \class InterpolationFactory
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATION_API InterpolationFactory { 
+#include <modules/animation/factories/interpolationfactoryobject.h>
+
+namespace inviwo {
+namespace animation {
+
+class IVW_MODULE_ANIMATION_API InterpolationFactory
+    : public StandardFactory<Interpolation, InterpolationFactoryObject> {
 public:
-    InterpolationFactory();
+    InterpolationFactory() = default;
     virtual ~InterpolationFactory() = default;
+
+    using StandardFactory<Interpolation, InterpolationFactoryObject>::create;
 };
 
+} // namespace
 } // namespace
 
 #endif // IVW_INTERPOLATIONFACTORY_H

@@ -27,57 +27,42 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATION_H
-#define IVW_ANIMATION_H
+#ifndef IVW_TRACKFACTORYOBJECT_H
+#define IVW_TRACKFACTORYOBJECT_H
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
 
-#include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/trackobserver.h>
-#include <modules/animation/datastructures/animationobserver.h>
 
 namespace inviwo {
-
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API Animation : public AnimationObserverble,
-                                           public Serializable,
-                                           public TrackObserver {
+class IVW_MODULE_ANIMATION_API TrackFactoryObject {
 public:
-    Animation();
-    Animation(const Animation&) = delete;
-    Animation& operator=(const Animation& that) = delete;
+    TrackFactoryObject(const std::string& classIdentifier);
+    virtual ~TrackFactoryObject() = default;
 
-    void operator()(Time from, Time to) const;
+    virtual std::unique_ptr<Track> create() const = 0;
+    const std::string& getClassIdentifier() const;
 
-    size_t size() const;
-    Track& operator[](size_t i);
-    const Track& operator[](size_t i) const;
-
-    void add(std::unique_ptr<Track> track);
-    void remove(size_t i);
-    void remove(const std::string& id);
-
-    Time firstTime() const;
-    Time lastTime() const;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    virtual void onPriorityChanged(Track* t) override;
-    void doPrioritySort();
-
-    std::vector<std::unique_ptr<Track>> tracks_;
-    std::vector<Track*> priorityTracks_;
+protected:
+    const std::string classIdentifier_;
 };
 
-}  // namespace
+template <typename T>
+class TrackFactoryObjectTemplate : public TrackFactoryObject {
+public:
+    TrackFactoryObjectTemplate(const std::string& classIdentifier)
+        : TrackFactoryObject(classIdentifier){};
+    virtual ~TrackFactoryObjectTemplate() = default;
 
-}  // namespace
+    virtual std::unique_ptr<Track> create() const override { return std::make_unique<T>(); }
+};
 
-#endif // IVW_ANIMATION_H
+} // namespace
+
+} // namespace
+
+#endif // IVW_TRACKFACTORYOBJECT_H
 

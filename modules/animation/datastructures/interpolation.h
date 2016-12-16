@@ -74,7 +74,7 @@ public:
 
 
     // keys should be sorted by time
-    virtual auto evaluate(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
         typename Key::value_type = 0;
 };
 
@@ -96,7 +96,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto evaluate(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Time t) const ->
         typename Key::value_type override {
         auto it = std::upper_bound(
             keys.begin(), keys.end(), t,
