@@ -30,6 +30,8 @@
 #ifndef IVW_ANIMATIONTIME_H
 #define IVW_ANIMATIONTIME_H
 
+#include <chrono>
+
 namespace inviwo {
 
 namespace animation {

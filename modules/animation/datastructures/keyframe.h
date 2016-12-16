@@ -36,8 +36,6 @@
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <modules/animation/datastructures/animationtime.h>
 
-#include <chrono>
-
 namespace inviwo {
 
 namespace animation {
