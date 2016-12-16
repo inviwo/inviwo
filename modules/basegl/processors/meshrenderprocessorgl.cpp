@@ -233,7 +233,7 @@ void MeshRenderProcessorGL::changeRenderMode() {
 
 void MeshRenderProcessorGL::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
