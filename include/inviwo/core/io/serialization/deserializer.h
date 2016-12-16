@@ -248,6 +248,8 @@ public:
     template <typename T, typename K>
     friend class ContainerWrapper;
 
+    void registerFactory(FactoryBase* factory);
+
 private:
 
     // integers, strings

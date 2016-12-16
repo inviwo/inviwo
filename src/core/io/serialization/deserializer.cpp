@@ -124,6 +124,10 @@ void Deserializer::storeReferences(TxElement* node) {
     }
 }
 
+void Deserializer::registerFactory(FactoryBase* factory) {
+    registeredFactories_.push_back(factory);
+}
+
 void Deserializer::registerFactories(InviwoApplication* app) {
     registeredFactories_.clear();
     if (app) {
