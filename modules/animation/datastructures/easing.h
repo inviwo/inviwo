@@ -52,6 +52,8 @@ public:
     {
         None
         ,Linear
+
+        //Polynomial Types
         ,InQuadratic
         ,InCubic
         ,InQuartic
@@ -64,6 +66,11 @@ public:
         ,InOutCubic
         ,InOutQuartic
         ,InOutQuintic
+
+        //Trigonometric Types
+        ,InSine
+        ,OutSine
+        ,InOutSine
     };
 
 //Construction / Deconstruction
@@ -90,6 +97,25 @@ private:
             return InPolynomial(tstretched, Exponent) / 2.0;
         }
         return OutPolynomial(tstretched, Exponent, 2.0) / 2.0;
+    }
+
+    ///Trigonometric In-Easing
+    static double InSine(const double t)
+    {return 1 - sin((1-t) * M_PI_2);}
+
+    ///Trigonometric Out-Easing
+    static double OutSine(const double t)
+    {return sin(t * M_PI_2);}
+
+    ///Trigonometric In-Out-Easing
+    static double InOutSine(const double t)
+    {
+        //This could be done in several ways, like the other sine easing as well.
+        // With sin: 0.5 + sin((1.5-t) * M_PI)/2
+        // We could also use a system similar to the polynomial easing,
+        //  where we first call the InSine function and then the OutSine function.
+        // However, this is most concise:
+        return (1 - cos(t * M_PI)) / 2;
     }
 
 public:
@@ -124,6 +150,10 @@ public:
             case EEasingType::InOutCubic:     return InOutPolynomial(t, 3);
             case EEasingType::InOutQuartic:   return InOutPolynomial(t, 4);
             case EEasingType::InOutQuintic:   return InOutPolynomial(t, 5);
+
+            case EEasingType::InSine:    return InSine(t);
+            case EEasingType::OutSine:   return OutSine(t);
+            case EEasingType::InOutSine: return InOutSine(t);
         }
     }
 
