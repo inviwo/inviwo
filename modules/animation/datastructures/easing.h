@@ -75,11 +75,11 @@ public:
 private:
     ///Polynomial In-Easing
     static double InPolynomial(const double t, const double Exponent)
-    {return pow((double)t, Exponent);}
+    {return pow(t, Exponent);}
 
     ///Polynomial Out-Easing
     static double OutPolynomial(const double t, const double Exponent, const double Range = 1.0)
-    {return Range - pow(Range - (double)t, Exponent);}
+    {return Range - pow(Range - t, Exponent);}
 
     ///Polynomial In-Out-Easing
     static double InOutPolynomial(const double t, const double Exponent)
@@ -97,11 +97,8 @@ public:
     /// Most easing functions return an value in [0,1] as well.
     /// Some functions overshoot, which means you get also values outside of [0,1].
     /// Most interpolations should be fine with that. Linear Interpolation is fine with that.
-    static double Ease(Time timestep, EEasingType HowToEase)
+    static double Ease(const double t, EEasingType HowToEase)
     {
-        //Convert time to double to have something reasonable to compute with
-        const double t = timestep.count();
-
         ivwAssert(t >= 0 && t <= 1, "Normalized time required as easing input.");
 
         switch (HowToEase)
