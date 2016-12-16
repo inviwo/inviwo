@@ -81,6 +81,11 @@ public:
         ,InCircular
         ,OutCircular
         ,InOutCircular
+
+        //Overshooting Back Types
+        ,InBack
+        ,OutBack
+        ,InOutBack
     };
 
 //Construction / Deconstruction
@@ -179,6 +184,59 @@ private:
         return 1 + OutCircular(tstretched, 2.0) / 2;
     }
 
+    /** Overshooting In-Back-Easing
+
+        \verbatim
+        How to determine the strength of overshooting: (solved with Mathematica)
+        This is the formula: x^2 (-a + (1 + a) x)
+        It's lowest (overshooting) value is where this function has a zero slope, i.e., its derivative is zero.
+        Derivative: (1 + a) x^2 + 2 x (-a + (1 + a) x)
+        We get two zeros: {x -> 0}, {x -> (2 a)/(3 (1 + a))}}
+        The second is the one we are looking for.
+        We insert this into the original formula: f = ((a + 1) (2 a/(3 (1 + a))) - a) (2 a/(3 (1 + a))) (2 a/(3 (1 + a)))
+        We ask where f attains a 10% overshoot, i.e., it becomes -0.1
+        f + 0.1 == 0
+        Solve[0.1 - (4 a^3)/(27 (1 + a)^2) == 0, {a}]
+        {{a -> -0.51327 - 0.365039 I}, {a -> -0.51327 + 0.365039 I}, {a -> 1.70154}}
+        \endverbatim
+
+        Hence, a = 1.70154 gives a 10% overshoot. Rinse and repeat for other overshoot percentages.
+        The internet says 1.70158, but who believes the internet.
+    */
+    static double InBack(const double t, const double OvershootStrength = 1.70154)
+    {return ((OvershootStrength + 1) * t - OvershootStrength) * pow(t,2);}
+
+    ///Overshooting Out-Back-Easing
+    static double OutBack(const double t, const double OvershootStrength = 1.70154, const double Range = 1.0)
+    {return Range - ((OvershootStrength + 1) * (Range-t) + OvershootStrength) * pow(Range-t,2);}
+
+    /** Overshooting In-Out-Back-Easing
+
+        \verbatim
+        10% overshooting for the InOut Version:
+        (2x)^2 (-a + (1 + a) 2x)/2
+        2 x^2 (-a + 2 (1 + a) x)
+
+        x-derivative:
+        4 (1 + a) x^2 + 4 x (-a + 2 (1 + a) x)
+
+        zeros:
+        {{x -> 0}, {x -> a/(3 (1 + a))}}
+
+        Solve[ -((2 a^3)/(27 (1 + a)^2)) == -0.1, {a}]
+        {{a -> -0.621194 - 0.36725 I}, {a -> -0.621194 + 0.36725 I}, {a -> 2.59239}}
+        \endverbatim
+    */
+    static double InOutBack(const double t, const double OvershootStrength = 2.59239)
+    {
+        const double tstretched = 2.0 * t;
+        if (tstretched < 1.0)
+        {
+            return InBack(tstretched, OvershootStrength) / 2;
+        }
+        return OutBack(tstretched, OvershootStrength, 2.0) / 2;
+    }
+
 
 
 public:
@@ -225,6 +283,10 @@ public:
             case EEasingType::InCircular:     return InCircular(t);
             case EEasingType::OutCircular:    return OutCircular(t);
             case EEasingType::InOutCircular:  return InOutCircular(t);
+
+            case EEasingType::InBack:     return InBack(t);
+            case EEasingType::OutBack:    return OutBack(t);
+            case EEasingType::InOutBack:  return InOutBack(t);
         }
     }
 
