@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/easing.h>
 #include <inviwo/core/io/serialization/serializable.h>
 
 #include <algorithm>
@@ -108,7 +109,7 @@ public:
         const auto& v2 = (*it)->getValue();
         const auto& t2 = (*it)->getTime();
 
-        return glm::mix(v1, v2, (t - t1) / (t2 - t1));
+        return glm::mix(v1, v2, Easing::Ease((t - t1) / (t2 - t1), Easing::EEasingType::InOutCubic));
     }
 };
 

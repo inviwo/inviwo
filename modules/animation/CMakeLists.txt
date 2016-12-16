@@ -10,6 +10,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.h
