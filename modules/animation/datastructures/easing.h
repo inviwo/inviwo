@@ -71,6 +71,11 @@ public:
         ,InSine
         ,OutSine
         ,InOutSine
+
+        //Exponential Types
+        ,InExp
+        ,OutExp
+        ,InOutExp
     };
 
 //Construction / Deconstruction
@@ -124,7 +129,7 @@ private:
         if (t == 0) return 0;
         if (t == 1) return 1;
 
-        return exp(8 * (x - 1));
+        return exp(8 * (t - 1));
     }
 
     ///Exponential Out-Easing
@@ -133,7 +138,7 @@ private:
         if (t == 0) return 0;
         if (t == 1) return 1;
 
-        return Range - exp(-8*x);
+        return Range - exp(-8*t);
     }
 
     ///Exponential In-Out-Easing
@@ -145,9 +150,9 @@ private:
         const double tstretched = 2.0 * t;
         if (tstretched < 1.0)
         {
-            return InExp(tstretched, Exponent) / 2;
+            return InExp(tstretched) / 2;
         }
-        return OutExp(tstretched - 1, Exponent, 2.0) / 2;
+        return OutExp(tstretched - 1, 2.0) / 2;
     }
 
 
