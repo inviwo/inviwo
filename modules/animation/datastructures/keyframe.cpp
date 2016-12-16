@@ -32,5 +32,21 @@
 namespace inviwo {
 
 
+bool animation::operator<(const Keyframe& a, const Keyframe& b) {
+    return a.getTime() < b.getTime();
+}
+
+bool animation::operator>(const Keyframe& a, const Keyframe& b) {
+    return a.getTime() > b.getTime();
+}
+
+bool animation::operator>=(const Keyframe& a, const Keyframe& b) {
+    return a.getTime() >= b.getTime();
+}
+
+bool animation::operator<=(const Keyframe& a, const Keyframe& b) {
+    return a.getTime() <= b.getTime();
+}
+
 } // namespace
 

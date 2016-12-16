@@ -81,6 +81,9 @@ public:
     virtual KeyframeSequence& operator[](size_t i) = 0;
     virtual const KeyframeSequence& operator[](size_t i) const = 0;
 
+    virtual void add(const KeyframeSequence& sequence) = 0;
+    virtual void remove(size_t i) = 0;
+
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
@@ -95,7 +98,6 @@ public:
     virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const override = 0;
 
     virtual void add(const KeyframeSequenceTyped<Key>& sequence) = 0;
-    virtual void remove(size_t i) = 0;
 };
 
 
@@ -189,7 +191,7 @@ public:
     virtual void add(const KeyframeSequenceTyped<Key>& sequence) {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),
-            [](const auto& time, const auto& seq) { return seq->getFirst().getTime() < time; });
+            [](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
 
         if (it != sequences_.begin()) {
             if ((*std::prev(it))->getLast().getTime() > sequence.getFirst().getTime()) {
@@ -204,6 +206,10 @@ public:
             sequences_.insert(it, std::make_unique<KeyframeSequenceTyped<Key>>(sequence));
         notifyKeyframeSequenceAdded(inserted->get());
     };
+
+    virtual void add(const KeyframeSequence& sequence) override {
+        add(dynamic_cast<const KeyframeSequenceTyped<Key>&>(sequence));      
+    }
 
     virtual size_t size() const override {
        return sequences_.size();

@@ -89,9 +89,14 @@ public:
         return new LinearInterpolation(*this);   
     };
 
-    virtual std::string getClassIdentifier() const override {
-        return "org.inviwo.linearinterpolation";
-    }
+    static std::string classIdentifier() {
+        auto keyid = Key::classIdentifier();
+        std::string id = "org.inviwo.animation.linearinterpolation.";
+        auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
+        id.append(res.second, keyid.end());
+        return id;
+    };
+    virtual std::string getClassIdentifier() const override { return classIdentifier(); }
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -115,12 +120,19 @@ public:
 
 template <typename Key>
 void LinearInterpolation<Key>::serialize(Serializer& s) const {
-    // TODO
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 }
 
 template <typename Key>
 void LinearInterpolation<Key>::deserialize(Deserializer& d) {
-    // TODO
+    std::string className;
+    d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        throw SerializationException(
+            "Deserialized interpolation: " + getClassIdentifier() +
+                " from a serialized interpolation with a different class identifier: " + className,
+            IvwContext);
+    }
 }
 
 } // namespace

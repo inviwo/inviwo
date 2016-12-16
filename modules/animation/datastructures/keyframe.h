@@ -57,13 +57,21 @@ public:
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
+
+    virtual std::string getClassIdentifier() const = 0;
 };
+
+IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Keyframe& b);
 
 template <typename T>
 class ValueKeyframe : public Keyframe {
 public:
     using value_type  = T;
-    
+    ValueKeyframe() = default;
+
     ValueKeyframe(Time time, const T& value) : time_(time), value_(value) {}
     virtual ~ValueKeyframe() = default;
 
@@ -90,22 +98,53 @@ public:
 
     void setValue(const T& value) { value_ = value; }
 
+    static std::string classIdentifier(); 
+    virtual std::string getClassIdentifier() const override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    Time time_;
-    T value_;
+    Time time_{0.0};
+    T value_{0};
 };
 
 template <typename T>
+std::string inviwo::animation::ValueKeyframe<T>::classIdentifier() {
+    return "org.inviwo.animation.ValueKeyframe." + Defaultvalues<T>::getName();
+}
+
+template <typename T>
+std::string inviwo::animation::ValueKeyframe<T>::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+template <typename T>
+bool operator==(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
+    return a.getTime() == b.getTime() && a.getValue() == b.getValue();
+}
+template <typename T>
+bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
+    return !(a == b);
+}
+
+template <typename T>
 void ValueKeyframe<T>::serialize(Serializer& s) const {
+    //s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("time", time_.count());
     s.serialize("value", value_);
 }
 
 template <typename T>
 void ValueKeyframe<T>::deserialize(Deserializer& d) {
+   /* std::string className;
+    d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        throw SerializationException(
+            "Deserialized keyframe: " + getClassIdentifier() +
+                " from a serialized keyframe with a different class identifier: " + className,
+            IvwContext);
+    }*/
     double tmp = time_.count();
     d.deserialize("time", tmp);
     time_ = Time{tmp};

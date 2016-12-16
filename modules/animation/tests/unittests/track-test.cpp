@@ -39,6 +39,10 @@
 #include <modules/animation/datastructures/interpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/interpolation.h>
+
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/interpolationfactoryobject.h>
 
 
 namespace inviwo {
@@ -107,11 +111,11 @@ TEST(AnimationTests, AnimationTest) {
     DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
 
     KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
-    { {Time{1}, 0.0f}, {Time{2}, 1.0f}, {Time{3}, 0.0f} },
+    { {Time{1.0}, 0.0f}, {Time{2.0}, 1.0f}, {Time{3.0}, 0.0f} },
         std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
     KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
-    { {Time{1},  dvec3(1.0)}, {Time{2},  dvec3(0.0)}, {Time{3}, dvec3(1.0)} },
+    { {Time{1.0},  dvec3(1.0)}, {Time{2.0},  dvec3(0.0)}, {Time{3.0}, dvec3(1.0)} },
         std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
 
     Animation animation;
@@ -138,7 +142,129 @@ TEST(AnimationTests, AnimationTest) {
 
     EXPECT_EQ(0.5f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
+
+    EXPECT_EQ(Time{1.0}, animation.firstTime());
+    EXPECT_EQ(Time{3.0}, animation.lastTime());
+
+    animation[1][0].add(ValueKeyframe<dvec3>{Time{4.0}, dvec3(2.0)});
+
+    EXPECT_EQ(Time{ 1.0 }, animation.firstTime());
+    EXPECT_EQ(Time{ 4.0 }, animation.lastTime());
+
+    animation(Time{0.0}, Time{3.5});
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+    EXPECT_EQ(dvec3(1.5), doubleProperty.get());
+
+    animation[1][0].remove(2);
+
+    animation(Time{ 0.0 }, Time{ 3.0 });
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+    EXPECT_EQ(dvec3(1.0), doubleProperty.get());
+
+    {
+        KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2(
+        { {Time{6.0}, dvec3(1.0)}, {Time{7.0}, dvec3(0.0)}, {Time{8.0}, dvec3(1.0)} },
+            std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+        animation[1].add(doubleSequence2);
+    }
+
+    EXPECT_EQ(Time{ 1.0 }, animation.firstTime());
+    EXPECT_EQ(Time{ 8.0 }, animation.lastTime());
+
+    animation(Time{ 0.0 }, Time{ 7.5 });
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+    EXPECT_EQ(dvec3(0.5), doubleProperty.get());
 }
+
+
+TEST(AnimationTests, KeyframeSerializationTest) {
+    ValueKeyframe<dvec3> keyframe{Time{4.0}, dvec3(2.0)};
+
+    const std::string refPath = "/tmp";
+
+    Serializer s(refPath);
+    keyframe.serialize(s);
+
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    Deserializer d(nullptr, ss, refPath);
+    ValueKeyframe<dvec3> keyframe2;
+    keyframe2.deserialize(d);
+
+    EXPECT_EQ(keyframe, keyframe2);
+}
+
+
+TEST(AnimationTests, InterpolationSerializationTest) {
+    InterpolationFactory factory;
+
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO(
+        LinearInterpolation<ValueKeyframe<dvec3>>::classIdentifier());
+    factory.registerObject(&linearIFO);
+
+    const std::string refPath = "/tmp";
+
+    LinearInterpolation<ValueKeyframe<dvec3>> linear;
+
+    Interpolation* iptr = &linear;
+
+
+    Serializer s(refPath);
+    s.serialize("interpolation", iptr);
+
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    Deserializer d(nullptr, ss, refPath);
+    d.setExceptionHandler([](ExceptionContext context) {throw;});
+    d.registerFactory(&factory);
+    
+    Interpolation* iptr2 = nullptr;
+    d.deserialize("interpolation", iptr2);
+
+    factory.unRegisterObject(&linearIFO);
+}
+
+
+
+
+TEST(AnimationTests, KeyframeSequenceSerializationTest) {
+    InterpolationFactory factory;
+
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO(
+        LinearInterpolation<ValueKeyframe<dvec3>>::classIdentifier());
+    factory.registerObject(&linearIFO);
+
+
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
+    { {Time{1.0},  dvec3(1.0)}, {Time{2.0},  dvec3(0.0)}, {Time{3.0}, dvec3(1.0)} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+
+    const std::string refPath = "/tmp";
+
+    Serializer s(refPath);
+    doubleSequence.serialize(s);
+
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    Deserializer d(nullptr, ss, refPath);
+    d.setExceptionHandler([](ExceptionContext context) {throw;});
+    d.registerFactory(&factory);
+    
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2;
+
+    doubleSequence2.deserialize(d);
+
+    EXPECT_EQ(doubleSequence, doubleSequence2);
+
+    factory.unRegisterObject(&linearIFO);
+}
+
 
 }  // namespace
 

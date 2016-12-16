@@ -55,7 +55,7 @@ public:
     KeyframeSequence() = default;
     virtual ~KeyframeSequence() = default;
 
-    virtual size_t size() = 0;
+    virtual size_t size() const = 0;
 
     virtual const Keyframe& operator[](size_t i) const = 0;
     virtual Keyframe& operator[](size_t i) = 0;
@@ -74,11 +74,13 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 };
 
-// A sequence should always have at least to keyframes.
+// A sequence should always have at least two keyframes.
 template <typename Key>
 class KeyframeSequenceTyped : public KeyframeSequence {
 public:
     static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
+
+    KeyframeSequenceTyped();
 
     KeyframeSequenceTyped(const std::vector<Key>& keyframes,
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
@@ -87,7 +89,7 @@ public:
 
     virtual ~KeyframeSequenceTyped() = default;
 
-    virtual size_t size() override;
+    virtual size_t size() const override;
 
     virtual const Key& operator[](size_t i) const override;
     virtual Key& operator[](size_t i) override;
@@ -119,11 +121,31 @@ private:
 };
 
 template <typename Key>
+bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i) {
+        if (a[i] != b[i]) return false;
+    }
+    return true;
+}
+template <typename Key>
+bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
+    return !(a == b);
+}
+
+template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
+    : KeyframeSequence(), keyframes_(), interpolation_() {
+     keyframes_.push_back(std::make_unique<Key>());
+     keyframes_.push_back(std::make_unique<Key>());
+}
+
+template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
     const std::vector<Key>& keyframes, std::unique_ptr<InterpolationTyped<Key>> interpolation)
     : KeyframeSequence(), keyframes_(), interpolation_{std::move(interpolation)} {
     for (const auto& key : keyframes) {
-        keyframes_.push_back(util::make_unique<Key>(key));
+        keyframes_.push_back(std::make_unique<Key>(key));
     }
 }
 
@@ -131,7 +153,7 @@ template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : KeyframeSequence(rhs), interpolation_(rhs.interpolation_->clone()) {
     for (const auto& key : rhs.keyframes_) {
-        addKeyFrame(util::make_unique<Key>(*key));
+        addKeyFrame(std::make_unique<Key>(*key));
     }
 }
 
@@ -146,7 +168,7 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(const Keyframe
         }
         for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
              i < that.keyframes_.size(); i++) {
-            keyframes_.push_back(util::make_unique<Key>(*that.keyframes_[i]));
+            keyframes_.push_back(std::make_unique<Key>(*that.keyframes_[i]));
             notifyKeyframeAdded(keyframes_.back().get());
         }
         while (keyframes_.size() > that.keyframes_.size()) {
@@ -190,9 +212,12 @@ void KeyframeSequenceTyped<Key>::setInterpolation(
 
 template <typename Key>
 auto KeyframeSequenceTyped<Key>::operator()(Time from, Time to) const -> typename Key::value_type {
-    return (*interpolation_)(keyframes_, to);
+    if (interpolation_) {
+        return (*interpolation_)(keyframes_, to);
+    } else {
+        return keyframes_.front()->getValue();
+    }
 }
-
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::add(const Keyframe& key) {
@@ -250,7 +275,7 @@ const Key& KeyframeSequenceTyped<Key>::operator[](size_t i) const {
 }
 
 template <typename Key>
-size_t KeyframeSequenceTyped<Key>::size() {
+size_t KeyframeSequenceTyped<Key>::size() const {
     return keyframes_.size();
 }
 
@@ -263,7 +288,13 @@ void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
 template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     d.deserialize("keyframes", keyframes_);
-    d.deserialize("interpolation", interpolation_);
+
+    if (Interpolation* ptr = interpolation_.get()) {
+        d.deserialize("interpolation", ptr);
+    } else {
+        d.deserialize("interpolation", ptr);
+        interpolation_.reset(dynamic_cast<InterpolationTyped<Key>*>(ptr));
+    }
 }
 
 
