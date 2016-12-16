@@ -118,6 +118,40 @@ private:
         return (1 - cos(t * M_PI)) / 2;
     }
 
+    ///Exponential In-Easing
+    static double InExp(const double t)
+    {
+        if (t == 0) return 0;
+        if (t == 1) return 1;
+
+        return exp(8 * (x - 1));
+    }
+
+    ///Exponential Out-Easing
+    static double OutExp(const double t, const double Range = 1.0)
+    {
+        if (t == 0) return 0;
+        if (t == 1) return 1;
+
+        return Range - exp(-8*x);
+    }
+
+    ///Exponential In-Out-Easing
+    static double InOutExp(const double t)
+    {
+        if (t == 0) return 0;
+        if (t == 1) return 1;
+
+        const double tstretched = 2.0 * t;
+        if (tstretched < 1.0)
+        {
+            return InExp(tstretched, Exponent) / 2;
+        }
+        return OutExp(tstretched - 1, Exponent, 2.0) / 2;
+    }
+
+
+
 public:
     ///A time input t in [0,1] is assumed.
     /// Most easing functions return an value in [0,1] as well.
@@ -136,15 +170,15 @@ public:
                 return t;
             }
 
-            case EEasingType::InQuadratic:  return InPolynomial(t, 2);
-            case EEasingType::InCubic:      return InPolynomial(t, 3);
-            case EEasingType::InQuartic:    return InPolynomial(t, 4);
-            case EEasingType::InQuintic:    return InPolynomial(t, 5);
+            case EEasingType::InQuadratic:    return InPolynomial(t, 2);
+            case EEasingType::InCubic:        return InPolynomial(t, 3);
+            case EEasingType::InQuartic:      return InPolynomial(t, 4);
+            case EEasingType::InQuintic:      return InPolynomial(t, 5);
 
-            case EEasingType::OutQuadratic: return OutPolynomial(t, 2);
-            case EEasingType::OutCubic:     return OutPolynomial(t, 3);
-            case EEasingType::OutQuartic:   return OutPolynomial(t, 4);
-            case EEasingType::OutQuintic:   return OutPolynomial(t, 5);
+            case EEasingType::OutQuadratic:   return OutPolynomial(t, 2);
+            case EEasingType::OutCubic:       return OutPolynomial(t, 3);
+            case EEasingType::OutQuartic:     return OutPolynomial(t, 4);
+            case EEasingType::OutQuintic:     return OutPolynomial(t, 5);
 
             case EEasingType::InOutQuadratic: return InOutPolynomial(t, 2);
             case EEasingType::InOutCubic:     return InOutPolynomial(t, 3);
@@ -154,6 +188,10 @@ public:
             case EEasingType::InSine:    return InSine(t);
             case EEasingType::OutSine:   return OutSine(t);
             case EEasingType::InOutSine: return InOutSine(t);
+
+            case EEasingType::InExp:     return InExp(t);
+            case EEasingType::OutExp:    return OutExp(t);
+            case EEasingType::InOutExp:  return InOutExp(t);
         }
     }
 
