@@ -84,8 +84,8 @@ public:
  * M Models a object with a function create(K key) that can create objects of type T
  * M would usually be a "factory object" type
  */
-template <typename T, typename M, typename K = const std::string&>
-class StandardFactory : public Factory<T, K> {
+template <typename T, typename M, typename K = const std::string&, typename... Args>
+class StandardFactory : public Factory<T, K, Args...> {
 public:
     using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
     using Map = std::unordered_map<Key, M*>;
@@ -96,7 +96,7 @@ public:
     virtual bool registerObject(M* obj);
     virtual bool unRegisterObject(M* obj);
 
-    virtual std::unique_ptr<T> create(K key) const override;
+    virtual std::unique_ptr<T> create(K key, Args... args) const override;
     virtual bool hasKey(K key) const override;
     virtual std::vector<Key> getKeys() const;
 
@@ -104,8 +104,8 @@ protected:
     Map map_;
 };
 
-template <typename T, typename M, typename K>
-inline bool StandardFactory<T, M, K>::registerObject(M* obj) {
+template <typename T, typename M, typename K, typename... Args>
+inline bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
         return true;
     } else {
@@ -114,31 +114,32 @@ inline bool StandardFactory<T, M, K>::registerObject(M* obj) {
         return false;
     }
 }
-template <typename T, typename M, typename K>
-inline bool StandardFactory<T, M, K>::unRegisterObject(M* obj) {
+
+template <typename T, typename M, typename K, typename... Args>
+inline bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
     size_t removed = util::map_erase_remove_if(
         map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
 
     return removed > 0;
 }
 
-template <typename T, typename M, typename K>
-std::unique_ptr<T> StandardFactory<T, M, K>::create(K key) const {
+template <typename T, typename M, typename K, typename... Args>
+std::unique_ptr<T> StandardFactory<T, M, K, Args...>::create(K key, Args... args) const {
     auto it = map_.find(key);
     if (it != end(map_)) {
-        return it->second->create();
+        return it->second->create(args...);
     } else {
         return nullptr;
     }
 }
 
-template <typename T, typename M, typename K>
-bool StandardFactory<T, M, K>::hasKey(K key) const {
+template <typename T, typename M, typename K, typename... Args>
+bool StandardFactory<T, M, K, Args...>::hasKey(K key) const {
     return util::has_key(map_, key);
 }
 
-template <typename T, typename M, typename K>
-auto StandardFactory<T, M, K>::getKeys() const -> std::vector<Key> {
+template <typename T, typename M, typename K, typename... Args>
+auto StandardFactory<T, M, K, Args...>::getKeys() const -> std::vector<Key> {
     auto res = std::vector<Key>();
     for (auto& elem : map_) res.push_back(elem.first);
     return res;
