@@ -76,6 +76,11 @@ public:
         ,InExp
         ,OutExp
         ,InOutExp
+
+        //Circular Types
+        ,InCircular
+        ,OutCircular
+        ,InOutCircular
     };
 
 //Construction / Deconstruction
@@ -155,6 +160,25 @@ private:
         return OutExp(tstretched - 1, 2.0) / 2;
     }
 
+    ///Circular In-Easing
+    static double InCircular(const double t)
+    {return 1 - sqrt(1 - pow(t, 2));}
+
+    ///Circular Out-Easing
+    static double OutCircular(const double t, const double Range = 1.0)
+    {return sqrt(1 - pow(Range-t, 2));}
+
+    ///Circular In-Out-Easing
+    static double InOutCircular(const double t)
+    {
+        const double tstretched = 2.0 * t;
+        if (tstretched < 1.0)
+        {
+            return InCircular(tstretched) / 2;
+        }
+        return 1 + OutCircular(tstretched, 2.0) / 2;
+    }
+
 
 
 public:
@@ -197,6 +221,10 @@ public:
             case EEasingType::InExp:     return InExp(t);
             case EEasingType::OutExp:    return OutExp(t);
             case EEasingType::InOutExp:  return InOutExp(t);
+
+            case EEasingType::InCircular:     return InCircular(t);
+            case EEasingType::OutCircular:    return OutCircular(t);
+            case EEasingType::InOutCircular:  return InOutCircular(t);
         }
     }
 
