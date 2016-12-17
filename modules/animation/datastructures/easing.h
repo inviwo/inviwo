@@ -32,6 +32,8 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/datastructures/animationtime.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -155,6 +157,7 @@ private:
     static double InOutExp(const double t)
     {
         if (t == 0) return 0;
+        if (t == 0.5) return 0.5;
         if (t == 1) return 1;
 
         const double tstretched = 2.0 * t;
@@ -181,7 +184,7 @@ private:
         {
             return InCircular(tstretched) / 2;
         }
-        return 1 + OutCircular(tstretched, 2.0) / 2;
+        return (1 + OutCircular(tstretched, 2.0)) / 2;
     }
 
     /** Overshooting In-Back-Easing
@@ -208,7 +211,7 @@ private:
 
     ///Overshooting Out-Back-Easing
     static double OutBack(const double t, const double OvershootStrength = 1.70154, const double Range = 1.0)
-    {return Range - ((OvershootStrength + 1) * (Range-t) + OvershootStrength) * pow(Range-t,2);}
+    {return Range - ((OvershootStrength + 1) * (Range-t) - OvershootStrength) * pow(Range-t,2);}
 
     /** Overshooting In-Out-Back-Easing
 
@@ -241,7 +244,7 @@ private:
 
 public:
     ///A time input t in [0,1] is assumed.
-    /// Most easing functions return an value in [0,1] as well.
+    /// Most easing functions return a value in [0,1] as well.
     /// Some functions overshoot, which means you get also values outside of [0,1].
     /// Most interpolations should be fine with that. Linear Interpolation is fine with that.
     static double Ease(const double t, EEasingType HowToEase)
