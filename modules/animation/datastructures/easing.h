@@ -93,6 +93,11 @@ public:
         ,InElastic
         ,OutElastic
         ,InOutElastic
+
+        //Bounce Types
+        ,InBounce
+        ,OutBounce
+        ,InOutBounce
     };
 
 //Construction / Deconstruction
@@ -268,7 +273,41 @@ private:
     }
 
 
+    static double InBounce(const double t)
+    {return 1 - OutBounce(1 - t);}
 
+    static double OutBounce(const double t)
+    {
+        if (t < 1 / 2.75)
+        {
+            return 7.5625 * t * t;
+        }
+        else if (t < 2 / 2.75)
+        {
+            const double tnew = t - (1.5 / 2.75);
+            return 7.5625 * tnew * tnew + 0.75;
+        }
+        else if (t < 2.5 / 2.75)
+        {
+            const double tnew = t - (2.25 / 2.75);
+            return 7.5625 * tnew * tnew + 0.9375;
+        }
+        else
+        {
+            const double tnew = t - (2.625 / 2.75);
+            return 7.5625 * tnew * tnew + 0.984375;
+        }
+    }
+
+    static double InOutBounce(const double t)
+    {
+        const double tstretched = 2.0 * t;
+        if (t < 0.5)
+        {
+            return InBounce(tstretched) / 2;
+        }
+        return 0.5 + OutBounce(tstretched - 1) / 2;
+    }
 
 public:
     ///A time input t in [0,1] is assumed.
@@ -322,6 +361,10 @@ public:
             case EEasingType::InElastic:     return InElastic(t);
             case EEasingType::OutElastic:    return OutElastic(t);
             case EEasingType::InOutElastic:  return InOutElastic(t);
+
+            case EEasingType::InBounce:     return InBounce(t);
+            case EEasingType::OutBounce:    return OutBounce(t);
+            case EEasingType::InOutBounce:  return InOutBounce(t);
         }
     }
 
