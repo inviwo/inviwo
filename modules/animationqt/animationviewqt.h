@@ -27,24 +27,48 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONQTMODULE_H
-#define IVW_ANIMATIONQTMODULE_H
+#ifndef IVW_ANIMATIONVIEWQT_H
+#define IVW_ANIMATIONVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/datastructures/animation.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsView>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
+namespace animation {
+/**
+ * \class AnimationViewQt
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+
+
+class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView {
 public:
-    AnimationQtModule(InviwoApplication* app);
-    virtual ~AnimationQtModule();
-    
-    //animation::Animation animation_;
+    AnimationViewQt();
+    virtual ~AnimationViewQt() = default;
+
+protected:
+	void mousePressEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void wheelEvent(QWheelEvent* e);
+
+	virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
+
+	void updateZoom();
+
+	dvec2 zoomH_{ 1,1 };
+	dvec2 zoomV_{ 1,1 };
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_ANIMATIONQTMODULE_H
+}  // namespace
+
+#endif  // IVW_ANIMATIONVIEWQT_H

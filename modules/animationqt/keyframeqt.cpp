@@ -28,12 +28,49 @@
  *********************************************************************************/
 
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animation/datastructures/keyframe.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+//#include <QTextStream>
+#include <QGraphicsLineItem>
+#include <QGraphicsScene>
+//#include <QGraphicsSceneEvent>
+#include <QGraphicsView>
+#include <QPainter>
+//#include <QKeyEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
-KeyframeQt::KeyframeQt()  {
-    
+namespace animation {
+
+KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
 }
 
-} // namespace
+void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+	QWidget* widget) {
+	IVW_UNUSED_PARAM(options);
+	IVW_UNUSED_PARAM(widget);
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	QPen pen = QPen();
+	pen.setWidthF(1);
+	pen.setCosmetic(true);
+	pen.setCapStyle(Qt::RoundCap);
+	pen.setStyle(Qt::SolidLine);
+	isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
+	QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
+	painter->setPen(pen);
+	painter->setBrush(brush);
 
+	int hs = static_cast<int>(KeyframeWidth / 2.0f);
+	QPoint p[4] = { {-hs, 0}, {0, -hs}, {hs, 0}, {0, hs} };
+	painter->drawPolygon(p, 4);
+}
+
+QRectF KeyframeQt::boundingRect() const { return QRectF(-KeyframeWidth / 2.0f, -KeyframeHeight / 2.0f, KeyframeWidth, KeyframeHeight); }
+
+}  // namespace
+
+}  // namespace

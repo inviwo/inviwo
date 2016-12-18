@@ -33,20 +33,38 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsItem>
+#include <warn/pop>
+
 namespace inviwo {
+
+namespace animation {
+
+class Keyframe;
 
 /**
  * \class KeyframeQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API KeyframeQt { 
+class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem {
 public:
-    KeyframeQt();
+    KeyframeQt(Keyframe& keyframe);
     virtual ~KeyframeQt() = default;
+
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
+
+protected:
+    virtual QRectF boundingRect() const;
+
+    Keyframe& keyframe_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_KEYFRAMEQT_H
+}  // namespace
 
+#endif  // IVW_KEYFRAMEQT_H

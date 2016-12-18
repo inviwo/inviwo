@@ -60,12 +60,18 @@ public:
     // Pause and reset to start
     void stop();
 
-    const Animation* getAnimation() const { return animation_; }
+	void setAnimation(Animation* animation);
+	void setPlaySpeed(double framesPerSecond);
 
+    const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
+	const Time getCurrentTime() const { return currentTime_; }
+	const double getPlaySpeed() const { return speed_.count(); }
 protected:
-    Animation* animation_; ///< non-owning reference
-    AnimationState state_;
+	Animation* animation_; ///< non-owning reference
+	AnimationState state_;
+	Time currentTime_;
+	Time speed_;
 };
 
 } // namespace

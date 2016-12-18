@@ -28,12 +28,50 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/trackqt.h>
+#include <modules/animation/datastructures/animation.h>
+
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-AnimationEditorQt::AnimationEditorQt()  {
-    
+namespace animation {
+
+AnimationEditorQt::AnimationEditorQt(Animation& animation)
+    : QGraphicsScene(),
+	animation_(animation) {
+
+	setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerTimeUnit, animation.size() * TrackHeight);
+
+    for (size_t i = 0; i < animation_.size(); ++i) {
+        auto& track = animation_[i];
+        auto trackQt = new TrackQt(track);
+		trackQt->setPos(0, TrackHeight * i + TrackHeight * 0.5);
+        this->addItem(trackQt);
+    }
+}
+void AnimationEditorQt::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+	//LogWarnCustom("AnimationEditor", "Pressed mouse");
+	QGraphicsScene::mousePressEvent(e);
 }
 
-} // namespace
+void AnimationEditorQt::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
+	//LogWarnCustom("AnimationEditor", "Moved mouse");
+	QGraphicsScene::mouseMoveEvent(e);
+}
 
+void AnimationEditorQt::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
+	//LogWarnCustom("AnimationEditor", "Released mouse");
+	QGraphicsScene::mouseReleaseEvent(e);
+}
+
+void AnimationEditorQt::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
+}
+
+
+void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
+}
+
+}  // namespace
+
+}  // namespace

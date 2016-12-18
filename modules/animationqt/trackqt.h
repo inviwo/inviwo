@@ -33,18 +33,35 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsItem>
+#include <warn/pop>
+
 namespace inviwo {
+
+namespace animation {
+
+class Track;
 
 /**
  * \class TrackQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API TrackQt { 
+class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem { 
 public:
-    TrackQt();
+    TrackQt(Track& track);
     virtual ~TrackQt() = default;
+    virtual void paint(QPainter* painter,
+        const QStyleOptionGraphicsItem* options,
+        QWidget* widget) override;
+protected:
+    virtual QRectF boundingRect() const;
+    Track& track_;
 };
+
+} // namespace
 
 } // namespace
 

@@ -33,20 +33,44 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsScene>
+#include <warn/pop>
+
 namespace inviwo {
+
+namespace animation {
+
+constexpr int TrackHeight = 25;
+constexpr int KeyframeWidth = 15;
+constexpr int KeyframeHeight = TrackHeight;
+constexpr int WidthPerTimeUnit = 100;
+
+class Animation;
 
 /**
  * \class AnimationEditorQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt { 
+
+class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene {
 public:
-    AnimationEditorQt();
+    AnimationEditorQt(Animation& animation);
     virtual ~AnimationEditorQt() = default;
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent* e);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* e);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
+    void keyPressEvent(QKeyEvent* keyEvent);
+
+    Animation& animation_;
 };
 
-} // namespace
+}  // namespace
+}  // namespace
 
-#endif // IVW_ANIMATIONEDITORQT_H
-
+#endif  // IVW_ANIMATIONEDITORQT_H

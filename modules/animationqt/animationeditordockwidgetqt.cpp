@@ -28,7 +28,14 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationeditordockwidgetqt.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/trackqt.h>
+#include <modules/animationqt/keyframesequenceqt.h>
+#include <modules/animationqt/keyframeqt.h>
+
 #include <modules/animation/animationcontroller.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,32 +51,36 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController* animationController, const std::string& widgetName, QWidget* parent) 
+AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(Animation* animation, const std::string& widgetName, QWidget* parent) 
     : InviwoDockWidget(QString(widgetName.c_str()), parent)
-    , animationController_(animationController) {
-    if (animationController_ == nullptr) {
-        throw Exception("Animation controller cannot be null", IvwContext);
+    , animation_(animation)
+	, controller_(animation) {
+
+    if (animation == nullptr) {
+        throw Exception("Animation cannot be null", IvwContext);
     }
+
     generateWidget();
+}
+
+void AnimationEditorDockWidgetQt::setAnimation(Animation * animation) {
+	controller_.setAnimation(animation);
 }
 
 void AnimationEditorDockWidgetQt::generateWidget() {
 
-    
-
     auto btnPlay_ = new QPushButton("Play");
     connect(btnPlay_, &QPushButton::clicked, [&]() {
-        animationController_->play();
+        controller_.play();
     });
     auto btnPause_ = new QPushButton("Pause");
     connect(btnPause_, &QPushButton::clicked, [&]() {
-        animationController_->pause();
+		controller_.pause();
     });
     auto btnStop_ = new QPushButton("Stop");
     connect(btnStop_, &QPushButton::clicked, [&]() {
-        animationController_->stop();
+		controller_.stop();
     });
-
 
     auto controllerLayout = new QHBoxLayout();
     controllerLayout->addWidget(btnPlay_);
@@ -83,7 +94,17 @@ void AnimationEditorDockWidgetQt::generateWidget() {
 
     auto rightPanel = new QVBoxLayout();
     rightPanel->addWidget(new QLabel("Timeline"));
-    rightPanel->addWidget(new QLabel("Tracks"));
+    //rightPanel->addWidget(new QLabel("Tracks"));
+
+    auto animationEditor = new AnimationEditorQt(*animation_);
+    auto animationView = new AnimationViewQt();
+
+	animationView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	animationView->setMinimumSize(200, 200);
+	animationView->setScene(animationEditor);
+
+	//animationView->setDragMode(QGraphicsView::ScrollHandDrag);
+    rightPanel->addWidget(animationView);
 
     auto hLayout = new QHBoxLayout();
     hLayout->addItem(leftPanel);

@@ -31,6 +31,7 @@
 #define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/animationcontroller.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
@@ -39,7 +40,6 @@ class QWidget;
 namespace inviwo {
 
 namespace animation {
-class AnimationController;
 /**
  * \class AnimationEditorDockWidgetQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
@@ -47,13 +47,15 @@ class AnimationController;
  */
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget { 
 public:
-    AnimationEditorDockWidgetQt(AnimationController* animationController, const std::string& widgetName, QWidget *parent);
+    AnimationEditorDockWidgetQt(Animation* animation, const std::string& widgetName, QWidget *parent);
     virtual ~AnimationEditorDockWidgetQt() = default;
 
-
+	void setAnimation(Animation* animation);
 protected:
     void generateWidget();
-    AnimationController* animationController_;
+
+    Animation* animation_;
+	AnimationController controller_;
 };
 
 } // namespace

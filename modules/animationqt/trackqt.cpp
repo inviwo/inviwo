@@ -28,12 +28,30 @@
  *********************************************************************************/
 
 #include <modules/animationqt/trackqt.h>
+#include <modules/animationqt/keyframesequenceqt.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 
 namespace inviwo {
 
-TrackQt::TrackQt()  {
-    
+namespace animation {
+
+TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
+    for (size_t i = 0; i < track_.size(); ++i) {
+        auto &sequence = track_[i];
+        auto sequenceQt = new KeyframeSequenceQt(sequence);
+
+		auto sequenceWidth = sequence.getLast().getTime().count() - sequence.getFirst().getTime().count();
+        sequenceQt->setParentItem(this);
+    }
 }
 
-} // namespace
+void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {
 
+}
+
+QRectF TrackQt::boundingRect() const { return QRectF(); }
+
+}  // namespace
+
+}  // namespace

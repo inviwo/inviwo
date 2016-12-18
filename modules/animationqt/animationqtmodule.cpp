@@ -29,6 +29,11 @@
 
 #include <modules/animationqt/animationqtmodule.h>
 #include <modules/animationqt/animationeditordockwidgetqt.h>
+
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframe.h>
+
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -41,14 +46,32 @@
 
 namespace inviwo {
 
+// --- BOGUS DATA, USE ME FOR TESTING ---
+using namespace animation;
+using Key = ValueKeyframe<float>;
+auto bogus_prop = std::make_unique<FloatProperty>("float_id", "Hello");
+auto bogus_anim = std::make_unique<Animation>();
+auto bogus_track = std::make_unique<TrackProperty<FloatProperty, Key>>(bogus_prop.get());
+
+void initBogus() {
+	KeyframeSequenceTyped<Key> s1{ { { Time(0), 1.f },{ Time(1), 2.f },{ Time(4), 5.f } }, std::make_unique<LinearInterpolation<Key>>() };
+	KeyframeSequenceTyped<Key> s2{ { { Time(5), 2.f },{ Time(6), 1.f } }, std::make_unique<LinearInterpolation<Key>>() };
+
+	bogus_track->add(s1);
+	bogus_anim->add(std::move(bogus_track));
+}
+// --- END OF BOGUS ---
+
+
 AnimationQtModule::AnimationQtModule(InviwoApplication* app) 
-    : InviwoModule(app, "AnimationQt"), animationController_(&animation_) {  
+    : InviwoModule(app, "AnimationQt") {  
 
     if (auto win = utilqt::getApplicationMainWindow()) {
+		initBogus();
         auto menu = win->menuBar()->addMenu("Animation");
         auto animationEditorOpen =
             menu->addAction(QIcon(":/icons/stopwatch.png"), "&Animation Editor");
-        auto editor = new animation::AnimationEditorDockWidgetQt(&animationController_, "Animation Editor", win);
+        auto editor = new animation::AnimationEditorDockWidgetQt(bogus_anim.get(), "Animation Editor", win);
         editor->hide();
         win->connect(animationEditorOpen, SIGNAL(triggered(bool)), editor, SLOT(show(void)));
     }
@@ -87,6 +110,10 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     // registerPortInspector("AnimationQtOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
     // registerDrawer(util::make_unique_ptr<AnimationQtDrawer>());  
+}
+
+AnimationQtModule::~AnimationQtModule() {
+
 }
 
 } // namespace

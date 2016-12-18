@@ -34,20 +34,33 @@ namespace inviwo {
 namespace animation {
 
 AnimationController::AnimationController(Animation* animation)
-: animation_(animation), state_(AnimationState::Paused) {
-    
+	: animation_(animation)
+	, state_(AnimationState::Paused)
+	, currentTime_(0) {
+
 }
 
 void AnimationController::play() {
-
+	state_ = AnimationState::Playing;
 }
 
 void AnimationController::pause() {
-
+	state_ = AnimationState::Paused;
 }
 
 void AnimationController::stop() {
+	state_ = AnimationState::Paused;
+	currentTime_ = Time(0.0);
+}
 
+void AnimationController::setAnimation(Animation * animation) {
+	animation_ = animation;
+	state_ = AnimationState::Paused;
+	currentTime_ = Time(0.0);
+}
+
+void AnimationController::setPlaySpeed(double framesPerSecond) {
+	speed_ = Time(1.0 / framesPerSecond);
 }
 
 } // namespace
