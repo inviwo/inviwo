@@ -74,6 +74,9 @@ TEST(AnimationTests, Easing) {
         ,{Easing::EEasingType::InBack, "InBack"}
         ,{Easing::EEasingType::OutBack, "OutBack"}
         ,{Easing::EEasingType::InOutBack, "InOutBack"}
+        ,{Easing::EEasingType::InElastic, "InElastic"}
+        ,{Easing::EEasingType::OutElastic, "OutElastic"}
+        ,{Easing::EEasingType::InOutElastic, "InOutElastic"}
     };
 
 

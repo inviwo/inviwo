@@ -88,6 +88,11 @@ public:
         ,InBack
         ,OutBack
         ,InOutBack
+
+        //Overshooting Elastic Types
+        ,InElastic
+        ,OutElastic
+        ,InOutElastic
     };
 
 //Construction / Deconstruction
@@ -240,6 +245,29 @@ private:
         return OutBack(tstretched, OvershootStrength, 2.0) / 2;
     }
 
+    ///Overshooting Elastic In-Easing
+    static double InElastic(const double t)
+    {return InExp(t) * sin(t * 3.25 * 2 * M_PI);}
+
+    ///Overshooting Elastic Out-Easing
+    static double OutElastic(const double t)
+    {return 1 - exp(-8*t) * sin((1-t) * 3.25 * 2 * M_PI);}
+
+    ///Overshooting Elastic In-Out-Easing
+    static double InOutElastic(const double t)
+    {
+        if (t==0.5) return 0.5;
+        if (t==1) return 1;
+
+        const double tstretched = 2.0 * t;
+        if (tstretched < 1.0)
+        {
+            return InElastic(tstretched) / 2;
+        }
+        return (2 - exp(-8*(tstretched-1)) * sin((2-tstretched) * 3.25 * 2 * M_PI)) / 2;
+    }
+
+
 
 
 public:
@@ -290,6 +318,10 @@ public:
             case EEasingType::InBack:     return InBack(t);
             case EEasingType::OutBack:    return OutBack(t);
             case EEasingType::InOutBack:  return InOutBack(t);
+
+            case EEasingType::InElastic:     return InElastic(t);
+            case EEasingType::OutElastic:    return OutElastic(t);
+            case EEasingType::InOutElastic:  return InOutElastic(t);
         }
     }
 
