@@ -51,7 +51,7 @@ class ButtonPropertyWidgetQt : public PropertyWidgetQt {
 public:
     ButtonPropertyWidgetQt(ButtonProperty* property);
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
     QPushButton* getButton();
 private:
     ButtonProperty* property_;

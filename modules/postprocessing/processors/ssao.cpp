@@ -224,8 +224,6 @@ void SSAO::process() {
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto depthLayer = imageGL->getDepthLayerGL();
     auto depthTex = depthLayer->getTexture()->getID();
-    auto colorLayer = imageGL->getColorLayerGL();
-    auto colorTex = colorLayer->getTexture()->getID();
 
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
     auto outFbo = outImageGL->getFBO()->getID();

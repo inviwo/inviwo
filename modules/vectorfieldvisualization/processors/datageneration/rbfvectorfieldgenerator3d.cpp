@@ -151,10 +151,6 @@ void RBFVectorFieldGenerator3D::process() {
     xy = solverY.solve(by);
     xz = solverZ.solve(bz);
 
-    auto testX = solverX.info() == Eigen::Success;
-    auto testY = solverY.info() == Eigen::Success;
-    auto testZ = solverZ.info() == Eigen::Success;
-
     auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
     volume->dataMap_.dataRange = vec2(0, 1);
     volume->dataMap_.valueRange = vec2(-1, 1);
