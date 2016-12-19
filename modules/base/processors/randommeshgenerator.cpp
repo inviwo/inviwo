@@ -109,24 +109,24 @@ void RandomMeshGenerator::process() {
         mesh->append(mesh2.get());
     }
     for (int i = 0; i < numberOfSpheres_.get(); i++) {
-        auto center = randVec3();
-        auto color = randColor();
         auto radius = randD(0.1f, 1.0f);
+        auto color = randColor();
+        auto center = randVec3();
         BasicMesh::sphere(center, radius, color, mesh);
     }
     for (int i = 0; i < numberOfCylinders_.get(); i++) {
-        auto start = randVec3();
-        auto end = randVec3();
-        auto color = randColor();
         auto radius = randD(0.1f, 1.0f);
+        auto color = randColor();
+        auto end = randVec3();
+        auto start = randVec3();
         auto mesh2 = BasicMesh::cylinder(start, end, color, radius);
         mesh->append(mesh2.get());
     }
     for (int i = 0; i < numberOfCones_.get(); i++) {
-        auto start = randVec3();
-        auto end = randVec3();
-        auto color = randColor();
         auto radius = randD(0.1f, 1.0f);
+        auto color = randColor();
+        auto end = randVec3();
+        auto start = randVec3();
         auto mesh2 = BasicMesh::cone(start, end, color, radius);
         mesh->append(mesh2.get());
     }
