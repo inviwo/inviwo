@@ -210,17 +210,22 @@ IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
     int source = open(src.c_str(), O_RDONLY, 0);
     if (source < 0) { return false; }
 
-    int dest = open(dst.c_str(), O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+    int dest = open(dst.c_str(), O_WRONLY | O_CREAT, 0644);
     if (dest < 0) { close(source); return false; }
 
+    bool successful = false;
+#if defined(__APPLE__)
+    off_t bytesWritten = 0; // send until the end of file has been reached
+    successful = sendfile(dest, source, 0, &bytesWritten, nullptr, 0) == 0;
+#else
     struct stat stat_source;
     fstat(source, &stat_source);
-
     auto bytesWritten = sendfile(dest, source, 0, stat_source.st_size);
-
+    successful = bytesWritten > 0;
+#endif
     close(source);
     close(dest);
-    return bytesWritten > 0;
+    return successful;
 #endif
 }
 

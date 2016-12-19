@@ -245,7 +245,6 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
         // since we are ensuring the they must be built for the 
         // same core version. 
         auto versionIt = moduleObj->dependenciesVersion.cbegin();
-        auto anyIncorrectDependencyVersions = false;
         std::stringstream dependencyVersionError;
         for (auto dep = moduleObj->dependencies.cbegin();
             dep != moduleObj->dependencies.end(); ++dep, ++versionIt) {
