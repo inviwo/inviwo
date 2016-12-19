@@ -85,6 +85,7 @@
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/binarystlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
+#include <modules/base/processors/randommeshgenerator.h>
 
 namespace inviwo {
 
@@ -142,6 +143,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeDivergenceCPUProcessor>();
     registerProcessor<VolumeLaplacianProcessor>();
     registerProcessor<MeshExport>();
+    registerProcessor<RandomMeshGenerator>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
@@ -161,7 +163,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 }
 
 int BaseModule::getVersion() const {
-    return 1;
+    return 2;
 }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
@@ -258,6 +260,12 @@ bool BaseModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
+        }case 1: {
+            res |= xml::changeAttribute(
+                root, { { xml::Kind::processor("org.inviwo.GeometeryGenerator") } },
+                "type",
+                "org.inviwo.GeometeryGenerator",
+                "org.inviwo.RandomMeshGenerator");
         }
             return res;
 

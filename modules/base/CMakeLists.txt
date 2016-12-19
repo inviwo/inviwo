@@ -49,6 +49,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixelvalue.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/randommeshgenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
@@ -121,6 +122,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixelvalue.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/randommeshgenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
