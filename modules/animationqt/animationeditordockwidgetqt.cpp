@@ -61,6 +61,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(Animation* animation, c
     }
 
     generateWidget();
+
+    setFloating(true);
 }
 
 void AnimationEditorDockWidgetQt::setAnimation(Animation * animation) {

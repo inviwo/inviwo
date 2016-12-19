@@ -50,7 +50,7 @@ void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, 
 
 }
 
-QRectF TrackQt::boundingRect() const { return QRectF(); }
+QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
 
 }  // namespace
 
