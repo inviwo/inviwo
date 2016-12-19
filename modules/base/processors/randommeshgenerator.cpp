@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo RandomMeshGenerator::processorInfo_{
     "org.inviwo.RandomMeshGenerator",  // Class identifier
     "Random Mesh Generator",           // Display name
-    "Undefined",                       // Category
+    "Mesh Creation",                   // Category
     CodeState::Experimental,           // Code state
     Tags::None,                        // Tags
 };
