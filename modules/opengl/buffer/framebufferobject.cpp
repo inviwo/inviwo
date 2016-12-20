@@ -28,6 +28,15 @@
  *********************************************************************************/
 
 #include "framebufferobject.h"
+#include <inviwo/core/util/assertion.h>
+
+#if defined(IVW_DEBUG)
+#  define IS_ACTIVE_CHECK_ATTACH ivwAssert(isActive(), "FBO not active when attaching texture")
+#  define IS_ACTIVE_CHECK_DETACH ivwAssert(isActive(), "FBO not active when detaching texture")
+#else
+#  define IS_ACTIVE_CHECK_ATTACH
+#  define IS_ACTIVE_CHECK_DETACH
+#endif // IVW_DEBUG
 
 namespace inviwo {
 
@@ -74,12 +83,16 @@ void FrameBufferObject::defineDrawBuffers() {
 }
 
 void FrameBufferObject::deactivate() {
-    GLint currentFbo = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
-    if (currentFbo == static_cast<GLint>(id_)) {
+    if (isActive()) {
         glBindFramebuffer(GL_FRAMEBUFFER, prevFbo_);
         LGL_ERROR;
     }
+}
+
+bool FrameBufferObject::isActive() const {
+    GLint currentFbo = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
+    return (static_cast<GLint>(id_) == currentFbo);
 }
 
 void FrameBufferObject::deactivateFBO() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
@@ -87,11 +100,13 @@ void FrameBufferObject::deactivateFBO() { glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 /******************************* 2D Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture2D* texture, GLenum attachmentID) {
+    IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(),
@@ -102,6 +117,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(),
@@ -113,11 +129,13 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentN
 /******************************* 2D Array Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture2DArray* texture, GLenum attachmentID) {
+    IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -127,6 +145,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -136,11 +155,13 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attach
 
 void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer,
                                            int level) {
+    IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
     glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), level, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int layer) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
@@ -151,6 +172,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int l
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber,
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
@@ -161,11 +183,13 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int a
 /******************************* 3D Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture3D* texture, GLenum attachmentID) {
+    IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -175,6 +199,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -183,12 +208,14 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentN
 }
 
 void FrameBufferObject::attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer) {
+    IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
     glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
                               layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(),
@@ -200,6 +227,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer)
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attachmentNumber,
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
+    IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(),
@@ -209,6 +237,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attach
 }
 
 void FrameBufferObject::detachTexture(GLenum attachmentID) {
+    IS_ACTIVE_CHECK_DETACH;
     if (attachmentID == GL_DEPTH_ATTACHMENT) {
         hasDepthAttachment_ = false;
     } else if (attachmentID == GL_STENCIL_ATTACHMENT) {
@@ -237,6 +266,7 @@ void FrameBufferObject::detachTexture(GLenum attachmentID) {
 }
 
 void FrameBufferObject::detachAllTextures() {
+    IS_ACTIVE_CHECK_DETACH;
     detachTexture(GL_DEPTH_ATTACHMENT);
     detachTexture(GL_STENCIL_ATTACHMENT);
 
