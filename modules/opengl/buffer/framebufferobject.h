@@ -164,6 +164,8 @@ public:
     void setRead_Blit(bool set = true) const;
     void setDraw_Blit(bool set = true);
 
+    bool isActive() const;
+
 protected:
     void performAttachTexture(GLenum attachmentID);
     bool performAttachColorTexture(GLenum& outAttachNumber);
@@ -179,7 +181,7 @@ protected:
 
     std::string printBuffers() const;
     static std::string getAttachmentStr(GLenum attachmentID);
-
+    
 private:
     unsigned int id_;
     bool hasDepthAttachment_;
