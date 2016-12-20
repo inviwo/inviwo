@@ -319,21 +319,41 @@ private:
 
 namespace util {
 
+
+/**
+ * A helper class for more advanced deserialization. useful when one has to call observer 
+ * notifications for example. 
+ * Example usage, serialize as usual  
+ * ```{.cpp}
+ *     s.serialize("dataPoints", points_, "point");
+ *      
+ * ```
+ * Then deserialize with notifications:
+ * ```{.cpp}
+ *    util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
+ *       .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+ *           notifyControlPointAdded(point.get());
+ *       })
+ *       .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+ *           notifyControlPointRemoved(point.get());
+ *       })(d, points_);
+ * ```
+ */
 template <typename T>
 class IndexedDeserializer {
 public:
     IndexedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
 
     IndexedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
-        makeNewItem_ = makeNewItem;
+        makeNewItem_ = std::move(makeNewItem);
         return *this;
     }
     IndexedDeserializer<T>& onNew(std::function<void(T&)> onNewItem) {
-        onNewItem_ = onNewItem;
+        onNewItem_ = std::move(onNewItem);
         return *this;
     }
-    IndexedDeserializer<T>& onRemove(std::function<bool(T&)> onRemoveItem) {
-        onRemoveItem_ = onRemoveItem;
+    IndexedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+        onRemoveItem_ = std::move(onRemoveItem);
         return *this;
     }
 
@@ -341,39 +361,33 @@ public:
     void operator()(Deserializer& d, C& container) {
         T tmp{};
         size_t count = 0;
-        ContainerWrapper<T> cont(itemKey_, [&](std::string id, size_t ind) ->
-                                 typename ContainerWrapper<T>::Item {
-                                     ++count;
-                                     if (ind < container.size()) {
-                                         return {true, container[ind], [&](T& val) {}};
-                                     } else {
-                                         tmp = makeNewItem_();
-                                         return {true, tmp, [&](T& val) { onNewItem_(val); }};
-                                     }
-                                 });
+        ContainerWrapper<T> cont(
+            itemKey_, [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::Item {
+                ++count;
+                if (ind < container.size()) {
+                    return {true, container[ind], [&](T& val) {}};
+                } else {
+                    tmp = makeNewItem_();
+                    return {true, tmp, [&](T& val) {
+                                container.push_back(std::move(tmp));
+                                onNewItem_(container.back());
+                            }};
+                }
+            });
 
         d.deserialize(key_, cont);
 
-        size_t n = 0;
-        util::erase_remove_if(container, [&](T& item) {
-            if (n < count) {
-                ++n;
-                return false;
-            } else {
-                ++n;
-                return onRemoveItem_(item);
-            }
-        });
+        while (container.size() > count) {
+            auto elem = std::move(container.back());
+            container.pop_back();
+            onRemoveItem_(elem);
+        }
     }
 
 private:
-    std::function<T()> makeNewItem_ = []() -> T {
-        throw Exception("MakeNewItem callback is not set!");
-    };
-    std::function<void(T&)> onNewItem_ = [](T&) {
-        throw Exception("OnNewItem callback is not set!");
-    };
-    std::function<bool(T&)> onRemoveItem_ = [](T&) { return true; };
+    std::function<T()> makeNewItem_ = []() -> T { return T{}; };
+    std::function<void(T&)> onNewItem_ = [](T&) {};
+    std::function<void(T&)> onRemoveItem_ = [](T&) {};
 
     std::string key_;
     std::string itemKey_;
