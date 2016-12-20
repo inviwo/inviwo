@@ -58,6 +58,7 @@ public:
     Track(const Track&) = delete;
     Track& operator=(const Track&) = delete;
 
+    virtual std::string getClassIdentifier() const = 0;
 
     virtual void setEnabled(bool enabled) = 0;
     virtual bool isEnabled() const = 0;
@@ -104,6 +105,12 @@ public:
 template <typename Prop, typename Key>
 class TrackProperty : public TrackTyped<Key> {
 public:
+    TrackProperty()
+        : TrackTyped<Key>()
+        , property_(nullptr)
+        , identifier_("")
+        , name_("") {}
+
     TrackProperty(Prop* property)
         : TrackTyped<Key>()
         , property_(property)
@@ -111,6 +118,15 @@ public:
         , name_(property_->getDisplayName())
         {}
     virtual ~TrackProperty() = default;
+
+    static std::string classIdentifier() {
+        auto keyid = Key::classIdentifier();
+        std::string id = "org.inviwo.animation.propertytrack.";
+        auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
+        id.append(res.second, keyid.end());
+        return id;
+    };
+    virtual std::string getClassIdentifier() const override { return classIdentifier(); }
 
     virtual void setEnabled(bool enabled) override { enabled_ = enabled; }
     virtual bool isEnabled() const override { return enabled_; }
@@ -188,7 +204,7 @@ public:
         }
     };
 
-    virtual void add(const KeyframeSequenceTyped<Key>& sequence) {
+    virtual void add(const KeyframeSequenceTyped<Key>& sequence) override {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),
             [](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
@@ -230,10 +246,56 @@ public:
     }
 
     virtual void serialize(Serializer& s) const override {
-    
+        s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+        s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+        s.serialize("name", name_);
+        s.serialize("enabled", enabled_);
+        s.serialize("priority", priority_);
+        s.serialize("property", property_);
+        s.serialize("sequences", sequences_, "sequence");
     };
     virtual void deserialize(Deserializer& d) override {
-    
+        std::string className;
+        d.deserialize("type", className, SerializationTarget::Attribute);
+        if (className != getClassIdentifier()) {
+            throw SerializationException(
+                "Deserialized animation track: " + getClassIdentifier() +
+                " from a serialized track with a different class identifier: " + className,
+                IvwContext);
+        }
+        {
+            auto old = identifier_;
+            d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
+            if (old != identifier_) notifyIdentifierChanged(this);
+        }
+        {
+            auto old = name_;
+            d.deserialize("name", name_);
+            if (old != name_) notifyNameChanged(this);
+        }
+        {
+            auto old = enabled_;
+            d.deserialize("enabled", enabled_);
+            if (old != enabled_) notifyEnabledChanged(this);
+        }
+        {
+            auto old = priority_;
+            d.deserialize("priority", priority_);
+            if (old != priority_) notifyPriorityChanged(this);
+        }
+
+
+        using Elem = std::unique_ptr<KeyframeSequenceTyped<Key>>;
+        util::IndexedDeserializer<Elem>("sequences", "sequence")
+            .onNew([&](Elem& seq) { notifyKeyframeSequenceAdded(seq.get()); })
+            .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(seq.get()); })(d, sequences_);
+
+        if (Property* ptr = property_) {
+            d.deserialize("property", ptr);
+        } else {
+            d.deserialize("property", ptr);
+            property_ = dynamic_cast<Prop*>(ptr);
+        }
     };
 
 private:
@@ -244,7 +306,7 @@ private:
         /// Do validation? 
     }
 
-    Prop* property_;
+    Prop* property_;   ///< non-owning reference
     bool enabled_{true};
     std::string identifier_;
     std::string name_;

@@ -32,6 +32,9 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 
 #include <modules/animation/datastructures/track.h>
@@ -226,6 +229,8 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     Interpolation* iptr2 = nullptr;
     d.deserialize("interpolation", iptr2);
 
+
+    delete iptr2;
     factory.unRegisterObject(&linearIFO);
 }
 
@@ -263,6 +268,51 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     EXPECT_EQ(doubleSequence, doubleSequence2);
 
     factory.unRegisterObject(&linearIFO);
+}
+
+TEST(AnimationTests, TrackSerializationTest) {
+    InterpolationFactory interpolationFactory;
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO(
+        LinearInterpolation<ValueKeyframe<float>>::classIdentifier());
+    interpolationFactory.registerObject(&linearIFO);
+
+    PropertyFactory propertyFactory;
+    PropertyFactoryObjectTemplate<FloatProperty> floatPFO;
+    propertyFactory.registerObject(&floatPFO);
+
+
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
+    TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
+    KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
+    { {Time{1}, 0.0f}, {Time{2}, 1.0f}, {Time{3}, 0.0f} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+    floatTrack.add(sequence);
+
+    const std::string refPath = "/tmp";
+
+    Serializer s(refPath);
+    s.serialize("Property", &floatProperty);
+    s.serialize("Track", floatTrack);
+    
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    Deserializer d(nullptr, ss, refPath);
+    d.setExceptionHandler([](ExceptionContext context) {throw; });
+    d.registerFactory(&interpolationFactory);
+    d.registerFactory(&propertyFactory);
+
+
+    Property* floatProperty2 = nullptr;
+    TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack2;
+    
+    d.deserialize("Property", floatProperty2);
+    d.deserialize("Track", floatTrack2);
+
+    EXPECT_EQ(floatTrack[0], floatTrack2[0]);
+
+    interpolationFactory.unRegisterObject(&linearIFO);
+    propertyFactory.unRegisterObject(&floatPFO);
 }
 
 

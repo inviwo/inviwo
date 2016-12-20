@@ -281,13 +281,16 @@ size_t KeyframeSequenceTyped<Key>::size() const {
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
-    s.serialize("keyframes", keyframes_);
+    s.serialize("keyframes", keyframes_, "keyframe");
     s.serialize("interpolation", interpolation_);
 }
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
-    d.deserialize("keyframes", keyframes_);
+    using Elem = std::unique_ptr<Key>;
+    util::IndexedDeserializer<Elem>("keyframes", "keyframe")
+        .onNew([&](Elem& key) { notifyKeyframeAdded(key.get()); })
+        .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get()); })(d, keyframes_);
 
     if (Interpolation* ptr = interpolation_.get()) {
         d.deserialize("interpolation", ptr);
