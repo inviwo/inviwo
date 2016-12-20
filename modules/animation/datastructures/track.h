@@ -105,6 +105,10 @@ public:
 template <typename Prop, typename Key>
 class TrackProperty : public TrackTyped<Key> {
 public:
+    static_assert(std::is_same<typename std::decay<decltype(std::declval<Prop>().get())>::type,
+                               typename Key::value_type>::value,
+                  "The value type of Prop has to match that of Key");
+
     TrackProperty()
         : TrackTyped<Key>()
         , property_(nullptr)

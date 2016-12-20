@@ -53,6 +53,9 @@ protected:
 template <typename T>
 class TrackFactoryObjectTemplate : public TrackFactoryObject {
 public:
+    // Requiers a static classIdentifier() method on T
+    TrackFactoryObjectTemplate() : TrackFactoryObject(T::classIdentifier()) {}
+
     TrackFactoryObjectTemplate(const std::string& classIdentifier)
         : TrackFactoryObject(classIdentifier){};
     virtual ~TrackFactoryObjectTemplate() = default;

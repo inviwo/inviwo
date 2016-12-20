@@ -47,6 +47,9 @@
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
 
+#include <modules/animation/factories/trackfactory.h>
+#include <modules/animation/factories/trackfactoryobject.h>
+
 
 namespace inviwo {
 namespace animation {
@@ -205,8 +208,7 @@ TEST(AnimationTests, KeyframeSerializationTest) {
 TEST(AnimationTests, InterpolationSerializationTest) {
     InterpolationFactory factory;
 
-    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO(
-        LinearInterpolation<ValueKeyframe<dvec3>>::classIdentifier());
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
 
     const std::string refPath = "/tmp";
@@ -240,8 +242,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
 TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     InterpolationFactory factory;
 
-    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO(
-        LinearInterpolation<ValueKeyframe<dvec3>>::classIdentifier());
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
 
 
@@ -272,13 +273,16 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
 
 TEST(AnimationTests, TrackSerializationTest) {
     InterpolationFactory interpolationFactory;
-    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO(
-        LinearInterpolation<ValueKeyframe<float>>::classIdentifier());
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO;
     interpolationFactory.registerObject(&linearIFO);
 
     PropertyFactory propertyFactory;
     PropertyFactoryObjectTemplate<FloatProperty> floatPFO;
     propertyFactory.registerObject(&floatPFO);
+
+    TrackFactory trackFactory;
+    TrackFactoryObjectTemplate<TrackProperty<FloatProperty, ValueKeyframe<float>>> floatTFO;
+    trackFactory.registerObject(&floatTFO);
 
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
@@ -301,19 +305,119 @@ TEST(AnimationTests, TrackSerializationTest) {
     d.setExceptionHandler([](ExceptionContext context) {throw; });
     d.registerFactory(&interpolationFactory);
     d.registerFactory(&propertyFactory);
+    d.registerFactory(&trackFactory);
 
 
     Property* floatProperty2 = nullptr;
-    TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack2;
+    Track* track = nullptr;
     
     d.deserialize("Property", floatProperty2);
-    d.deserialize("Track", floatTrack2);
+    d.deserialize("Track", track);
 
-    EXPECT_EQ(floatTrack[0], floatTrack2[0]);
+    auto floatTrack2 = dynamic_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>*>(track);
+
+    EXPECT_NE(nullptr, floatTrack2);
+    EXPECT_EQ(floatTrack[0], (*floatTrack2)[0]);
+
+    delete track;
+    delete floatProperty2;
 
     interpolationFactory.unRegisterObject(&linearIFO);
     propertyFactory.unRegisterObject(&floatPFO);
+    trackFactory.unRegisterObject(&floatTFO);
 }
+
+TEST(AnimationTests, AnimationSerializationTest) {
+    InterpolationFactory interpolationFactory;
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearFloatIFO;
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearDvec3IFO;
+    interpolationFactory.registerObject(&linearFloatIFO);
+    interpolationFactory.registerObject(&linearDvec3IFO);
+
+    PropertyFactory propertyFactory;
+    PropertyFactoryObjectTemplate<FloatProperty> floatPFO;
+    PropertyFactoryObjectTemplate<DoubleVec3Property> dvec3PFO;
+    propertyFactory.registerObject(&floatPFO);
+    propertyFactory.registerObject(&dvec3PFO);
+
+    TrackFactory trackFactory;
+    TrackFactoryObjectTemplate<TrackProperty<FloatProperty, ValueKeyframe<float>>> floatTFO;
+    TrackFactoryObjectTemplate<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>> dvec3TFO;
+    trackFactory.registerObject(&floatTFO);
+    trackFactory.registerObject(&dvec3TFO);
+
+
+
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
+    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
+
+    KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
+    { {Time{1.0}, 0.0f}, {Time{2.0}, 1.0f}, {Time{3.0}, 0.0f} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
+    { {Time{1.0},  dvec3(1.0)}, {Time{2.0},  dvec3(0.0)}, {Time{3.0}, dvec3(1.0)} },
+        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+
+    Animation animation;
+
+    {
+        auto floatTrack =
+            std::make_unique<TrackProperty<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
+        floatTrack->add(floatSequence);
+        animation.add(std::move(floatTrack));
+    }
+
+    {
+        auto doubleTrack =
+            std::make_unique<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>>(
+                &doubleProperty);
+        doubleTrack->add(doubleSequence);
+        animation.add(std::move(doubleTrack));
+    }
+
+
+    const std::string refPath = "/tmp";
+
+    Serializer s(refPath);
+    s.serialize("animation", animation);
+
+    std::stringstream ss;
+    s.writeFile(ss);
+
+
+    Deserializer d(nullptr, ss, refPath);
+    d.setExceptionHandler([](ExceptionContext context) {throw; });
+    d.registerFactory(&interpolationFactory);
+    d.registerFactory(&propertyFactory);
+    d.registerFactory(&trackFactory);
+
+
+    Animation animation2;
+    d.deserialize("animation", animation2);
+
+    const auto& ft1 =
+        static_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>&>(animation[0]);
+    const auto& ft2 =
+        static_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>&>(animation2[0]);
+
+    EXPECT_EQ(ft1[0], ft2[0]);
+
+    const auto& dt1 =
+        static_cast<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation[1]);
+    const auto& dt2 =
+        static_cast<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation2[1]);
+
+    EXPECT_EQ(dt1[0], dt2[0]);
+
+    interpolationFactory.unRegisterObject(&linearFloatIFO);
+    interpolationFactory.unRegisterObject(&linearDvec3IFO);
+    propertyFactory.unRegisterObject(&floatPFO);
+    propertyFactory.unRegisterObject(&dvec3PFO);
+    trackFactory.unRegisterObject(&floatTFO);
+    trackFactory.unRegisterObject(&dvec3TFO);
+}
+
 
 
 }  // namespace

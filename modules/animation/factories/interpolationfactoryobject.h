@@ -54,6 +54,9 @@ protected:
 template <typename T>
 class InterpolationFactoryObjectTemplate : public InterpolationFactoryObject {
 public:
+    // Requiers a static classIdentifier() method on T
+    InterpolationFactoryObjectTemplate() : InterpolationFactoryObject(T::classIdentifier()) {}
+
     InterpolationFactoryObjectTemplate(const std::string& classIdentifier)
         : InterpolationFactoryObject(classIdentifier) {};
     virtual ~InterpolationFactoryObjectTemplate() = default;
