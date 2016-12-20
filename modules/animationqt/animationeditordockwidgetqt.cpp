@@ -47,6 +47,11 @@
 #include <QListWidget>
 #include <warn/pop>
 
+constexpr auto UnicodePlay = 9658;
+constexpr auto UnicodeVerticalBar = 10073;
+constexpr auto UnicodePause = 0xfe0e;//= 10074;
+constexpr auto UnicodeStop = 9724;
+
 namespace inviwo {
 
 namespace animation {
@@ -61,8 +66,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(Animation* animation, c
     }
 
     generateWidget();
-
     setFloating(true);
+	addObservation(&controller_);
 }
 
 void AnimationEditorDockWidgetQt::setAnimation(Animation * animation) {
@@ -71,42 +76,53 @@ void AnimationEditorDockWidgetQt::setAnimation(Animation * animation) {
 
 void AnimationEditorDockWidgetQt::generateWidget() {
 
-    auto btnPlay_ = new QPushButton("Play");
-    connect(btnPlay_, &QPushButton::clicked, [&]() {
-        controller_.play();
-    });
-    auto btnPause_ = new QPushButton("Pause");
-    connect(btnPause_, &QPushButton::clicked, [&]() {
-		controller_.pause();
-    });
-    auto btnStop_ = new QPushButton("Stop");
+	btnPlayPause_ = new QPushButton(QChar(UnicodePlay));
+    connect(btnPlayPause_, &QPushButton::clicked, [&]() {
+		if (controller_.getState() == AnimationState::Playing) {
+			controller_.pause();
+		}
+		else if (controller_.getState() == AnimationState::Paused) {
+			controller_.play();
+		}
+	});
+	btnStop_ = new QPushButton(QChar(UnicodeStop));
     connect(btnStop_, &QPushButton::clicked, [&]() {
 		controller_.stop();
     });
 
+	btnPlayPause_->setFixedSize(75, 25);
+	btnStop_->setFixedSize(75, 25);
+
+	// Exposes controller buttons
     auto controllerLayout = new QHBoxLayout();
-    controllerLayout->addWidget(btnPlay_);
-    controllerLayout->addWidget(btnPause_);
+    controllerLayout->addWidget(btnPlayPause_);
     controllerLayout->addWidget(btnStop_);
 
-    auto leftPanel = new QVBoxLayout();
-    leftPanel->addItem(controllerLayout);
-    auto trackNames = new QListWidget();
-    leftPanel->addWidget(trackNames);
+	// 'Window' of all options (top left)
+	auto optionsLayout = new QVBoxLayout();
+	optionsLayout->addItem(controllerLayout);
 
+	// List widget of track names
+	lstTrackNames_ = new QListWidget();
+
+	// Entire left half
+    auto leftPanel = new QVBoxLayout();
+    leftPanel->addItem(optionsLayout);
+    leftPanel->addWidget(lstTrackNames_);
+
+	// Entire right half
     auto rightPanel = new QVBoxLayout();
-    rightPanel->addWidget(new QLabel("Timeline"));
     //rightPanel->addWidget(new QLabel("Tracks"));
 
-    auto animationEditor = new AnimationEditorQt(*animation_);
-    auto animationView = new AnimationViewQt();
+    animationEditor_ = new AnimationEditorQt(*animation_);
+    animationView_ = new AnimationViewQt(controller_);
 
-	animationView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-	animationView->setMinimumSize(200, 200);
-	animationView->setScene(animationEditor);
+	animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	animationView_->setMinimumSize(200, 200);
+	animationView_->setScene(animationEditor_);
 
 	//animationView->setDragMode(QGraphicsView::ScrollHandDrag);
-    rightPanel->addWidget(animationView);
+    rightPanel->addWidget(animationView_);
 
     auto hLayout = new QHBoxLayout();
     hLayout->addItem(leftPanel);
@@ -118,6 +134,16 @@ void AnimationEditorDockWidgetQt::generateWidget() {
     QWidget* mainPanel = new QWidget(this);
     mainPanel->setLayout(hLayout);
     setWidget(mainPanel);
+}
+
+void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) {
+	if (newState == AnimationState::Playing) {
+		const QChar Pause[2] = { QChar(UnicodeVerticalBar), QChar(UnicodeVerticalBar) };
+		btnPlayPause_->setText(QString(Pause, 2));
+	}
+	else if (newState == AnimationState::Paused) {
+		btnPlayPause_->setText(QChar(UnicodePlay));
+	}
 }
 
 } // namespace

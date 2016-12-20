@@ -46,7 +46,7 @@ AnimationEditorQt::AnimationEditorQt(Animation& animation)
     for (size_t i = 0; i < animation_.size(); ++i) {
         auto& track = animation_[i];
         auto trackQt = new TrackQt(track);
-		trackQt->setPos(0, TrackHeight * i + TrackHeight * 0.5);
+		trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
         this->addItem(trackQt);
     }
 }

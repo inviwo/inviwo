@@ -29,6 +29,7 @@
 
 #include <modules/animationqt/animationviewqt.h>
 #include <modules/animationqt/animationeditorqt.h>
+#include <modules/animation/animationcontroller.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,11 +41,16 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationViewQt::AnimationViewQt() : QGraphicsView() {
+constexpr auto LineWidth = 0.5;
+
+AnimationViewQt::AnimationViewQt(AnimationController& controller)
+	: QGraphicsView()
+	, controller_(controller) {
 	setMouseTracking(true);
 	setRenderHint(QPainter::Antialiasing, true);
 	setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 	setCacheMode(QGraphicsView::CacheBackground);
+	addObservation(&controller);
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
@@ -98,10 +104,66 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
 
 	QPen gridPen;
 	gridPen.setColor(QColor(102, 102, 102));
-	gridPen.setWidthF(1.0);
+	gridPen.setWidthF(LineWidth);
 	gridPen.setCosmetic(true);
 	painter->setPen(gridPen);
 	painter->drawLines(lines.data(), lines.size());
+}
+
+void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
+	QRectF sRect = frameRect();
+	sRect.setHeight(25);
+
+	// Background rect
+	QPen pen;
+	pen.setColor(QColor(102, 102, 102));
+	pen.setWidthF(LineWidth);
+	pen.setCosmetic(true);
+	painter->setPen(pen);
+	painter->fillRect(sRect, QColor(180, 180, 180));
+
+	int gridSpacing = WidthPerTimeUnit;
+	qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
+	QVarLengthArray<QLineF, 100> lines;
+	QVarLengthArray<QPointF, 100> points;
+
+	for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
+		lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
+		points.append(QPointF(x, 20));
+	}
+
+	// Grid
+	QPen gridPen;
+	gridPen.setColor(QColor(102, 102, 102));
+	gridPen.setWidthF(LineWidth);
+	gridPen.setCosmetic(true);
+	painter->setPen(gridPen);
+	painter->drawLines(lines.data(), lines.size());
+
+	// Time stamps
+	char buf[16];
+	for (const auto& p : points) {
+		snprintf(buf, 16, "%.4f", p.x() / static_cast<double>(WidthPerTimeUnit));
+		painter->drawText(p, QString(buf));
+	}
+
+	// Current time
+	auto x = controller_.getCurrentTime().count() * WidthPerTimeUnit;
+	QPen timePen;
+	timePen.setColor(QColor(255, 255, 255));
+	timePen.setWidthF(1.0);
+	timePen.setCosmetic(true);
+	timePen.setStyle(Qt::DashLine);
+	painter->setPen(timePen);
+	painter->drawLine(QLineF(x, rect.top(), x, rect.bottom()));
+}
+
+void AnimationViewQt::onStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) {
+	this->viewport()->update();
+}
+
+void AnimationViewQt::onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) {
+	this->viewport()->update();
 }
 
 }  // namespace

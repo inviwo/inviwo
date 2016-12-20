@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
 
@@ -36,31 +38,88 @@ namespace animation {
 AnimationController::AnimationController(Animation* animation)
 	: animation_(animation)
 	, state_(AnimationState::Paused)
-	, currentTime_(0) {
+	, currentTime_(0)
+	, deltaTime_(0) {
 
+	auto tickTime = std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_);
+	timer_ = std::make_unique<Timer>(tickTime, [this] {
+		tick();
+	});
+
+	setPlaySpeed(60.0);
 }
 
 void AnimationController::play() {
+	auto oldState = state_;
 	state_ = AnimationState::Playing;
+	timer_->start();
+
+	// TODO: Perhaps only trigger if oldstate != state_?
+	notifyStateChanged(this, oldState, state_);
 }
 
 void AnimationController::pause() {
+	auto oldState = state_;
 	state_ = AnimationState::Paused;
+	timer_->stop();
+
+	// TODO: Perhaps only trigger if oldstate != state_?
+	notifyStateChanged(this, oldState, state_);
 }
 
 void AnimationController::stop() {
+	auto oldState = state_;
 	state_ = AnimationState::Paused;
+	timer_->stop();
 	currentTime_ = Time(0.0);
+
+	// TODO: Perhaps only trigger if oldstate != state_?
+	notifyStateChanged(this, oldState, state_);
 }
 
-void AnimationController::setAnimation(Animation * animation) {
+void AnimationController::tick() {
+	// TODO: Implement fully working solution for this.
+	// What to do when network cannot be evaluated in the speed that is given by deltaTime?
+	// Initial solution: Don't care about that, and let it evaluate fully in the speed that it can muster
+	// Since we probably want to generate an imagesequence or something for videos.
+
+	if (state_ == AnimationState::Playing) {
+		auto oldTime = currentTime_;
+		currentTime_ += deltaTime_;
+
+		if (currentTime_ > animation_->lastTime()) {
+			currentTime_ = animation_->lastTime();
+			pause();
+		}
+
+		notifyTimeChanged(this, oldTime, currentTime_);
+	}
+}
+
+void AnimationController::setAnimation(Animation* animation) {
+	auto oldAnim = animation_;
+	auto oldState = state_;
+	auto oldTime = currentTime_;
+
 	animation_ = animation;
 	state_ = AnimationState::Paused;
 	currentTime_ = Time(0.0);
+
+	notifyAnimationChanged(this, oldAnim, animation_);
+	notifyStateChanged(this, oldState, state_);
+	notifyTimeChanged(this, oldTime, currentTime_);
+}
+
+void AnimationController::setCurrentTime(Time time) {
+	// TODO: Boundary check to not go outside of current animation?
+	auto oldTime = currentTime_;
+	currentTime_ = time;
+	notifyTimeChanged(this, oldTime, currentTime_);
 }
 
 void AnimationController::setPlaySpeed(double framesPerSecond) {
-	speed_ = Time(1.0 / framesPerSecond);
+	deltaTime_ = Time(1.0 / framesPerSecond);
+	timer_->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
 }
 
 } // namespace

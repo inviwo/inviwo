@@ -7,9 +7,11 @@ ivw_module(Animation)
 set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/animationprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationcontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationcontrollerobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationstate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.h
@@ -30,6 +32,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/animationprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationcontroller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationcontrollerobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.cpp

@@ -34,8 +34,13 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/animationcontrollerobserver.h>
 
 namespace inviwo {
+
+class Timer;
 
 namespace animation {
 
@@ -44,12 +49,8 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API AnimationController { 
+class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable { 
 public:
-    enum class AnimationState {
-        Paused = 0,
-        Playing
-    };
     AnimationController(Animation* animation);
     virtual ~AnimationController() = default;
 
@@ -60,18 +61,26 @@ public:
     // Pause and reset to start
     void stop();
 
+	// Progresses time and evaluates animation
+	void tick();
+
 	void setAnimation(Animation* animation);
+	void setCurrentTime(Time time);
 	void setPlaySpeed(double framesPerSecond);
 
     const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
 	const Time getCurrentTime() const { return currentTime_; }
-	const double getPlaySpeed() const { return speed_.count(); }
+	const Time getPlaySpeedTime() const { return deltaTime_; }
+	const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
+
 protected:
 	Animation* animation_; ///< non-owning reference
 	AnimationState state_;
 	Time currentTime_;
-	Time speed_;
+	Time deltaTime_;
+
+	std::unique_ptr<Timer> timer_;
 };
 
 } // namespace

@@ -27,31 +27,26 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/trackqt.h>
-#include <modules/animationqt/keyframesequenceqt.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/datastructures/animation.h>
 
 namespace inviwo {
 
 namespace animation {
 
-TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
-    for (size_t i = 0; i < track_.size(); ++i) {
-        auto &sequence = track_[i];
-        auto sequenceQt = new KeyframeSequenceQt(sequence);
-
-		//auto sequenceWidth = sequence.getLast().getTime().count() - sequence.getFirst().getTime().count();
-        sequenceQt->setParentItem(this);
-    }
+void AnimationControllerObservable::notifyStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) {
+    forEachObserver([&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
 }
 
-void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {
-
+void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller, Time oldtime, Time newTime) {
+	forEachObserver([&](AnimationControllerObserver* o) { o->onTimeChanged(controller, oldtime, newTime); });
 }
 
-QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
+void AnimationControllerObservable::notifyAnimationChanged(AnimationController* controller, Animation* oldAnim, Animation* newAnim) {
+	forEachObserver([&](AnimationControllerObserver* o) { o->onAnimationChanged(controller, oldAnim, newAnim); });
+}
 
-}  // namespace
+} // namespace
 
-}  // namespace
+} // namespace

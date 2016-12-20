@@ -27,31 +27,42 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/trackqt.h>
-#include <modules/animationqt/keyframesequenceqt.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
+#ifndef IVW_ANIMATIONCONTROLLEROBSERVER_H
+#define IVW_ANIMATIONCONTROLLEROBSERVER_H
+
+#include <modules/animation/animationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/observer.h>
+
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/animationstate.h>
 
 namespace inviwo {
 
 namespace animation {
 
-TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
-    for (size_t i = 0; i < track_.size(); ++i) {
-        auto &sequence = track_[i];
-        auto sequenceQt = new KeyframeSequenceQt(sequence);
+class Animation;
+class AnimationController;
 
-		//auto sequenceWidth = sequence.getLast().getTime().count() - sequence.getFirst().getTime().count();
-        sequenceQt->setParentItem(this);
-    }
-}
+class IVW_MODULE_ANIMATION_API AnimationControllerObserver : public Observer {
+public:
+	virtual void onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) {};
+    virtual void onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) {};
+	virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim, Animation* newAnim) {};
+};
 
-void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {
+class IVW_MODULE_ANIMATION_API AnimationControllerObservable : public Observable<AnimationControllerObserver> {
+protected:
+	void notifyStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState);
+	void notifyTimeChanged(AnimationController* controller, Time oldTime, Time newTime);
+	void notifyAnimationChanged(AnimationController* controller, Animation* oldAnimation, Animation* newAnimation);
 
-}
+};
 
-QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
+} // namespace
 
-}  // namespace
+} // namespace
 
-}  // namespace
+#endif // IVW_ANIMATIONCONTROLLEROBSERVER_H
+

@@ -27,31 +27,21 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/trackqt.h>
-#include <modules/animationqt/keyframesequenceqt.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
+#ifndef IVW_ANIMATIONSTATE_H
+#define IVW_ANIMATIONSTATE_H
 
 namespace inviwo {
 
 namespace animation {
 
-TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
-    for (size_t i = 0; i < track_.size(); ++i) {
-        auto &sequence = track_[i];
-        auto sequenceQt = new KeyframeSequenceQt(sequence);
+enum class AnimationState {
+	Paused = 0,
+	Playing
+};
 
-		//auto sequenceWidth = sequence.getLast().getTime().count() - sequence.getFirst().getTime().count();
-        sequenceQt->setParentItem(this);
-    }
-}
+} // namespace
 
-void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {
+} // namespace
 
-}
+#endif // IVW_ANIMATIONSTATE_H
 
-QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
-
-}  // namespace
-
-}  // namespace
