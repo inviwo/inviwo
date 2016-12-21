@@ -33,13 +33,11 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-//#include <QTextStream>
+#include <QApplication>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-//#include <QGraphicsSceneEvent>
 #include <QGraphicsView>
 #include <QPainter>
-//#include <QKeyEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -47,6 +45,7 @@ namespace inviwo {
 namespace animation {
 
 KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -70,6 +69,22 @@ void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
 }
 
 QRectF KeyframeQt::boundingRect() const { return QRectF(-KeyframeWidth / 2.0f, -KeyframeHeight / 2.0f, KeyframeWidth, KeyframeHeight); }
+
+QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
+    // Only restrict movement on user interaction
+    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
+        keyframe_.setTime(Time(x() / static_cast<double>(WidthPerTimeUnit)));
+        // Snap to frame per second
+        auto snapToGrid = WidthPerTimeUnit / 24.0;
+        qreal xV = round(value.toPointF().x() / snapToGrid)*snapToGrid;
+        // Do not allow it to move before t=0
+        xV = xV < 0 ? 0.f : xV;
+        // Restrict vertical movement 
+        return QPointF(xV, y());
+    }
+
+    return QGraphicsItem::itemChange(change, value);
+}
 
 }  // namespace
 

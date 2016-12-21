@@ -59,7 +59,8 @@ public:
 
 protected:
     virtual QRectF boundingRect() const;
-
+    // Restrict vertical movement and snap keyframe to grid
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     Keyframe& keyframe_;
 };
 
