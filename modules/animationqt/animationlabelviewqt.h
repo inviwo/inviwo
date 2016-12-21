@@ -31,12 +31,16 @@
 #define IVW_ANIMATIONLABELVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/datastructures/animationobserver.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsView>
+#include <QListView>
+#include <QStringList>
 #include <warn/pop>
+
+class QStringListModel;
 
 namespace inviwo {
 
@@ -50,7 +54,7 @@ class Animation;
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QGraphicsView {
+class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView, public AnimationObserver {
 public:
 	AnimationLabelViewQt(Animation& animation);
     virtual ~AnimationLabelViewQt() = default;
@@ -60,9 +64,12 @@ protected:
 	void mouseMoveEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
 
-	virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
+	virtual void onTrackAdded(Track* track) override;
+	virtual void onTrackRemoved(Track* track) override;
 
 	Animation& animation_;
+	QStringListModel* model_;
+	QStringList list_;
 };
 
 }  // namespace

@@ -102,6 +102,7 @@ void AnimationEditorDockWidgetQt::generateWidget() {
 
 	auto optionsWidget = new QWidget();
 	optionsWidget->setLayout(optionsLayout);
+	optionsWidget->setMinimumHeight(TimelineHeight);
 	optionsWidget->setMaximumHeight(TimelineHeight);
 
 	// List widget of track labels
@@ -155,7 +156,7 @@ void AnimationEditorDockWidgetQt::generateWidget() {
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) {
 	if (newState == AnimationState::Playing) {
 		const QChar pause[2] = { QChar(UnicodeVerticalBar), QChar(UnicodeVerticalBar) };
-		btnPlayPause_->setText(QString(pause, 2));
+		btnPlayPause_->setText(QChar(UnicodePause));
 	}
 	else if (newState == AnimationState::Paused) {
 		btnPlayPause_->setText(QChar(UnicodePlay));

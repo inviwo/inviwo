@@ -30,6 +30,7 @@
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -71,7 +72,7 @@ void AnimationController::stop() {
 	auto oldState = state_;
 	state_ = AnimationState::Paused;
 	timer_->stop();
-	currentTime_ = Time(0.0);
+	setCurrentTime(Time(0));
 
 	// TODO: Perhaps only trigger if oldstate != state_?
 	notifyStateChanged(this, oldState, state_);
@@ -125,6 +126,7 @@ void AnimationController::setCurrentTime(Time time) {
 	// Probably no, since you might want to set the time after the last keyframe of animation when creating new ones
 	auto oldTime = currentTime_;
 	currentTime_ = std::max(Time(0), time);
+	eval(oldTime, currentTime_);
 	notifyTimeChanged(this, oldTime, currentTime_);
 }
 

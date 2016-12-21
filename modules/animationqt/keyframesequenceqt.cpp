@@ -93,7 +93,6 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
         (*toRemove)->setParentItem(nullptr);
         updateRect();
     }
-    
 }
 
 void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) {

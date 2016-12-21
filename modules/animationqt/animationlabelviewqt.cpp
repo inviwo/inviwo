@@ -34,6 +34,7 @@
 #include <warn/ignore/all>
 #include <QWheelEvent>
 #include <QPainter>
+#include <QStringListModel>
 #include <warn/pop>
 
 namespace inviwo {
@@ -43,34 +44,45 @@ namespace animation {
 constexpr auto LineWidth = 0.5;
 
 AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
-	: QGraphicsView()
+	: QListView()
 	, animation_(animation) {
 	setMouseTracking(true);
-	setRenderHint(QPainter::Antialiasing, true);
-	setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-	setCacheMode(QGraphicsView::CacheBackground);
+	animation_.addObserver(this);
+	model_ = new QStringListModel(this);
+
+	for (size_t i = 0; i < animation_.size(); ++i) {
+		list_.append(QString(animation_[i].getIdentifier().c_str()));
+	}
+
+	model_->setStringList(list_);
+	setModel(model_);
 }
 
 void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
     //LogWarnCustom("AnimationEditor", "Pressed mouse");
 
-    QGraphicsView::mousePressEvent(e);
+    QListView::mousePressEvent(e);
 }
 
 void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
     //LogWarnCustom("AnimationEditor", "Moved mouse");
 
-    QGraphicsView::mouseMoveEvent(e);
+	QListView::mouseMoveEvent(e);
 }
 
 void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
     //LogWarnCustom("AnimationEditor", "Released mouse");
 
-    QGraphicsView::mouseReleaseEvent(e);
+	QListView::mouseReleaseEvent(e);
 }
 
-void AnimationLabelViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
-	painter->fillRect(rect, QColor(89, 89, 89));
+void AnimationLabelViewQt::onTrackAdded(Track* track) {
+	list_.append(QString(track->getName().c_str()));
+	model_->setStringList(list_);
+}
+
+void AnimationLabelViewQt::onTrackRemoved(Track* track) {
+
 }
 
 }  // namespace

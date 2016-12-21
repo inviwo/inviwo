@@ -55,7 +55,12 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
-	if (e->pos().y() < TimelineHeight) pressingOnTimeline_ = true;
+	if (e->pos().y() < TimelineHeight) {
+		pressingOnTimeline_ = true;
+		auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
+		controller_.setCurrentTime(Time(time));
+	}
+
     QGraphicsView::mousePressEvent(e);
 }
 
