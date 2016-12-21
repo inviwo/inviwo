@@ -33,12 +33,19 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/animationcontroller.h>
+
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/trackfactory.h>
 
 namespace inviwo {
 
+class InviwoApplication;
+class AnimationModule;
+
 namespace animation {
+
 
 /**
  * \class AnimationManager
@@ -47,7 +54,7 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API AnimationManager { 
 public:
-    AnimationManager();
+    AnimationManager(InviwoApplication* app, AnimationModule* animationModule);
     virtual ~AnimationManager() = default;
 
     TrackFactory& getTrackFactory();
@@ -56,9 +63,27 @@ public:
     InterpolationFactory& getInterpolationFactory();
     const InterpolationFactory& getInterpolationFactory() const;
 
+    void registerPropertyTrackConnection(const std::string& propertyClassID,
+                                         const std::string& trackClassID);
+
+    Animation& getAnimation();
+    const Animation& getAnimation() const;
+    AnimationController& getAnimationController();
+    const AnimationController& getAnimationController() const;
+
+    void addTrackCallback(const Property* property);
+
 private:
+    InviwoApplication* app_;
+
     TrackFactory trackFactory_;
     InterpolationFactory interpolationFactory_;
+
+    std::unordered_map<std::string, std::string> propertyToTrackMap_;
+    std::unordered_map<const Property*, BaseTrackProperty*> trackMap_;
+
+    Animation animation_;
+    AnimationController controller_;
 };
 
 } // namespace

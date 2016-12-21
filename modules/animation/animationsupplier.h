@@ -64,6 +64,9 @@ public:
     template <typename T>
     void registerInterpolation();
 
+    void registerPropertyTrackConnection(const std::string& propertyClassID,
+                                         const std::string& trackClassID);
+
 private:
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;

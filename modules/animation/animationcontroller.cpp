@@ -49,6 +49,8 @@ AnimationController::AnimationController(Animation* animation)
 	setPlaySpeed(60.0);
 }
 
+AnimationController::~AnimationController() = default;
+
 void AnimationController::play() {
 	auto oldState = state_;
 	state_ = AnimationState::Playing;

@@ -101,9 +101,14 @@ public:
     virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) = 0;
 };
 
+class BaseTrackProperty {
+public:
+    virtual void setProperty(Property* property) = 0;
+    virtual void addKeyFrameUsingPropertyValue(Time time) = 0;
+};
 
 template <typename Prop, typename Key>
-class TrackProperty : public TrackTyped<Key> {
+class TrackProperty : public TrackTyped<Key>, public BaseTrackProperty {
 public:
     static_assert(std::is_same<typename std::decay<decltype(std::declval<Prop>().get())>::type,
                                typename Key::value_type>::value,
@@ -298,6 +303,25 @@ public:
 
         d.deserializeAs<Property>("property", property_);
     };
+
+    virtual void setProperty(Property* property) override {
+        if (property_ = dynamic_cast<Prop*>(property)) {
+            setIdentifier(property_->getIdentifier());
+            setName(property_->getDisplayName());
+        } else {
+            throw Exception("Invalid property set to track", IvwContext);
+        }
+    }
+
+    virtual void addKeyFrameUsingPropertyValue(Time time) override {
+        if (sequences_.empty()) {
+            KeyframeSequenceTyped<Key> sequence({{time, property_->get()}},
+                                                std::make_unique<LinearInterpolation<Key>>());
+            addTyped(sequence);
+        } else {
+            sequences_[0]->add(Key{time, property_->get()});
+        }
+    }
 
 private:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* key) override {

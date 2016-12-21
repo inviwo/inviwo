@@ -48,9 +48,6 @@ public:
 
     animation::AnimationManager& getAnimationManager();
     const animation::AnimationManager& getAnimationManager() const;
-
-    void addTrackCallback(const Property* property);
-
 private:
     animation::AnimationManager manager_;
 };

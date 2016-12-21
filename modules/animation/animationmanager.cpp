@@ -28,12 +28,25 @@
  *********************************************************************************/
 
 #include <modules/animation/animationmanager.h>
+#include <modules/animation/animationmodule.h>
+
+#include <inviwo/core/common/modulecallback.h>
+#include <inviwo/core/common/moduleaction.h>
 
 namespace inviwo {
 
 namespace animation {
 
-AnimationManager::AnimationManager() {}
+AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* animationModule)
+    : app_(app), trackFactory_{}, interpolationFactory_{}, animation_{}, controller_{&animation_} {
+    
+    auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule);
+
+    callbackAction->getCallBack()->addMemberFunction(this, &AnimationManager::addTrackCallback);
+    callbackAction->setActionState(ModuleCallBackActionState::Enabled);
+
+    app->addCallbackAction(callbackAction);
+}
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
 
@@ -43,6 +56,41 @@ InterpolationFactory& AnimationManager::getInterpolationFactory() { return inter
 
 const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
     return interpolationFactory_;
+}
+
+void AnimationManager::registerPropertyTrackConnection(const std::string& propertyClassID,
+                                                       const std::string& trackClassID) {
+    propertyToTrackMap_[propertyClassID] = trackClassID;
+}
+
+Animation& AnimationManager::getAnimation() { return animation_; }
+
+const Animation& AnimationManager::getAnimation() const { return animation_; }
+
+AnimationController& AnimationManager::getAnimationController() { return controller_; }
+
+const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
+
+void AnimationManager::addTrackCallback(const Property* property) {
+    auto tIt = trackMap_.find(property);
+    if (tIt != trackMap_.end()) {
+        tIt->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+    } else {
+
+        auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+        if (it != propertyToTrackMap_.end()) {
+            if (auto track = trackFactory_.create(it->second)) {
+                if (auto baseTrackProperty = dynamic_cast<BaseTrackProperty*>(track.get())) {
+                    baseTrackProperty->setProperty(const_cast<Property*>(property));
+                    baseTrackProperty->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+                    animation_.add(std::move(track));
+                    trackMap_[property] = baseTrackProperty;
+                    return;
+                }
+            }
+        }
+        LogWarn("No matching Track found for property");
+    }
 }
 
 } // namespace

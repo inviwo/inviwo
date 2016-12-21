@@ -52,7 +52,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable { 
 public:
     AnimationController(Animation* animation);
-    virtual ~AnimationController() = default;
+    virtual ~AnimationController();
 
     // Start animation
     void play();
@@ -61,26 +61,26 @@ public:
     // Pause and reset to start
     void stop();
 
-	// Progresses time and evaluates animation
-	void tick();
+    // Progresses time and evaluates animation
+    void tick();
 
-	void setAnimation(Animation* animation);
-	void setCurrentTime(Time time);
-	void setPlaySpeed(double framesPerSecond);
+    void setAnimation(Animation* animation);
+    void setCurrentTime(Time time);
+    void setPlaySpeed(double framesPerSecond);
 
     const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
-	const Time getCurrentTime() const { return currentTime_; }
-	const Time getPlaySpeedTime() const { return deltaTime_; }
-	const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
+    const Time getCurrentTime() const { return currentTime_; }
+    const Time getPlaySpeedTime() const { return deltaTime_; }
+    const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 protected:
-	Animation* animation_; ///< non-owning reference
-	AnimationState state_;
-	Time currentTime_;
-	Time deltaTime_;
+    Animation* animation_; ///< non-owning reference
+    AnimationState state_;
+    Time currentTime_;
+    Time deltaTime_;
 
-	std::unique_ptr<Timer> timer_;
+    std::unique_ptr<Timer> timer_;
 };
 
 } // namespace

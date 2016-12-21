@@ -31,13 +31,5 @@
 
 namespace inviwo {
     
-void animation::Track::serialize(Serializer& s) const {
-    throw std::logic_error("The method or operation is not implemented.");
-}
-
-void animation::Track::deserialize(Deserializer& d) {
-    throw std::logic_error("The method or operation is not implemented.");
-}
-
 } // namespace
 

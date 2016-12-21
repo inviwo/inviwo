@@ -31,9 +31,6 @@
 
 #include <inviwo/core/util/stdextensions.h>
 
-#include <inviwo/core/common/modulecallback.h>
-#include <inviwo/core/common/moduleaction.h>
-
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
 
@@ -45,30 +42,22 @@ struct OrdinalReghelper {
         using namespace animation;
         am.registerTrack<TrackProperty<OrdinalProperty<T>, ValueKeyframe<T>>>();
         am.registerInterpolation<LinearInterpolation<ValueKeyframe<T>>>();
+
+        am.registerPropertyTrackConnection(
+            OrdinalProperty<T>::CLASS_IDENTIFIER,
+            TrackProperty<OrdinalProperty<T>, ValueKeyframe<T>>::classIdentifier());
     }
 };
 
-
 AnimationModule::AnimationModule(InviwoApplication* app)
-    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_) {
+    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_), manager_(app, this) {
 
     using namespace animation;
 
-    using Types = std::tuple<
-        float, vec2, vec3, vec4, 
-        mat2, mat3, mat4,
-        double, dvec2, dvec3, dvec4,
-        dmat2, dmat3, dmat4
-    >;
+    using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
+                             dmat2, dmat3, dmat4>;
+
     util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
-
-    auto callbackAction_ = new ModuleCallbackAction("Add Key Frame", this);
-
-    callbackAction_->getCallBack()->addMemberFunction(this, &AnimationModule::addTrackCallback);
-    callbackAction_->setActionState(ModuleCallBackActionState::Enabled);
-
-    app->addCallbackAction(callbackAction_);
-
 }
 animation::AnimationManager& AnimationModule::getAnimationManager() {
     return manager_;
@@ -78,8 +67,6 @@ const animation::AnimationManager& AnimationModule::getAnimationManager() const 
     return manager_;
 }
 
-void AnimationModule::addTrackCallback(const Property* property) {
-    LogInfo("Add track, property: " + property->getIdentifier());
-}
+
 
 } // namespace

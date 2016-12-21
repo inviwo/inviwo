@@ -61,6 +61,11 @@ AnimationSupplier::~AnimationSupplier() {
     }
 }
 
+void AnimationSupplier::registerPropertyTrackConnection(const std::string& propertyClassID,
+                                                        const std::string& trackClassID) {
+    manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
+}
+
 } // namespace
 
 } // namespace
