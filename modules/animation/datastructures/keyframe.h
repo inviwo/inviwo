@@ -45,7 +45,7 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObserverble { 
+class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable { 
 public:
     Keyframe() = default;
     virtual ~Keyframe() = default;

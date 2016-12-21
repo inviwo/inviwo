@@ -27,16 +27,25 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/animationmanager.h>
 
 namespace inviwo {
 
 namespace animation {
 
-void KeyframeObservable::notifKeyframeTimeChanged(Keyframe* key, Time oldTime) {
-    forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
+AnimationManager::AnimationManager() {}
+
+TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
+
+const TrackFactory& AnimationManager::getTrackFactory() const { return trackFactory_; }
+
+InterpolationFactory& AnimationManager::getInterpolationFactory() { return interpolationFactory_; }
+
+const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
+    return interpolationFactory_;
 }
 
 } // namespace
 
 } // namespace
+

@@ -48,7 +48,7 @@ public:
     virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) {};
 };
 
-class IVW_MODULE_ANIMATION_API KeyframeObserverble : public Observable<KeyframeObserver> {
+class IVW_MODULE_ANIMATION_API KeyframeObservable : public Observable<KeyframeObserver> {
 protected:
     void notifKeyframeTimeChanged(Keyframe* key, Time oldTime);
 };

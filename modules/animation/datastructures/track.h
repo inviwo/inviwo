@@ -98,7 +98,7 @@ public:
     virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override = 0;
     virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const override = 0;
 
-    virtual void add(const KeyframeSequenceTyped<Key>& sequence) = 0;
+    virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) = 0;
 };
 
 
@@ -211,7 +211,7 @@ public:
     const Prop* getProperty() const { return property_; }
     Prop* getProperty() {return property_; }
 
-    virtual void add(const KeyframeSequenceTyped<Key>& sequence) override {
+    virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) override {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),
             [](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
@@ -231,7 +231,7 @@ public:
     };
 
     virtual void add(const KeyframeSequence& sequence) override {
-        add(dynamic_cast<const KeyframeSequenceTyped<Key>&>(sequence));      
+        addTyped(dynamic_cast<const KeyframeSequenceTyped<Key>&>(sequence));      
     }
 
     virtual size_t size() const override {
@@ -291,18 +291,12 @@ public:
             if (old != priority_) notifyPriorityChanged(this);
         }
 
-
         using Elem = std::unique_ptr<KeyframeSequenceTyped<Key>>;
         util::IndexedDeserializer<Elem>("sequences", "sequence")
             .onNew([&](Elem& seq) { notifyKeyframeSequenceAdded(seq.get()); })
             .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(seq.get()); })(d, sequences_);
 
-        if (Property* ptr = property_) {
-            d.deserialize("property", ptr);
-        } else {
-            d.deserialize("property", ptr);
-            property_ = dynamic_cast<Prop*>(ptr);
-        }
+        d.deserializeAs<Property>("property", property_);
     };
 
 private:

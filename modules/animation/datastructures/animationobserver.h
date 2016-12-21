@@ -45,7 +45,7 @@ public:
     virtual void onTrackRemoved(Track* track) {};
 };
 
-class IVW_MODULE_ANIMATION_API AnimationObserverble : public Observable<AnimationObserver> {
+class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {
 protected:
     void notifyTrackAdded(Track* track);
     void notifyTrackRemoved(Track* track);

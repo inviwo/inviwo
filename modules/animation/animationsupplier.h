@@ -27,34 +27,68 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONMODULE_H
-#define IVW_ANIMATIONMODULE_H
+#ifndef IVW_ANIMATIONSUPPLIER_H
+#define IVW_ANIMATIONSUPPLIER_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/animation/animationsupplier.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <modules/animation/animationmanager.h>
 
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/interpolationfactoryobject.h>
+#include <modules/animation/factories/trackfactory.h>
+#include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
 
-class Property;
+class InviwoApplication;
 
-class IVW_MODULE_ANIMATION_API AnimationModule : public InviwoModule,
-                                                 public animation::AnimationSupplier {
+namespace animation {
+
+/**
+ * \class AnimationSupplier
+ * Base class to derive your module from if your module should add to the animation framework
+ */
+class IVW_MODULE_ANIMATION_API AnimationSupplier { 
 public:
-    AnimationModule(InviwoApplication* app);
-    virtual ~AnimationModule() = default;
+    AnimationSupplier(AnimationManager& manager);
+    AnimationSupplier(InviwoApplication* app);
+    AnimationSupplier(const AnimationSupplier&) = delete;
+    AnimationSupplier& operator=(const AnimationSupplier&) = delete;
+    virtual ~AnimationSupplier();
 
-    animation::AnimationManager& getAnimationManager();
-    const animation::AnimationManager& getAnimationManager() const;
+    template <typename T>
+    void registerTrack();
 
-    void addTrackCallback(const Property* property);
+    template <typename T>
+    void registerInterpolation();
 
 private:
-    animation::AnimationManager manager_;
+    AnimationManager& manager_;
+    std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;
+    std::vector<std::unique_ptr<InterpolationFactoryObject>> interpolations_;
 };
+
+template <typename T>
+void AnimationSupplier::registerInterpolation() {
+    auto interpolation = util::make_unique<InterpolationFactoryObjectTemplate<T>>();
+    if (manager_.getInterpolationFactory().registerObject(interpolation.get())) {
+        interpolations_.push_back(std::move(interpolation));
+    }
+}
+
+template <typename T>
+void AnimationSupplier::registerTrack() {
+    auto track = util::make_unique<TrackFactoryObjectTemplate<T>>();
+    if (manager_.getTrackFactory().registerObject(track.get())) {
+        tracks_.push_back(std::move(track));
+    }
+}
 
 } // namespace
 
-#endif // IVW_ANIMATIONMODULE_H
+} // namespace
+
+#endif // IVW_ANIMATIONSUPPLIER_H
+

@@ -29,44 +29,57 @@
 
 #include <modules/animation/animationmodule.h>
 
+#include <inviwo/core/util/stdextensions.h>
+
+#include <inviwo/core/common/modulecallback.h>
+#include <inviwo/core/common/moduleaction.h>
+
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/track.h>
+
 namespace inviwo {
 
-AnimationModule::AnimationModule(InviwoApplication* app) : InviwoModule(app, "Animation") {   
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+struct OrdinalReghelper {
+    template <typename T>
+    auto operator()(AnimationModule& am) {
+        using namespace animation;
+        am.registerTrack<TrackProperty<OrdinalProperty<T>, ValueKeyframe<T>>>();
+        am.registerInterpolation<LinearInterpolation<ValueKeyframe<T>>>();
+    }
+};
 
-    // Register objects that can be shared with the rest of inviwo here:
-    
-    // Processors
-    // registerProcessor<AnimationProcessor>();
-    
-    // Properties
-    // registerProperty<AnimationProperty>();
-    
-    // Readers and writes
-    // registerDataReader(util::make_unique<AnimationReader>());
-    // registerDataWriter(util::make_unique<AnimationWriter>());
-    
-    // Data converters
-    // registerRepresentationConverter(util::make_unique<AnimationDisk2RAMConverter>());
 
-    // Ports
-    // registerPort<AnimationOutport>("AnimationOutport");
-    // registerPort<AnimationInport>("AnimationInport");
+AnimationModule::AnimationModule(InviwoApplication* app)
+    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_) {
 
-    // PropertyWidgets
-    // registerPropertyWidget<AnimationPropertyWidget, AnimationProperty>("Default");
-    
-    // Dialogs
-    // registerDialog<AnimationDialog>(AnimationOutport);
-    
-    // Other varius things
-    // registerCapabilities(util::make_unique<AnimationCapabilities>());
-    // registerSettings(util::make_unique<AnimationSettings>());
-    // registerMetaData(util::make_unique<AnimationMetaData>());   
-    // registerPortInspector("AnimationOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<AnimationDrawer>());  
+    using namespace animation;
+
+    using Types = std::tuple<
+        float, vec2, vec3, vec4, 
+        mat2, mat3, mat4,
+        double, dvec2, dvec3, dvec4,
+        dmat2, dmat3, dmat4
+    >;
+    util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
+
+    auto callbackAction_ = new ModuleCallbackAction("Add Key Frame", this);
+
+    callbackAction_->getCallBack()->addMemberFunction(this, &AnimationModule::addTrackCallback);
+    callbackAction_->setActionState(ModuleCallBackActionState::Enabled);
+
+    app->addCallbackAction(callbackAction_);
+
+}
+animation::AnimationManager& AnimationModule::getAnimationManager() {
+    return manager_;
+}
+
+const animation::AnimationManager& AnimationModule::getAnimationManager() const {
+    return manager_;
+}
+
+void AnimationModule::addTrackCallback(const Property* property) {
+    LogInfo("Add track, property: " + property->getIdentifier());
 }
 
 } // namespace

@@ -33,11 +33,11 @@ namespace inviwo {
 
 namespace animation {
 
-void AnimationObserverble::notifyTrackAdded(Track* track) {
+void AnimationObservable::notifyTrackAdded(Track* track) {
     forEachObserver([&](AnimationObserver* o) { o->onTrackAdded(track); });
 }
 
-void AnimationObserverble::notifyTrackRemoved(Track* track) {
+void AnimationObservable::notifyTrackRemoved(Track* track) {
     forEachObserver([&](AnimationObserver* o) { o->onTrackAdded(track); });
 }
 

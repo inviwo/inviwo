@@ -292,12 +292,7 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
         .onNew([&](Elem& key) { notifyKeyframeAdded(key.get()); })
         .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get()); })(d, keyframes_);
 
-    if (Interpolation* ptr = interpolation_.get()) {
-        d.deserialize("interpolation", ptr);
-    } else {
-        d.deserialize("interpolation", ptr);
-        interpolation_.reset(dynamic_cast<InterpolationTyped<Key>*>(ptr));
-    }
+    d.deserializeAs<Interpolation>("interpolation", interpolation_);
 }
 
 

@@ -27,16 +27,41 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/keyframeobserver.h>
+
+#include <modules/animation/animationsupplier.h>
+#include <modules/animation/animationmodule.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
 namespace animation {
 
-void KeyframeObservable::notifKeyframeTimeChanged(Keyframe* key, Time oldTime) {
-    forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
+AnimationManager& getAnimationManager(InviwoApplication* app) {
+    if (app) {
+        if (auto animationmodule = app->getModuleByType<AnimationModule>()) {
+            return animationmodule->getAnimationManager();
+        }
+    }
+    throw Exception("Was not able to find the animation manager",
+                    IvwContextCustom("AnimationSupplier"));
+}
+
+AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manager) {}
+
+AnimationSupplier::AnimationSupplier(InviwoApplication* app) : manager_(getAnimationManager(app)) {}
+
+AnimationSupplier::~AnimationSupplier() {
+    for (auto& elem : tracks_) {
+        manager_.getTrackFactory().unRegisterObject(elem.get());
+    }
+
+    for (auto& elem : interpolations_) {
+        manager_.getInterpolationFactory().unRegisterObject(elem.get());
+    }
 }
 
 } // namespace
 
 } // namespace
+

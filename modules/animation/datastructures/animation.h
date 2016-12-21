@@ -43,7 +43,7 @@ namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API Animation : public AnimationObserverble,
+class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public Serializable,
                                            public TrackObserver {
 public:
