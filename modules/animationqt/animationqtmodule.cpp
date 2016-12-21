@@ -102,6 +102,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             menu = win->menuBar()->addMenu(animationMenuName);
         }
 		auto& controller = app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
+        controller.setAnimation(bogusAnim.release());
         auto editor =
             new animation::AnimationEditorDockWidgetQt(controller, "Animation Editor", win);
         menu->addAction(editor->toggleViewAction());

@@ -60,8 +60,8 @@ public:
 
 protected:
 	virtual void onKeyframeAdded(Keyframe* key);;
-	virtual void onKeyframeRemoved(Keyframe* key) {};
-	virtual void onKeyframeSequenceMoved(KeyframeSequence* key) {};
+	virtual void onKeyframeRemoved(Keyframe* key);;
+	virtual void onKeyframeSequenceMoved(KeyframeSequence* key);;
 
     virtual QRectF boundingRect() const;
 

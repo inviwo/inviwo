@@ -80,6 +80,24 @@ void KeyframeSequenceQt::onKeyframeAdded(Keyframe *key) {
 	auto keyframeQt = new KeyframeQt(*key);
 	keyframeQt->setParentItem(this);
 	keyframeQt->setPos(QPointF(key->getTime().count() * WidthPerTimeUnit, 0));
+    updateRect();
+}
+
+void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
+    auto children = childItems();
+    auto toRemove = std::find_if(children.begin(), children.end(), [&](auto& child) {
+        auto keyframe = dynamic_cast<KeyframeQt*>(child);
+        return keyframe && (&(keyframe->getKeyframe()) == key);
+    });
+    if (toRemove != children.end()) {
+        (*toRemove)->setParentItem(nullptr);
+        updateRect();
+    }
+    
+}
+
+void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) {
+    updateRect();
 }
 
 QRectF KeyframeSequenceQt::boundingRect() const { return rect_; }
@@ -100,13 +118,24 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
         // Snap to frame per second
         qreal xV = round(value.toPointF().x() / WidthPerFrame)*WidthPerFrame;
-        // Do not allow it to move before t=0
-        xV = xV < 0 ? 0.f : xV;
+
 
         auto delta = Time((xV - x()) / static_cast<double>(WidthPerTimeUnit));
-        for (auto i = 0; i < keyframeSequence_.size(); ++i) {
-            keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+
+        if (delta < Time(0.0)) {
+            // Do not allow it to move before t=0
+            //xV = std::max(delta.count(), -keyframeSequence_.getFirst().getTime().count() /
+            //                                 static_cast<double>(WidthPerTimeUnit));
+            for (auto i = 0; i < keyframeSequence_.size(); ++i) {
+                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+            }
         }
+        else {
+            for (auto i = keyframeSequence_.size()-1; i > 0; --i) {
+                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+            }
+        }
+
 
         // Restrict vertical movement 
         return QPointF(xV, y());

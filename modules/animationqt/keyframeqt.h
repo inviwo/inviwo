@@ -57,6 +57,7 @@ public:
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
+    const Keyframe& getKeyframe() const { return keyframe_; }
 protected:
     virtual QRectF boundingRect() const;
     // Restrict vertical movement and snap keyframe to grid
