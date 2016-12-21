@@ -219,9 +219,15 @@ public:
      */
     template <class T>
     void deserialize(const std::string& key, T*& data);
+    template <class Base, class T>
+    void deserializeAs(const std::string& key, T*& data);
+
 
     template <class T, class D>
     void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
+
+    template <class Base, class T, class D>
+    void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
 
     void setExceptionHandler(ExceptionHandler handler);
 
@@ -1060,6 +1066,42 @@ void Deserializer::deserialize(const std::string& key, ContainerWrapper<T, K>& c
         NodeSwitch elementNodeSwitch(*this, &(*child), false);
         container.deserialize(*this, &(*child), i);
         i++;
+    }
+}
+
+template <class Base, class T>
+void Deserializer::deserializeAs(const std::string& key, T*& data) {
+    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+
+    if (Base* ptr = data) {
+        deserialize(key, ptr);
+    } else {
+        deserialize(key, ptr);
+        if (auto typeptr = dynamic_cast<T*>(ptr)) {
+            data = typeptr;
+        } else {
+            delete ptr;
+            throw SerializationException("Could not deserialize \"" + key +
+                                         "\" types does not match", IvwContext);
+        }
+    }
+}
+
+template <class Base, class T, class D>
+void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& data) {
+    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+
+    if (Base* ptr = data.get()) {
+        deserialize(key, ptr);
+    } else {
+        deserialize(key, ptr);
+        if (auto typeptr = dynamic_cast<T*>(ptr)) {
+            data.reset(typeptr);
+        } else {
+            delete ptr;
+            throw SerializationException("Could not deserialize \"" + key +
+                                         "\" types does not match", IvwContext);
+        }
     }
 }
 
