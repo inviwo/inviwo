@@ -64,16 +64,29 @@ void initBogus() {
 
 
 AnimationQtModule::AnimationQtModule(InviwoApplication* app) 
-    : InviwoModule(app, "AnimationQt") {  
+    : InviwoModule(app, "AnimationQt") {
 
     if (auto win = utilqt::getApplicationMainWindow()) {
-		initBogus();
-        auto menu = win->menuBar()->addMenu("Animation");
-        auto animationEditorOpen =
-            menu->addAction(QIcon(":/icons/stopwatch.png"), "&Animation Editor");
-        auto editor = new animation::AnimationEditorDockWidgetQt(bogus_anim.get(), "Animation Editor", win);
+        initBogus();
+        QString animationMenuName("Animation");
+        QMenu* menu = nullptr;
+        // Find view menu
+        auto menus = win->menuBar()->findChildren<QMenu*>();
+        auto viewMenuIt = std::find_if(menus.begin(), menus.end(), [](auto& m) {
+            return m->title().compare(QObject::tr("&View"), Qt::CaseInsensitive) == 0;
+        });
+
+        if (viewMenuIt != menus.end()) {
+            // Add to view menu if found
+            menu = (*viewMenuIt);
+        } else {
+            // Add new menu if not found
+            menu = win->menuBar()->addMenu(animationMenuName);
+        }
+        auto editor =
+            new animation::AnimationEditorDockWidgetQt(bogus_anim.get(), "Animation Editor", win);
+        menu->addAction(editor->toggleViewAction());
         editor->hide();
-        win->connect(animationEditorOpen, SIGNAL(triggered(bool)), editor, SLOT(show(void)));
     }
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
