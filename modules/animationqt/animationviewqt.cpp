@@ -35,6 +35,7 @@
 #include <warn/ignore/all>
 #include <QWheelEvent>
 #include <QPainter>
+#include <qmath.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -72,21 +73,24 @@ void AnimationViewQt::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void AnimationViewQt::wheelEvent(QWheelEvent* e) {
-	
-	// Does not seem to work
-    auto dx = 1.0 + glm::clamp(e->angleDelta().y() * 0.01, -0.2, 0.2);
-	zoomH_ *= dx;
-	updateZoom();
+    QPointF numPixels = e->pixelDelta() / 5.0;
+    QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 
-    QGraphicsView::wheelEvent(e);
+    if (e->modifiers() == Qt::ControlModifier) {
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        if (!numPixels.isNull()) {
+            zoom(qPow(1.05, numPixels.y()));
+        } else if (!numDegrees.isNull()) {
+            zoom(qPow(1.05, numDegrees.y()));
+        }
+    } else {
+        QGraphicsView::wheelEvent(e);
+    }
+    e->accept();
 }
 
-void AnimationViewQt::updateZoom() {
-	const auto rect = scene()->sceneRect();
-	const auto zh = zoomH_;
-	const auto zv = zoomV_;
-	fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
-		(zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
+void AnimationViewQt::zoom(double dz) {
+    scale(dz, 1.0);
 }
 
 void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {

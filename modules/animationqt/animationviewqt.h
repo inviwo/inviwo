@@ -63,16 +63,12 @@ protected:
 	void mouseReleaseEvent(QMouseEvent* e);
 	void wheelEvent(QWheelEvent* e);
 
-	virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
+    void zoom(double dz);
+    virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
 	virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
 	virtual void onStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) override;
 	virtual void onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) override;
-
-	void updateZoom();
-
-	dvec2 zoomH_{ 1,1 };
-	dvec2 zoomV_{ 1,1 };
 
 	AnimationController& controller_;
 };
