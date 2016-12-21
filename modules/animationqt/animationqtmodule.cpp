@@ -30,6 +30,7 @@
 #include <modules/animationqt/animationqtmodule.h>
 #include <modules/animationqt/animationeditordockwidgetqt.h>
 
+#include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/keyframe.h>
@@ -100,8 +101,9 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             // Add new menu if not found
             menu = win->menuBar()->addMenu(animationMenuName);
         }
+		auto& controller = app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
         auto editor =
-            new animation::AnimationEditorDockWidgetQt(*bogusController.get(), "Animation Editor", win);
+            new animation::AnimationEditorDockWidgetQt(controller, "Animation Editor", win);
         menu->addAction(editor->toggleViewAction());
         editor->hide();
     }

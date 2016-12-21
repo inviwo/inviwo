@@ -50,6 +50,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     : QGraphicsScene(),
 	controller_(controller) {
 	auto& animation = *controller_.getAnimation();
+	animation.addObserver(this);
 
     for (size_t i = 0; i < animation.size(); ++i) {
         auto& track = animation[i];
@@ -59,6 +60,17 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     }
 
 	setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerTimeUnit, animation.size() * TrackHeight + TimelineHeight);
+}
+
+void AnimationEditorQt::onTrackAdded(Track* track) {
+	auto trackQt = new TrackQt(*track);
+	auto i = items().size();
+	trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
+	this->addItem(trackQt);
+}
+
+void AnimationEditorQt::onTrackRemoved(Track* track) {
+
 }
 
 }  // namespace

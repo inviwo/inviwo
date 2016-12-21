@@ -63,6 +63,7 @@ public:
 
     // Progresses time and evaluates animation
     void tick();
+	void eval(Time oldTime, Time newTime);
 
     void setAnimation(Animation* animation);
     void setCurrentTime(Time time);

@@ -31,7 +31,7 @@
 #define IVW_ANIMATIONEDITORQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationobserver.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
@@ -57,10 +57,13 @@ class AnimationController;
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene {
+class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene, public AnimationObserver {
 public:
     AnimationEditorQt(AnimationController& controller);
     virtual ~AnimationEditorQt() = default;
+
+	virtual void onTrackAdded(Track* track) override;
+	virtual void onTrackRemoved(Track* track) override;
 
 protected:
     AnimationController& controller_;

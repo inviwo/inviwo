@@ -94,8 +94,16 @@ void AnimationController::tick() {
 			notifyStateChanged(this, AnimationState::Playing, AnimationState::Paused);
 		}
 
+		// Evaluate animation
+		eval(oldTime, currentTime_);
+
 		notifyTimeChanged(this, oldTime, currentTime_);
 	}
+}
+
+void AnimationController::eval(Time oldTime, Time newTime) {
+	NetworkLock lock;
+	(*animation_)(oldTime, newTime);
 }
 
 void AnimationController::setAnimation(Animation* animation) {

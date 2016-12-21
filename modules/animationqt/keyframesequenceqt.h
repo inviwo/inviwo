@@ -31,6 +31,7 @@
 #define IVW_KEYFRAMESEQUENCEQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
@@ -49,7 +50,7 @@ class KeyframeSequence;
 * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
 * DESCRIBE_THE_CLASS
 */
-class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem {
+class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem, public KeyframeSequenceObserver {
 public:
     KeyframeSequenceQt(KeyframeSequence& keyframeSequence);
     virtual ~KeyframeSequenceQt() = default;
@@ -58,6 +59,10 @@ public:
                        QWidget* widget) override;
 
 protected:
+	virtual void onKeyframeAdded(Keyframe* key);;
+	virtual void onKeyframeRemoved(Keyframe* key) {};
+	virtual void onKeyframeSequenceMoved(KeyframeSequence* key) {};
+
     virtual QRectF boundingRect() const;
 
 	void updateRect();

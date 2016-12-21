@@ -44,6 +44,8 @@ namespace inviwo {
 namespace animation {
 
 KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence) : QGraphicsItem(), keyframeSequence_(keyframeSequence) {
+	keyframeSequence.addObserver(this);
+
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
         auto& keyframe = keyframeSequence_[i];
         auto keyframeQt = new KeyframeQt(keyframe);
@@ -73,6 +75,12 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     painter->setBrush(brush);
 
     painter->drawRect(rect_);
+}
+
+void KeyframeSequenceQt::onKeyframeAdded(Keyframe *key) {
+	auto keyframeQt = new KeyframeQt(*key);
+	keyframeQt->setParentItem(this);
+	keyframeQt->setPos(QPointF(key->getTime().count() * WidthPerTimeUnit, 0));
 }
 
 QRectF KeyframeSequenceQt::boundingRect() const { return rect_; }
