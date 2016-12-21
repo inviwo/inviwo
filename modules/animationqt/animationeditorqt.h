@@ -47,7 +47,8 @@ constexpr int TrackHeight = 25;
 constexpr int TimelineHeight = TrackHeight;
 constexpr int KeyframeWidth = 15;
 constexpr int KeyframeHeight = TrackHeight;
-constexpr int WidthPerTimeUnit = 100;
+constexpr int WidthPerTimeUnit = 96; 
+constexpr int WidthPerFrame = WidthPerTimeUnit/24;
 
 class AnimationController;
 

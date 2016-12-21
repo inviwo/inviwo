@@ -66,7 +66,8 @@ protected:
     virtual QRectF boundingRect() const;
 
 	void updateRect();
-
+    // Move all keyframes, restrict vertical movement and snap to grid
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     KeyframeSequence& keyframeSequence_;
 	QRectF rect_;
 };

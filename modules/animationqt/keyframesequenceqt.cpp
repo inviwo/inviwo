@@ -30,13 +30,11 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
- //#include <QTextStream>
+#include <QApplication>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
- //#include <QGraphicsSceneEvent>
 #include <QGraphicsView>
 #include <QPainter>
- //#include <QKeyEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -44,8 +42,9 @@ namespace inviwo {
 namespace animation {
 
 KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence) : QGraphicsItem(), keyframeSequence_(keyframeSequence) {
-	keyframeSequence.addObserver(this);
+    setFlags(ItemIsMovable | ItemSendsGeometryChanges);
 
+	keyframeSequence.addObserver(this);
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
         auto& keyframe = keyframeSequence_[i];
         auto keyframeQt = new KeyframeQt(keyframe);
@@ -94,6 +93,26 @@ void KeyframeSequenceQt::updateRect() {
 	auto w = (endTime - startTime) * WidthPerTimeUnit;
 	auto h = TrackHeight;
 	rect_ = QRectF(l, t, w, h);
+}
+
+QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {
+    // Only restrict movement on user interaction
+    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
+        // Snap to frame per second
+        qreal xV = round(value.toPointF().x() / WidthPerFrame)*WidthPerFrame;
+        // Do not allow it to move before t=0
+        xV = xV < 0 ? 0.f : xV;
+
+        auto delta = Time((xV - x()) / static_cast<double>(WidthPerTimeUnit));
+        for (auto i = 0; i < keyframeSequence_.size(); ++i) {
+            keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+        }
+
+        // Restrict vertical movement 
+        return QPointF(xV, y());
+    }
+
+    return QGraphicsItem::itemChange(change, value);
 }
 
 }  // namespace
