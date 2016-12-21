@@ -35,6 +35,7 @@
 #include <modules/animation/datastructures/keyframe.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,17 +49,33 @@ namespace inviwo {
 
 // --- BOGUS DATA, USE ME FOR TESTING ---
 using namespace animation;
-using Key = ValueKeyframe<float>;
-auto bogus_prop = std::make_unique<FloatProperty>("float_id", "Hello");
-auto bogus_anim = std::make_unique<Animation>();
-auto bogus_track = std::make_unique<TrackProperty<FloatProperty, Key>>(bogus_prop.get());
+using FloatKey = ValueKeyframe<float>;
+using Vec3Key = ValueKeyframe<vec3>;
+
+auto bogusFloatProp = std::make_unique<FloatProperty>("float_id", "Float property");
+auto bogusVec3Prop = std::make_unique<FloatVec3Property>("vec3_id", "Vec3 property");
+auto bogusAnim = std::make_unique<Animation>();
+auto bogusController = std::make_unique<AnimationController>(bogusAnim.get());
 
 void initBogus() {
-	KeyframeSequenceTyped<Key> s1{ { { Time(0), 1.f },{ Time(1), 2.f },{ Time(4), 5.f } }, std::make_unique<LinearInterpolation<Key>>() };
-	KeyframeSequenceTyped<Key> s2{ { { Time(5), 2.f },{ Time(6), 1.f } }, std::make_unique<LinearInterpolation<Key>>() };
+	{
+		KeyframeSequenceTyped<FloatKey> s1{ { { Time(0), 1.f },{ Time(1), 2.f },{ Time(4), 5.f } }, std::make_unique<LinearInterpolation<FloatKey>>() };
+		KeyframeSequenceTyped<FloatKey> s2{ { { Time(5), 2.f },{ Time(6), 1.f } }, std::make_unique<LinearInterpolation<FloatKey>>() };
 
-	bogus_track->add(s1);
-	bogus_anim->add(std::move(bogus_track));
+		auto track = std::make_unique<TrackProperty<FloatProperty, FloatKey>>(bogusFloatProp.get());
+		track->add(s1);
+		track->setName("Lame ass float track");
+		bogusAnim->add(std::move(track));
+	}
+
+	{
+		KeyframeSequenceTyped<Vec3Key> s1{ { { Time(1), vec3(2) },{ Time(4), vec3(1) } }, std::make_unique<LinearInterpolation<Vec3Key>>() };
+
+		auto track = std::make_unique<TrackProperty<FloatVec3Property, Vec3Key>>(bogusVec3Prop.get());
+		track->add(s1);
+		track->setName("Lame ass vec3 track");
+		bogusAnim->add(std::move(track));
+	}
 }
 // --- END OF BOGUS ---
 
@@ -84,7 +101,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             menu = win->menuBar()->addMenu(animationMenuName);
         }
         auto editor =
-            new animation::AnimationEditorDockWidgetQt(bogus_anim.get(), "Animation Editor", win);
+            new animation::AnimationEditorDockWidgetQt(*bogusController.get(), "Animation Editor", win);
         menu->addAction(editor->toggleViewAction());
         editor->hide();
     }

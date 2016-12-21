@@ -27,54 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-#define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+#include <modules/animationqt/animationlabelviewqt.h>
+#include <modules/animation/datastructures/animation.h>
 
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/animationcontroller.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-
-class QToolButton;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWheelEvent>
+#include <QPainter>
+#include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-class AnimationEditorQt;
-class AnimationViewQt;
-class AnimationLabelViewQt;
-class TimelineViewQt;
+constexpr auto LineWidth = 0.5;
 
-/**
- * \class AnimationEditorDockWidgetQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget, public AnimationControllerObserver { 
-public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName, QWidget *parent);
-    virtual ~AnimationEditorDockWidgetQt() = default;
-protected:
-    void generateWidget();
+AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
+	: QGraphicsView()
+	, animation_(animation) {
+	setMouseTracking(true);
+	setRenderHint(QPainter::Antialiasing, true);
+	setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+	setCacheMode(QGraphicsView::CacheBackground);
+}
 
-	virtual void onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) override;
+void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
+    //LogWarnCustom("AnimationEditor", "Pressed mouse");
 
-	AnimationController& controller_;
+    QGraphicsView::mousePressEvent(e);
+}
 
-	// GUI-stuff
-	QToolButton* btnPlayPause_;
-	QToolButton* btnStop_;
-	AnimationEditorQt* animationEditor_;
-	AnimationViewQt* animationView_;
-	AnimationLabelViewQt* animationLabelView_;
-	TimelineViewQt* timelineView_;
-};
+void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
+    //LogWarnCustom("AnimationEditor", "Moved mouse");
 
-} // namespace
+    QGraphicsView::mouseMoveEvent(e);
+}
 
-} // namespace
+void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
+    //LogWarnCustom("AnimationEditor", "Released mouse");
 
-#endif // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+    QGraphicsView::mouseReleaseEvent(e);
+}
 
+void AnimationLabelViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
+	painter->fillRect(rect, QColor(89, 89, 89));
+}
+
+}  // namespace
+
+}  // namespace

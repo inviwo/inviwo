@@ -80,13 +80,12 @@ QRectF KeyframeSequenceQt::boundingRect() const { return rect_; }
 void KeyframeSequenceQt::updateRect() {
 	auto startTime = keyframeSequence_.getFirst().getTime().count();
 	auto endTime = keyframeSequence_.getLast().getTime().count();
-	auto totalTime = endTime - startTime;
 
-	auto l = static_cast<int>(-totalTime / 2.0);
-	auto t = static_cast<int>(-KeyframeHeight / 2.0);
-	auto w = static_cast<int>(totalTime * WidthPerTimeUnit);
+	auto l = startTime * WidthPerTimeUnit;
+	auto t = -TrackHeight / 2.0;
+	auto w = (endTime - startTime) * WidthPerTimeUnit;
 	auto h = TrackHeight;
-	rect_ = QRect(l, t, w, h);
+	rect_ = QRectF(l, t, w, h);
 }
 
 }  // namespace

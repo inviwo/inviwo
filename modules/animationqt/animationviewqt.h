@@ -67,10 +67,13 @@ protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
 	virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
+	//virtual void setupViewport(QWidget* widget) override;
+
 	virtual void onStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) override;
 	virtual void onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) override;
 
 	AnimationController& controller_;
+	bool pressingOnTimeline_ = false;
 };
 
 }  // namespace

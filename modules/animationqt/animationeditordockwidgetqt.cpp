@@ -30,6 +30,7 @@
 #include <modules/animationqt/animationeditordockwidgetqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/animationlabelviewqt.h>
 #include <modules/animationqt/trackqt.h>
 #include <modules/animationqt/keyframesequenceqt.h>
 #include <modules/animationqt/keyframeqt.h>
@@ -39,45 +40,35 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QSplitter>
+#include <QToolButton>
 #include <QVBoxLayout>
-#include <QListWidget>
+#include <QHBoxLayout>
+#include <QSplitter>
 #include <warn/pop>
 
 constexpr auto UnicodePlay = 9658;
 constexpr auto UnicodeVerticalBar = 10073;
-constexpr auto UnicodePause = 0xfe0e;//= 10074;
+constexpr auto UnicodePause = 9208;//= 10074;
 constexpr auto UnicodeStop = 9724;
 
 namespace inviwo {
 
 namespace animation {
 
-AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(Animation* animation, const std::string& widgetName, QWidget* parent) 
+AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName, QWidget* parent) 
     : InviwoDockWidget(QString(widgetName.c_str()), parent)
-    , animation_(animation)
-	, controller_(animation) {
-
-    if (animation == nullptr) {
-        throw Exception("Animation cannot be null", IvwContext);
-    }
+	, controller_(controller) {
 
     generateWidget();
     setFloating(true);
 	addObservation(&controller_);
 }
 
-void AnimationEditorDockWidgetQt::setAnimation(Animation * animation) {
-	controller_.setAnimation(animation);
-}
-
 void AnimationEditorDockWidgetQt::generateWidget() {
 
-	btnPlayPause_ = new QPushButton(QChar(UnicodePlay));
-    connect(btnPlayPause_, &QPushButton::clicked, [&]() {
+	btnPlayPause_ = new QToolButton();
+	btnPlayPause_->setText(QChar(UnicodePlay));
+    connect(btnPlayPause_, &QToolButton::clicked, [&]() {
 		if (controller_.getState() == AnimationState::Playing) {
 			controller_.pause();
 		}
@@ -85,61 +76,86 @@ void AnimationEditorDockWidgetQt::generateWidget() {
 			controller_.play();
 		}
 	});
-	btnStop_ = new QPushButton(QChar(UnicodeStop));
-    connect(btnStop_, &QPushButton::clicked, [&]() {
+
+	btnStop_ = new QToolButton();
+	btnStop_->setText(QChar(UnicodeStop));
+    connect(btnStop_, &QToolButton::clicked, [&]() {
 		controller_.stop();
     });
 
-	btnPlayPause_->setFixedSize(75, 25);
-	btnStop_->setFixedSize(75, 25);
+	btnPlayPause_->setFixedSize(15, 15);
+	btnStop_->setFixedSize(15, 15);
 
 	// Exposes controller buttons
     auto controllerLayout = new QHBoxLayout();
     controllerLayout->addWidget(btnPlayPause_);
     controllerLayout->addWidget(btnStop_);
+	controllerLayout->setSpacing(0);
+	controllerLayout->setMargin(0);
+	controllerLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-	// 'Window' of all options (top left)
+	// Layout of all options (top left)
 	auto optionsLayout = new QVBoxLayout();
 	optionsLayout->addItem(controllerLayout);
+	optionsLayout->setSpacing(0);
+	optionsLayout->setMargin(0);
 
-	// List widget of track names
-	lstTrackNames_ = new QListWidget();
+	auto optionsWidget = new QWidget();
+	optionsWidget->setLayout(optionsLayout);
+	optionsWidget->setMaximumHeight(TimelineHeight);
+
+	// List widget of track labels
+	animationLabelView_ = new AnimationLabelViewQt(*controller_.getAnimation());
 
 	// Entire left half
     auto leftPanel = new QVBoxLayout();
-    leftPanel->addItem(optionsLayout);
-    leftPanel->addWidget(lstTrackNames_);
+    leftPanel->addWidget(optionsWidget);
+    leftPanel->addWidget(animationLabelView_);
+	leftPanel->setSpacing(0);
+	leftPanel->setMargin(0);
 
 	// Entire right half
-    auto rightPanel = new QVBoxLayout();
-    //rightPanel->addWidget(new QLabel("Tracks"));
+    //auto rightPanel = new QVBoxLayout();
 
-    animationEditor_ = new AnimationEditorQt(*animation_);
+    animationEditor_ = new AnimationEditorQt(controller_);
     animationView_ = new AnimationViewQt(controller_);
+	//timelineView_ = new TimelineViewQt(controller_);
 
 	animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 	animationView_->setMinimumSize(200, 200);
 	animationView_->setScene(animationEditor_);
 
-	//animationView->setDragMode(QGraphicsView::ScrollHandDrag);
-    rightPanel->addWidget(animationView_);
+	//timelineView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	//timelineView_->setScene(animationEditor_);
 
-    auto hLayout = new QHBoxLayout();
-    hLayout->addItem(leftPanel);
-    //auto splitter = new QSplitter();
-    //splitter->
+	//rightPanel->addWidget(timelineView_);
+    //rightPanel->addWidget(animationView_);
+
+	auto leftWidget = new QWidget();
+	leftWidget->setLayout(leftPanel);
+	
+	//auto rightWidget = new QWidget();
+	//rightWidget->setLayout(rightPanel);
+
+    auto splitter = new QSplitter();
+	splitter->setMidLineWidth(1);
+	splitter->setHandleWidth(1);
+	splitter->setLineWidth(1);
+	splitter->addWidget(leftWidget);
+	splitter->addWidget(animationView_);
+
     //hLayout->addWidget(new QSplitter());
-    hLayout->addItem(rightPanel);
+   // hLayout->addItem(rightPanel);
 
-    QWidget* mainPanel = new QWidget(this);
-    mainPanel->setLayout(hLayout);
-    setWidget(mainPanel);
+    //QWidget* mainPanel = new QWidget(this);
+    //mainPanel->setLayout(splitter);
+    setWidget(splitter);
 }
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) {
 	if (newState == AnimationState::Playing) {
-		const QChar Pause[2] = { QChar(UnicodeVerticalBar), QChar(UnicodeVerticalBar) };
-		btnPlayPause_->setText(QString(Pause, 2));
+		const QChar pause[2] = { QChar(UnicodeVerticalBar), QChar(UnicodeVerticalBar) };
+		btnPlayPause_->setText(QString(pause, 2));
 	}
 	else if (newState == AnimationState::Paused) {
 		btnPlayPause_->setText(QChar(UnicodePlay));

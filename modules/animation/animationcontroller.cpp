@@ -42,9 +42,7 @@ AnimationController::AnimationController(Animation* animation)
 	, deltaTime_(0) {
 
 	auto tickTime = std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_);
-	timer_ = std::make_unique<Timer>(tickTime, [this] {
-		tick();
-	});
+	timer_ = std::make_unique<Timer>(tickTime, [this] { tick(); });
 
 	setPlaySpeed(60.0);
 }
@@ -91,7 +89,9 @@ void AnimationController::tick() {
 
 		if (currentTime_ > animation_->lastTime()) {
 			currentTime_ = animation_->lastTime();
-			pause();
+			
+			state_ = AnimationState::Paused;
+			notifyStateChanged(this, AnimationState::Playing, AnimationState::Paused);
 		}
 
 		notifyTimeChanged(this, oldTime, currentTime_);
@@ -114,8 +114,9 @@ void AnimationController::setAnimation(Animation* animation) {
 
 void AnimationController::setCurrentTime(Time time) {
 	// TODO: Boundary check to not go outside of current animation?
+	// Probably no, since you might want to set the time after the last keyframe of animation when creating new ones
 	auto oldTime = currentTime_;
-	currentTime_ = time;
+	currentTime_ = std::max(Time(0), time);
 	notifyTimeChanged(this, oldTime, currentTime_);
 }
 

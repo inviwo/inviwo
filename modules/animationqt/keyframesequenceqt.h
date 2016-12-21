@@ -63,7 +63,7 @@ protected:
 	void updateRect();
 
     KeyframeSequence& keyframeSequence_;
-	QRect rect_;
+	QRectF rect_;
 };
 
 }  // namespace

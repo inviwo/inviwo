@@ -68,6 +68,7 @@ public:
     void setCurrentTime(Time time);
     void setPlaySpeed(double framesPerSecond);
 
+	Animation* getAnimation() { return animation_; }
     const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
     const Time getCurrentTime() const { return currentTime_; }

@@ -55,20 +55,21 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
-    LogWarnCustom("AnimationEditor", "Pressed mouse");
-
+	if (e->pos().y() < TimelineHeight) pressingOnTimeline_ = true;
     QGraphicsView::mousePressEvent(e);
 }
 
 void AnimationViewQt::mouseMoveEvent(QMouseEvent* e) {
-    LogWarnCustom("AnimationEditor", "Moved mouse");
+	if (pressingOnTimeline_) {
+		auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
+		controller_.setCurrentTime(Time(time));
+	}
 
     QGraphicsView::mouseMoveEvent(e);
 }
 
 void AnimationViewQt::mouseReleaseEvent(QMouseEvent* e) {
-    LogWarnCustom("AnimationEditor", "Released mouse");
-
+	pressingOnTimeline_ = false;
     QGraphicsView::mouseReleaseEvent(e);
 }
 
@@ -115,8 +116,9 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
 }
 
 void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
-	QRectF sRect = frameRect();
-	sRect.setHeight(25);
+	QRectF sRect(0,0,0,0);
+	sRect.setWidth(std::max(sceneRect().width(), rect.width()));
+	sRect.setHeight(TimelineHeight);
 
 	// Background rect
 	QPen pen;

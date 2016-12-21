@@ -27,54 +27,46 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-#define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+#ifndef IVW_ANIMATIONLABELVIEWQT_H
+#define IVW_ANIMATIONLABELVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/animationcontroller.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 
-class QToolButton;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsView>
+#include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-class AnimationEditorQt;
-class AnimationViewQt;
-class AnimationLabelViewQt;
-class TimelineViewQt;
+class Animation;
 
 /**
- * \class AnimationEditorDockWidgetQt
+ * \class AnimationLabelViewQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget, public AnimationControllerObserver { 
+
+class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QGraphicsView {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName, QWidget *parent);
-    virtual ~AnimationEditorDockWidgetQt() = default;
+	AnimationLabelViewQt(Animation& animation);
+    virtual ~AnimationLabelViewQt() = default;
+
 protected:
-    void generateWidget();
+	void mousePressEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
 
-	virtual void onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) override;
+	virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
 
-	AnimationController& controller_;
-
-	// GUI-stuff
-	QToolButton* btnPlayPause_;
-	QToolButton* btnStop_;
-	AnimationEditorQt* animationEditor_;
-	AnimationViewQt* animationView_;
-	AnimationLabelViewQt* animationLabelView_;
-	TimelineViewQt* timelineView_;
+	Animation& animation_;
 };
 
-} // namespace
+}  // namespace
 
-} // namespace
+}  // namespace
 
-#endif // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-
+#endif  // IVW_ANIMATIONLABELVIEWQT_H

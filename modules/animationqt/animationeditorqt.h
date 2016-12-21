@@ -31,6 +31,7 @@
 #define IVW_ANIMATIONEDITORQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/animationcontrollerobserver.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
@@ -48,7 +49,7 @@ constexpr int KeyframeWidth = 15;
 constexpr int KeyframeHeight = TrackHeight;
 constexpr int WidthPerTimeUnit = 100;
 
-class Animation;
+class AnimationController;
 
 /**
  * \class AnimationEditorQt
@@ -58,17 +59,11 @@ class Animation;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene {
 public:
-    AnimationEditorQt(Animation& animation);
+    AnimationEditorQt(AnimationController& controller);
     virtual ~AnimationEditorQt() = default;
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* e);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* e);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
-    void keyPressEvent(QKeyEvent* keyEvent);
-
-    Animation& animation_;
+    AnimationController& controller_;
 };
 
 }  // namespace
