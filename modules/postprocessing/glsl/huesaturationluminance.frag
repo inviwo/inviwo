@@ -41,11 +41,11 @@ void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
     vec4 inColor = texture(inport_, texCoords);
     
-    vec3 hslColor = rgbToHsl(inColor.rgb);
+    vec3 hslColor = rgb2hsl(inColor.rgb);
 
     hslColor.r = mod(hslColor.r + hue, 1.0);
     hslColor.g = clamp(hslColor.g + sat, 0.0, 1.0);
     hslColor.b = clamp(hslColor.b + lum, 0.0, 1.0);
     
-    FragData0 = vec4(hslToRgb(hslColor), inColor.a);
+    FragData0 = vec4(hsl2rgb(hslColor), inColor.a);
 }
