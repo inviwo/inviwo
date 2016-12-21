@@ -208,6 +208,9 @@ public:
         }
     };
 
+    const Prop* getProperty() const { return property_; }
+    Prop* getProperty() {return property_; }
+
     virtual void add(const KeyframeSequenceTyped<Key>& sequence) override {
         auto it = std::upper_bound(
             sequences_.begin(), sequences_.end(), sequence.getFirst().getTime(),

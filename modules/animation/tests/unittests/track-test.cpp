@@ -410,6 +410,31 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     EXPECT_EQ(dt1[0], dt2[0]);
 
+
+
+    Time start = animation.firstTime();
+    Time end = animation.lastTime();
+
+    Time from = start;
+    for (Time to = start; to <= end; to += (end-start)/100) {
+        animation(from, to);
+        animation2(from, to);
+
+        const auto& oldfloat = floatProperty.get();
+        const auto& newfloat =  ft2.getProperty()->get();
+        EXPECT_EQ(oldfloat, newfloat); 
+
+        const auto& olddvec3 = doubleProperty.get();
+        const auto& newdvec3 = dt2.getProperty()->get();
+        EXPECT_EQ(olddvec3, newdvec3);
+
+        from = to;
+    }
+
+
+    delete ft2.getProperty();
+    delete dt2.getProperty();
+
     interpolationFactory.unRegisterObject(&linearFloatIFO);
     interpolationFactory.unRegisterObject(&linearDvec3IFO);
     propertyFactory.unRegisterObject(&floatPFO);

@@ -91,17 +91,14 @@ Time Animation::lastTime() const {
     }
 }
 
-void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_); }
+void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
 
 void Animation::deserialize(Deserializer& d) {
-    auto des = util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("Tracks", "Track")
-                   .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
-                   .setMakeNew([]() { return std::unique_ptr<Track>(); })
-                   .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-                   .onRemove([&](const std::string& id) { remove(id); });
-
-    des(d, tracks_);
-    d.deserialize("tracks", tracks_); 
+    util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("tracks", "track")
+        .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
+        .setMakeNew([]() { return std::unique_ptr<Track>(); })
+        .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
+        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
 }
 
 void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }
