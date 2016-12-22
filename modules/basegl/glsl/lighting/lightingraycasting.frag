@@ -36,6 +36,7 @@
 #include "utils/depth.glsl"
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
+#include "utils/raycastgeometry.glsl"
 
 uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
@@ -53,6 +54,11 @@ uniform sampler2D entryPicking;
 uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
 uniform sampler2D exitDepth;
+
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgPicking;
+uniform sampler2D bgDepth;
 
 uniform ImageParameters outportParameters;
 
@@ -81,10 +87,29 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 lightVoxel;
     vec3 samplePos;
     vec3 toCameraDir = normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
+
+    float bgTDepth = -1;
+    #ifdef HAS_BG
+    {
+        float depthV = texture(bgDepth,texCoords).x;
+        if(depthV!=1){ // convert to raycasting depth
+            bgTDepth = calculateTValueFromDepthValue(camera, depthV, texture(entryDepth, texCoords).x,
+                                     texture(exitDepth, texCoords).x);
+        }
+    }
+
+    if(bgTDepth<0 ){
+        result = texture(bgColor, texCoords);
+    }
+    #endif
+
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
+
+        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
+
         if (color.a > 0) {
             vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
             gradient = normalize(gradient);
@@ -122,6 +147,11 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
+    
+    if(bgTDepth > tEnd){
+        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
+    }
+
     gl_FragDepth = tDepth;
     return result;
 }
@@ -131,9 +161,20 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    if (entryPoint == exitPoint) discard;
+     vec4 color;
 
-    vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
+#ifdef HAS_BG
+    color = texture(bgColor, texCoords);
+    gl_FragDepth = texture(bgDepth, texCoords).x;
+    PickingData = texture(bgPicking, texCoords);
+#else
+    PickingData = vec4(0);
+    if (entryPoint == exitPoint){
+        discard;
+    }
+#endif
+    if (entryPoint != exitPoint){
+        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    }
     FragData0 = color;
-    PickingData = texture(entryPicking, texCoords);
 }

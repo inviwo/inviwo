@@ -51,6 +51,11 @@ uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
 uniform sampler2D exitDepth;
 
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgPicking;
+uniform sampler2D bgDepth;
+
 uniform ImageParameters outportParameters;
 
 uniform LightParameters lighting;
@@ -81,6 +86,22 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec3 samplePos;
     mat4x3 gradients;
     vec3 toCameraDir = normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
+
+    float bgTDepth = -1;
+    #ifdef HAS_BG
+    {
+        float depthV = texture(bgDepth,texCoords).x;
+        if(depthV!=1){ // convert to raycasting depth
+            bgTDepth = calculateTValueFromDepthValue(camera, depthV, texture(entryDepth, texCoords).x,
+                                     texture(exitDepth, texCoords).x);
+        }
+    }
+
+    if(bgTDepth<0 ){
+        result = texture(bgColor, texCoords);
+    }
+    #endif
+
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
@@ -88,6 +109,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         // macro defined in MultichannelRaycaster::initializeResources()
         // sets colors;
         SAMPLE_CHANNELS;
+
+        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
+        result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
 
         if (color[0].a > 0 || color[1].a > 0 || color[2].a > 0 || color[3].a > 0) {
             // World space position
@@ -100,9 +124,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
                 result = APPLY_COMPOSITING(result, color[i], samplePos, voxel,
                     gradients[i], camera, raycaster.isoValue, t, tDepth, tIncr);
             }
-        } else {
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
-        }
+        } 
 
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -119,6 +141,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
+    if(bgTDepth > tEnd){
+        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
+    }
+
     gl_FragDepth = tDepth;
     return result;
 }
@@ -128,9 +154,20 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    if (entryPoint == exitPoint) discard;
+     vec4 color;
 
-    vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
+#ifdef HAS_BG
+    color = texture(bgColor, texCoords);
+    gl_FragDepth = texture(bgDepth, texCoords).x;
+    PickingData = texture(bgPicking, texCoords);
+#else
+    PickingData = vec4(0);
+    if (entryPoint == exitPoint){
+        discard;
+    }
+#endif
+    if (entryPoint != exitPoint){
+        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    }
     FragData0 = color;
-    PickingData = texture(entryPicking, texCoords);
 }

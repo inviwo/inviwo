@@ -56,6 +56,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
+    , backgroundPort_("bg")
     , outport_("outport")
     , transferFunctions_("transfer-functions", "Transfer functions")
     , raycasting_("raycaster", "Raycasting")
@@ -77,6 +78,9 @@ MultichannelRaycaster::MultichannelRaycaster()
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+    addPort(backgroundPort_, "ImagePortGroup1");
+
+    backgroundPort_.setOptional(true);
 
     addProperty(raycasting_);
     addProperty(camera_);
@@ -85,6 +89,9 @@ MultichannelRaycaster::MultichannelRaycaster()
     addProperty(transferFunctions_);
     
     volumePort_.onChange(this, &MultichannelRaycaster::initializeResources);
+
+    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 }
 
 MultichannelRaycaster::~MultichannelRaycaster() {
@@ -98,6 +105,7 @@ void MultichannelRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
     utilgl::addShaderDefines(shader_, positionIndicator_);
+    utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
 
     if (volumePort_.hasData()) {
         size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
@@ -129,6 +137,9 @@ void MultichannelRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
+    if (backgroundPort_.isConnected()) {
+        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
+    }
 
     auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
     size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
