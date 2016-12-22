@@ -193,6 +193,7 @@ ImageOverlayGL::ImageOverlayGL()
     , outport_("outport")
     , enabled_("enabled", "Overlay Enabled", true)
     , overlayInteraction_("overlayInteraction", "Overlay Interaction", false)
+    , passThroughEvent_("passTroughEvent", "Pass Events on to Main View", false)
     , overlayProperty_("overlay", "Overlay")
     , border_("border", "Border", true)
     , borderColor_("borderColor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
@@ -219,6 +220,7 @@ ImageOverlayGL::ImageOverlayGL()
 
     addProperty(enabled_);
     addProperty(overlayInteraction_);
+    addProperty(passThroughEvent_);
     addProperty(overlayProperty_);
 
     borderColor_.setSemantics(PropertySemantics::Color);
@@ -251,9 +253,12 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            if (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
-                    overlayPort_.propagateEvent(newEvent);
-                })) {
+            bool overlayHandlesEvent =
+                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
+                overlayPort_.propagateEvent(newEvent);
+            }));
+
+            if ((overlayHandlesEvent && !passThroughEvent_.get()) || event->hasBeenUsed()) {
                 return;
             }
         }
