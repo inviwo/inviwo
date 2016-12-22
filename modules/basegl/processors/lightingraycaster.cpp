@@ -99,7 +99,7 @@ LightingRaycaster::LightingRaycaster()
 void LightingRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
     utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_)
+    utilgl::addShaderDefines(shader_, lighting_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
 
     if (enableLightColor_.get())
