@@ -16,8 +16,16 @@ std::vector<std::string> registerAllModules() {
     auto paths = std::vector<std::string>{
         inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
         inviwo::filesystem::getPath(inviwo::PathType::Modules)};
-    // Xcode stores library output path in DYLD_LIBRARY_PATH
-    auto dyldPaths = std::getenv("DYLD_LIBRARY_PATH");
+    
+    // http://unix.stackexchange.com/questions/22926/where-do-executables-look-for-shared-objects-at-runtime
+    char* dyldPaths = nullptr;
+#if defined(__APPLE__)
+    // Xcode/OSX store library output path in DYLD_LIBRARY_PATH
+    dyldPaths = std::getenv("DYLD_LIBRARY_PATH");
+#elif defined(__unix__)
+    // Unix uses LD_LIBRARY_PATH instead
+    dyldPaths = std::getenv("LD_LIBRARY_PATH");
+#endif
     if (dyldPaths) {
         auto dyPaths = splitString(dyldPaths, ':');
         paths.insert(std::end(paths), std::begin(dyPaths), std::end(dyPaths));
