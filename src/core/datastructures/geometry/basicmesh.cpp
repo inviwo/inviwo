@@ -766,8 +766,8 @@ std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, 
             int j1 = startJ + j + 1;
             
             inds->add(i0%numVertex);
-            inds->add(i1%numVertex);
             inds->add(j0%numVertex);
+            inds->add(i1%numVertex);
 
             inds->add(j0%numVertex);
             inds->add(j1%numVertex);

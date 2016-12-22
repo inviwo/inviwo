@@ -81,7 +81,7 @@ class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_,
-                         std::array<int, 7> region_size_);
+                         std::array<int, 7> region_size_, std::array<bool, 3> flipAxis);
     virtual NiftiVolumeRAMLoader* clone() const override;
     virtual ~NiftiVolumeRAMLoader() = default;
 
@@ -111,6 +111,25 @@ public:
             throw DataReaderException(
                 "Error: Could not read data from file: " + std::string(nim->fname), IvwContext);
         }
+        // Flip data along axes if necessary
+        if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
+            auto tmp = util::make_unique<F[]>(size);
+            std::memcpy(tmp.get(), dataPointer, size*sizeof(F));
+            auto dim = size3_t{ region_size[0], region_size[1], region_size[2] };
+            util::IndexMapper3D mapper(dim);
+            for (auto z = 0; z < region_size[2]; ++z) {
+                auto idz = flipAxis[2] ? region_size[2] - 1 - z : z;
+                for (auto y = 0; y < region_size[1]; ++y) {
+                    auto idy = flipAxis[1] ? region_size[1] - 1 - y : y;
+                    for (auto x = 0; x < region_size[0]; ++x) {
+                        auto idx = flipAxis[0] ? region_size[0] - 1 - x : x;
+                        auto from = mapper(x, y, z);
+                        auto to = mapper(idx, idy, idz);
+                        data[to] = tmp[from];
+                    }
+                }
+            }
+        }
 
         auto repr = std::make_shared<VolumeRAMPrecision<F>>(
             data.get(), size3_t{region_size[0], region_size[1], region_size[2]});
@@ -121,6 +140,7 @@ public:
 private:
     std::array<int, 7> start_index;
     std::array<int, 7> region_size;
+    std::array<bool, 3> flipAxis; // Flip x,y,z axis?
     std::shared_ptr<nifti_image> nim;
 };
 

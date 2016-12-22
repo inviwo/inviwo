@@ -58,6 +58,7 @@ LightingRaycaster::LightingRaycaster()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
+    , backgroundPort_("bg")
     , lightVolumePort_("lightVolume")
     , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
@@ -74,12 +75,18 @@ LightingRaycaster::LightingRaycaster()
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(lightVolumePort_);
+    addPort(backgroundPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+
+    backgroundPort_.setOptional(true);
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange(this, &LightingRaycaster::onVolumeChange);
+
+    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     addProperty(raycasting_);
     addProperty(camera_);
@@ -93,6 +100,7 @@ void LightingRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
 
     if (enableLightColor_.get())
         shader_.getFragmentShaderObject()->addShaderDefine("LIGHT_COLOR_ENABLED");
@@ -130,6 +138,9 @@ void LightingRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry", ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, *exitPort_.getData(), "exit", ImageType::ColorDepth);
+    if (backgroundPort_.isConnected()) {
+        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
+    }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
 
     utilgl::singleDrawImagePlaneRect();

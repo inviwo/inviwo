@@ -28,8 +28,11 @@
  *********************************************************************************/
 
 #include "textoverlaygl.h"
+#include <modules/fontrendering/util/fontutils.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
@@ -38,6 +41,7 @@
 #include <inviwo/core/util/assertion.h>
 
 #include <cctype>
+#include <locale>
 
 namespace inviwo {
 
@@ -61,6 +65,7 @@ TextOverlayGL::TextOverlayGL()
             PropertySemantics::TextEditor)
     , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , fontFace_("fontFace", "Font Face")
     , fontSize_("fontSize", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
@@ -72,6 +77,7 @@ TextOverlayGL::TextOverlayGL()
     addProperty(enable_);
     addProperty(text_);
     addProperty(color_);
+    addProperty(fontFace_);
     addProperty(fontPos_);
     addProperty(anchorPos_);
     addProperty(fontSize_);
@@ -88,7 +94,18 @@ TextOverlayGL::TextOverlayGL()
         property->setSerializationMode(PropertySerializationMode::All);
         addProperty(property, true);
     });
+    
+    auto fonts = util::getAvailableFonts();
 
+    for (auto font : fonts) {
+        auto identifier = filesystem::getFileNameWithoutExtension(font.second);
+        // use the file name w/o extension as identifier
+        fontFace_.addOption(identifier, font.first, font.second);
+    }
+    fontFace_.setSelectedIdentifier("arial");
+    fontFace_.setCurrentStateAsDefault();
+
+    // set up different font sizes
     std::vector<int> fontSizes ={ 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96 };
     for (auto size : fontSizes) {
         std::string str = std::to_string(size);
@@ -104,6 +121,10 @@ void TextOverlayGL::process() {
         return;
     }
     
+    if (fontFace_.isModified()) {
+        textRenderer_.setFont(fontFace_.get());
+    }
+
     // check whether a property was modified
     if (!cacheTexture_ ||
         util::any_of(getProperties(), [](const auto& p) { return p->isModified(); })) {

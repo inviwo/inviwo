@@ -106,6 +106,7 @@ private:
     BoolProperty enable_;
 
     FloatVec4Property color_;
+    OptionPropertyString fontFace_;
     OptionPropertyInt fontSize_;
     FloatVec2Property fontPos_;
     FloatVec2Property anchorPos_;

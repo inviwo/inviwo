@@ -86,6 +86,7 @@ private:
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
+    ImageInport backgroundPort_;
     ImageOutport outport_;
 
     OptionPropertyInt channel_;

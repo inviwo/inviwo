@@ -119,7 +119,7 @@ std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFor
     return std::make_shared<Layer>(dimensions, format, LayerType::Color);
 }
 std::shared_ptr<Layer> Image::createDepthLayer(size2_t dimensions) {
-    return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
+    return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth, swizzlemasks::depth);
 }
 std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions, const DataFormatBase* format) {
     return std::make_shared<Layer>(dimensions, format, LayerType::Picking);

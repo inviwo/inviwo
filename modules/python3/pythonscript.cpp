@@ -77,6 +77,11 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         auto d = PyModule_GetDict(m);
 
         PyObject* copy = PyDict_Copy(d);
+
+        for(auto ea : extraLocalVariables){
+            PyDict_SetItemString(copy,ea.first.c_str() , ea.second);
+        }
+
         PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
         bool success = checkRuntimeError();
         if (success) {

@@ -40,20 +40,18 @@ class TransferFunctionDataPoint;
 
 class IVW_CORE_API TransferFunctionPointObserver : public Observer {
 public:
-    TransferFunctionPointObserver() : Observer(){};
-    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p){};
+    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p) {};
 };
-
 
 class IVW_CORE_API TransferFunctionDataPoint : public Observable<TransferFunctionPointObserver>,
                                                public Serializable {
 public:
     TransferFunctionDataPoint(const vec2& pos = vec2(0), const vec4& rgba = vec4(0));
-    TransferFunctionDataPoint(const TransferFunctionDataPoint& rhs);
-    virtual ~TransferFunctionDataPoint();
+    TransferFunctionDataPoint(const TransferFunctionDataPoint& rhs) = default;
     TransferFunctionDataPoint& operator=(const TransferFunctionDataPoint& that);
+    virtual ~TransferFunctionDataPoint() = default;
 
-    inline const vec2& getPos() const { return pos_; };
+    inline const vec2& getPos() const { return pos_; }
     inline const vec4& getRGBA() const { return rgba_; }
 
     void setPos(const vec2& pos);
@@ -62,23 +60,14 @@ public:
     void setA(float alpha);
     void setPosA(const vec2& pos, float alpha);
 
-    void setNotificationsEnabled(bool enabled) { notify_ = enabled; }
     void notifyTransferFunctionPointObservers();
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    friend IVW_CORE_API bool operator==(const TransferFunctionDataPoint& lhs,
-                                        const TransferFunctionDataPoint& rhs);
-
-    // Compare points by their "x" value
-    friend IVW_CORE_API bool operator<(const TransferFunctionDataPoint& lhs,
-                                       const TransferFunctionDataPoint& rhs);
-
 private:
     vec2 pos_;
     vec4 rgba_;
-    bool notify_;
 };
 
 IVW_CORE_API bool operator==(const TransferFunctionDataPoint& lhs,

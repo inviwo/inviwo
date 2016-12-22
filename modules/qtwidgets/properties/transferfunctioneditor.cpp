@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/networklock.h>
 
 #include <warn/push>
@@ -61,26 +62,45 @@ private:
     const TransferFunctionDataPoint* p_;
 };
 
-TransferFunctionEditor::TransferFunctionEditor(TransferFunction* transferFunction,
-                                               QGraphicsView* view)
+TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfProperty)
     : QGraphicsScene()
     , zoomRangeXMin_(0.0)
     , zoomRangeXMax_(1.0)
     , zoomRangeYMin_(0.0)
     , zoomRangeYMax_(1.0)
-    , view_(view)
-    , transferFunction_(transferFunction)
+    , transferFunction_(&tfProperty->get())
+    , dataMap_()
     , groups_()
     , moveMode_(0) {
 
     setSceneRect(0.0, 0.0, 512.0, 512.0);
     mouseDrag_ = false;
-    // initialize editor with current tf
-    
-    // The defalt bsp tends to crash...  
+   
+    // The default bsp tends to crash...  
     setItemIndexMethod(QGraphicsScene::NoIndex);
-    
-    for (int i = 0; i < transferFunction_->getNumPoints(); ++i){
+
+    if (auto port = tfProperty->getVolumeInport()) {
+
+        const auto portChange = [this, port]() {
+            dataMap_ = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+            for (auto& item : items()) {
+                if (auto cp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(item)) {
+                    cp->setDataMap(dataMap_);
+                }
+            }
+        };
+
+        port->onChange(portChange);
+        port->onConnect(portChange);
+        port->onDisconnect(portChange);
+
+        if (port->hasData()) {
+            dataMap_ = port->getData()->dataMap_;
+        }
+    }
+
+    // initialize editor with current tf
+    for (int i = 0; i < transferFunction_->getNumPoints(); ++i) {
         onControlPointAdded(transferFunction_->getPoint(i));
     }
 
@@ -282,12 +302,10 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
         std::vector<TransferFunctionEditorControlPoint*> points;
         for (auto& selitem : selitems) {
-            TransferFunctionEditorControlPoint* p =
-                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem);
-            if (p) points.push_back(p);
+            if (auto p = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem))
+                points.push_back(p);
         }
-        std::stable_sort(points.begin(), points.end(),
-                         comparePtr<TransferFunctionEditorControlPoint>);
+        std::stable_sort(points.begin(), points.end(), comparePtr{});
 
         switch (k) {
             case Qt::Key_Left:
@@ -330,12 +348,12 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 }
                 break;
         }
-    
-    } else if ((k >= '0' && k <= '9') ||                               // Groups selection
-               k == '!' || k =='"' || k =='#' || k ==Qt::Key_paragraph || k =='%' || k =='&' || k =='(' ||
-               k ==')' || k =='=') {                                                                
+
+    } else if ((k >= '0' && k <= '9') ||  // Groups selection
+               k == '!' || k == '"' || k == '#' || k == Qt::Key_paragraph || k == '%' || k == '&' ||
+               k == '(' || k == ')' || k == '=') {
         int group = 0;
-        switch(k) {
+        switch (k) {
             case '0':
             case '=':
                 group = 0;
@@ -428,11 +446,13 @@ void TransferFunctionEditor::addControlPoint(QPointF pos, vec4 color) {
     } else if (pos.y() > height()) {
         pos.setY(height());
     }
+     NetworkLock lock;
     transferFunction_->addPoint(vec2(pos.x() / width(), pos.y() / height()), color);
 }
 
 void TransferFunctionEditor::removeControlPoint(TransferFunctionEditorControlPoint* controlPoint) {
     if (transferFunction_->getNumPoints() > 1) {
+        NetworkLock lock;
         transferFunction_->removePoint(controlPoint->getPoint());
     }
 }
@@ -442,29 +462,20 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
     QList<QGraphicsItem*> graphicsItems = items(pos);
 
     for (auto& graphicsItem : graphicsItems) {
-        TransferFunctionEditorControlPoint* controlPointGraphicsItem =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem);
-
-        if (controlPointGraphicsItem) return controlPointGraphicsItem;
+        if (auto item = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem)) {
+            return item;
+        }
     }
 
     return nullptr;
 }
 
 void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
-    QPointF pos(p->getPos().x * width(), p->getPos().y * height());
-
-    TransferFunctionEditorControlPoint* newpoint =
-        new TransferFunctionEditorControlPoint(p, dataMap_);
-    newpoint->setSize(controlPointSize_);
-    newpoint->setPos(pos);
-
-    PointVec::iterator it = std::lower_bound(points_.begin(), points_.end(), newpoint,
-                                             comparePtr<TransferFunctionEditorControlPoint>);
+    auto newpoint = new TransferFunctionEditorControlPoint(p, dataMap_, controlPointSize_);
+    auto it = std::lower_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
     it = points_.insert(it, newpoint);
 
     updateConnections();
-
     addItem(newpoint);
 }
 
@@ -487,15 +498,15 @@ void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p)
 }
 
 void TransferFunctionEditor::updateConnections() {
-    std::stable_sort(points_.begin(), points_.end(), comparePtr<TransferFunctionEditorControlPoint>);
+    std::stable_sort(points_.begin(), points_.end(), comparePtr{});
     
     while (connections_.size() < points_.size() + 1){
-        TransferFunctionControlPointConnection* c = new TransferFunctionControlPointConnection();
+        auto c = new TransferFunctionControlPointConnection();
         connections_.push_back(c);
         addItem(c);
     }
     while (connections_.size() > points_.size() + 1){
-        TransferFunctionControlPointConnection* c = connections_.back();
+        auto c = connections_.back();
         removeItem(c);
         delete c;
         connections_.pop_back();
@@ -524,14 +535,6 @@ void TransferFunctionEditor::setControlPointSize(float val) {
     for (auto e : points_) {
         e->setSize(getControlPointSize());
     }
-}
-
-void TransferFunctionEditor::setDataMap(const DataMapper& dataMap) {
-   dataMap_ = dataMap;
-}
-
-inviwo::DataMapper TransferFunctionEditor::getDataMap() const {
-    return dataMap_;
 }
 
 float TransferFunctionEditor::getZoomRangeXMin() const {
@@ -564,10 +567,6 @@ float TransferFunctionEditor::getZoomRangeYMax() const {
 
 void TransferFunctionEditor::setZoomRangeYMax(float max) {
     zoomRangeYMax_ = max;
-}
-
-QGraphicsView* TransferFunctionEditor::getView() {
-    return view_;
 }
 
 void TransferFunctionEditor::setMoveMode(int i) {

@@ -37,34 +37,58 @@
 namespace inviwo {
 namespace util {
 
-struct IndexMapper2D {
-    constexpr IndexMapper2D(const size2_t &dim) : dimx(dim.x){};
-    constexpr size_t operator()(size_t x, size_t y) const noexcept { return x + y * dimx; }
-    constexpr size_t operator()(long long x, long long y) const noexcept {
-        return static_cast<size_t>(x + y * dimx);
+template <size_t N, typename IndexType = size_t>
+struct IndexMapper {};
+
+template <typename IndexType>
+struct IndexMapper<2, IndexType> {
+    constexpr IndexMapper(const Vector<2, IndexType> &dim) : dimx(dim.x){};
+    constexpr IndexType operator()(const IndexType x, const IndexType y) const noexcept {
+        return x + y * dimx;
     }
-    constexpr size_t operator()(const size2_t &pos) const noexcept { return pos.x + pos.y * dimx; }
+    constexpr IndexType operator()(const Vector<2, IndexType> &pos) const noexcept {
+        return pos.x + pos.y * dimx;
+    }
+    constexpr Vector<2, IndexType> operator()(const IndexType index) const noexcept {
+        const auto y = index / dimx;
+        const auto x = index % dimx;
+        return Vector<2, IndexType>(x, y);
+    }
 
 private:
-    const size_t dimx;
+    const IndexType dimx;
 };
 
-struct IndexMapper3D {
-    constexpr IndexMapper3D(const size3_t &dim) noexcept : dimx(dim.x), dimxy(dim.x *dim.y){};
-    constexpr size_t operator()(size_t x, size_t y, size_t z) const noexcept {
+template <typename IndexType>
+struct IndexMapper<3, IndexType> {
+    constexpr IndexMapper(const Vector<3, IndexType> &dim) noexcept
+        : dimx(dim.x), dimxy(dim.x * dim.y){};
+    constexpr IndexType operator()(const IndexType x, const IndexType y, const IndexType z) const
+        noexcept {
         return x + y * dimx + z * dimxy;
     }
-    constexpr size_t operator()(long long x, long long y, long long z) const noexcept {
-        return static_cast<size_t>(x + y * dimx + z * dimxy);
-    }
-    constexpr size_t operator()(const size3_t &pos) const noexcept {
+    constexpr IndexType operator()(const Vector<3, IndexType> &pos) const noexcept {
         return pos.x + pos.y * dimx + pos.z * dimxy;
+    }
+    constexpr Vector<3, IndexType> operator()(const IndexType index) const noexcept {
+        const auto z = index / dimxy;
+        const auto y = (index % dimxy) / dimx;
+        const auto x = (index % dimxy) % dimx;
+        return Vector<3, IndexType>(x, y, z);
     }
 
 private:
-    const size_t dimx;
-    const size_t dimxy;
+    const IndexType dimx;
+    const IndexType dimxy;
 };
+
+using IndexMapper2D = IndexMapper<2, size_t>;
+using IndexMapper3D = IndexMapper<3, size_t>;
+
+template <size_t N, typename IndexType = size_t>
+auto makeIndexMapper(const Vector<N, IndexType> &dim) {
+    return IndexMapper<N, IndexType>(dim);
+}
 
 }  // namespace util
 }  // namespace

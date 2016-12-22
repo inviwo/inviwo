@@ -52,7 +52,7 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  -----------------------------------------------------------------------*/
 
-#include <modules/PostProcessing/processors/ssao.h>
+#include <modules/postprocessing/processors/ssao.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
@@ -104,9 +104,13 @@ SSAO::SSAO()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , option_("option", "SSAO Technique")
+    , technique_("option", "SSAO Technique")
     , radius_("radius", "Radius", 2.f, 0.f, 128.f, 0.05f)
     , intensity_("intensity", "Intensity", 1.5f, 0.f, 5.f)
+    , bias_("bias", "Angle Bias", 0.1f, 0.f, 0.5f, 0.01f)
+	, directions_("directions", "Directions", 8, 4, 32)
+	, steps_("steps", "Steps / Dir", 4, 2, 32)
+	, useNormal_("normal", "Use Normal", true)
     , enableBlur_("enable-blur", "Enable Blur", true)
     , blurSharpness_("blur-sharpness", "Blur Sharpness", 40.f, 0.f, 200.f)
     , camera_("camera", "Camera")
@@ -117,16 +121,20 @@ SSAO::SSAO()
     , hbaoBlurVert_("fullscreenquad.vert", "hbao_blur.frag", false)
     , hbaoUbo_(0) {
     
-    option_.addOption("none", "None", 0);
-    option_.addOption("hbao-classic", "HBAO Classic", 1);
-    option_.set(1);
-    option_.setCurrentStateAsDefault();
+    technique_.addOption("none", "None", 0);
+    technique_.addOption("hbao-classic", "HBAO Classic", 1);
+    technique_.set(1);
+    technique_.setCurrentStateAsDefault();
 
     addPort(inport_);
     addPort(outport_);
-    addProperty(option_);
+    addProperty(technique_);
     addProperty(radius_);
     addProperty(intensity_);
+    addProperty(bias_);
+	addProperty(directions_);
+	addProperty(steps_);
+	addProperty(useNormal_);
     addProperty(blurSharpness_);
     addProperty(enableBlur_);
     addProperty(camera_);
@@ -135,6 +143,9 @@ SSAO::SSAO()
     initFramebuffers(512, 512);
 
     initializeResources();
+	directions_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+	steps_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+	useNormal_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     depthLinearize_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoCalc_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoCalcBlur_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -160,10 +171,16 @@ void SSAO::initializeResources() {
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "0");
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
+	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
+	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalc_.build();
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "1");
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
+	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
+	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalcBlur_.build();
     hbaoBlurHoriz_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR_PRESENT", "0");
     hbaoBlurHoriz_.build();
@@ -207,20 +224,17 @@ void SSAO::process() {
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto depthLayer = imageGL->getDepthLayerGL();
     auto depthTex = depthLayer->getTexture()->getID();
-    auto colorLayer = imageGL->getColorLayerGL();
-    auto colorTex = colorLayer->getTexture()->getID();
 
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
     auto outFbo = outImageGL->getFBO()->getID();
 
-    if (option_.get() == 0) {
+    if (technique_.get() == 0) {
         return;
     }
-    else if (option_.get() == 1) {
-        // This geometry is actually never used, but a valid VAO and VBO is required in 3.30 to kick off the drawcalls
+    else if (technique_.get() == 1) {
+        // This geometry is actually never used, but a valid VAO and VBO is required to kick off the drawcalls
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
         utilgl::Enable<MeshGL> enable(rect);
-
         drawHbaoClassic(outFbo, depthTex, projParam_, width, height);
     }
 }
@@ -358,7 +372,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
 
     // ao
     hbaoUboData_.PowExponent = std::max(intensity_.get(), 0.0f);
-    hbaoUboData_.NDotVBias = std::min(std::max(0.0f, 0.1f), 1.0f);
+    hbaoUboData_.NDotVBias = glm::clamp(bias_.get(), 0.0f, 1.0f);
     hbaoUboData_.AOMultiplier = 1.0f / (1.0f - hbaoUboData_.NDotVBias);
 
     // resolution
@@ -396,6 +410,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
 
     glBindFramebuffer(GL_FRAMEBUFFER, fboOut);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    glColorMask(1, 1, 1, 0);
 
     if (blur) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers_.hbaoCalc);
@@ -446,6 +461,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
+    glColorMask(1, 1, 1, 1);
 
     glUseProgram(0);
 }

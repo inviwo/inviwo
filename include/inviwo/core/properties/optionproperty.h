@@ -145,16 +145,22 @@ public:
     InviwoPropertyInfo();
     typedef T valueType;
 
-    TemplateOptionProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    TemplateOptionProperty(std::string identifier, std::string displayName,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
 
-    TemplateOptionProperty(
-        std::string identifier, std::string displayName,
-        std::vector<OptionPropertyOption<T>> options, size_t selectedIndex = 0,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    TemplateOptionProperty(std::string identifier, std::string displayName,
+                           const std::vector<OptionPropertyOption<T>>& options,
+                           size_t selectedIndex = 0,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+
+    template <typename U = T,
+              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    TemplateOptionProperty(std::string identifier, std::string displayName,
+                           const std::vector<T>& options, size_t selectedIndex = 0,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) = default;
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that) = default;
@@ -281,11 +287,10 @@ TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::s
     , defaultSelectedIndex_(0) {}
 
 template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
-                                                  std::vector<OptionPropertyOption<T>> options,
-                                                  size_t selectedIndex,
-                                                  InvalidationLevel invalidationLevel,
-                                                  PropertySemantics semantics)
+TemplateOptionProperty<T>::TemplateOptionProperty(
+    std::string identifier, std::string displayName,
+    const std::vector<OptionPropertyOption<T>>& options, size_t selectedIndex,
+    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedIndex_(std::min(selectedIndex, options.size() - 1))
     , options_(options)
@@ -293,8 +298,27 @@ TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::s
     , defaultOptions_(options_) {}
 
 template <typename T>
+template <typename U, class>
+TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
+                                                  const std::vector<T>& options,
+                                                  size_t selectedIndex,
+                                                  InvalidationLevel invalidationLevel,
+                                                  PropertySemantics semantics)
+    : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
+    , selectedIndex_(std::min(selectedIndex, options.size() - 1))
+    , options_()
+    , defaultSelectedIndex_(selectedIndex_)
+    , defaultOptions_() {
+
+    for (const auto& option : options) {
+        options_.emplace_back(option);
+        defaultOptions_.emplace_back(option);
+    }
+}
+
+template <typename T>
 void TemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
-                                              T value) {
+                                          T value) {
     options_.push_back(OptionPropertyOption<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it

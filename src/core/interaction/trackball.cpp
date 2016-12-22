@@ -59,6 +59,7 @@ Trackball::Trackball(TrackballObject* object)
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
+    , allowRecenterView_("allowRecenterView", "Recenter view with Double Click", false)
     , animate_("animate", "Animate rotations", false)
 
     , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left,
@@ -69,6 +70,10 @@ Trackball::Trackball(TrackballObject* object)
 
     , mousePan_("trackballPan", "Pan", [this](Event* e) { pan(e); }, MouseButton::Middle,
                 MouseState::Press | MouseState::Move)
+
+    , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point",
+                             [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left,
+                             MouseState::DoubleClick)
 
     , mouseReset_("mouseReset", "Reset", [this](Event* e) { reset(e); }, MouseButtons(flags::any),
                   MouseState::Release)
@@ -120,15 +125,19 @@ Trackball::Trackball(TrackballObject* object)
     addProperty(allowHorizontalPanning_);
     addProperty(allowVerticalPanning_);
     addProperty(allowZooming_);
+    //addProperty(maxZoomInDistance_);
 
     addProperty(allowHorizontalRotation_);
     addProperty(allowVerticalRotation_);
     addProperty(allowViewDirectionRotation_);
+    addProperty(allowRecenterView_);
+
     addProperty(animate_);
 
     addProperty(mouseRotate_);
     addProperty(mouseZoom_);
     addProperty(mousePan_);
+    addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
     addProperty(stepRotateUp_);
     addProperty(stepRotateLeft_);
@@ -167,10 +176,12 @@ Trackball::Trackball(const Trackball& rhs)
     , allowHorizontalRotation_(rhs.allowHorizontalRotation_)
     , allowVerticalRotation_(rhs.allowVerticalRotation_)
     , allowViewDirectionRotation_(rhs.allowViewDirectionRotation_)
+    , allowRecenterView_(rhs.allowRecenterView_)
     , animate_(rhs.animate_)
     , mouseRotate_(rhs.mouseRotate_)
     , mouseZoom_(rhs.mouseZoom_)
     , mousePan_(rhs.mousePan_)
+    , mouseRecenterFocusPoint_(rhs.mouseRecenterFocusPoint_)
     , mouseReset_(rhs.mouseReset_)
     , stepRotateUp_(rhs.stepRotateUp_)
     , stepRotateLeft_(rhs.stepRotateLeft_)
@@ -201,11 +212,14 @@ Trackball::Trackball(const Trackball& rhs)
     addProperty(allowHorizontalRotation_);
     addProperty(allowVerticalRotation_);
     addProperty(allowViewDirectionRotation_);
+    addProperty(allowRecenterView_);
+
     addProperty(animate_);
 
     addProperty(mouseRotate_);
     addProperty(mouseZoom_);
     addProperty(mousePan_);
+    addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
     addProperty(stepRotateUp_);
     addProperty(stepRotateLeft_);
@@ -246,10 +260,12 @@ Trackball& Trackball::operator=(const Trackball& that) {
         allowHorizontalRotation_ = that.allowHorizontalRotation_;
         allowVerticalRotation_ = that.allowVerticalRotation_;
         allowViewDirectionRotation_ = that.allowViewDirectionRotation_;
+        allowRecenterView_ = that.allowRecenterView_;
         animate_ = that.animate_;
         mouseRotate_ = that.mouseRotate_;
         mouseZoom_ = that.mouseZoom_;
         mousePan_ = that.mousePan_;
+        mouseRecenterFocusPoint_ = that.mouseRecenterFocusPoint_;
         mouseReset_ = that.mouseReset_;
         stepRotateUp_ = that.stepRotateUp_;
         stepRotateLeft_ = that.stepRotateLeft_;
@@ -796,6 +812,25 @@ void Trackball::zoomIn(Event* event) {
 
 void Trackball::zoomOut(Event* event) {
     stepZoom(Direction::Down);
+    event->markAsUsed();
+}
+
+void Trackball::recenterFocusPoint(Event *event) {
+    if (!allowRecenterView_.get()) {
+        return;
+    }
+
+    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+        auto p = mouseEvent->ndc();
+
+        if (std::abs(p.z - 1.0) < glm::epsilon<decltype(p.z)>()) return;
+
+        auto newLookTo = object_->getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(p));
+        auto newLookFrom = getLookFrom() + (newLookTo - getLookTo());
+
+        setLookTo(newLookTo);
+        setLookFrom(newLookFrom);
+    }
     event->markAsUsed();
 }
 

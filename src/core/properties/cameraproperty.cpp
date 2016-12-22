@@ -64,9 +64,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
-    , mouseChangeFocusPoint_("mouseChangeFocusPoint", "Change Focus Point",
-                             [this](Event* e) { changeFocusPoint(e); }, MouseButton::Left,
-                             MouseState::DoubleClick)
 
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
     , camera_()
@@ -95,7 +92,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
-    addProperty(mouseChangeFocusPoint_);
 
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
@@ -114,7 +110,6 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-    , mouseChangeFocusPoint_(rhs.mouseChangeFocusPoint_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
     , camera_()
     , inport_(rhs.inport_)
@@ -141,7 +136,6 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
-    addProperty(mouseChangeFocusPoint_);
     addProperty(adjustCameraOnDataChange_);
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
@@ -326,11 +320,16 @@ void CameraProperty::adjustCameraToData(const mat4& prevDataToWorldMatrix,
         farPlane_.set(farPlane);
         nearPlane_.setMaxValue(nearPlane_.getMaxValue() * depthRatio);
         nearPlane_.set(nearPlane);
-
-        lookFrom_.setMinValue((toNewSpace * vec4(lookFrom_.getMinValue(), 1.f)).xyz());
-        lookFrom_.setMaxValue((toNewSpace * vec4(lookFrom_.getMaxValue(), 1.f)).xyz());
-        lookTo_.setMinValue((toNewSpace * vec4(lookTo_.getMinValue(), 1.f)).xyz());
-        lookTo_.setMaxValue((toNewSpace * vec4(lookTo_.getMaxValue(), 1.f)).xyz());
+        // Choose min and max values in new space.
+        // Rotation/mirroring may change the sign so apply min/max in new space
+        vec3 minLookFrom(toNewSpace * vec4(lookFrom_.getMinValue(), 1.f));
+        vec3 maxLookFrom(toNewSpace * vec4(lookFrom_.getMaxValue(), 1.f));
+        lookFrom_.setMinValue(glm::min(minLookFrom, maxLookFrom));
+        lookFrom_.setMaxValue(glm::max(minLookFrom, maxLookFrom));
+        vec3 minLookTo(toNewSpace * vec4(lookTo_.getMinValue(), 1.f));
+        vec3 maxLookTo(toNewSpace * vec4(lookTo_.getMaxValue(), 1.f));
+        lookTo_.setMinValue(glm::min(minLookTo, maxLookTo));
+        lookTo_.setMaxValue(glm::max(minLookTo, maxLookTo));
 
         setLookFrom(newLookFrom);
         setLookTo(newLookTo);
@@ -400,21 +399,6 @@ const mat4& CameraProperty::inverseViewMatrix() const { return camera_->getInver
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->getInverseProjectionMatrix();
-}
-
-void CameraProperty::changeFocusPoint(Event* event) {
-    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        auto p = mouseEvent->ndc();
-
-        if (std::abs(p.z - 1.0) < glm::epsilon<decltype(p.z)>()) return;
-     
-        auto newLookTo = camera_->getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(p));
-        auto newLookFrom = lookFrom_.get() + (newLookTo - lookTo_.get());
-
-        setLookTo(newLookTo);
-        setLookFrom(newLookFrom);
-    }
-    event->markAsUsed();
 }
 
 }  // namespace

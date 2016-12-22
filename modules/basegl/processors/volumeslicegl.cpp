@@ -236,9 +236,11 @@ VolumeSliceGL::VolumeSliceGL()
 
     normalizedSample_.setSemantics(PropertySemantics::Text);
     normalizedSample_.setReadOnly(true);
+    normalizedSample_.setSerializationMode(PropertySerializationMode::None);
     normalizedSample_.setCurrentStateAsDefault();
     volumeSample_.setSemantics(PropertySemantics::Text);
     volumeSample_.setReadOnly(true);
+    volumeSample_.setSerializationMode(PropertySerializationMode::None);
     volumeSample_.setCurrentStateAsDefault();
 
     sampleQuery_.addProperty(normalizedSample_);
@@ -613,8 +615,9 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 
     vec3 max(texToWorld * vec4(1.0f));
     vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    worldPosition_.setMaxValue(max);
-    worldPosition_.setMinValue(min);
+    // Rotation/mirroring may change the sign so apply min/max
+    worldPosition_.setMaxValue(glm::max(min, max));
+    worldPosition_.setMinValue(glm::min(min, max));
 }
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {

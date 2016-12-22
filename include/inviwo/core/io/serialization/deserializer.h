@@ -220,6 +220,9 @@ public:
     template <class T>
     void deserialize(const std::string& key, T*& data);
 
+    template <class T, class D>
+    void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
+
     void setExceptionHandler(ExceptionHandler handler);
 
     void convertVersion(VersionConverter* converter);
@@ -1015,6 +1018,16 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
     if (data) {
         deserialize(key, *data);
         if (allowRef_ && !id_attr.empty()) refDataContainer_.insert(data, keyNode);
+    }
+}
+
+template <class T, class D>
+void Deserializer::deserialize(const std::string& key, std::unique_ptr<T, D>& data) {
+    if (auto ptr = data.get()) {
+        deserialize(key, ptr);
+    } else {
+        deserialize(key, ptr);
+        data.reset(ptr);
     }
 }
 

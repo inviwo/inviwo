@@ -30,12 +30,13 @@
 #ifndef IVW_SSAO_H
 #define IVW_SSAO_H
 
-#include <modules/PostProcessing/PostProcessingmoduledefine.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
@@ -44,24 +45,30 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.SSAO, SSAO}
  * ![](org.inviwo.SSAO.png?classIdentifier=org.inviwo.SSAO)
- * Explanation of how to use the processor.
+ * Use any image with a proper depth channel as input. It will compute SSAO using the depth and then apply the occlusion to the color-layer.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __ImageInport__ Input Image.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __ImageOutport__ Output Image.
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Technique__ SSAO Technique.
+ *   * __Radius__ Radius of hemisphere used to compute the ambient occlusion.
+ *   * __Intensity__ Intensity of the ambient occlusion.
+ *   * __Angle Bias__ Offsets the minimum angle of samples used in the computation. (Good for hiding AO effects on low-tess geometry)
+ *   * __Directions__ Number of directions used to sample the hemisphere.
+ *   * __Steps/Dir__ Number of samples used for each direction.
+ *   * __Use Normal__ Orients the hemisphere using an approximated surface normal.
+ *   * __Enable Blur__ Apply a bilateral blur filter.
+ *   * __Blur Sharpness__ Controls the sharpness of the blur, small number -> large filter
  */
 
 
 /**
  * \class SSAO
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \brief Screen space ambient occlusion post process. (Computed using depth layer)
  */
 class IVW_MODULE_POSTPROCESSING_API SSAO : public Processor { 
 public:
@@ -77,7 +84,7 @@ public:
     static constexpr int AO_RANDOM_TEX_SIZE = 4;
     static constexpr int HBAO_RANDOM_SIZE = AO_RANDOM_TEX_SIZE;
     static constexpr int HBAO_RANDOM_ELEMENTS = HBAO_RANDOM_SIZE * HBAO_RANDOM_SIZE;
-    static constexpr int MAX_SAMPLES = 8;
+    static constexpr int MAX_SAMPLES = 1; // CHANGE TO 8 WHEN IMPLEMENTING MSAA
 
 private:
     struct ProjectionParam {
@@ -121,9 +128,13 @@ private:
     ImageInport inport_;
     ImageOutport outport_;
 
-    OptionPropertyInt option_;
+    OptionPropertyInt technique_;
     FloatProperty radius_;
     FloatProperty intensity_;
+    FloatProperty bias_;
+	IntProperty directions_;
+	IntProperty steps_;
+	BoolProperty useNormal_;
     BoolProperty enableBlur_;
     FloatProperty blurSharpness_;
     CameraProperty camera_;

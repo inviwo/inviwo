@@ -72,9 +72,21 @@ https://github.com/NVIDIAGameWorks/D3DSamples/tree/master/samples/DeinterleavedT
 
 #define M_PI 3.14159265
 
+#ifndef AO_STEPS
+#define AO_STEPS 4
+#endif
+
+#ifndef AO_DIRS
+#define AO_DIRS 8
+#endif
+
+#ifndef AO_USE_NORMAL
+#define AO_USE_NORMAL 1
+#endif
+
 // tweakables
-const float  NUM_STEPS = 4;
-const float  NUM_DIRECTIONS = 8; // texRandom/g_Jitter initialization depends on this
+const float  NUM_STEPS = AO_STEPS;
+const float  NUM_DIRECTIONS = AO_DIRS; // texRandom/g_Jitter initialization depends on this
 
 layout(std140) uniform controlBuffer {
   HBAOData   control;
@@ -187,7 +199,8 @@ float ComputeCoarseAO(vec2 FullResUV, float RadiusPixels, vec4 Rand, vec3 ViewPo
   }
 
   AO *= control.AOMultiplier / (NUM_DIRECTIONS * NUM_STEPS);
-  return clamp(1.0 - AO * 2.0,0,1);
+
+  return clamp(1.0 - AO, 0, 1);
 }
 
 //----------------------------------------------------------------------------------
@@ -198,7 +211,11 @@ void main()
   vec3 ViewPosition = FetchViewPos(uv);
 
   // Reconstruct view-space normal from nearest neighbors
+#if AO_USE_NORMAL
   vec3 ViewNormal = -ReconstructNormal(uv, ViewPosition);
+#else
+  vec3 ViewNormal = vec3(0,0,-1);
+#endif
 
   // Compute projection of disk of radius control.R into screen space
   float RadiusPixels = control.RadiusToScreen / (control.projOrtho != 0 ? 1.0 : ViewPosition.z);

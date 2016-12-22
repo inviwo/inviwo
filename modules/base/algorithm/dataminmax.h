@@ -55,7 +55,6 @@ IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
 IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
     const BufferRAM* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
-
 IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(
     const Volume* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
@@ -64,6 +63,29 @@ IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
 
 IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
     const BufferBase* buffer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+
+template <typename ValueType>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
+                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+    using Res = std::pair<ValueType, ValueType>;
+    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
+
+    if (ignore == IgnoreSpecialValues::Yes) {
+        minmax = std::accumulate(data, data + size, minmax,
+                                 [](const Res& mm, const ValueType& v) -> Res {
+                                     return util::all(v != v + ValueType(1))
+                                                ? Res{glm::min(mm.first, v), glm::max(mm.second, v)}
+                                                : mm;
+                                 });
+    } else {
+        minmax = std::accumulate(data, data + size, minmax,
+                                 [](const Res& mm, const ValueType& v) -> Res {
+                                     return {glm::min(mm.first, v), glm::max(mm.second, v)};
+                                 });
+    }
+
+    return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
+}
 
 }  // namespace
 

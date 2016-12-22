@@ -44,7 +44,7 @@ TransferFunctionProperty::TransferFunctionProperty(const std::string &identifier
     , TransferFunctionObserver()
     , zoomH_("zoomH_", vec2(0.0f, 1.0f))
     , zoomV_("zoomV_", vec2(0.0f, 1.0f))
-    , showHistogram_("showHistogram_", true)
+    , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
     
     // rename the "value" to make the serialized file easier to understand.
@@ -57,7 +57,7 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     , TransferFunctionObserver()
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
-    , showHistogram_(rhs.showHistogram_)
+    , histogramMode_(rhs.histogramMode_)
     , volumeInport_(rhs.volumeInport_) {
 
     this->value_.value.addObserver(this);
@@ -70,7 +70,7 @@ TransferFunctionProperty& TransferFunctionProperty::operator=(const TransferFunc
         this->value_.value.addObserver(this);
         zoomH_ = that.zoomH_;
         zoomV_ = that.zoomV_;
-        showHistogram_ = that.showHistogram_;
+        histogramMode_ = that.histogramMode_;
         volumeInport_ = that.volumeInport_;
     }
     return *this;
@@ -82,30 +82,29 @@ TransferFunctionProperty* TransferFunctionProperty::clone() const {
 
 TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
 
-void TransferFunctionProperty::setShowHistogram(int type) {
-    showHistogram_ = type;
+void TransferFunctionProperty::setHistogramMode(HistogramMode mode) { 
+    if(histogramMode_ != mode) {
+        histogramMode_ = mode;
+        notifyHistogramModeChange(histogramMode_);
+    }
 }
 
-int TransferFunctionProperty::getShowHistogram() {
-    return showHistogram_;
-}
+auto TransferFunctionProperty::getHistogramMode() -> HistogramMode { return histogramMode_; }
 
-VolumeInport* TransferFunctionProperty::getVolumeInport() {
-    return volumeInport_;
-}
+VolumeInport* TransferFunctionProperty::getVolumeInport() { return volumeInport_; }
 
 void TransferFunctionProperty::resetToDefaultState() {
     NetworkLock lock(this);
     zoomH_.reset();
     zoomV_.reset();
-    showHistogram_.reset();
+    histogramMode_.reset();
     TemplateProperty<TransferFunction>::resetToDefaultState();
 }
 void TransferFunctionProperty::setCurrentStateAsDefault() {
     TemplateProperty<TransferFunction>::setCurrentStateAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
-    showHistogram_.setAsDefault();
+    histogramMode_.setAsDefault();
 }
 
 void TransferFunctionProperty::serialize(Serializer& s) const {
@@ -113,7 +112,7 @@ void TransferFunctionProperty::serialize(Serializer& s) const {
 
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
-    showHistogram_.serialize(s, this->serializationMode_);
+    histogramMode_.serialize(s, this->serializationMode_);
     value_.serialize(s, this->serializationMode_);
 }
 
@@ -123,7 +122,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     bool modified = false;
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
-    modified |= showHistogram_.deserialize(d, this->serializationMode_);
+    modified |= histogramMode_.deserialize(d, this->serializationMode_);
     modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
@@ -132,9 +131,15 @@ void TransferFunctionProperty::setMask(float maskMin, float maskMax) {
     if (maskMax < maskMin) {
         maskMax = maskMin;
     }
-    this->value_.value.setMaskMin(maskMin);
-    this->value_.value.setMaskMax(maskMax);
-    propertyModified();
+
+    if (this->value_.value.getMaskMin() != maskMax || this->value_.value.getMaskMax() != maskMax) {
+        this->value_.value.setMaskMin(maskMin);
+        this->value_.value.setMaskMax(maskMax);
+
+        notifyMaskChange(vec2(maskMin, maskMax));
+
+        propertyModified();
+    }
 }
 
 const vec2 TransferFunctionProperty::getMask() const {
@@ -149,7 +154,12 @@ void TransferFunctionProperty::setZoomH(float zoomHMin, float zoomHMax) {
     if (zoomHMax < zoomHMin) {
         zoomHMax = zoomHMin;
     }
-    zoomH_ = vec2(zoomHMin, zoomHMax);
+
+    const auto newZoomH = vec2(zoomHMin, zoomHMax);;
+    if (zoomH_ != newZoomH) {
+      zoomH_ = newZoomH;
+      notifyZoomHChange(zoomH_);
+    }
 }
 
 const vec2& TransferFunctionProperty::getZoomV() const {
@@ -160,7 +170,12 @@ void TransferFunctionProperty::setZoomV(float zoomVMin, float zoomVMax) {
     if (zoomVMax < zoomVMin) {
         zoomVMax = zoomVMin;
     }
-    zoomV_ = vec2(zoomVMin, zoomVMax);
+
+    const auto newZoomV = vec2(zoomVMin, zoomVMax);;
+    if (zoomV_ != newZoomV) {
+        zoomV_ = newZoomV;
+        notifyZoomVChange(zoomV_);
+    }
 }
 
 void TransferFunctionProperty::set(const TransferFunction& value) {
@@ -185,5 +200,20 @@ void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataP
     propertyModified();
 }
 
+void TransferFunctionPropertyObservable::notifyMaskChange(const vec2& mask) {
+    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onMaskChange(mask); });
+}
+
+void TransferFunctionPropertyObservable::notifyZoomHChange(const vec2& zoomH) {
+    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomHChange(zoomH); });
+}
+
+void TransferFunctionPropertyObservable::notifyZoomVChange(const vec2& zoomV) {
+    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomVChange(zoomV); });
+}
+
+void TransferFunctionPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
+    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onHistogramModeChange(mode); });
+}
 
 } // namespace

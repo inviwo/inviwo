@@ -151,21 +151,13 @@ void RBFVectorFieldGenerator3D::process() {
     xy = solverY.solve(by);
     xz = solverZ.solve(bz);
 
-    auto testX = solverX.info() == Eigen::Success;
-    auto testY = solverY.info() == Eigen::Success;
-    auto testZ = solverZ.info() == Eigen::Success;
-    if (!(testX && testY && testZ)) {
-        LogError("Fuck, didn't work" << (testX ? "1" : "0") << (testY ? "1" : "0")
-                                     << (testZ ? "1" : "0"));
-    }
-
-    auto volume = std::make_shared<Volume>(size_.get(), DataVec4Float32::get());
+    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
     volume->dataMap_.dataRange = vec2(0, 1);
     volume->dataMap_.valueRange = vec2(-1, 1);
     volume->setBasis(basis);
     volume->setOffset(offset);
 
-    vec4 *data = static_cast<vec4 *>(volume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto data = static_cast<vec3 *>(volume->getEditableRepresentation<VolumeRAM>()->getData());
 
     int i = 0;
     for (size_t z = 0; z < size_.get().z; z++) {
@@ -185,7 +177,7 @@ void RBFVectorFieldGenerator3D::process() {
                     v.z += static_cast<float>(xz(s) * gaussian_.evaluate(r));
                 }
 
-                data[i++] = vec4(v, glm::length(v));
+                data[i++] = v;
             }
         }
     }

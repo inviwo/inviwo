@@ -44,7 +44,6 @@ set(MOC_FILES
     properties/syntaxhighlighter.h
     properties/texteditorwidgetqt.h
     properties/transferfunctioneditor.h
-    properties/transferfunctioneditorview.h
     properties/transferfunctionpropertydialog.h
     properties/transferfunctionpropertywidgetqt.h
     propertylistwidget.h
@@ -65,6 +64,7 @@ set(HEADER_FILES
     properties/boolpropertywidgetqt.h
     properties/transferfunctioncontrolpointconnection.h
     properties/transferfunctioneditorcontrolpoint.h
+    properties/transferfunctioneditorview.h
     qstringhelper.h
     qtwidgetsmodule.h
     qtwidgetsmoduledefine.h

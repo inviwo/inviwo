@@ -161,6 +161,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 auto tableCell = t.append("tr").append("td");
                 for (auto layer : layers) {
                     auto data = layer->getAsCodedBuffer(imageType);
+                    if (!data) continue; // no conversion possible
+
                     QByteArray byteArray;
 
                     if (imageType == "png") {

@@ -59,7 +59,7 @@ public:
     };
 
     TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
-                                       const DataMapper& dataMap);
+                                       const DataMapper& dataMap, float size = 14.0f);
     ~TransferFunctionEditorControlPoint() = default;
 
     void setDataPoint(TransferFunctionDataPoint* dataPoint);

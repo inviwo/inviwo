@@ -42,19 +42,13 @@ class ProcessorNetworkEvaluationObservable;
  */
 class IVW_CORE_API ProcessorNetworkEvaluationObserver : public Observer {
 public:
-    friend ProcessorNetworkEvaluationObservable;
-    ProcessorNetworkEvaluationObserver() = default;
-    virtual ~ProcessorNetworkEvaluationObserver() = default;
-
     virtual void onProcessorNetworkEvaluationBegin(){};
     virtual void onProcessorNetworkEvaluationEnd(){};
 };
 
 class IVW_CORE_API ProcessorNetworkEvaluationObservable
     : public Observable<ProcessorNetworkEvaluationObserver> {
-public:
-    ProcessorNetworkEvaluationObservable() = default;
-
+protected:
     virtual void notifyObserversProcessorNetworkEvaluationBegin();
     virtual void notifyObserversProcessorNetworkEvaluationEnd();
 };

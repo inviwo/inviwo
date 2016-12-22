@@ -39,7 +39,6 @@
 #include <warn/ignore/all>
 #include <QVarLengthArray>
 #include <QGraphicsItem>
-#include <QThread>
 #include <QtEvents>
 #include <QGraphicsScene>
 #include <QPainter>
@@ -49,58 +48,70 @@
 namespace inviwo {
 
 TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty* tfProperty)
-    : TransferFunctionObserver()
+    : QGraphicsView()
     , tfProperty_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
-    , showHistogram_(tfProperty->getShowHistogram())
-    , histogramTheadWorking_(false)
-    , workerThread_(nullptr)
-    , worker_(nullptr)
-    , invalidatedHistogram_(true)
+    , histogramMode_(tfProperty->getHistogramMode())
     , maskHorizontal_(0.0f, 1.0f) {
+
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
-    // TODO: enable this block for OpenGL rendering of the Transfer Function
-    /*
-        QGLFormat format;
-        // we only need a Depth buffer and a RGB frame buffer
-        // double buffering is nice, too!
-        format.setOption(QGL::DeprecatedFunctions);
-        format.setDoubleBuffer(true);
-        format.setDepth(true);
-        format.setRgba(true);
-        format.setAlpha(true);
-        format.setAccum(false);
-        format.setStencil(false);
-        format.setStereo(false);
-        this->setViewport(new QGLWidget(format));
-    */
+    tfProperty_->TransferFunctionPropertyObservable::addObserver(this);
 
     if (volumeInport_) {
+        const auto portChange = [this]() {
+            if (histogramMode_ != HistogramMode::Off && volumeInport_->hasData()) {
+                updateHistogram();
+                resetCachedContent();
+                update();
+            }
+        };
+
         volumeInport_->onInvalid(this, &TransferFunctionEditorView::onVolumeInportInvalid);
-        volumeInport_->onChange(this, &TransferFunctionEditorView::onVolumeInportChange);
+        volumeInport_->onChange(portChange);
+        volumeInport_->onConnect(portChange);
+        volumeInport_->onDisconnect([this](){
+            histograms_.clear();
+            resetCachedContent();
+            update();
+        });
     }
+    updateHistogram();
 }
 
 TransferFunctionEditorView::~TransferFunctionEditorView() {
-    if (workerThread_) {
-        if (worker_) worker_->stopCalculation();
-        workerThread_ = nullptr;
+    stopHistCalculation_ = true;
+    if (volumeInport_) volumeInport_->removeOnInvalid(this);
+}
+
+void TransferFunctionEditorView::onMaskChange(const vec2& mask) {
+    if (maskHorizontal_ != mask) {
+        maskHorizontal_ = mask;
+        update();
     }
-    if (volumeInport_) {
-        volumeInport_->removeOnInvalid(this);
+}
+
+void TransferFunctionEditorView::onZoomHChange(const vec2& zoomH) { updateZoom(); }
+
+void TransferFunctionEditorView::onZoomVChange(const vec2& zoomV) { updateZoom(); }
+
+void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
+    if (histogramMode_ != mode) {
+        histogramMode_ = mode;
+        if (histogramMode_ != HistogramMode::Off) updateHistogram();
+        resetCachedContent();
+        update();
     }
 }
 
 void TransferFunctionEditorView::resizeEvent(QResizeEvent* event) {
-    updateZoom();
-    invalidatedHistogram_ = true;
     QGraphicsView::resizeEvent(event);
-    this->resetCachedContent();
+    resetCachedContent();
+    updateZoom();
 }
 
 void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
@@ -131,87 +142,52 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
     QGraphicsView::drawForeground(painter, rect);
 }
 
-void TransferFunctionEditorView::onTransferFunctionChange() {
-    if (volumeInport_ != tfProperty_->getVolumeInport()) {
-        volumeInport_ = tfProperty_->getVolumeInport();
-        volumeInport_->onInvalid(this, &TransferFunctionEditorView::onVolumeInportInvalid);
-        volumeInport_->onChange(this, &TransferFunctionEditorView::onVolumeInportChange);
-    }
-
-    this->viewport()->update();
-}
-
-void TransferFunctionEditorView::onControlPointChanged(const TransferFunctionDataPoint* p) {
-    onTransferFunctionChange();
-}
-
 void TransferFunctionEditorView::onVolumeInportInvalid() {
-    if (workerThread_) {
-        if (worker_) worker_->stopCalculation();
-        workerThread_ = nullptr;
-    }
-    invalidatedHistogram_ = true;
-    this->resetCachedContent();
-}
-
-void TransferFunctionEditorView::setShowHistogram(int type) {
-    showHistogram_ = type;
-    invalidatedHistogram_ = true;
-    this->resetCachedContent();
-}
-
-void TransferFunctionEditorView::histogramThreadFinished() {
-    workerThread_ = nullptr;
-    worker_ = nullptr;
-    histogramTheadWorking_ = false;
-    invalidatedHistogram_ = true;
-    this->resetCachedContent();
+    stopHistCalculation_ = true;
+    resetCachedContent();
+    update();
 }
 
 void TransferFunctionEditorView::updateHistogram() {
-    if (!invalidatedHistogram_) return;
-
     histograms_.clear();
     QRectF sRect = sceneRect();
 
     const HistogramContainer* histCont = getNormalizedHistograms();
-    if (histCont == nullptr) {
-        return;
-    }
-    for(size_t channel = 0; channel <  histCont->size(); ++channel) {
+    if (!histCont) return;
 
-        histograms_.push_back(QPolygonF());        
+    for (size_t channel = 0; channel < histCont->size(); ++channel) {
+        histograms_.push_back(QPolygonF());
         const std::vector<double>* normHistogramData = (*histCont)[channel].getData();
         double histSize = static_cast<double>(normHistogramData->size());
         double stepSize = sRect.width() / histSize;
 
         double scale = 1.0;
-        switch (showHistogram_) {
-            case 0:  // Don't show
+        switch (histogramMode_) {
+            case HistogramMode::Off:  // Don't show
                 return;
-            case 1:  // show all
+            case HistogramMode::All:  // show all
                 scale = 1.0;
                 break;
-            case 2:  // show 99%
+            case HistogramMode::P99:  // show 99%
                 scale = (*histCont)[channel].histStats_.percentiles[99];
                 break;
-            case 3:  // show 95%
+            case HistogramMode::P95:  // show 95%
                 scale = (*histCont)[channel].histStats_.percentiles[95];
                 break;
-            case 4:  // show 90%
+            case HistogramMode::P90:  // show 90%
                 scale = (*histCont)[channel].histStats_.percentiles[90];
                 break;
-            case 5:  // show log%
+            case HistogramMode::Log:  // show log%
                 scale = 1.0;
                 break;
         }
         double height;
         double maxCount = (*histCont)[channel].getMaximumBinValue();
 
-        histograms_.back() << QPointF(0.0f,0.0f);
+        histograms_.back() << QPointF(0.0f, 0.0f);
 
         for (double i = 0; i < histSize; i++) {
-            if (showHistogram_ == 5) {
+            if (histogramMode_ == HistogramMode::Log) {
                 height =
                     std::log10(1.0 + maxCount * normHistogramData->at(static_cast<size_t>(i))) /
                     std::log10(maxCount);
@@ -221,34 +197,37 @@ void TransferFunctionEditorView::updateHistogram() {
                 height = std::min(height, 1.0);
             }
             height *= sRect.height();
-            histograms_.back() << QPointF(i*stepSize, height) << QPointF((i+1)*stepSize, height);
+            histograms_.back() << QPointF(i * stepSize, height)
+                               << QPointF((i + 1) * stepSize, height);
         }
-        histograms_.back() << QPointF(sRect.width(),0.0f) << QPointF(0.0f,0.0f);
+        histograms_.back() << QPointF(sRect.width(), 0.0f) << QPointF(0.0f, 0.0f);
     }
-
-    invalidatedHistogram_ = false;
 }
 
 const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() {
     if (volumeInport_ && volumeInport_->hasData()) {
-        const VolumeRAM* volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>();
+        if (const auto volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>()) {
+            if (volumeRAM->hasHistograms()) {
+                return volumeRAM->getHistograms(2048, size3_t(1));
+            } else if (!histCalculation_.valid()) {
 
-        if (volumeRAM) {
-            if (volumeRAM->hasHistograms()) return volumeRAM->getHistograms(2048, size3_t(1));
+                const auto done = [this]() {
+                    histCalculation_.get();
+                    updateHistogram();
+                    resetCachedContent();
+                    update();
+                };
 
-            else if (!histogramTheadWorking_) {
-                histogramTheadWorking_ = true;
-                workerThread_ = new QThread();
-                worker_ = new HistogramWorkerQt(volumeRAM, 2048);
-                worker_->moveToThread(workerThread_);
-                connect(workerThread_, SIGNAL(started()), worker_, SLOT(process()));
-                connect(worker_, SIGNAL(finished()), workerThread_, SLOT(quit()));
-                connect(workerThread_, SIGNAL(finished()), this, SLOT(histogramThreadFinished()));
-
-                // clean up objects
-                connect(worker_, SIGNAL(finished()), worker_, SLOT(deleteLater()));
-                connect(workerThread_, SIGNAL(finished()), workerThread_, SLOT(deleteLater()));
-                workerThread_->start();
+                const auto histcalc =
+                    [& stop = stopHistCalculation_, volume = volumeInport_->getData(), done ]()
+                        ->void {
+                    auto ram = volume->getRepresentation<VolumeRAM>();
+                    ram->calculateHistograms(2048, size3_t(1), stop);
+                    dispatchFront(done);
+                    return;
+                };
+                stopHistCalculation_ = false;
+                histCalculation_ = dispatchPool(histcalc);
             }
         }
     }
@@ -277,8 +256,7 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     painter->drawLines(lines.data(), lines.size());
 
     // histogram
-    if (showHistogram_ > 0) {
-        updateHistogram();
+    if (histogramMode_ != HistogramMode::Off) {
         for (auto& elem : histograms_) {
             QPen pen;
             pen.setColor(QColor(68, 102, 170, 150));
@@ -297,58 +275,11 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
 }
 
 void TransferFunctionEditorView::updateZoom() {
-    fitInView(
-        tfProperty_->getZoomH().x * scene()->sceneRect().width(),
-        tfProperty_->getZoomV().x * scene()->sceneRect().height(),
-        (tfProperty_->getZoomH().y - tfProperty_->getZoomH().x) * scene()->sceneRect().width(),
-        (tfProperty_->getZoomV().y - tfProperty_->getZoomV().x) * scene()->sceneRect().height(),
-        Qt::IgnoreAspectRatio);
-}
-
-void TransferFunctionEditorView::setMask(float maskMin, float maskMax) {
-    if (maskMax < maskMin) {
-        maskMax = maskMin;
-    }
-    maskHorizontal_ = vec2(maskMin, maskMax);
-    this->viewport()->update();
-}
-
-void TransferFunctionEditorView::onVolumeInportChange() {
-    if (volumeInport_ && volumeInport_->hasData()) {
-        TransferFunctionEditor* editor = dynamic_cast<TransferFunctionEditor*>(this->scene());
-        editor->setDataMap(volumeInport_->getData()->dataMap_);
-        if (editor) {
-            QList<QGraphicsItem*> items = editor->items();
-            for (auto& item : items) {
-                TransferFunctionEditorControlPoint* cp =
-                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(item);
-                if (cp) {
-                    cp->setDataMap(volumeInport_->getData()->dataMap_);
-                }
-            }
-        }
-    }
-
-    if (showHistogram_ && volumeInport_ && volumeInport_->hasData()) {
-        invalidatedHistogram_ = true;
-        updateHistogram();
-        this->viewport()->update();
-    }
-}
-
-void HistogramWorkerQt::process() {
-    volumeRAM_->calculateHistograms(numBins_, size3_t(1), stop);
-    emit finished();
-}
-
-HistogramWorkerQt::HistogramWorkerQt(const VolumeRAM* volumeRAM, std::size_t numBins /*= 2048u*/) 
-    : stop(false), volumeRAM_(volumeRAM), numBins_(numBins) {
-}
-
-HistogramWorkerQt::~HistogramWorkerQt() { volumeRAM_ = nullptr; }
-
-void HistogramWorkerQt::stopCalculation() {
-    stop = true;
+    const auto rect = scene()->sceneRect();
+    const auto zh = tfProperty_->getZoomH();
+    const auto zv = tfProperty_->getZoomV();
+    fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
+              (zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
 }
 
 }  // namespace inviwo

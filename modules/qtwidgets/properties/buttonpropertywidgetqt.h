@@ -51,7 +51,7 @@ class ButtonPropertyWidgetQt : public PropertyWidgetQt {
 public:
     ButtonPropertyWidgetQt(ButtonProperty* property);
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
     QPushButton* getButton();
 private:
     ButtonProperty* property_;
@@ -61,6 +61,9 @@ private:
 
 public slots:
     void handleButton();
+
+    virtual void onSetDisplayName(const std::string& displayName) override;
+
 };
 
 } //namespace

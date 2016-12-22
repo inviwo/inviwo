@@ -32,9 +32,10 @@ if(${MSVC})
     if(${IVW_DOXYGEN_PROJECT})
         ivw_message(STATUS 
             "In Visual Studio the doxygen project will rerun every time you run\n"
-            "\"ALL_BUILD\" even if it is up to date. Hence, you propbably only\n"
-            "want to enable \"IVW_DOXYGEN_PROJECT\" once to generate the\n"
-            "documentation and then then disable it.")
+            "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
+            "to disable generation of doxygen on each build this can be done\n"
+            "by right clicking on the doc folder in the \"Solution Explorer\" and\n"
+            "select \"Unload Project\".")
     endif()
 else()
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ON)
@@ -111,7 +112,7 @@ function(ivw_make_help INPUT_DIR SOURCE_LIST image_path_list)
     )
 
     ivw_make_documentation(
-        "${ivw_doxy_out}" 
+        "${IVW_DOXY_OUT}" 
         "Help" 
         "Inviwo help"  
         "${SOURCE_LIST}"
@@ -138,21 +139,21 @@ function(ivw_make_help INPUT_DIR SOURCE_LIST image_path_list)
         "</QHelpCollectionProject>"
     )
     string(REPLACE ";" "\n" INV_QHCP ${INV_QHCP})
-    file(WRITE "${ivw_doxy_out}/help/inviwo.qhcp" ${INV_QHCP})
+    file(WRITE "${IVW_DOXY_OUT}/help/inviwo.qhcp" ${INV_QHCP})
 
     add_custom_target("DOXY-QCH"
         COMMAND ${CMAKE_COMMAND} -E echo "Clean unused files"
-        COMMAND ${CMAKE_COMMAND} -P "${ivw_doxy_out}/clean_help.cmake"
+        COMMAND ${CMAKE_COMMAND} -P "${IVW_DOXY_OUT}/clean_help.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "Building inviwo.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${ivw_doxy_out}/help/inviwo.qch ${ivw_doxy_out}/help/html/index.qhp"
-        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${ivw_doxy_out}/help/inviwo.qch" "${ivw_doxy_out}/help/html/index.qhp"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${IVW_DOXY_OUT}/help/inviwo.qch ${IVW_DOXY_OUT}/help/html/index.qhp"
+        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${IVW_DOXY_OUT}/help/inviwo.qch" "${IVW_DOXY_OUT}/help/html/index.qhp"
         COMMAND ${CMAKE_COMMAND} -E echo "Building inviwo.qhc"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QCOLLECTIONGENERATOR} -o ${ivw_doxy_out}/help/inviwo.qhc ${ivw_doxy_out}/help/inviwo.qhcp"
-        COMMAND ${IVW_DOXY_QCOLLECTIONGENERATOR} "-o" "${ivw_doxy_out}/help/inviwo.qhc" "${ivw_doxy_out}/help/inviwo.qhcp"
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy ${ivw_doxy_out}/help/inviwo.q* to ${IVW_ROOT_DIR}/data/help/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_out}/help/inviwo.qch" "${IVW_ROOT_DIR}/data/help/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_out}/help/inviwo.qhc" "${IVW_ROOT_DIR}/data/help/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_out}/help/inviwo.qhcp" "${IVW_ROOT_DIR}/data/help/"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QCOLLECTIONGENERATOR} -o ${IVW_DOXY_OUT}/help/inviwo.qhc ${IVW_DOXY_OUT}/help/inviwo.qhcp"
+        COMMAND ${IVW_DOXY_QCOLLECTIONGENERATOR} "-o" "${IVW_DOXY_OUT}/help/inviwo.qhc" "${IVW_DOXY_OUT}/help/inviwo.qhcp"
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy ${IVW_DOXY_OUT}/help/inviwo.q* to ${IVW_ROOT_DIR}/data/help/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/help/inviwo.qch" "${IVW_ROOT_DIR}/data/help/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/help/inviwo.qhc" "${IVW_ROOT_DIR}/data/help/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_DOXY_OUT}/help/inviwo.qhcp" "${IVW_ROOT_DIR}/data/help/"
 
         WORKING_DIRECTORY ${OUTPUT_DIR}
         COMMENT "Generating QCH files"
@@ -182,7 +183,7 @@ function(make_doxygen_target modules_var)
     endif()
 
     set(ivw_doxy_dir ${IVW_ROOT_DIR}/tools/doxygen)
-    set(ivw_doxy_out ${CMAKE_CURRENT_BINARY_DIR}/doc)
+    set(IVW_DOXY_OUT "${CMAKE_CURRENT_BINARY_DIR}/doc" CACHE PATH "Path to put the doxygen output")
     set(tag_files "")
     set(dependency_list "")
 
@@ -222,19 +223,19 @@ function(make_doxygen_target modules_var)
 
     # Group target
     add_custom_target("DOXY-ALL"
-        WORKING_DIRECTORY ${ivw_doxy_out}
+        WORKING_DIRECTORY ${IVW_DOXY_OUT}
         COMMENT "Generating ALL API documentation with Doxygen"
         VERBATIM
     )
     set_target_properties("DOXY-ALL" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
     # Core
-    set(core_tag "${ivw_doxy_out}/core/ivwcore.tag")
+    set(core_tag "${IVW_DOXY_OUT}/core/ivwcore.tag")
     ivw_make_documentation(
-        "${ivw_doxy_out}" 
+        "${IVW_DOXY_OUT}" 
         "Core" 
         "Core functionality of Inviwo" 
-        "${IVW_CORE_INCLUDE_DIR};${IVW_CORE_SOURCE_DIR}" 
+        "${IVW_CORE_INCLUDE_DIR};${IVW_CORE_SOURCE_DIR};${IVW_ROOT_DIR}/docs" 
         "${core_tag}"
         "${tag_files}"
         "${extra_files}"
@@ -243,13 +244,13 @@ function(make_doxygen_target modules_var)
         ""
     )
     list(APPEND dependency_list "DOXY-Core")
-    list(APPEND tag_files "${core_tag}=${ivw_doxy_out}/core/html")
+    list(APPEND tag_files "${core_tag}=${IVW_DOXY_OUT}/core/html")
     
     # Ot
-    set(qt_tag "${ivw_doxy_out}/qt/ivwqt.tag")
+    set(qt_tag "${IVW_DOXY_OUT}/qt/ivwqt.tag")
     #list(APPEND tag_files "qtcore.tags=http://qt-project.org/doc/qt-5/")
     ivw_make_documentation(
-        "${ivw_doxy_out}" 
+        "${IVW_DOXY_OUT}" 
         "Qt" 
         "Main Qt elements of Inviwo" 
         "${IVW_QT_INCLUDE_DIR};${IVW_QT_SOURCE_DIR}" 
@@ -264,7 +265,7 @@ function(make_doxygen_target modules_var)
         add_dependencies("DOXY-Qt" ${depends})
     endforeach()
     list(APPEND dependency_list "DOXY-Qt")
-    list(APPEND tag_files "${qt_tag}=${ivw_doxy_out}/qt/html")
+    list(APPEND tag_files "${qt_tag}=${IVW_DOXY_OUT}/qt/html")
 
     # Modules
     set(module_bases "")
@@ -292,9 +293,9 @@ function(make_doxygen_target modules_var)
             endif()
         endforeach()
         
-        set(module_tag "${ivw_doxy_out}/${desc_name_lower}/${desc_name_lower}.tag")
+        set(module_tag "${IVW_DOXY_OUT}/${desc_name_lower}/${desc_name_lower}.tag")
         ivw_make_documentation(
-            "${ivw_doxy_out}" 
+            "${IVW_DOXY_OUT}" 
             "${desc_name}" 
             "Modules for ${desc_name}"  
             "${inc_dirs}" 
@@ -309,14 +310,14 @@ function(make_doxygen_target modules_var)
             add_dependencies("DOXY-${desc_name}" ${depends})
         endforeach()
         list(APPEND dependency_list "DOXY-${desc_name}")
-        list(APPEND tag_files "${module_tag}=${ivw_doxy_out}/${desc_name_lower}/html")
+        list(APPEND tag_files "${module_tag}=${IVW_DOXY_OUT}/${desc_name_lower}/html")
         MATH(EXPR index "${index}+1")
     endforeach()
         
     # Apps
-    set(app_tag "${ivw_doxy_out}/apps/ivwapps.tag")
+    set(app_tag "${IVW_DOXY_OUT}/apps/ivwapps.tag")
     ivw_make_documentation(
-        "${ivw_doxy_out}" 
+        "${IVW_DOXY_OUT}" 
         "Apps" 
         "Applications using Inviwo Core and Modules" 
         "${IVW_APPLICATION_DIR}" 
@@ -331,7 +332,7 @@ function(make_doxygen_target modules_var)
         add_dependencies("DOXY-Apps" ${depends})
     endforeach()
     list(APPEND dependency_list "DOXY-Apps")
-    list(APPEND tag_files "${app_tag}={ivw_doxy_out}/apps/html")
+    list(APPEND tag_files "${app_tag}={IVW_DOXY_OUT}/apps/html")
 
     foreach(depends "${dependency_list}")
         add_dependencies("DOXY-ALL" ${depends})
@@ -340,7 +341,7 @@ function(make_doxygen_target modules_var)
 
     # All In one.
     ivw_make_documentation(
-        "${ivw_doxy_out}" 
+        "${IVW_DOXY_OUT}" 
         "Inviwo" 
         "Inviwo documentation" 
         "${all_sources}"
@@ -373,12 +374,12 @@ function(make_doxygen_target modules_var)
         "endforeach()"
     )
     string(REPLACE ";" "\n" COPY_SCRIPT "${COPY_SCRIPT_LIST}")
-    file(WRITE "${ivw_doxy_out}/copy_img.cmake" ${COPY_SCRIPT})
+    file(WRITE "${IVW_DOXY_OUT}/copy_img.cmake" ${COPY_SCRIPT})
 
     # make a clean help script
     set(CLEAN_HELP_SCRIPT_LIST
-        "file(GLOB save \"${ivw_doxy_out}/help/html/docpage*.html\")"
-        "file(GLOB todelete \"${ivw_doxy_out}/help/html/*.js\" \"${ivw_doxy_out}/help/html/*.html\")"
+        "file(GLOB save \"${IVW_DOXY_OUT}/help/html/docpage*.html\")"
+        "file(GLOB todelete \"${IVW_DOXY_OUT}/help/html/*.js\" \"${IVW_DOXY_OUT}/help/html/*.html\")"
         "list(REMOVE_ITEM todelete \${save})"
         "foreach(item \${todelete})"
         "    message(\"Remove: \${item}\")"
@@ -386,6 +387,6 @@ function(make_doxygen_target modules_var)
         "endforeach()"
     )
     string(REPLACE ";" "\n" CLEAN_HELP_SCRIPT "${CLEAN_HELP_SCRIPT_LIST}")
-    file(WRITE "${ivw_doxy_out}/clean_help.cmake" ${CLEAN_HELP_SCRIPT})
+    file(WRITE "${IVW_DOXY_OUT}/clean_help.cmake" ${CLEAN_HELP_SCRIPT})
 
  endfunction()

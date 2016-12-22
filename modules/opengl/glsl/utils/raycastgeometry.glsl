@@ -55,3 +55,14 @@ vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlanePar
     result = drawPlanes(result, pos, dir, inc, plane3);
     return result;
 }
+
+vec4 drawBackground(in vec4 oldres,in float depth, in float inc, in vec4 color,in float bgDepth){
+    vec4 result = oldres;
+
+    if((depth-inc) <= bgDepth && (depth) >= bgDepth){
+        result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
+        result.a = result.a + (1.0 - result.a) * color.a;
+    }
+    
+    return result;    
+}

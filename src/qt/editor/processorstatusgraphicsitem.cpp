@@ -29,6 +29,9 @@
 
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,7 +57,11 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setPos(QPointF(64.0f, -15.0f));
 
-    processor->ProcessorObservable::addObserver(this);
+    if (processor && processor->getNetwork() && processor->getNetwork()->getApplication() &&
+        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()) {
+        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()->addObserver(
+            this);
+    }
 }
 
 void ProcessorStatusGraphicsItem::setRunning(bool running) {
@@ -124,7 +131,7 @@ void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) {
     setRunning(active);
 }
 
-void ProcessorStatusGraphicsItem::onProcessorAboutToProcess(Processor*) {
+void ProcessorStatusGraphicsItem::onProcessorNetworkEvaluationEnd() {
     update();
 }
 

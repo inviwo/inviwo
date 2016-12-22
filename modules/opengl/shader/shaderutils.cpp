@@ -260,6 +260,19 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
+void addShaderDefinesBGPort(Shader& shader,ImageInport port){
+    std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth)";
+    if (port.isConnected()) {
+        shader.getFragmentShaderObject()->addShaderDefine("HAS_BG");
+        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);");
+    }
+    else {
+        shader.getFragmentShaderObject()->removeShaderDefine("HAS_BG");
+        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
+    }
+
+}
+
 void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
     // compositing defines
     std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params)";

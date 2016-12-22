@@ -53,6 +53,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
@@ -854,6 +855,9 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
             e->acceptProposedAction();
 
             try {
+                // activate default render context
+                RenderContext::getPtr()->activateDefaultRenderContext();
+
                 // create processor, add it to processor network, and generate it's widgets
                 auto factory = mainwindow_->getInviwoApplication()->getProcessorFactory();
                 Processor* processor = factory->create(className).release();
@@ -1139,6 +1143,7 @@ QByteArray NetworkEditor::cut() {
 void NetworkEditor::paste(QByteArray mimeData) {
     std::stringstream ss;
     for (auto d : mimeData) ss << d;
+    RenderContext::getPtr()->activateDefaultRenderContext();
     auto added = util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
     
     ivec2 top{std::numeric_limits<int>::max()};

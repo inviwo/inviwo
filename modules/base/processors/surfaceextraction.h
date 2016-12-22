@@ -57,7 +57,6 @@ namespace inviwo {
  *
  * ### Properties
  *   * __ISO Value__ ...
- *   * __Method__ ...
  *   * __Triangle Color__ ...
  *
  */
@@ -95,7 +94,8 @@ protected:
         float status = 0.0f;
 
         bool isSame(float iso, vec4 color, bool invert, bool enclose) const;
-        void set(float iso, vec4 color, bool invert, bool enclose, float status, std::future<std::shared_ptr<Mesh>>&& result);
+        void set(float iso, vec4 color, bool invert, bool enclose, float status,
+                 std::future<std::shared_ptr<Mesh>>&& result);
     };
 
     DataInport<Volume, 0> volume_;
@@ -104,7 +104,6 @@ protected:
 
     FloatProperty isoValue_;
     BoolProperty invertIso_;
-    OptionPropertyInt method_;
     BoolProperty encloseSurface_;
     CompositeProperty colors_;
 

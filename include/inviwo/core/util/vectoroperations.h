@@ -31,6 +31,7 @@
 #define IVW_VECTOROPERATIONS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/introspection.h>
 #include <vector>
 
 namespace inviwo {
@@ -86,11 +87,21 @@ bool hasTypeInVector(const std::vector<U> vec) {
     return false;
 }
 
-template <typename T>
-bool comparePtr(T* a, T* b) { return (*a < *b); }
+struct comparePtr {
+    template <typename T>
+    bool operator()(const T& a, const T& b) {
+        static_assert(util::is_dereferenceable<T>::value, "T has to be dereferenceable");
+        return (*a < *b);
+    }
+};
 
-template <typename T>
-bool equalPtr(T* a, T* b) { return (*a == *b); }
+struct equalPtr {
+    template <typename T>
+    bool operator()(const T& a, const T& b) {
+        static_assert(util::is_dereferenceable<T>::value, "T has to be dereferenceable");
+        return (*a == *b);
+    }
+};
 
 } // namespace
 

@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/histogram.h>
 
@@ -46,71 +47,39 @@ class TransferFunctionProperty;
 class TransferFunctionDataPoint;
 class VolumeRAM;
 
-class IVW_MODULE_QTWIDGETS_API HistogramWorkerQt : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    HistogramWorkerQt(const VolumeRAM* volumeRAM, std::size_t numBins = 2048u);
-    virtual ~HistogramWorkerQt();
-
-    void stopCalculation();
-
-public slots:
-    void process();
-
-signals:
-    void finished();
-
-private:
-    bool stop;
-    const VolumeRAM* volumeRAM_;
-    const std::size_t numBins_;
-};
-
-
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorView : public QGraphicsView,
-                                                     public TransferFunctionObserver {
-    Q_OBJECT
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorView
+    : public QGraphicsView,
+      public TransferFunctionPropertyObserver {
 public:
     TransferFunctionEditorView(TransferFunctionProperty* tfProperty);
     ~TransferFunctionEditorView();
 
-    void setMask(float maskMin, float maskMax);
-    void onVolumeInportInvalid();
-    void onTransferFunctionChange();
-    void onControlPointChanged(const TransferFunctionDataPoint* p);
-    void setShowHistogram(int);
-
-signals:
-    void resized();
-
-public slots:
-    void histogramThreadFinished();
-    void updateZoom();
-
 protected:
     const HistogramContainer* getNormalizedHistograms();
 
-    void resizeEvent(QResizeEvent* event);
-    void drawForeground(QPainter* painter, const QRectF& rect);
-    void drawBackground(QPainter* painter, const QRectF& rect);
+    void onVolumeInportInvalid();
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
+    virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     void updateHistogram();
-    void onVolumeInportChange();
+    void updateZoom();
+
+    // TransferFunctionPropertyObserver overloads
+    virtual void onMaskChange(const vec2& mask) override;
+    virtual void onZoomHChange(const vec2& zoomH) override;
+    virtual void onZoomVChange(const vec2& zoomV) override;
+    virtual void onHistogramModeChange(HistogramMode mode) override;
 
 private:
     TransferFunctionProperty* tfProperty_;
     VolumeInport* volumeInport_;
-    int showHistogram_;
+    HistogramMode histogramMode_;
 
     std::vector<QPolygonF> histograms_;
 
-    bool histogramTheadWorking_;
-    QThread* workerThread_;
-    HistogramWorkerQt* worker_;
+    bool stopHistCalculation_ = false;
+    std::future<void> histCalculation_;
 
-    bool invalidatedHistogram_;
     vec2 maskHorizontal_;
 };
 

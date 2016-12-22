@@ -200,7 +200,7 @@ const void* VolumeRAMPrecision<T>::getData(size_t pos) const {
 }
 
 template <typename T>
-void inviwo::VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
+void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
     std::unique_ptr<T[]> data(static_cast<T*>(d));
     data_.swap(data);
     std::swap(dimensions_, dimensions);
@@ -210,12 +210,12 @@ void inviwo::VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
 }
 
 template <typename T>
-void inviwo::VolumeRAMPrecision<T>::removeDataOwnership() {
+void VolumeRAMPrecision<T>::removeDataOwnership() {
     ownsDataPtr_ = false;
 }
 
 template <typename T>
-const size3_t& inviwo::VolumeRAMPrecision<T>::getDimensions() const {
+const size3_t& VolumeRAMPrecision<T>::getDimensions() const {
     return dimensions_;
 }
 
@@ -319,7 +319,7 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const size
     const T* srcData = reinterpret_cast<const T*>(src->getData());
 
     size_t initialStartPos = (dstOffset.z * (dimensions_.x * dimensions_.y)) +
-        (dstOffset.y * dimensions_.x) + dstOffset.x;
+                             (dstOffset.y * dimensions_.x) + dstOffset.x;
 
     size3_t srcDims = src->getDimensions();
     size_t dataSize = subSize.x * getDataFormat()->getSize();
@@ -328,20 +328,20 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const size
     size_t subVolumePos;
     ivec3 subSizeI = ivec3(subSize);
 #pragma omp parallel for
-    for (int zy = 0; zy < subSizeI.z*subSizeI.y; ++zy) {
+    for (int zy = 0; zy < subSizeI.z * subSizeI.y; ++zy) {
         int z = zy / subSizeI.y;
         int y = zy % subSizeI.y;
         volumePos = (y * dimensions_.x) + (z * dimensions_.x * dimensions_.y);
         subVolumePos = ((y + subOffset.y) * srcDims.x) +
-            ((z + subOffset.z) * srcDims.x * srcDims.y) + subOffset.x;
-        std::memcpy((data_.get() + volumePos + initialStartPos), (srcData + subVolumePos), dataSize);
+                       ((z + subOffset.z) * srcDims.x * srcDims.y) + subOffset.x;
+        std::memcpy((data_.get() + volumePos + initialStartPos), (srcData + subVolumePos),
+                    dataSize);
     }
 }
 
-
 template <typename T>
-const HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
-                                                                       size3_t sampleRate) const {
+const HistogramContainer* VolumeRAMPrecision<T>::getHistograms(size_t bins,
+                                                               size3_t sampleRate) const {
     if (!hasHistograms()) {
         bool stop = false;
         calculateHistograms(bins, sampleRate, stop);
@@ -351,22 +351,19 @@ const HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bi
 }
 
 template <typename T>
-HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
-                                                                 size3_t sampleRate) {
+HistogramContainer* VolumeRAMPrecision<T>::getHistograms(size_t bins, size3_t sampleRate) {
     if (!hasHistograms()) {
         bool stop = false;
         calculateHistograms(bins, sampleRate, stop);
     }
 
     return &histCont_;
-
 }
 
 template <typename T>
-void inviwo::VolumeRAMPrecision<T>::calculateHistograms(size_t bins, size3_t sampleRate,
-                                                        const bool& stop) const {
-    const Volume* volume = dynamic_cast<const Volume*>(getOwner());
-    if (volume) {
+void VolumeRAMPrecision<T>::calculateHistograms(size_t bins, size3_t sampleRate,
+                                                const bool& stop) const {
+    if (const auto volume = getOwner()) {
         dvec2 dataRange = volume->dataMap_.dataRange;
         histCont_ = util::calculateVolumeHistogram(data_.get(), dimensions_, dataRange, stop, bins,
                                                    sampleRate);
@@ -374,7 +371,7 @@ void inviwo::VolumeRAMPrecision<T>::calculateHistograms(size_t bins, size3_t sam
 }
 
 template <typename T>
-bool inviwo::VolumeRAMPrecision<T>::hasHistograms() const {
+bool VolumeRAMPrecision<T>::hasHistograms() const {
     return !histCont_.empty() && histCont_.isValid();
 }
 

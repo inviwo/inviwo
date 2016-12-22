@@ -35,12 +35,10 @@
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datawriter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -85,28 +83,24 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
 TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
     hide();
-    delete tfPixmap_;
-    delete tfEditor_;
-    delete colorWheel_;
-    delete colorDialog_;
 }
 
 void TransferFunctionPropertyDialog::generateWidget() {
     ivec2 minEditorDims = vec2(255, 100);
 
+    tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_);
+    connect(tfEditor_.get(), SIGNAL(doubleClick()), this, SLOT(showColorDialog()));
+    connect(tfEditor_.get(), SIGNAL(selectionChanged()), this, SLOT(updateColorWheel()));
+
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
-    tfProperty_->get().addObserver(tfEditorView_);
+    
     // put origin to bottom left corner
     tfEditorView_->scale(1.0, -1.0);
     tfEditorView_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
     tfEditorView_->setMinimumSize(minEditorDims.x, minEditorDims.y);
     tfEditorView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    tfEditor_ = new TransferFunctionEditor(&tfProperty_->get(), tfEditorView_);
-    connect(tfEditor_, SIGNAL(doubleClick()), this, SLOT(showColorDialog()));
-    connect(tfEditor_, SIGNAL(selectionChanged()), this, SLOT(updateColorWheel()));
-    tfEditorView_->setScene(tfEditor_);
+    tfEditorView_->setScene(tfEditor_.get());
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this);
     zoomVSlider_->setRange(0, sliderRange_);
@@ -132,11 +126,11 @@ void TransferFunctionPropertyDialog::generateWidget() {
                           static_cast<int>(tfProperty_->getMask().y * sliderRange_));
     connect(maskSlider_, SIGNAL(valuesChanged(int, int)), this, SLOT(changeMask(int, int)));
 
-    colorWheel_ = new ColorWheel();
-    connect(colorWheel_, SIGNAL(colorChange(QColor)), this, SLOT(setPointColor(QColor)));
+    colorWheel_ = util::make_unique<ColorWheel>();
+    connect(colorWheel_.get(), SIGNAL(colorChange(QColor)), this, SLOT(setPointColor(QColor)));
 
     btnClearTF_ = new QPushButton("Reset");
-    connect(btnClearTF_, SIGNAL(clicked()), tfEditor_, SLOT(resetTransferFunction()));
+    connect(btnClearTF_, SIGNAL(clicked()), tfEditor_.get(), SLOT(resetTransferFunction()));
     btnClearTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     btnImportTF_ = new QPushButton("Import");
@@ -153,13 +147,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     sliderPol.setHorizontalStretch(3);
     tfPreview_->setSizePolicy(sliderPol);
 
-    cmbInterpolation_ = new QComboBox();
-    cmbInterpolation_->addItem("Interpolation: Linear");
-    // cmbInterpolation_->addItem("Interpolation: Cubic"); // Not implemented... (yet)
-    cmbInterpolation_->setCurrentIndex(tfProperty_->get().getInterpolationType());
-    connect(cmbInterpolation_, SIGNAL(currentIndexChanged(int)), this,
-            SLOT(switchInterpolationType(int)));
-
     chkShowHistogram_ = new QComboBox();
     chkShowHistogram_->addItem("Histogram: Off");
     chkShowHistogram_->addItem("Histogram: 100%");
@@ -167,7 +154,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     chkShowHistogram_->addItem("Histogram: 95%");
     chkShowHistogram_->addItem("Histogram: 90%");
     chkShowHistogram_->addItem("Histogram: Log");
-    chkShowHistogram_->setCurrentIndex(tfProperty_->getShowHistogram());
+    chkShowHistogram_->setCurrentIndex(static_cast<int>(tfProperty_->getHistogramMode()));
     connect(chkShowHistogram_, SIGNAL(currentIndexChanged(int)), this, SLOT(showHistogram(int)));
 
     pointMoveMode_ = new QComboBox();
@@ -177,13 +164,13 @@ void TransferFunctionPropertyDialog::generateWidget() {
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, SIGNAL(currentIndexChanged(int)), this, SLOT(changeMoveMode(int)));
 
-    colorDialog_ = new QColorDialog(this);
+    colorDialog_ = util::make_unique<QColorDialog>(this);
     colorDialog_->hide();
     colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
     colorDialog_->setOption(QColorDialog::NoButtons, true);
     colorDialog_->setWindowModality(Qt::NonModal);
     colorDialog_->setWindowTitle(QString::fromStdString(tfProperty_->getDisplayName()));
-    connect(colorDialog_, SIGNAL(currentColorChanged(QColor)), this,
+    connect(colorDialog_.get(), SIGNAL(currentColorChanged(QColor)), this,
             SLOT(setPointColorDialog(QColor)));
 
     QFrame* leftPanel = new QFrame(this);
@@ -202,8 +189,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(7);
     rightLayout->setAlignment(Qt::AlignTop);
-    rightLayout->addWidget(colorWheel_);
-    rightLayout->addWidget(cmbInterpolation_);
+    rightLayout->addWidget(colorWheel_.get());
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
     rightLayout->addStretch(3);
@@ -226,27 +212,15 @@ void TransferFunctionPropertyDialog::generateWidget() {
     setWidget(mainPanel);
 }
 
-// Connected to the cmbInterpolation_ button
-void TransferFunctionPropertyDialog::switchInterpolationType(int interpolationType) {
-    if (interpolationType == 0) {
-        tfProperty_->get().setInterpolationType(TransferFunction::InterpolationLinear);
-    } else {
-        tfProperty_->get().setInterpolationType(TransferFunction::InterpolationCubic);
-    }
-}
-
 void TransferFunctionPropertyDialog::updateTFPreview() {
     int gradientWidth = tfPreview_->width();
     gradient_.setFinalStop(gradientWidth, 0);
 
     if (!tfPixmap_ || gradientWidth != tfPixmap_->width()) {
-        if (tfPixmap_) {
-            delete tfPixmap_;
-        }
-        tfPixmap_ = new QPixmap(gradientWidth, 20);
+        tfPixmap_ = util::make_unique<QPixmap>(gradientWidth, 20);
     }
 
-    QPainter tfPainter(tfPixmap_);
+    QPainter tfPainter(tfPixmap_.get());
     QPixmap checkerBoard(10, 10);
     QPainter checkerBoardPainter(&checkerBoard);
     checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
@@ -290,11 +264,11 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     QVector<QGradientStop> gradientStops;
 
     for (int i = 0; i < transFunc.getNumPoints(); i++) {
-        TransferFunctionDataPoint* curPoint = transFunc.getPoint(i);
+        const auto curPoint = transFunc.getPoint(i);
         vec4 curColor = curPoint->getRGBA();
 
         // increase alpha to allow better visibility by 1 - (a - 1)^4
-        float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
+        const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
         curColor.a = 1.0f - factor * factor;
 
         gradientStops.append(
@@ -308,14 +282,13 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
 
 // Connected to selectionChanged() on the tfEditor
 void TransferFunctionPropertyDialog::updateColorWheel() {
-    QList<QGraphicsItem*> selection = tfEditor_->selectedItems();
+    const auto selection = tfEditor_->selectedItems();
 
     if (selection.size() > 0) {
-        TransferFunctionEditorControlPoint* tfPoint =
+        const auto tfPoint =
             qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selection.at(0));
-
         if (selection.size() == 1 && tfPoint) {
-            ivec4 color{tfPoint->getPoint()->getRGBA() * 255.0f};
+            const ivec4 color{tfPoint->getPoint()->getRGBA() * 255.0f};
             colorWheel_->blockSignals(true);
             colorWheel_->setColor(QColor(color.r, color.g, color.b, color.a));
             colorWheel_->blockSignals(false);
@@ -327,7 +300,7 @@ void TransferFunctionPropertyDialog::updateColorWheel() {
 
 // Connected to doubleClick on the tfEditor
 void TransferFunctionPropertyDialog::showColorDialog() {
-    QList<QGraphicsItem*> selection = tfEditor_->selectedItems();
+    const auto selection = tfEditor_->selectedItems();
     if (selection.size() > 0) {
         colorDialog_->hide();  // Bug workaround
         colorDialog_->show();
@@ -336,17 +309,13 @@ void TransferFunctionPropertyDialog::showColorDialog() {
 
 // Connected to colorChange on the colorWheel_
 void TransferFunctionPropertyDialog::setPointColor(QColor color) {
-    QList<QGraphicsItem*> selection = tfEditor_->selectedItems();
-    vec3 newRgb = vec3(color.redF(), color.greenF(), color.blueF());
+    const auto selection = tfEditor_->selectedItems();
+    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
 
     // update Color dialog to reflect the color changes
     setColorDialogColor(color);
-
     for (auto& elem : selection) {
-        TransferFunctionEditorControlPoint* tfcp =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
-
-        if (tfcp) {
+        if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
             tfcp->getPoint()->setRGB(newRgb);
         }
     }
@@ -354,18 +323,15 @@ void TransferFunctionPropertyDialog::setPointColor(QColor color) {
 
 // Connected to currentColorChanged on the colorDialog_
 void TransferFunctionPropertyDialog::setPointColorDialog(QColor color) {
-    QList<QGraphicsItem*> selection = tfEditor_->selectedItems();
-    vec3 newRgb = vec3(color.redF(), color.greenF(), color.blueF());
+    const auto selection = tfEditor_->selectedItems();
+    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
 
     colorWheel_->blockSignals(true);
     colorWheel_->setColor(color);
     colorWheel_->blockSignals(false);
 
     for (auto& elem : selection) {
-        TransferFunctionEditorControlPoint* tfcp =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
-
-        if (tfcp) {
+        if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
             tfcp->getPoint()->setRGB(newRgb);
         }
     }
@@ -375,54 +341,50 @@ void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax
     // normalize zoom values, as sliders in TransferFunctionPropertyDialog
     // have the range [0...100]
     // and flip/rescale values to compensate slider layout
-    float zoomMaxF = static_cast<float>(sliderRange_ - zoomMin) / sliderRange_;
-    float zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
+    const auto zoomMaxF = static_cast<float>(sliderRange_ - zoomMin) / sliderRange_;
+    const auto zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
 
     tfProperty_->setZoomV(zoomMinF, zoomMaxF);
-    tfEditorView_->updateZoom();
 }
 
 void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
-    float zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
-    float zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
+    const auto zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
+    const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
     tfProperty_->setZoomH(zoomMinF, zoomMaxF);
-    tfEditorView_->updateZoom();
 }
 
 // Connected to valuesChanged on the maskSlider
 void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
-    float maskMinF = static_cast<float>(maskMin) / sliderRange_;
-    float maskMaxF = static_cast<float>(maskMax) / sliderRange_;
+    const auto maskMinF = static_cast<float>(maskMin) / sliderRange_;
+    const auto maskMaxF = static_cast<float>(maskMax) / sliderRange_;
     tfProperty_->setMask(maskMinF, maskMaxF);
-    tfEditorView_->setMask(maskMinF, maskMaxF);
 
     updateTFPreview();
 }
 
 void TransferFunctionPropertyDialog::importTransferFunction() {
-    InviwoFileDialog importFileDialog(
-        this, "Import transfer function", "transferfunction",
-        filesystem::getPath(PathType::TransferFunctions));
+    InviwoFileDialog importFileDialog(this, "Import transfer function", "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
     importFileDialog.addExtension("itf", "Inviwo Transfer Function");
+    importFileDialog.addExtension("png", "Transfer Function Image");
+    importFileDialog.addExtension("", "All files");  // this will add "All files (*)"
 
     if (importFileDialog.exec()) {
         QString file = importFileDialog.selectedFiles().at(0);
-        // TODO: we need to check whether it is a valid itf file!
-        Deserializer deserializer(InviwoApplication::getPtr(), file.toLocal8Bit().constData());
-        TransferFunction tf;
-        tf.deserialize(deserializer);
-        tfProperty_->set(tf);
-        updateFromProperty();
+        try {
+            NetworkLock lock(tfProperty_);
+            tfProperty_->get().load(file.toLocal8Bit().constData(),
+                                    importFileDialog.getSelectedFileExtension());
+        } catch (DataReaderException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+        }
     }
 }
 
 void TransferFunctionPropertyDialog::exportTransferFunction() {
-    InviwoFileDialog exportFileDialog(
-        this, "Export transfer function", "transferfunction",
-        filesystem::getPath(PathType::TransferFunctions));
+    InviwoFileDialog exportFileDialog(this, "Export transfer function", "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
     exportFileDialog.addExtension("itf", "Inviwo Transfer Function");
@@ -430,62 +392,20 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
     exportFileDialog.addExtension("", "All files");  // this will add "All files (*)"
 
     if (exportFileDialog.exec()) {
-        std::string file = exportFileDialog.selectedFiles().at(0).toLocal8Bit().constData();
-        std::string extension = filesystem::getFileExtension(file);
-
-        FileExtension fileExt = exportFileDialog.getSelectedFileExtension();
-
-        if (fileExt.extension_.empty()) {
-            // fall-back to standard inviwo TF format
-            fileExt.extension_ = "itf";
-        }
-
-        // check whether file extension matches the selected one
-        if (fileExt.extension_ != extension) {
-            file.append(fileExt.extension_);
-        }
-
-        if (fileExt.extension_ == "png") {
-            TransferFunction& tf = tfProperty_->get();
-            const Layer* layer = tf.getData();
-            vec2 texSize(tf.getTextureSize(), 1);
-            const vec4* readData =
-                static_cast<const vec4*>(layer->getRepresentation<LayerRAM>()->getData());
-            Layer writeLayer(layer->getDimensions(), DataVec4UInt8::get());
-            glm::u8vec4* writeData = static_cast<glm::u8vec4*>(
-                writeLayer.getEditableRepresentation<LayerRAM>()->getData());
-
-            for (std::size_t i = 0; i < texSize.x * texSize.y; ++i) {
-                for (int c = 0; c < 4; ++c) {
-                    writeData[i][c] = static_cast<glm::u8>(
-                        std::min(std::max(readData[i][c] * 255.0f, 0.0f), 255.0f));
-                }
-            }
-
-            auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
-
-            if (auto writer = factory->getWriterForTypeAndExtension<Layer>(extension)) {
-                try {
-                    writer->setOverwrite(true);
-                    writer->writeData(&writeLayer, file);
-                } catch (DataWriterException const& e) {
-                    util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-                }
-            } else {
-                LogError(
-                    "Error: Cound not find a writer for the specified extension and data type");
-            }
-        } else if (fileExt.extension_ == "itf") {
-            Serializer serializer(file);
-            tfProperty_->get().serialize(serializer);
-            serializer.writeFile();
+        const std::string file = exportFileDialog.selectedFiles().at(0).toLocal8Bit().constData();
+        const auto fileExt = exportFileDialog.getSelectedFileExtension();
+        try {
+            tfProperty_->get().save(file, fileExt);
+            util::log(IvwContext, "Data exported to disk: " + file, LogLevel::Info,
+                      LogAudience::User);
+        } catch (DataWriterException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
     }
 }
 
 void TransferFunctionPropertyDialog::showHistogram(int type) {
-    tfProperty_->setShowHistogram(type);
-    tfEditorView_->setShowHistogram(type);
+    tfProperty_->setHistogramMode(static_cast<HistogramMode>(type));
 }
 
 void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {

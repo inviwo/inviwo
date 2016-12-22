@@ -59,14 +59,13 @@ SurfaceExtraction::SurfaceExtraction()
     , outport_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
-    , method_("method", "Method")
     , encloseSurface_("enclose", "Enclose Surface", true)
     , colors_("meshColors", "Mesh Colors")
     , dirty_(false) {
+
     addPort(volume_);
     addPort(outport_);
 
-    addProperty(method_);
     addProperty(isoValue_);
     addProperty(invertIso_);
     addProperty(encloseSurface_);
@@ -74,10 +73,8 @@ SurfaceExtraction::SurfaceExtraction()
 
     getProgressBar().hide();
 
-    method_.addOption("marchingtetrahedra", "Marching Tetrahedra", TETRA);
     volume_.onChange(this, &SurfaceExtraction::updateColors);
     volume_.onChange(this, &SurfaceExtraction::setMinMax);
-    method_.setCurrentStateAsDefault();
 }
 
 SurfaceExtraction::~SurfaceExtraction() {}
@@ -96,50 +93,45 @@ void SurfaceExtraction::process() {
     for (size_t i = 0; i < data.size(); ++i) {
         auto vol = data[i].second;
 
-        switch (method_.get()) {
-            case TETRA: {
-                if (util::is_future_ready(result_[i].result)) {
-                    (*meshes_)[i] = result_[i].result.get();
-                    result_[i].status = 1.0f;
-                    dirty_ = false;
-                }
+        if (util::is_future_ready(result_[i].result)) {
+            (*meshes_)[i] = result_[i].result.get();
+            result_[i].status = 1.0f;
+            dirty_ = false;
+        }
 
-                float iso = isoValue_.get();
-                vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
-                bool invert = invertIso_.get();
-                bool enclose = encloseSurface_.get();
-                if (!result_[i].result.valid() &&
-                    (util::contains(changed, data[i].first) || !result_[i].isSame(iso, color, invert, enclose))) {
-                    result_[i].set(
-                        iso, color, invert, enclose, 0.0f,
-                        dispatchPool([this, vol, iso, color, invert, enclose, i]() -> std::shared_ptr<Mesh> {
-                            auto m =
-                                MarchingTetrahedron::apply(vol, iso, color, invert, enclose, [this, i](float s) {
-                                    this->result_[i].status = s;
-                                    float status = 0;
-                                    for (const auto& e : this->result_) status += e.status;
-                                    status /= result_.size();
-                                    dispatchFront([status](ProgressBar& pb) {
-                                        pb.updateProgress(status);
-                                        if (status < 1.0f)
-                                            pb.show();
-                                        else
-                                            pb.hide();
-                                    }, std::ref(this->getProgressBar()));
-                                });
+        float iso = isoValue_.get();
+        vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
+        bool invert = invertIso_.get();
+        bool enclose = encloseSurface_.get();
+        if (!result_[i].result.valid() && (util::contains(changed, data[i].first) ||
+                                           !result_[i].isSame(iso, color, invert, enclose))) {
+            result_[i].set(iso, color, invert, enclose, 0.0f,
+                           dispatchPool([this, vol, iso, color, invert, enclose,
+                                         i]() -> std::shared_ptr<Mesh> {
+                               auto m = MarchingTetrahedron::apply(
+                                   vol, iso, color, invert, enclose, [this, i](float s) {
+                                       this->result_[i].status = s;
+                                       float status = 0;
+                                       for (const auto& e : this->result_) status += e.status;
+                                       status /= result_.size();
+                                       dispatchFront(
+                                           [status](ProgressBar& pb) {
+                                               pb.updateProgress(status);
+                                               if (status < 1.0f)
+                                                   pb.show();
+                                               else
+                                                   pb.hide();
+                                           },
+                                           std::ref(this->getProgressBar()));
+                                   });
 
-                            dispatchFront([this]() {
-                                dirty_ = true;
-                                invalidate(InvalidationLevel::InvalidOutput);
-                            });
+                               dispatchFront([this]() {
+                                   dirty_ = true;
+                                   invalidate(InvalidationLevel::InvalidOutput);
+                               });
 
-                            return m;
-                        }));
-                }
-                break;
-            }
-            default:
-                break;
+                               return m;
+                           }));
         }
     }
 }

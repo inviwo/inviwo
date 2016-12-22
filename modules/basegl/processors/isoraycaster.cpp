@@ -53,6 +53,7 @@ ISORaycaster::ISORaycaster()
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
+    , backgroundPort_("bg")
     , outport_("outport")
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
@@ -66,8 +67,14 @@ ISORaycaster::ISORaycaster()
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+    addPort(backgroundPort_, "ImagePortGroup1");
+    
+    backgroundPort_.setOptional(true);
 
     volumePort_.onChange(this, &ISORaycaster::onVolumeChange);
+
+    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     addProperty(channel_);
     addProperty(raycasting_);
@@ -87,6 +94,7 @@ void ISORaycaster::initializeResources(){
     utilgl::addShaderDefines(shader_, raycasting_);
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
 }
     
@@ -115,6 +123,10 @@ void ISORaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
+    if (backgroundPort_.isConnected()) {
+        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
+        
+    }
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
 

@@ -46,11 +46,11 @@
 namespace inviwo {
 
 TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
-    TransferFunctionDataPoint* datapoint, const DataMapper& dataMap)
+    TransferFunctionDataPoint* datapoint, const DataMapper& dataMap, float size)
     : QGraphicsItem()
     , left_(nullptr)
     , right_(nullptr)
-    , size_(14.0f)
+    , size_(size)
     , showLabel_(false)
     , isEditingPoint_(false)
     , dataPoint_(datapoint)
@@ -208,6 +208,8 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
 
         // return the constraint position
         return currentPos_;
+    } else if (change == QGraphicsItem::ItemSceneHasChanged) {
+        onTransferFunctionPointChange(dataPoint_);
     }
 
     return QGraphicsItem::itemChange(change, value);
@@ -219,7 +221,7 @@ void TransferFunctionEditorControlPoint::onTransferFunctionPointChange(
         isEditingPoint_ = true;
         QRectF rect = scene()->sceneRect();
         QPointF newpos(p->getPos().x * rect.width(), p->getPos().y * rect.height());
-        if(newpos != pos()) setPos(newpos);
+        if (newpos != pos()) setPos(newpos);
         isEditingPoint_ = false;
     }
 }
