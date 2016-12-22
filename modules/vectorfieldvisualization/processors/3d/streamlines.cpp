@@ -34,13 +34,14 @@ StreamLines::StreamLines()
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
     , useOpenMP_("useOpenMP","Use OpenMP",true)
 {
-    
+
 
     addPort(sampler_);
     addPort(seedPoints_);
-    addPort(linesStripsMesh_);
     addPort(volume_);
+
     addPort(lines_);
+    addPort(linesStripsMesh_);
 
     maxVelocity_.setReadOnly(true);
 

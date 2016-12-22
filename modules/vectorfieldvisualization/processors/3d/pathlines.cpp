@@ -77,8 +77,8 @@ PathLines::PathLines()
     addPort(seedPoints_);
     addPort(colors_);
     addPort(volume_);
-    addPort(linesStripsMesh_);
     addPort(lines_);
+    addPort(linesStripsMesh_);
 
     addProperty(pathLineProperties_);
 
@@ -153,7 +153,8 @@ void PathLines::process() {
             auto size = line.getPositions().size();
             if (size>1) {  
                 #pragma omp critical
-                lines->push_back(line,startID + j);
+                //lines->push_back(line, startID + j);
+                lines->push_back(line, lines->size());
             };
         }
         startID += seeds->size();
