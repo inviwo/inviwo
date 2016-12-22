@@ -90,6 +90,7 @@ private:
     ImageInport entryPort_;
     ImageInport exitPort_;
     VolumeInport lightVolumePort_;
+    ImageInport backgroundPort_;
     ImageOutport outport_;
 
     BoolProperty enableLightColor_;

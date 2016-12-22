@@ -36,6 +36,7 @@
 #include "utils/depth.glsl"
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
+#include "utils/raycastgeometry.glsl"
 
 uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
@@ -48,6 +49,11 @@ uniform ImageParameters entryParameters;
 uniform sampler2D exitColor;
 uniform sampler2D exitDepth;
 uniform ImageParameters exitParameters;
+
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgPicking;
+uniform sampler2D bgDepth;
 
 uniform ImageParameters outportParameters;
 
@@ -130,6 +136,19 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
+
+#ifdef HAS_BG
+    {
+        float d = texture(bgDepth,texCoords).x;
+        if(tDepth == 1 || d < tDepth){
+            result = vec4(0);
+            result = drawBackground(texture(bgColor,texCoords),0,0,result,0);
+            tDepth = d;
+        }
+    }
+#endif
+
+
     gl_FragDepth = tDepth;
     return result;
 }
@@ -139,9 +158,21 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    if (entryPoint == exitPoint) discard;
+    vec4 color;
 
-    vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
+#ifdef HAS_BG
+    color = texture(bgColor, texCoords);
+    gl_FragDepth = texture(bgDepth, texCoords).x;
+    PickingData = texture(bgPicking, texCoords);
+#else
+    PickingData = vec4(0);
+    if (entryPoint == exitPoint){
+        discard;
+    }
+#endif
+    if (entryPoint != exitPoint){
+        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    }
+
     FragData0 = color;
-    PickingData = texture(entryPicking, texCoords);
 }
