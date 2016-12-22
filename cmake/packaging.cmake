@@ -65,27 +65,27 @@ if(IVW_PACKAGE_PROJECT)
     set(CPACK_COMPONENT_CORE_GROUP             "Base")
     set(CPACK_COMPONENT_GROUP_BASE_DESCRIPTION "Inviwo core and common shared modules")
 
-    list(APPEND IVW_PACKAGES                 "modules")
     set(CPACK_COMPONENT_MODULES_DISPLAY_NAME "Shared Modules")
     set(CPACK_COMPONENT_MODULES_DEPENDS      core)
     set(CPACK_COMPONENT_MODULES_GROUP        "Base")
+    list(APPEND IVW_PACKAGES                 "modules")
 
     if(IVW_QT_APPLICATION)
         # Inviwo network editor application depends on QtEditor 
-        list(APPEND IVW_PACKAGES                   "qt_editor")
         set(CPACK_COMPONENT_QT_EDITOR_DISPLAY_NAME "Qt Editor")
         set(CPACK_COMPONENT_QT_EDITOR_DEPENDS      ${IVW_PACKAGES})
         set(CPACK_COMPONENT_QT_EDITOR_GROUP        "Qt")
+        list(APPEND IVW_PACKAGES                   "qt_editor")
 
-        list(APPEND IVW_PACKAGES                    "qt_modules")
         set(CPACK_COMPONENT_QT_MODULES_DISPLAY_NAME "Qt Modules")
         set(CPACK_COMPONENT_QT_MODULES_DEPENDS      ${IVW_PACKAGES})
         set(CPACK_COMPONENT_QT_MODULES_GROUP        "Qt")
+        list(APPEND IVW_PACKAGES                    "qt_modules")
  
-        list(APPEND IVW_PACKAGES                "qt_app")
         list(APPEND IVW_EXECUTABLES             "inviwo;Inviwo")
         set(CPACK_COMPONENT_QT_APP_DISPLAY_NAME "Qt Application")
         set(CPACK_COMPONENT_QT_APP_DEPENDS      ${IVW_PACKAGES})
+        list(APPEND IVW_PACKAGES                "qt_app")
         set(CPACK_COMPONENT_QT_APP_GROUP        "Qt")
     endif()
 
