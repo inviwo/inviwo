@@ -95,7 +95,6 @@ void AnimationController::tick() {
 
         // Evaluate animation
         eval(oldTime, currentTime_);
-
         notifyTimeChanged(this, oldTime, currentTime_);
     }
 }

@@ -60,8 +60,7 @@ public:
 
     const Keyframe& getKeyframe() const { return keyframe_; }
 
-
-    /** 
+    /**
      * Lock when editing keyframe from GUI
      */
     void lock();
@@ -69,14 +68,14 @@ public:
     bool islocked() const;
 
 protected:
-	virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
     virtual QRectF boundingRect() const;
     // Restrict vertical movement and snap keyframe to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     Keyframe& keyframe_;
 
-    bool isEditing_ = false; // User interaction
+    bool isEditing_ = false;  // User interaction
 };
 
 // A RAII utility for locking and unlocking the network

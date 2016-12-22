@@ -64,7 +64,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
 
 void AnimationEditorQt::onTrackAdded(Track* track) {
     auto trackQt = new TrackQt(*track);
-    auto i = items().size();
+    auto i = controller_.getAnimation()->size() - 1;
     trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
     this->addItem(trackQt);
 }

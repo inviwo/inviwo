@@ -55,7 +55,7 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence)
 
         keyframeQt->setParentItem(this);
         keyframeQt->setPos(
-            keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)));
+            keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)).x(), 0);
     }
     prepareGeometryChange();
 }
@@ -84,7 +84,7 @@ void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
     auto keyframeQt = new KeyframeQt(*key);
     keyframeQt->setParentItem(this);
     keyframeQt->setPos(
-        keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)));
+        keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)).x(), 0);
     prepareGeometryChange();
 }
 
@@ -124,28 +124,18 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
         double xV = round(value.toPointF().x() / WidthPerFrame) * WidthPerFrame;
         auto dt = Seconds((xV - x()) / static_cast<double>(WidthPerSecond));
         
+        // No need to update time within keyframes in here,
+        // since the position changed event will be propagated to keyframes.
         if (dt < Seconds(0.0)) {
             // Do not allow it to move before t=0
             auto maxMove = -keyframeSequence_.getFirst().getTime().count();
             dt = Seconds(std::max(dt.count(), maxMove));
             xV = x() + dt.count() * static_cast<double>(WidthPerSecond);
-            for (auto i = 0; i < keyframeSequence_.size(); ++i) {
-                // Prevent KeyframeQt from updating position since
-                // it is given relative to this sequence
-                KeyframeQtLock lock(getKeyframeQt(&keyframeSequence_[i]));
-                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
-            }
-        } else {
-            for (int i = static_cast<int>(keyframeSequence_.size() - 1); i >= 0; --i) {
-                KeyframeQtLock lock(getKeyframeQt(&keyframeSequence_[i]));
-                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
-            }
-        }
-
+        } 
         // Restrict vertical movement
         return QPointF(static_cast<float>(xV), y());
     }
-
+    
     return QGraphicsItem::itemChange(change, value);
 }
 
