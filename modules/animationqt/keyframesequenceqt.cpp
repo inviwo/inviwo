@@ -27,6 +27,7 @@
 #include <modules/animationqt/keyframeqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/animationtime.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,14 +47,15 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence)
     setFlags(ItemIsMovable | ItemSendsGeometryChanges);
 
     keyframeSequence.addObserver(this);
+    auto firstKeyframePos = keyframeSequence_.getFirst().getTime().count() * WidthPerSecond;
+    setX(firstKeyframePos);
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
         auto& keyframe = keyframeSequence_[i];
         auto keyframeQt = new KeyframeQt(keyframe);
 
         keyframeQt->setParentItem(this);
-        keyframeQt->setPos(QPointF(keyframe.getTime().count() * WidthPerSecond, 0));
+        keyframeQt->setPos(keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)));
     }
-
 	prepareGeometryChange();
 }
 
@@ -72,14 +74,13 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
     painter->setPen(pen);
     painter->setBrush(brush);
-
     painter->drawRect(boundingRect());
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
     auto keyframeQt = new KeyframeQt(*key);
     keyframeQt->setParentItem(this);
-    keyframeQt->setPos(QPointF(key->getTime().count() * WidthPerSecond, 0));
+    keyframeQt->setPos(keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)));
 	prepareGeometryChange();
 }
 
@@ -105,25 +106,25 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
     // Only restrict movement on user interaction
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
         // Snap to frame per second
-        qreal xV = round(value.toPointF().x() / WidthPerFrame) * WidthPerFrame;
+        double xV = round(value.toPointF().x() / WidthPerFrame) * WidthPerFrame;
+        auto dt = Seconds((xV - x()) / static_cast<double>(WidthPerSecond));
 
-        auto delta = Seconds((xV - x()) / static_cast<double>(WidthPerSecond));
-
-        if (delta < Seconds(0.0)) {
+        if (dt < Seconds(0.0)) {
             // Do not allow it to move before t=0
-            // xV = std::max(delta.count(), -keyframeSequence_.getFirst().getTime().count() /
-            //                                 static_cast<double>(WidthPerTimeUnit));
+            auto maxMove = -keyframeSequence_.getFirst().getTime().count();
+            dt = Seconds(std::max(dt.count(), maxMove));
+            xV = x() + dt.count() * static_cast<double>(WidthPerSecond);
             for (auto i = 0; i < keyframeSequence_.size(); ++i) {
-                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
             }
         } else {
-            for (auto i = keyframeSequence_.size() - 1; i > 0; --i) {
-                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + delta);
+            for (int i = static_cast<int>(keyframeSequence_.size() - 1); i >= 0; --i) {
+                keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
             }
         }
 
-        // Restrict vertical movement
-        return QPointF(xV, y());
+        // Restrict vertical movement 
+        return QPointF(static_cast<float>(xV), y());
     }
 
     return QGraphicsItem::itemChange(change, value);

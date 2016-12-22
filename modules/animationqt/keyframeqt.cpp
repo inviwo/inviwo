@@ -87,7 +87,7 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
         auto snapToGrid = WidthPerSecond / 24.0;
         qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
         // Do not allow it to move before t=0
-        xV = xV < 0 ? 0.f : xV;
+        xV = std::max(xV, 0.0);
         // Restrict vertical movement
         return QPointF(xV, y());
     }
