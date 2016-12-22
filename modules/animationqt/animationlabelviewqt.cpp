@@ -43,11 +43,31 @@ namespace animation {
 
 constexpr auto LineWidth = 0.5;
 
+class AnimationLabelModelQt : public QStringListModel {
+public:
+    AnimationLabelModelQt(QObject* parent) : QStringListModel(parent) {}
+
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const override {
+        return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
+    }
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
+        if (role == Qt::SizeHintRole) {
+            return QSize(200, 25);
+        }
+        return QStringListModel::data(index, role);
+    }
+};
+
 AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
     : QListView(), animation_(animation) {
     setMouseTracking(true);
+    setSelectionBehavior(SelectItems);
+    setMovement(Snap);
+    setDragDropMode(InternalMove);
+    setDragDropOverwriteMode(false);
+
     animation_.addObserver(this);
-    model_ = new QStringListModel(this);
+    model_ = new AnimationLabelModelQt(this);
 
     for (size_t i = 0; i < animation_.size(); ++i) {
         list_.append(QString(animation_[i].getIdentifier().c_str()));
