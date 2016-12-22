@@ -44,6 +44,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QSplitter>
+#include <QSettings>
 #include <warn/pop>
 
 constexpr auto UnicodePlay = 9658;
@@ -62,7 +63,17 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     generateWidget();
     setFloating(true);
+    setSticky(false);
     addObservation(&controller_);
+
+    {
+        // Restore State
+        QSettings settings("Inviwo", "Inviwo");
+        settings.beginGroup("AnimationEditor");
+        restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
+        setSticky(settings.value("isSticky", InviwoDockWidget::isSticky()).toBool());
+        settings.endGroup();
+    }
 }
 
 void AnimationEditorDockWidgetQt::generateWidget() {
@@ -121,8 +132,15 @@ void AnimationEditorDockWidgetQt::generateWidget() {
     // timelineView_ = new TimelineViewQt(controller_);
 
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    animationView_->setMinimumSize(200, 200);
-    animationView_->setScene(animationEditor_);
+    {
+        animationView_->setMinimumSize(300, 200);
+        animationView_->setScene(animationEditor_);
+        auto policy = animationView_->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::Expanding);
+        policy.setHorizontalStretch(5);
+        animationView_->setSizePolicy(policy);
+    }
+
 
     // timelineView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     // timelineView_->setScene(animationEditor_);
@@ -131,8 +149,14 @@ void AnimationEditorDockWidgetQt::generateWidget() {
     // rightPanel->addWidget(animationView_);
 
     auto leftWidget = new QWidget();
-    leftWidget->setLayout(leftPanel);
-
+    {
+        leftWidget->setLayout(leftPanel);
+        auto policy = leftWidget->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::Fixed);
+        policy.setHorizontalStretch(0);
+        leftWidget->setSizePolicy(policy);
+        leftWidget->setMinimumWidth(100);
+    }
     // auto rightWidget = new QWidget();
     // rightWidget->setLayout(rightPanel);
 
@@ -160,6 +184,16 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller
     } else if (newState == AnimationState::Paused) {
         btnPlayPause_->setText(QChar(UnicodePlay));
     }
+}
+
+void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent* event) {
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("AnimationEditor");
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("isSticky", isSticky());
+    settings.endGroup();
+
+    InviwoDockWidget::closeEvent(event);
 }
 
 }  // namespace

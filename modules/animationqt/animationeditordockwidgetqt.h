@@ -65,6 +65,8 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
+    virtual void closeEvent(QCloseEvent *event) override;
+
     AnimationController& controller_;
 
     // GUI-stuff
