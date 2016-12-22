@@ -58,7 +58,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
         this->addItem(trackQt);
     }
 
-    setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerTimeUnit,
+    setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerSecond,
                  animation.size() * TrackHeight + TimelineHeight);
 }
 

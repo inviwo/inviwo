@@ -56,7 +56,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
     if (e->pos().y() < TimelineHeight) {
         pressingOnTimeline_ = true;
-        auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
+        auto time = e->pos().x() / static_cast<double>(WidthPerSecond);
         controller_.setCurrentTime(Seconds(time));
     }
 
@@ -65,7 +65,7 @@ void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
 
 void AnimationViewQt::mouseMoveEvent(QMouseEvent* e) {
     if (pressingOnTimeline_) {
-        auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
+        auto time = e->pos().x() / static_cast<double>(WidthPerSecond);
         controller_.setCurrentTime(Seconds(time));
     }
 
@@ -100,7 +100,7 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->fillRect(rect, QColor(89, 89, 89));
 
     // overlay grid
-    int gridSpacing = WidthPerTimeUnit;
+    int gridSpacing = WidthPerSecond;
     QRectF sRect = frameRect();
     qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
     QVarLengthArray<QLineF, 100> lines;
@@ -130,7 +130,7 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     painter->setPen(pen);
     painter->fillRect(sRect, QColor(180, 180, 180));
 
-    int gridSpacing = WidthPerTimeUnit;
+    int gridSpacing = WidthPerSecond;
     qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
     QVarLengthArray<QLineF, 100> lines;
     QVarLengthArray<QPointF, 100> points;
@@ -151,12 +151,12 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     // Time stamps
     char buf[16];
     for (const auto& p : points) {
-        snprintf(buf, 16, "%.4f", p.x() / static_cast<double>(WidthPerTimeUnit));
+        snprintf(buf, 16, "%.4f", p.x() / static_cast<double>(WidthPerSecond));
         painter->drawText(p, QString(buf));
     }
 
     // Current time
-    auto x = controller_.getCurrentTime().count() * WidthPerTimeUnit;
+    auto x = controller_.getCurrentTime().count() * WidthPerSecond;
     QPen timePen;
     timePen.setColor(QColor(255, 255, 255));
     timePen.setWidthF(1.0);
