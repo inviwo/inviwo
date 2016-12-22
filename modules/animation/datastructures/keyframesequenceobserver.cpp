@@ -42,7 +42,7 @@ void KeyframeSequenceObserverble::notifyKeyframeRemoved(Keyframe* key) {
 }
 
 void KeyframeSequenceObserverble::notifyKeyframeSequenceMoved(KeyframeSequence* seq) {
-     forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceMoved(seq); });
+    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceMoved(seq); });
 }
 
 }  // namespace

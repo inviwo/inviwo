@@ -45,7 +45,7 @@ class Keyframe;
 
 class IVW_MODULE_ANIMATION_API KeyframeObserver : public Observer {
 public:
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {};
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeObservable : public Observable<KeyframeObserver> {

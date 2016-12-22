@@ -35,7 +35,6 @@
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmanager.h>
 
-
 namespace inviwo {
 
 class Property;
@@ -48,6 +47,7 @@ public:
 
     animation::AnimationManager& getAnimationManager();
     const animation::AnimationManager& getAnimationManager() const;
+
 private:
     animation::AnimationManager manager_;
 };

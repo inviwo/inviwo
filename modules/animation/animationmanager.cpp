@@ -39,7 +39,7 @@ namespace animation {
 
 AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* animationModule)
     : app_(app), trackFactory_{}, interpolationFactory_{}, animation_{}, controller_{&animation_} {
-    
+
     auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule);
 
     callbackAction->getCallBack()->addMemberFunction(this, &AnimationManager::addTrackCallback);
@@ -93,7 +93,6 @@ void AnimationManager::addTrackCallback(const Property* property) {
     }
 }
 
-} // namespace
+}  // namespace
 
-} // namespace
-
+}  // namespace

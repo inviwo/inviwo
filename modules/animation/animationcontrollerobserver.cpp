@@ -35,16 +35,24 @@ namespace inviwo {
 
 namespace animation {
 
-void AnimationControllerObservable::notifyStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) {
-    forEachObserver([&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
+void AnimationControllerObservable::notifyStateChanged(AnimationController* controller,
+                                                       AnimationState oldState,
+                                                       AnimationState newState) {
+    forEachObserver(
+        [&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
 }
 
-void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller, Seconds oldtime, Seconds newTime) {
-	forEachObserver([&](AnimationControllerObserver* o) { o->onTimeChanged(controller, oldtime, newTime); });
+void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller,
+                                                      Seconds oldtime, Seconds newTime) {
+    forEachObserver(
+        [&](AnimationControllerObserver* o) { o->onTimeChanged(controller, oldtime, newTime); });
 }
 
-void AnimationControllerObservable::notifyAnimationChanged(AnimationController* controller, Animation* oldAnim, Animation* newAnim) {
-	forEachObserver([&](AnimationControllerObserver* o) { o->onAnimationChanged(controller, oldAnim, newAnim); });
+void AnimationControllerObservable::notifyAnimationChanged(AnimationController* controller,
+                                                           Animation* oldAnim, Animation* newAnim) {
+    forEachObserver([&](AnimationControllerObserver* o) {
+        o->onAnimationChanged(controller, oldAnim, newAnim);
+    });
 }
 
 } // namespace

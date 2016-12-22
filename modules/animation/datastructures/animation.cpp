@@ -87,7 +87,7 @@ Seconds Animation::lastTime() const {
     if (it != tracks_.end()) {
         return (*it)->lastTime();
     } else {
-        return Seconds{ 0.0 };
+        return Seconds{0.0};
     }
 }
 

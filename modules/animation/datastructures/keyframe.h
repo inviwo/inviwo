@@ -45,7 +45,7 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable { 
+class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable {
 public:
     Keyframe() = default;
     virtual ~Keyframe() = default;
@@ -67,7 +67,7 @@ IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Keyframe& b);
 template <typename T>
 class ValueKeyframe : public Keyframe {
 public:
-    using value_type  = T;
+    using value_type = T;
     ValueKeyframe() = default;
 
     ValueKeyframe(Seconds time, const T& value) : time_(time), value_(value) {}
@@ -96,7 +96,7 @@ public:
 
     void setValue(const T& value) { value_ = value; }
 
-    static std::string classIdentifier(); 
+    static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 
     virtual void serialize(Serializer& s) const override;
@@ -128,31 +128,29 @@ bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 
 template <typename T>
 void ValueKeyframe<T>::serialize(Serializer& s) const {
-    //s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    // s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("time", time_.count());
     s.serialize("value", value_);
 }
 
 template <typename T>
 void ValueKeyframe<T>::deserialize(Deserializer& d) {
-   /* std::string className;
-    d.deserialize("type", className, SerializationTarget::Attribute);
-    if (className != getClassIdentifier()) {
-        throw SerializationException(
-            "Deserialized keyframe: " + getClassIdentifier() +
-                " from a serialized keyframe with a different class identifier: " + className,
-            IvwContext);
-    }*/
+    /* std::string className;
+     d.deserialize("type", className, SerializationTarget::Attribute);
+     if (className != getClassIdentifier()) {
+         throw SerializationException(
+             "Deserialized keyframe: " + getClassIdentifier() +
+                 " from a serialized keyframe with a different class identifier: " + className,
+             IvwContext);
+     }*/
     double tmp = time_.count();
     d.deserialize("time", tmp);
     time_ = Seconds{tmp};
     d.deserialize("value", value_);
 }
 
-} // namespace
+}  // namespace
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_KEYFRAME_H
-
+#endif  // IVW_KEYFRAME_H

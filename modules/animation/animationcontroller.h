@@ -49,7 +49,7 @@ namespace animation {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable { 
+class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable {
 public:
     AnimationController(Animation* animation);
     virtual ~AnimationController();
@@ -63,13 +63,13 @@ public:
 
     // Progresses time and evaluates animation
     void tick();
-	void eval(Seconds oldTime, Seconds newTime);
+    void eval(Seconds oldTime, Seconds newTime);
 
     void setAnimation(Animation* animation);
     void setCurrentTime(Seconds time);
     void setPlaySpeed(double framesPerSecond);
 
-	Animation* getAnimation() { return animation_; }
+    Animation* getAnimation() { return animation_; }
     const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
     const Seconds getCurrentTime() const { return currentTime_; }
@@ -77,7 +77,7 @@ public:
     const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 protected:
-    Animation* animation_; ///< non-owning reference
+    Animation* animation_;  ///< non-owning reference
     AnimationState state_;
     Seconds currentTime_;
     Seconds deltaTime_;

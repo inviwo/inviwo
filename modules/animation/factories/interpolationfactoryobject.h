@@ -35,7 +35,6 @@
 
 #include <modules/animation/datastructures/interpolation.h>
 
-
 namespace inviwo {
 namespace animation {
 
@@ -58,7 +57,7 @@ public:
     InterpolationFactoryObjectTemplate() : InterpolationFactoryObject(T::classIdentifier()) {}
 
     InterpolationFactoryObjectTemplate(const std::string& classIdentifier)
-        : InterpolationFactoryObject(classIdentifier) {};
+        : InterpolationFactoryObject(classIdentifier){};
     virtual ~InterpolationFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Interpolation> create() const override { return std::make_unique<T>(); }

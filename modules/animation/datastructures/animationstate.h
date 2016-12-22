@@ -34,10 +34,7 @@ namespace inviwo {
 
 namespace animation {
 
-enum class AnimationState {
-	Paused = 0,
-	Playing
-};
+enum class AnimationState { Paused = 0, Playing };
 
 } // namespace
 

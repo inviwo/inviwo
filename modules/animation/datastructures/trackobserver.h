@@ -49,8 +49,8 @@ class Track;
  */
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
-    virtual void onKeyframeSequenceAdded(KeyframeSequence* s) {};
-    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s) {};
+    virtual void onKeyframeSequenceAdded(KeyframeSequence* s){};
+    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s){};
 
     virtual void onEnabledChanged(Track* t){};
     virtual void onIdentifierChanged(Track* t){};

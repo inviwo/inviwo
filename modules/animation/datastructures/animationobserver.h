@@ -41,8 +41,8 @@ class Track;
 
 class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
 public:
-    virtual void onTrackAdded(Track* track) {};
-    virtual void onTrackRemoved(Track* track) {};
+    virtual void onTrackAdded(Track* track){};
+    virtual void onTrackRemoved(Track* track){};
 };
 
 class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {

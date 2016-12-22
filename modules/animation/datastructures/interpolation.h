@@ -73,7 +73,6 @@ public:
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 
-
     // keys should be sorted by time
     virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
         typename Key::value_type = 0;
@@ -85,9 +84,7 @@ public:
     LinearInterpolation() = default;
     virtual ~LinearInterpolation() = default;
 
-    virtual LinearInterpolation* clone() const {
-        return new LinearInterpolation(*this);   
-    };
+    virtual LinearInterpolation* clone() const { return new LinearInterpolation(*this); };
 
     static std::string classIdentifier() {
         auto keyid = Key::classIdentifier();
@@ -114,7 +111,8 @@ public:
         const auto& v2 = (*it)->getValue();
         const auto& t2 = (*it)->getTime();
 
-        return glm::mix(v1, v2, Easing::Ease((t - t1) / (t2 - t1), Easing::EEasingType::InOutCubic));
+        return glm::mix(v1, v2,
+                        Easing::Ease((t - t1) / (t2 - t1), Easing::EEasingType::InOutCubic));
     }
 };
 

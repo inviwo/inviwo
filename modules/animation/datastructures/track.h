@@ -114,18 +114,13 @@ public:
                                typename Key::value_type>::value,
                   "The value type of Prop has to match that of Key");
 
-    TrackProperty()
-        : TrackTyped<Key>()
-        , property_(nullptr)
-        , identifier_("")
-        , name_("") {}
+    TrackProperty() : TrackTyped<Key>(), property_(nullptr), identifier_(""), name_("") {}
 
     TrackProperty(Prop* property)
         : TrackTyped<Key>()
         , property_(property)
         , identifier_(property_->getIdentifier())
-        , name_(property_->getDisplayName())
-        {}
+        , name_(property_->getDisplayName()) {}
     virtual ~TrackProperty() = default;
 
     static std::string classIdentifier() {
@@ -162,18 +157,18 @@ public:
             notifyPriorityChanged(this);
         }
     };
-    virtual size_t getPriority() const override {return priority_;}
+    virtual size_t getPriority() const override { return priority_; }
 
     virtual Seconds firstTime() const override {
         if (sequences_.empty()) {
-            return Seconds{ 0.0 };
+            return Seconds{0.0};
         } else {
             return sequences_.front()->getFirst().getTime();
         }
     };
     virtual Seconds lastTime() const override {
         if (sequences_.empty()) {
-            return Seconds{ 0.0 };
+            return Seconds{0.0};
         } else {
             return sequences_.back()->getLast().getTime();
         }
@@ -197,16 +192,16 @@ public:
             if (from > (*it)->getFirst().getTime()) {  // case 1
                 property_->set((*it)->getFirst().getValue());
             }
-        } else {                                       // case 2
+        } else {  // case 2
             auto& seq1 = *std::prev(it);
 
-            if (to < seq1->getLast().getTime() ) {                              // case 2a
+            if (to < seq1->getLast().getTime()) {  // case 2a
                 property_->set((*seq1)(from, to));
-            } else {                                                            // case 2b    
-                if( from < seq1->getLast().getTime() ) {
+            } else {  // case 2b
+                if (from < seq1->getLast().getTime()) {
                     // We came from before the previous key
-                    property_->set(seq1->getLast().getValue()); 
-                } else if(it != sequences_.end() &&  from > (*it)->getFirst().getTime()) {
+                    property_->set(seq1->getLast().getValue());
+                } else if (it != sequences_.end() && from > (*it)->getFirst().getTime()) {
                     // We came form after the next key
                     property_->set((*it)->getFirst().getValue());
                 }
@@ -216,7 +211,7 @@ public:
     }
 
     const Prop* getProperty() const { return property_; }
-    Prop* getProperty() {return property_; }
+    Prop* getProperty() { return property_; }
 
     virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) override {
         auto it = std::upper_bound(
@@ -238,16 +233,12 @@ public:
     };
 
     virtual void add(const KeyframeSequence& sequence) override {
-        addTyped(dynamic_cast<const KeyframeSequenceTyped<Key>&>(sequence));      
+        addTyped(dynamic_cast<const KeyframeSequenceTyped<Key>&>(sequence));
     }
 
-    virtual size_t size() const override {
-       return sequences_.size();
-    }
+    virtual size_t size() const override { return sequences_.size(); }
 
-    virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override {
-        return *sequences_[i];
-    }
+    virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override { return *sequences_[i]; }
 
     virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const override {
         return *sequences_[i];
@@ -255,7 +246,7 @@ public:
 
     virtual void remove(size_t i) override {
         auto seq = std::move(sequences_[i]);
-        sequences_.erase(sequences_.begin()+i);
+        sequences_.erase(sequences_.begin() + i);
         notifyKeyframeSequenceRemoved(seq.get());
     }
 
@@ -274,7 +265,7 @@ public:
         if (className != getClassIdentifier()) {
             throw SerializationException(
                 "Deserialized animation track: " + getClassIdentifier() +
-                " from a serialized track with a different class identifier: " + className,
+                    " from a serialized track with a different class identifier: " + className,
                 IvwContext);
         }
         {
@@ -330,10 +321,10 @@ private:
         std::stable_sort(sequences_.begin(), sequences_.end(), [](const auto& a, const auto& b) {
             return a->getFirst().getTime() < b->getFirst().getTime();
         });
-        /// Do validation? 
+        /// Do validation?
     }
 
-    Prop* property_;   ///< non-owning reference
+    Prop* property_;  ///< non-owning reference
     bool enabled_{true};
     std::string identifier_;
     std::string name_;
@@ -342,8 +333,6 @@ private:
     // Sorted list of non-overlapping sequences of key frames
     std::vector<std::unique_ptr<KeyframeSequenceTyped<Key>>> sequences_;
 };
-
-
 
 } // namespace
 

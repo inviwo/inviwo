@@ -59,14 +59,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
 }
-animation::AnimationManager& AnimationModule::getAnimationManager() {
-    return manager_;
-}
+animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
-const animation::AnimationManager& AnimationModule::getAnimationManager() const {
-    return manager_;
-}
-
-
+const animation::AnimationManager& AnimationModule::getAnimationManager() const { return manager_; }
 
 } // namespace

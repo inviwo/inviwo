@@ -46,20 +46,19 @@ class AnimationModule;
 
 namespace animation {
 
-
 /**
  * \class AnimationManager
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATION_API AnimationManager { 
+class IVW_MODULE_ANIMATION_API AnimationManager {
 public:
     AnimationManager(InviwoApplication* app, AnimationModule* animationModule);
     virtual ~AnimationManager() = default;
 
     TrackFactory& getTrackFactory();
     const TrackFactory& getTrackFactory() const;
-    
+
     InterpolationFactory& getInterpolationFactory();
     const InterpolationFactory& getInterpolationFactory() const;
 

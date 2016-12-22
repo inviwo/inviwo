@@ -50,7 +50,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
                                                   public KeyframeSequenceObserverble,
                                                   public KeyframeObserver {
-        
+
 public:
     KeyframeSequence() = default;
     virtual ~KeyframeSequence() = default;
@@ -136,8 +136,8 @@ bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
     : KeyframeSequence(), keyframes_(), interpolation_() {
-     keyframes_.push_back(std::make_unique<Key>());
-     keyframes_.push_back(std::make_unique<Key>());
+    keyframes_.push_back(std::make_unique<Key>());
+    keyframes_.push_back(std::make_unique<Key>());
 }
 
 template <typename Key>
@@ -158,7 +158,8 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Ke
 }
 
 template <typename Key>
-KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(const KeyframeSequenceTyped<Key>& that) {
+KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
+    const KeyframeSequenceTyped<Key>& that) {
     if (this != &that) {
         KeyframeSequence::operator=(that);
         interpolation_.reset(that.interpolation_->clone());
@@ -180,7 +181,6 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(const Keyframe
     return *this;
 }
 
-
 template <typename Key>
 void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     const auto startTime = keyframes_.front()->getTime();
@@ -195,15 +195,15 @@ void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds ol
 }
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation) {
+void KeyframeSequenceTyped<Key>::setInterpolation(
+    std::unique_ptr<InterpolationTyped<Key>> interpolation) {
     interpolation_ = std::move(interpolation);
 }
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::setInterpolation(
-    std::unique_ptr<Interpolation> interpolation) {
-    if (auto inter = util::dynamic_unique_ptr_cast<InterpolationTyped<Key>>(
-            std::move(interpolation))) {
+void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation> interpolation) {
+    if (auto inter =
+            util::dynamic_unique_ptr_cast<InterpolationTyped<Key>>(std::move(interpolation))) {
         setInterpolation(std::move(inter));
     } else {
         throw Exception("Interpolation type does not match key", IvwContext);
@@ -211,7 +211,8 @@ void KeyframeSequenceTyped<Key>::setInterpolation(
 }
 
 template <typename Key>
-auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const -> typename Key::value_type {
+auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
+    typename Key::value_type {
     if (interpolation_) {
         return (*interpolation_)(keyframes_, to);
     } else {
@@ -295,10 +296,8 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     d.deserializeAs<Interpolation>("interpolation", interpolation_);
 }
 
+}  // namespace
 
-} // namespace
+}  // namespace
 
-} // namespace
-
-#endif // IVW_KEYFRAMESEQUENCE_H
-
+#endif  // IVW_KEYFRAMESEQUENCE_H

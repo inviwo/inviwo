@@ -40,7 +40,7 @@
 namespace inviwo {
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API TrackFactory : public StandardFactory<Track, TrackFactoryObject> { 
+class IVW_MODULE_ANIMATION_API TrackFactory : public StandardFactory<Track, TrackFactoryObject> {
 public:
     TrackFactory() = default;
     virtual ~TrackFactory() = default;
