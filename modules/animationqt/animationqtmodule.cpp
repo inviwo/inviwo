@@ -103,7 +103,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             // Add new menu if not found
             menu = win->menuBar()->addMenu(animationMenuName);
         }
-        controller.setAnimation(bogusAnim.release());
         auto& controller =
             app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
         auto editor =

@@ -45,6 +45,7 @@ namespace inviwo {
 namespace animation {
 
 KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
+    setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemSendsGeometryChanges);
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
