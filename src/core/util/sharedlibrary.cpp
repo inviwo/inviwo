@@ -125,7 +125,7 @@ SharedLibrary::SharedLibrary(std::string filePath)
     // RTLD_GLOBAL gives all other loaded libraries access to library
     // RTLD_LOCAL is preferred but would require each module to
     // explicitly load its dependent libraries as well.
-    handle_ = dlopen(filePath.c_str(), RTLD_GLOBAL);
+    handle_ = dlopen(filePath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!handle_) {
         throw Exception("Failed to load library: " + filePath);
     }
