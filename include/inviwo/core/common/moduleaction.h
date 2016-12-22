@@ -37,31 +37,25 @@ namespace inviwo {
 
 class InviwoModule;
 
-class IVW_CORE_API ModuleCallBackActionState {
-public:
-    enum Status { Default =0,
-                  Enabled =1,
-                  Disabled =2,
-                  Custom =3
-                };
-};
+enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
 
-//TODO: several types of call back action required ???
 class IVW_CORE_API ModuleCallbackAction {
 public:
-    ModuleCallbackAction(std::string actionName, InviwoModule* module,
-                         ModuleCallBackActionState::Status state=ModuleCallBackActionState::Disabled);
-    std::string getActionName() const;
+    ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
+                         ModuleCallBackActionState state = ModuleCallBackActionState::Disabled);
+    const std::string& getActionName() const;
     InviwoModule* getModule() const;
-    ModuleCallback* getCallBack();
-    void setActionState(ModuleCallBackActionState::Status state);
-    ModuleCallBackActionState::Status getActionState() const;
+    ModuleCallback& getCallBack();
+    const ModuleCallback& getCallBack() const;
+    void setActionState(ModuleCallBackActionState state);
+    ModuleCallBackActionState getActionState() const;
+
 private:
     InviwoModule* module_;
     std::string actionName_;
-    // TODO: for now call backs with single argument is supported
+
     ModuleCallback callBack_;
-    ModuleCallBackActionState::Status actionState_;
+    ModuleCallBackActionState actionState_;
 };
 
 } // namespace

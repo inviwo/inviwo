@@ -271,27 +271,31 @@ void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
     xmlSerializer.writeFile(os);
 }
 
-std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
-                                                              std::istream& is,
-                                                              const std::string& refPath,
-                                                              InviwoApplication* app) {
+std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
+                                                 const std::string& refPath,
+                                                 InviwoApplication* app) {
     NetworkLock lock(network);
 
     std::vector<Processor*> addedProcessors;
     try {
-        Deserializer xmlDeserializer(app, is, refPath);
+        Deserializer deserializer(is, refPath);
+        deserializer.registerFactory(app->getProcessorFactory());
+        deserializer.registerFactory(app->getMetaDataFactory());
+        deserializer.registerFactory(app->getPropertyFactory());
+        deserializer.registerFactory(app->getInportFactory());
+        deserializer.registerFactory(app->getOutportFactory());
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
         std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;
         std::vector<std::unique_ptr<PropertyLink>> links;
         std::vector<std::unique_ptr<detail::PartialSrcLink>> partialSrcLinks;
         std::vector<std::unique_ptr<detail::PartialDstLink>> partialDstLinks;
-        xmlDeserializer.deserialize("Processors", processors, "Processor");
-        xmlDeserializer.deserialize("Connections", connections, "Connection");
-        xmlDeserializer.deserialize("PartialInConnections", partialIn, "Connection");
-        xmlDeserializer.deserialize("PropertyLinks", links, "PropertyLink");
-        xmlDeserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-        xmlDeserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
+        deserializer.deserialize("Processors", processors, "Processor");
+        deserializer.deserialize("Connections", connections, "Connection");
+        deserializer.deserialize("PartialInConnections", partialIn, "Connection");
+        deserializer.deserialize("PropertyLinks", links, "PropertyLink");
+        deserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
+        deserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
         for (auto p : network->getProcessors()) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);

@@ -41,9 +41,14 @@ PortInspector::PortInspector(std::string portClassIdentifier,
 
     // Deserialize the network
     auto app = InviwoApplication::getPtr();
-    Deserializer xmlDeserializer(app, inspectorNetworkFileName_);
+    Deserializer deserializer(inspectorNetworkFileName_);
+    deserializer.registerFactory(app->getProcessorFactory());
+    deserializer.registerFactory(app->getMetaDataFactory());
+    deserializer.registerFactory(app->getPropertyFactory());
+    deserializer.registerFactory(app->getInportFactory());
+    deserializer.registerFactory(app->getOutportFactory());
     inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
-    inspectorNetwork_->deserialize(xmlDeserializer);
+    inspectorNetwork_->deserialize(deserializer);
     processors_ = inspectorNetwork_->getProcessors();
 
     for (auto processor : processors_) {

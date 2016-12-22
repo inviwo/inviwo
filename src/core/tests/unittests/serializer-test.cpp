@@ -53,7 +53,7 @@ T serializationOfType(T inValue) {
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     T outValue;
     deserializer.deserialize("serializedValue", outValue);
     return outValue;
@@ -153,7 +153,7 @@ TEST(SerializationTest, IvwSerializableClassTest) {
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue.value_, 12);
     EXPECT_NE(outValue.value_, 0);
@@ -167,7 +167,7 @@ TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue->value_, 12);
     EXPECT_NE(outValue->value_, 0);
@@ -186,7 +186,7 @@ TEST(SerializationTest, floatVectorTest) {
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -203,7 +203,7 @@ TEST(SerializationTest, vectorOfNonPointersTest) {
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -220,7 +220,7 @@ TEST(SerializationTest, vectorOfPointersTest) {
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, refpath);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 

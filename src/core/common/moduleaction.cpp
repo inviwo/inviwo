@@ -31,35 +31,21 @@
 
 namespace inviwo {
 
-ModuleCallbackAction::ModuleCallbackAction(std::string actionName,
-        InviwoModule* module,
-        ModuleCallBackActionState::Status state)
-    : module_(module)
-    , actionName_(actionName)
-    , actionState_(state) {
-}
+ModuleCallbackAction::ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
+                                           ModuleCallBackActionState state)
+    : module_(module), actionName_(actionName), actionState_(state) {}
 
-std::string ModuleCallbackAction::getActionName() const {
-    return actionName_;
-}
+const std::string& ModuleCallbackAction::getActionName() const { return actionName_; }
 
-InviwoModule* ModuleCallbackAction::getModule() const {
-    return module_;
-}
+InviwoModule* ModuleCallbackAction::getModule() const { return module_; }
 
-ModuleCallback* ModuleCallbackAction::getCallBack() {
-    return &callBack_;
-}
+ModuleCallback& ModuleCallbackAction::getCallBack() { return callBack_; }
 
-ModuleCallBackActionState::Status ModuleCallbackAction::getActionState() const {
-    return actionState_;
-}
+const ModuleCallback& ModuleCallbackAction::getCallBack() const { return callBack_; }
 
-void ModuleCallbackAction::setActionState(ModuleCallBackActionState::Status state) {
-    actionState_ = state;
-}
+ModuleCallBackActionState ModuleCallbackAction::getActionState() const { return actionState_; }
 
-
+void ModuleCallbackAction::setActionState(ModuleCallBackActionState state) { actionState_ = state; }
 
 } // namespace
 

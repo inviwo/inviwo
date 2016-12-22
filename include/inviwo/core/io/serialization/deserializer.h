@@ -60,17 +60,16 @@ public:
      * @param fileName path to file that is to be deserialized.
      * @param allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(InviwoApplication* app, std::string fileName, bool allowReference = true);
+    Deserializer(std::string fileName, bool allowReference = true);
     /**
-     * \brief Deserializes content from the stream using path to calculate relative paths to data.
+     * \brief Deserializes content from the stream using refPath to calculate relative paths to data.
      *
      * @param stream Stream with content that is to be deserialized.
-     * @param path A path that will be used to decode the location of data during
+     * @param refPath A path that will be used to decode the location of data during
      * deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
-                 bool allowReference = true);
+    Deserializer(std::istream& stream, const std::string& refPath, bool allowReference = true);
 
     virtual ~Deserializer() = default;
 

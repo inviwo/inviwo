@@ -240,11 +240,13 @@ void PropertyWidgetQt::generateContextMenu() {
                     ss << data;
                     try {
                         NetworkLock lock(property_);
-                        Deserializer deserializer(InviwoApplication::getPtr(), ss, "");
+                        Deserializer deserializer(ss, "");
+                        auto app = InviwoApplication::getPtr();
+                        deserializer.registerFactory(app->getPropertyFactory());
+                        deserializer.registerFactory(app->getMetaDataFactory());
                         property_->deserialize(deserializer);
                     } catch (AbortException&) {
                     }
-
                 });
             };
             using MT = StdUnorderedMapMetaData<std::string, std::string>;
@@ -314,7 +316,10 @@ void PropertyWidgetQt::generateContextMenu() {
             for (auto d : data) ss << d;
 
             try {
-                Deserializer deserializer(InviwoApplication::getPtr(), ss, "");
+                Deserializer deserializer(ss, "");
+                auto app = InviwoApplication::getPtr();
+                deserializer.registerFactory(app->getPropertyFactory());
+                deserializer.registerFactory(app->getMetaDataFactory());
                 std::vector<std::unique_ptr<Property>> properties;
                 deserializer.deserialize("Properties", properties, "Property");
                 if (!properties.empty() && properties.front()) {
@@ -362,7 +367,20 @@ void PropertyWidgetQt::generateModuleMenuActions() {
                 submenu->addAction(action);
                 action->setChecked(moduleAction->getActionState() ==
                                    ModuleCallBackActionState::Enabled);
-                connect(action, SIGNAL(triggered()), this, SLOT(moduleAction()));
+                connect(action, &QAction::triggered, [
+                    action, actionName = moduleAction->getActionName(), property = property_
+                ](bool checked) {
+                    InviwoApplication* app = InviwoApplication::getPtr();
+                    const auto& moduleActions = app->getCallbackActions();
+
+                    for (auto& moduleAction : moduleActions) {
+                        if (moduleAction->getActionName() == actionName) {
+                            moduleAction->getCallBack().invoke(property);
+                            action->setChecked(moduleAction->getActionState() ==
+                                               ModuleCallBackActionState::Enabled);
+                        }
+                    }
+                });
             }
             moduleSubMenus_[elem.first] = std::move(submenu);
         }
@@ -370,7 +388,7 @@ void PropertyWidgetQt::generateModuleMenuActions() {
 }
 
 void PropertyWidgetQt::updateModuleMenuActions() {
-    auto& moduleActions = InviwoApplication::getPtr()->getCallbackActions();
+    const auto& moduleActions = InviwoApplication::getPtr()->getCallbackActions();
 
     for (auto& moduleAction : moduleActions) {
         std::string moduleName = moduleAction->getModule()->getIdentifier();
@@ -382,10 +400,8 @@ void PropertyWidgetQt::updateModuleMenuActions() {
                 if (action->text().toLocal8Bit().constData() == moduleAction->getActionName()) {
                     // FIXME: Following setChecked is not behaving as expected on some special
                     // case. This needs to be investigated.
-                    // bool blockState = actions[j]->blockSignals(true);
                     action->setChecked(moduleAction->getActionState() ==
                                        ModuleCallBackActionState::Enabled);
-                    // actions[j]->blockSignals(blockState);
                 }
             }
         }
@@ -403,24 +419,6 @@ void PropertyWidgetQt::setApplicationUsageMode(bool value) {
 
 UsageMode PropertyWidgetQt::getApplicationUsageMode() {
     return applicationUsageMode_->get();
-}
-
-void PropertyWidgetQt::moduleAction() {
-    QAction* action = qobject_cast<QAction*>(QObject::sender());
-
-    if (action) {
-        InviwoApplication* app = InviwoApplication::getPtr();
-        const auto& moduleActions = app->getCallbackActions();
-        std::string actionName(action->text().toLocal8Bit().constData());
-
-        for (auto& moduleAction : moduleActions) {
-            if (moduleAction->getActionName() == actionName) {
-                moduleAction->getCallBack()->invoke(property_);
-                action->setChecked(moduleAction->getActionState() ==
-                                   ModuleCallBackActionState::Enabled);
-            }
-        }
-    }
 }
 
 void PropertyWidgetQt::updateContextMenu() {

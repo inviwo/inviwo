@@ -60,7 +60,10 @@ void Settings::load() {
     if (filesystem::fileExists(filename)) {
         // An error is not critical as the default setting will be used.
         try {
-            Deserializer d(InviwoApplication::getPtr(), filename);
+            auto app = InviwoApplication::getPtr();
+            Deserializer d(filename);
+            d.registerFactory(app->getPropertyFactory());
+            d.registerFactory(app->getMetaDataFactory());
             deserialize(d);
         } catch (AbortException& e) {
             LogError(e.getMessage());

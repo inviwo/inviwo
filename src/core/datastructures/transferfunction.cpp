@@ -371,7 +371,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
     std::string extension = toLower(filesystem::getFileExtension(filename));
 
     if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
-        Deserializer deserializer(InviwoApplication::getPtr(), filename);
+        Deserializer deserializer(filename);
         deserialize(deserializer);
     } else {
         auto factory = InviwoApplication::getPtr()->getDataReaderFactory();

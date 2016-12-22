@@ -50,7 +50,7 @@ TEST(ContainerSerialitionTest, Minimal) {
     vector[2] = 10;
     vector.pop_back();
     
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", vector, "Item");
     
     ASSERT_EQ(5, vector.size());
@@ -91,7 +91,7 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
 
     ASSERT_EQ(vector.size(), visited.size());
     
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
     size_t ind = 0;
@@ -151,7 +151,7 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
             }
         });
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
     util::erase_remove_if(vector, [&](Item& i) { return !util::contains(visited, i.id_); });
@@ -216,7 +216,7 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
             }
         });
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
     util::erase_remove_if(vector, [&](Item*& i) {
@@ -276,7 +276,7 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     vector.pop_back();
     vector.insert(vector.begin(), new Item("d",1));
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     auto des = util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
                    .setGetId([](Item* const& i) { return i->id_; })
                    .setMakeNew([]() { return new Item(); })
@@ -319,7 +319,7 @@ TEST(ContainerSerialitionTest, ContainerTest5) {
     vector[2] = 10;
     vector.push_back(12);
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     auto des = util::IndexedDeserializer<int>("Vector", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](int& i) { vector.push_back(i); })
@@ -354,7 +354,7 @@ TEST(ContainerSerialitionTest, ContainerTest6) {
 
     using Item = std::pair<const std::string, int>;
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     auto des = util::MapDeserializer<std::string, int>("Map", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](const std::string& k, int& v) { map[k] = v; })
@@ -385,7 +385,7 @@ TEST(ContainerSerialitionTest, ContainerTest7) {
 
     using Item = std::pair<const int, std::string>;
 
-    Deserializer deserializer(nullptr, ss, "");
+    Deserializer deserializer(ss, "");
     auto des = util::MapDeserializer<int, std::string>("Map", "Item")
                    .setMakeNew([]() { return ""; })
                    .onNew([&](const int& k, std::string& v) { map[k] = v; })

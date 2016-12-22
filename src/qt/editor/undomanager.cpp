@@ -100,7 +100,14 @@ void UndoManager::undoState() {
         std::stringstream stream;
         --head_;
         stream << undoBuffer_[head_];
-        Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
+        Deserializer d(stream, path);
+        auto app = mainWindow_->getInviwoApplication();
+        d.registerFactory(app->getProcessorFactory());
+        d.registerFactory(app->getMetaDataFactory());
+        d.registerFactory(app->getPropertyFactory());
+        d.registerFactory(app->getInportFactory());
+        d.registerFactory(app->getOutportFactory());
+
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
 
         dirty_ = false;
@@ -118,7 +125,14 @@ void UndoManager::redoState() {
         std::stringstream stream;
         ++head_;
         stream << undoBuffer_[head_];
-        Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
+        Deserializer d(stream, path);
+        auto app = mainWindow_->getInviwoApplication();
+        d.registerFactory(app->getProcessorFactory());
+        d.registerFactory(app->getMetaDataFactory());
+        d.registerFactory(app->getPropertyFactory());
+        d.registerFactory(app->getInportFactory());
+        d.registerFactory(app->getOutportFactory());
+        
         mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
 
         dirty_ = false;

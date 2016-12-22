@@ -41,9 +41,8 @@
 
 namespace inviwo {
 
-Deserializer::Deserializer(InviwoApplication* app, std::string fileName, bool allowReference)
+Deserializer::Deserializer(std::string fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
-    registerFactories(app);
     try {
         doc_.LoadFile();
         rootElement_ = doc_.FirstChildElement();
@@ -53,10 +52,8 @@ Deserializer::Deserializer(InviwoApplication* app, std::string fileName, bool al
     }
 }
 
-Deserializer::Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
-                           bool allowReference)
+Deserializer::Deserializer(std::istream& stream, const std::string& path, bool allowReference)
     : SerializeBase(stream, path, allowReference) {
-    registerFactories(app);
     try {
         // Base streamed in the xml data. Get the first node.
         rootElement_ = doc_.FirstChildElement();
@@ -127,17 +124,5 @@ void Deserializer::storeReferences(TxElement* node) {
 void Deserializer::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
-
-void Deserializer::registerFactories(InviwoApplication* app) {
-    registeredFactories_.clear();
-    if (app) {
-        registeredFactories_.push_back(app->getProcessorFactory());
-        registeredFactories_.push_back(app->getMetaDataFactory());
-        registeredFactories_.push_back(app->getPropertyFactory());
-        registeredFactories_.push_back(app->getInportFactory());
-        registeredFactories_.push_back(app->getOutportFactory());
-    }
-}
-
 
 }  // namespace

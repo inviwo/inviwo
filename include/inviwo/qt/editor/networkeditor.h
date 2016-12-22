@@ -87,28 +87,6 @@ public:
     NetworkEditor(InviwoMainWindow* mainwindow);
     virtual ~NetworkEditor() = default;
 
-    void clearNetwork();
-
-    /**
-     * Save network to stream.
-     * Uses current file name for relative paths.
-     *
-     * @param stream Stream to save data
-     * @return true if successful, false otherwise.
-     */
-    bool saveNetwork(std::ostream stream);
-    bool saveNetwork(std::string fileName, bool setAsFilename = true);
-
-    /**
-     * Load network from a stream. The path will be used to calculate relative directories of data
-     * (nothing will be stored in the path).
-     * @param stream Stream with content that is to be deserialized.
-     * @param path A path that will be used to calculate location of data during
-     * deserialization.
-     */
-    bool loadNetwork(std::istream& stream, const std::string& path);
-    bool loadNetwork(std::string fileName);
-
     QByteArray copy() const;
     QByteArray cut();
     void paste(QByteArray data);
