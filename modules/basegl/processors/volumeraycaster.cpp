@@ -83,7 +83,8 @@ VolumeRaycaster::VolumeRaycaster()
     channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
-    backgroundPort_.onChange([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
     raycasting_.gradientComputationMode_.onChange([this]() {

@@ -72,7 +72,9 @@ ISORaycaster::ISORaycaster()
     backgroundPort_.setOptional(true);
 
     volumePort_.onChange(this, &ISORaycaster::onVolumeChange);
-    backgroundPort_.onChange([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+
+    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     addProperty(channel_);
     addProperty(raycasting_);
