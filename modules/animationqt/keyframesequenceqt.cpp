@@ -54,9 +54,10 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence)
         auto keyframeQt = new KeyframeQt(keyframe);
 
         keyframeQt->setParentItem(this);
-        keyframeQt->setPos(keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)));
+        keyframeQt->setPos(
+            keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)));
     }
-	prepareGeometryChange();
+    prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -75,15 +76,16 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     painter->setPen(pen);
     painter->setBrush(brush);
     auto rect = boundingRect();
-    rect.adjust(0.5*KeyframeWidth, 0, -0.5*KeyframeWidth, 0);
+    rect.adjust(0.5 * KeyframeWidth, 0, -0.5 * KeyframeWidth, 0);
     painter->drawRect(rect);
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
     auto keyframeQt = new KeyframeQt(*key);
     keyframeQt->setParentItem(this);
-    keyframeQt->setPos(keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)));
-	prepareGeometryChange();
+    keyframeQt->setPos(
+        keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)));
+    prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
@@ -94,15 +96,13 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
     });
     if (toRemove != children.end()) {
         (*toRemove)->setParentItem(nullptr);
-		prepareGeometryChange();
+        prepareGeometryChange();
     }
 }
 
 void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { prepareGeometryChange(); }
 
-QRectF KeyframeSequenceQt::boundingRect() const {
-	return childrenBoundingRect();
-}
+QRectF KeyframeSequenceQt::boundingRect() const { return childrenBoundingRect(); }
 
 QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     // Only restrict movement on user interaction
@@ -125,7 +125,7 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
             }
         }
 
-        // Restrict vertical movement 
+        // Restrict vertical movement
         return QPointF(static_cast<float>(xV), y());
     }
 
