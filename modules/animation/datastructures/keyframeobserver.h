@@ -45,12 +45,12 @@ class Keyframe;
 
 class IVW_MODULE_ANIMATION_API KeyframeObserver : public Observer {
 public:
-    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) {};
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeObservable : public Observable<KeyframeObserver> {
 protected:
-    void notifKeyframeTimeChanged(Keyframe* key, Time oldTime);
+    void notifKeyframeTimeChanged(Keyframe* key, Seconds oldTime);
 };
 
 } // namespace

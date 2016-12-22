@@ -36,7 +36,7 @@ namespace inviwo {
 
 namespace animation {
 
-using Time = std::chrono::duration<double, std::ratio<1>>;
+using Seconds = std::chrono::duration<double, std::ratio<1>>;
 
 } // namespace
 

@@ -72,7 +72,7 @@ void AnimationController::stop() {
 	auto oldState = state_;
 	state_ = AnimationState::Paused;
 	timer_->stop();
-	setCurrentTime(Time(0));
+	setCurrentTime(Seconds(0));
 
 	// TODO: Perhaps only trigger if oldstate != state_?
 	notifyStateChanged(this, oldState, state_);
@@ -102,7 +102,7 @@ void AnimationController::tick() {
 	}
 }
 
-void AnimationController::eval(Time oldTime, Time newTime) {
+void AnimationController::eval(Seconds oldTime, Seconds newTime) {
 	NetworkLock lock;
 	(*animation_)(oldTime, newTime);
 }
@@ -114,24 +114,24 @@ void AnimationController::setAnimation(Animation* animation) {
 
 	animation_ = animation;
 	state_ = AnimationState::Paused;
-	currentTime_ = Time(0.0);
+	currentTime_ = Seconds(0.0);
 
 	notifyAnimationChanged(this, oldAnim, animation_);
 	notifyStateChanged(this, oldState, state_);
 	notifyTimeChanged(this, oldTime, currentTime_);
 }
 
-void AnimationController::setCurrentTime(Time time) {
+void AnimationController::setCurrentTime(Seconds time) {
 	// TODO: Boundary check to not go outside of current animation?
 	// Probably no, since you might want to set the time after the last keyframe of animation when creating new ones
 	auto oldTime = currentTime_;
-	currentTime_ = std::max(Time(0), time);
+	currentTime_ = std::max(Seconds(0), time);
 	eval(oldTime, currentTime_);
 	notifyTimeChanged(this, oldTime, currentTime_);
 }
 
 void AnimationController::setPlaySpeed(double framesPerSecond) {
-	deltaTime_ = Time(1.0 / framesPerSecond);
+	deltaTime_ = Seconds(1.0 / framesPerSecond);
 	timer_->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
 }
 

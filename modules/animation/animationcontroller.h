@@ -63,24 +63,24 @@ public:
 
     // Progresses time and evaluates animation
     void tick();
-	void eval(Time oldTime, Time newTime);
+	void eval(Seconds oldTime, Seconds newTime);
 
     void setAnimation(Animation* animation);
-    void setCurrentTime(Time time);
+    void setCurrentTime(Seconds time);
     void setPlaySpeed(double framesPerSecond);
 
 	Animation* getAnimation() { return animation_; }
     const Animation* getAnimation() const { return animation_; }
     const AnimationState& getState() const { return state_; }
-    const Time getCurrentTime() const { return currentTime_; }
-    const Time getPlaySpeedTime() const { return deltaTime_; }
+    const Seconds getCurrentTime() const { return currentTime_; }
+    const Seconds getPlaySpeedTime() const { return deltaTime_; }
     const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 protected:
     Animation* animation_; ///< non-owning reference
     AnimationState state_;
-    Time currentTime_;
-    Time deltaTime_;
+    Seconds currentTime_;
+    Seconds deltaTime_;
 
     std::unique_ptr<Timer> timer_;
 };

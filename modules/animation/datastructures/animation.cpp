@@ -35,7 +35,7 @@ namespace animation {
 
 Animation::Animation() {}
 
-void Animation::operator()(Time from, Time to) const {
+void Animation::operator()(Seconds from, Seconds to) const {
     for (const auto& track : priorityTracks_) {
         (*track)(from, to);
     }
@@ -69,25 +69,25 @@ void Animation::remove(const std::string& id) {
     }
 }
 
-Time Animation::firstTime() const {
+Seconds Animation::firstTime() const {
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->firstTime() < b->firstTime();
     });
     if (it != tracks_.end()) {
         return (*it)->firstTime();
     } else {
-        return Time{0.0};
+        return Seconds{0.0};
     }
 }
 
-Time Animation::lastTime() const {
+Seconds Animation::lastTime() const {
     auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->lastTime() < b->lastTime();
     });
     if (it != tracks_.end()) {
         return (*it)->lastTime();
     } else {
-        return Time{ 0.0 };
+        return Seconds{ 0.0 };
     }
 }
 

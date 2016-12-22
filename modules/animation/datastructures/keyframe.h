@@ -50,8 +50,8 @@ public:
     Keyframe() = default;
     virtual ~Keyframe() = default;
 
-    virtual void setTime(Time time) = 0;
-    virtual Time getTime() const = 0;
+    virtual void setTime(Seconds time) = 0;
+    virtual Seconds getTime() const = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
@@ -70,7 +70,7 @@ public:
     using value_type  = T;
     ValueKeyframe() = default;
 
-    ValueKeyframe(Time time, const T& value) : time_(time), value_(value) {}
+    ValueKeyframe(Seconds time, const T& value) : time_(time), value_(value) {}
     virtual ~ValueKeyframe() = default;
 
     ValueKeyframe(const ValueKeyframe& rhs) = default;
@@ -82,14 +82,14 @@ public:
         return *this;
     }
 
-    virtual void setTime(Time time) override {
+    virtual void setTime(Seconds time) override {
         if (time != time_) {
             auto oldTime = time_;
             time_ = time;
             notifKeyframeTimeChanged(this, oldTime);
         }
     }
-    virtual Time getTime() const override { return time_; }
+    virtual Seconds getTime() const override { return time_; }
 
     const T& getValue() const { return value_; }
     T& getValue() { return value_; }
@@ -103,7 +103,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    Time time_{0.0};
+    Seconds time_{0.0};
     T value_{0};
 };
 
@@ -145,7 +145,7 @@ void ValueKeyframe<T>::deserialize(Deserializer& d) {
     }*/
     double tmp = time_.count();
     d.deserialize("time", tmp);
-    time_ = Time{tmp};
+    time_ = Seconds{tmp};
     d.deserialize("value", value_);
 }
 

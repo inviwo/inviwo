@@ -75,7 +75,7 @@ QRectF KeyframeQt::boundingRect() const {
 QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     // Only restrict movement on user interaction
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
-        keyframe_.setTime(Time(x() / static_cast<double>(WidthPerTimeUnit)));
+        keyframe_.setTime(Seconds(x() / static_cast<double>(WidthPerTimeUnit)));
         // Snap to frame per second
         auto snapToGrid = WidthPerTimeUnit / 24.0;
         qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;

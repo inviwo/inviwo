@@ -72,12 +72,12 @@ public:
     virtual void setPriority(size_t priority) = 0;
     virtual size_t getPriority() const = 0;
 
-    virtual Time firstTime() const = 0;
-    virtual Time lastTime() const = 0;
+    virtual Seconds firstTime() const = 0;
+    virtual Seconds lastTime() const = 0;
 
     virtual size_t size() const = 0;
 
-    virtual void operator()(Time from, Time to) const = 0;
+    virtual void operator()(Seconds from, Seconds to) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;
     virtual const KeyframeSequence& operator[](size_t i) const = 0;
@@ -104,7 +104,7 @@ public:
 class BaseTrackProperty {
 public:
     virtual void setProperty(Property* property) = 0;
-    virtual void addKeyFrameUsingPropertyValue(Time time) = 0;
+    virtual void addKeyFrameUsingPropertyValue(Seconds time) = 0;
 };
 
 template <typename Prop, typename Key>
@@ -164,16 +164,16 @@ public:
     };
     virtual size_t getPriority() const override {return priority_;}
 
-    virtual Time firstTime() const override {
+    virtual Seconds firstTime() const override {
         if (sequences_.empty()) {
-            return Time{ 0.0 };
+            return Seconds{ 0.0 };
         } else {
             return sequences_.front()->getFirst().getTime();
         }
     };
-    virtual Time lastTime() const override {
+    virtual Seconds lastTime() const override {
         if (sequences_.empty()) {
-            return Time{ 0.0 };
+            return Seconds{ 0.0 };
         } else {
             return sequences_.back()->getLast().getTime();
         }
@@ -185,7 +185,7 @@ public:
      * |- case 1-|-case 2----------------|-case 2----------|-case 2------|
      *           |-case 2a---|-case 2b---|
      */
-    virtual void operator()(Time from, Time to) const override {
+    virtual void operator()(Seconds from, Seconds to) const override {
         if (!enabled_ || sequences_.empty()) return;
 
         // 'it' will be the first seq. with a first time larger then 'to'.
@@ -315,7 +315,7 @@ public:
         }
     }
 
-    virtual void addKeyFrameUsingPropertyValue(Time time) override {
+    virtual void addKeyFrameUsingPropertyValue(Seconds time) override {
         if (sequences_.empty()) {
             KeyframeSequenceTyped<Key> sequence({{time, property_->get()}},
                                                 std::make_unique<LinearInterpolation<Key>>());

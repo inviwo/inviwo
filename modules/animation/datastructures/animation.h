@@ -51,7 +51,7 @@ public:
     Animation(const Animation&) = delete;
     Animation& operator=(const Animation& that) = delete;
 
-    void operator()(Time from, Time to) const;
+    void operator()(Seconds from, Seconds to) const;
 
     size_t size() const;
     Track& operator[](size_t i);
@@ -61,8 +61,8 @@ public:
     void remove(size_t i);
     void remove(const std::string& id);
 
-    Time firstTime() const;
-    Time lastTime() const;
+    Seconds firstTime() const;
+    Seconds lastTime() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

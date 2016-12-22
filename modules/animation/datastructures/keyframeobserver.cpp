@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-void KeyframeObservable::notifKeyframeTimeChanged(Keyframe* key, Time oldTime) {
+void KeyframeObservable::notifKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
 }
 

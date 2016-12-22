@@ -119,9 +119,9 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
         qreal xV = round(value.toPointF().x() / WidthPerFrame)*WidthPerFrame;
 
 
-        auto delta = Time((xV - x()) / static_cast<double>(WidthPerTimeUnit));
+        auto delta = Seconds((xV - x()) / static_cast<double>(WidthPerTimeUnit));
 
-        if (delta < Time(0.0)) {
+        if (delta < Seconds(0.0)) {
             // Do not allow it to move before t=0
             //xV = std::max(delta.count(), -keyframeSequence_.getFirst().getTime().count() /
             //                                 static_cast<double>(WidthPerTimeUnit));

@@ -57,7 +57,7 @@ void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
     if (e->pos().y() < TimelineHeight) {
         pressingOnTimeline_ = true;
         auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
-        controller_.setCurrentTime(Time(time));
+        controller_.setCurrentTime(Seconds(time));
     }
 
     QGraphicsView::mousePressEvent(e);
@@ -66,7 +66,7 @@ void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
 void AnimationViewQt::mouseMoveEvent(QMouseEvent* e) {
     if (pressingOnTimeline_) {
         auto time = e->pos().x() / static_cast<double>(WidthPerTimeUnit);
-        controller_.setCurrentTime(Time(time));
+        controller_.setCurrentTime(Seconds(time));
     }
 
     QGraphicsView::mouseMoveEvent(e);
@@ -171,7 +171,7 @@ void AnimationViewQt::onStateChanged(AnimationController* controller, AnimationS
     this->viewport()->update();
 }
 
-void AnimationViewQt::onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) {
+void AnimationViewQt::onTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime) {
     this->viewport()->update();
 }
 

@@ -60,9 +60,9 @@ auto bogusController = std::make_unique<AnimationController>(bogusAnim.get());
 
 void initBogus() {
     {
-        KeyframeSequenceTyped<FloatKey> s1{{{Time(0), 1.f}, {Time(1), 2.f}, {Time(4), 5.f}},
+        KeyframeSequenceTyped<FloatKey> s1{{{Seconds(0), 1.f}, {Seconds(1), 2.f}, {Seconds(4), 5.f}},
                                            std::make_unique<LinearInterpolation<FloatKey>>()};
-        KeyframeSequenceTyped<FloatKey> s2{{{Time(5), 2.f}, {Time(6), 1.f}},
+        KeyframeSequenceTyped<FloatKey> s2{{{Seconds(5), 2.f}, {Seconds(6), 1.f}},
                                            std::make_unique<LinearInterpolation<FloatKey>>()};
 
         auto track = std::make_unique<TrackProperty<FloatProperty, FloatKey>>(bogusFloatProp.get());
@@ -72,7 +72,7 @@ void initBogus() {
     }
 
     {
-        KeyframeSequenceTyped<Vec3Key> s1{{{Time(1), vec3(2)}, {Time(4), vec3(1)}},
+        KeyframeSequenceTyped<Vec3Key> s1{{{Seconds(1), vec3(2)}, {Seconds(4), vec3(1)}},
                                           std::make_unique<LinearInterpolation<Vec3Key>>()};
 
         auto track =

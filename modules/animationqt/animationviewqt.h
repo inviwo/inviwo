@@ -72,8 +72,8 @@ protected:
 
     virtual void onStateChanged(AnimationController* controller, AnimationState oldState,
                                 AnimationState newState) override;
-    virtual void onTimeChanged(AnimationController* controller, Time oldTime,
-                               Time newTime) override;
+    virtual void onTimeChanged(AnimationController* controller, Seconds oldTime,
+                               Seconds newTime) override;
 
     AnimationController& controller_;
     bool pressingOnTimeline_ = false;

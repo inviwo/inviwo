@@ -39,7 +39,7 @@ void AnimationControllerObservable::notifyStateChanged(AnimationController* cont
     forEachObserver([&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
 }
 
-void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller, Time oldtime, Time newTime) {
+void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller, Seconds oldtime, Seconds newTime) {
 	forEachObserver([&](AnimationControllerObserver* o) { o->onTimeChanged(controller, oldtime, newTime); });
 }
 

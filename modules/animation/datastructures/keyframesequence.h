@@ -103,7 +103,7 @@ public:
     virtual void add(const Keyframe& key) override;
     void add(const Key& key);
 
-    virtual auto operator()(Time from, Time to) const -> typename Key::value_type;
+    virtual auto operator()(Seconds from, Seconds to) const -> typename Key::value_type;
 
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
     void setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation);
@@ -114,7 +114,7 @@ public:
 private:
     void addKeyFrame(std::unique_ptr<Key> key);
 
-    virtual void onKeyframeTimeChanged(Keyframe* key, Time oldTime) override;
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
     std::vector<std::unique_ptr<Key>> keyframes_;
     std::unique_ptr<InterpolationTyped<Key>> interpolation_;
@@ -182,7 +182,7 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(const Keyframe
 
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Time oldTime) {
+void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     const auto startTime = keyframes_.front()->getTime();
     const auto endTime = keyframes_.back()->getTime();
 
@@ -211,7 +211,7 @@ void KeyframeSequenceTyped<Key>::setInterpolation(
 }
 
 template <typename Key>
-auto KeyframeSequenceTyped<Key>::operator()(Time from, Time to) const -> typename Key::value_type {
+auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const -> typename Key::value_type {
     if (interpolation_) {
         return (*interpolation_)(keyframes_, to);
     } else {
