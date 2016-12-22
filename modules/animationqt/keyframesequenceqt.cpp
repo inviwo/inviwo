@@ -54,7 +54,7 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence)
         keyframeQt->setPos(QPointF(keyframe.getTime().count() * WidthPerSecond, 0));
     }
 
-    updateRect();
+	prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -73,14 +73,14 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     painter->setPen(pen);
     painter->setBrush(brush);
 
-    painter->drawRect(rect_);
+    painter->drawRect(boundingRect());
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
     auto keyframeQt = new KeyframeQt(*key);
     keyframeQt->setParentItem(this);
     keyframeQt->setPos(QPointF(key->getTime().count() * WidthPerSecond, 0));
-    updateRect();
+	prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
@@ -91,23 +91,14 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
     });
     if (toRemove != children.end()) {
         (*toRemove)->setParentItem(nullptr);
-        updateRect();
+		prepareGeometryChange();
     }
 }
 
-void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { updateRect(); }
+void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { prepareGeometryChange(); }
 
-QRectF KeyframeSequenceQt::boundingRect() const { return rect_; }
-
-void KeyframeSequenceQt::updateRect() {
-    auto startTime = keyframeSequence_.getFirst().getTime().count();
-    auto endTime = keyframeSequence_.getLast().getTime().count();
-
-    auto l = startTime * WidthPerSecond;
-    auto t = -TrackHeight / 2.0;
-    auto w = (endTime - startTime) * WidthPerSecond;
-    auto h = TrackHeight;
-    rect_ = QRectF(l, t, w, h);
+QRectF KeyframeSequenceQt::boundingRect() const {
+	return childrenBoundingRect();
 }
 
 QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {

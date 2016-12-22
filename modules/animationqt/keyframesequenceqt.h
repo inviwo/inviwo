@@ -61,15 +61,11 @@ public:
 
 protected:
     virtual void onKeyframeAdded(Keyframe* key);
-    ;
     virtual void onKeyframeRemoved(Keyframe* key);
-    ;
     virtual void onKeyframeSequenceMoved(KeyframeSequence* key);
-    ;
 
     virtual QRectF boundingRect() const;
 
-    void updateRect();
     // Move all keyframes, restrict vertical movement and snap to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     KeyframeSequence& keyframeSequence_;

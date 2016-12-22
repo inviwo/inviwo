@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animationqt/keyframesequenceqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animation/datastructures/keyframe.h>
 
@@ -46,6 +47,7 @@ namespace animation {
 
 KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
     setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemSendsGeometryChanges);
+	keyframe_.addObserver(this);
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -66,6 +68,11 @@ void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     int hs = static_cast<int>(KeyframeWidth / 2.0f);
     QPoint p[4] = {{-hs, 0}, {0, -hs}, {hs, 0}, {0, hs}};
     painter->drawPolygon(p, 4);
+}
+
+void KeyframeQt::onKeyframeTimeChanged(Keyframe * key, Seconds oldTime) {
+	//parentItem()->update();
+	scene()->invalidate(); // Perhaps too much?
 }
 
 QRectF KeyframeQt::boundingRect() const {

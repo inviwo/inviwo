@@ -31,6 +31,7 @@
 #define IVW_KEYFRAMEQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
@@ -49,7 +50,7 @@ class Keyframe;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem {
+class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem, public KeyframeObserver {
 public:
     KeyframeQt(Keyframe& keyframe);
     virtual ~KeyframeQt() = default;
@@ -60,6 +61,8 @@ public:
     const Keyframe& getKeyframe() const { return keyframe_; }
 
 protected:
+	virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
+
     virtual QRectF boundingRect() const;
     // Restrict vertical movement and snap keyframe to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
