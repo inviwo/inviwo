@@ -193,9 +193,11 @@ public:
             sequences_.begin(), sequences_.end(), to,
             [](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
 
-        if (it == sequences_.begin() && from > (*it)->getFirst().getTime()) { // case 1
-             property_->set((*it)->getFirst().getValue());      
-        } else {                                                              // case 2
+        if (it == sequences_.begin()) {
+            if (from > (*it)->getFirst().getTime()) {  // case 1
+                property_->set((*it)->getFirst().getValue());
+            }
+        } else {                                       // case 2
             auto& seq1 = *std::prev(it);
 
             if (to < seq1->getLast().getTime() ) {                              // case 2a
@@ -211,7 +213,7 @@ public:
                 // we moved in an unmarked region, do nothing.
             }
         }
-    };
+    }
 
     const Prop* getProperty() const { return property_; }
     Prop* getProperty() {return property_; }
