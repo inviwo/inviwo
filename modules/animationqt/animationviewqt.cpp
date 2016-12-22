@@ -54,10 +54,9 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
-    if (e->pos().y() < TimelineHeight) {
+    if (e->y() < TimelineHeight) {
         pressingOnTimeline_ = true;
-        auto time = e->pos().x() / static_cast<double>(WidthPerSecond);
-        controller_.setCurrentTime(Seconds(time));
+        setTimelinePos(e->x());
     }
 
     QGraphicsView::mousePressEvent(e);
@@ -65,8 +64,7 @@ void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
 
 void AnimationViewQt::mouseMoveEvent(QMouseEvent* e) {
     if (pressingOnTimeline_) {
-        auto time = e->pos().x() / static_cast<double>(WidthPerSecond);
-        controller_.setCurrentTime(Seconds(time));
+        setTimelinePos(e->x());
     }
 
     QGraphicsView::mouseMoveEvent(e);
@@ -94,6 +92,11 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
     e->accept();
 }
 
+void AnimationViewQt::setTimelinePos(int x) {
+    auto time = mapToScene(x, 0).x() / static_cast<double>(WidthPerSecond);
+    controller_.setCurrentTime(Seconds(time));
+}
+
 void AnimationViewQt::zoom(double dz) { scale(dz, 1.0); }
 
 void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
@@ -102,6 +105,7 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     // overlay grid
     int gridSpacing = WidthPerSecond;
     QRectF sRect = frameRect();
+    sRect.setWidth(std::max(sceneRect().width(), rect.width()));
     qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
     QVarLengthArray<QLineF, 100> lines;
 
@@ -148,12 +152,16 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     painter->setPen(gridPen);
     painter->drawLines(lines.data(), lines.size());
 
+    // Little hack to render text with correct scale
+    painter->save();
+    painter->resetTransform();
     // Time stamps
-    char buf[16];
+    char buf[32];
     for (const auto& p : points) {
-        snprintf(buf, 16, "%.4f", p.x() / static_cast<double>(WidthPerSecond));
-        painter->drawText(p, QString(buf));
+        snprintf(buf, 32, "%.4f", p.x() / static_cast<double>(WidthPerSecond));
+        painter->drawText(mapFromScene(p.x(), p.y()), QString(buf));
     }
+    painter->restore();
 
     // Current time
     auto x = controller_.getCurrentTime().count() * WidthPerSecond;

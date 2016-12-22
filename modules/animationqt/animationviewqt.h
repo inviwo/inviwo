@@ -64,6 +64,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* e);
     void wheelEvent(QWheelEvent* e);
 
+    void setTimelinePos(int x);
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
