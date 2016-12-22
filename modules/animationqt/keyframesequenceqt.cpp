@@ -104,23 +104,40 @@ void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { prepar
 
 QRectF KeyframeSequenceQt::boundingRect() const { return childrenBoundingRect(); }
 
+inviwo::animation::KeyframeQt* KeyframeSequenceQt::getKeyframeQt(const Keyframe* keyframe) const {
+    auto children = childItems();
+    auto found = std::find_if(children.begin(), children.end(), [&](auto& child) {
+        auto keyframeQt = dynamic_cast<KeyframeQt*>(child);
+        return keyframeQt && (&(keyframeQt->getKeyframe()) == keyframe);
+    });
+    if (found != children.end()) {
+        return static_cast<KeyframeQt*>(*found);
+    } else {
+        return nullptr;
+    }
+}
+
 QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     // Only restrict movement on user interaction
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
         // Snap to frame per second
         double xV = round(value.toPointF().x() / WidthPerFrame) * WidthPerFrame;
         auto dt = Seconds((xV - x()) / static_cast<double>(WidthPerSecond));
-
+        
         if (dt < Seconds(0.0)) {
             // Do not allow it to move before t=0
             auto maxMove = -keyframeSequence_.getFirst().getTime().count();
             dt = Seconds(std::max(dt.count(), maxMove));
             xV = x() + dt.count() * static_cast<double>(WidthPerSecond);
             for (auto i = 0; i < keyframeSequence_.size(); ++i) {
+                // Prevent KeyframeQt from updating position since
+                // it is given relative to this sequence
+                KeyframeQtLock lock(getKeyframeQt(&keyframeSequence_[i]));
                 keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
             }
         } else {
             for (int i = static_cast<int>(keyframeSequence_.size() - 1); i >= 0; --i) {
+                KeyframeQtLock lock(getKeyframeQt(&keyframeSequence_[i]));
                 keyframeSequence_[i].setTime(keyframeSequence_[i].getTime() + dt);
             }
         }

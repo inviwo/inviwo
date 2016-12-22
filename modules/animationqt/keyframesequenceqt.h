@@ -44,6 +44,7 @@ namespace inviwo {
 namespace animation {
 
 class KeyframeSequence;
+class KeyframeQt;
 
 /**
 * \class KeyframeSequenceQt
@@ -65,6 +66,14 @@ protected:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* key);
 
     virtual QRectF boundingRect() const;
+
+    /** 
+     * \brief Get the KeyframeQt corresponding to the given keyframe
+     * 
+     * @param keyframe The keyframe to search for
+     * @return KeyframeQt containing the keyframe or null if not found.  
+     */
+    KeyframeQt* getKeyframeQt(const Keyframe* keyframe) const;
 
     // Move all keyframes, restrict vertical movement and snap to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value);

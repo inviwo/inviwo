@@ -70,9 +70,27 @@ void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     painter->drawPolygon(p, 4);
 }
 
+void KeyframeQt::lock() {
+    isEditing_ = true;
+}
+
+void KeyframeQt::unlock() {
+    isEditing_ = false;
+}
+
+bool KeyframeQt::islocked() const {
+    return isEditing_;
+}
+
 void KeyframeQt::onKeyframeTimeChanged(Keyframe * key, Seconds oldTime) {
-	//parentItem()->update();
-	scene()->invalidate(); // Perhaps too much?
+    if (!isEditing_) {
+        KeyframeQtLock lock(this);
+        auto newPos = mapFromScene(QPointF(key->getTime().count()*static_cast<double>(WidthPerSecond), y()));
+        if (newPos != pos()) {
+            setPos(newPos);
+        }
+    }
+
 }
 
 QRectF KeyframeQt::boundingRect() const {
@@ -82,17 +100,31 @@ QRectF KeyframeQt::boundingRect() const {
 QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     // Only restrict movement on user interaction
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
-        keyframe_.setTime(Seconds(x() / static_cast<double>(WidthPerSecond)));
+        
         // Snap to frame per second
         auto snapToGrid = WidthPerSecond / 24.0;
-        qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
+        //qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
+        qreal xV = value.toPointF().x();
         // Do not allow it to move before t=0
-        xV = std::max(xV, 0.0);
+        xV = mapFromScene(std::max(mapToScene(xV, 0).x(), 0.0), 0).x();
+        if (!isEditing_) {
+            KeyframeQtLock lock(this);
+            keyframe_.setTime(Seconds(mapToScene(xV, 0).x() / static_cast<double>(WidthPerSecond)));
+        }
+        
         // Restrict vertical movement
         return QPointF(xV, y());
     }
 
     return QGraphicsItem::itemChange(change, value);
+}
+
+KeyframeQtLock::KeyframeQtLock(KeyframeQt* keyframe) : keyframe_(keyframe) {
+    if (keyframe_) keyframe_->lock();
+}
+
+KeyframeQtLock::~KeyframeQtLock() {
+    if (keyframe_) keyframe_->unlock();
 }
 
 }  // namespace
