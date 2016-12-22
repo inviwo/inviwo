@@ -59,30 +59,32 @@ auto bogusAnim = std::make_unique<Animation>();
 auto bogusController = std::make_unique<AnimationController>(bogusAnim.get());
 
 void initBogus() {
-	{
-		KeyframeSequenceTyped<FloatKey> s1{ { { Time(0), 1.f },{ Time(1), 2.f },{ Time(4), 5.f } }, std::make_unique<LinearInterpolation<FloatKey>>() };
-		KeyframeSequenceTyped<FloatKey> s2{ { { Time(5), 2.f },{ Time(6), 1.f } }, std::make_unique<LinearInterpolation<FloatKey>>() };
+    {
+        KeyframeSequenceTyped<FloatKey> s1{{{Time(0), 1.f}, {Time(1), 2.f}, {Time(4), 5.f}},
+                                           std::make_unique<LinearInterpolation<FloatKey>>()};
+        KeyframeSequenceTyped<FloatKey> s2{{{Time(5), 2.f}, {Time(6), 1.f}},
+                                           std::make_unique<LinearInterpolation<FloatKey>>()};
 
-		auto track = std::make_unique<TrackProperty<FloatProperty, FloatKey>>(bogusFloatProp.get());
-		track->add(s1);
-		track->setName("Lame ass float track");
-		bogusAnim->add(std::move(track));
-	}
+        auto track = std::make_unique<TrackProperty<FloatProperty, FloatKey>>(bogusFloatProp.get());
+        track->add(s1);
+        track->setName("Lame ass float track");
+        bogusAnim->add(std::move(track));
+    }
 
-	{
-		KeyframeSequenceTyped<Vec3Key> s1{ { { Time(1), vec3(2) },{ Time(4), vec3(1) } }, std::make_unique<LinearInterpolation<Vec3Key>>() };
+    {
+        KeyframeSequenceTyped<Vec3Key> s1{{{Time(1), vec3(2)}, {Time(4), vec3(1)}},
+                                          std::make_unique<LinearInterpolation<Vec3Key>>()};
 
-		auto track = std::make_unique<TrackProperty<FloatVec3Property, Vec3Key>>(bogusVec3Prop.get());
-		track->add(s1);
-		track->setName("Lame ass vec3 track");
-		bogusAnim->add(std::move(track));
-	}
+        auto track =
+            std::make_unique<TrackProperty<FloatVec3Property, Vec3Key>>(bogusVec3Prop.get());
+        track->add(s1);
+        track->setName("Lame ass vec3 track");
+        bogusAnim->add(std::move(track));
+    }
 }
 // --- END OF BOGUS ---
 
-
-AnimationQtModule::AnimationQtModule(InviwoApplication* app) 
-    : InviwoModule(app, "AnimationQt") {
+AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app, "AnimationQt") {
 
     if (auto win = utilqt::getApplicationMainWindow()) {
         initBogus();
@@ -101,48 +103,14 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             // Add new menu if not found
             menu = win->menuBar()->addMenu(animationMenuName);
         }
-		auto& controller = app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
         controller.setAnimation(bogusAnim.release());
+        auto& controller =
+            app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
         auto editor =
             new animation::AnimationEditorDockWidgetQt(controller, "Animation Editor", win);
         menu->addAction(editor->toggleViewAction());
         editor->hide();
     }
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
-    
-    // Processors
-    // registerProcessor<AnimationQtProcessor>();
-    
-    // Properties
-    // registerProperty<AnimationQtProperty>();
-    
-    // Readers and writes
-    // registerDataReader(util::make_unique<AnimationQtReader>());
-    // registerDataWriter(util::make_unique<AnimationQtWriter>());
-    
-    // Data converters
-    // registerRepresentationConverter(util::make_unique<AnimationQtDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<AnimationQtOutport>("AnimationQtOutport");
-    // registerPort<AnimationQtInport>("AnimationQtInport");
-
-    // PropertyWidgets
-    // registerPropertyWidget<AnimationQtPropertyWidget, AnimationQtProperty>("Default");
-    
-    // Dialogs
-    // registerDialog<AnimationQtDialog>(AnimationQtOutport);
-    
-    // Other varius things
-    // registerCapabilities(util::make_unique<AnimationQtCapabilities>());
-    // registerSettings(util::make_unique<AnimationQtSettings>());
-    // registerMetaData(util::make_unique<AnimationQtMetaData>());   
-    // registerPortInspector("AnimationQtOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<AnimationQtDrawer>());  
 }
 
 AnimationQtModule::~AnimationQtModule() {

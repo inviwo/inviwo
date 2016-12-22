@@ -49,13 +49,13 @@ class Track;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem { 
+class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem {
 public:
     TrackQt(Track& track);
     virtual ~TrackQt() = default;
-    virtual void paint(QPainter* painter,
-        const QStyleOptionGraphicsItem* options,
-        QWidget* widget) override;
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
+
 protected:
     virtual QRectF boundingRect() const;
     Track& track_;

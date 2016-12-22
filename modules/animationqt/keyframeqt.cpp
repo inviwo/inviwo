@@ -45,30 +45,31 @@ namespace inviwo {
 namespace animation {
 
 KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
-    setFlags(ItemIsMovable | ItemSendsGeometryChanges);
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-	QWidget* widget) {
-	IVW_UNUSED_PARAM(options);
-	IVW_UNUSED_PARAM(widget);
-	painter->setRenderHint(QPainter::Antialiasing, true);
-	QPen pen = QPen();
-	pen.setWidthF(1);
-	pen.setCosmetic(true);
-	pen.setCapStyle(Qt::RoundCap);
-	pen.setStyle(Qt::SolidLine);
-	isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-	QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
-	painter->setPen(pen);
-	painter->setBrush(brush);
+                       QWidget* widget) {
+    IVW_UNUSED_PARAM(options);
+    IVW_UNUSED_PARAM(widget);
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    QPen pen = QPen();
+    pen.setWidthF(1);
+    pen.setCosmetic(true);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setStyle(Qt::SolidLine);
+    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
+    QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
+    painter->setPen(pen);
+    painter->setBrush(brush);
 
-	int hs = static_cast<int>(KeyframeWidth / 2.0f);
-	QPoint p[4] = { {-hs, 0}, {0, -hs}, {hs, 0}, {0, hs} };
-	painter->drawPolygon(p, 4);
+    int hs = static_cast<int>(KeyframeWidth / 2.0f);
+    QPoint p[4] = {{-hs, 0}, {0, -hs}, {hs, 0}, {0, hs}};
+    painter->drawPolygon(p, 4);
 }
 
-QRectF KeyframeQt::boundingRect() const { return QRectF(-KeyframeWidth / 2.0f, -KeyframeHeight / 2.0f, KeyframeWidth, KeyframeHeight); }
+QRectF KeyframeQt::boundingRect() const {
+    return QRectF(-KeyframeWidth / 2.0f, -KeyframeHeight / 2.0f, KeyframeWidth, KeyframeHeight);
+}
 
 QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     // Only restrict movement on user interaction
@@ -76,10 +77,10 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
         keyframe_.setTime(Time(x() / static_cast<double>(WidthPerTimeUnit)));
         // Snap to frame per second
         auto snapToGrid = WidthPerTimeUnit / 24.0;
-        qreal xV = round(value.toPointF().x() / snapToGrid)*snapToGrid;
+        qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
         // Do not allow it to move before t=0
         xV = xV < 0 ? 0.f : xV;
-        // Restrict vertical movement 
+        // Restrict vertical movement
         return QPointF(xV, y());
     }
 

@@ -52,24 +52,28 @@ class TimelineViewQt;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget, public AnimationControllerObserver { 
+class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
+                                                               public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName, QWidget *parent);
+    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName,
+                                QWidget* parent);
     virtual ~AnimationEditorDockWidgetQt() = default;
+
 protected:
     void generateWidget();
 
-	virtual void onStateChanged(AnimationController* controller, AnimationState prevState, AnimationState newState) override;
+    virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
+                                AnimationState newState) override;
 
-	AnimationController& controller_;
+    AnimationController& controller_;
 
-	// GUI-stuff
-	QToolButton* btnPlayPause_;
-	QToolButton* btnStop_;
-	AnimationEditorQt* animationEditor_;
-	AnimationViewQt* animationView_;
-	AnimationLabelViewQt* animationLabelView_;
-	TimelineViewQt* timelineView_;
+    // GUI-stuff
+    QToolButton* btnPlayPause_;
+    QToolButton* btnStop_;
+    AnimationEditorQt* animationEditor_;
+    AnimationViewQt* animationView_;
+    AnimationLabelViewQt* animationLabelView_;
+    TimelineViewQt* timelineView_;
 };
 
 } // namespace

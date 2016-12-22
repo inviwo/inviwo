@@ -56,20 +56,20 @@ class Animation;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView, public AnimationObserver {
 public:
-	AnimationLabelViewQt(Animation& animation);
+    AnimationLabelViewQt(Animation& animation);
     virtual ~AnimationLabelViewQt() = default;
 
 protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
 
-	virtual void onTrackAdded(Track* track) override;
-	virtual void onTrackRemoved(Track* track) override;
+    virtual void onTrackAdded(Track* track) override;
+    virtual void onTrackRemoved(Track* track) override;
 
-	Animation& animation_;
-	QStringListModel* model_;
-	QStringList list_;
+    Animation& animation_;
+    QStringListModel* model_;
+    QStringList list_;
 };
 
 }  // namespace

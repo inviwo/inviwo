@@ -44,46 +44,43 @@ namespace animation {
 constexpr auto LineWidth = 0.5;
 
 AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
-	: QListView()
-	, animation_(animation) {
-	setMouseTracking(true);
-	animation_.addObserver(this);
-	model_ = new QStringListModel(this);
+    : QListView(), animation_(animation) {
+    setMouseTracking(true);
+    animation_.addObserver(this);
+    model_ = new QStringListModel(this);
 
-	for (size_t i = 0; i < animation_.size(); ++i) {
-		list_.append(QString(animation_[i].getIdentifier().c_str()));
-	}
+    for (size_t i = 0; i < animation_.size(); ++i) {
+        list_.append(QString(animation_[i].getIdentifier().c_str()));
+    }
 
-	model_->setStringList(list_);
-	setModel(model_);
+    model_->setStringList(list_);
+    setModel(model_);
 }
 
 void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
-    //LogWarnCustom("AnimationEditor", "Pressed mouse");
+    // LogWarnCustom("AnimationEditor", "Pressed mouse");
 
     QListView::mousePressEvent(e);
 }
 
 void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
-    //LogWarnCustom("AnimationEditor", "Moved mouse");
+    // LogWarnCustom("AnimationEditor", "Moved mouse");
 
-	QListView::mouseMoveEvent(e);
+    QListView::mouseMoveEvent(e);
 }
 
 void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
-    //LogWarnCustom("AnimationEditor", "Released mouse");
+    // LogWarnCustom("AnimationEditor", "Released mouse");
 
-	QListView::mouseReleaseEvent(e);
+    QListView::mouseReleaseEvent(e);
 }
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
-	list_.append(QString(track->getName().c_str()));
-	model_->setStringList(list_);
+    list_.append(QString(track->getName().c_str()));
+    model_->setStringList(list_);
 }
 
-void AnimationLabelViewQt::onTrackRemoved(Track* track) {
-
-}
+void AnimationLabelViewQt::onTrackRemoved(Track* track) {}
 
 }  // namespace
 

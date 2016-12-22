@@ -47,8 +47,8 @@ constexpr int TrackHeight = 25;
 constexpr int TimelineHeight = TrackHeight;
 constexpr int KeyframeWidth = 15;
 constexpr int KeyframeHeight = TrackHeight;
-constexpr int WidthPerTimeUnit = 96; 
-constexpr int WidthPerFrame = WidthPerTimeUnit/24;
+constexpr int WidthPerTimeUnit = 96;
+constexpr int WidthPerFrame = WidthPerTimeUnit / 24;
 
 class AnimationController;
 
@@ -58,13 +58,14 @@ class AnimationController;
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene, public AnimationObserver {
+class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
+                                                     public AnimationObserver {
 public:
     AnimationEditorQt(AnimationController& controller);
     virtual ~AnimationEditorQt() = default;
 
-	virtual void onTrackAdded(Track* track) override;
-	virtual void onTrackRemoved(Track* track) override;
+    virtual void onTrackAdded(Track* track) override;
+    virtual void onTrackRemoved(Track* track) override;
 
 protected:
     AnimationController& controller_;

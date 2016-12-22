@@ -50,7 +50,8 @@ class KeyframeSequence;
 * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
 * DESCRIBE_THE_CLASS
 */
-class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem, public KeyframeSequenceObserver {
+class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem,
+                                                      public KeyframeSequenceObserver {
 public:
     KeyframeSequenceQt(KeyframeSequence& keyframeSequence);
     virtual ~KeyframeSequenceQt() = default;
@@ -59,17 +60,20 @@ public:
                        QWidget* widget) override;
 
 protected:
-	virtual void onKeyframeAdded(Keyframe* key);;
-	virtual void onKeyframeRemoved(Keyframe* key);;
-	virtual void onKeyframeSequenceMoved(KeyframeSequence* key);;
+    virtual void onKeyframeAdded(Keyframe* key);
+    ;
+    virtual void onKeyframeRemoved(Keyframe* key);
+    ;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* key);
+    ;
 
     virtual QRectF boundingRect() const;
 
-	void updateRect();
+    void updateRect();
     // Move all keyframes, restrict vertical movement and snap to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     KeyframeSequence& keyframeSequence_;
-	QRectF rect_;
+    QRectF rect_;
 };
 
 }  // namespace

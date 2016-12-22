@@ -41,8 +41,6 @@ class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
-    
-    //animation::Animation animation_;
 };
 
 } // namespace

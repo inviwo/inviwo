@@ -47,31 +47,29 @@ namespace animation {
 static constexpr double LineWidth = 0.5;
 
 AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
-    : QGraphicsScene(),
-	controller_(controller) {
-	auto& animation = *controller_.getAnimation();
-	animation.addObserver(this);
+    : QGraphicsScene(), controller_(controller) {
+    auto& animation = *controller_.getAnimation();
+    animation.addObserver(this);
 
     for (size_t i = 0; i < animation.size(); ++i) {
         auto& track = animation[i];
         auto trackQt = new TrackQt(track);
-		trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
+        trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
         this->addItem(trackQt);
     }
 
-	setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerTimeUnit, animation.size() * TrackHeight + TimelineHeight);
+    setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerTimeUnit,
+                 animation.size() * TrackHeight + TimelineHeight);
 }
 
 void AnimationEditorQt::onTrackAdded(Track* track) {
-	auto trackQt = new TrackQt(*track);
-	auto i = items().size();
-	trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
-	this->addItem(trackQt);
+    auto trackQt = new TrackQt(*track);
+    auto i = items().size();
+    trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
+    this->addItem(trackQt);
 }
 
-void AnimationEditorQt::onTrackRemoved(Track* track) {
-
-}
+void AnimationEditorQt::onTrackRemoved(Track* track) {}
 
 }  // namespace
 

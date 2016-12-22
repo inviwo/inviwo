@@ -52,28 +52,31 @@ class AnimationController;
  * DESCRIBE_THE_CLASS
  */
 
-class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView, public AnimationControllerObserver {
+class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView,
+                                                   public AnimationControllerObserver {
 public:
     AnimationViewQt(AnimationController& controller);
     virtual ~AnimationViewQt() = default;
 
 protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
-	void wheelEvent(QWheelEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
+    void wheelEvent(QWheelEvent* e);
 
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
-	virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
+    virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
-	//virtual void setupViewport(QWidget* widget) override;
+    // virtual void setupViewport(QWidget* widget) override;
 
-	virtual void onStateChanged(AnimationController* controller, AnimationState oldState, AnimationState newState) override;
-	virtual void onTimeChanged(AnimationController* controller, Time oldTime, Time newTime) override;
+    virtual void onStateChanged(AnimationController* controller, AnimationState oldState,
+                                AnimationState newState) override;
+    virtual void onTimeChanged(AnimationController* controller, Time oldTime,
+                               Time newTime) override;
 
-	AnimationController& controller_;
-	bool pressingOnTimeline_ = false;
+    AnimationController& controller_;
+    bool pressingOnTimeline_ = false;
 };
 
 }  // namespace
