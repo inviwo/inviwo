@@ -74,7 +74,9 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
     painter->setPen(pen);
     painter->setBrush(brush);
-    painter->drawRect(boundingRect());
+    auto rect = boundingRect();
+    rect.adjust(0.5*KeyframeWidth, 0, -0.5*KeyframeWidth, 0);
+    painter->drawRect(rect);
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
