@@ -142,7 +142,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         float d = texture(bgDepth,texCoords).x;
         if(tDepth == 1 || d < tDepth){
             result = vec4(0);
-            result = drawBG(texture(bgColor,texCoords),0,0,result,0);
+            result = drawBackground(texture(bgColor,texCoords),0,0,result,0);
             tDepth = d;
         }
     }

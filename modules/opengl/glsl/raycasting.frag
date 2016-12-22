@@ -86,7 +86,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
 
     float bgTDepth = -1;
-    if(true){ //always on while testing, add better check
+    #ifdef HAS_BG
+    {
         float depthV = texture(bgDepth,texCoords).x;
         if(depthV!=1){ // convert to raycasting depth
             bgTDepth = calculateTValueFromDepthValue(camera, depthV, texture(entryDepth, texCoords).x,
@@ -97,13 +98,14 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     if(bgTDepth<0 ){
         result = texture(bgColor, texCoords);
     }
+    #endif
 
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
 
-        result = DRAW_BG(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
+        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
         result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
 
         if (color.a > 0) {
@@ -136,7 +138,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
 
     if(bgTDepth > tEnd){
-        result = DRAW_BG(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
+        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
     }
 
     gl_FragDepth = tDepth;

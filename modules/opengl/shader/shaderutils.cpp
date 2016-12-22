@@ -261,10 +261,10 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
 }
 
 void addShaderDefinesBGPort(Shader& shader,ImageInport port){
-    std::string bgKey = "DRAW_BG(result,t,tIncr,color,bgTDepth)";
+    std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth)";
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("HAS_BG");
-        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBG(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);");
+        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);");
     }
     else {
         shader.getFragmentShaderObject()->removeShaderDefine("HAS_BG");
