@@ -49,16 +49,26 @@ std::vector<std::string> registerAllModules() {
         } else if (dyn->d_tag == DT_RPATH) {
             rPath = dyn;
         } else if (dyn->d_tag == DT_STRTAB) {
-            offset = static_cast<const char *>(dyn->d_un.d_val);
+            offset = (const char *)dyn->d_un.d_val;
         }
     }
     if (offset) {
         // Prioritize DT_RUNPATH, DT_RPATH is deprecated
         if (runPath) {
             auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
+            auto execPath = inviwo::filesystem::getExecutablePath();
+            for (auto& path:rPaths) {
+                replaceInString(path, "$ORIGIN",
+                                execPath);
+            }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         } else if (rPath) {
             auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
+            auto execPath = inviwo::filesystem::getExecutablePath();
+            for (auto& path:rPaths) {
+                replaceInString(path, "$ORIGIN",
+                                execPath);
+            }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         }
     }
