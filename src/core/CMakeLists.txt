@@ -577,6 +577,10 @@ if(APPLE)
    mark_as_advanced(CORESERVICES_LIBRARY)
    target_link_libraries(inviwo-core ${CORESERVICES_LIBRARY})
 endif (APPLE)
+if(UNIX)
+    # Required for dlopen
+    target_link_libraries(inviwo-core ${CMAKE_DL_LIBS})
+endif(UNIX)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize()
