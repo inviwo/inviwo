@@ -89,7 +89,11 @@ void util::validateIdentifier(const std::string& identifier, const std::string& 
 
 std::string util::stripModuleFileNameDecoration(std::string filePath) {
     auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+#if defined(WIN32)
     auto decoration = std::string("inviwo-module-");
+#else
+    auto decoration = std::string("libinviwo-module-");
+#endif
     auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
     if (inviwoModulePos == std::string::npos) {
         inviwoModulePos = 0;
