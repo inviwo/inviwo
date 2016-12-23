@@ -5,6 +5,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #if defined(__unix__)
 #include <elf.h> // To retrieve rpath
+#include <link.h>
 #endif
 
 namespace inviwo {
