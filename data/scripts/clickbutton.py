@@ -1,5 +1,3 @@
-# Inviwo Python script 
-import inviwo 
-
-inviwo.clickButton("CanvasGL.saveLayer") 
+import inviwopy
+inviwopy.app.network.eep.camera.near.set(0.09)
 

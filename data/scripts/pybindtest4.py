@@ -1,11 +1,14 @@
-#Inviwo Python script 
 import inviwopy
+from inviwopy.glm import *
+inviwopy.app.network.Background.color1.set(vec4(1,1,0,1))
+inviwopy.app.network.Background.color2.set(vec4(1,0,1,1))
 
-help('inviwopy') 
-app = inviwopy.getApp();
-network = app.getProcessorNetwork();
-processor = network.getProcessors()[0];
+print(inviwopy)
+print(inviwopy.app)
+print(inviwopy.app.network)
+print(inviwopy.app.network.VolumeRaycaster)
+print(inviwopy.app.network.VolumeRaycaster.raycaster)
+print(inviwopy.app.network.VolumeRaycaster.raycaster.samplingRate)
+inviwopy.app.network.VolumeRaycaster.raycaster.getPropertyByIdentifier("samplingRate").set(2)
+#inviwopy.app.network.VolumeRaycaster.raycaster.samplingRate.set(2)
 
-asdf = inviwopy.FloatProperty("asdasdff","qwer",0.5,0,1,0.001)
-
-processor.addProperty(asdf)
