@@ -45,11 +45,11 @@ std::vector<std::string> registerAllModules() {
     const char *offset = nullptr;
     for (const ElfW(Dyn) *dyn = _DYNAMIC; dyn->d_tag != DT_NULL; ++dyn) {
         if (dyn->d_tag == DT_RUNPATH) {
-            *runPath = dyn->d_tag
+            runPath = dyn;
         } else if (dyn->d_tag == DT_RPATH) {
             rPath = dyn;
         } else if (dyn->d_tag == DT_STRTAB) {
-            offset = (const char *)dyn->d_un.d_val;
+            offset = static_cast<const char *>(dyn->d_un.d_val);
         }
     }
     if (offset) {
