@@ -32,24 +32,45 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsScene>
+#include <warn/pop>
+
 namespace inviwo {
 
 namespace animation {
 
 TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
     for (size_t i = 0; i < track_.size(); ++i) {
-        auto& sequence = track_[i];
-        auto sequenceQt = new KeyframeSequenceQt(sequence);
-
-        // auto sequenceWidth = sequence.getLast().getTime().count() -
-        // sequence.getFirst().getTime().count();
-        sequenceQt->setParentItem(this);
+        sequences_.push_back(std::make_unique<KeyframeSequenceQt>(track_[i], this));
     }
 }
 
+TrackQt::~TrackQt() = default;
+
 void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {}
 
+Track& TrackQt::getTrack() { return track_; }
+
+const Track& TrackQt::getTrack() const { return track_; }
+
 QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
+
+void TrackQt::onKeyframeSequenceAdded(KeyframeSequence* s) {
+    sequences_.push_back(std::make_unique<KeyframeSequenceQt>(*s, this));
+}
+
+void TrackQt::onKeyframeSequenceRemoved(KeyframeSequence* sequence) {
+    util::erase_remove_if(sequences_, [&](auto& sequenceqt) {
+        if (&(sequenceqt->getKeyframeSequence()) == sequence) {
+            scene()->removeItem(sequenceqt.get());
+            return true;
+        } else {
+            return false;
+        }
+    });
+}
 
 }  // namespace
 

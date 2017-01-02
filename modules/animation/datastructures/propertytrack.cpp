@@ -27,60 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-#define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/animationcontroller.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-
-class QToolButton;
+#include <modules/animation/datastructures/propertytrack.h>
 
 namespace inviwo {
 
-namespace animation {
-
-class AnimationEditorQt;
-class AnimationViewQt;
-class AnimationLabelViewQt;
-class TimelineViewQt;
-
-/**
- * \class AnimationEditorDockWidgetQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
-                                                               public AnimationControllerObserver {
-public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName,
-                                QWidget* parent);
-    virtual ~AnimationEditorDockWidgetQt();
-
-protected:
-    void generateWidget();
-
-    virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
-                                AnimationState newState) override;
-
-    virtual void closeEvent(QCloseEvent *event) override;
-
-    AnimationController& controller_;
-
-    // GUI-stuff
-    QToolButton* btnPlayPause_;
-    QToolButton* btnStop_;
-    std::unique_ptr<AnimationEditorQt> animationEditor_;
-    AnimationViewQt* animationView_;
-    AnimationLabelViewQt* animationLabelView_;
-    TimelineViewQt* timelineView_;
-};
-
 } // namespace
-
-} // namespace
-
-#endif // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
 

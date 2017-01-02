@@ -32,6 +32,7 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/animation/datastructures/trackobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,22 +44,25 @@ namespace inviwo {
 namespace animation {
 
 class Track;
+class KeyframeSequenceQt;
 
-/**
- * \class TrackQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem {
+class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem, public TrackObserver {
 public:
     TrackQt(Track& track);
-    virtual ~TrackQt() = default;
+    virtual ~TrackQt();
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
+    Track& getTrack(); 
+    const Track& getTrack() const; 
 protected:
     virtual QRectF boundingRect() const;
+
+    virtual void onKeyframeSequenceAdded(KeyframeSequence* s) override;
+    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s) override;
+
     Track& track_;
+    std::vector<std::unique_ptr<KeyframeSequenceQt>> sequences_;
 };
 
 } // namespace

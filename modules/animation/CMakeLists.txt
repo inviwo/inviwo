@@ -21,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequenceobserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/propertytrack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.h
@@ -47,6 +48,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequenceobserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/propertytrack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.cpp

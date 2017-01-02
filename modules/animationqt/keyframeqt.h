@@ -52,7 +52,7 @@ class Keyframe;
  */
 class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem, public KeyframeObserver {
 public:
-    KeyframeQt(Keyframe& keyframe);
+    KeyframeQt(Keyframe& keyframe, QGraphicsItem* parent);
     virtual ~KeyframeQt() = default;
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -79,7 +79,7 @@ protected:
 };
 
 // A RAII utility for locking and unlocking the network
-struct IVW_CORE_API KeyframeQtLock {
+struct IVW_MODULE_ANIMATIONQT_API KeyframeQtLock {
     KeyframeQtLock(KeyframeQt* keyframe);
     ~KeyframeQtLock();
 

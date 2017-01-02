@@ -33,12 +33,14 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation() {}
+Animation::Animation() = default;
 
-void Animation::operator()(Seconds from, Seconds to) const {
+AniamtionTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
+    AniamtionTimeState ts{to, state};
     for (const auto& track : priorityTracks_) {
-        (*track)(from, to);
+        ts = (*track)(from, ts.time, ts.state);
     }
+    return ts;
 }
 
 size_t Animation::size() const { return tracks_.size(); }

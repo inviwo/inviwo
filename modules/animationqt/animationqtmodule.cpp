@@ -33,6 +33,7 @@
 #include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -59,13 +60,17 @@ auto bogusVec3Prop = std::make_unique<FloatVec3Property>("vec3_id", "Vec3 proper
 
 void initBogus() {
     {
-        auto& animation = InviwoApplication::getPtr()->getModuleByType<AnimationModule>()->getAnimationManager().getAnimation();
-        KeyframeSequenceTyped<FloatKey> s1{{{Seconds(0), 1.f}, {Seconds(1), 2.f}, {Seconds(4), 5.f}},
-                                           std::make_unique<LinearInterpolation<FloatKey>>()};
+        auto& animation = InviwoApplication::getPtr()
+                              ->getModuleByType<AnimationModule>()
+                              ->getAnimationManager()
+                              .getAnimation();
+        KeyframeSequenceTyped<FloatKey> s1{
+            {{Seconds(0), 1.f}, {Seconds(1), 2.f}, {Seconds(4), 5.f}},
+            std::make_unique<LinearInterpolation<FloatKey>>()};
         KeyframeSequenceTyped<FloatKey> s2{{{Seconds(5), 2.f}, {Seconds(6), 1.f}},
                                            std::make_unique<LinearInterpolation<FloatKey>>()};
 
-        auto track = std::make_unique<TrackProperty<FloatProperty, FloatKey>>(bogusFloatProp.get());
+        auto track = std::make_unique<PropertyTrack<FloatProperty, FloatKey>>(bogusFloatProp.get());
         track->add(s1);
         track->setName("Lame ass float track");
         animation.add(std::move(track));
@@ -76,10 +81,13 @@ void initBogus() {
                                           std::make_unique<LinearInterpolation<Vec3Key>>()};
 
         auto track =
-            std::make_unique<TrackProperty<FloatVec3Property, Vec3Key>>(bogusVec3Prop.get());
+            std::make_unique<PropertyTrack<FloatVec3Property, Vec3Key>>(bogusVec3Prop.get());
         track->add(s1);
         track->setName("Lame ass vec3 track");
-        auto& animation = InviwoApplication::getPtr()->getModuleByType<AnimationModule>()->getAnimationManager().getAnimation();
+        auto& animation = InviwoApplication::getPtr()
+                              ->getModuleByType<AnimationModule>()
+                              ->getAnimationManager()
+                              .getAnimation();
         animation.add(std::move(track));
     }
 }
@@ -113,8 +121,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
     }
 }
 
-AnimationQtModule::~AnimationQtModule() {
-
-}
+AnimationQtModule::~AnimationQtModule() = default;
 
 } // namespace

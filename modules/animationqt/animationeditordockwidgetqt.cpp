@@ -76,6 +76,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     }
 }
 
+AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
+
 void AnimationEditorDockWidgetQt::generateWidget() {
 
     btnPlayPause_ = new QToolButton();
@@ -127,14 +129,14 @@ void AnimationEditorDockWidgetQt::generateWidget() {
     // Entire right half
     // auto rightPanel = new QVBoxLayout();
 
-    animationEditor_ = new AnimationEditorQt(controller_);
+    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
     animationView_ = new AnimationViewQt(controller_);
     // timelineView_ = new TimelineViewQt(controller_);
 
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     {
         animationView_->setMinimumSize(300, 200);
-        animationView_->setScene(animationEditor_);
+        animationView_->setScene(animationEditor_.get());
         auto policy = animationView_->sizePolicy();
         policy.setHorizontalPolicy(QSizePolicy::Expanding);
         policy.setHorizontalStretch(5);

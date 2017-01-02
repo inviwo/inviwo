@@ -32,6 +32,7 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/timer.h>
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -40,18 +41,15 @@
 
 namespace inviwo {
 
-class Timer;
-
 namespace animation {
 
 /**
- * \class AnimationController
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * The AnimationController is responsible for evaluating the animation and keeping track of the
+ * animation time and state.
  */
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable {
 public:
-    AnimationController(Animation* animation);
+    AnimationController(Animation* animation, InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~AnimationController();
 
     // Start animation
@@ -60,29 +58,32 @@ public:
     void pause();
     // Pause and reset to start
     void stop();
+    
+    void setState(AnimationState newState);
 
     // Progresses time and evaluates animation
     void tick();
     void eval(Seconds oldTime, Seconds newTime);
 
     void setAnimation(Animation* animation);
-    void setCurrentTime(Seconds time);
     void setPlaySpeed(double framesPerSecond);
 
-    Animation* getAnimation() { return animation_; }
-    const Animation* getAnimation() const { return animation_; }
-    const AnimationState& getState() const { return state_; }
-    const Seconds getCurrentTime() const { return currentTime_; }
-    const Seconds getPlaySpeedTime() const { return deltaTime_; }
-    const double getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
+    Animation* getAnimation();
+    const Animation* getAnimation() const;
+    const AnimationState& getState() const;
+    const Seconds getCurrentTime() const;
+    const Seconds getPlaySpeedTime() const;
+    const double getPlaySpeedFps() const;
 
 protected:
+    void setTime(Seconds time); // Use eval to set time in the public interface.
+
     Animation* animation_;  ///< non-owning reference
+    InviwoApplication* app_;
     AnimationState state_;
     Seconds currentTime_;
     Seconds deltaTime_;
-
-    std::unique_ptr<Timer> timer_;
+    Timer timer_;
 };
 
 } // namespace

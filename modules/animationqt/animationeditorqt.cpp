@@ -52,24 +52,40 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     animation.addObserver(this);
 
     for (size_t i = 0; i < animation.size(); ++i) {
-        auto& track = animation[i];
-        auto trackQt = new TrackQt(track);
+        auto trackQt = std::make_unique<TrackQt>(animation[i]);
         trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
-        this->addItem(trackQt);
+        this->addItem(trackQt.get());
+        tracks_.push_back(std::move(trackQt));
     }
 
     setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerSecond,
                  animation.size() * TrackHeight + TimelineHeight);
 }
 
+AnimationEditorQt::~AnimationEditorQt() = default;
+
 void AnimationEditorQt::onTrackAdded(Track* track) {
-    auto trackQt = new TrackQt(*track);
-    auto i = controller_.getAnimation()->size() - 1;
-    trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
-    this->addItem(trackQt);
+    auto trackQt = std::make_unique<TrackQt>(*track);
+    trackQt->setPos(0, TimelineHeight + TrackHeight * tracks_.size() + TrackHeight * 0.5);
+    this->addItem(trackQt.get());
+    tracks_.push_back(std::move(trackQt));
 }
 
-void AnimationEditorQt::onTrackRemoved(Track* track) {}
+void AnimationEditorQt::onTrackRemoved(Track* track) {
+    if (util::erase_remove_if(tracks_, [&](auto& trackqt) {
+            if (&(trackqt->getTrack()) == track) {
+                removeItem(trackqt.get());
+                return true;
+            } else {
+                return false;
+            }
+        }) > 0) {
+
+        for (size_t i = 0; i < tracks_.size(); ++i) {
+            tracks_[i]->setY(TimelineHeight + TrackHeight * i);
+        }
+    }
+}
 
 }  // namespace
 

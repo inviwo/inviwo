@@ -33,12 +33,18 @@
 #include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/common/moduleaction.h>
 
+#include <modules/animation/datastructures/propertytrack.h>
+
 namespace inviwo {
 
 namespace animation {
 
 AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* animationModule)
-    : app_(app), trackFactory_{}, interpolationFactory_{}, animation_{}, controller_{&animation_} {
+    : app_(app)
+    , trackFactory_{}
+    , interpolationFactory_{}
+    , animation_{}
+    , controller_{&animation_, app} {
 
     auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule);
 
@@ -80,7 +86,7 @@ void AnimationManager::addTrackCallback(const Property* property) {
         auto it = propertyToTrackMap_.find(property->getClassIdentifier());
         if (it != propertyToTrackMap_.end()) {
             if (auto track = trackFactory_.create(it->second)) {
-                if (auto baseTrackProperty = dynamic_cast<BaseTrackProperty*>(track.get())) {
+                if (auto baseTrackProperty = dynamic_cast<BasePropertyTrack*>(track.get())) {
                     baseTrackProperty->setProperty(const_cast<Property*>(property));
                     baseTrackProperty->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
                     animation_.add(std::move(track));

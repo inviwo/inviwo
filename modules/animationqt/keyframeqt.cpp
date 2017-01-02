@@ -45,10 +45,14 @@ namespace inviwo {
 
 namespace animation {
 
-KeyframeQt::KeyframeQt(Keyframe& keyframe) : keyframe_(keyframe) {
+KeyframeQt::KeyframeQt(Keyframe& keyframe, QGraphicsItem* parent)
+    : QGraphicsItem(parent), keyframe_(keyframe) {
+
     setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemSendsGeometryChanges |
              ItemSendsScenePositionChanges);
     keyframe_.addObserver(this);
+
+    setPos(mapFromScene(QPointF(keyframe_.getTime().count() * WidthPerSecond, 0)).x(), 0);
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -96,7 +100,7 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
     // Only restrict movement on user interaction
     if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
         // Snap to frame per second
-        auto snapToGrid = WidthPerSecond / 24.0;
+        // auto snapToGrid = WidthPerSecond / 24.0;
         // qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
         qreal xV = value.toPointF().x();
         // Do not allow it to move before t=0

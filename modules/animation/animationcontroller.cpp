@@ -29,50 +29,66 @@
 
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
-#include <inviwo/core/util/timer.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
 namespace animation {
 
-AnimationController::AnimationController(Animation* animation)
-    : animation_(animation), state_(AnimationState::Paused), currentTime_(0), deltaTime_(0) {
-
-    auto tickTime = std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_);
-    timer_ = std::make_unique<Timer>(tickTime, [this] { tick(); });
-
-    setPlaySpeed(60.0);
-}
+AnimationController::AnimationController(Animation* animation, InviwoApplication* app)
+    : animation_(animation)
+    , app_(app)
+    , state_(AnimationState::Paused)
+    , currentTime_(0)
+    , deltaTime_(Seconds(1.0 / 60.0))
+    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
+             [this] { tick(); }} {}
 
 AnimationController::~AnimationController() = default;
 
-void AnimationController::play() {
+void AnimationController::setState(AnimationState newState) {
+    if (state_ == newState) return;
     auto oldState = state_;
-    state_ = AnimationState::Playing;
-    timer_->start();
+    state_ = newState;
+    switch (newState) {
+        case AnimationState::Playing: {
+            app_->getInteractionStateManager().beginInteraction();
+            timer_.start();
+            break;
+        }
+        case AnimationState::Paused: {
+            timer_.stop();
+            app_->getInteractionStateManager().endInteraction();
+            break;
+        }
 
-    // TODO: Perhaps only trigger if oldstate != state_?
+        default:
+            break;
+    }
     notifyStateChanged(this, oldState, state_);
+}
+
+void AnimationController::setTime(Seconds time) {
+    // No upper boundary check since you might want to set the time after the last keyframe of
+    // animation when creating new ones
+    if (currentTime_ != time) {
+        auto oldTime = currentTime_;
+        currentTime_ = std::max(Seconds(0), time);
+        notifyTimeChanged(this, oldTime, currentTime_);
+    }
+}
+
+void AnimationController::play() {
+    setState(AnimationState::Playing);
 }
 
 void AnimationController::pause() {
-    auto oldState = state_;
-    state_ = AnimationState::Paused;
-    timer_->stop();
-
-    // TODO: Perhaps only trigger if oldstate != state_?
-    notifyStateChanged(this, oldState, state_);
+    setState(AnimationState::Paused);
 }
 
 void AnimationController::stop() {
-    auto oldState = state_;
-    state_ = AnimationState::Paused;
-    timer_->stop();
-    setCurrentTime(Seconds(0));
-
-    // TODO: Perhaps only trigger if oldstate != state_?
-    notifyStateChanged(this, oldState, state_);
+    setState(AnimationState::Paused);
+    setTime(Seconds(0));
 }
 
 void AnimationController::tick() {
@@ -83,55 +99,50 @@ void AnimationController::tick() {
     // Since we probably want to generate an imagesequence or something for videos.
 
     if (state_ == AnimationState::Playing) {
-        auto oldTime = currentTime_;
-        currentTime_ += deltaTime_;
+        auto newTime = currentTime_ + deltaTime_;
 
-        if (currentTime_ > animation_->lastTime()) {
-            currentTime_ = animation_->lastTime();
-
-            state_ = AnimationState::Paused;
-            notifyStateChanged(this, AnimationState::Playing, AnimationState::Paused);
+        if (newTime > animation_->lastTime()) {
+            newTime = animation_->lastTime();
+            setState(AnimationState::Paused);
         }
 
         // Evaluate animation
-        eval(oldTime, currentTime_);
-        notifyTimeChanged(this, oldTime, currentTime_);
+        eval(currentTime_, newTime);
     }
 }
 
 void AnimationController::eval(Seconds oldTime, Seconds newTime) {
     NetworkLock lock;
-    (*animation_)(oldTime, newTime);
+    auto ts = (*animation_)(oldTime, newTime, state_);
+    setState(ts.state);
+    setTime(ts.time);
 }
 
 void AnimationController::setAnimation(Animation* animation) {
     auto oldAnim = animation_;
-    auto oldState = state_;
-    auto oldTime = currentTime_;
-
     animation_ = animation;
-    state_ = AnimationState::Paused;
-    currentTime_ = Seconds(0.0);
 
     notifyAnimationChanged(this, oldAnim, animation_);
-    notifyStateChanged(this, oldState, state_);
-    notifyTimeChanged(this, oldTime, currentTime_);
-}
-
-void AnimationController::setCurrentTime(Seconds time) {
-    // TODO: Boundary check to not go outside of current animation?
-    // Probably no, since you might want to set the time after the last keyframe of animation when
-    // creating new ones
-    auto oldTime = currentTime_;
-    currentTime_ = std::max(Seconds(0), time);
-    eval(oldTime, currentTime_);
-    notifyTimeChanged(this, oldTime, currentTime_);
+    setState(AnimationState::Paused);
+    setTime(Seconds(0.0));
 }
 
 void AnimationController::setPlaySpeed(double framesPerSecond) {
     deltaTime_ = Seconds(1.0 / framesPerSecond);
-    timer_->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
+    timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
 }
+
+const Animation* AnimationController::getAnimation() const { return animation_; }
+
+Animation* AnimationController::getAnimation() { return animation_; }
+
+const AnimationState& AnimationController::getState() const { return state_; }
+
+const Seconds AnimationController::getCurrentTime() const { return currentTime_; }
+
+const Seconds AnimationController::getPlaySpeedTime() const { return deltaTime_; }
+
+const double AnimationController::getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 } // namespace
 

@@ -54,12 +54,14 @@ class KeyframeQt;
 class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem,
                                                       public KeyframeSequenceObserver {
 public:
-    KeyframeSequenceQt(KeyframeSequence& keyframeSequence);
-    virtual ~KeyframeSequenceQt() = default;
+    KeyframeSequenceQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent);
+    virtual ~KeyframeSequenceQt();
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
+    KeyframeSequence& getKeyframeSequence();
+    const KeyframeSequence& getKeyframeSequence() const;
 protected:
     virtual void onKeyframeAdded(Keyframe* key);
     virtual void onKeyframeRemoved(Keyframe* key);
@@ -79,6 +81,7 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     KeyframeSequence& keyframeSequence_;
     QRectF rect_;
+    std::vector<std::unique_ptr<KeyframeQt>> keyframes_;
 };
 
 }  // namespace

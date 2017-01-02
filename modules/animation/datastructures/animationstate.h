@@ -36,6 +36,11 @@ namespace animation {
 
 enum class AnimationState { Paused = 0, Playing };
 
+struct AniamtionTimeState {
+    Seconds time;
+    AnimationState state;
+};
+
 } // namespace
 
 } // namespace

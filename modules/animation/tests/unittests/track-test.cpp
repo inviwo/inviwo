@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/interpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -58,7 +59,7 @@ TEST(AnimationTests, FloatInterpolation) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     
-    TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
+    PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
 
     KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
         {{Seconds{1}, 0.0f}, {Seconds{2}, 1.0f}, {Seconds{3}, 0.0f}},
@@ -68,15 +69,15 @@ TEST(AnimationTests, FloatInterpolation) {
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
-    floatTrack(Seconds{0.0}, Seconds{1.5});
+    floatTrack(Seconds{0.0}, Seconds{1.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.5f, floatProperty.get());
 
-    floatTrack(Seconds{ 1.5 }, Seconds{ 2.5 });
+    floatTrack(Seconds{ 1.5 }, Seconds{ 2.5 }, AnimationState::Playing);
 
     EXPECT_EQ(0.5f, floatProperty.get());
 
-    floatTrack(Seconds{ 2.5 }, Seconds{ 3.5 });
+    floatTrack(Seconds{ 2.5 }, Seconds{ 3.5 }, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
@@ -84,27 +85,27 @@ TEST(AnimationTests, FloatInterpolation) {
 
     EXPECT_EQ(3.0f, floatProperty.get());
 
-    floatTrack(Seconds{ 3.5 }, Seconds{ 4.5 });
+    floatTrack(Seconds{ 3.5 }, Seconds{ 4.5 }, AnimationState::Playing);
 
     EXPECT_EQ(3.0f, floatProperty.get());
 
-    floatTrack(Seconds{ 3.5 }, Seconds{ 0.5 });
+    floatTrack(Seconds{ 3.5 }, Seconds{ 0.5 }, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 1.0 });
+    floatTrack(Seconds{ 0.5 }, Seconds{ 1.0 }, AnimationState::Playing);
     EXPECT_EQ(0.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 2.0 });
+    floatTrack(Seconds{ 0.5 }, Seconds{ 2.0 }, AnimationState::Playing);
     EXPECT_EQ(1.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 3.0 });
+    floatTrack(Seconds{ 0.5 }, Seconds{ 3.0 }, AnimationState::Playing);
     EXPECT_EQ(0.0f, floatProperty.get());
 
 }
@@ -128,14 +129,14 @@ TEST(AnimationTests, AnimationTest) {
 
     {
         auto floatTrack =
-            std::make_unique<TrackProperty<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
+            std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
         floatTrack->add(floatSequence);
         animation.add(std::move(floatTrack));
     }
 
     {
         auto doubleTrack =
-            std::make_unique<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>>(
+            std::make_unique<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>>(
                 &doubleProperty);
         doubleTrack->add(doubleSequence);
         animation.add(std::move(doubleTrack));
@@ -144,7 +145,7 @@ TEST(AnimationTests, AnimationTest) {
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(1.0), doubleProperty.get());
 
-    animation(Seconds{0.0}, Seconds{1.5});
+    animation(Seconds{0.0}, Seconds{1.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.5f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
@@ -157,14 +158,14 @@ TEST(AnimationTests, AnimationTest) {
     EXPECT_EQ(Seconds{ 1.0 }, animation.firstTime());
     EXPECT_EQ(Seconds{ 4.0 }, animation.lastTime());
 
-    animation(Seconds{0.0}, Seconds{3.5});
+    animation(Seconds{0.0}, Seconds{3.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(1.5), doubleProperty.get());
 
     animation[1][0].remove(2);
 
-    animation(Seconds{ 0.0 }, Seconds{ 3.0 });
+    animation(Seconds{ 0.0 }, Seconds{ 3.0 }, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(1.0), doubleProperty.get());
@@ -179,7 +180,7 @@ TEST(AnimationTests, AnimationTest) {
     EXPECT_EQ(Seconds{ 1.0 }, animation.firstTime());
     EXPECT_EQ(Seconds{ 8.0 }, animation.lastTime());
 
-    animation(Seconds{ 0.0 }, Seconds{ 7.5 });
+    animation(Seconds{ 0.0 }, Seconds{ 7.5 }, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
@@ -281,12 +282,12 @@ TEST(AnimationTests, TrackSerializationTest) {
     propertyFactory.registerObject(&floatPFO);
 
     TrackFactory trackFactory;
-    TrackFactoryObjectTemplate<TrackProperty<FloatProperty, ValueKeyframe<float>>> floatTFO;
+    TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
     trackFactory.registerObject(&floatTFO);
 
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
-    TrackProperty<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
+    PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
     KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
     { {Seconds{1}, 0.0f}, {Seconds{2}, 1.0f}, {Seconds{3}, 0.0f} },
         std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
@@ -314,7 +315,7 @@ TEST(AnimationTests, TrackSerializationTest) {
     d.deserialize("Property", floatProperty2);
     d.deserialize("Track", track);
 
-    auto floatTrack2 = dynamic_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>*>(track);
+    auto floatTrack2 = dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track);
 
     EXPECT_NE(nullptr, floatTrack2);
     EXPECT_EQ(floatTrack[0], (*floatTrack2)[0]);
@@ -341,8 +342,8 @@ TEST(AnimationTests, AnimationSerializationTest) {
     propertyFactory.registerObject(&dvec3PFO);
 
     TrackFactory trackFactory;
-    TrackFactoryObjectTemplate<TrackProperty<FloatProperty, ValueKeyframe<float>>> floatTFO;
-    TrackFactoryObjectTemplate<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>> dvec3TFO;
+    TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
+    TrackFactoryObjectTemplate<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>> dvec3TFO;
     trackFactory.registerObject(&floatTFO);
     trackFactory.registerObject(&dvec3TFO);
 
@@ -363,14 +364,14 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     {
         auto floatTrack =
-            std::make_unique<TrackProperty<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
+            std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
         floatTrack->add(floatSequence);
         animation.add(std::move(floatTrack));
     }
 
     {
         auto doubleTrack =
-            std::make_unique<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>>(
+            std::make_unique<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>>(
                 &doubleProperty);
         doubleTrack->add(doubleSequence);
         animation.add(std::move(doubleTrack));
@@ -397,16 +398,16 @@ TEST(AnimationTests, AnimationSerializationTest) {
     d.deserialize("animation", animation2);
 
     const auto& ft1 =
-        static_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>&>(animation[0]);
+        static_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>&>(animation[0]);
     const auto& ft2 =
-        static_cast<TrackProperty<FloatProperty, ValueKeyframe<float>>&>(animation2[0]);
+        static_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>&>(animation2[0]);
 
     EXPECT_EQ(ft1[0], ft2[0]);
 
     const auto& dt1 =
-        static_cast<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation[1]);
+        static_cast<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation[1]);
     const auto& dt2 =
-        static_cast<TrackProperty<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation2[1]);
+        static_cast<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>&>(animation2[1]);
 
     EXPECT_EQ(dt1[0], dt2[0]);
 
@@ -417,8 +418,8 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     Seconds from = start;
     for (Seconds to = start; to <= end; to += (end-start)/100) {
-        animation(from, to);
-        animation2(from, to);
+        animation(from, to, AnimationState::Playing);
+        animation2(from, to, AnimationState::Playing);
 
         const auto& oldfloat = floatProperty.get();
         const auto& newfloat =  ft2.getProperty()->get();

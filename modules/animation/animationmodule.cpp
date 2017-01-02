@@ -33,6 +33,7 @@
 
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/propertytrack.h>
 
 namespace inviwo {
 
@@ -40,12 +41,12 @@ struct OrdinalReghelper {
     template <typename T>
     auto operator()(AnimationModule& am) {
         using namespace animation;
-        am.registerTrack<TrackProperty<OrdinalProperty<T>, ValueKeyframe<T>>>();
+        am.registerTrack<PropertyTrack<OrdinalProperty<T>, ValueKeyframe<T>>>();
         am.registerInterpolation<LinearInterpolation<ValueKeyframe<T>>>();
 
         am.registerPropertyTrackConnection(
             OrdinalProperty<T>::CLASS_IDENTIFIER,
-            TrackProperty<OrdinalProperty<T>, ValueKeyframe<T>>::classIdentifier());
+            PropertyTrack<OrdinalProperty<T>, ValueKeyframe<T>>::classIdentifier());
     }
 };
 

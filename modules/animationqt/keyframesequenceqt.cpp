@@ -42,23 +42,20 @@ namespace inviwo {
 
 namespace animation {
 
-KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence)
-    : QGraphicsItem(), keyframeSequence_(keyframeSequence) {
+KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent)
+    : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) {
     setFlags(ItemIsMovable | ItemSendsGeometryChanges);
 
     keyframeSequence.addObserver(this);
     auto firstKeyframePos = keyframeSequence_.getFirst().getTime().count() * WidthPerSecond;
     setX(firstKeyframePos);
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
-        auto& keyframe = keyframeSequence_[i];
-        auto keyframeQt = new KeyframeQt(keyframe);
-
-        keyframeQt->setParentItem(this);
-        keyframeQt->setPos(
-            keyframeQt->mapFromScene(QPointF(keyframe.getTime().count() * WidthPerSecond, 0)).x(), 0);
+        keyframes_.push_back(std::make_unique<KeyframeQt>(keyframeSequence_[i], this));
     }
     prepareGeometryChange();
 }
+
+KeyframeSequenceQt::~KeyframeSequenceQt() = default;
 
 void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                                QWidget* widget) {
@@ -80,22 +77,26 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     painter->drawRect(rect);
 }
 
+KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() { return keyframeSequence_; }
+
+const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
+    return keyframeSequence_;
+}
+
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
-    auto keyframeQt = new KeyframeQt(*key);
-    keyframeQt->setParentItem(this);
-    keyframeQt->setPos(
-        keyframeQt->mapFromScene(QPointF(key->getTime().count() * WidthPerSecond, 0)).x(), 0);
+    keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
     prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
-    auto children = childItems();
-    auto toRemove = std::find_if(children.begin(), children.end(), [&](auto& child) {
-        auto keyframe = dynamic_cast<KeyframeQt*>(child);
-        return keyframe && (&(keyframe->getKeyframe()) == key);
-    });
-    if (toRemove != children.end()) {
-        (*toRemove)->setParentItem(nullptr);
+    if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
+            if (&(keyframeqt->getKeyframe()) == key) {
+                scene()->removeItem(keyframeqt.get());
+                return true;
+            } else {
+                return false;
+            }
+        }) > 0) {
         prepareGeometryChange();
     }
 }
@@ -104,14 +105,12 @@ void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { prepar
 
 QRectF KeyframeSequenceQt::boundingRect() const { return childrenBoundingRect(); }
 
-inviwo::animation::KeyframeQt* KeyframeSequenceQt::getKeyframeQt(const Keyframe* keyframe) const {
-    auto children = childItems();
-    auto found = std::find_if(children.begin(), children.end(), [&](auto& child) {
-        auto keyframeQt = dynamic_cast<KeyframeQt*>(child);
-        return keyframeQt && (&(keyframeQt->getKeyframe()) == keyframe);
-    });
-    if (found != children.end()) {
-        return static_cast<KeyframeQt*>(*found);
+KeyframeQt* KeyframeSequenceQt::getKeyframeQt(const Keyframe* keyframe) const {
+    auto it = util::find_if(
+        keyframes_, [&](auto& keyframeqt) { return &(keyframeqt->getKeyframe()) == keyframe; });
+
+    if (it != keyframes_.end()) {
+        return it->get();
     } else {
         return nullptr;
     }

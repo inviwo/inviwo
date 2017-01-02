@@ -51,24 +51,21 @@ constexpr int WidthPerSecond = 96;
 constexpr int WidthPerFrame = WidthPerSecond / 24;
 
 class AnimationController;
+class TrackQt;
 
-/**
- * \class AnimationEditorQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationObserver {
 public:
     AnimationEditorQt(AnimationController& controller);
-    virtual ~AnimationEditorQt() = default;
+    virtual ~AnimationEditorQt();
 
     virtual void onTrackAdded(Track* track) override;
     virtual void onTrackRemoved(Track* track) override;
 
 protected:
     AnimationController& controller_;
+    std::vector<std::unique_ptr<TrackQt>> tracks_;
 };
 
 }  // namespace

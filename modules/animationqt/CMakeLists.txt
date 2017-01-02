@@ -30,15 +30,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-
-#--------------------------------------------------------------------
-# Add shaders
-set(SHADER_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/glsl/animationqtprocessor.frag
-)
-ivw_group("Shader Files" ${SHADER_FILES})
-
-
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
@@ -46,9 +37,12 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
+# Add some qt specific things
+ivw_define_qt_definitions()
+
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add shader directory to pack

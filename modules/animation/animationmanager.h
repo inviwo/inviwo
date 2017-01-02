@@ -46,10 +46,12 @@ class AnimationModule;
 
 namespace animation {
 
+class BasePropertyTrack;
+
 /**
- * \class AnimationManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * The AnimationManager is responsible for managed the factories related to animations as well as
+ * owning the currently used animation and controller. The AnumationSuppliers will register
+ * FactoryObjects with the factories here.
  */
 class IVW_MODULE_ANIMATION_API AnimationManager {
 public:
@@ -79,7 +81,7 @@ private:
     InterpolationFactory interpolationFactory_;
 
     std::unordered_map<std::string, std::string> propertyToTrackMap_;
-    std::unordered_map<const Property*, BaseTrackProperty*> trackMap_;
+    std::unordered_map<const Property*, BasePropertyTrack*> trackMap_;
 
     Animation animation_;
     AnimationController controller_;

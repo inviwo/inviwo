@@ -94,7 +94,7 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
 
 void AnimationViewQt::setTimelinePos(int x) {
     auto time = mapToScene(x, 0).x() / static_cast<double>(WidthPerSecond);
-    controller_.setCurrentTime(Seconds(time));
+    controller_.eval(controller_.getCurrentTime(), Seconds(time));
 }
 
 void AnimationViewQt::zoom(double dz) { scale(dz, 1.0); }

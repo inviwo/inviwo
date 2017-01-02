@@ -38,6 +38,7 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/animationstate.h>
 
 namespace inviwo {
 
@@ -51,7 +52,7 @@ public:
     Animation(const Animation&) = delete;
     Animation& operator=(const Animation& that) = delete;
 
-    void operator()(Seconds from, Seconds to) const;
+    AniamtionTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
     size_t size() const;
     Track& operator[](size_t i);
