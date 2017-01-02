@@ -504,6 +504,7 @@ void InviwoApplication::registerModules(
         } catch (Exception ex) {
             // Library dependency is probably missing.
             // We silently skip this library. 
+            LogInfo("Could not load library: " + filePath);
         }
     }
 #if WIN32
