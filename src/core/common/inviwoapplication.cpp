@@ -394,11 +394,12 @@ void InviwoApplication::registerModules(
             return lib->getFilePath().compare(path) == 0;
         });
     };
-    // Remove unsupported files and files belonging to loaded modules
-    // erase-remove idiom can't be used with std::set so we have to loop 
+    // Remove unsupported files and files belonging to already loaded modules.
+    // Erase-remove idiom can't be used with std::set so we have to loop
     for (auto it = files.begin(); it != files.end();) {
-        if (libraryTypes.find(filesystem::getFileExtension(*it)) == libraryTypes.end()
-            || isModuleLibraryLoaded(*it)) {
+        if (libraryTypes.find(filesystem::getFileExtension(*it)) == libraryTypes.end() ||
+            it->find("inviwo-module") == std::string::npos ||
+            isModuleLibraryLoaded(*it)) {
             files.erase(it++);
         } else {
             ++it;
