@@ -11,32 +11,41 @@
 namespace inviwo {
 
 /**
- * \brief Returns paths to search for module libraries
- *
- * @return std::vector<std::string> executable directory and application Modules directory
- * (AppData/Inviwo on windows)
+ * \brief Returns paths to search for module libraries.
+ * All platforms: executable directory and application modules directory
+ * (AppData/Inviwo/modules on windows).
+ * Platform dependent search directories:
+ * OSX: DYLD_LIBRARY_PATH
+ * UNIX: LD_LIBRARY_PATH/LD_RUN_PATH, RPATH and "executable directory
+ * /../../lib"
+ * @return List of paths to directories
  */
 std::vector<std::string> registerAllModules() {
     auto paths = std::vector<std::string>{
         inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
         inviwo::filesystem::getPath(inviwo::PathType::Modules)};
-    
+
     // http://unix.stackexchange.com/questions/22926/where-do-executables-look-for-shared-objects-at-runtime
 #if defined(__APPLE__)
     // Xcode/OSX store library output path in DYLD_LIBRARY_PATH
-    if (char* envPaths = std::getenv("DYLD_LIBRARY_PATH")) {
+    if (char *envPaths = std::getenv("DYLD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
     }
 #elif defined(__unix__)
-    // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
-    if (char* envPaths = std::getenv("LD_LIBRARY_PATH")) {
+    paths.push_back(inviwo::filesystem::getFileDirectory(
+        inviwo::filesystem::getExecutablePath()) +
+        "/../../lib");
+        // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
+    if (char *envPaths = std::getenv("LD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
+        std::cout << "LD_LIBRARY_PATH: " << envPaths << std::endl;
     }
-    if (char* envPaths = std::getenv("LD_RUN_PATH")) {
+    if (char *envPaths = std::getenv("LD_RUN_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
+        std::cout << "LD_RUN_PATH: " << envPaths << std::endl;
     }
     // Additional paths can be specified in
     // ELF header: RUN_PATH or RPATH
@@ -53,21 +62,21 @@ std::vector<std::string> registerAllModules() {
         }
     }
     if (offset) {
+        std::cout << "RPATH: " << (offset + runPath->d_un.d_val);
+
         // Prioritize DT_RUNPATH, DT_RPATH is deprecated
         if (runPath) {
             auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto& path:rPaths) {
-                replaceInString(path, "$ORIGIN",
-                                execPath);
+            for (auto &path : rPaths) {
+                replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         } else if (rPath) {
             auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto& path:rPaths) {
-                replaceInString(path, "$ORIGIN",
-                                execPath);
+            for (auto &path : rPaths) {
+                replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         }

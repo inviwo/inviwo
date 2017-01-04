@@ -113,12 +113,12 @@ public:
      * \brief Load modules from dynamic library files in the specified search paths.
      *
      * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
+     * The library filename must contain "inviwo-module" to be loaded.
      *
      * @param const std::vector<std::string> & librarySearchPaths Paths to directories to recursively
      * search.
      * @param bool reloadLibrariesWhenChanged Add file watchers and reload libraries without
      * restarting the application.
-     * @return void
      */
     virtual void registerModules(
         const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged = false);
