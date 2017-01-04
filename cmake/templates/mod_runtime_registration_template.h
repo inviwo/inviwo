@@ -3,6 +3,8 @@
 #include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/logcentral.h>
+
 #if defined(__unix__)
 #include <elf.h> // To retrieve rpath
 #include <link.h>
@@ -35,17 +37,18 @@ std::vector<std::string> registerAllModules() {
 #elif defined(__unix__)
     paths.push_back(inviwo::filesystem::getFileDirectory(
         inviwo::filesystem::getExecutablePath()) +
-        "/../../lib");
+        "/../lib");
+    LogInfoCustom("registerAllModules()", "lib: " + paths.back());
         // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
     if (char *envPaths = std::getenv("LD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-        std::cout << "LD_LIBRARY_PATH: " << envPaths << std::endl;
+        LogInfoCustom("registerAllModules()", "LD_LIBRARY_PATH: " + std::string(envPaths));
     }
     if (char *envPaths = std::getenv("LD_RUN_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-        std::cout << "LD_RUN_PATH: " << envPaths << std::endl;
+        LogInfoCustom("registerAllModules()", "LD_RUN_PATH: " + std::string(envPaths));
     }
     // Additional paths can be specified in
     // ELF header: RUN_PATH or RPATH
@@ -62,8 +65,7 @@ std::vector<std::string> registerAllModules() {
         }
     }
     if (offset) {
-        std::cout << "RPATH: " << (offset + runPath->d_un.d_val);
-
+        LogInfoCustom("registerAllModules()", "RPATH: " + std::string(offset + runPath->d_un.d_val));
         // Prioritize DT_RUNPATH, DT_RPATH is deprecated
         if (runPath) {
             auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
