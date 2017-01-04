@@ -258,7 +258,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
                     dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but version " << (*dependencyIt)->version << " was loaded" << std::endl;
                 }
                 else {
-                    dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but version no such module was loaded" << std::endl;
+                    dependencyVersionError << "Module depends on " + *dep + " version " << *versionIt << " but no such module was loaded" << std::endl;
                 }
             };
         }
@@ -505,7 +505,7 @@ void InviwoApplication::registerModules(
         } catch (Exception ex) {
             // Library dependency is probably missing.
             // We silently skip this library. 
-            //LogInfo("Could not load library: " + filePath);
+            LogInfo("Could not load library: " + filePath);
         }
     }
 #if WIN32
