@@ -39,7 +39,7 @@ std::vector<std::string> registerAllModules() {
         inviwo::filesystem::getExecutablePath()) +
         "/../lib");
     LogInfoCustom("registerAllModules()", "lib: " + paths.back());
-        // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
+    // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
     if (char *envPaths = std::getenv("LD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
@@ -82,6 +82,9 @@ std::vector<std::string> registerAllModules() {
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         }
+    }
+    for (auto &path : paths) {
+        LogInfoCustom("registerAllModules()", "path: " + path);
     }
 #endif
     return paths;
