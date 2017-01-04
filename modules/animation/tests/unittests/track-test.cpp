@@ -198,7 +198,7 @@ TEST(AnimationTests, KeyframeSerializationTest) {
     std::stringstream ss;
     s.writeFile(ss);
 
-    Deserializer d(nullptr, ss, refPath);
+    Deserializer d(ss, refPath);
     ValueKeyframe<dvec3> keyframe2;
     keyframe2.deserialize(d);
 
@@ -225,7 +225,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     std::stringstream ss;
     s.writeFile(ss);
 
-    Deserializer d(nullptr, ss, refPath);
+    Deserializer d(ss, refPath);
     d.setExceptionHandler([](ExceptionContext context) {throw;});
     d.registerFactory(&factory);
     
@@ -259,7 +259,7 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     std::stringstream ss;
     s.writeFile(ss);
 
-    Deserializer d(nullptr, ss, refPath);
+    Deserializer d(ss, refPath);
     d.setExceptionHandler([](ExceptionContext context) {throw;});
     d.registerFactory(&factory);
     
@@ -302,7 +302,7 @@ TEST(AnimationTests, TrackSerializationTest) {
     std::stringstream ss;
     s.writeFile(ss);
 
-    Deserializer d(nullptr, ss, refPath);
+    Deserializer d(ss, refPath);
     d.setExceptionHandler([](ExceptionContext context) {throw; });
     d.registerFactory(&interpolationFactory);
     d.registerFactory(&propertyFactory);
@@ -387,7 +387,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
     s.writeFile(ss);
 
 
-    Deserializer d(nullptr, ss, refPath);
+    Deserializer d(ss, refPath);
     d.setExceptionHandler([](ExceptionContext context) {throw; });
     d.registerFactory(&interpolationFactory);
     d.registerFactory(&propertyFactory);

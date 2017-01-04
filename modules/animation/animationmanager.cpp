@@ -46,12 +46,24 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
     , animation_{}
     , controller_{&animation_, app} {
 
-    auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule);
+    auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
+                                                   ModuleCallBackActionState::Enabled);
 
-    callbackAction->getCallBack()->addMemberFunction(this, &AnimationManager::addTrackCallback);
-    callbackAction->setActionState(ModuleCallBackActionState::Enabled);
-
+    callbackAction->getCallBack().addMemberFunction(this, &AnimationManager::addTrackCallback);
     app->addCallbackAction(callbackAction);
+
+    app_->getWorkspaceManager()->registerFactory(&trackFactory_);
+    app_->getWorkspaceManager()->registerFactory(&interpolationFactory_);
+
+    app_->getProcessorNetwork()->addObserver(this);
+    animation_.addObserver(this);
+
+    animationClearHandle_ =
+        app_->getWorkspaceManager()->addClearCallback([&]() { animation_.clear(); });
+    animationSerializationHandle_ = app_->getWorkspaceManager()->addSerializationCallback(
+        [&](Serializer& s) { animation_.serialize(s); });
+    animationDeserializationHandle_ = app_->getWorkspaceManager()->addDeserializationCallback(
+        [&](Deserializer& d) { animation_.deserialize(d); });
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
@@ -77,25 +89,52 @@ AnimationController& AnimationManager::getAnimationController() { return control
 
 const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
 
-void AnimationManager::addTrackCallback(const Property* property) {
+void AnimationManager::addTrackCallback(Property* property) {
     auto tIt = trackMap_.find(property);
     if (tIt != trackMap_.end()) {
         tIt->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
     } else {
-
         auto it = propertyToTrackMap_.find(property->getClassIdentifier());
         if (it != propertyToTrackMap_.end()) {
             if (auto track = trackFactory_.create(it->second)) {
-                if (auto baseTrackProperty = dynamic_cast<BasePropertyTrack*>(track.get())) {
-                    baseTrackProperty->setProperty(const_cast<Property*>(property));
-                    baseTrackProperty->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
-                    animation_.add(std::move(track));
-                    trackMap_[property] = baseTrackProperty;
+                if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+                    basePropertyTrack->setProperty(const_cast<Property*>(property));
+                    basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+                    animation_.add(std::move(track)); // Callback will add track to trackMap_           
+                    property->getOwner()->addObserver(this);
                     return;
                 }
             }
         }
         LogWarn("No matching Track found for property");
+    }
+}
+
+void AnimationManager::onWillRemoveProperty(Property* property, size_t index) {
+    auto it = trackMap_.find(property);
+    if (it != trackMap_.end()) {
+        animation_.remove(it->second->getIdentifier());
+    }
+}
+
+void AnimationManager::onTrackRemoved(Track* track) {
+    util::map_erase_remove_if(trackMap_, [&](const auto& elem) {
+        return elem.second->toTrack() == track;
+    });
+}
+
+void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
+    auto it = util::find_if(trackMap_, [&](const auto& elem) {
+        return elem.first->getOwner()->getProcessor() == processor;
+    });
+    if (it != trackMap_.end()) {
+        animation_.remove(it->second->getIdentifier());
+    }
+}
+
+void AnimationManager::onTrackAdded(Track* track) {
+    if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        trackMap_[basePropertyTrack->getProperty()] = basePropertyTrack;
     }
 }
 

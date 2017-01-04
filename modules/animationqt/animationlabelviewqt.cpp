@@ -34,7 +34,8 @@
 #include <warn/ignore/all>
 #include <QWheelEvent>
 #include <QPainter>
-#include <QStringListModel>
+#include <QStandardItemModel>
+#include <QStandardItem>
 #include <warn/pop>
 
 namespace inviwo {
@@ -43,9 +44,11 @@ namespace animation {
 
 constexpr auto LineWidth = 0.5;
 
-class AnimationLabelModelQt : public QStringListModel {
+class AnimationLabelModelQt : public QStandardItemModel {
 public:
-    AnimationLabelModelQt(QObject* parent) : QStringListModel(parent) {}
+    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) {
+        setColumnCount(1);
+    }
 
     virtual Qt::ItemFlags flags(const QModelIndex& index) const override {
         return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
@@ -54,7 +57,7 @@ public:
         if (role == Qt::SizeHintRole) {
             return QSize(200, 25);
         }
-        return QStringListModel::data(index, role);
+        return QStandardItemModel::data(index, role);
     }
 };
 
@@ -70,37 +73,47 @@ AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
     model_ = new AnimationLabelModelQt(this);
 
     for (size_t i = 0; i < animation_.size(); ++i) {
-        list_.append(QString(animation_[i].getIdentifier().c_str()));
+        auto& track = animation_[i];
+        QList<QStandardItem*> row;
+        auto item = new QStandardItem(QString::fromStdString(track.getName()));
+        item->setData(QVariant::fromValue(static_cast<void*>(&track)), Qt::UserRole + 1);
+        row.append(item);
+        model_->appendRow(row);
     }
 
-    model_->setStringList(list_);
     setModel(model_);
 }
 
 void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
-    // LogWarnCustom("AnimationEditor", "Pressed mouse");
-
     QListView::mousePressEvent(e);
 }
 
 void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
-    // LogWarnCustom("AnimationEditor", "Moved mouse");
-
     QListView::mouseMoveEvent(e);
 }
 
 void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
-    // LogWarnCustom("AnimationEditor", "Released mouse");
-
     QListView::mouseReleaseEvent(e);
 }
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
-    list_.append(QString(track->getName().c_str()));
-    model_->setStringList(list_);
+    QList<QStandardItem*> row;
+    auto item = new QStandardItem(QString::fromStdString(track->getName()));
+    item->setData(QVariant::fromValue(static_cast<void*>(track)), Qt::UserRole + 1);
+    row.append(item);
+    model_->appendRow(row);
 }
 
-void AnimationLabelViewQt::onTrackRemoved(Track* track) {}
+void AnimationLabelViewQt::onTrackRemoved(Track* track) {
+    QModelIndex parent = QModelIndex();
+    for (int r = 0; r < model_->rowCount(parent); ++r) {
+        QModelIndex index = model_->index(r, 0, parent);
+        if (model_->data(index, Qt::UserRole + 1).value<void*>() == static_cast<void*>(track)) {
+            model_->removeRow(r, parent);
+            break;
+        }
+    }
+}
 
 }  // namespace
 

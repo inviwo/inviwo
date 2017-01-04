@@ -44,7 +44,11 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API BasePropertyTrack {
 public:
     virtual void setProperty(Property* property) = 0;
+    virtual const Property* getProperty() const = 0;
+    virtual Property* getProperty() = 0;
+    virtual const std::string& getIdentifier() const = 0;
     virtual void addKeyFrameUsingPropertyValue(Seconds time) = 0;
+    virtual Track* toTrack() = 0;
 };
 
 template <typename Prop, typename Key>
@@ -84,8 +88,8 @@ public:
     virtual AniamtionTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
 
-    const Prop* getProperty() const;
-    Prop* getProperty();
+    virtual const Prop* getProperty() const override;
+    virtual Prop* getProperty() override;
 
     virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) override;
 
@@ -106,6 +110,8 @@ public:
 
     virtual void addKeyFrameUsingPropertyValue(Seconds time) override;
 
+    virtual Track* toTrack();
+
 private:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* key) override;
 
@@ -118,6 +124,11 @@ private:
     // Sorted list of non-overlapping sequences of key frames
     std::vector<std::unique_ptr<KeyframeSequenceTyped<Key>>> sequences_;
 };
+
+template <typename Prop, typename Key>
+Track* inviwo::animation::PropertyTrack<Prop, Key>::toTrack() {
+    return this;
+}
 
 template <typename Prop, typename Key>
 PropertyTrack<Prop, Key>::PropertyTrack(Prop* property)

@@ -40,19 +40,13 @@
 #include <QStringList>
 #include <warn/pop>
 
-class QStringListModel;
+class QStandardItemModel;
 
 namespace inviwo {
 
 namespace animation {
 
 class Animation;
-
-/**
- * \class AnimationLabelViewQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 
 class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView, public AnimationObserver {
 public:
@@ -68,8 +62,7 @@ protected:
     virtual void onTrackRemoved(Track* track) override;
 
     Animation& animation_;
-    QStringListModel* model_;
-    QStringList list_;
+    QStandardItemModel* model_;
 };
 
 }  // namespace

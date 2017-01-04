@@ -189,10 +189,7 @@ void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds ol
     std::stable_sort(keyframes_.begin(), keyframes_.end(),
                      [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
 
-    // TODO: Change this, because it never triggers in current state
-    //if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
-        notifyKeyframeSequenceMoved(this);
-    //}
+    notifyKeyframeSequenceMoved(this);
 }
 
 template <typename Key>
@@ -233,9 +230,14 @@ void KeyframeSequenceTyped<Key>::add(const Key& key) {
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::addKeyFrame(std::unique_ptr<Key> key) {
-    keyframes_.push_back(std::move(key));
-    keyframes_.back()->addObserver(this);
-    notifyKeyframeAdded(keyframes_.back().get());
+    auto it = keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
+                                                 [&key](const auto& a, const auto& b) {
+                                                     return a->getTime() < b->getTime();
+                                                 }),
+                                std::move(key));
+
+    (*it)->addObserver(this);
+    notifyKeyframeAdded(it->get());
 }
 
 template <typename Key>

@@ -60,6 +60,14 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
 }
+
+AnimationModule::~AnimationModule() {
+    // need to call that here since we will have to delete the manager before we call the destructor
+    // of AnimationSupplier. Other modules that implement AnimationSupplier will not have this
+    // problem.
+    unRegisterAll();
+}
+
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
 const animation::AnimationManager& AnimationModule::getAnimationManager() const { return manager_; }

@@ -52,18 +52,24 @@ AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manag
 AnimationSupplier::AnimationSupplier(InviwoApplication* app) : manager_(getAnimationManager(app)) {}
 
 AnimationSupplier::~AnimationSupplier() {
-    for (auto& elem : tracks_) {
-        manager_.getTrackFactory().unRegisterObject(elem.get());
-    }
-
-    for (auto& elem : interpolations_) {
-        manager_.getInterpolationFactory().unRegisterObject(elem.get());
-    }
+    unRegisterAll();
 }
 
 void AnimationSupplier::registerPropertyTrackConnection(const std::string& propertyClassID,
                                                         const std::string& trackClassID) {
     manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
+}
+
+void AnimationSupplier::unRegisterAll() {
+    for (auto& elem : tracks_) {
+        manager_.getTrackFactory().unRegisterObject(elem.get());
+    }
+    tracks_.clear();
+    
+    for (auto& elem : interpolations_) {
+        manager_.getInterpolationFactory().unRegisterObject(elem.get());
+    }
+    interpolations_.clear();
 }
 
 } // namespace

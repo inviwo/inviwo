@@ -67,6 +67,7 @@ public:
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 
+    void unRegisterAll();
 private:
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;

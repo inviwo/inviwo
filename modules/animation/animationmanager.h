@@ -32,8 +32,12 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
+
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/animationobserver.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
@@ -53,7 +57,9 @@ class BasePropertyTrack;
  * owning the currently used animation and controller. The AnumationSuppliers will register
  * FactoryObjects with the factories here.
  */
-class IVW_MODULE_ANIMATION_API AnimationManager {
+class IVW_MODULE_ANIMATION_API AnimationManager : public AnimationObserver, 
+                                                  public PropertyOwnerObserver,
+                                                  public ProcessorNetworkObserver {
 public:
     AnimationManager(InviwoApplication* app, AnimationModule* animationModule);
     virtual ~AnimationManager() = default;
@@ -72,9 +78,20 @@ public:
     AnimationController& getAnimationController();
     const AnimationController& getAnimationController() const;
 
-    void addTrackCallback(const Property* property);
+    void addTrackCallback(Property* property);
 
 private:
+    // PropertyOwnerObserver overload
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+
+    // AnimationObserver overload
+    virtual void onTrackRemoved(Track* track) override;
+
+    // ProcessorNetworkObserver overload
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
+
+    virtual void onTrackAdded(Track* track) override;
+
     InviwoApplication* app_;
 
     TrackFactory trackFactory_;
@@ -85,6 +102,10 @@ private:
 
     Animation animation_;
     AnimationController controller_;
+
+    WorkspaceManager::ClearHandle animationClearHandle_;
+    WorkspaceManager::SerializationHandle animationSerializationHandle_;
+    WorkspaceManager::DeserializationHandle animationDeserializationHandle_;
 };
 
 } // namespace

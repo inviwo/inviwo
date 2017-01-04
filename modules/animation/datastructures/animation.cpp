@@ -43,6 +43,10 @@ AniamtionTimeState Animation::operator()(Seconds from, Seconds to, AnimationStat
     return ts;
 }
 
+bool Animation::empty() const {
+    return tracks_.empty();
+}
+
 size_t Animation::size() const { return tracks_.size(); }
 
 const Track& Animation::operator[](size_t i) const { return *tracks_[i]; }
@@ -68,6 +72,12 @@ void Animation::remove(const std::string& id) {
                            [&](const auto& track) { return track->getIdentifier() == id; });
     if (it != tracks_.end()) {
         remove(std::distance(tracks_.begin(), it));
+    }
+}
+
+void Animation::clear() {
+    while (!empty()) {
+        remove(tracks_.size() - 1);
     }
 }
 

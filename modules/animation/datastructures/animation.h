@@ -54,6 +54,7 @@ public:
 
     AniamtionTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
+    bool empty() const;
     size_t size() const;
     Track& operator[](size_t i);
     const Track& operator[](size_t i) const;
@@ -61,6 +62,8 @@ public:
     void add(std::unique_ptr<Track> track);
     void remove(size_t i);
     void remove(const std::string& id);
+
+    void clear();
 
     Seconds firstTime() const;
     Seconds lastTime() const;

@@ -38,7 +38,7 @@ void AnimationObservable::notifyTrackAdded(Track* track) {
 }
 
 void AnimationObservable::notifyTrackRemoved(Track* track) {
-    forEachObserver([&](AnimationObserver* o) { o->onTrackAdded(track); });
+    forEachObserver([&](AnimationObserver* o) { o->onTrackRemoved(track); });
 }
 
 }  // namespace

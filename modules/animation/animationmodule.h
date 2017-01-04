@@ -43,7 +43,7 @@ class IVW_MODULE_ANIMATION_API AnimationModule : public InviwoModule,
                                                  public animation::AnimationSupplier {
 public:
     AnimationModule(InviwoApplication* app);
-    virtual ~AnimationModule() = default;
+    virtual ~AnimationModule();
 
     animation::AnimationManager& getAnimationManager();
     const animation::AnimationManager& getAnimationManager() const;
