@@ -272,7 +272,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             auto it = checkdepends(moduleObj->dependencies);
             if (it == failed.end()) {
                 registerModule(moduleObj->create(this));
-                LogError("Registering module: " + moduleObj->name);
+                LogInfo("Registered module: " + moduleObj->name);
             }
             else {
                 LogError("Could not register module: " + moduleObj->name + " since dependency: " +
@@ -515,7 +515,9 @@ void InviwoApplication::registerModules(
         RemoveDllDirectory(dir);
     }
 #endif
-
+    for (const auto& mod : modules) {
+        LogInfo("Found module: " + mod->name);
+    }
     registerModules(std::move(modules));
 }
 
