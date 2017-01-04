@@ -272,6 +272,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             auto it = checkdepends(moduleObj->dependencies);
             if (it == failed.end()) {
                 registerModule(moduleObj->create(this));
+                LogError("Registering module: " + moduleObj->name);
             }
             else {
                 LogError("Could not register module: " + moduleObj->name + " since dependency: " +
