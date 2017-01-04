@@ -65,7 +65,6 @@ std::vector<std::string> registerAllModules() {
         }
     }
     if (offset) {
-        LogInfoCustom("registerAllModules()", "RPATH: " + std::string(offset + runPath->d_un.d_val));
         // Prioritize DT_RUNPATH, DT_RPATH is deprecated
         if (runPath) {
             auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
@@ -74,6 +73,7 @@ std::vector<std::string> registerAllModules() {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
+            LogInfoCustom("registerAllModules()", "runPath: " + std::string(offset + runPath->d_un.d_val));
         } else if (rPath) {
             auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
@@ -81,6 +81,7 @@ std::vector<std::string> registerAllModules() {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
+            LogInfoCustom("registerAllModules()", "RPATH: " + std::string(offset + rPath->d_un.d_val));
         }
     }
     for (auto &path : paths) {
