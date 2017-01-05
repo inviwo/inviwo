@@ -38,17 +38,14 @@ std::vector<std::string> registerAllModules() {
     paths.push_back(inviwo::filesystem::getFileDirectory(
         inviwo::filesystem::getExecutablePath()) +
         "/../lib");
-    LogInfoCustom("registerAllModules()", "lib: " + paths.back());
     // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
     if (char *envPaths = std::getenv("LD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-        LogInfoCustom("registerAllModules()", "LD_LIBRARY_PATH: " + std::string(envPaths));
     }
     if (char *envPaths = std::getenv("LD_RUN_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-        LogInfoCustom("registerAllModules()", "LD_RUN_PATH: " + std::string(envPaths));
     }
     // Additional paths can be specified in
     // ELF header: RUN_PATH or RPATH
@@ -73,7 +70,6 @@ std::vector<std::string> registerAllModules() {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
-            LogInfoCustom("registerAllModules()", "runPath: " + std::string(offset + runPath->d_un.d_val));
         } else if (rPath) {
             auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
@@ -81,11 +77,7 @@ std::vector<std::string> registerAllModules() {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
-            LogInfoCustom("registerAllModules()", "RPATH: " + std::string(offset + rPath->d_un.d_val));
         }
-    }
-    for (auto &path : paths) {
-        LogInfoCustom("registerAllModules()", "path: " + path);
     }
 #endif
     return paths;

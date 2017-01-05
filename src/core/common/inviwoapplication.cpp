@@ -272,7 +272,6 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             auto it = checkdepends(moduleObj->dependencies);
             if (it == failed.end()) {
                 registerModule(moduleObj->create(this));
-                LogInfo("Registered module: " + moduleObj->name);
             }
             else {
                 LogError("Could not register module: " + moduleObj->name + " since dependency: " +
@@ -374,6 +373,8 @@ void InviwoApplication::registerModules(
 #endif
     // Find unique files and directories in specified search paths
     for (auto path : librarySearchPaths) {
+        // Make sure that we have an absolute path to avoid duplicates
+        path = filesystem::cleanupPath(path);
         auto filesInPath = getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
         auto directories = getDirectoryContentsRecursively(path, filesystem::ListMode::Directories);
         files.insert(
@@ -515,9 +516,6 @@ void InviwoApplication::registerModules(
         RemoveDllDirectory(dir);
     }
 #endif
-    for (const auto& mod : modules) {
-        LogInfo("Found module: " + mod->name);
-    }
     registerModules(std::move(modules));
 }
 
