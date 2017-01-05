@@ -60,8 +60,10 @@ public:
     const Track& operator[](size_t i) const;
 
     void add(std::unique_ptr<Track> track);
-    void remove(size_t i);
-    void remove(const std::string& id);
+    void removeTrack(size_t i);
+    void removeTrack(const std::string& id);
+
+    void removeKeyframe(Keyframe* key);
 
     void clear();
 

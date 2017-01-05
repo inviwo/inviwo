@@ -170,12 +170,12 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
         for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
              i < that.keyframes_.size(); i++) {
             keyframes_.push_back(std::make_unique<Key>(*that.keyframes_[i]));
-            notifyKeyframeAdded(keyframes_.back().get());
+            notifyKeyframeAdded(keyframes_.back().get(), this);
         }
         while (keyframes_.size() > that.keyframes_.size()) {
             auto key = std::move(keyframes_.back());
             keyframes_.pop_back();
-            notifyKeyframeRemoved(key.get());
+            notifyKeyframeRemoved(key.get(), this);
         }
     }
     return *this;
@@ -237,7 +237,7 @@ void KeyframeSequenceTyped<Key>::addKeyFrame(std::unique_ptr<Key> key) {
                                 std::move(key));
 
     (*it)->addObserver(this);
-    notifyKeyframeAdded(it->get());
+    notifyKeyframeAdded(it->get(), this);
 }
 
 template <typename Key>
@@ -245,7 +245,7 @@ void KeyframeSequenceTyped<Key>::remove(size_t i) {
 
     auto key = std::move(keyframes_[i]);
     keyframes_.erase(keyframes_.begin() + i);
-    notifyKeyframeRemoved(key.get());
+    notifyKeyframeRemoved(key.get(), this);
 }
 
 template <typename Key>
@@ -293,8 +293,8 @@ template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     using Elem = std::unique_ptr<Key>;
     util::IndexedDeserializer<Elem>("keyframes", "keyframe")
-        .onNew([&](Elem& key) { notifyKeyframeAdded(key.get()); })
-        .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get()); })(d, keyframes_);
+        .onNew([&](Elem& key) { notifyKeyframeAdded(key.get(), this); })
+        .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
 
     d.deserializeAs<Interpolation>("interpolation", interpolation_);
 }

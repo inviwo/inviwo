@@ -33,12 +33,12 @@ namespace inviwo {
 
 namespace animation {
 
-void KeyframeSequenceObserverble::notifyKeyframeAdded(Keyframe* key) {
-    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeAdded(key); });
+void KeyframeSequenceObserverble::notifyKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
+    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeAdded(key, seq); });
 }
 
-void KeyframeSequenceObserverble::notifyKeyframeRemoved(Keyframe* key) {
-    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeRemoved(key); });
+void KeyframeSequenceObserverble::notifyKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
+    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeRemoved(key, seq); });
 }
 
 void KeyframeSequenceObserverble::notifyKeyframeSequenceMoved(KeyframeSequence* seq) {

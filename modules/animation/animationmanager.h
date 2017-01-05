@@ -78,9 +78,13 @@ public:
     AnimationController& getAnimationController();
     const AnimationController& getAnimationController() const;
 
-    void addTrackCallback(Property* property);
+    void addKeyframeCallback(Property* property);
+    void addSequenceCallback(Property* property);
 
 private:
+    BasePropertyTrack* addNewTrack(Property* property);
+
+
     // PropertyOwnerObserver overload
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 

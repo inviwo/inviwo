@@ -39,6 +39,8 @@
 #include <QGraphicsScene>
 #include <warn/pop>
 
+class QKeyEvent;
+
 namespace inviwo {
 
 namespace animation {
@@ -53,7 +55,6 @@ constexpr int WidthPerFrame = WidthPerSecond / 24;
 class AnimationController;
 class TrackQt;
 
-
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationObserver {
 public:
@@ -62,6 +63,8 @@ public:
 
     virtual void onTrackAdded(Track* track) override;
     virtual void onTrackRemoved(Track* track) override;
+
+    virtual void keyPressEvent(QKeyEvent *event) override;
 
 protected:
     AnimationController& controller_;

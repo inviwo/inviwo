@@ -29,6 +29,7 @@
 
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/trackqt.h>
+#include <modules/animationqt/keyframeqt.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
 
@@ -38,6 +39,7 @@
 #include <warn/ignore/all>
 #include <QPainter>
 #include <QGraphicsItem>
+#include <QKeyEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -84,6 +86,28 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
         for (size_t i = 0; i < tracks_.size(); ++i) {
             tracks_[i]->setY(TimelineHeight + TrackHeight * i);
         }
+    }
+}
+
+void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
+    int k = keyEvent->key();
+    if (k == Qt::Key_Delete) {  // Delete selected
+        QList<QGraphicsItem*> itemList = selectedItems();
+        for (auto& elem : itemList) {
+            if (auto key = qgraphicsitem_cast<KeyframeQt*>(elem)) {
+                auto& animation = *controller_.getAnimation();
+                animation.removeKeyframe(&(key->getKeyframe()));
+            }
+        }
+    } else if (k == Qt::Key_Space) {
+        switch(controller_.getState()) {
+            case AnimationState::Paused:
+                controller_.play();
+                break;
+            case AnimationState::Playing:
+                controller_.stop();
+                break;
+        } 
     }
 }
 

@@ -46,11 +46,21 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
     , animation_{}
     , controller_{&animation_, app} {
 
-    auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
-                                                   ModuleCallBackActionState::Enabled);
+    {
+        auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
+                                                       ModuleCallBackActionState::Enabled);
 
-    callbackAction->getCallBack().addMemberFunction(this, &AnimationManager::addTrackCallback);
-    app->addCallbackAction(callbackAction);
+        callbackAction->getCallBack().addMemberFunction(this,
+                                                        &AnimationManager::addKeyframeCallback);
+        app->addCallbackAction(callbackAction);
+    }
+    {
+        auto callbackAction = new ModuleCallbackAction("Add Sequence", animationModule,
+                                                       ModuleCallBackActionState::Enabled);
+        callbackAction->getCallBack().addMemberFunction(this,
+                                                        &AnimationManager::addSequenceCallback);
+        app->addCallbackAction(callbackAction);
+    }
 
     app_->getWorkspaceManager()->registerFactory(&trackFactory_);
     app_->getWorkspaceManager()->registerFactory(&interpolationFactory_);
@@ -89,31 +99,47 @@ AnimationController& AnimationManager::getAnimationController() { return control
 
 const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
 
-void AnimationManager::addTrackCallback(Property* property) {
-    auto tIt = trackMap_.find(property);
-    if (tIt != trackMap_.end()) {
-        tIt->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+void AnimationManager::addKeyframeCallback(Property* property) {
+    auto it = trackMap_.find(property);
+    if (it != trackMap_.end()) {
+        it->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+    } else if (auto basePropertyTrack = addNewTrack(property)) {
+        basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
     } else {
-        auto it = propertyToTrackMap_.find(property->getClassIdentifier());
-        if (it != propertyToTrackMap_.end()) {
-            if (auto track = trackFactory_.create(it->second)) {
-                if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
-                    basePropertyTrack->setProperty(const_cast<Property*>(property));
-                    basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
-                    animation_.add(std::move(track)); // Callback will add track to trackMap_           
-                    property->getOwner()->addObserver(this);
-                    return;
-                }
+        LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
+    }
+}
+
+void AnimationManager::addSequenceCallback(Property* property) {
+    auto it = trackMap_.find(property);
+    if (it != trackMap_.end()) {
+        it->second->addSequenceUsingPropertyValue(controller_.getCurrentTime());
+    } else if (auto basePropertyTrack = addNewTrack(property)) {
+        basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime());
+    } else {
+        LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
+    }
+}
+
+BasePropertyTrack* AnimationManager::addNewTrack(Property* property) {
+    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+    if (it != propertyToTrackMap_.end()) {
+        if (auto track = trackFactory_.create(it->second)) {
+            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+                basePropertyTrack->setProperty(const_cast<Property*>(property));
+                animation_.add(std::move(track)); // Callback will add track to trackMap_           
+                property->getOwner()->addObserver(this);
+                return basePropertyTrack; 
             }
         }
-        LogWarn("No matching Track found for property");
     }
+    return nullptr;
 }
 
 void AnimationManager::onWillRemoveProperty(Property* property, size_t index) {
     auto it = trackMap_.find(property);
     if (it != trackMap_.end()) {
-        animation_.remove(it->second->getIdentifier());
+        animation_.removeTrack(it->second->getIdentifier());
     }
 }
 
@@ -124,11 +150,18 @@ void AnimationManager::onTrackRemoved(Track* track) {
 }
 
 void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    auto it = util::find_if(trackMap_, [&](const auto& elem) {
-        return elem.first->getOwner()->getProcessor() == processor;
+    std::vector<std::string> toRemove;  // Save id to remove to avoid invalidating iterators.
+    util::map_erase_remove_if(trackMap_, [&](const auto& elem) {
+        if (elem.first->getOwner()->getProcessor() == processor) {
+            toRemove.push_back(elem.second->getIdentifier());
+            return true;
+        } else {
+            return false;
+        }
     });
-    if (it != trackMap_.end()) {
-        animation_.remove(it->second->getIdentifier());
+
+    for (const auto& item : toRemove) {
+        animation_.removeTrack(item);
     }
 }
 

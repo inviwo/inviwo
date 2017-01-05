@@ -83,12 +83,12 @@ const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
     return keyframeSequence_;
 }
 
-void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key) {
+void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
     keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
     prepareGeometryChange();
 }
 
-void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key) {
+void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
                 scene()->removeItem(keyframeqt.get());

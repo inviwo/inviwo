@@ -60,24 +60,43 @@ void Animation::add(std::unique_ptr<Track> track) {
     notifyTrackAdded(tracks_.back().get());
 }
 
-void Animation::remove(size_t i) {
+void Animation::removeTrack(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
     notifyTrackRemoved(track.get());
 }
 
-void Animation::remove(const std::string& id) {
+void Animation::removeTrack(const std::string& id) {
     auto it = std::find_if(tracks_.begin(), tracks_.end(),
                            [&](const auto& track) { return track->getIdentifier() == id; });
     if (it != tracks_.end()) {
-        remove(std::distance(tracks_.begin(), it));
+        removeTrack(std::distance(tracks_.begin(), it));
+    }
+}
+
+void Animation::removeKeyframe(Keyframe* key) {
+    for (size_t t = 0; t < tracks_.size(); ++t) {
+        auto& track = *tracks_[t];
+        for (size_t s = 0; s < track.size(); ++s) {
+            auto& seq = track[s];
+            for (auto k = 0; k < seq.size(); ++k) {
+                if (&seq[k] == key) {
+                    if (seq.size() == 1) {
+                        track.remove(s);
+                    } else {
+                        seq.remove(k);
+                    }
+                    return;
+                }
+            }
+        }
     }
 }
 
 void Animation::clear() {
     while (!empty()) {
-        remove(tracks_.size() - 1);
+        removeTrack(tracks_.size() - 1);
     }
 }
 
@@ -110,7 +129,7 @@ void Animation::deserialize(Deserializer& d) {
         .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
+        .onRemove([&](const std::string& id) { removeTrack(id); })(d, tracks_);
 }
 
 void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }

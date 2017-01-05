@@ -59,6 +59,7 @@ public:
                        QWidget* widget) override;
 
     const Keyframe& getKeyframe() const { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
     /**
      * Lock when editing keyframe from GUI
@@ -66,6 +67,10 @@ public:
     void lock();
     void unlock();
     bool islocked() const;
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = UserType + 1 };
+    int type() const { return Type; }
 
 protected:
     virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;

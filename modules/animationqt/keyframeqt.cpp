@@ -48,8 +48,8 @@ namespace animation {
 KeyframeQt::KeyframeQt(Keyframe& keyframe, QGraphicsItem* parent)
     : QGraphicsItem(parent), keyframe_(keyframe) {
 
-    setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemSendsGeometryChanges |
-             ItemSendsScenePositionChanges);
+    setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemIsSelectable |
+             ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
     keyframe_.addObserver(this);
 
     setPos(mapFromScene(QPointF(keyframe_.getTime().count() * WidthPerSecond, 0)).x(), 0);

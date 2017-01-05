@@ -45,6 +45,7 @@ TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
     for (size_t i = 0; i < track_.size(); ++i) {
         sequences_.push_back(std::make_unique<KeyframeSequenceQt>(track_[i], this));
     }
+    track_.addObserver(this);
 }
 
 TrackQt::~TrackQt() = default;

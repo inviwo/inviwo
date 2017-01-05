@@ -48,6 +48,7 @@ public:
     virtual Property* getProperty() = 0;
     virtual const std::string& getIdentifier() const = 0;
     virtual void addKeyFrameUsingPropertyValue(Seconds time) = 0;
+    virtual void addSequenceUsingPropertyValue(Seconds time) = 0;
     virtual Track* toTrack() = 0;
 };
 
@@ -109,11 +110,12 @@ public:
     virtual void setProperty(Property* property) override;
 
     virtual void addKeyFrameUsingPropertyValue(Seconds time) override;
+    virtual void addSequenceUsingPropertyValue(Seconds time) override;
 
     virtual Track* toTrack();
 
 private:
-    virtual void onKeyframeSequenceMoved(KeyframeSequence* key) override;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
 
     Prop* property_;  ///< non-owning reference
     bool enabled_{true};
@@ -124,6 +126,7 @@ private:
     // Sorted list of non-overlapping sequences of key frames
     std::vector<std::unique_ptr<KeyframeSequenceTyped<Key>>> sequences_;
 };
+
 
 template <typename Prop, typename Key>
 Track* inviwo::animation::PropertyTrack<Prop, Key>::toTrack() {
@@ -301,6 +304,7 @@ void PropertyTrack<Prop, Key>::addTyped(const KeyframeSequenceTyped<Key>& sequen
 
     auto inserted = sequences_.insert(it, std::make_unique<KeyframeSequenceTyped<Key>>(sequence));
     notifyKeyframeSequenceAdded(inserted->get());
+    (*inserted)->addObserver(this);
 }
 
 template <typename Prop, typename Key>
@@ -336,6 +340,12 @@ void PropertyTrack<Prop, Key>::onKeyframeSequenceMoved(KeyframeSequence* key) {
     /// Do validation?
 }
 
+/**
+ * Track of sequences
+ * ----------X======X====X-----------------X=========X-------X=====X--------
+ * |- case 1-|-case 2----------------------|-case 2----------|-case 3------|
+ *           |-case 2a-----------|-case 2b-|
+ */
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(Seconds time) {
     if (sequences_.empty()) {
@@ -343,9 +353,36 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(Seconds time) {
                                             std::make_unique<LinearInterpolation<Key>>());
         addTyped(sequence);
     } else {
-        sequences_[0]->add(Key{time, property_->get()});
+        // 'it' will be the first seq. with a first time larger then 'to'.
+        auto it = std::upper_bound(
+            sequences_.begin(), sequences_.end(), time,
+            [](const auto& t, const auto& seq) { return t < seq->getFirst().getTime(); });
+
+        if (it == sequences_.begin()) {   // case 1
+            sequences_[0]->add(Key{time, property_->get()});
+        } else if (it == sequences_.end()) { // case 3
+            auto& seq1 = *std::prev(it);
+            seq1->add(Key{time, property_->get()});
+        } else {                          // case 2
+            auto& seq1 = *std::prev(it);
+            auto& seq2 = *it;
+            if ((time - seq1->getLast().getTime()) < (seq2->getFirst().getTime() - time)) {
+                seq1->add(Key{time, property_->get()});  // case 2a
+            } else {
+                seq2->add(Key{time, property_->get()});  // case 2b
+            }
+        }
     }
 }
+
+
+template <typename Prop, typename Key>
+void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(Seconds time) {
+    KeyframeSequenceTyped<Key> sequence({ {time, property_->get()} },
+                                        std::make_unique<LinearInterpolation<Key>>());
+    addTyped(sequence);
+}
+
 
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::serialize(Serializer& s) const {
@@ -391,7 +428,10 @@ void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
 
     using Elem = std::unique_ptr<KeyframeSequenceTyped<Key>>;
     util::IndexedDeserializer<Elem>("sequences", "sequence")
-        .onNew([&](Elem& seq) { notifyKeyframeSequenceAdded(seq.get()); })
+        .onNew([&](Elem& seq) {
+            notifyKeyframeSequenceAdded(seq.get());
+            seq->addObserver(this);
+        })
         .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(seq.get()); })(d, sequences_);
 
     d.deserializeAs<Property>("property", property_);
