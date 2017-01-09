@@ -322,9 +322,11 @@ void InviwoApplication::registerModules(
     // 2. Sort them according to protected modules (done by std::set).
     //    Prevents dependent modules from being loaded from temporary directory.
     //    Only necessary when libraries can be reloaded.
-    // 3. Load libraries and see if createModule function exist.
-    // 4. Start observing file if reloadLibrariesWhenChanged
-    // 5. Pass module factories to registerModules
+    // 3. Filter out files with correct extension, named inviwo-module
+    //    and listed in application_name-enabled-modules.txt (if it exist).
+    // 4. Load libraries and see if createModule function exist.
+    // 5. Start observing file if reloadLibrariesWhenChanged
+    // 6. Pass module factories to registerModules
 
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
 
@@ -398,20 +400,20 @@ void InviwoApplication::registerModules(
     };
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
     // otherwise load all modules
-    std::vector<std::string> onlyLoadModules;
-    std::ifstream enabledModules(
+    std::vector<std::string> enabledModules;
+    std::ifstream enabledModulesFile(filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/" +
         filesystem::getFileNameWithoutExtension(filesystem::getExecutablePath()) +
         "-enabled-modules.txt");
 
-    std::copy(std::istream_iterator<std::string>(enabledModules),
+    std::copy(std::istream_iterator<std::string>(enabledModulesFile),
         std::istream_iterator<std::string>(),
-        std::back_inserter(onlyLoadModules));
-    std::for_each(std::begin(onlyLoadModules), std::end(onlyLoadModules), toLower);
+        std::back_inserter(enabledModules));
+    std::for_each(std::begin(enabledModules), std::end(enabledModules), toLower);
     auto isModuleEnabled = [&](const std::string path) {
-        return onlyLoadModules.empty() || onlyLoadModules.end() !=
+        return enabledModules.empty() || enabledModules.end() !=
             std::find_if(
-                std::begin(onlyLoadModules),
-                std::end(onlyLoadModules),
+                std::begin(enabledModules),
+                std::end(enabledModules),
                 [path](const auto& mod) {
             return mod.compare(util::stripModuleFileNameDecoration(path)) == 0;
         });
@@ -422,7 +424,7 @@ void InviwoApplication::registerModules(
         if (libraryTypes.find(filesystem::getFileExtension(*it)) == libraryTypes.end() ||
             it->find("inviwo-module") == std::string::npos ||
             isModuleLibraryLoaded(*it)
-            || isModuleEnabled(*it)) {
+            || !isModuleEnabled(*it)) {
             files.erase(it++);
         } else {
             ++it;
