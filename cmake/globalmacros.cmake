@@ -100,6 +100,28 @@ function(ivw_retrieve_all_modules module_list)
 endfunction()
 
 #--------------------------------------------------------------------
+# Create a file ("executable_name-enabled-modules.txt") in the binary output directory.
+# The application can use the file to check the enabled modules at runtime.
+# Usage: ivw_create_enabled_modules_file("application_name" ${enabled_modules})
+# where enabled_modules is a list of module names (i.e. InviwoBaseModule)
+macro(ivw_create_enabled_modules_file executable_name)
+	foreach(mod ${ARGN})  
+		ivw_mod_name_to_dir(mod_name ${mod})
+		set(enabled_modules "${enabled_modules}${mod_name}\n") 
+	endforeach()
+	if(MSVC OR XCODE_VERSION)
+		# Multi-configuration generators (VS, Xcode) append a per-configuration 
+		# subdirectory to the specified directory
+		foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+			file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${OUTPUTCONFIG}/${executable_name}-enabled-modules.txt" ${enabled_modules})
+		endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+	else()
+		file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${executable_name}-enabled-modules.txt" ${enabled_modules})
+	endif()
+
+endmacro()
+
+#--------------------------------------------------------------------
 # Generate header for external modules
 function(ivw_generate_module_paths_header)
     set(dirs "")

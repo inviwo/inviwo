@@ -396,12 +396,33 @@ void InviwoApplication::registerModules(
             return lib->getFilePath().compare(path) == 0;
         });
     };
+    // Load enabled modules if file "application_name-enabled-modules.txt" exists,
+    // otherwise load all modules
+    std::vector<std::string> onlyLoadModules;
+    std::ifstream enabledModules(
+        filesystem::getFileNameWithoutExtension(filesystem::getExecutablePath()) +
+        "-enabled-modules.txt");
+
+    std::copy(std::istream_iterator<std::string>(enabledModules),
+        std::istream_iterator<std::string>(),
+        std::back_inserter(onlyLoadModules));
+    std::for_each(std::begin(onlyLoadModules), std::end(onlyLoadModules), toLower);
+    auto isModuleEnabled = [&](const std::string path) {
+        return onlyLoadModules.empty() || onlyLoadModules.end() !=
+            std::find_if(
+                std::begin(onlyLoadModules),
+                std::end(onlyLoadModules),
+                [path](const auto& mod) {
+            return mod.compare(util::stripModuleFileNameDecoration(path)) == 0;
+        });
+    };
     // Remove unsupported files and files belonging to already loaded modules.
     // Erase-remove idiom can't be used with std::set so we have to loop
     for (auto it = files.begin(); it != files.end();) {
         if (libraryTypes.find(filesystem::getFileExtension(*it)) == libraryTypes.end() ||
             it->find("inviwo-module") == std::string::npos ||
-            isModuleLibraryLoaded(*it)) {
+            isModuleLibraryLoaded(*it)
+            || isModuleEnabled(*it)) {
             files.erase(it++);
         } else {
             ++it;

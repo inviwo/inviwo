@@ -115,6 +115,8 @@ public:
      * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
      * The library filename must contain "inviwo-module" to be loaded.
      *
+     * @note Which modules to load can be specified by creating a file (application_name-enabled-modules.txt)
+     * containing the names of the modules to load.
      * @param const std::vector<std::string> & librarySearchPaths Paths to directories to recursively
      * search.
      * @param bool reloadLibrariesWhenChanged Add file watchers and reload libraries without

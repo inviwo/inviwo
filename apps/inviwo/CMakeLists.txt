@@ -69,6 +69,12 @@ if(IVW_RUNTIME_MODULE_LOADING)
 	if (IVW_RUNTIME_MODULE_RELOADING)
 		add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
 	endif()
+
+	# Specify which modules to load at runtime (all will be loaded if not existing)
+	ivw_create_enabled_modules_file("inviwo" ${package_list})
+	if(WIN32)
+		ivw_create_enabled_modules_file("inviwo-cli" ${package_list})
+	endif()
 else()
 	set(dependencies ${package_list})
 endif()
@@ -169,7 +175,6 @@ endif()
 #--------------------------------------------------------------------
 # Add dependencies
 ivw_add_dependencies(${dependencies})
-
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
