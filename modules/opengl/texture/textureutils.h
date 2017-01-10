@@ -50,22 +50,30 @@ class Mesh;
 
 namespace utilgl {
 
-IVW_MODULE_OPENGL_API void activateTarget(Image& image, ImageType type = ImageType::AllLayers);
-IVW_MODULE_OPENGL_API void activateTarget(ImageOutport& outport, ImageType type = ImageType::AllLayers);
-IVW_MODULE_OPENGL_API void activateAndClearTarget(Image& image,
+IVW_MODULE_OPENGL_API void activateTarget(Image& targetImage,
+                                          ImageType type = ImageType::AllLayers);
+IVW_MODULE_OPENGL_API void activateTarget(ImageOutport& targetOutport,
+                                          ImageType type = ImageType::AllLayers);
+IVW_MODULE_OPENGL_API void activateAndClearTarget(Image& targetImage,
                                                   ImageType type = ImageType::AllLayers);
-IVW_MODULE_OPENGL_API void activateAndClearTarget(ImageOutport& outport,
+IVW_MODULE_OPENGL_API void activateAndClearTarget(ImageOutport& targetOutport,
                                                   ImageType type = ImageType::AllLayers);
 
-IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& image, ImageInport& inport,
+IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage,
                                                        ImageType type = ImageType::AllLayers);
-IVW_MODULE_OPENGL_API void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport,
+
+IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage,
+                                                       ImageInport& sourceInport,
+                                                       ImageType type = ImageType::AllLayers);
+IVW_MODULE_OPENGL_API void activateTargetAndCopySource(ImageOutport& targetOutport,
+                                                       ImageInport& sourceInport,
                                                        ImageType type = ImageType::AllLayers);
 
 IVW_MODULE_OPENGL_API void clearCurrentTarget();
 IVW_MODULE_OPENGL_API void deactivateCurrentTarget();
 
-IVW_MODULE_OPENGL_API void updateAndActivateTarget(ImageOutport& outport, ImageInport& inport);
+IVW_MODULE_OPENGL_API void updateAndActivateTarget(ImageOutport& targetOutport,
+                                                   ImageInport& sourceInport);
 
 // Bind textures with glenum
 IVW_MODULE_OPENGL_API void bindTextures(const Image& image, bool color, bool depth, bool picking,
