@@ -44,7 +44,7 @@ class Mesh;
 namespace algorithm {
 
 /**
-* \class EntryExitPoints
+* \class EntryExitPointsHelper
 * \brief Helper class for creating 
 */
 class IVW_MODULE_BASEGL_API EntryExitPointsHelper {
@@ -82,17 +82,6 @@ private:
 };
 
 } // namespace algorithm
-
-/**
- * \class EntryExitPoints
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-//class IVW_MODULE_BASEGL_API EntryExitPoints { 
-//public:
-//    EntryExitPoints();
-//    virtual ~EntryExitPoints() = default;
-//};
 
 } // namespace inviwo
 
