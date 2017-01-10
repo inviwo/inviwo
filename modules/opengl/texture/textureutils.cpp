@@ -69,6 +69,15 @@ void activateAndClearTarget(Image& image, ImageType type) {
     clearCurrentTarget();
 }
 
+void activateTargetAndCopySource(Image& outImage, const Image& inImage, ImageType type) {
+    auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
+
+    if (auto inImageGL = inImage.getRepresentation<ImageGL>()) {
+        inImageGL->copyRepresentationsTo(outImageGL);
+    }
+    outImageGL->activateBuffer(type);
+}
+
 void activateTargetAndCopySource(Image& outImage, ImageInport& inport, ImageType type) {
     auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
 
