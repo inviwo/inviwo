@@ -261,9 +261,9 @@ vec4 TransferFunction::sample(double v) const {
 }
 
 vec4 TransferFunction::sample(float v) const {
-    if (v < 0) {
+    if (v <= 0) {
         return points_.front()->getRGBA();
-    } else if (v > 1) {
+    } else if (v >= 1) {
         return points_.back()->getRGBA();
     }
 
