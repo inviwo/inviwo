@@ -56,8 +56,8 @@ namespace inviwo {
 
 /**
  * \class <name>
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS 
+ * DESCRIBE_THE_CLASS
  */
 class <api> <name> : public Processor { 
 public:
