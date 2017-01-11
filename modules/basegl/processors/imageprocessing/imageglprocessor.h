@@ -82,10 +82,21 @@ protected:
      */
     virtual void afterInportChanged() {}
 
+    static void createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
+                                  const SwizzleMask &swizzleMask, ImageInport &inport,
+                                  ImageOutport &outport);
+
+    static void createDefaultImage(const size2_t &dim, ImageInport &inport, ImageOutport &outport);
+
+    size2_t calcOutputDimensions() const;
+
     ImageInport inport_;
     ImageOutport outport_;
 
     const DataFormatBase* dataFormat_;
+    // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
+    SwizzleMask swizzleMask_; 
+
     bool internalInvalid_;
 
     std::string fragmentShader_;

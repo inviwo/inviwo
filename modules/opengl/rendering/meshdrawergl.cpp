@@ -210,8 +210,7 @@ void MeshDrawerGL::DrawObject::draw() {
                                indexBuffer->getFormatType(), nullptr);
             }
         }
-    }
-    else {
+    } else if (!meshGL_->empty()) {
         // the mesh does not contain index buffers, render all vertices
         const auto drawModeGL = getGLDrawMode(arrayMeshInfo_);
         glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
@@ -233,8 +232,7 @@ void MeshDrawerGL::DrawObject::draw(DrawMode drawMode) {
                                indexBuffer->getFormatType(), nullptr);
             }
         }
-    }
-    else {
+    } else if (!meshGL_->empty()) {
         // the mesh does not contain index buffers, render all vertices
         glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
     }

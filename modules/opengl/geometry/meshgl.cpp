@@ -51,6 +51,10 @@ void MeshGL::enable() const { bufferArray_.bind(); }
 
 void MeshGL::disable() const { bufferArray_.unbind(); }
 
+size_t MeshGL::size() const { return bufferGLs_.size(); }
+
+bool MeshGL::empty() const { return bufferGLs_.empty(); }
+
 const BufferGL* MeshGL::getBufferGL(size_t idx) const {
     ivwAssert(idx < bufferGLs_.size(), "MeshGL::getBufferGL(): index out of bounds");
     return bufferGLs_[idx];

@@ -49,6 +49,7 @@ ImageGradient::ImageGradient()
     , renormalization_("renormalization", "Renormalization", true)
 {
     dataFormat_ = DataVec2Float32::get();
+    swizzleMask_ = swizzlemasks::redGreen;
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();

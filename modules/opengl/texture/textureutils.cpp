@@ -71,10 +71,7 @@ void activateAndClearTarget(ImageOutport& targetOutport, ImageType type) {
 
 void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
-
-    if (auto inImageGL = sourceImage.getRepresentation<ImageGL>()) {
-        inImageGL->copyRepresentationsTo(outImageGL);
-    }
+    sourceImage.getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     outImageGL->activateBuffer(type);
 }
 
@@ -82,9 +79,7 @@ void activateTargetAndCopySource(Image& targetImage, ImageInport& sourceInport, 
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
-        if (auto inImageGL = inImage->getRepresentation<ImageGL>()) {
-            inImageGL->copyRepresentationsTo(outImageGL);
-        }
+        auto inImageGL = inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
         LogWarnCustom("TextureUtils", "Trying to copy empty image inport: \""
                                           << sourceInport.getIdentifier() << "\" in processor: \""

@@ -56,6 +56,9 @@ public:
     void enable() const;
     void disable() const;
 
+    size_t size() const;
+    bool empty() const;
+
     const BufferGL* getBufferGL(size_t idx = 0) const;
 
     const Mesh::MeshInfo& getMeshInfoForIndexBuffer(size_t idx = 0) const;

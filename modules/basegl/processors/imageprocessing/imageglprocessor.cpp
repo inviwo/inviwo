@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "imageglprocessor.h"
+#include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -40,6 +41,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     , inport_("inputImage")
     , outport_("outputImage")
     , dataFormat_(nullptr)
+    , swizzleMask_(swizzlemasks::rgba)
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)
     , shader_(fragmentShader, false) {
@@ -62,17 +64,12 @@ void ImageGLProcessor::initializeResources() {
 void ImageGLProcessor::process() {
     if (internalInvalid_) {
         internalInvalid_ = false;
-        const DataFormatBase* format = dataFormat_ ? dataFormat_ : inport_.getData()->getDataFormat();
-        size2_t dimensions;
-        if (outport_.isHandlingResizeEvents() || !inport_.isOutportDeterminingSize())
-            dimensions  = outport_.getData()->getDimensions();
-        else
-            dimensions = inport_.getData()->getDimensions();
-        if (!outport_.hasData() || format != outport_.getData()->getDataFormat()
-            || dimensions != outport_.getData()->getDimensions()){
-            Image *img = new Image(dimensions, format);
-            img->copyMetaDataFrom(*inport_.getData());
-            outport_.setData(img);
+
+        const size2_t dim(calcOutputDimensions());
+        if (dataFormat_) {
+            createCustomImage(dim, dataFormat_, swizzleMask_, inport_, outport_);
+        } else {
+            createDefaultImage(dim, inport_, outport_);
         }
     }
 
@@ -96,6 +93,47 @@ void ImageGLProcessor::process() {
     utilgl::deactivateCurrentTarget();
 
     postProcess();
+}
+
+void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
+                                         const SwizzleMask &swizzleMask, ImageInport &inport, ImageOutport &outport) {
+
+    if (!outport.hasEditableData() || dataFormat != outport.getData()->getDataFormat()
+        || dim != outport.getData()->getDimensions()) {
+        Image *img = new Image(dim, dataFormat);
+        img->copyMetaDataFrom(*inport.getData());
+        img->getColorLayer()->setSwizzleMask(swizzleMask);
+        outport.setData(img);
+    } else if (outport.hasEditableData() && outport.getData()->getColorLayer()->getSwizzleMask() != swizzleMask) {
+        outport.getEditableData()->getColorLayer()->setSwizzleMask(swizzleMask);
+    }
+}
+
+void ImageGLProcessor::createDefaultImage(const size2_t &dim, ImageInport &inport, ImageOutport &outport) {
+    const DataFormatBase* format = inport.getData()->getDataFormat();
+
+    const auto swizzleMask = inport.getData()->getColorLayer()->getSwizzleMask();
+
+    if (!outport.hasEditableData() || format != outport.getData()->getDataFormat() ||
+        dim != outport.getData()->getDimensions() ||
+        swizzleMask != outport.getData()->getColorLayer()->getSwizzleMask()) {
+        Image *img = new Image(dim, format);
+        img->copyMetaDataFrom(*inport.getData());
+        // forward swizzle mask of the input
+        img->getColorLayer()->setSwizzleMask(swizzleMask);
+
+        outport.setData(img);
+    }
+}
+
+size2_t ImageGLProcessor::calcOutputDimensions() const {
+    size2_t dimensions;
+    if (outport_.isHandlingResizeEvents() || !inport_.isOutportDeterminingSize()) {
+        dimensions = outport_.getData()->getDimensions();
+    } else {
+        dimensions = inport_.getData()->getDimensions();
+    }
+    return dimensions;
 }
 
 }  // namespace
