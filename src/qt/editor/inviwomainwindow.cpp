@@ -174,7 +174,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
         .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
-    settings.endGroup();
+    settings.endGroup(); 
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
 
@@ -186,6 +186,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::updateForNewModules() {
+    menuBar()->addMenu(helpMenuItem_);
     settingsWidget_->updateSettingsWidget();
     processorTreeWidget_->addProcessorsToTree();
     fillExampleWorkspaceMenu();
@@ -223,14 +224,13 @@ void InviwoMainWindow::addActions() {
     auto editMenuItem = new QMenu(tr("&Edit"), menu);
     auto viewMenuItem = new QMenu(tr("&View"), menu);
     auto evalMenuItem = new QMenu(tr("&Evaluation"), menu);
-    auto helpMenuItem = new QMenu(tr("&Help"), menu);
+    helpMenuItem_ = new QMenu(tr("&Help"), menu);
 
     QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
     menu->insertMenu(first, fileMenuItem);
     menu->insertMenu(first, editMenuItem);
     menu->insertMenu(first, viewMenuItem);
     menu->insertMenu(first, evalMenuItem);
-    menu->addMenu(helpMenuItem);
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
@@ -552,11 +552,11 @@ void InviwoMainWindow::addActions() {
 
     // Help
     {
-        helpMenuItem->addAction(helpWidget_->toggleViewAction());
+        helpMenuItem_->addAction(helpWidget_->toggleViewAction());
 
         auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
         connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
-        helpMenuItem->addAction(aboutBoxAction);
+        helpMenuItem_->addAction(aboutBoxAction);
     }
 }
 

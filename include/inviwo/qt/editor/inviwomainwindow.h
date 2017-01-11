@@ -162,6 +162,7 @@ private:
 
     // toolbar
     QToolBar* basicToolbar_;
+    QMenu* helpMenuItem_;
 
     // dock widgets
     SettingsWidget* settingsWidget_;
