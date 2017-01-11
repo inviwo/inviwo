@@ -127,6 +127,7 @@ void Layer::setSwizzleMask(const SwizzleMask &mask) {
             rep.second->setSwizzleMask(mask);
         }
     }
+    swizzleMask_ = mask;
 }
 
 SwizzleMask Layer::getSwizzleMask() const {
