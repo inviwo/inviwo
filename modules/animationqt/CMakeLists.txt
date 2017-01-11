@@ -2,6 +2,8 @@
 # Inviwo AnimationQt Module
 ivw_module(AnimationQt)
 
+find_package(Qt5Core QUIET REQUIRED)
+
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
@@ -38,11 +40,13 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Add some qt specific things
+source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc)
+qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
 ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 
 #--------------------------------------------------------------------
 # Add shader directory to pack
