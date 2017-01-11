@@ -48,7 +48,7 @@ namespace utilqt {
 std::locale getCurrentStdLocale() {
     std::locale loc;
     try {
-        // use the system locale provided by Qt
+// use the system locale provided by Qt
 
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
@@ -58,8 +58,7 @@ std::locale getCurrentStdLocale() {
         std::string localeName(QLocale::system().name().toStdString());
 #endif
         loc = std::locale(localeName.c_str());
-    }
-    catch (std::exception &e) {
+    } catch (std::exception& e) {
         LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
     }
     return loc;
@@ -70,45 +69,25 @@ std::ios_base& localizeStream(std::ios_base& stream) {
     return stream;
 }
 
-QString toLocalQString(const std::string& input) {
-   return QString::fromLocal8Bit(input.c_str());
-}
+QString toLocalQString(const std::string& input) { return QString::fromLocal8Bit(input.c_str()); }
 
-QString toQString(const std::string& input) {
-   return QString::fromUtf8(input.c_str());
-}
+QString toQString(const std::string& input) { return QString::fromUtf8(input.c_str()); }
 
-QPointF toQPoint(dvec2 v) {
-    return QPointF(v.x, v.y);
-}
+QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
 
-QPoint toQPoint(ivec2 v) {
-    return QPoint(v.x, v.y);
-}
+QPoint toQPoint(ivec2 v) { return QPoint(v.x, v.y); }
 
-dvec2 toGLM(QPointF v) {
-    return dvec2(v.x(), v.y());
-}
+dvec2 toGLM(QPointF v) { return dvec2(v.x(), v.y()); }
 
-ivec2 toGLM(QPoint v) {
-    return ivec2(v.x(), v.y());
-}
+ivec2 toGLM(QPoint v) { return ivec2(v.x(), v.y()); }
 
-dvec2 toGLM(QSizeF v) {
-    return dvec2(v.width(), v.height());
-}
+dvec2 toGLM(QSizeF v) { return dvec2(v.width(), v.height()); }
 
-ivec2 toGLM(QSize v) {
-    return ivec2(v.width(), v.height());
-}
+ivec2 toGLM(QSize v) { return ivec2(v.width(), v.height()); }
 
-QSizeF toQSize(dvec2 v) {
-    return QSizeF(v.x, v.y);
-}
+QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
 
-QSize toQSize(ivec2 v) {
-    return QSize(v.x, v.y);
-}
+QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
@@ -117,13 +96,13 @@ QMainWindow* getApplicationMainWindow() {
     });
     if (it != widgets.end()) {
         return dynamic_cast<QMainWindow*>(*it);
-    }
-    else {
+    } else {
         return nullptr;
     }
 }
 
-QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset /*= true*/) {
+QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
+                            bool decorationOffset /*= true*/) {
 #ifdef WIN32
     // Only non zero on windows, due to a QT bug in window decoration handling.
     static QPoint windowDecorationOffset = []() {
@@ -141,36 +120,36 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorat
         w.hide();
         return offset;
     }();
-#else 
+#else
     static QPoint windowDecorationOffset = QPoint(0, 0);
 #endif
 
     QPoint pos(point);
     QDesktopWidget* desktop = QApplication::desktop();
-    int primaryScreenIndex = desktop->primaryScreen();
-    QRect wholeScreen = desktop->screenGeometry(primaryScreenIndex);
-
-    for (int i = 0; i < desktop->screenCount(); i++) {
-        if (i != primaryScreenIndex)
-            wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
-    }
-
-    wholeScreen.setRect(wholeScreen.x() - 10, wholeScreen.y() - 10, wholeScreen.width() + 20,
-        wholeScreen.height() + 20);
-    QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
-    auto mainWindow = getApplicationMainWindow();
-    QPoint appPos;
-    if (mainWindow) {
-        appPos = mainWindow->pos();
-    }
 
     if (decorationOffset) {
         QPoint offset = windowDecorationOffset;
         pos -= offset;
     }
 
-    if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {
+    // Check if point is within any desktops rect (with some extra padding applied).
+    static constexpr int padding = 10;
+    bool withinAnyDesktop = false;
+    for (int i = 0; i < desktop->screenCount(); i++) {
+        auto geom = desktop->screenGeometry(i).marginsAdded({padding, padding, padding, padding});
+        if (geom.contains(pos)) {
+            withinAnyDesktop = true;
+            break;
+        }
+    }
+
+    if (!withinAnyDesktop) {
         // If the widget is outside visible screen
+        auto mainWindow = getApplicationMainWindow();
+        QPoint appPos;
+        if (mainWindow) {
+            appPos = mainWindow->pos();
+        }
         pos = appPos;
         pos += offsetWidget();
     }
@@ -198,6 +177,6 @@ QPoint offsetWidget() {
     return QPoint(pos.x, pos.y);
 }
 
-} // namespace utilqt
+}  // namespace utilqt
 
 }  // namespace
