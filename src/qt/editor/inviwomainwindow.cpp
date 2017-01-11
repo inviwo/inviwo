@@ -220,17 +220,11 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
 void InviwoMainWindow::addActions() {
     auto menu = menuBar();
 
-    auto fileMenuItem = new QMenu(tr("&File"), menu);
-    auto editMenuItem = new QMenu(tr("&Edit"), menu);
-    auto viewMenuItem = new QMenu(tr("&View"), menu);
-    auto evalMenuItem = new QMenu(tr("&Evaluation"), menu);
-    helpMenuItem_ = new QMenu(tr("&Help"), menu);
-
-    QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
-    menu->insertMenu(first, fileMenuItem);
-    menu->insertMenu(first, editMenuItem);
-    menu->insertMenu(first, viewMenuItem);
-    menu->insertMenu(first, evalMenuItem);
+    auto fileMenuItem = menu->addMenu(tr("&File"));
+    auto editMenuItem = menu->addMenu(tr("&Edit"));
+    auto viewMenuItem = menu->addMenu(tr("&View"));
+    auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
+    helpMenuItem_ = new QMenu(tr("&Help"), menu);  // will be added in updateForNewModules
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
