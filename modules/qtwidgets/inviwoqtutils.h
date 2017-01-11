@@ -110,13 +110,21 @@ IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
  */
 IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset = true);
 
-/** 
- * \brief Offset widgets based on order added such that they do not end up on top of each other.
- * Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is called.
- * Furthermore, the horizontal offset will be increased by 200 every tenth time.
- * @return  
- */
+/**
+* \brief Offset widgets based on order added such that they do not end up on top of each other.
+* Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is called.
+* Furthermore, the horizontal offset will be increased by 200 every tenth time.
+* @return
+*/
 IVW_MODULE_QTWIDGETS_API QPoint offsetWidget();
+
+
+
+IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, std::string before);
+IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu * before = nullptr);
+IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFound = false);
+
+
 } // namespace utilqt
 
 

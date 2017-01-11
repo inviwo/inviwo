@@ -186,7 +186,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::updateForNewModules() {
-    menuBar()->addMenu(helpMenuItem_);
     settingsWidget_->updateSettingsWidget();
     processorTreeWidget_->addProcessorsToTree();
     fillExampleWorkspaceMenu();
@@ -224,7 +223,7 @@ void InviwoMainWindow::addActions() {
     auto editMenuItem = menu->addMenu(tr("&Edit"));
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
-    helpMenuItem_ = new QMenu(tr("&Help"), menu);  // will be added in updateForNewModules
+    auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
@@ -546,11 +545,11 @@ void InviwoMainWindow::addActions() {
 
     // Help
     {
-        helpMenuItem_->addAction(helpWidget_->toggleViewAction());
+        helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
         auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
         connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
-        helpMenuItem_->addAction(aboutBoxAction);
+        helpMenuItem->addAction(aboutBoxAction);
     }
 }
 

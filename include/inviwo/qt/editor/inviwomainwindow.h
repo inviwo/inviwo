@@ -161,8 +161,7 @@ private:
     TemplateOptionProperty<UsageMode>* appUsageModeProp_;
 
     // toolbar
-    QToolBar* basicToolbar_;
-    QMenu* helpMenuItem_;
+    QToolBar* basicToolbar_;;
 
     // dock widgets
     SettingsWidget* settingsWidget_;

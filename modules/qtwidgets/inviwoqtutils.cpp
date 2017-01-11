@@ -37,6 +37,9 @@
 #include <QLocale>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QMenu>
+#include <QAction>
+#include <QMenuBar>
 #include <warn/pop>
 #include <ios>
 #include <exception>
@@ -196,6 +199,51 @@ QPoint offsetWidget() {
         }
     }
     return QPoint(pos.x, pos.y);
+}
+
+
+QMenu* addMenu(std::string menuName, std::string before) {
+    return addMenu(menuName, getMenu(before));
+}
+
+QMenu* addMenu(std::string menuName, QMenu* before) {
+    if (auto mainwin = utilqt::getApplicationMainWindow()) {
+        if (!before) {
+            before = getMenu("&Help", false);
+        }
+
+        auto menuBar = mainwin->menuBar();
+
+        if (before) {
+            auto menu = new QMenu(menuName.c_str(), menuBar);
+            menuBar->insertMenu(before->menuAction(), menu);
+            return menu;
+        } else {  // No menu specified or couldn't find a help menu
+            return menuBar->addMenu(menuName.c_str());
+        }
+    }
+    // throw exception no main window
+    return nullptr;
+}
+
+
+QMenu* getMenu(std::string menuName, bool createIfNotFound) {
+    if (auto mainwin = utilqt::getApplicationMainWindow()) {
+        auto menuBar = mainwin->menuBar();
+        auto menus = menuBar->findChildren<QMenu*>();
+
+        auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
+            // Questions, what &View vs View
+            return m->title().compare(QObject::tr(menuName.c_str()), Qt::CaseInsensitive) == 0;
+        });
+        if (menuItem != menus.end()) {
+            return *menuItem;
+        } else if (createIfNotFound) {
+            return addMenu(menuName);
+        }
+    }
+    // throw exception no main window
+    return nullptr;
 }
 
 } // namespace utilqt

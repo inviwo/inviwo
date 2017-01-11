@@ -59,7 +59,8 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
-        mainWindow->menuBar()->addMenu(menu.release());
+        auto menuBar = mainWindow->menuBar();
+        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(),menu.release());
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
