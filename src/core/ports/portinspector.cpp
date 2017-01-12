@@ -32,6 +32,10 @@
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/ports/portfactory.h>
 
 namespace inviwo {
 PortInspector::PortInspector(std::string portClassIdentifier,
