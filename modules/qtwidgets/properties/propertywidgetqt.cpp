@@ -332,11 +332,8 @@ void PropertyWidgetQt::generateContextMenu() {
 
         // Module actions.
         generateModuleMenuActions();
-        QMapIterator<QString, QMenu*> it(moduleSubMenus_);
-
-        while (it.hasNext()) {
-            it.next();
-            contextMenu_->addMenu(it.value());
+        for (const auto& item : moduleSubMenus_) {
+            contextMenu_->addMenu(item.second.get());
         }
 
         // Update to current state.
@@ -347,26 +344,27 @@ void PropertyWidgetQt::generateContextMenu() {
 void PropertyWidgetQt::generateModuleMenuActions() {
     moduleSubMenus_.clear();
 
-    std::map<std::string, std::vector<const ModuleCallbackAction*> > callbackMapPerModule;
-    for (auto& moduleAction : InviwoApplication::getPtr()->getCallbackActions())
+    std::map<std::string, std::vector<const ModuleCallbackAction*>> callbackMapPerModule;
+    for (auto& moduleAction : InviwoApplication::getPtr()->getCallbackActions()) {
         callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(
             moduleAction.get());
+    }
 
     for (auto& elem : callbackMapPerModule) {
-        auto actions = elem.second;
+        auto& actions = elem.second;
 
-        if (actions.size()) {
-            QMenu* submenu = new QMenu(tr(elem.first.c_str()));
-            moduleSubMenus_[elem.first.c_str()] = submenu;
-
+        if (!actions.empty()) {
+            auto submenu = util::make_unique<QMenu>(QString::fromStdString(elem.first));
             for (auto& moduleAction : actions) {
-                QAction* action = new QAction(tr(moduleAction->getActionName().c_str()), this);
+                QAction* action =
+                    new QAction(QString::fromStdString(moduleAction->getActionName()), this);
                 action->setCheckable(true);
                 submenu->addAction(action);
                 action->setChecked(moduleAction->getActionState() ==
                                    ModuleCallBackActionState::Enabled);
                 connect(action, SIGNAL(triggered()), this, SLOT(moduleAction()));
             }
+            moduleSubMenus_[elem.first] = std::move(submenu);
         }
     }
 }
@@ -376,23 +374,18 @@ void PropertyWidgetQt::updateModuleMenuActions() {
 
     for (auto& moduleAction : moduleActions) {
         std::string moduleName = moduleAction->getModule()->getIdentifier();
-        QMapIterator<QString, QMenu*> it(moduleSubMenus_);
+        auto it = moduleSubMenus_.find(moduleName);
 
-        while (it.hasNext()) {
-            it.next();
-
-            if (it.key().toLocal8Bit().constData() == moduleName) {
-                QList<QAction*> actions = it.value()->actions();
-
-                for (auto& action : actions) {
-                    if (action->text().toLocal8Bit().constData() == moduleAction->getActionName()) {
-                        // FIXME: Following setChecked is not behaving as expected on some special
-                        // case. This needs to be investigated.
-                        // bool blockState = actions[j]->blockSignals(true);
-                        action->setChecked(moduleAction->getActionState() ==
-                                           ModuleCallBackActionState::Enabled);
-                        // actions[j]->blockSignals(blockState);
-                    }
+        if (it != moduleSubMenus_.end()) {
+            QList<QAction*> actions = it->second->actions();
+            for (auto& action : actions) {
+                if (action->text().toLocal8Bit().constData() == moduleAction->getActionName()) {
+                    // FIXME: Following setChecked is not behaving as expected on some special
+                    // case. This needs to be investigated.
+                    // bool blockState = actions[j]->blockSignals(true);
+                    action->setChecked(moduleAction->getActionState() ==
+                                       ModuleCallBackActionState::Enabled);
+                    // actions[j]->blockSignals(blockState);
                 }
             }
         }
