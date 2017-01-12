@@ -201,8 +201,7 @@ QMenu* addMenu(std::string menuName, QMenu* before) {
             return menuBar->addMenu(menuName.c_str());
         }
     }
-    // throw exception no main window
-    return nullptr;
+    throw Exception("No Qt main window found");
 }
 
 
@@ -211,9 +210,13 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
         auto menuBar = mainwin->menuBar();
         auto menus = menuBar->findChildren<QMenu*>();
 
+        auto menuNoAnd = menuName;
+        replaceInString(menuNoAnd, "&", "");
+
         auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
-            // Questions, what &View vs View
-            return m->title().compare(QObject::tr(menuName.c_str()), Qt::CaseInsensitive) == 0;
+            std::string title = m->title().toLocal8Bit().constData();
+            replaceInString(title, "&", "");
+            return menuNoAnd == title;
         });
         if (menuItem != menus.end()) {
             return *menuItem;
@@ -221,8 +224,7 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
             return addMenu(menuName);
         }
     }
-    // throw exception no main window
-    return nullptr;
+    throw Exception("No Qt main window found");
 }
 
 } // namespace utilqt
