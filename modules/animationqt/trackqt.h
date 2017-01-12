@@ -58,8 +58,8 @@ public:
 protected:
     virtual QRectF boundingRect() const;
 
-    virtual void onKeyframeSequenceAdded(KeyframeSequence* s) override;
-    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s) override;
+    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
+    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
 
     Track& track_;
     std::vector<std::unique_ptr<KeyframeSequenceQt>> sequences_;

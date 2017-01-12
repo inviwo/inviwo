@@ -33,12 +33,20 @@ namespace inviwo {
 
 namespace animation {
 
-void TrackObservable::notifyKeyframeSequenceAdded(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceAdded(s); });
+void TrackObservable::notifyKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
+    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceAdded(t, s); });
 }
 
-void TrackObservable::notifyKeyframeSequenceRemoved(KeyframeSequence* s) {
-    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(s); });
+void TrackObservable::notifyKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) {
+    forEachObserver([&](TrackObserver* o) { o->onKeyframeSequenceRemoved(t, s); });
+}
+
+void TrackObservable::notifyFirstMoved(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onFirstMoved(t); });
+}
+
+void TrackObservable::notifyLastMoved(Track* t) {
+    forEachObserver([&](TrackObserver* o) { o->onLastMoved(t); });
 }
 
 void TrackObservable::notifyEnabledChanged(Track* t) {

@@ -42,10 +42,11 @@
 namespace inviwo {
 
 namespace animation {
+
 /**
- * \class KeyframeSequence
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * The KeyframeSequence is a part of a Track and owns Keyframes. KeyframeSequence provides the
+ * base interface giving access to a list of Keyframes. And a interpolation method used to
+ * interpolate between Keyframes.
  */
 class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
                                                   public KeyframeSequenceObserverble,
@@ -136,8 +137,6 @@ bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
     : KeyframeSequence(), keyframes_(), interpolation_() {
-    keyframes_.push_back(std::make_unique<Key>());
-    keyframes_.push_back(std::make_unique<Key>());
 }
 
 template <typename Key>
@@ -293,7 +292,10 @@ template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     using Elem = std::unique_ptr<Key>;
     util::IndexedDeserializer<Elem>("keyframes", "keyframe")
-        .onNew([&](Elem& key) { notifyKeyframeAdded(key.get(), this); })
+        .onNew([&](Elem& key) {
+            notifyKeyframeAdded(key.get(), this);
+            key->addObserver(this);
+        })
         .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
 
     d.deserializeAs<Interpolation>("interpolation", interpolation_);

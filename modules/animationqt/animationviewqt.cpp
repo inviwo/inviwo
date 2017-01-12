@@ -35,6 +35,7 @@
 #include <warn/ignore/all>
 #include <QWheelEvent>
 #include <QPainter>
+#include <QScrollbar>
 #include <qmath.h>
 #include <warn/pop>
 
@@ -51,6 +52,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
     addObservation(&controller);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
@@ -141,7 +143,7 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
 
     for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
         lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
-        points.append(QPointF(x, 20));
+        points.append(QPointF(x, 30));
     }
 
     // Grid

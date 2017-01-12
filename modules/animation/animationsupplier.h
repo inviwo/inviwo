@@ -56,14 +56,24 @@ public:
     AnimationSupplier(InviwoApplication* app);
     AnimationSupplier(const AnimationSupplier&) = delete;
     AnimationSupplier& operator=(const AnimationSupplier&) = delete;
-    virtual ~AnimationSupplier();
+    ~AnimationSupplier();
 
+    /**
+     *	Register a Track with the Track Factory
+     */
     template <typename T>
     void registerTrack();
 
+    /**
+     *	Register a Interpolation with the Interpolation Factory
+     */
     template <typename T>
     void registerInterpolation();
 
+
+    /**
+     *	Register a Property Track class identifier for a property class identifier.
+     */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 

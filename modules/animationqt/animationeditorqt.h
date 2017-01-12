@@ -46,7 +46,7 @@ namespace inviwo {
 namespace animation {
 
 constexpr int TrackHeight = 25;
-constexpr int TimelineHeight = TrackHeight;
+constexpr int TimelineHeight = 35;
 constexpr int KeyframeWidth = 15;
 constexpr int KeyframeHeight = TrackHeight;
 constexpr int WidthPerSecond = 96;
@@ -67,6 +67,12 @@ public:
     virtual void keyPressEvent(QKeyEvent *event) override;
 
 protected:
+    void updateSceneRect();
+
+    virtual void onFirstMoved() override;
+
+    virtual void onLastMoved() override;
+
     AnimationController& controller_;
     std::vector<std::unique_ptr<TrackQt>> tracks_;
 };

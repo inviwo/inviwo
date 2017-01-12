@@ -58,11 +58,11 @@ const Track& TrackQt::getTrack() const { return track_; }
 
 QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
 
-void TrackQt::onKeyframeSequenceAdded(KeyframeSequence* s) {
+void TrackQt::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     sequences_.push_back(std::make_unique<KeyframeSequenceQt>(*s, this));
 }
 
-void TrackQt::onKeyframeSequenceRemoved(KeyframeSequence* sequence) {
+void TrackQt::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* sequence) {
     util::erase_remove_if(sequences_, [&](auto& sequenceqt) {
         if (&(sequenceqt->getKeyframeSequence()) == sequence) {
             scene()->removeItem(sequenceqt.get());

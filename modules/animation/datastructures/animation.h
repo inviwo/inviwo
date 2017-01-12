@@ -44,6 +44,9 @@ namespace inviwo {
 
 namespace animation {
 
+/**
+ *	Animation data structure, owns a list of tracks.
+ */
 class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public Serializable,
                                            public TrackObserver {
@@ -67,6 +70,8 @@ public:
 
     void clear();
 
+    std::vector<Seconds> getAllTimes() const;
+
     Seconds firstTime() const;
     Seconds lastTime() const;
 
@@ -76,6 +81,9 @@ public:
 private:
     virtual void onPriorityChanged(Track* t) override;
     void doPrioritySort();
+
+    virtual void onFirstMoved(Track* t) override;
+    virtual void onLastMoved(Track* t) override;
 
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;

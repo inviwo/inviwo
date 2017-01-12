@@ -303,7 +303,7 @@ void PropertyTrack<Prop, Key>::addTyped(const KeyframeSequenceTyped<Key>& sequen
     }
 
     auto inserted = sequences_.insert(it, std::make_unique<KeyframeSequenceTyped<Key>>(sequence));
-    notifyKeyframeSequenceAdded(inserted->get());
+    notifyKeyframeSequenceAdded(this, inserted->get());
     (*inserted)->addObserver(this);
 }
 
@@ -311,7 +311,7 @@ template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::remove(size_t i) {
     auto seq = std::move(sequences_[i]);
     sequences_.erase(sequences_.begin() + i);
-    notifyKeyframeSequenceRemoved(seq.get());
+    notifyKeyframeSequenceRemoved(this, seq.get());
 }
 
 template <typename Prop, typename Key>
@@ -338,6 +338,17 @@ void PropertyTrack<Prop, Key>::onKeyframeSequenceMoved(KeyframeSequence* key) {
         return a->getFirst().getTime() < b->getFirst().getTime();
     });
     /// Do validation?
+
+    auto it = std::find_if(sequences_.begin(), sequences_.end(), [&](const auto& item){
+        return item.get() == key;
+    });
+    if (it != sequences_.end()) {
+        if (it == sequences_.begin()) {
+            notifyFirstMoved(this);
+        } else if (it == std::prev(sequences_.end())) {
+            notifyLastMoved(this);
+        }
+    }
 }
 
 /**
@@ -429,10 +440,10 @@ void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     using Elem = std::unique_ptr<KeyframeSequenceTyped<Key>>;
     util::IndexedDeserializer<Elem>("sequences", "sequence")
         .onNew([&](Elem& seq) {
-            notifyKeyframeSequenceAdded(seq.get());
+            notifyKeyframeSequenceAdded(this, seq.get());
             seq->addObserver(this);
         })
-        .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(seq.get()); })(d, sequences_);
+        .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(this, seq.get()); })(d, sequences_);
 
     d.deserializeAs<Property>("property", property_);
 }

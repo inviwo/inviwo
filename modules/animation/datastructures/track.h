@@ -46,9 +46,8 @@ namespace inviwo {
 namespace animation {
 
 /**
- * \class Track
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * A Animation base Track interface, provides access to a list of KeyframeSequence,
+ * and track metadata: Identifier, Name, Enabled, Priority. 
  */
 class IVW_MODULE_ANIMATION_API Track : public Serializable,
                                        public TrackObservable,

@@ -68,12 +68,11 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
     app_->getProcessorNetwork()->addObserver(this);
     animation_.addObserver(this);
 
-    animationClearHandle_ =
-        app_->getWorkspaceManager()->addClearCallback([&]() { animation_.clear(); });
-    animationSerializationHandle_ = app_->getWorkspaceManager()->addSerializationCallback(
-        [&](Serializer& s) { animation_.serialize(s); });
-    animationDeserializationHandle_ = app_->getWorkspaceManager()->addDeserializationCallback(
-        [&](Deserializer& d) { animation_.deserialize(d); });
+    animationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() { animation_.clear(); });
+    animationSerializationHandle_ = app_->getWorkspaceManager()->onSave(
+        [&](Serializer& s) { s.serialize("Animation", animation_); });
+    animationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
+        [&](Deserializer& d) { d.deserialize("Animation", animation_); });
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }

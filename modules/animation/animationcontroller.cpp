@@ -39,6 +39,7 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     : animation_(animation)
     , app_(app)
     , state_(AnimationState::Paused)
+    , mode_(PlaybackMode::Once)
     , currentTime_(0)
     , deltaTime_(Seconds(1.0 / 60.0))
     , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
@@ -68,6 +69,14 @@ void AnimationController::setState(AnimationState newState) {
     notifyStateChanged(this, oldState, state_);
 }
 
+void AnimationController::setPlaybackMode(PlaybackMode mode) {
+    if (mode_ != mode) {
+        auto oldmode = mode_;
+        mode_ = mode;
+        notifyPlaybackModeChanged(this, oldmode, mode_);
+    }
+}
+
 void AnimationController::setTime(Seconds time) {
     // No upper boundary check since you might want to set the time after the last keyframe of
     // animation when creating new ones
@@ -88,7 +97,7 @@ void AnimationController::pause() {
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-    setTime(Seconds(0));
+    eval(currentTime_, Seconds(0));
 }
 
 void AnimationController::tick() {
@@ -102,8 +111,19 @@ void AnimationController::tick() {
         auto newTime = currentTime_ + deltaTime_;
 
         if (newTime > animation_->lastTime()) {
-            newTime = animation_->lastTime();
-            setState(AnimationState::Paused);
+            switch (mode_) {
+                case PlaybackMode::Once: {
+                    newTime = animation_->lastTime();
+                    setState(AnimationState::Paused);
+                    break;
+                }
+                case PlaybackMode::Loop: {
+                    newTime = animation_->firstTime();
+                    break;
+                }
+                default:
+                    break;
+            }
         }
 
         // Evaluate animation
@@ -137,6 +157,10 @@ const Animation* AnimationController::getAnimation() const { return animation_; 
 Animation* AnimationController::getAnimation() { return animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
+
+const inviwo::animation::PlaybackMode& AnimationController::getPlaybackMode() const {
+    return mode_;
+}
 
 const Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 

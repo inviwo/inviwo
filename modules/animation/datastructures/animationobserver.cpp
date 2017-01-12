@@ -41,6 +41,14 @@ void AnimationObservable::notifyTrackRemoved(Track* track) {
     forEachObserver([&](AnimationObserver* o) { o->onTrackRemoved(track); });
 }
 
+void AnimationObservable::notifyFirstMoved() {
+    forEachObserver([&](AnimationObserver* o) { o->onFirstMoved(); });
+}
+
+void AnimationObservable::notifyLastMoved() {
+    forEachObserver([&](AnimationObserver* o) { o->onLastMoved(); });
+}
+
 }  // namespace
 
 }  // namespace

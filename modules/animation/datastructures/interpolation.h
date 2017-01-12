@@ -43,10 +43,9 @@ namespace inviwo {
 
 namespace animation {
 
+
 /**
- * \class Interpolation
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ *	Base class for keyframe interpolations.
  */
 class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
 public:

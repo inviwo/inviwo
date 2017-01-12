@@ -48,8 +48,11 @@ class AnimationController;
 class IVW_MODULE_ANIMATION_API AnimationControllerObserver : public Observer {
 public:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
-                                AnimationState newState){};
-    virtual void onTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime){};
+                                AnimationState newState) {};
+    virtual void onPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
+                                       PlaybackMode newMode) {};
+
+    virtual void onTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime) {};
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
                                     Animation* newAnim){};
 };
@@ -59,6 +62,8 @@ class IVW_MODULE_ANIMATION_API AnimationControllerObservable
 protected:
     void notifyStateChanged(AnimationController* controller, AnimationState prevState,
                             AnimationState newState);
+    void notifyPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
+                                   PlaybackMode newMode);
     void notifyTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime);
     void notifyAnimationChanged(AnimationController* controller, Animation* oldAnimation,
                                 Animation* newAnimation);

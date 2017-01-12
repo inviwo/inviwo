@@ -53,9 +53,16 @@ namespace animation {
 class BasePropertyTrack;
 
 /**
- * The AnimationManager is responsible for managed the factories related to animations as well as
+ * The AnimationManager is responsible for managing the factories related to animations as well as
  * owning the currently used animation and controller. The AnumationSuppliers will register
  * FactoryObjects with the factories here.
+ * The AnimationManager owns the current Animation and a AnimationController for that Animation, it 
+ * is also responsible for clearing, saving, and loading the animation when ever the workspace is 
+ * cleared, saved, or loaded. 
+ * The AnimationManager also manages the ModuleCallback actions that are used to facilitate
+ * the creation of property track from the context menu of properties. 
+ * To be able to do this is has a map of track class identifiers to map to property class 
+ * identifiers.
  */
 class IVW_MODULE_ANIMATION_API AnimationManager : public AnimationObserver, 
                                                   public PropertyOwnerObserver,
@@ -70,15 +77,27 @@ public:
     InterpolationFactory& getInterpolationFactory();
     const InterpolationFactory& getInterpolationFactory() const;
 
-    void registerPropertyTrackConnection(const std::string& propertyClassID,
-                                         const std::string& trackClassID);
-
     Animation& getAnimation();
     const Animation& getAnimation() const;
     AnimationController& getAnimationController();
     const AnimationController& getAnimationController() const;
 
+
+
+    /**
+     *	Register a Property Track class identifier for a property class identifier.
+     */
+    void registerPropertyTrackConnection(const std::string& propertyClassID,
+                                         const std::string& trackClassID);
+
+
+    /**
+     *	Callback for the module action callbacks. 
+     */
     void addKeyframeCallback(Property* property);
+    /**
+     *	Callback for the module action callbacks. 
+     */
     void addSequenceCallback(Property* property);
 
 private:

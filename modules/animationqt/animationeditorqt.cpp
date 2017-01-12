@@ -60,8 +60,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
         tracks_.push_back(std::move(trackQt));
     }
 
-    setSceneRect(0.0, 0.0, animation.lastTime().count() * WidthPerSecond,
-                 animation.size() * TrackHeight + TimelineHeight);
+    updateSceneRect();
 }
 
 AnimationEditorQt::~AnimationEditorQt() = default;
@@ -71,6 +70,7 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
     trackQt->setPos(0, TimelineHeight + TrackHeight * tracks_.size() + TrackHeight * 0.5);
     this->addItem(trackQt.get());
     tracks_.push_back(std::move(trackQt));
+    updateSceneRect();
 }
 
 void AnimationEditorQt::onTrackRemoved(Track* track) {
@@ -87,6 +87,7 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
             tracks_[i]->setY(TimelineHeight + TrackHeight * i);
         }
     }
+    updateSceneRect();
 }
 
 void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
@@ -110,6 +111,15 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
         } 
     }
 }
+
+void AnimationEditorQt::updateSceneRect() {
+    setSceneRect(0.0, 0.0, controller_.getAnimation()->lastTime().count() * WidthPerSecond,
+                 controller_.getAnimation()->size() * TrackHeight + TimelineHeight);
+}
+
+void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }
+
+void AnimationEditorQt::onLastMoved() { updateSceneRect(); }
 
 }  // namespace
 

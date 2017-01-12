@@ -42,15 +42,13 @@ namespace animation {
 class KeyframeSequence;
 class Track;
 
-/**
- * \class TrackObserver
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
-    virtual void onKeyframeSequenceAdded(KeyframeSequence* s){};
-    virtual void onKeyframeSequenceRemoved(KeyframeSequence* s){};
+    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s){};
+    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s){};
+
+    virtual void onFirstMoved(Track* t){};
+    virtual void onLastMoved(Track* t){};
 
     virtual void onEnabledChanged(Track* t){};
     virtual void onIdentifierChanged(Track* t){};
@@ -60,8 +58,11 @@ public:
 
 class IVW_MODULE_ANIMATION_API TrackObservable : public Observable<TrackObserver> {
 protected:
-    void notifyKeyframeSequenceAdded(KeyframeSequence* s);
-    void notifyKeyframeSequenceRemoved(KeyframeSequence* s);
+    void notifyKeyframeSequenceAdded(Track* t, KeyframeSequence* s);
+    void notifyKeyframeSequenceRemoved(Track* t, KeyframeSequence* s);
+
+    void notifyFirstMoved(Track* t);
+    void notifyLastMoved(Track* t);
 
     void notifyEnabledChanged(Track* t);
     void notifyIdentifierChanged(Track* t);

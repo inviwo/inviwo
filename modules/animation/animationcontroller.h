@@ -60,6 +60,7 @@ public:
     void stop();
     
     void setState(AnimationState newState);
+    void setPlaybackMode(PlaybackMode mode);
 
     // Progresses time and evaluates animation
     void tick();
@@ -71,6 +72,7 @@ public:
     Animation* getAnimation();
     const Animation* getAnimation() const;
     const AnimationState& getState() const;
+    const PlaybackMode& getPlaybackMode() const;
     const Seconds getCurrentTime() const;
     const Seconds getPlaySpeedTime() const;
     const double getPlaySpeedFps() const;
@@ -81,6 +83,7 @@ protected:
     Animation* animation_;  ///< non-owning reference
     InviwoApplication* app_;
     AnimationState state_;
+    PlaybackMode mode_;
     Seconds currentTime_;
     Seconds deltaTime_;
     Timer timer_;

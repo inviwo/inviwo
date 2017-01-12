@@ -69,6 +69,9 @@ AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
     setDragDropMode(InternalMove);
     setDragDropOverwriteMode(false);
 
+    std::string style = "border: 0px;\n background-color: #323235;";
+    setStyleSheet(style.c_str());
+
     animation_.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 

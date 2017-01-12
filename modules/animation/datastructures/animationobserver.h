@@ -43,12 +43,18 @@ class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
 public:
     virtual void onTrackAdded(Track* track){};
     virtual void onTrackRemoved(Track* track){};
+
+    virtual void onFirstMoved() {};
+    virtual void onLastMoved() {};
 };
 
 class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {
 protected:
     void notifyTrackAdded(Track* track);
     void notifyTrackRemoved(Track* track);
+
+    void notifyFirstMoved();
+    void notifyLastMoved();
 };
 
 } // namespace

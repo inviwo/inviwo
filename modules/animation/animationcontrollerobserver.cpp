@@ -42,6 +42,14 @@ void AnimationControllerObservable::notifyStateChanged(AnimationController* cont
         [&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
 }
 
+void AnimationControllerObservable::notifyPlaybackModeChanged(AnimationController* controller,
+                                                              PlaybackMode prevMode,
+                                                              PlaybackMode newMode) {
+    forEachObserver([&](AnimationControllerObserver* o) {
+        o->onPlaybackModeChanged(controller, prevMode, newMode);
+    });
+}
+
 void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller,
                                                       Seconds oldtime, Seconds newTime) {
     forEachObserver(

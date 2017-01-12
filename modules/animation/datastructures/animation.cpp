@@ -57,6 +57,7 @@ void Animation::add(std::unique_ptr<Track> track) {
     tracks_.push_back(std::move(track));
     priorityTracks_.push_back(tracks_.back().get());
     doPrioritySort();
+    tracks_.back()->addObserver(this);
     notifyTrackAdded(tracks_.back().get());
 }
 
@@ -100,6 +101,23 @@ void Animation::clear() {
     }
 }
 
+std::vector<Seconds> Animation::getAllTimes() const {
+    
+    std::vector<Seconds> result;
+
+    for (size_t t = 0; t < tracks_.size(); ++t) {
+        auto& track = *tracks_[t];
+        for (size_t s = 0; s < track.size(); ++s) {
+            auto& seq = track[s];
+            for (auto k = 0; k < seq.size(); ++k) {
+                result.push_back(seq[k].getTime());
+            }
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
 Seconds Animation::firstTime() const {
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->firstTime() < b->firstTime();
@@ -139,6 +157,10 @@ void Animation::doPrioritySort() {
         priorityTracks_.begin(), priorityTracks_.end(),
         [](const auto& a, const auto& b) { return a->getPriority() > b->getPriority(); });
 }
+
+void Animation::onFirstMoved(Track* t) { notifyFirstMoved(); }
+
+void Animation::onLastMoved(Track* t) { notifyLastMoved(); }
 
 } // namespace
 

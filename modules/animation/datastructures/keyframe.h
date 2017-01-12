@@ -41,9 +41,8 @@ namespace inviwo {
 namespace animation {
 
 /**
- * \class Keyframe
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * The Keyframe is a element of a KeyframeSequence. The base interface Keyframe only provied
+ * a Time property.
  */
 class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable {
 public:
