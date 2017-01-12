@@ -68,6 +68,9 @@ private:
     T* obj_;
 };
 
+/**
+ *	A callback for use in ModuleCallbackAction
+ */
 class IVW_CORE_API ModuleCallback {
 public:
     ModuleCallback() : callBack_{} {}

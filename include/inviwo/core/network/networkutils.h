@@ -42,6 +42,10 @@ namespace util {
 
 namespace detail {
 
+/**
+ * Helper class for a connection referring to a port outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping connections.
+ */
 struct PartialConnection : public Serializable {
     PartialConnection();
     PartialConnection(std::string path, Inport* inport);
@@ -51,6 +55,11 @@ struct PartialConnection : public Serializable {
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 };
+
+/**
+ * Helper class for a links referring to a properties outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping links.
+ */
 struct PartialSrcLink : public Serializable {
     PartialSrcLink();
     PartialSrcLink(Property* src, std::string path);
@@ -60,6 +69,11 @@ struct PartialSrcLink : public Serializable {
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 };
+
+/**
+ * Helper class for a links referring to a properties outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping links.
+ */
 struct PartialDstLink : public Serializable {
     PartialDstLink();
     PartialDstLink(std::string path, Property* dst);
@@ -70,6 +84,9 @@ struct PartialDstLink : public Serializable {
     virtual void deserialize(Deserializer& d) override;
 };
 
+/**
+ * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.
+ */
 struct PartialProcessorNetwork : public Serializable {
     PartialProcessorNetwork(ProcessorNetwork* network);
 

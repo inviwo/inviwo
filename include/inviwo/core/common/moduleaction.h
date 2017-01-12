@@ -39,6 +39,11 @@ class InviwoModule;
 
 enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
 
+
+/**
+ * A Module can register ModuleCallbackActions with the InviwoApplication. These action will the
+ * Be added a some places, for example as property widget context menu options.  
+ */
 class IVW_CORE_API ModuleCallbackAction {
 public:
     ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
