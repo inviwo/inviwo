@@ -173,7 +173,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
         .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
-    settings.endGroup();
+    settings.endGroup(); 
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
 
@@ -218,18 +218,11 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
 void InviwoMainWindow::addActions() {
     auto menu = menuBar();
 
-    auto fileMenuItem = new QMenu(tr("&File"), menu);
-    auto editMenuItem = new QMenu(tr("&Edit"), menu);
-    auto viewMenuItem = new QMenu(tr("&View"), menu);
-    auto evalMenuItem = new QMenu(tr("&Evaluation"), menu);
-    auto helpMenuItem = new QMenu(tr("&Help"), menu);
-
-    QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
-    menu->insertMenu(first, fileMenuItem);
-    menu->insertMenu(first, editMenuItem);
-    menu->insertMenu(first, viewMenuItem);
-    menu->insertMenu(first, evalMenuItem);
-    menu->addMenu(helpMenuItem);
+    auto fileMenuItem = menu->addMenu(tr("&File"));
+    auto editMenuItem = menu->addMenu(tr("&Edit"));
+    auto viewMenuItem = menu->addMenu(tr("&View"));
+    auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
+    auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
