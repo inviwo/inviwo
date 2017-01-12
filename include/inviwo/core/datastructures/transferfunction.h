@@ -78,8 +78,8 @@ public:
     int getNumPoints() const;
     int getTextureSize();
 
-    TransferFunctionDataPoint* getPoint(int i);
-    const TransferFunctionDataPoint* getPoint(int i) const;
+    TransferFunctionDataPoint* getPoint(size_t i);
+    const TransferFunctionDataPoint* getPoint(size_t i) const;
 
     void addPoint(const vec2& pos, const vec4& color);
     void addPoint(const vec2& pos);
