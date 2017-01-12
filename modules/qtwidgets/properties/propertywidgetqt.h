@@ -106,7 +106,6 @@ public slots:
     virtual void setApplicationUsageMode(bool value);
     virtual void changeSemantics(QAction* action);
 
-    void moduleAction();
 signals:
     void updateSemantics(PropertyWidgetQt*);
 

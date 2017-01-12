@@ -88,13 +88,13 @@ std::unordered_set<Processor*> util::getSuccessors(Processor* processor) {
 std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     // perform topological sorting and store processor order in sorted
 
-    std::vector<Processor*> endProcessors;
-    util::copy_if(network->getProcessors(), std::back_inserter(endProcessors),
+    std::vector<Processor*> sinkProcessors;
+    util::copy_if(network->getProcessors(), std::back_inserter(sinkProcessors),
                   [](Processor* p) { return p->isSink(); });
 
     ProcessorStates state;
     std::vector<Processor*> sorted;
-    for (auto processor : endProcessors) {
+    for (auto processor : sinkProcessors) {
         traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
             state, processor, [&sorted](Processor* p) { sorted.push_back(p); });
     }
@@ -199,145 +199,219 @@ void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
 
 void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                           const std::string& refPath) {
+    Serializer serializer(refPath);
+
+    detail::PartialProcessorNetwork ppc(network);
+    serializer.serialize("ProcessorNetwork", ppc);
+    serializer.writeFile(os);
+}
+
+std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
+                                                 const std::string& refPath,
+                                                 InviwoApplication* app) {
+    NetworkLock lock(network);
+
+    Deserializer deserializer(is, refPath);
+    deserializer.registerFactory(app->getProcessorFactory());
+    deserializer.registerFactory(app->getMetaDataFactory());
+    deserializer.registerFactory(app->getPropertyFactory());
+    deserializer.registerFactory(app->getInportFactory());
+    deserializer.registerFactory(app->getOutportFactory());
+
+    detail::PartialProcessorNetwork ppc(network);
+
+    deserializer.deserialize("ProcessorNetwork", ppc);
+
+    return ppc.getAddedProcessors();
+}
+
+util::detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network)
+    : network_(network) {}
+
+std::vector<Processor*> util::detail::PartialProcessorNetwork::getAddedProcessors() const {
+    return addedProcessors_;
+}
+
+void util::detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<Processor*> selected;
-    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
+    util::copy_if(network_->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
         return m->isSelected();
     });
 
     std::vector<PortConnection> connections;
-    util::copy_if(network->getConnections(), std::back_inserter(connections),
+    util::copy_if(network_->getConnections(), std::back_inserter(connections),
                   [&selected](const PortConnection& c) {
-                      auto in = c.getInport()->getProcessor();
-                      auto out = c.getOutport()->getProcessor();
-                      return util::contains(selected, in) && util::contains(selected, out);
-                  });
+        auto in = c.getInport()->getProcessor();
+        auto out = c.getOutport()->getProcessor();
+        return util::contains(selected, in) && util::contains(selected, out);
+    });
 
     std::vector<PortConnection> partialInConnections;
-    util::copy_if(network->getConnections(), std::back_inserter(partialInConnections),
+    util::copy_if(network_->getConnections(), std::back_inserter(partialInConnections),
                   [&selected](const PortConnection& c) {
-                      auto in = c.getInport()->getProcessor();
-                      auto out = c.getOutport()->getProcessor();
-                      return util::contains(selected, in) && !util::contains(selected, out);
-                  });
+        auto in = c.getInport()->getProcessor();
+        auto out = c.getOutport()->getProcessor();
+        return util::contains(selected, in) && !util::contains(selected, out);
+    });
 
     auto partialIn = util::transform(partialInConnections, [](const PortConnection& c) {
         return detail::PartialConnection{
             c.getOutport()->getProcessor()->getIdentifier() + "/" + c.getOutport()->getIdentifier(),
-            c.getInport()};
+            c.getInport() };
     });
 
     std::vector<PropertyLink> links;
-    util::copy_if(network->getLinks(), std::back_inserter(links),
+    util::copy_if(network_->getLinks(), std::back_inserter(links),
                   [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return util::contains(selected, src) && util::contains(selected, dst);
-                  });
+        auto src = c.getSource()->getOwner()->getProcessor();
+        auto dst = c.getDestination()->getOwner()->getProcessor();
+        return util::contains(selected, src) && util::contains(selected, dst);
+    });
 
     std::vector<PropertyLink> srcLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(srcLinks),
+    util::copy_if(network_->getLinks(), std::back_inserter(srcLinks),
                   [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return util::contains(selected, src) && !util::contains(selected, dst);
-                  });
+        auto src = c.getSource()->getOwner()->getProcessor();
+        auto dst = c.getDestination()->getOwner()->getProcessor();
+        return util::contains(selected, src) && !util::contains(selected, dst);
+    });
     auto partialSrcLinks = util::transform(srcLinks, [](const PropertyLink& c) {
-        return detail::PartialSrcLink{c.getSource(),
-                                      joinString(c.getDestination()->getPath(), ".")};
+        return detail::PartialSrcLink{ c.getSource(),
+                                      joinString(c.getDestination()->getPath(), ".") };
     });
 
     std::vector<PropertyLink> dstLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(dstLinks),
+    util::copy_if(network_->getLinks(), std::back_inserter(dstLinks),
                   [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return !util::contains(selected, src) && util::contains(selected, dst);
-                  });
+        auto src = c.getSource()->getOwner()->getProcessor();
+        auto dst = c.getDestination()->getOwner()->getProcessor();
+        return !util::contains(selected, src) && util::contains(selected, dst);
+    });
     auto partialDstLinks = util::transform(dstLinks, [](const PropertyLink& c) {
-        return detail::PartialDstLink{joinString(c.getSource()->getPath(), "."),
-                                      c.getDestination()};
+        return detail::PartialDstLink{ joinString(c.getSource()->getPath(), "."),
+                                      c.getDestination() };
     });
 
-    Serializer xmlSerializer(refPath);
-    xmlSerializer.serialize("ProcessorNetworkVersion", network->getVersion());
-    xmlSerializer.serialize("Processors", selected, "Processor");
-    xmlSerializer.serialize("Connections", connections, "Connection");
-    xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
-    xmlSerializer.serialize("PropertyLinks", links, "PropertyLink");
-    xmlSerializer.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-    xmlSerializer.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
-    xmlSerializer.writeFile(os);
+    s.serialize("ProcessorNetworkVersion", network_->getVersion());
+    s.serialize("Processors", selected, "Processor");
+    s.serialize("Connections", connections, "Connection");
+    s.serialize("PartialInConnections", partialIn, "Connection");
+    s.serialize("PropertyLinks", links, "PropertyLink");
+    s.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
+    s.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 }
 
-std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network,
-                                                              std::istream& is,
-                                                              const std::string& refPath,
-                                                              InviwoApplication* app) {
-    NetworkLock lock(network);
-
-    std::vector<Processor*> addedProcessors;
+void util::detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     try {
-        Deserializer xmlDeserializer(app, is, refPath);
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
         std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;
         std::vector<std::unique_ptr<PropertyLink>> links;
         std::vector<std::unique_ptr<detail::PartialSrcLink>> partialSrcLinks;
         std::vector<std::unique_ptr<detail::PartialDstLink>> partialDstLinks;
-        xmlDeserializer.deserialize("Processors", processors, "Processor");
-        xmlDeserializer.deserialize("Connections", connections, "Connection");
-        xmlDeserializer.deserialize("PartialInConnections", partialIn, "Connection");
-        xmlDeserializer.deserialize("PropertyLinks", links, "PropertyLink");
-        xmlDeserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-        xmlDeserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
+        d.deserialize("Processors", processors, "Processor");
+        d.deserialize("Connections", connections, "Connection");
+        d.deserialize("PartialInConnections", partialIn, "Connection");
+        d.deserialize("PropertyLinks", links, "PropertyLink");
+        d.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
+        d.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
-        for (auto p : network->getProcessors()) {
+        for (auto p : network_->getProcessors()) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             m->setSelected(false);
         }
 
         for (auto& p : processors) {
-            network->addProcessor(p.get());
-            util::autoLinkProcessor(network, p.get());
-            addedProcessors.push_back(p.get());
+            network_->addProcessor(p.get());
+            util::autoLinkProcessor(network_, p.get());
+            addedProcessors_.push_back(p.get());
             p.release();
         }
         for (auto& c : connections) {
-            network->addConnection(c->getOutport(), c->getInport());
+            network_->addConnection(c->getOutport(), c->getInport());
         }
         for (auto& c : partialIn) {
             auto parts = splitString(c->outportPath_, '/');
             if (parts.size() != 2) continue;
-            if (auto p = network->getProcessorByIdentifier(parts[0])) {
+            if (auto p = network_->getProcessorByIdentifier(parts[0])) {
                 if (auto outport = p->getOutport(parts[1])) {
-                    network->addConnection(outport, c->inport_);
+                    network_->addConnection(outport, c->inport_);
                 }
             }
         }
 
         for (auto& l : links) {
-            network->addLink(l->getSource(), l->getDestination());
+            network_->addLink(l->getSource(), l->getDestination());
         }
         for (auto& l : partialSrcLinks) {
             auto path = splitString(l->dstPath_, '.');
-            if (auto dst = network->getProperty(path)) {
-                network->addLink(l->src_, dst);
+            if (auto dst = network_->getProperty(path)) {
+                network_->addLink(l->src_, dst);
             }
         }
         for (auto& l : partialDstLinks) {
             auto path = splitString(l->srcPath_, '.');
-            if (auto src = network->getProperty(path)) {
-                network->addLink(src, l->dst_);
+            if (auto src = network_->getProperty(path)) {
+                network_->addLink(src, l->dst_);
             }
         }
 
     } catch (Exception& e) {
         util::log(IvwContextCustom("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
-    return addedProcessors;
 }
+
+
+
+
+
+util::detail::PartialConnection::PartialConnection(std::string path, Inport* inport)
+    : outportPath_(path), inport_(inport) {}
+
+util::detail::PartialConnection::PartialConnection() {}
+
+void util::detail::PartialConnection::serialize(Serializer& s) const {
+    s.serialize("OutPortPath", outportPath_);
+    s.serialize("InPort", inport_);
+}
+
+void util::detail::PartialConnection::deserialize(Deserializer& d) {
+    d.deserialize("OutPortPath", outportPath_);
+    d.deserialize("InPort", inport_);
+}
+
+util::detail::PartialSrcLink::PartialSrcLink(Property* src, std::string path)
+    : src_(src), dstPath_(path) {}
+
+util::detail::PartialSrcLink::PartialSrcLink() {}
+
+void util::detail::PartialSrcLink::serialize(Serializer& s) const {
+    s.serialize("SourceProperty", src_);
+    s.serialize("DestinationPropertyPath", dstPath_);
+}
+
+void util::detail::PartialSrcLink::deserialize(Deserializer& d) {
+    d.deserialize("SourceProperty", src_);
+    d.deserialize("DestinationPropertyPath", dstPath_);
+}
+
+util::detail::PartialDstLink::PartialDstLink(std::string path, Property* dst)
+    : srcPath_(path), dst_(dst) {}
+
+util::detail::PartialDstLink::PartialDstLink() {}
+
+void util::detail::PartialDstLink::serialize(Serializer& s) const {
+    s.serialize("SourcePropertyPath", srcPath_);
+    s.serialize("DestinationProperty", dst_);
+}
+
+void util::detail::PartialDstLink::deserialize(Deserializer& d) {
+    d.deserialize("SourcePropertyPath", srcPath_);
+    d.deserialize("DestinationProperty", dst_);
+}
+
 
 
 }  // namespace

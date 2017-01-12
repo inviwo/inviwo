@@ -33,33 +33,16 @@
 namespace inviwo {
 
 const std::string SerializeConstants::XmlVersion="1.0";
-const std::string SerializeConstants::InviwoTreedata="InviwoTreeData";
-const std::string SerializeConstants::InviwoVersion="1.0";
-const std::string SerializeConstants::NetworkVersion="1.0";
-const std::string SerializeConstants::Version="version";
-const std::string SerializeConstants::EditComment=" Don't edit the following code ";
-const std::string SerializeConstants::IDAttribute="id";
-const std::string SerializeConstants::RefAttribute="reference";
+const std::string SerializeConstants::InviwoWorkspace="InviwoWorkspace";
+const int SerializeConstants::InviwoWorkspaceVersion = 2;
 const std::string SerializeConstants::VersionAttribute="version";
 const std::string SerializeConstants::ContentAttribute="content";
-const std::string SerializeConstants::TypeAttribute="type";
 const std::string SerializeConstants::KeyAttribute="key";
 
+const std::string SerializeConstants::TypeAttribute="type";
+const std::string SerializeConstants::RefAttribute="reference";
+const std::string SerializeConstants::IDAttribute="id";
+
 const std::string SerializeConstants::VectorAttributes[] = {"x", "y", "z", "w"};
-
-const std::string SerializeConstants::PropertyAttribute1="identifier";
-const std::string SerializeConstants::PropertyAttribute2="displayName";
-const std::string SerializeConstants::ProcessorAttribute1="identifier";
-const std::string SerializeConstants::ProcessorAttribute2="displayName";
-
-bool SerializeConstants::isReversvedAttribute(const std::string key) {
-    if (key == PropertyAttribute1
-        || key == PropertyAttribute2
-        || key == ProcessorAttribute1
-        || key == ProcessorAttribute2)
-        return true;
-
-    return false;
-}
 
 } //namespace

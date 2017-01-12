@@ -50,7 +50,7 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow)
 
     interactionEndCallback_ =
         mainWindow_->getInviwoApplication()->getInteractionStateManager().onInteractionEnd(
-            [&]() { if (dirty_) pushState(); });
+            [&](int interactionCount) { if (dirty_) pushState(true); });
 
     undoAction_ = new QAction(QAction::tr("&Undo"), mainWindow_);
     undoAction_->setShortcut(QKeySequence::Undo);
@@ -69,16 +69,16 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow)
     pushState();
 }
 
-void UndoManager::pushState() {
+void UndoManager::pushState(bool force) {
     if (isRestoring) return;
     if (mainWindow_->getInviwoApplication()->getProcessorNetwork()->islocked()) return;
-    if (mainWindow_->getInviwoApplication()->getInteractionStateManager().isInteracting()) return;
-
+    if (!force &&
+        mainWindow_->getInviwoApplication()->getInteractionStateManager().isInteracting()) {
+        return;
+    }
     auto path = mainWindow_->getCurrentWorkspace();
-    Serializer s(path);
-    mainWindow_->getInviwoApplication()->getProcessorNetwork()->serialize(s);
     std::stringstream stream;
-    s.writeFile(stream);
+    mainWindow_->getInviwoApplication()->getWorkspaceManager()->save(stream, path);
     auto str = stream.str();
    
     if (head_ >= 0 && str == undoBuffer_[head_]) return; // No Change
@@ -89,42 +89,34 @@ void UndoManager::pushState() {
     undoBuffer_.emplace_back(str);
     dirty_ = false;
     updateActions();
-
-    //LogInfo("Push state: " << head_ << " (" << undoBuffer_.size() << ")");
 }
 void UndoManager::undoState() {
     if (head_ > 0) {
         util::KeepTrueWhileInScope restore(&isRestoring);
-        auto path = mainWindow_->getCurrentWorkspace();
+        --head_;
 
         std::stringstream stream;
-        --head_;
         stream << undoBuffer_[head_];
-        Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
-        mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
+        auto path = mainWindow_->getCurrentWorkspace();
+        mainWindow_->getInviwoApplication()->getWorkspaceManager()->load(stream, path);
 
         dirty_ = false;
         updateActions();
-
-        //LogInfo("Undo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 void UndoManager::redoState() {
     if (head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size())-1) {
 
         util::KeepTrueWhileInScope restore(&isRestoring);
-        auto path = mainWindow_->getCurrentWorkspace();
-
-        std::stringstream stream;
         ++head_;
-        stream << undoBuffer_[head_];
-        Deserializer d(mainWindow_->getInviwoApplication(), stream, path);
-        mainWindow_->getInviwoApplication()->getProcessorNetwork()->deserialize(d);
+        
+        std::stringstream stream;
+        stream << undoBuffer_[head_];     
+        auto path = mainWindow_->getCurrentWorkspace();
+        mainWindow_->getInviwoApplication()->getWorkspaceManager()->load(stream, path);
 
         dirty_ = false;
         updateActions();
-
-        //LogInfo("Redo state: " << head_ << " (" << undoBuffer_.size() << ")");
     }
 }
 

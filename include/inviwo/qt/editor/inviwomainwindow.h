@@ -80,7 +80,6 @@ public:
     void openWorkspace(QString workspaceFileName);
     std::string getCurrentWorkspace();
 
-    virtual void onNetworkEditorFileChanged(const std::string& filename) override;
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
@@ -116,6 +115,9 @@ public slots:
     void showAboutBox();
 
 private:
+    void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
+    void saveWorkspace(QString workspaceFileName);
+
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;
@@ -183,7 +185,6 @@ private:
 
     // settings
     bool maximized_;
-    bool exampleWorkspaceOpen_;
 
     // paths
     QString rootDir_;

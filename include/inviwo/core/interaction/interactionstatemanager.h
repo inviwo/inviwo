@@ -40,7 +40,13 @@ namespace inviwo {
  * \class InteractionStateManager
  */
 class IVW_CORE_API InteractionStateManager {
+    using InteractionBeginDispatcher = Dispatcher<void(int)>;
+    using InteractionEndDispatcher = Dispatcher<void(int)>;
+
 public:
+    using InteractionBeginHandle = typename InteractionBeginDispatcher::Handle;
+    using InteractionEndHandle = typename InteractionEndDispatcher::Handle;
+
     InteractionStateManager() = default;
     ~InteractionStateManager() = default;
 
@@ -50,23 +56,24 @@ public:
     bool isInteracting() const;
 
     template <typename T>
-    std::shared_ptr<std::function<void()>> onInteractionBegin(T&& callback);
+    InteractionBeginHandle onInteractionBegin(T&& callback);
     template <typename T>
-    std::shared_ptr<std::function<void()>> onInteractionEnd(T&& callback);
+    InteractionEndHandle onInteractionEnd(T&& callback);
 
 private:
-    Dispatcher<void()> onInteractionBegin_;
-    Dispatcher<void()> onInteractionEnd_;
+    InteractionBeginDispatcher onInteractionBegin_;
+    InteractionEndDispatcher onInteractionEnd_;
 
-    bool isInteracting_ = false;
+    int interactionCount_ = 0;
 };
 
 template <typename T>
-std::shared_ptr<std::function<void()>> InteractionStateManager::onInteractionBegin(T&& callback) {
+std::shared_ptr<std::function<void(int)>> InteractionStateManager::onInteractionBegin(
+    T&& callback) {
     return onInteractionBegin_.add(std::forward<T>(callback));
 }
 template <typename T>
-std::shared_ptr<std::function<void()>> InteractionStateManager::onInteractionEnd(T&& callback) {
+std::shared_ptr<std::function<void(int)>> InteractionStateManager::onInteractionEnd(T&& callback) {
     return onInteractionEnd_.add(std::forward<T>(callback));
 }
 

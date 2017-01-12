@@ -41,7 +41,6 @@
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
@@ -249,42 +248,6 @@ private:
 
     void addPropertyOwnerObservation(PropertyOwner*);
     void removePropertyOwnerObservation(PropertyOwner*);
-
-    struct ErrorHandle {
-        ErrorHandle(const InviwoSetupInfo& info, const Deserializer& d) : info_(info), d_(d) {};
-
-        ~ErrorHandle() {
-            if (!messages.empty()) {
-                LogNetworkError("There were errors while loading workspace: " + d_.getFileName() +
-                               "\n" + joinString(messages, "\n"));
-            }
-        }
-
-        void operator()(ExceptionContext c) {
-            try {
-                throw;
-            } catch (SerializationException& error) {
-                auto key = error.getKey();
-                if (key == "Processor") {
-                    std::string module = info_.getModuleForProcessor(error.getType());
-                    if (!module.empty()) {
-                        messages.push_back(error.getMessage() + " Processor was in module: \"" +
-                                           module + "\".");
-                    } else {
-                        messages.push_back(error.getMessage());
-                    }
-                } else {
-                    messages.push_back(error.getMessage());
-                }
-            } catch (Exception& exception) {
-                messages.push_back("Deserialization error: " + exception.getMessage());
-            }
-        }
-
-        std::vector<std::string> messages;
-        const InviwoSetupInfo& info_;
-        const Deserializer& d_;
-    };
 
     static const int processorNetworkVersion_;
 

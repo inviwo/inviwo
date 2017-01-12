@@ -99,7 +99,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{
-          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
+          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())}
+    , workspaceManager_{ util::make_unique<WorkspaceManager>(this)} {
+
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
         auto dir = filesystem::getFileDirectory(filename);
@@ -129,6 +131,18 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
             resizePool(static_cast<size_t>(sys->poolSize_.get()));
         });
     }
+
+    workspaceManager_->registerFactory(getProcessorFactory());
+    workspaceManager_->registerFactory(getMetaDataFactory());
+    workspaceManager_->registerFactory(getPropertyFactory());
+    workspaceManager_->registerFactory(getInportFactory());
+    workspaceManager_->registerFactory(getOutportFactory());
+
+    networkClearHandle_ = workspaceManager_->onClear([&]() { processorNetwork_->clear(); });
+    networkSerializationHandle_ = workspaceManager_->onSave(
+        [&](Serializer& s) { s.serialize("ProcessorNetwork", *processorNetwork_); });
+    networkDeserializationHandle_ = workspaceManager_->onLoad(
+        [&](Deserializer& d) { d.deserialize("ProcessorNetwork", *processorNetwork_); });
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
@@ -237,6 +251,8 @@ ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNet
 ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {
     return processorNetworkEvaluator_.get();
 }
+
+WorkspaceManager* InviwoApplication::getWorkspaceManager() { return workspaceManager_.get(); }
 
 const CommandLineParser& InviwoApplication::getCommandLineParser() const {
     return commandLineParser_;

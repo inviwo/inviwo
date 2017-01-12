@@ -39,63 +39,57 @@ class IVW_CORE_API CallbackWithSingleArgument {
 public:
     CallbackWithSingleArgument() {}
     virtual ~CallbackWithSingleArgument() {}
-    virtual void invoke(const void*) const=0;
+    virtual void invoke(void*) const =  0;
 };
 
 template <typename T, typename U>
-class BaseModuleCallback  : public CallbackWithSingleArgument {
+class BaseModuleCallback : public CallbackWithSingleArgument {
 public:
-    typedef void (T::*fPointer)(const U*);
+    using fPointer = void (T::*)(U*);
 
-    BaseModuleCallback(T* obj, fPointer functionPtr)
-        : functionPtr_(functionPtr)
-        , obj_(obj) {}
+    BaseModuleCallback(T* obj, fPointer functionPtr) : functionPtr_(functionPtr), obj_(obj) {}
 
-    virtual ~BaseModuleCallback() {}
+    virtual ~BaseModuleCallback() = default;
 
-    void invoke(const U* argument) const {
+    void invoke(U* argument) const {
         if (!argument) {
-            LogInfo("Callback function argument does not match");
-            return;
+            throw Exception("Callback function argument does not match", IvwContext);
         }
 
-        if (functionPtr_)(*obj_.*functionPtr_)(argument);
+        if (functionPtr_) {
+            (*obj_.*functionPtr_)(argument);
+        }
     }
 
-    virtual void invoke(const void* p) const {
-        const U* argument = static_cast<const U*>(p);
-        BaseModuleCallback::invoke(argument);
-    }
+    virtual void invoke(void* p) const { BaseModuleCallback::invoke(static_cast<U*>(p)); }
 
 private:
     fPointer functionPtr_;
     T* obj_;
 };
 
+/**
+ *	A callback for use in ModuleCallbackAction
+ */
 class IVW_CORE_API ModuleCallback {
 public:
-    ModuleCallback() : callBack_(0) {}
-    virtual ~ModuleCallback() {
-        delete callBack_;
-    };
+    ModuleCallback() : callBack_{} {}
+    virtual ~ModuleCallback() = default;
 
     template <typename U>
-    void invoke(const U* p) const {
-        if (callBack_)
+    void invoke(U* p) const {
+        if (callBack_) {
             callBack_->invoke(p);
+        }
     }
-
     template <typename T, typename U>
-    void addMemberFunction(T* o, void (T::*m)(const U*)) {
-        if (callBack_) delete callBack_;
-
-        callBack_ = new BaseModuleCallback<T,U>(o,m);
+    void addMemberFunction(T* o, void (T::*m)(U*)) {
+        callBack_ = util::make_unique<BaseModuleCallback<T, U>>(o, m);
     }
 
 private:
-    CallbackWithSingleArgument* callBack_;
+    std::unique_ptr<CallbackWithSingleArgument> callBack_;
 };
-
 
 } // namespace
 

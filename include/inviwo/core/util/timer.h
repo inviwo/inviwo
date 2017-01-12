@@ -43,6 +43,7 @@
 #include <mutex>
 #include <memory>
 #include <utility>
+#include <atomic>
 #include <warn/pop>
 
 namespace inviwo {
@@ -54,19 +55,19 @@ namespace inviwo {
 
 class IVW_CORE_API Timer {
 public:
-    using duration_t = std::chrono::milliseconds;
+    using Milliseconds = std::chrono::milliseconds;
 
     Timer(size_t interval, std::function<void()> callback);
-    Timer(duration_t interval, std::function<void()> callback);
+    Timer(Milliseconds interval, std::function<void()> callback);
     ~Timer();
 
     void start();
     void start(size_t interval);
-    void start(duration_t interval);
+    void start(Milliseconds interval);
 
     void setInterval(size_t interval);
-    void setInterval(duration_t interval);
-    duration_t getInterval() const;
+    void setInterval(Milliseconds interval);
+    Milliseconds getInterval() const;
     
     void stop();
 
@@ -74,16 +75,18 @@ private:
     struct Callback {
         Callback(std::function<void()>&& fun) : callback(std::move(fun)), enabled(false) {}
         std::function<void()> callback;
-        mutable std::mutex mutex;
-        std::condition_variable cvar;
-        bool enabled;
+        
+        // Mutex needed to make sure we never evaluate the callback after stop has been called
+        std::recursive_mutex mutex; 
+        std::condition_variable_any cvar;
+        std::atomic<bool> enabled;
     };
 
     void timer();
 
     std::shared_ptr<Callback> callback_;
     std::future<void> result_;
-    duration_t interval_;
+    Milliseconds interval_;
     std::thread thread_;   
 };
 

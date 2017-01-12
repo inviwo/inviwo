@@ -60,17 +60,16 @@ public:
      * @param fileName path to file that is to be deserialized.
      * @param allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(InviwoApplication* app, std::string fileName, bool allowReference = true);
+    Deserializer(std::string fileName, bool allowReference = true);
     /**
-     * \brief Deserializes content from the stream using path to calculate relative paths to data.
+     * \brief Deserializes content from the stream using refPath to calculate relative paths to data.
      *
      * @param stream Stream with content that is to be deserialized.
-     * @param path A path that will be used to decode the location of data during
+     * @param refPath A path that will be used to decode the location of data during
      * deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
-                 bool allowReference = true);
+    Deserializer(std::istream& stream, const std::string& refPath, bool allowReference = true);
 
     virtual ~Deserializer() = default;
 
@@ -219,9 +218,15 @@ public:
      */
     template <class T>
     void deserialize(const std::string& key, T*& data);
+    template <class Base, class T>
+    void deserializeAs(const std::string& key, T*& data);
+
 
     template <class T, class D>
     void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
+
+    template <class Base, class T, class D>
+    void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
 
     void setExceptionHandler(ExceptionHandler handler);
 
@@ -248,6 +253,10 @@ public:
     template <typename T, typename K>
     friend class ContainerWrapper;
 
+    void registerFactory(FactoryBase* factory);
+
+    int getInviwoWorkspaceVersion() const;
+
 private:
 
     // integers, strings
@@ -258,8 +267,6 @@ private:
     template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
     void getSafeValue(const std::string& key, T& data);
 
-    void registerFactories(InviwoApplication* app);
-
     void storeReferences(TxElement* node);
 
     void handleError(const ExceptionContext& context);
@@ -268,6 +275,8 @@ private:
     std::map<std::string, TxElement*> referenceLookup_;
     
     std::vector<FactoryBase*> registeredFactories_;
+
+    int inviwoWorkspaceVersion_ = 0;
 };
 
 /**
@@ -317,21 +326,41 @@ private:
 
 namespace util {
 
+
+/**
+ * A helper class for more advanced deserialization. useful when one has to call observer 
+ * notifications for example. 
+ * Example usage, serialize as usual  
+ * ```{.cpp}
+ *     s.serialize("dataPoints", points_, "point");
+ *      
+ * ```
+ * Then deserialize with notifications:
+ * ```{.cpp}
+ *    util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
+ *       .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+ *           notifyControlPointAdded(point.get());
+ *       })
+ *       .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+ *           notifyControlPointRemoved(point.get());
+ *       })(d, points_);
+ * ```
+ */
 template <typename T>
 class IndexedDeserializer {
 public:
     IndexedDeserializer(std::string key, std::string itemKey) : key_(key), itemKey_(itemKey) {}
 
     IndexedDeserializer<T>& setMakeNew(std::function<T()> makeNewItem) {
-        makeNewItem_ = makeNewItem;
+        makeNewItem_ = std::move(makeNewItem);
         return *this;
     }
     IndexedDeserializer<T>& onNew(std::function<void(T&)> onNewItem) {
-        onNewItem_ = onNewItem;
+        onNewItem_ = std::move(onNewItem);
         return *this;
     }
-    IndexedDeserializer<T>& onRemove(std::function<bool(T&)> onRemoveItem) {
-        onRemoveItem_ = onRemoveItem;
+    IndexedDeserializer<T>& onRemove(std::function<void(T&)> onRemoveItem) {
+        onRemoveItem_ = std::move(onRemoveItem);
         return *this;
     }
 
@@ -339,39 +368,33 @@ public:
     void operator()(Deserializer& d, C& container) {
         T tmp{};
         size_t count = 0;
-        ContainerWrapper<T> cont(itemKey_, [&](std::string id, size_t ind) ->
-                                 typename ContainerWrapper<T>::Item {
-                                     ++count;
-                                     if (ind < container.size()) {
-                                         return {true, container[ind], [&](T& val) {}};
-                                     } else {
-                                         tmp = makeNewItem_();
-                                         return {true, tmp, [&](T& val) { onNewItem_(val); }};
-                                     }
-                                 });
+        ContainerWrapper<T> cont(
+            itemKey_, [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::Item {
+                ++count;
+                if (ind < container.size()) {
+                    return {true, container[ind], [&](T& val) {}};
+                } else {
+                    tmp = makeNewItem_();
+                    return {true, tmp, [&](T& val) {
+                                container.push_back(std::move(tmp));
+                                onNewItem_(container.back());
+                            }};
+                }
+            });
 
         d.deserialize(key_, cont);
 
-        size_t n = 0;
-        util::erase_remove_if(container, [&](T& item) {
-            if (n < count) {
-                ++n;
-                return false;
-            } else {
-                ++n;
-                return onRemoveItem_(item);
-            }
-        });
+        while (container.size() > count) {
+            auto elem = std::move(container.back());
+            container.pop_back();
+            onRemoveItem_(elem);
+        }
     }
 
 private:
-    std::function<T()> makeNewItem_ = []() -> T {
-        throw Exception("MakeNewItem callback is not set!");
-    };
-    std::function<void(T&)> onNewItem_ = [](T&) {
-        throw Exception("OnNewItem callback is not set!");
-    };
-    std::function<bool(T&)> onRemoveItem_ = [](T&) { return true; };
+    std::function<T()> makeNewItem_ = []() -> T { return T{}; };
+    std::function<void(T&)> onNewItem_ = [](T&) {};
+    std::function<void(T&)> onRemoveItem_ = [](T&) {};
 
     std::string key_;
     std::string itemKey_;
@@ -1044,6 +1067,42 @@ void Deserializer::deserialize(const std::string& key, ContainerWrapper<T, K>& c
         NodeSwitch elementNodeSwitch(*this, &(*child), false);
         container.deserialize(*this, &(*child), i);
         i++;
+    }
+}
+
+template <class Base, class T>
+void Deserializer::deserializeAs(const std::string& key, T*& data) {
+    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+
+    if (Base* ptr = data) {
+        deserialize(key, ptr);
+    } else {
+        deserialize(key, ptr);
+        if (auto typeptr = dynamic_cast<T*>(ptr)) {
+            data = typeptr;
+        } else {
+            delete ptr;
+            throw SerializationException("Could not deserialize \"" + key +
+                                         "\" types does not match", IvwContext);
+        }
+    }
+}
+
+template <class Base, class T, class D>
+void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& data) {
+    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+
+    if (Base* ptr = data.get()) {
+        deserialize(key, ptr);
+    } else {
+        deserialize(key, ptr);
+        if (auto typeptr = dynamic_cast<T*>(ptr)) {
+            data.reset(typeptr);
+        } else {
+            delete ptr;
+            throw SerializationException("Could not deserialize \"" + key +
+                                         "\" types does not match", IvwContext);
+        }
     }
 }
 

@@ -62,7 +62,8 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(std::string filePath) {
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
     auto volume = std::make_shared<Volume>();
-    Deserializer d(InviwoApplication::getPtr(), filePath);
+    Deserializer d(filePath);
+    d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + "/" + rawFile_;
     std::string formatFlag("");

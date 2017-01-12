@@ -37,31 +37,30 @@ namespace inviwo {
 
 class InviwoModule;
 
-class IVW_CORE_API ModuleCallBackActionState {
-public:
-    enum Status { Default =0,
-                  Enabled =1,
-                  Disabled =2,
-                  Custom =3
-                };
-};
+enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
 
-//TODO: several types of call back action required ???
+
+/**
+ * A Module can register ModuleCallbackActions with the InviwoApplication. These action will the
+ * Be added a some places, for example as property widget context menu options.  
+ */
 class IVW_CORE_API ModuleCallbackAction {
 public:
-    ModuleCallbackAction(std::string actionName, InviwoModule* module,
-                         ModuleCallBackActionState::Status state=ModuleCallBackActionState::Disabled);
-    std::string getActionName() const;
+    ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
+                         ModuleCallBackActionState state = ModuleCallBackActionState::Disabled);
+    const std::string& getActionName() const;
     InviwoModule* getModule() const;
-    ModuleCallback* getCallBack();
-    void setActionState(ModuleCallBackActionState::Status state);
-    ModuleCallBackActionState::Status getActionState() const;
+    ModuleCallback& getCallBack();
+    const ModuleCallback& getCallBack() const;
+    void setActionState(ModuleCallBackActionState state);
+    ModuleCallBackActionState getActionState() const;
+
 private:
     InviwoModule* module_;
     std::string actionName_;
-    // TODO: for now call backs with single argument is supported
+
     ModuleCallback callBack_;
-    ModuleCallBackActionState::Status actionState_;
+    ModuleCallBackActionState actionState_;
 };
 
 } // namespace

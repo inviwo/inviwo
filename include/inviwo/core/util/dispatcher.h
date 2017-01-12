@@ -45,11 +45,11 @@ namespace inviwo {
  */
 template <typename C>
 class Dispatcher final {
-private:
-    std::vector<std::weak_ptr<std::function<C>>> callbacks;
-    int32_t concurrent_dispatcher_count = 0;
-
 public:
+    using Function = C;
+    using Callback = std::function<C>;
+    using Handle = std::shared_ptr<std::function<C>>;
+
     template <typename T>
     std::shared_ptr<std::function<C>> add(T&& callback) {
         auto shared = std::make_shared<std::function<C>>(std::forward<T>(callback));
@@ -79,6 +79,9 @@ public:
             });
         }
     }
+private:
+    std::vector<std::weak_ptr<std::function<C>>> callbacks;
+    int32_t concurrent_dispatcher_count = 0;
 };
 
 }  // namespace

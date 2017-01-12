@@ -78,10 +78,7 @@ PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
 
     auto tf = getTF(path,"saveTransferFunction");
     if (!tf) { return nullptr; }
-
-    Serializer serializer(filename);
-    tf->serialize(serializer);
-    serializer.writeFile();
+    tf->get().save(filename);
     Py_RETURN_NONE;
 }
 
@@ -96,9 +93,8 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
     auto tf = getTF(path, "loadTransferFunction");
     if (!tf) { return nullptr; }
 
-    auto app = InviwoApplication::getPtr();
-
     if (!filesystem::fileExists(filename)) {
+        auto app = InviwoApplication::getPtr();
         if (filesystem::fileExists(app->getPath(PathType::TransferFunctions, "/" + filename))) {
             filename = app->getPath(PathType::TransferFunctions, "/" + filename);
         } else {
@@ -108,9 +104,7 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
         }
     }
 
-    Deserializer deserializer(app, filename);
-    tf->deserialize(deserializer);
-
+    tf->get().load(filename);
     Py_RETURN_NONE;
 }
 

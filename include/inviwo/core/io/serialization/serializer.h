@@ -71,9 +71,10 @@ public:
      * \brief Writes serialized data to stream.
      *
      * @param stream Stream to be written to.
+     * @param format Format the output, i.e. insert line breaks and tabs.
      * @throws SerializationException
      */
-    virtual void writeFile(std::ostream& stream);
+    virtual void writeFile(std::ostream& stream, bool format = false);
 
     // std containers
     template <typename T>

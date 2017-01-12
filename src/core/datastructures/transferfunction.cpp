@@ -235,23 +235,15 @@ void TransferFunction::deserialize(Deserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
 
-    TFPoints toAdd;
-    std::vector<TransferFunctionDataPoint*> toRemove;
-
-    auto desPoints =
-        util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
-            .setMakeNew([this]() { return std::unique_ptr<TransferFunctionDataPoint>(); })
-            .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
-                toAdd.push_back(std::move(point));
-            })
-            .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
-                toRemove.push_back(point.get());
-                return false;
-            });
-    desPoints(d, points_);
-
-    for (auto point : toRemove) removePoint(point);
-    for (auto& point : toAdd) addPoint(std::move(point));
+    util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
+        .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+            auto ptr = point.get();
+            std::stable_sort(points_.begin(), points_.end(), comparePtr{});
+            notifyControlPointAdded(ptr);
+        })
+        .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+            notifyControlPointRemoved(point.get());
+        })(d, points_);
 
     invalidate();
 }
@@ -379,7 +371,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
     std::string extension = toLower(filesystem::getFileExtension(filename));
 
     if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
-        Deserializer deserializer(InviwoApplication::getPtr(), filename);
+        Deserializer deserializer(filename);
         deserialize(deserializer);
     } else {
         auto factory = InviwoApplication::getPtr()->getDataReaderFactory();

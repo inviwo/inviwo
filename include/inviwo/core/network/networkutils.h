@@ -42,55 +42,65 @@ namespace util {
 
 namespace detail {
 
+/**
+ * Helper class for a connection referring to a port outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping connections.
+ */
 struct PartialConnection : public Serializable {
-    PartialConnection() {}
-    PartialConnection(std::string path, Inport* inport) : outportPath_(path), inport_(inport) {}
+    PartialConnection();
+    PartialConnection(std::string path, Inport* inport);
     std::string outportPath_ = "";
     Inport* inport_ = nullptr;
 
-    virtual void serialize(Serializer& s) const override {
-        s.serialize("OutPortPath", outportPath_);
-        s.serialize("InPort", inport_);
-    }
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("OutPortPath", outportPath_);
-        d.deserialize("InPort", inport_);
-    }
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 };
+
+/**
+ * Helper class for a links referring to a properties outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping links.
+ */
 struct PartialSrcLink : public Serializable {
-    PartialSrcLink() {}
-    PartialSrcLink(Property* src, std::string path) : src_(src), dstPath_(path) {}
+    PartialSrcLink();
+    PartialSrcLink(Property* src, std::string path);
     Property* src_ = nullptr;
     std::string dstPath_ = "";
 
-    virtual void serialize(Serializer& s) const override {
-        s.serialize("SourceProperty", src_);
-        s.serialize("DestinationPropertyPath", dstPath_);
-    }
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("SourceProperty", src_);
-        d.deserialize("DestinationPropertyPath", dstPath_);
-    }
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 };
+
+/**
+ * Helper class for a links referring to a properties outsize the network it's in
+ * used in Copy/Paste for copying subparts of a network but still keeping links.
+ */
 struct PartialDstLink : public Serializable {
-    PartialDstLink() {}
-    PartialDstLink(std::string path, Property* dst) : srcPath_(path), dst_(dst) {}
+    PartialDstLink();
+    PartialDstLink(std::string path, Property* dst);
     std::string srcPath_ = "";
     Property* dst_ = nullptr;
 
-    virtual void serialize(Serializer& s) const override {
-        s.serialize("SourcePropertyPath", srcPath_);
-        s.serialize("DestinationProperty", dst_);
-    }
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("SourcePropertyPath", srcPath_);
-        d.deserialize("DestinationProperty", dst_);
-    }
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+};
+
+/**
+ * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.
+ */
+struct PartialProcessorNetwork : public Serializable {
+    PartialProcessorNetwork(ProcessorNetwork* network);
+
+    std::vector<Processor*> getAddedProcessors() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+private:
+    ProcessorNetwork* network_;
+    std::vector<Processor*> addedProcessors_;
 };
 
 }  // namespace
-
-
 
 struct IVW_CORE_API ProcessorStates {
     bool hasBeenVisited(Processor* processor) const;
@@ -126,7 +136,7 @@ void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
                 }
                 break;
             }
-            
+
             case TraversalDirection::Down: {
                 for (auto port : processor->getOutports()) {
                     for (auto connectedPort : port->getConnectedInports()) {
@@ -152,22 +162,22 @@ private:
     vec2 getPosition(const Property* p);
     vec2 getPosition(const Processor* processor);
 
-    vec2 pos_ = {0,0};
+    vec2 pos_ = {0, 0};
     std::map<const Property*, vec2> cache_;
 };
 
-
 IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
-
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
 
 // return the appended processors.
 IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                     const std::string& refPath, InviwoApplication* app);
+                                                        const std::string& refPath,
+                                                        InviwoApplication* app);
 
 }  // namespace
+
 }  // namespace
 
 #endif  // IVW_NETWORKUTILS_H
