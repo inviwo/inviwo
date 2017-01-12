@@ -290,7 +290,7 @@ PyObject* py_clearNetwork(PyObject* self, PyObject* args) {
         return nullptr;
     }
     auto app = InviwoApplication::getPtr();
-    app->getWorkspaceManager()->clearWorkspace();
+    app->getWorkspaceManager()->clear();
     Py_RETURN_NONE;
 }
 
@@ -313,9 +313,9 @@ PyObject* py_loadNetwork(PyObject* self, PyObject* args) {
     {
         auto app = InviwoApplication::getPtr();
         NetworkLock lock(app->getProcessorNetwork());
-        app->getWorkspaceManager()->clearWorkspace();
+        app->getWorkspaceManager()->clear();
         try {
-            app->getWorkspaceManager()->loadWorkspace(filename, [&](ExceptionContext ec) {
+            app->getWorkspaceManager()->load(filename, [&](ExceptionContext ec) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
@@ -328,7 +328,7 @@ PyObject* py_loadNetwork(PyObject* self, PyObject* args) {
             PyErr_SetString(PyExc_TypeError, std::string("Unable to load network " + filename +
                                                          " due to " + e.getMessage())
                                                  .c_str());
-            app->getWorkspaceManager()->clearWorkspace();
+            app->getWorkspaceManager()->clear();
             return nullptr;
         }
     }
@@ -345,7 +345,7 @@ PyObject* py_saveNetwork(PyObject* self, PyObject* args) {
 
     auto app = InviwoApplication::getPtr();
     try {
-        app->getWorkspaceManager()->saveWorkspace(filename, [&](ExceptionContext ec) {
+        app->getWorkspaceManager()->save(filename, [&](ExceptionContext ec) {
             try {
                 throw;
             } catch (const IgnoreException& e) {

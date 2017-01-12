@@ -255,6 +255,8 @@ public:
 
     void registerFactory(FactoryBase* factory);
 
+    int getInviwoWorkspaceVersion() const;
+
 private:
 
     // integers, strings
@@ -265,8 +267,6 @@ private:
     template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
     void getSafeValue(const std::string& key, T& data);
 
-    void registerFactories(InviwoApplication* app);
-
     void storeReferences(TxElement* node);
 
     void handleError(const ExceptionContext& context);
@@ -275,6 +275,8 @@ private:
     std::map<std::string, TxElement*> referenceLookup_;
     
     std::vector<FactoryBase*> registeredFactories_;
+
+    int inviwoWorkspaceVersion_ = 0;
 };
 
 /**

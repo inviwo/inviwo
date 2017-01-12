@@ -796,7 +796,7 @@ void InviwoMainWindow::newWorkspace() {
     if (currentWorkspaceFileName_ != "")
         if (!askToSaveWorkspaceChanges()) return;
 
-    app_->getWorkspaceManager()->clearWorkspace();
+    app_->getWorkspaceManager()->clear();
 
     setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
     getNetworkEditor()->setModified(false);
@@ -818,9 +818,9 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
 
     {
         NetworkLock lock(app_->getProcessorNetwork());
-        app_->getWorkspaceManager()->clearWorkspace();
+        app_->getWorkspaceManager()->clear();
         try {
-            app_->getWorkspaceManager()->loadWorkspace(fileName, [&](ExceptionContext ec) {
+            app_->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
@@ -840,7 +840,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
             util::log(e.getContext(),
                       "Unable to load network " + fileName + " due to " + e.getMessage(),
                       LogLevel::Error);
-            app_->getWorkspaceManager()->clearWorkspace();
+            app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
         }
         app_->processEvents();  // make sure the gui is ready before we unlock.
@@ -892,7 +892,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     fileName = filesystem::cleanupPath(fileName);
 
     try {
-        app_->getWorkspaceManager()->saveWorkspace(fileName, [&](ExceptionContext ec) {
+        app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
                 throw;
             } catch (const IgnoreException& e) {
@@ -1120,7 +1120,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    app_->getWorkspaceManager()->clearWorkspace();
+    app_->getWorkspaceManager()->clear();
 
     saveWindowState();
 

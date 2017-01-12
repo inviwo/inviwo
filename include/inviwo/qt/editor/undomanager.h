@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/interaction/interactionstatemanager.h>
 
 class QAction;
 
@@ -48,7 +49,7 @@ public:
     UndoManager(InviwoMainWindow* mainWindow);
     virtual ~UndoManager() = default;
     
-    void pushState();
+    void pushState(bool force = false);
     void undoState();
     void redoState();
 
@@ -72,7 +73,7 @@ private:
 
     InviwoMainWindow* mainWindow_;
 
-    std::shared_ptr<std::function<void()>> interactionEndCallback_;
+    InteractionStateManager::InteractionEndHandle interactionEndCallback_;
     bool dirty_ = true;
     bool isRestoring = false;
     DiffType head_ = -1;

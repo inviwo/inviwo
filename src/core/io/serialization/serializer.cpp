@@ -32,6 +32,7 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/util/exception.h>
 
+
 namespace inviwo {
 
 Serializer::Serializer(const std::string& fileName, bool allowReference)
@@ -39,13 +40,11 @@ Serializer::Serializer(const std::string& fileName, bool allowReference)
     try {
         auto decl = util::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
         doc_.LinkEndChild(decl.get());
-        rootElement_ = new TxElement(SerializeConstants::InviwoTreedata);
+        rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
+
         rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
-                                   SerializeConstants::InviwoVersion);
+                                   SerializeConstants::InviwoWorkspaceVersion);
         doc_.LinkEndChild(rootElement_);
-        auto comment = util::make_unique<TxComment>();
-        comment->SetValue(SerializeConstants::EditComment.c_str());
-        rootElement_->LinkEndChild(comment.get());
 
     } catch (TxException& e) {
         throw SerializationException(e.what(), IvwContext);
@@ -83,10 +82,17 @@ void Serializer::writeFile() {
     }
 }
 
-void Serializer::writeFile(std::ostream& stream) {
+void Serializer::writeFile(std::ostream& stream, bool format) {
     try {
         refDataContainer_.setReferenceAttributes();
-        stream << doc_;
+        if (format) {
+            TiXmlPrinter printer;
+            printer.SetIndent("    ");
+            doc_.Accept(&printer);
+            stream << printer.Str();
+        } else {
+            stream << doc_;
+        }
     } catch (TxException& e) {
         throw SerializationException(e.what(), IvwContext);
     }

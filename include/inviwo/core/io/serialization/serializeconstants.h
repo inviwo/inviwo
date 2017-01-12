@@ -38,24 +38,18 @@ namespace inviwo {
 class IVW_CORE_API SerializeConstants {
 public:
     static const std::string XmlVersion;
-    static const std::string InviwoTreedata;
-    static const std::string InviwoVersion;
-    static const std::string NetworkVersion;
-    static const std::string Version;
-    static const std::string EditComment;
-    static const std::string IDAttribute;
-    static const std::string RefAttribute;
+    static const std::string InviwoWorkspace;
+    static const int InviwoWorkspaceVersion;
     static const std::string VersionAttribute;
     static const std::string ContentAttribute;
-    static const std::string TypeAttribute;
     static const std::string KeyAttribute;
-    static const std::string VectorAttributes[4];
-    static const std::string PropertyAttribute1;
-    static const std::string PropertyAttribute2;
-    static const std::string ProcessorAttribute1;
-    static const std::string ProcessorAttribute2;
+    
+    // For reference management
+    static const std::string TypeAttribute;
+    static const std::string RefAttribute;
+    static const std::string IDAttribute;
 
-    static bool isReversvedAttribute(const std::string key);
+    static const std::string VectorAttributes[4];
 };
 
 } //namespace

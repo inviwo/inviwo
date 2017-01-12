@@ -36,7 +36,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/processornetworkconverter.h>
-#include <inviwo/core/common/inviwomodule.h>
+
 #include <algorithm>
 
 namespace inviwo {
@@ -328,9 +328,6 @@ void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("Processors", getProcessors(), "Processor");
     s.serialize("Connections", getConnections(), "Connection");
     s.serialize("PropertyLinks", getLinks(), "PropertyLink");
-
-    InviwoSetupInfo info(application_);
-    s.serialize("InviwoSetup", info);
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
@@ -370,24 +367,6 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);
     }
-
-    InviwoSetupInfo info;
-    d.deserialize("InviwoSetup", info);
-
-    for (const auto& module : application_->getModules()) {
-        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
-            if (minfo->version_ < module->getVersion()) {
-                auto converter = module->getConverter(minfo->version_);
-                d.convertVersion(converter.get());
-                LogNetworkWarn("Loading old workspace ("
-                               << d.getFileName() << ") " << module->getIdentifier()
-                               << "Module version: " << minfo->version_
-                               << ". Updating to version: " << module->getVersion() << ".");
-            }
-        }
-    }
-
-    DeserializationErrorHandle<ErrorHandle> errorHandle(d, info, d);
 
     // Processors
     try {

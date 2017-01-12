@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -47,6 +48,8 @@ Deserializer::Deserializer(std::string fileName, bool allowReference)
         doc_.LoadFile();
         rootElement_ = doc_.FirstChildElement();
         storeReferences(rootElement_);
+        rootElement_->GetAttribute(SerializeConstants::VersionAttribute, &inviwoWorkspaceVersion_,
+                                   false);
     } catch (TxException& e) {
         throw AbortException(e.what(), IvwContext);
     }
@@ -124,5 +127,7 @@ void Deserializer::storeReferences(TxElement* node) {
 void Deserializer::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
+
+int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
 }  // namespace

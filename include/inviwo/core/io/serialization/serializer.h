@@ -73,7 +73,7 @@ public:
      * @param stream Stream to be written to.
      * @throws SerializationException
      */
-    virtual void writeFile(std::ostream& stream);
+    virtual void writeFile(std::ostream& stream, bool format = false);
 
     // std containers
     template <typename T>

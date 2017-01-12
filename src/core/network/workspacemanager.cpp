@@ -29,46 +29,165 @@
 
 #include <inviwo/core/network/workspacemanager.h>
 
+#include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/inviwosetupinfo.h>
+
 namespace inviwo {
 
-WorkspaceManager::WorkspaceManager()  {}
+class WorkspaceConverter : public VersionConverter {
+public:
+    WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
+
+    virtual bool convert(TxElement* root) override {
+
+        switch (from_) {
+            case 0:
+            case 1:
+                return bundleProcessorNetwork(root);
+
+            default:
+                return false;  // No changes
+        }
+    }
+
+private:
+    bool bundleProcessorNetwork(TxElement* root) {
+
+        // create
+        TxElement newNode;
+        newNode.SetValue("ProcessorNetwork");
+
+        // temp list
+        std::vector<TxElement*> toBeDeleted;
+
+        std::vector<std::string> toMove = {"ProcessorNetworkVersion", "Processors", "Connections",
+                                           "PropertyLinks"};
+
+        ticpp::Iterator<TxElement> child;
+        for (child = child.begin(root); child != child.end(); child++) {
+            if (std::find(toMove.begin(), toMove.end(), child.Get()->Value()) != toMove.end()) {
+                newNode.InsertEndChild(*(child.Get()->Clone()));
+                toBeDeleted.push_back(child.Get());
+            }
+        }
+
+        for (auto& elem : toBeDeleted) {
+            root->RemoveChild(elem);
+        }
+
+        // insert new node
+        root->InsertEndChild(newNode);
+
+        return true;
+    }
+
+    int from_;
+};
+
+struct ErrorHandle {
+    ErrorHandle(const InviwoSetupInfo& info, const std::string& filename)
+        : info_(info), filename_(filename){};
+
+    ~ErrorHandle() {
+        if (!messages.empty()) {
+            LogNetworkError("There were errors while loading workspace: " + filename_ + "\n" +
+                            joinString(messages, "\n"));
+        }
+    }
+
+    void operator()(ExceptionContext c) {
+        try {
+            throw;
+        } catch (SerializationException& error) {
+            auto key = error.getKey();
+            if (key == "Processor") {
+                std::string module = info_.getModuleForProcessor(error.getType());
+                if (!module.empty()) {
+                    messages.push_back(error.getMessage() + " Processor was in module: \"" +
+                                       module + "\".");
+                } else {
+                    messages.push_back(error.getMessage());
+                }
+            } else {
+                messages.push_back(error.getMessage());
+            }
+        } catch (Exception& exception) {
+            messages.push_back("Deserialization error: " + exception.getMessage());
+        }
+    }
+
+    std::vector<std::string> messages;
+    const InviwoSetupInfo& info_;
+    std::string filename_;
+};
+
+
+WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {};
 
 WorkspaceManager::~WorkspaceManager() = default;
 
-void WorkspaceManager::clearWorkspace() {
+void WorkspaceManager::clear() {
     clears_.invoke();
 }
 
-void WorkspaceManager::saveWorkspace(std::ostream& stream, const std::string& refPath,
-                                     const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
+                            const ExceptionHandler& exceptionHandler) {
     Serializer serializer(refPath);
+
+    InviwoSetupInfo info(app_);
+    serializer.serialize("InviwoSetup", info);
+
     serializers_.invoke(serializer, exceptionHandler);
-    serializer.writeFile(stream);
+    serializer.writeFile(stream, true);
 }
 
-void WorkspaceManager::loadWorkspace(std::istream& stream, const std::string& refPath,
-                                     const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
+                            const ExceptionHandler& exceptionHandler) {
     Deserializer deserializer(stream, refPath);
     for (const auto& factory : registeredFactories_) {
         deserializer.registerFactory(factory);
     }
+    
+    
+    if (SerializeConstants::InviwoWorkspaceVersion != deserializer.getInviwoWorkspaceVersion()) {
+        WorkspaceConverter converter(deserializer.getInviwoWorkspaceVersion());
+        deserializer.convertVersion(&converter);
+    }
+
+    InviwoSetupInfo info; 
+    deserializer.deserialize("InviwoSetup", info);
+
+    for (const auto& module : app_->getModules()) {
+        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
+            if (minfo->version_ < module->getVersion()) {
+                auto converter = module->getConverter(minfo->version_);
+                deserializer.convertVersion(converter.get());
+                LogNetworkWarn("Loading old workspace ("
+                               << deserializer.getFileName() << ") " << module->getIdentifier()
+                               << "Module version: " << minfo->version_
+                               << ". Updating to version: " << module->getVersion() << ".");
+            }
+        }
+    }
+
+    DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::saveWorkspace(const std::string& path,
-                                     const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler) {
     if (auto ostream = std::ofstream(path.c_str())) {
-        saveWorkspace(ostream, path, exceptionHandler);
+        save(ostream, path, exceptionHandler);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
     }
 }
 
-void WorkspaceManager::loadWorkspace(const std::string& path,
-                                     const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::load(const std::string& path, const ExceptionHandler& exceptionHandler) {
 
     if (auto istream = std::ifstream(path.c_str())) {
-        loadWorkspace(istream, path, exceptionHandler);
+        load(istream, path, exceptionHandler);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
     }
@@ -78,39 +197,36 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
 
-WorkspaceManager::ClearHandle WorkspaceManager::addClearCallback(const ClearCallback& callback) {
+WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& callback) {
     return clears_.add(callback);
 }
 
-WorkspaceManager::SerializationHandle WorkspaceManager::addSerializationCallback(
+WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
     const SerializationCallback& callback) {
-    return serializers_.add([callback](Serializer& s, const ExceptionHandler& exceptionHandler) {
-        try {
-            callback(s);
-        } catch (Exception& e) {
-            if (exceptionHandler) {
+    return serializers_.add(
+        [callback, this](Serializer& s, const ExceptionHandler& exceptionHandler) {
+            try {
+                callback(s);
+            } catch (Exception& e) {
                 exceptionHandler(e.getContext());
-            } else {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            } catch (...) {
+                exceptionHandler(IvwContext);
             }
-        }
-    });
+        });
 }
 
-WorkspaceManager::DeserializationHandle WorkspaceManager::addDeserializationCallback(
+WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
     const DeserializationCallback& callback) {
-    return deserializers_.add([callback](Deserializer& d,
-                                         const ExceptionHandler& exceptionHandler) {
-        try {
-            callback(d);
-        } catch (const Exception& e) {
-            if (exceptionHandler) {
+    return deserializers_.add(
+        [callback, this](Deserializer& d, const ExceptionHandler& exceptionHandler) {
+            try {
+                callback(d);
+            } catch (Exception& e) {
                 exceptionHandler(e.getContext());
-            } else {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            } catch (...) {
+                exceptionHandler(IvwContext);
             }
-        }
-    });
+        });
 }
 
 } // namespace

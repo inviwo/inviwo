@@ -100,7 +100,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{
           util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())}
-    , workspaceManager_{ util::make_unique<WorkspaceManager>()} {
+    , workspaceManager_{ util::make_unique<WorkspaceManager>(this)} {
 
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
@@ -138,12 +138,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     workspaceManager_->registerFactory(getInportFactory());
     workspaceManager_->registerFactory(getOutportFactory());
 
-    networkClearHandle_ = workspaceManager_->addClearCallback(
-        [&]() { processorNetwork_->clear(); });
-    networkSerializationHandle_ = workspaceManager_->addSerializationCallback(
-        [&](Serializer& s) { processorNetwork_->serialize(s); });
-    networkDeserializationHandle_ = workspaceManager_->addDeserializationCallback(
-        [&](Deserializer& d) { processorNetwork_->deserialize(d); });
+    networkClearHandle_ = workspaceManager_->onClear([&]() { processorNetwork_->clear(); });
+    networkSerializationHandle_ = workspaceManager_->onSave(
+        [&](Serializer& s) { s.serialize("ProcessorNetwork", *processorNetwork_); });
+    networkDeserializationHandle_ = workspaceManager_->onLoad(
+        [&](Deserializer& d) { d.deserialize("ProcessorNetwork", *processorNetwork_); });
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
