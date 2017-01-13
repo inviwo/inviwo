@@ -17,9 +17,9 @@ paths = [
 #]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*", 
-					"*/genetree/*", "*/vrnbase/*", "*.DS_Store"
-					,"*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav", "*.ico", "*.icns",
-					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pdf"]
+					"*/genetree/*", "*.DS_Store", "*DS_mapp",
+					"*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav", "*.ico", "*.icns",
+					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe"]
 
 files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
 
@@ -33,8 +33,8 @@ def replace(pattern, replacement) :
 
 
 copyright_replacements  = {
-	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201\d( Inviwo Foundation\s*)" : r"\g<1>2016\g<2>",
-	r"(\s*[*#]\s+Copyright \(c\) )(201[12345])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2016\g<3>"
+	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[123456]( Inviwo Foundation\s*)" : r"\g<1>2017\g<2>",
+	r"(\s*[*#]\s+Copyright \(c\) )(201[123456])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2017\g<3>"
 }
 
 print("Looking in " + str(len(files)) + " files")
