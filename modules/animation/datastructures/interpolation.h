@@ -66,7 +66,7 @@ public:
     InterpolationTyped() = default;
     virtual ~InterpolationTyped() = default;
 
-    virtual InterpolationTyped* clone() const = 0;
+    virtual InterpolationTyped* clone() const override = 0;
 
     virtual std::string getClassIdentifier() const override = 0;
     virtual void serialize(Serializer& s) const override = 0;
@@ -83,7 +83,7 @@ public:
     LinearInterpolation() = default;
     virtual ~LinearInterpolation() = default;
 
-    virtual LinearInterpolation* clone() const { return new LinearInterpolation(*this); };
+    virtual LinearInterpolation* clone() const override { return new LinearInterpolation(*this); };
 
     static std::string classIdentifier() {
         auto keyid = Key::classIdentifier();

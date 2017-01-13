@@ -81,7 +81,7 @@ void Animation::removeKeyframe(Keyframe* key) {
         auto& track = *tracks_[t];
         for (size_t s = 0; s < track.size(); ++s) {
             auto& seq = track[s];
-            for (auto k = 0; k < seq.size(); ++k) {
+            for (size_t k = 0; k < seq.size(); ++k) {
                 if (&seq[k] == key) {
                     if (seq.size() == 1) {
                         track.remove(s);
@@ -109,7 +109,7 @@ std::vector<Seconds> Animation::getAllTimes() const {
         auto& track = *tracks_[t];
         for (size_t s = 0; s < track.size(); ++s) {
             auto& seq = track[s];
-            for (auto k = 0; k < seq.size(); ++k) {
+            for (size_t k = 0; k < seq.size(); ++k) {
                 result.push_back(seq[k].getTime());
             }
         }

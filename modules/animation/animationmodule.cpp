@@ -30,6 +30,7 @@
 #include <modules/animation/animationmodule.h>
 
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>

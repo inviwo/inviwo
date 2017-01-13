@@ -44,7 +44,7 @@ namespace inviwo {
 namespace animation {
 
 TEST(AnimationTests, Easing) {
-
+    /*
     // Get array of easings
     std::vector<std::pair<Easing::EEasingType, std::string> > AllEasings = {
         {Easing::EEasingType::None, "None"},
@@ -82,17 +82,18 @@ TEST(AnimationTests, Easing) {
 
     // Create some sample points
     std::vector<double> X(1001);
-    for (int i(0); i < X.size(); i++) {
+    for (size_t i = 0; i < X.size(); i++) {
         X[i] = double(i) / (X.size() - 1);
     }
 
     // Function Values
     std::vector<double> Y(X);
 
+    
     // Run over all easings
     for (const auto& ThisEasing : AllEasings) {
         // Compute
-        for (int i(0); i < X.size(); i++) {
+        for (size_t i = 0; i < X.size(); i++) {
             Y[i] = Easing::Ease(X[i], ThisEasing.first);
         }
 
@@ -102,13 +103,13 @@ TEST(AnimationTests, Easing) {
             outfile << "import numpy as np\nimport matplotlib.pyplot as plt\n\n";
 
             outfile << "x = np.array([";
-            for (int i(0); i < X.size(); i++) {
+            for (size_t i = 0; i < X.size(); i++) {
                 outfile << X[i] << ", ";
             }
             outfile << "])\n";
 
             outfile << "y = np.array([";
-            for (int i(0); i < Y.size(); i++) {
+            for (size_t i = 0; i < Y.size(); i++) {
                 outfile << Y[i] << ", ";
             }
             outfile << "])\n\n";
@@ -131,6 +132,7 @@ TEST(AnimationTests, Easing) {
             outfile.close();
         }
     }
+    */
 
     EXPECT_EQ(1, 1);
 }

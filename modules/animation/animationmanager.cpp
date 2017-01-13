@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <modules/animation/datastructures/propertytrack.h>
 

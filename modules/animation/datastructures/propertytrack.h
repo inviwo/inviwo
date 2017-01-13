@@ -33,6 +33,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/core/properties/property.h>
+
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -43,6 +45,7 @@ namespace animation {
 
 class IVW_MODULE_ANIMATION_API BasePropertyTrack {
 public:
+    virtual ~BasePropertyTrack() = default;
     virtual void setProperty(Property* property) = 0;
     virtual const Property* getProperty() const = 0;
     virtual Property* getProperty() = 0;
@@ -112,7 +115,7 @@ public:
     virtual void addKeyFrameUsingPropertyValue(Seconds time) override;
     virtual void addSequenceUsingPropertyValue(Seconds time) override;
 
-    virtual Track* toTrack();
+    virtual Track* toTrack() override;
 
 private:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
@@ -167,7 +170,7 @@ template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::setPriority(size_t priority) {
     if (priority_ != priority) {
         priority_ = priority;
-        notifyPriorityChanged(this);
+        this->notifyPriorityChanged(this);
     }
 }
 
@@ -180,7 +183,7 @@ template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::setName(const std::string& name) {
     if (name_ != name) {
         name_ = name;
-        notifyNameChanged(this);
+        this->notifyNameChanged(this);
     }
 }
 
@@ -193,7 +196,7 @@ template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::setIdentifier(const std::string& identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
-        notifyIdentifierChanged(this);
+        this->notifyIdentifierChanged(this);
     }
 }
 
@@ -219,7 +222,7 @@ const Prop* PropertyTrack<Prop, Key>::getProperty() const {
 
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::setProperty(Property* property) {
-    if (property_ = dynamic_cast<Prop*>(property)) {
+    if ((property_ = dynamic_cast<Prop*>(property))) {
         setIdentifier(property_->getIdentifier());
         setName(property_->getDisplayName());
     } else {
@@ -303,7 +306,7 @@ void PropertyTrack<Prop, Key>::addTyped(const KeyframeSequenceTyped<Key>& sequen
     }
 
     auto inserted = sequences_.insert(it, std::make_unique<KeyframeSequenceTyped<Key>>(sequence));
-    notifyKeyframeSequenceAdded(this, inserted->get());
+    this->notifyKeyframeSequenceAdded(this, inserted->get());
     (*inserted)->addObserver(this);
 }
 
@@ -311,7 +314,7 @@ template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::remove(size_t i) {
     auto seq = std::move(sequences_[i]);
     sequences_.erase(sequences_.begin() + i);
-    notifyKeyframeSequenceRemoved(this, seq.get());
+    this->notifyKeyframeSequenceRemoved(this, seq.get());
 }
 
 template <typename Prop, typename Key>
@@ -344,9 +347,9 @@ void PropertyTrack<Prop, Key>::onKeyframeSequenceMoved(KeyframeSequence* key) {
     });
     if (it != sequences_.end()) {
         if (it == sequences_.begin()) {
-            notifyFirstMoved(this);
+            this->notifyFirstMoved(this);
         } else if (it == std::prev(sequences_.end())) {
-            notifyLastMoved(this);
+            this->notifyLastMoved(this);
         }
     }
 }
@@ -419,31 +422,32 @@ void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     {
         auto old = identifier_;
         d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
-        if (old != identifier_) notifyIdentifierChanged(this);
+        if (old != identifier_) this->notifyIdentifierChanged(this);
     }
     {
         auto old = name_;
         d.deserialize("name", name_);
-        if (old != name_) notifyNameChanged(this);
+        if (old != name_) this->notifyNameChanged(this);
     }
     {
         auto old = enabled_;
         d.deserialize("enabled", enabled_);
-        if (old != enabled_) notifyEnabledChanged(this);
+        if (old != enabled_) this->notifyEnabledChanged(this);
     }
     {
         auto old = priority_;
         d.deserialize("priority", priority_);
-        if (old != priority_) notifyPriorityChanged(this);
+        if (old != priority_) this->notifyPriorityChanged(this);
     }
 
     using Elem = std::unique_ptr<KeyframeSequenceTyped<Key>>;
     util::IndexedDeserializer<Elem>("sequences", "sequence")
         .onNew([&](Elem& seq) {
-            notifyKeyframeSequenceAdded(this, seq.get());
+            this->notifyKeyframeSequenceAdded(this, seq.get());
             seq->addObserver(this);
         })
-        .onRemove([&](Elem& seq) { notifyKeyframeSequenceRemoved(this, seq.get()); })(d, sequences_);
+        .onRemove([&](Elem& seq) { this->notifyKeyframeSequenceRemoved(this, seq.get()); })(
+            d, sequences_);
 
     d.deserializeAs<Property>("property", property_);
 }

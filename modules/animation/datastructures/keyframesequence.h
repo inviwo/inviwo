@@ -187,8 +187,9 @@ void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds ol
 
     std::stable_sort(keyframes_.begin(), keyframes_.end(),
                      [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
-
-    notifyKeyframeSequenceMoved(this);
+    if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
+        notifyKeyframeSequenceMoved(this);
+    }
 }
 
 template <typename Key>

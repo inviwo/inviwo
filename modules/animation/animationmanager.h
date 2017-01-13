@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/network/processornetworkobserver.h>
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationobserver.h>
