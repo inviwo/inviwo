@@ -373,10 +373,10 @@ void PropertyWidgetQt::generateModuleMenuActions() {
                     InviwoApplication* app = InviwoApplication::getPtr();
                     const auto& moduleActions = app->getCallbackActions();
 
-                    for (auto& moduleAction : moduleActions) {
-                        if (moduleAction->getActionName() == actionName) {
-                            moduleAction->getCallBack().invoke(property);
-                            action->setChecked(moduleAction->getActionState() ==
+                    for (auto& mAction : moduleActions) {
+                        if (mAction->getActionName() == actionName) {
+                            mAction->getCallBack().invoke(property);
+                            action->setChecked(mAction->getActionState() ==
                                                ModuleCallBackActionState::Enabled);
                         }
                     }

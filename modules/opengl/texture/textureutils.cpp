@@ -79,7 +79,7 @@ void activateTargetAndCopySource(Image& targetImage, ImageInport& sourceInport, 
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
-        auto inImageGL = inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+        inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
         LogWarnCustom("TextureUtils", "Trying to copy empty image inport: \""
                                           << sourceInport.getIdentifier() << "\" in processor: \""
