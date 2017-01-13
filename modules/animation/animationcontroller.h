@@ -62,7 +62,10 @@ public:
     void setState(AnimationState newState);
     void setPlaybackMode(PlaybackMode mode);
 
-    // Progresses time and evaluates animation
+    /**
+     * Advances the animation to the next time step given by @setPlaySpeed if the animation is in
+     * a playing state and evaluates, otherwise does nothing. 
+     */
     void tick();
     void eval(Seconds oldTime, Seconds newTime);
 
