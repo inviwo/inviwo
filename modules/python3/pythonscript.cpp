@@ -62,24 +62,22 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         return !isCompileNeeded_;
     }
 
-    bool PythonScript::run( const VariableMap& extraLocalVariables,
-                           std::function<void(PyObject*)> callback) {
+    bool PythonScript::run(const VariableMap& extraLocalVariables,
+        std::function<void(pybind11::dict&)> callback) {
+
         if (isCompileNeeded_ && !compile()) {
             LogError("Failed to run script, script could not be compiled");
             return false;
         }
 
         ivwAssert(byteCode_ != nullptr, "No byte code");
-       
+
         auto m = PyImport_AddModule("__main__");
         if (m == NULL) return false;
-       
-        auto d = PyModule_GetDict(m);
 
-        PyObject* copy = PyDict_Copy(d);
-
-        for(auto ea : extraLocalVariables){
-            PyDict_SetItemString(copy,ea.first.c_str() , ea.second);
+        PyObject* copy = PyDict_Copy(PyModule_GetDict(m));
+        for (auto ea : extraLocalVariables) {
+            PyDict_SetItemString(copy, ea.first.c_str(), ea.second.ptr());
         }
 
         InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
@@ -89,7 +87,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         bool success = checkRuntimeError();
         if (success) {
-            callback(copy);
+            callback(pybind11::dict(copy,true));
         }
 
         Py_XDECREF(ret);
