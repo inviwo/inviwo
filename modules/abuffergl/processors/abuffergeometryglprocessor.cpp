@@ -111,7 +111,11 @@ void ABufferGeometryGLProcessor::geometryRender() {
         ABUFFER_PROFILE("Rendering");
 
         tempImageGL = tempImage_->getEditableRepresentation<ImageGL>();
-        utilgl::activateAndClearTarget(outport_);
+
+        if (imageInport_.isConnected())
+            utilgl::activateTargetAndCopySource(outport_, imageInport_);
+        else
+            utilgl::activateAndClearTarget(outport_);
 
         // initialize shader
         abufferGeometryShader_.activate();
