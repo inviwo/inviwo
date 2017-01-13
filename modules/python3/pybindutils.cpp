@@ -32,36 +32,5 @@
 namespace inviwo {
 
 
-InviwoApplication* pyutil::getApplication()
-{
-    auto app = InviwoApplication::getPtr();
-    if (!app) {
-        throw std::exception("Could not get a Inviwo Application");
-    }
-    return app;
-}
-
-ProcessorNetwork* pyutil::getNetwork()
-{
-    auto app = getApplication();
-    auto network = app->getProcessorNetwork();
-    if (!network) {
-        throw std::exception("No network available");
-    }
-    return network;
-}
-
-Processor* pyutil::getProcessor(std::string id)
-{
-    auto network = getNetwork();
-    auto p = network->getProcessorByIdentifier(id);
-    if (!p) {
-        std::stringstream ss;
-        ss << "No processor with identifier " << id;
-        throw std::exception(ss.str().c_str());
-    }
-    return p;
-}
-
 } // namespace
 

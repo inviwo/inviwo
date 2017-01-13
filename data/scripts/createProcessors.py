@@ -14,7 +14,7 @@ p1 = factory.create('org.inviwo.NoiseProcessor',  ivec2(75 , -100))
 p2 = factory.create('org.inviwo.ImageLowPass' , ivec2(75 , -25))
 p3 = factory.create('org.inviwo.CanvasGL')
 
-p3.location = ivec2(75 , 50)
+p3.position = ivec2(75 , 50)
 
 network.addProcessor(p1)
 network.addProcessor(p2)

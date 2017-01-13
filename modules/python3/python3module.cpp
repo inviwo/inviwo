@@ -69,15 +69,15 @@ Python3Module::Python3Module(InviwoApplication* app)
 
     auto t = [](bool b) {return b ? "YES" : "NO"; };
 
-    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<int>(11))));
-    LogInfo( t(pyutil::is<int>(pyutil::toPyBindObject<float>(11))) );
-    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<double>(11))));
-    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<short>(11))));
-    LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<long>(11))));
+    //LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<int>(11))));
+    //LogInfo( t(pyutil::is<int>(pyutil::toPyBindObject<float>(11))) );
+    //LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<double>(11))));
+    //LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<short>(11))));
+    //LogInfo(t(pyutil::is<int>(pyutil::toPyBindObject<long>(11))));
 
-
+/*
     auto pyObj = pyutil::toPyBindObject<int>(42);
-    auto asdf = pyutil::parse<int>(pyObj);
+    auto asdf = pyutil::parse<int>(pyObj);*/
 
 }
 
