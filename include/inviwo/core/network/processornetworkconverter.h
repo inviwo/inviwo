@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2015-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ namespace inviwo {
 
 /**
  * \class ProcessorNetworkConverter
- * \brief A utitlity to handle conversion of ProcessorNetwork versions.
+ * \brief A utility to handle conversion of ProcessorNetwork versions.
  */
 class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
     public:

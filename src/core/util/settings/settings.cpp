@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,10 @@ void Settings::load() {
     if (filesystem::fileExists(filename)) {
         // An error is not critical as the default setting will be used.
         try {
-            Deserializer d(InviwoApplication::getPtr(), filename);
+            auto app = InviwoApplication::getPtr();
+            Deserializer d(filename);
+            d.registerFactory(app->getPropertyFactory());
+            d.registerFactory(app->getMetaDataFactory());
             deserialize(d);
         } catch (AbortException& e) {
             LogError(e.getMessage());

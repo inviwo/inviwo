@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -144,6 +144,36 @@ void for_each_in_tuple(F&& f, std::tuple<Ts...>&& t) {
     detail::for_each_in_tuple_impl(std::forward<F>(f), std::forward<std::tuple<Ts...>>(t),
                                    std::index_sequence_for<Ts...>{});
 }
+
+template <class... Types>
+struct for_each_type;
+
+template <typename T>
+struct for_each_type<std::tuple<T>> {
+    template <class F, class... Args>
+    auto operator()(F&& f, Args&&... args) {
+#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+        f.operator()<T>(std::forward<Args>(args)...);
+#else
+        f.template operator()<T>(std::forward<Args>(args)...);
+#endif
+        return std::forward<F>(f);
+    }
+};
+
+template <class T, class... Types>
+struct for_each_type<std::tuple<T, Types...>> {
+    template <class F, class... Args>
+    auto operator()(F&& f, Args&&... args) {
+#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+        f.operator()<T>(std::forward<Args>(args)...);
+#else
+        f.template operator()<T>(std::forward<Args>(args)...);
+#endif
+        return for_each_type<std::tuple<Types...>>{}(std::forward<F>(f),
+                                                     std::forward<Args>(args)...);
+    }
+};
 
 template <typename T, typename V>
 auto erase_remove(T& cont, const V& elem)

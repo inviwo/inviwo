@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,15 @@
 namespace inviwo {
 
 void InteractionStateManager::beginInteraction() {
-    if (!isInteracting_) {
-        isInteracting_ = true;
-        onInteractionBegin_.invoke();
-    }
+    ++interactionCount_;
+    onInteractionBegin_.invoke(interactionCount_);
 }
 
 void InteractionStateManager::endInteraction() {
-    if (isInteracting_) {
-        isInteracting_ = false;
-        onInteractionEnd_.invoke();
-    }
+    --interactionCount_;
+    onInteractionEnd_.invoke(interactionCount_);
 }
 
-bool InteractionStateManager::isInteracting() const { return isInteracting_; }
+bool InteractionStateManager::isInteracting() const { return interactionCount_ > 0; }
 
 }  // namespace

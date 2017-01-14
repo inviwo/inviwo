@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -127,6 +127,7 @@ void Layer::setSwizzleMask(const SwizzleMask &mask) {
             rep.second->setSwizzleMask(mask);
         }
     }
+    swizzleMask_ = mask;
 }
 
 SwizzleMask Layer::getSwizzleMask() const {

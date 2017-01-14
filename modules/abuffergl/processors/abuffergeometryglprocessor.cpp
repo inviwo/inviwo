@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,7 +111,11 @@ void ABufferGeometryGLProcessor::geometryRender() {
         ABUFFER_PROFILE("Rendering");
 
         tempImageGL = tempImage_->getEditableRepresentation<ImageGL>();
-        utilgl::activateAndClearTarget(outport_);
+
+        if (imageInport_.isConnected())
+            utilgl::activateTargetAndCopySource(outport_, imageInport_);
+        else
+            utilgl::activateAndClearTarget(outport_);
 
         // initialize shader
         abufferGeometryShader_.activate();

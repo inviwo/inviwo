@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,10 +82,21 @@ protected:
      */
     virtual void afterInportChanged() {}
 
+    static void createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
+                                  const SwizzleMask &swizzleMask, ImageInport &inport,
+                                  ImageOutport &outport);
+
+    static void createDefaultImage(const size2_t &dim, ImageInport &inport, ImageOutport &outport);
+
+    size2_t calcOutputDimensions() const;
+
     ImageInport inport_;
     ImageOutport outport_;
 
     const DataFormatBase* dataFormat_;
+    // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
+    SwizzleMask swizzleMask_; 
+
     bool internalInvalid_;
 
     std::string fragmentShader_;

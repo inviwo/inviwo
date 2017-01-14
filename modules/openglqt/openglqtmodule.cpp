@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,8 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
-        mainWindow->menuBar()->addMenu(menu.release());
+        auto menuBar = mainWindow->menuBar();
+        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(),menu.release());
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);

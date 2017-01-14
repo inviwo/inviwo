@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
@@ -92,8 +93,15 @@ int main(int argc, char** argv) {
 
     try {
         if (!workspace.empty()) {
-            Deserializer xmlDeserializer(&inviwoApp, workspace);
-            inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
+            inviwoApp.getWorkspaceManager()->load(workspace, [&](ExceptionContext ec) {
+                try {
+                    throw;
+                } catch (const IgnoreException& e) {
+                    util::log(e.getContext(), "Incomplete network loading " + workspace +
+                                                  " due to " + e.getMessage(),
+                              LogLevel::Error);
+                }
+            });
         }
     } catch (const AbortException& exception) {
         util::log(exception.getContext(),

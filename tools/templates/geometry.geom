@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
+#ifndef GLSL_VERSION_150
+#extension GL_EXT_gpu_shader4 : enable
+#extension GL_EXT_geometry_shader4 : enable
+#endif
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 10) out;
 
 void main(void) {
         

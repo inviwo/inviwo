@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -134,6 +135,7 @@ public:
 
     ProcessorNetwork* getProcessorNetwork();
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
+    WorkspaceManager* getWorkspaceManager();
 
     template <class T>
     T* getSettingsByType();
@@ -247,6 +249,12 @@ protected:
 
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
+    std::unique_ptr<WorkspaceManager> workspaceManager_;
+
+    WorkspaceManager::ClearHandle networkClearHandle_;
+    WorkspaceManager::SerializationHandle networkSerializationHandle_;
+    WorkspaceManager::DeserializationHandle networkDeserializationHandle_;
+
 };
 
 template <class T>

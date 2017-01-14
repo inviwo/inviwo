@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,10 @@ MeshGL* MeshGL::clone() const { return new MeshGL(*this); }
 void MeshGL::enable() const { bufferArray_.bind(); }
 
 void MeshGL::disable() const { bufferArray_.unbind(); }
+
+size_t MeshGL::size() const { return bufferGLs_.size(); }
+
+bool MeshGL::empty() const { return bufferGLs_.empty(); }
 
 const BufferGL* MeshGL::getBufferGL(size_t idx) const {
     ivwAssert(idx < bufferGLs_.size(), "MeshGL::getBufferGL(): index out of bounds");

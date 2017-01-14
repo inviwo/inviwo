@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,6 @@ public slots:
     virtual void setApplicationUsageMode(bool value);
     virtual void changeSemantics(QAction* action);
 
-    void moduleAction();
 signals:
     void updateSemantics(PropertyWidgetQt*);
 
@@ -142,7 +141,7 @@ private:
     TemplateOptionProperty<UsageMode>* applicationUsageMode_;
     const BaseCallBack* appModeCallback_;
     QMenu* contextMenu_;
-    QMap<QString, QMenu*> moduleSubMenus_;
+    std::unordered_map<std::string, std::unique_ptr<QMenu>> moduleSubMenus_;
 
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;
