@@ -89,7 +89,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
     samplePos = entryPoint + t * rayDirection;
     bool outside =
-        vec4(getNormalizedVoxel(volume, volumeParameters, samplePos))[channel] < raycasting.isoValue;
+        getNormalizedVoxelChannel(volume, volumeParameters, samplePos,channel) < raycasting.isoValue;
     t += tIncr;
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
