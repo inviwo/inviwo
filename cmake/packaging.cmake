@@ -71,7 +71,12 @@ if(IVW_PACKAGE_PROJECT)
     list(APPEND IVW_PACKAGES                 "modules")
 
     if(IVW_QT_APPLICATION)
-        # Inviwo network editor application depends on QtEditor 
+        # Inviwo network editor application depends on QtEditor and QtApplicationBase 
+        set(CPACK_COMPONENT_QT_APPLICATIONBASE_DISPLAY_NAME "Qt Application Base")
+        set(CPACK_COMPONENT_QT_APPLICATIONBASE_DEPENDS      ${IVW_PACKAGES})
+        set(CPACK_COMPONENT_QT_APPLICATIONBASE_GROUP        "Qt")
+        list(APPEND IVW_PACKAGES                   "qt_applicationbase")
+
         set(CPACK_COMPONENT_QT_EDITOR_DISPLAY_NAME "Qt Editor")
         set(CPACK_COMPONENT_QT_EDITOR_DEPENDS      ${IVW_PACKAGES})
         set(CPACK_COMPONENT_QT_EDITOR_GROUP        "Qt")
