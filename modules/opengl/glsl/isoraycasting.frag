@@ -129,6 +129,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         }
     }
 
+    
+
+
     if (tDepth != -1.0) {
         tDepth = calculateDepthValue(camera, tDepth/tEnd, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
@@ -136,18 +139,17 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
-
+    
 #ifdef HAS_BG
     {
         float d = texture(bgDepth,texCoords).x;
         if(tDepth == 1 || d < tDepth){
             result = vec4(0);
-            result = drawBackground(texture(bgColor,texCoords),0,0,result,0);
+            result = drawBackground(texture(bgColor,texCoords),0,0,result,0,tDepth);
             tDepth = d;
         }
     }
 #endif
-
 
     gl_FragDepth = tDepth;
     return result;

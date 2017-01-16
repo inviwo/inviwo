@@ -70,7 +70,7 @@ uniform sampler2D transferFunction4;
 
 #define ERT_THRESHOLD 0.99 // threshold for early ray termination
 
-vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
+vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords,float indepth) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
@@ -110,14 +110,13 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         // sets colors;
         SAMPLE_CHANNELS;
 
-        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
-        result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
+        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);
+        result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator,t,tDepth);
 
         if (color[0].a > 0 || color[1].a > 0 || color[2].a > 0 || color[3].a > 0) {
             // World space position
             vec3 worldSpacePosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
             gradients = COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParameters, samplePos);
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
             for (int i = 0; i < NUMBER_OF_CHANNELS; ++i) {
                 color[i].rgb = APPLY_LIGHTING(lighting, color[i].rgb, color[i].rgb, vec3(1.0),
                     worldSpacePosition, normalize(-gradients[i]), toCameraDir);
@@ -134,6 +133,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         }
     }
 
+    if(bgTDepth > tEnd){
+        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);
+    }
+
     if (tDepth != -1.0) {
         tDepth = calculateDepthValue(camera, tDepth/tEnd, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
@@ -141,11 +144,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
-    if(bgTDepth > tEnd){
-        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
-    }
+    
 
-    gl_FragDepth = tDepth;
+    gl_FragDepth = min(indepth,tDepth);
     return result;
 }
 
@@ -155,10 +156,11 @@ void main() {
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
      vec4 color;
-
+     
+    float indepth = 1;
 #ifdef HAS_BG
     color = texture(bgColor, texCoords);
-    gl_FragDepth = texture(bgDepth, texCoords).x;
+    gl_FragDepth = indepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
     PickingData = vec4(0);
@@ -167,7 +169,7 @@ void main() {
     }
 #endif
     if (entryPoint != exitPoint){
-        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+        color = rayTraversal(entryPoint, exitPoint, texCoords,indepth);   
     }
     FragData0 = color;
 }

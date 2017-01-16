@@ -71,7 +71,7 @@ uniform int channel;
 
 #define ERT_THRESHOLD 0.99 // threshold for early ray termination
 
-vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
+vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords , in float indepth) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
@@ -108,7 +108,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
 
-        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);
+        result = DRAW_BACKGROUND(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);
 
         if (color.a > 0) {
             vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
@@ -140,6 +140,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         }
     }
 
+    if(bgTDepth > tEnd){
+        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);
+    }
+
     if (tDepth != -1.0) {
         tDepth = calculateDepthValue(camera, tDepth/tEnd, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
@@ -148,11 +152,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     
-    if(bgTDepth > tEnd){
-        result = DRAW_BACKGROUND(result,bgTDepth,tIncr, texture(bgColor,texCoords),bgTDepth);
-    }
+  
 
-    gl_FragDepth = tDepth;
+    gl_FragDepth = min(indepth,tDepth);
     return result;
 }
 
@@ -163,9 +165,10 @@ void main() {
 
      vec4 color;
 
+     float indepth = 1;
 #ifdef HAS_BG
     color = texture(bgColor, texCoords);
-    gl_FragDepth = texture(bgDepth, texCoords).x;
+    gl_FragDepth = indepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
     PickingData = vec4(0);
@@ -174,7 +177,7 @@ void main() {
     }
 #endif
     if (entryPoint != exitPoint){
-        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+        color = rayTraversal(entryPoint, exitPoint, texCoords,indepth);   
     }
     FragData0 = color;
 }
