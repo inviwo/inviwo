@@ -39,7 +39,7 @@ in vec4 texCoord_;
 
 void main() {
 #ifdef ADD_DATA_CHANNEL
-    float v = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz)[channel];
+    float v = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz,channel);
 #else
     float v = 1.0f;
 #endif
