@@ -82,14 +82,25 @@ PYBIND11_PLUGIN(inviwopy) {
         .def_property_readonly("binaryPath", &InviwoApplication::getBinaryPath)
         .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
              py::arg("createFolder") = false)
-        .def_property_readonly("modules", &InviwoApplication::getModules)
+        .def_property_readonly("modules",
+                               [](InviwoApplication *app) {
+                                   std::vector<InviwoModule *> modules;
+                                   for (auto &m : app->getModules()) {
+                                       modules.push_back(m.get());
+                                   }
+                                   return modules;
+                               },
+                               py::return_value_policy::reference)
         //.def("getModuleFactoryObjects", &InviwoApplication::getModuleFactoryObjects)
-        .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier)
-        .def("getModuleSettings", &InviwoApplication::getModuleSettings)
+        .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
+        py::return_value_policy::reference)
+        .def("getModuleSettings", &InviwoApplication::getModuleSettings,
+        py::return_value_policy::reference)
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
-                               py::return_value_policy::reference);
+                               py::return_value_policy::reference)
+        ;
 
     py::class_<InviwoModule>(m, "InviwoModule")
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
@@ -453,6 +464,7 @@ PYBIND11_PLUGIN(inviwopy) {
         });
 
     m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
+   // m.def("getApp" ,&InviwoApplication::getPtr, py::return_value_policy::reference);
 
     py::enum_<inviwo::PathType>(m, "PathType")
         .value("Data", PathType::Data)

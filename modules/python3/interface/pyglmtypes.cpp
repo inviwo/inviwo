@@ -84,6 +84,8 @@ namespace inviwo {
             .def(py::self /= py::self)
             .def(py::self == py::self)
             .def(py::self != py::self)
+            .def("__getitem__", [](V &v, int idx) { return v[idx]; })
+            .def("__setitm__", [](V &v, int idx, T &t) { return v[idx] = t; })
             //.def(py::self < py::self)
             //.def(py::self > py::self)
             //.def(py::self >= py::self)

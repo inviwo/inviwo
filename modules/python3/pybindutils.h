@@ -45,6 +45,9 @@ namespace inviwo {
 
     namespace pyutil {
 
+        
+
+
         /*IVW_MODULE_PYTHON3_API InviwoApplication* getApplication();
         IVW_MODULE_PYTHON3_API ProcessorNetwork* getNetwork();
         IVW_MODULE_PYTHON3_API Processor* getProcessor(std::string id);*/
@@ -67,7 +70,7 @@ namespace inviwo {
         /*template<typename T>
         T parse(PyObject *obj) {
             return pybind11::handle(obj).cast<T>();
-        }*/
+        }//*/
 
        /* template<typename T>
         T parse(const pybind11::object &obj) {
@@ -89,12 +92,12 @@ namespace inviwo {
               return type1 == type2;
           }
 
-          
+
+          */
           
           template<typename T> pybind11::object toPyBindObject(const T &t) {
               return pybind11::cast(t);
           }
-          */
 
     }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
-#include <modules/python3/python3module.h>
-#include <modules/python3/pyinviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
-
+#include <modules/numpy/processors/numpymeshcreatetest.h>
+#include <modules/numpy/numpymodule.h>
+#include <modules/numpy/numpyobjectwrapper.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/filesystem.h>
-#include <modules/python3/pythonscript.h>
-#include <modules/python3/pythonlogger.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <pybind11/pybind11.h>
 
-#include <modules/python3/pybindutils.h>
 namespace inviwo {
 
-Python3Module::Python3Module(InviwoApplication* app)
-    : InviwoModule(app, "Python3")
-    , pyInviwo_(util::make_unique<PyInviwo>(this))
-    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-        "Path to the file containing the script") {
-
-
-    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR));
-    pyInviwo_->addObserver(&pythonLogger_);
-
-
-
-    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        auto filename = pythonScriptArg_.getValue();
-        if (!filesystem::fileExists(filename)) {
-            LogWarn("Could not run script, file does not exist: " << filename);
-            return;
-        }
-        PythonScriptDisk s(filename);
-        s.run();
-    }, 100);
-
-
-    PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo NumPyMeshCreateTest::processorInfo_{
+    "org.inviwo.NumPyMeshCreateTest",  // Class identifier
+    "NumPy Mesh Create Test",          // Display name
+    "Undefined",                       // Category
+    CodeState::Experimental,           // Code state
+    Tags::None,                        // Tags
+};
+const ProcessorInfo NumPyMeshCreateTest::getProcessorInfo() const {
+    return processorInfo_;
 }
 
-Python3Module::~Python3Module() {
-    pyInviwo_->removeObserver(&pythonLogger_);
+NumPyMeshCreateTest::NumPyMeshCreateTest()
+    : Processor()
+    , script_(InviwoApplication::getPtr()->getModuleByType<NumPyModule>()->getPath(ModulePath::Scripts) + "/numpymeshcreatetest.py")
+    , mesh_("mesh")
+{
+    
+    script_.onChange([this](){
+        invalidate(InvalidationLevel::InvalidOutput);
+    });
+
+    addPort(mesh_);
+
+}
+    
+void NumPyMeshCreateTest::process() {
+    script_.run( { } , [&](pybind11::dict &dict){
+        auto pyMesh  = dict["mesh"];
+        
+        auto mesh = util::toMesh(pyMesh.ptr());
+        mesh_.setData(mesh);
+    });
 }
 
-}  // namespace
+} // namespace
+

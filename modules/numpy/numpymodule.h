@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,20 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
-#include <modules/python3/python3module.h>
-#include <modules/python3/pyinviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+#ifndef IVW_NUMPYMODULE_H
+#define IVW_NUMPYMODULE_H
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/filesystem.h>
-#include <modules/python3/pythonscript.h>
-#include <modules/python3/pythonlogger.h>
+#include <modules/numpy/numpymoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
-#include <modules/python3/pybindutils.h>
 namespace inviwo {
 
-Python3Module::Python3Module(InviwoApplication* app)
-    : InviwoModule(app, "Python3")
-    , pyInviwo_(util::make_unique<PyInviwo>(this))
-    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-        "Path to the file containing the script") {
+class IVW_MODULE_NUMPY_API NumPyModule : public InviwoModule {
+public:
+    NumPyModule(InviwoApplication* app);
+    virtual ~NumPyModule() = default;
+};
 
+} // namespace
 
-    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR));
-    pyInviwo_->addObserver(&pythonLogger_);
-
-
-
-    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        auto filename = pythonScriptArg_.getValue();
-        if (!filesystem::fileExists(filename)) {
-            LogWarn("Could not run script, file does not exist: " << filename);
-            return;
-        }
-        PythonScriptDisk s(filename);
-        s.run();
-    }, 100);
-
-
-    PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
-}
-
-Python3Module::~Python3Module() {
-    pyInviwo_->removeObserver(&pythonLogger_);
-}
-
-}  // namespace
+#endif // IVW_NUMPYMODULE_H
