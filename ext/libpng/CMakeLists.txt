@@ -44,11 +44,7 @@ ivw_default_install_targets(libpng)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-if (BUILD_SHARED_LIBS)
-    ivw_folder(libpng ext)
-else(BUILD_SHARED_LIBS)
-    ivw_folder(libpngstatic ext)
-endif(BUILD_SHARED_LIBS)
+ivw_folder(libpng ext)
 
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
