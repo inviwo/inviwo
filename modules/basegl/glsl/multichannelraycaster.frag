@@ -86,10 +86,12 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     mat4x3 gradients;
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
-
+    
+    vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
 #ifdef HAS_BACKGROUND
     {
+        backgroundColor = texture(bgColor, texCoords);
         float depthV = texture(bgDepth, texCoords).x;
         if (depthV != 1) {  // convert to raycasting depth
             bgTDepth = calculateTValueFromDepthValue(
@@ -98,7 +100,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     }
 
     if (bgTDepth < 0) {
-        result = texture(bgColor, texCoords);
+        result = backgroundColor;
     }
 #endif
 
@@ -110,7 +112,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         // sets colors;
         SAMPLE_CHANNELS;
 
-        result = DRAW_BACKGROUND(result, t, tIncr, texture(bgColor, texCoords), bgTDepth, tDepth);
+        result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
         result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator, t, tDepth);
 
         if (color[0].a > 0 || color[1].a > 0 || color[2].a > 0 || color[3].a > 0) {
@@ -136,7 +138,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 
     if (bgTDepth > tEnd) {
         result =
-            DRAW_BACKGROUND(result, bgTDepth, tIncr, texture(bgColor, texCoords), bgTDepth, tDepth);
+            DRAW_BACKGROUND(result, bgTDepth, tIncr, backgroundColor, bgTDepth, tDepth);
     }
 
     if (tDepth != -1.0) {
@@ -159,7 +161,7 @@ void main() {
 
     float backgroundDepth = 1;
 #ifdef HAS_BACKGROUND
-    color = texture(bgColor, texCoords);
+    color = backgroundColor;
     gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
