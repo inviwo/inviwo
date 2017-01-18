@@ -79,7 +79,10 @@ option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
 #--------------------------------------------------------------------
-# Add externals
+# Add external libraries.
+# 
+# Dependencies between libraries are solved using the given order
+add_subdirectory(ext/zlib-1.2.11)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
