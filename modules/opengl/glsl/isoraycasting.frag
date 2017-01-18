@@ -140,7 +140,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     {
         float d = texture(bgDepth,texCoords).x;
         if(tDepth == 1 || d < tDepth){
@@ -162,7 +162,7 @@ void main() {
 
     vec4 color;
 
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     color = texture(bgColor, texCoords);
     gl_FragDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);

@@ -88,7 +88,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
 
     float bgTDepth = -1;
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     {
         float depthV = texture(bgDepth, texCoords).x;
         if (depthV != 1) {  // convert to raycasting depth
@@ -158,7 +158,7 @@ void main() {
     vec4 color;
 
     float backgroundDepth = 1;
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     color = texture(bgColor, texCoords);
     gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
