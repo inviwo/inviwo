@@ -83,6 +83,9 @@ option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Q
 # 
 # Dependencies between libraries are solved using the given order
 add_subdirectory(ext/zlib-1.2.11)
+add_subdirectory(ext/libpng)
+add_subdirectory(ext/libjpeg)
+add_subdirectory(ext/openexr)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
