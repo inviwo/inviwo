@@ -261,13 +261,13 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
 }
 
 void addShaderDefinesBGPort(Shader& shader,ImageInport port){
-    std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth)";
+    std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
-        shader.getFragmentShaderObject()->addShaderDefine("HAS_BG");
-        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth);");
+        shader.getFragmentShaderObject()->addShaderDefine("HAS_BACKGROUND");
+        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);");
     }
     else {
-        shader.getFragmentShaderObject()->removeShaderDefine("HAS_BG");
+        shader.getFragmentShaderObject()->removeShaderDefine("HAS_BACKGROUND");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
     }
 
@@ -275,7 +275,7 @@ void addShaderDefinesBGPort(Shader& shader,ImageInport port){
 
 void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
     // compositing defines
-    std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params)";
+    std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params,t,tDepth)";
     std::string value = "result";
 
     if (property.enable_ &&
@@ -284,7 +284,7 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
         planes += property.plane1_.enable_ ? ", params.plane1" : ""; 
         planes += property.plane2_.enable_ ? ", params.plane2" : ""; 
         planes += property.plane3_.enable_ ? ", params.plane3" : "";
-        value = "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ")";
+        value = "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
     }
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }

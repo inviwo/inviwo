@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
-vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane) {
+vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane, in float t, inout float tDepth) {
     vec4 result = oldres;
     
     float e = dot(pos-plane.position, plane.normal);
     float step = abs(dot(plane.normal, inc*dir));
     if ( e <= 0.0 && e > -step ) {
+        if (tDepth == -1.0 && oldres.a > 0.0) tDepth = t;
         result.rgb = result.rgb + (1.0 - result.a) * plane.color.a * plane.color.rgb;
         result.a = result.a + (1.0 - result.a) * plane.color.a;
     }
@@ -40,26 +41,27 @@ vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlanePar
 }
 
 vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane1,
-                 PlaneParameters plane2) {
+                 PlaneParameters plane2, in float t, inout float tDepth) {
     vec4 result = oldres;
-    result = drawPlanes(result, pos, dir, inc, plane1);
-    result = drawPlanes(result, pos, dir, inc, plane2);
+    result = drawPlanes(result, pos, dir, inc, plane1, t, tDepth);
+    result = drawPlanes(result, pos, dir, inc, plane2, t, tDepth);
     return result;
 }
 
 vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane1,
-                 PlaneParameters plane2, PlaneParameters plane3) {
+                 PlaneParameters plane2, PlaneParameters plane3,in float t, inout float tDepth) {
     vec4 result = oldres;
-    result = drawPlanes(result, pos, dir, inc, plane1);
-    result = drawPlanes(result, pos, dir, inc, plane2);
-    result = drawPlanes(result, pos, dir, inc, plane3);
+    result = drawPlanes(result, pos, dir, inc, plane1, t, tDepth);
+    result = drawPlanes(result, pos, dir, inc, plane2, t, tDepth);
+    result = drawPlanes(result, pos, dir, inc, plane3, t, tDepth);
     return result;
 }
 
-vec4 drawBackground(in vec4 oldres,in float depth, in float inc, in vec4 color,in float bgDepth){
+vec4 drawBackground(in vec4 oldres,in float depth, in float inc, in vec4 color,in float bgDepth,inout float tDepth){
     vec4 result = oldres;
 
     if((depth-inc) <= bgDepth && (depth) >= bgDepth){
+        if (tDepth == -1.0 && color.a > 0.0) tDepth = depth;
         result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
         result.a = result.a + (1.0 - result.a) * color.a;
     }

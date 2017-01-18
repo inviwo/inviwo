@@ -69,8 +69,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
-    float tIncr = min(
-        tEnd, tEnd / (raycasting.samplingRate * length(rayDirection * volumeParameters.dimensions)));
+    float tIncr =
+        min(tEnd,
+            tEnd / (raycasting.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
     float t = 0.5f * tIncr;
@@ -114,7 +115,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             result.rgb = APPLY_LIGHTING(lighting, vec3(1.0), vec3(1.0), vec3(1.0),
                                         worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
-			tDepth = t;
+            tDepth = t;
             t += tEnd;
             break;
         } else if (sampOutside != outside) {
@@ -130,24 +131,22 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera, tDepth/tEnd, texture(entryDepth, texCoords).x,
+        tDepth = calculateDepthValue(camera, tDepth / tEnd, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
     } else {
         tDepth = 1.0;
     }
 
-
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     {
-        float d = texture(bgDepth,texCoords).x;
-        if(tDepth == 1 || d < tDepth){
+        float d = texture(bgDepth, texCoords).x;
+        if (tDepth == 1 || d < tDepth) {
             result = vec4(0);
-            result = drawBackground(texture(bgColor,texCoords),0,0,result,0);
+            result = drawBackground(texture(bgColor, texCoords), 0, 0, result, 0, tDepth);
             tDepth = d;
         }
     }
 #endif
-
 
     gl_FragDepth = tDepth;
     return result;
@@ -160,18 +159,18 @@ void main() {
 
     vec4 color;
 
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     color = texture(bgColor, texCoords);
     gl_FragDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
     PickingData = vec4(0);
-    if (entryPoint == exitPoint){
+    if (entryPoint == exitPoint) {
         discard;
     }
 #endif
-    if (entryPoint != exitPoint){
-        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    if (entryPoint != exitPoint) {
+        color = rayTraversal(entryPoint, exitPoint, texCoords);
     }
 
     FragData0 = color;
