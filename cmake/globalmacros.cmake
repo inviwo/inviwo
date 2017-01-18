@@ -640,11 +640,17 @@ endmacro()
 macro(ivw_make_package package_name project_name)
     ivw_private_install_package(${project_name})
 
+    # retrieve output name of target, use project name if not set
+    get_target_property(ivw_output_name ${project_name} OUTPUT_NAME)
+    if(NOT ivw_output_name)
+        set(ivw_output_name ${project_name})
+    endif()
+
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
+        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
     else()
-       set(PROJECT_LIBRARIES ${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
+       set(PROJECT_LIBRARIES ${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
     
     get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)

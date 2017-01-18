@@ -215,7 +215,7 @@ if(UNIX)
     endif()
 elseif(BUILD_SHARED_LIBS AND WIN32)
     # Creates zlib1.dll when building shared library version
-    set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
+    #set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
 endif()
 
 # if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
@@ -256,6 +256,11 @@ endif()
 #     set_target_properties(minigzip64 PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64")
 # endif()
 
+
+SET_TARGET_PROPERTIES ( zlib
+  PROPERTIES
+  OUTPUT_NAME "zlib1"
+)
 
 #--------------------------------------------------------------------
 # Install library into target folder
