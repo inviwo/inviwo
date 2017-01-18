@@ -39,7 +39,7 @@
 # _cpackName -> modules or qt_modules if QT
 # _pchDisabledForThisModule -> FALSE 
 macro(ivw_project project_name)
-    project(${project_name})
+    project(${project_name} ${ARGN})
     set(_projectName ${project_name})
     set(_allLibsDir "")
     set(_allDefinitions "")
@@ -639,8 +639,6 @@ endmacro()
 # Make package (with configure file etc)
 macro(ivw_make_package package_name project_name)
     ivw_private_install_package(${project_name})
-
-    list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
 
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
