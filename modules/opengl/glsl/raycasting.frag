@@ -68,7 +68,7 @@ uniform int channel;
 
 #define ERT_THRESHOLD 0.99 // threshold for early ray termination
 
-vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords ,inout float indepth) {
+vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords ,float backgroundDepth) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
@@ -144,7 +144,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords ,inout float i
 
 
     
-    gl_FragDepth = min(indepth,tDepth);
+    gl_FragDepth = min(backgroundDepth,tDepth);
 
 
     return result;
@@ -158,10 +158,10 @@ void main() {
 
     vec4 color;
 
-    float indepth = 1;
+    float backgroundDepth = 1;
 #ifdef HAS_BG
     color = texture(bgColor, texCoords);
-    gl_FragDepth = indepth = texture(bgDepth, texCoords).x;
+    gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
     PickingData = vec4(0);
@@ -170,7 +170,7 @@ void main() {
     }
 #endif
     if (entryPoint != exitPoint){
-        color = rayTraversal(entryPoint, exitPoint, texCoords,indepth);   
+        color = rayTraversal(entryPoint, exitPoint, texCoords,backgroundDepth);   
     }
     FragData0 = color;
 }
