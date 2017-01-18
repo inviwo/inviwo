@@ -189,8 +189,8 @@ if (BUILD_SHARED_LIBS)
 	set_target_properties(zlib PROPERTIES SOVERSION 1)
     ivw_suppress_compiler_warnings(zlib)
 else()
-	add_library(zlibstatic STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-    ivw_suppress_compiler_warnings(zlibstatic)
+	add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    ivw_suppress_compiler_warnings(zlib)
 endif()
 
 
@@ -209,7 +209,7 @@ endif()
 
 if(UNIX)
     # On unix-like platforms the library is almost always called libz
-    set_target_properties(zlib zlibstatic PROPERTIES OUTPUT_NAME z)
+    set_target_properties(zlib PROPERTIES OUTPUT_NAME z)
     if((NOT APPLE) AND BUILD_SHARED_LIBS)
         set_target_properties(zlib PROPERTIES LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/zlib.map\"")
     endif()
@@ -269,11 +269,7 @@ ivw_default_install_targets(zlib)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-if (BUILD_SHARED_LIBS)
-    ivw_folder(zlib ext)
-else(BUILD_SHARED_LIBS)
-    ivw_folder(zlibstatic ext)
-endif(BUILD_SHARED_LIBS)
+ivw_folder(zlib ext)
 
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
