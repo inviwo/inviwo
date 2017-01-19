@@ -24,9 +24,9 @@ add_library(libjpeg ${SOURCE_FILES} ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Define defintions
 if(BUILD_SHARED_LIBS)
-	target_compile_definitions(libjpeg PRIVATE JPEG_DLL)
+	target_compile_definitions(libjpeg PUBLIC JPEG_DLL)
 else(BUILD_SHARED_LIBS)
-	target_compile_definitions(libjpeg PRIVATE JPEG_STATIC)
+	target_compile_definitions(libjpeg PUBLIC JPEG_STATIC)
 endif(BUILD_SHARED_LIBS)
 
 #--------------------------------------------------------------------

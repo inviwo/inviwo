@@ -646,6 +646,13 @@ macro(ivw_make_package package_name project_name)
         set(ivw_output_name ${project_name})
     endif()
 
+    # retrieve target definitions
+    get_target_property(ivw_target_defs ${project_name} INTERFACE_COMPILE_DEFINITIONS)
+    if(ivw_target_defs)
+        prepend(ivw_target_defs "-D" ${ivw_target_defs})
+        list(APPEND _allDefinitions ${ivw_target_defs})
+    endif()
+
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
         set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
