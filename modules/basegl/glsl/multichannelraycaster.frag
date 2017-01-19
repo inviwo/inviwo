@@ -157,11 +157,11 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    vec4 color;
+    vec4 color = vec4(0);
 
     float backgroundDepth = 1;
 #ifdef HAS_BACKGROUND
-    color = texture(bgColor, texCoords);;
+    color = texture(bgColor, texCoords);
     gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else

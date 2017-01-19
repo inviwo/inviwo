@@ -157,7 +157,7 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    vec4 color;
+    vec4 color = vec4(0);
 
 #ifdef HAS_BACKGROUND
     color = texture(bgColor, texCoords);
