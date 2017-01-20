@@ -238,6 +238,7 @@ void TransferFunction::deserialize(Deserializer& d) {
     util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
         .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
             auto ptr = point.get();
+            ptr->addObserver(this);
             std::stable_sort(points_.begin(), points_.end(), comparePtr{});
             notifyControlPointAdded(ptr);
         })

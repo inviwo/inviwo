@@ -105,9 +105,15 @@ private:
 
     const int sliderRange_;
 
-    TransferFunctionProperty*
-        tfProperty_;  ///< Pointer to property, for get and invalidation in the widget
-    std::unique_ptr<TransferFunctionEditor> tfEditor_;  ///< TransferFunctionEditor inherited from QGraphicsScene
+    std::unique_ptr<QColorDialog> colorDialog_;
+    std::unique_ptr<ColorWheel> colorWheel_;
+
+    // Pointer to property, for get and invalidation in the widget
+    TransferFunctionProperty* tfProperty_;
+    
+    // TransferFunctionEditor inherited from QGraphicsScene
+    std::unique_ptr<TransferFunctionEditor> tfEditor_;
+    
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
     QPushButton* btnClearTF_;
     QPushButton* btnImportTF_;
@@ -120,9 +126,6 @@ private:
     std::unique_ptr<QPixmap> tfPixmap_;
 
     QLinearGradient gradient_;
-
-    std::unique_ptr<QColorDialog> colorDialog_;
-    std::unique_ptr<ColorWheel> colorWheel_;
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
