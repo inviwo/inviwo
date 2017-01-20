@@ -65,6 +65,9 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setCacheMode(QGraphicsView::CacheBackground);
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
+        [this](Deserializer&) { fitNetwork(); });
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
