@@ -63,6 +63,9 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+# option for setting the project/solution name of the Inviwo project
+set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
+
 if(IVW_PROJECT_NAME)
     project(${IVW_PROJECT_NAME})
 else()
