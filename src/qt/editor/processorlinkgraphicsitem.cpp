@@ -41,14 +41,13 @@
 namespace inviwo {
 
 ProcessorLinkGraphicsItem::ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent)
-    : EditorGraphicsItem(parent), processor_(parent), leftItem_(nullptr), rightItem_(nullptr) {
+    : QGraphicsItem(parent), processor_(parent), leftItem_(nullptr), rightItem_(nullptr) {
     setFlags(ItemSendsScenePositionChanges);
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
     leftItem_ =
-        new LinkItem(this, (parent->rect().bottomRight() + parent->rect().topRight()) / 2.0, 90.0f);
+        new LinkItem(this, QPointF(parent->rect().right()+1.0, 0.0), 90.0f);
     rightItem_ =
-        new LinkItem(this, (parent->rect().bottomLeft() + parent->rect().topLeft()) / 2.0, -90.0f);
+        new LinkItem(this, QPointF(parent->rect().left()-1.0, 0.0), -90.0f);
 }
 
 QPointF ProcessorLinkGraphicsItem::getLeftPos() const {
@@ -62,6 +61,10 @@ QPointF ProcessorLinkGraphicsItem::getRightPos() const {
 ProcessorGraphicsItem* ProcessorLinkGraphicsItem::getProcessorGraphicsItem() const {
     return processor_;
 }
+
+QRectF ProcessorLinkGraphicsItem::boundingRect() const { return QRectF(); }
+void ProcessorLinkGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                                      QWidget* widget) {}
 
 QVariant ProcessorLinkGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == QGraphicsItem::ItemScenePositionHasChanged) {
@@ -87,10 +90,14 @@ void ProcessorLinkGraphicsItem::updateLinkPositions() {
 
 ProcessorLinkGraphicsItem::LinkItem::LinkItem(ProcessorLinkGraphicsItem* parent, QPointF pos,
                                               float angle)
-    : EditorGraphicsItem(parent), parent_(parent), pos_(pos), angle_(angle), size_(4.0f), lineWidth_(1.3f) {
-    setRect(-0.5f * size_ - 2.0 * lineWidth_, -0.5f * size_ - 2.0 * lineWidth_, size_ + 4.0 * lineWidth_,
-            size_ + 4.0 * lineWidth_);
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+    : EditorGraphicsItem(parent)
+    , parent_(parent)
+    , pos_(pos)
+    , angle_(angle)
+    , size_(4.0f)
+    , lineWidth_(2.0f) {
+    setRect(-0.5f * size_ - 2.0 * lineWidth_, -0.5f * size_ - 2.0 * lineWidth_,
+            size_ + 4.0 * lineWidth_, size_ + 4.0 * lineWidth_);
     setPos(pos);
 }
 
@@ -106,13 +113,10 @@ void ProcessorLinkGraphicsItem::LinkItem::paint(QPainter* p,
                                                 QWidget* widget) {
     p->save();
     p->setBrush(Qt::NoBrush);
+    p->setBrush(QColor(164, 164, 164));
     p->setRenderHint(QPainter::Antialiasing, true);
-    p->setPen(QPen(QColor(164, 164, 164), lineWidth_, Qt::SolidLine, Qt::RoundCap));
-
-    QPainterPath linkpath1;
-    linkpath1.arcTo(QRectF(QPointF(-size_, size_), QPointF(size_, -size_)), angle_, 180);
-    linkpath1.closeSubpath();
-    p->drawPath(linkpath1);
+    p->setPen(QPen(QColor(164, 164, 164), lineWidth_, Qt::SolidLine, Qt::FlatCap));
+    p->drawArc(QRectF(QPointF(-size_, size_), QPointF(size_, -size_)), 16*angle_, 16*180);
     p->restore();
 }
 

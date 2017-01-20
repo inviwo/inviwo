@@ -48,14 +48,11 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     : EditorGraphicsItem(parent)
     , processor_(processor)
     , size_(10.0f)
-    , lineWidth_(3.0f)
+    , lineWidth_(1.0f)
     , state_(State::Invalid)
     , current_(State::Invalid) {
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
-
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    setPos(QPointF(64.0f, -15.0f));
 
     if (processor && processor->getNetwork() && processor->getNetwork()->getApplication() &&
         processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()) {
@@ -78,52 +75,29 @@ void ProcessorStatusGraphicsItem::setRunning(bool running) {
 void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                                         QWidget* widget) {
     qreal ledRadius = size_ / 2.0f;
-    QColor baseColor(0, 170, 0);
+    QColor baseColor = QColor(0, 170, 0).light(200);
 
     QColor ledColor;
-    QColor borderColor;
+    QColor borderColor(124, 124, 124);
 
     switch (state_) {
         case State::Ready:
             ledColor = baseColor;
-            borderColor = QColor(124, 124, 124);
             break;
         case State::Running:
             ledColor = Qt::yellow;
-            borderColor = QColor(124, 124, 124);
             break;
         case State::Invalid:
             ledColor = baseColor.dark(400);
-            borderColor = QColor(64, 64, 64);
             break;
     }
     current_ = state_;
 
-    // initialize painter
     p->save();
-    p->setPen(QPen(borderColor, 3.0));
+    p->setPen(QPen(borderColor, 1.0));
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setBrush(QBrush(ledColor));
-    // draw base shape
     p->drawEllipse(QPointF(0.0f, 0.0f), ledRadius, ledRadius);
-    // draw light highlight
-    QPointF highLightPos = QPointF(0.0f, 0.0f);
-    p->setPen(Qt::NoPen);
-
-    while (ledRadius > 0.0) {
-        ledColor = ledColor.light(120);
-        p->setBrush(QBrush(ledColor));
-        p->drawEllipse(highLightPos, ledRadius, ledRadius);
-        ledRadius -= 0.25;
-        p->drawEllipse(highLightPos, ledRadius, ledRadius);
-        ledRadius -= 0.25;
-        p->drawEllipse(highLightPos, ledRadius, ledRadius);
-        ledRadius -= 0.25;
-        highLightPos.setX(highLightPos.x() - 0.25);
-        highLightPos.setY(highLightPos.y() - 0.25);
-    }
-
-    // deinitialize painter
     p->restore();
 }
 

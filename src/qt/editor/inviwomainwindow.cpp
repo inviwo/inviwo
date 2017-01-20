@@ -298,25 +298,12 @@ void InviwoMainWindow::addActions() {
             saveFileDialog.addExtension("png", "PNG");
             saveFileDialog.addExtension("jpg", "JPEG");
             saveFileDialog.addExtension("bmp", "BMP");
+            saveFileDialog.addExtension("pdf", "PDF");
 
             if (saveFileDialog.exec()) {
                 QString path = saveFileDialog.selectedFiles().at(0);
-
-                auto rect = networkEditor_->itemsBoundingRect();
-
-                QPointF margins(25, 25);
-                auto TL = rect.topLeft() - margins;
-                auto BR = rect.bottomRight() + margins;
-                QRect rect2(TL.toPoint(), BR.toPoint());
-                QRect sourceRect(QPoint(0, 0), rect2.size());
-
-                QImage image(sourceRect.size(), QImage::Format_ARGB32);
-                QPainter painter(&image);
-                painter.setRenderHint(QPainter::Antialiasing);
-                networkEditor_->render(&painter, sourceRect, rect2);
-                image.save(saveFileDialog.selectedFiles().at(0));
-                LogInfo("Saved image of network as "
-                    << saveFileDialog.selectedFiles().at(0).toLocal8Bit().constData());
+                networkEditor_->saveNetworkImage(path.toStdString());
+                LogInfo("Saved image of network as " << path.toStdString());
             }
 
         });

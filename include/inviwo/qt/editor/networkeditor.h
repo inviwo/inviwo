@@ -119,6 +119,8 @@ public:
 
     void updateLeds();
     bool doingContextMenu() const;
+    
+    void saveNetworkImage(const std::string& filename);
 
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
@@ -199,7 +201,8 @@ private:
     ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
-    void drawBackground(QPainter* painter, const QRectF& rect) override;
+    virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
+    virtual void drawForeground(QPainter *painter, const QRectF &rect) override;
 
     void deleteItems(QList<QGraphicsItem*> items);
 

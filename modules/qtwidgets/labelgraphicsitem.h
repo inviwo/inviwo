@@ -37,10 +37,9 @@
 #include <QGraphicsTextItem>
 #include <warn/pop>
 
-
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObserver: public Observer {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObserver : public Observer {
 public:
     LabelGraphicsItemObserver() = default;
 
@@ -48,9 +47,10 @@ public:
     * This method will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void onLabelGraphicsItemChange() {};
+    virtual void onLabelGraphicsItemChange(){};
 };
-class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable: public Observable<LabelGraphicsItemObserver> {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable
+    : public Observable<LabelGraphicsItemObserver> {
 public:
     LabelGraphicsItemObservable() = default;
 
@@ -59,18 +59,20 @@ public:
     }
 };
 
-class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem, public LabelGraphicsItemObservable {
+class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem,
+                                                   public LabelGraphicsItemObservable {
 
 public:
-    LabelGraphicsItem(QGraphicsItem* parent, Qt::Alignment alignment=Qt::AlignLeft | Qt::AlignTop);
+    LabelGraphicsItem(QGraphicsItem* parent, int width = 30,
+                      Qt::Alignment alignment = Qt::AlignLeft | Qt::AlignTop);
     ~LabelGraphicsItem() = default;
 
     QString text() const;
     void setText(const QString&);
-    void setHtml(const QString &str);
+    void setHtml(const QString& str);
 
     QString croppedText() const;
-    void setCrop(int, int);
+    void setCrop(int width);
     bool isCropped() const;
 
     void setNoFocusOut();
@@ -89,12 +91,10 @@ protected:
     void updatePosition();
 
 private:
-    int maxBefore_;
-    int maxAfter_;
+    int width_;
     bool focusOut_;
     QString orgText_;
-
-    Qt::Alignment alignment_; // Qt::AlignLeft/Right/HCenter | Qt::AlignTop/Bottom/VCenter
+    Qt::Alignment alignment_;  // Qt::AlignLeft/Right/HCenter | Qt::AlignTop/Bottom/VCenter
 };
 
 } // namespace

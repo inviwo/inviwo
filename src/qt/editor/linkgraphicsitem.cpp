@@ -54,10 +54,6 @@ LinkGraphicsItem::LinkGraphicsItem(QPointF startPoint, QPointF endPoint, ivec3 c
     , startDir_(startDir)
     , endDir_(endDir) {
     setZValue(LINKGRAPHICSITEM_DEPTH);
-    QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
-    processorShadowEffect->setOffset(3.0);
-    processorShadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(processorShadowEffect);
 }
 
 LinkGraphicsItem::~LinkGraphicsItem() {}

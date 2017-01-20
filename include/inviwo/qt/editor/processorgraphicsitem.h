@@ -128,9 +128,6 @@ private:
     
     bool highlight_;
 
-    static const float roundedCorners_;
-    static const int labelHeight_;
-
     #if IVW_PROFILING 
     size_t processCount_;
     LabelGraphicsItem* countLabel_;
