@@ -56,7 +56,7 @@ public:
     Track& getTrack(); 
     const Track& getTrack() const; 
 protected:
-    virtual QRectF boundingRect() const;
+    virtual QRectF boundingRect() const override;
 
     virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
     virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;

@@ -49,11 +49,6 @@
 #include <QMainWindow>
 #include <warn/pop>
 
-constexpr auto UnicodePlay = 9658;
-constexpr auto UnicodeVerticalBar = 10073;
-constexpr auto UnicodePause = 9208;  //= 10074;
-constexpr auto UnicodeStop = 9724;
-
 namespace inviwo {
 
 namespace animation {
@@ -193,8 +188,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         end->setToolTip("To End");
         leftWidget->addAction(end);
         connect(end, &QAction::triggered, [&]() {
-            auto end = controller_.getAnimation()->lastTime();
-            controller_.eval(controller_.getCurrentTime(), end);
+            auto endTime = controller_.getAnimation()->lastTime();
+            controller_.eval(controller_.getCurrentTime(), endTime);
         });
     }
 

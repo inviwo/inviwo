@@ -54,9 +54,9 @@ public:
     virtual ~AnimationLabelViewQt() = default;
 
 protected:
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
     virtual void onTrackAdded(Track* track) override;
     virtual void onTrackRemoved(Track* track) override;

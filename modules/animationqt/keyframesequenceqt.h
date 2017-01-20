@@ -48,8 +48,7 @@ class KeyframeQt;
 
 /**
 * \class KeyframeSequenceQt
-* \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
-* DESCRIBE_THE_CLASS
+* \brief Owns a sorted list of keyframes
 */
 class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem,
                                                       public KeyframeSequenceObserver {
@@ -63,11 +62,11 @@ public:
     KeyframeSequence& getKeyframeSequence();
     const KeyframeSequence& getKeyframeSequence() const;
 protected:
-    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq);
-    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq);
-    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq);
+    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
+    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
 
-    virtual QRectF boundingRect() const;
+    virtual QRectF boundingRect() const override;
 
     /** 
      * \brief Get the KeyframeQt corresponding to the given keyframe
@@ -78,7 +77,7 @@ protected:
     KeyframeQt* getKeyframeQt(const Keyframe* keyframe) const;
 
     // Move all keyframes, restrict vertical movement and snap to grid
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     KeyframeSequence& keyframeSequence_;
     QRectF rect_;
     std::vector<std::unique_ptr<KeyframeQt>> keyframes_;

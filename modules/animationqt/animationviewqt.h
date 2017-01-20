@@ -59,10 +59,10 @@ public:
     virtual ~AnimationViewQt() = default;
 
 protected:
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-    void wheelEvent(QWheelEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
 
     void setTimelinePos(int x);
     void zoom(double dz);

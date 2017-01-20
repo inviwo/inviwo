@@ -46,8 +46,6 @@ namespace inviwo {
 
 namespace animation {
 
-static constexpr double LineWidth = 0.5;
-
 AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     : QGraphicsScene(), controller_(controller) {
     auto& animation = *controller_.getAnimation();

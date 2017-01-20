@@ -42,8 +42,6 @@ namespace inviwo {
 
 namespace animation {
 
-constexpr auto LineWidth = 0.5;
-
 class AnimationLabelModelQt : public QStandardItemModel {
 public:
     AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) {

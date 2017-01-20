@@ -47,8 +47,7 @@ class Keyframe;
 
 /**
  * \class KeyframeQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * \brief Graphical representation of a keyframe
  */
 class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem, public KeyframeObserver {
 public:
@@ -70,12 +69,12 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + 1 };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
 protected:
     virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
-    virtual QRectF boundingRect() const;
+    virtual QRectF boundingRect() const override;
     // Restrict vertical movement and snap keyframe to grid
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     Keyframe& keyframe_;
