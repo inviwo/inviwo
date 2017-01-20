@@ -1,9 +1,9 @@
 #--------------------------------------------------------------------
 # Dependencies for current module
 set(dependencies
-    zlib
-    libjpeg
-    libpng
+    ZLIB
+    JPEG
+    PNG
     ## OpenEXR dependencies
     openexr-half
     openexr-iex

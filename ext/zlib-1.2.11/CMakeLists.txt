@@ -276,4 +276,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_set_cpack_name(zlib)
-ivw_make_package(zlib zlib)
+ivw_make_package(ZLIB zlib)

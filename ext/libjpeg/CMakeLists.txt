@@ -49,4 +49,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_set_cpack_name(libjpeg)
-ivw_make_package(libjpeg libjpeg)
+ivw_make_package(JPEG libjpeg)
