@@ -82,6 +82,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 }
 
 TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
+    tfEditor_->disconnect();
     hide();
 }
 
@@ -89,8 +90,9 @@ void TransferFunctionPropertyDialog::generateWidget() {
     ivec2 minEditorDims = vec2(255, 100);
 
     tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_);
-    connect(tfEditor_.get(), SIGNAL(doubleClick()), this, SLOT(showColorDialog()));
-    connect(tfEditor_.get(), SIGNAL(selectionChanged()), this, SLOT(updateColorWheel()));
+    connect(tfEditor_.get(), &TransferFunctionEditor::doubleClick, [this]() { showColorDialog(); });
+    connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged,
+            [this]() { updateColorWheel(); });
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
     
@@ -130,15 +132,15 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(colorWheel_.get(), SIGNAL(colorChange(QColor)), this, SLOT(setPointColor(QColor)));
 
     btnClearTF_ = new QPushButton("Reset");
-    connect(btnClearTF_, SIGNAL(clicked()), tfEditor_.get(), SLOT(resetTransferFunction()));
+    connect(btnClearTF_, &QPushButton::clicked, [this](){tfEditor_->resetTransferFunction();});
     btnClearTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     btnImportTF_ = new QPushButton("Import");
-    connect(btnImportTF_, SIGNAL(clicked()), this, SLOT(importTransferFunction()));
+    connect(btnImportTF_, &QPushButton::clicked, [this](){importTransferFunction();});
     btnImportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     btnExportTF_ = new QPushButton("Export");
-    connect(btnExportTF_, SIGNAL(clicked()), this, SLOT(exportTransferFunction()));
+    connect(btnExportTF_, &QPushButton::clicked, [this](){exportTransferFunction();});
     btnExportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     tfPreview_ = new QLabel();
