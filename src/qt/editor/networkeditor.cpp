@@ -81,6 +81,8 @@
 #include <QTimer>
 #include <QPainter>
 #include <QMimeData>
+#include <QMargins>
+#include <QPdfWriter>
 #include <warn/pop>
 
 namespace inviwo {
@@ -1075,6 +1077,32 @@ void NetworkEditor::selectAll() {
     for(auto i : items()) i->setSelected(true);
 }
 
+void NetworkEditor::saveNetworkImage(const std::string& filename) {
+    QRectF rect(itemsBoundingRect());
+
+    QMargins margins(25, 25, 25, 25);
+    rect += margins;
+
+    QRect destRect(QPoint(0, 0), rect.size().toSize());
+
+    if (toLower(filesystem::getFileExtension(filename)) == "pdf") {
+        QPdfWriter pdfwriter(QString::fromStdString(filename));
+        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfwriter.setResolution(72);
+        QPainter painter(&pdfwriter);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+    } else {
+        QImage image(destRect.size(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+        image.save(QString::fromStdString(filename));
+    }
+}
+
 ////////////////////////
 //   HELPER METHODS   //
 ////////////////////////
@@ -1109,16 +1137,20 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->drawLines(linesX.data(), linesX.size());
     painter->drawLines(linesY.data(), linesY.size());
     painter->restore();
+}
 
+void NetworkEditor::drawForeground(QPainter* painter, const QRectF& rect) {
     // For testing purpuses only. Draw bounding rects around all graphics items
-    // QList<QGraphicsItem*> items = QGraphicsScene::items(Qt::DescendingOrder);
-    // painter->setPen(Qt::magenta);
-    // for (QList<QGraphicsItem*>::iterator it = items.begin(); it != items.end(); ++it) {
-    //    QRectF br = (*it)->sceneBoundingRect();
-    //    painter->drawRect(br);
-    //}
-    // painter->setPen(Qt::red);
-    // painter->drawRect(QGraphicsScene::itemsBoundingRect());
+    /*
+    QList<QGraphicsItem*> items = QGraphicsScene::items(Qt::DescendingOrder);
+    painter->setPen(Qt::magenta);
+    for (QList<QGraphicsItem*>::iterator it = items.begin(); it != items.end(); ++it) {
+        QRectF br = (*it)->sceneBoundingRect();
+        painter->drawRect(br);
+    }
+    painter->setPen(Qt::red);
+    painter->drawRect(QGraphicsScene::itemsBoundingRect());
+    */
 }
 
 void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {

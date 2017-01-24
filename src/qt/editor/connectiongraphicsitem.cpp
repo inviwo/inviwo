@@ -55,10 +55,6 @@ CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3
     , selectedBorderColor_() {
 
     setZValue(DRAGING_ITEM_DEPTH);
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect();
-    shadowEffect->setOffset(3.0);
-    shadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(shadowEffect);
     resetBorderColors();
 }
 

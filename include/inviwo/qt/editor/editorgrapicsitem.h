@@ -75,8 +75,6 @@ public:
     virtual ~EditorGraphicsItem();
     QPoint mapPosToSceen(QPointF pos) const;
 
-    static const QPainterPath makeRoundedBox(QRectF rect, float radius );
-
     virtual void showToolTip(QGraphicsSceneHelpEvent* event);
     void showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const;
     

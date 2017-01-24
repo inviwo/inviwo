@@ -59,8 +59,6 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
     , lineWidth_(1.0f)
     , up_(up) {
     
-
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setRect(-(0.5f * size_ + lineWidth_), -(0.5f * size_ + lineWidth_), size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
     setPos(pos);
@@ -236,11 +234,11 @@ void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGrap
     gradPen.setColorAt(1.0f, QColor(lineColor.red(), lineColor.green(), lineColor.blue(), 0));
 
     p->setPen(Qt::NoPen);
-    p->setBrush(gradBrush);
+    p->setBrush(color_);
     p->drawPath(closedPath);
 
     p->setBrush(Qt::NoBrush);
-    p->setPen(QPen(gradPen, selected ? 1.0f : 0.5f));
+    p->setPen(QPen(lineColor, selected ? 1.0f : 0.5f));
     p->drawPath(path);
 
     p->restore();

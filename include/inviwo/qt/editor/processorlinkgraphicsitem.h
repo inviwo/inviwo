@@ -43,14 +43,14 @@ namespace inviwo {
 class ProcessorGraphicsItem;
 class LinkConnectionGraphicsItem;
 
-class IVW_QTEDITOR_API ProcessorLinkGraphicsItem : public EditorGraphicsItem {
+class IVW_QTEDITOR_API ProcessorLinkGraphicsItem : public QGraphicsItem {
 public:
     ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent);
     virtual ~ProcessorLinkGraphicsItem(){}
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorLinkGraphicsType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     ProcessorGraphicsItem* getProcessorGraphicsItem() const;
 
@@ -62,9 +62,11 @@ public:
 
 protected:
     void updateLinkPositions();
-
+    virtual QRectF boundingRect() const override;
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
     // events
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private:
     class IVW_QTEDITOR_API LinkItem : public EditorGraphicsItem {
@@ -73,10 +75,11 @@ private:
         virtual ~LinkItem();
 
     protected:
-        void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+        virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                           QWidget* widget) override;
 
         // events
-        virtual void mousePressEvent(QGraphicsSceneMouseEvent* e);
+        virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
 
     private:
         ProcessorLinkGraphicsItem* parent_;

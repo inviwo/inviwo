@@ -64,8 +64,6 @@
 namespace inviwo {
 
 const QSizeF ProcessorGraphicsItem::size_ = {150.f, 50.f};
-const float ProcessorGraphicsItem::roundedCorners_ = 9.0f;
-const int ProcessorGraphicsItem::labelHeight_ = 8;
 
 int pointSizeToPixelSize(const int pointSize) {
     // compute pixel size for fonts by assuming 96 dpi as basis
@@ -89,53 +87,57 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , totEvalTime_(0.0)
     #endif
 {
+    static constexpr int labelHeight_ = 8;
+    static constexpr int labelMargin_ = 8;
+    
 
     setZValue(PROCESSORGRAPHICSITEM_DEPTH);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
-    QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
-    processorShadowEffect->setOffset(3.0);
-    processorShadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(processorShadowEffect);
-    nameLabel_ = new LabelGraphicsItem(this);
-    nameLabel_->setCrop(9, 8);
-    nameLabel_->setPos(rect().topLeft() + QPointF(labelHeight_,  0.6 * labelHeight_));
-    nameLabel_->setDefaultTextColor(Qt::white);
-    QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
-    nameFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
-    nameLabel_->setFont(nameFont);
-    LabelGraphicsItemObserver::addObservation(nameLabel_);
-    classLabel_ = new LabelGraphicsItem(this);
-    classLabel_->setCrop(9, 8);
-    classLabel_->setPos(rect().topLeft() + QPointF(labelHeight_, 2.0f * labelHeight_));
-    classLabel_->setDefaultTextColor(Qt::lightGray);
-    QFont classFont("Segoe", labelHeight_, QFont::Normal, true);
-    classFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
-    classLabel_->setFont(classFont);
 
-    nameLabel_->setText(QString::fromStdString(processor_->getIdentifier()));
-    classLabel_->setText(QString::fromStdString(processor_->getDisplayName() + " " 
-        + processor_->getTags().getString()));
+    {
+        nameLabel_ =
+            new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_ - 10, Qt::AlignBottom);
+        nameLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
+        nameLabel_->setDefaultTextColor(Qt::white);
+        QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
+        nameFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
+        nameLabel_->setFont(nameFont);
+        nameLabel_->setText(QString::fromStdString(processor_->getIdentifier()));
+        LabelGraphicsItemObserver::addObservation(nameLabel_);
+    }
+    {
+        classLabel_ = new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_, Qt::AlignTop);
+        classLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
+        classLabel_->setDefaultTextColor(Qt::lightGray);
+        QFont classFont("Segoe", labelHeight_, QFont::Normal, true);
+        classFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
+        classLabel_->setFont(classFont);
+        classLabel_->setText(QString::fromStdString(processor_->getDisplayName() + " " +
+                                                    processor_->getTags().getString()));
+    }
     processor_->ProcessorObservable::addObserver(this);
 
     processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
     processorMeta_->addObserver(this);
 
+    
     linkItem_ = new ProcessorLinkGraphicsItem(this);
-
+    
     for (auto& inport : processor_->getInports()) {
         addInport(inport);
     }
-
     for (auto& outport : processor_->getOutports()) {
         addOutport(outport);
     }
-
+    
     statusItem_ = new ProcessorStatusGraphicsItem(this, processor_);
+    statusItem_->setPos(rect().topRight() + QPointF(-9.0f, 9.0f));
+    
     if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {
         progressItem_ =
             new ProcessorProgressGraphicsItem(this, &(progressBarOwner->getProgressBar()));
+        progressItem_->setPos(QPointF(0.0f, 9.0f));
 
         progressBarOwner->getProgressBar().ActivityIndicator::addObserver(statusItem_);
     }
@@ -143,15 +145,18 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)){
         activityInd->getActivityIndicator().addObserver(statusItem_);
     }
-
+    
     #if IVW_PROFILING
-    countLabel_ = new LabelGraphicsItem(this, Qt::AlignRight);
-    countLabel_->setCrop(9,8);
-    countLabel_->setPos(rect().bottomRight() - QPointF(labelHeight_, 2.5*labelHeight_));
-    countLabel_->setDefaultTextColor(Qt::lightGray);
-    countLabel_->setFont(classFont);
+    {
+        countLabel_ = new LabelGraphicsItem(this, 100, Qt::AlignRight | Qt::AlignBottom);
+        countLabel_->setPos(rect().bottomRight() + QPointF(-5.0, 0.0));
+        countLabel_->setDefaultTextColor(Qt::lightGray);
+        QFont font("Segoe", labelHeight_, QFont::Normal, true);
+        font.setPixelSize(pointSizeToPixelSize(labelHeight_));
+        countLabel_->setFont(font);
+    }
     #endif
-
+    
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
@@ -250,60 +255,19 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
                                   QWidget* widget) {
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
+    const float roundedCorners = 9.0f;
+    
     p->save();
     p->setPen(Qt::NoPen);
     p->setRenderHint(QPainter::Antialiasing, true);
     QColor topColor(140, 140, 140);
     QColor middleColor(59, 61, 61);
     QColor bottomColor(40, 40, 40);
-    // paint processor
-    QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
-
-    if (isSelected()) {
-        grad.setColorAt(0.0f, topColor);
-        grad.setColorAt(0.2f, middleColor);
-        grad.setColorAt(0.5f, Qt::darkRed);
-        grad.setColorAt(1.0f, bottomColor);
-    } else {
-        grad.setColorAt(0.0f, topColor);
-        grad.setColorAt(0.2f, middleColor);
-        grad.setColorAt(1.0f, bottomColor);
-    }
-
-    QRectF bRect = rect();
-    QPainterPath roundRectPath = makeRoundedBox(rect(), roundedCorners_);
-
-    p->setBrush(grad);
-    p->drawPath(roundRectPath);
-    QLinearGradient highlightGrad(rect().topLeft(), rect().bottomLeft());
-
-    if (isSelected()) {
-        highlightGrad.setColorAt(0.0f, bottomColor);
-        highlightGrad.setColorAt(0.1f, bottomColor);
-        highlightGrad.setColorAt(0.5f, Qt::darkRed);
-        highlightGrad.setColorAt(1.0f, bottomColor);
-    } else {
-        highlightGrad.setColorAt(0.0f, bottomColor);
-        highlightGrad.setColorAt(1.0f, bottomColor);
-    }
-
-    QPainterPath highlightPath;
-    double highlightLength = bRect.width() / 8.0;
-    highlightPath.moveTo(bRect.left(), bRect.top() + roundedCorners_);
-    highlightPath.lineTo(bRect.left(), bRect.bottom() - roundedCorners_);
-    highlightPath.arcTo(bRect.left(), bRect.bottom() - (2 * roundedCorners_), (2 * roundedCorners_),
-                        (2 * roundedCorners_), 180.0, 90.0);
-    highlightPath.lineTo(bRect.left() + (bRect.width() / 2.0) + highlightLength, bRect.bottom());
-    highlightPath.lineTo(bRect.left() + (bRect.width() / 2.0) - highlightLength, bRect.top());
-    highlightPath.lineTo(bRect.left() + roundedCorners_, bRect.top());
-    highlightPath.arcTo(bRect.left(), bRect.top(), (2 * roundedCorners_), (2 * roundedCorners_), 90.0,
-                        90.0);
-
-    p->setBrush(highlightGrad);
-    p->drawPath(highlightPath);
-    p->setPen(QPen(QColor(164, 164, 164), 1.0));
-    p->setBrush(Qt::NoBrush);
-    p->drawPath(roundRectPath);
+    
+    p->setBrush(middleColor);
+    p->setPen(QPen(QBrush(isSelected() ? Qt::darkRed : bottomColor), 2.0));
+    
+    p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
 
     p->restore();
 }

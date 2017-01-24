@@ -40,13 +40,11 @@ namespace inviwo {
 
 ProcessorProgressGraphicsItem::ProcessorProgressGraphicsItem(QGraphicsRectItem* parent,
                                                              ProgressBar* progressBar)
-    : EditorGraphicsItem(parent), size_(126, 5), progressBar_(progressBar) {
+    : EditorGraphicsItem(parent), size_(134, 5), progressBar_(progressBar) {
     setRect(-0.5f * size_.width(), 
             -0.5f * size_.height() + 3,
             size_.width(), size_.height());
 
-    setPos(QPointF(0.0f, 9.0f));
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setVisible(progressBar_->isVisible());
     progressBar_->ProgressBarObservable::addObserver(this);
 

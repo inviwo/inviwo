@@ -33,21 +33,23 @@
 #include <QFont>
 #include <QPainter>
 #include <QTextCursor>
+#include <QFontMetrics>
+#include <QTextDocument>
 #include <warn/pop>
 
 #include <modules/qtwidgets/labelgraphicsitem.h>
 
 namespace inviwo {
 
-LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent, Qt::Alignment alignment)
-    : QGraphicsTextItem(parent), LabelGraphicsItemObservable()
-    , maxBefore_(0)
-    , maxAfter_(0)
+LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent, int width, Qt::Alignment alignment)
+    : QGraphicsTextItem(parent)
+    , LabelGraphicsItemObservable()
+    , width_(width)
     , focusOut_(false)
     , orgText_("")
-    , alignment_(alignment)
-{
+    , alignment_(alignment) {
     font().setPixelSize(4);
+    document()->setDocumentMargin(0.0);
 }
 
 QString LabelGraphicsItem::text() const {
@@ -58,18 +60,12 @@ QString LabelGraphicsItem::text() const {
 }
 
 void LabelGraphicsItem::setText(const QString& str) {
-    if (doCrop(str)) {
-        if (toolTip() == orgText_)
-            setToolTip(str);
+    QFontMetrics fm = QFontMetrics(font());
+    auto text = fm.elidedText(str, Qt::ElideMiddle, width_);
+    setPlainText(text);
+    setToolTip(str);
+    orgText_ = str;
 
-        orgText_ = str;
-        setPlainText(str.left(maxBefore_) + "..." + str.right(maxAfter_));
-    }
-    else {
-        orgText_="";
-        setToolTip(orgText_);
-        setPlainText(str);
-    }
     updatePosition();
 }
 
@@ -106,14 +102,13 @@ QString LabelGraphicsItem::croppedText() const {
     return toPlainText();
 }
 
-void LabelGraphicsItem::setCrop(int before, int after) {
-    maxBefore_ = before;
-    maxAfter_ = after;
-    updateCrop();
+void LabelGraphicsItem::setCrop(int width) {
+    width_ = width;
+    setText(orgText_);
 }
 
 bool LabelGraphicsItem::isCropped() const {
-    return (!orgText_.isEmpty());
+    return (orgText_ != toPlainText());
 }
 
 void LabelGraphicsItem::setNoFocusOut() {
@@ -130,14 +125,6 @@ void LabelGraphicsItem::setAlignment(Qt::Alignment alignment) {
     updatePosition();
 }
 
-bool LabelGraphicsItem::doCrop(const QString& str) {
-    return (maxBefore_ + maxAfter_ + 2 < str.length());
-}
-
-void LabelGraphicsItem::updateCrop() {
-    setText(toPlainText());
-}
-
 void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
         clearFocus();
@@ -148,8 +135,7 @@ void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 void LabelGraphicsItem::focusInEvent(QFocusEvent* event) {
-    if (isCropped())
-        setPlainText(orgText_);
+    if (isCropped()) setPlainText(orgText_);
 }
 
 void LabelGraphicsItem::focusOutEvent(QFocusEvent* event) {
@@ -159,7 +145,7 @@ void LabelGraphicsItem::focusOutEvent(QFocusEvent* event) {
     QTextCursor cur = QTextCursor(textCursor());
     cur.clearSelection();
     setTextCursor(cur);
-    updateCrop();
+    setText(toPlainText());
     notifyLabelGraphicsItemObservers();
     focusOut_ = false;
 }

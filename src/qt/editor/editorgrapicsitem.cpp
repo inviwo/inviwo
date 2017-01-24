@@ -71,25 +71,6 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
 
 }
 
-const QPainterPath EditorGraphicsItem::makeRoundedBox(QRectF rect, float radius) {
-    QPainterPath roundRectPath;
-    roundRectPath.moveTo(rect.left(), rect.top() + radius);
-    roundRectPath.lineTo(rect.left(), rect.bottom() - radius);
-    roundRectPath.arcTo(rect.left(), rect.bottom() - (2 * radius), (2 * radius),
-                        (2 * radius), 180.0, 90.0);
-    roundRectPath.lineTo(rect.right() - radius, rect.bottom());
-    roundRectPath.arcTo(rect.right() - (2 * radius), rect.bottom() - (2 * radius),
-                        (2 * radius), (2 * radius), 270.0, 90.0);
-    roundRectPath.lineTo(rect.right(), rect.top() + radius);
-    roundRectPath.arcTo(rect.right() - (2 * radius), rect.top(), (2 * radius),
-                        (2 * radius), 0.0, 90.0);
-    roundRectPath.lineTo(rect.left() + radius, rect.top());
-    roundRectPath.arcTo(rect.left(), rect.top(), (2 * radius), (2 * radius), 90.0,
-                        90.0);
-
-    return roundRectPath;
-}
-
 void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showToolTipHelper(e, QString("Test"));
 }
