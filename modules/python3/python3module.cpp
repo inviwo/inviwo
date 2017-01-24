@@ -39,6 +39,11 @@
 #include <modules/python3/pythonlogger.h>
 
 #include <modules/python3/pybindutils.h>
+
+#if defined(__unix__)
+#include <unistd.h>
+#endif
+
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
@@ -57,9 +62,27 @@ Python3Module::Python3Module(InviwoApplication* app)
         PythonScriptDisk s(filename);
         s.run();
     }, 100);
+ 
+    
+#if defined(__unix__)
+    char executablePath[PATH_MAX];
+    auto size = ::readlink("/proc/self/exe", executablePath, sizeof(executablePath) - 1);
+    if (size != -1) {
+        // readlink does not append a null character to the path
+        executablePath[size] = '\0';
+    }
+    else {
+        // Error retrieving path
+        executablePath[0] = '\0';;
+    }
 
-    auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->registerLogger(logger);
+    std::string execpath(executablePath);
+    auto folder = filesystem::getFileDirectory(execpath);
+    pyInviwo_->addModulePath(folder);
+#elif defined(__APPLE__)
+    //TODO add output path
+    //pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are 
+#endif
 
     PythonScript tmp;
     tmp.setSource("import sys\nfor p in sys.path:\n\tprint(p)");

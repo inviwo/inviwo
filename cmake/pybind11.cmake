@@ -38,7 +38,10 @@ function (ivw_add_py_wrapper name)
         pybind11_add_module(${name} ${ARGN})
         set_target_properties(${name} PROPERTIES DEBUG_POSTFIX "")
         set_target_properties(${name} PROPERTIES PREFIX "")
-        set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
+
+        if(MSVC)
+            set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
+        endif()
 
         set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         target_link_libraries(${name} PUBLIC inviwo-module-python3)
