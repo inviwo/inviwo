@@ -48,7 +48,7 @@ Python3Module::Python3Module(InviwoApplication* app)
         "Path to the file containing the script") {
 
 
-    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR));
+    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR)); //TODO this is windows specific
     pyInviwo_->addObserver(&pythonLogger_);
 
 

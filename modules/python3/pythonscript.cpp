@@ -36,6 +36,9 @@
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <modules/python3/pyinviwo.h>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+
 #include <traceback.h>
 #include <frameobject.h>
 
@@ -87,7 +90,9 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         bool success = checkRuntimeError();
         if (success) {
-            callback(pybind11::dict(copy,true));
+            pybind11::handle dict_handle( copy);
+            auto pybinddict = pybind11::reinterpret_borrow<pybind11::dict>(dict_handle);
+            callback(pybinddict);
         }
 
         Py_XDECREF(ret);

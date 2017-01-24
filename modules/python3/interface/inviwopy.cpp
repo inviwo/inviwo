@@ -24,6 +24,8 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/util/exception.h>
+
 
 namespace py = pybind11;
 
@@ -344,7 +346,7 @@ PYBIND11_PLUGIN(inviwopy) {
             if (!writer) {
                 std::stringstream ss;
                 ss << "No write for extension " << ext;
-                throw std::exception(ss.str().c_str());
+                throw Exception(ss.str().c_str());
             }
 
             auto layer = canvas->getVisibleLayer();
