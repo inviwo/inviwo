@@ -21,6 +21,7 @@ node {
                 echo "Building inviwo Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                 dir('inviwo') {
                     checkout scm
+                    sh 'git submodule update --init'
                 }
             }
         stage('Build') {
