@@ -41,7 +41,7 @@ node {
                                 -DBUILD_SHARED_LIBS=ON \
                             ../inviwo
  
-                        make -j 8
+                        make -j 6
                     """
                 }
             }
