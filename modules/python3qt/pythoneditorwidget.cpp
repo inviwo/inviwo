@@ -63,8 +63,7 @@ namespace inviwo {
 
 
 const static std::string defaultSource =
-"#Inviwo Python script \nimport inviwo \nimport inviwoqt \n\nhelp('inviwo') \nhelp('inviwoqt') "
-    "\n";
+"#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\n";
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Python Editor"), parent)
