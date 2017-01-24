@@ -54,7 +54,7 @@ void Timer::start() {
     std::unique_lock<std::recursive_mutex> l(callback_->mutex);
     if (!callback_->enabled) {
         callback_->enabled = true;
-        thread_ = std::thread(&Timer::timer, this);
+        callback_->thread = std::thread(&Timer::timer, this);
     }
 }
 
@@ -85,20 +85,23 @@ void Timer::stop() {
 }
 
 void Timer::timer() {
+    auto callback = callback_;
+    
     auto deadline = std::chrono::steady_clock::now() + interval_;
-    std::unique_lock<std::recursive_mutex> lock{callback_->mutex};
+    std::unique_lock<std::recursive_mutex> lock{callback->mutex};
 
-    while (callback_->enabled) {
-        if (callback_->cvar.wait_until(lock, deadline) == std::cv_status::timeout) {
+
+    while (callback->enabled) {
+        if (callback->cvar.wait_until(lock, deadline) == std::cv_status::timeout) {
             lock.unlock();
             // skip if previous not done.
             if (!result_.valid() ||
                 result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                     std::future_status::ready) {
-                auto tmp = callback_;
-                result_ = dispatchFront([tmp]() {
-                    std::unique_lock<std::recursive_mutex> l(tmp->mutex, std::try_to_lock);
-                    if (l && tmp->enabled) (tmp->callback)();
+
+                result_ = dispatchFront([callback]() {
+                    std::unique_lock<std::recursive_mutex> l(callback->mutex, std::try_to_lock);
+                    if (l && callback->enabled) (callback->callback)();
                 });
             }
             deadline += interval_;
@@ -106,7 +109,7 @@ void Timer::timer() {
         }
     }
 
-    dispatchFront([this]() { thread_.join(); });
+    dispatchFront([callback]() { callback->thread.join(); });
 }
 
 

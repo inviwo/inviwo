@@ -80,6 +80,7 @@ private:
         std::recursive_mutex mutex; 
         std::condition_variable_any cvar;
         std::atomic<bool> enabled;
+        std::thread thread;
     };
 
     void timer();
@@ -87,7 +88,6 @@ private:
     std::shared_ptr<Callback> callback_;
     std::future<void> result_;
     Milliseconds interval_;
-    std::thread thread_;   
 };
 
 class IVW_CORE_API Delay {
