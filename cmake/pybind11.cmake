@@ -33,11 +33,6 @@ if(IVW_MODULE_PYTHON3)
     add_subdirectory(${CMAKE_SOURCE_DIR}/ext/pybind11)
 endif()
 
-function(ivw_get_pybind_output_path retval)
-	set(${retval} ${CMAKE_BINARY_DIR}/py/ PARENT_SCOPE)
-endfunction()
-
-
 function (ivw_add_py_wrapper name)
     if(IVW_MODULE_PYTHON3)
         pybind11_add_module(${name} ${ARGN})
@@ -45,9 +40,7 @@ function (ivw_add_py_wrapper name)
         set_target_properties(${name} PROPERTIES PREFIX "")
         set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
 
-        ivw_get_pybind_output_path(outdir)
-
-        set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${outdir})
+        set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         target_link_libraries(${name} PUBLIC inviwo-module-python3)
         target_link_libraries(${name} PUBLIC ${${mod}_target})
 

@@ -45,14 +45,9 @@ Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pyInviwo_(util::make_unique<PyInviwo>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-        "Path to the file containing the script") {
-
-
-    pyInviwo_->addModulePath(std::string(PYBIND_OUTPUT_PATH) + "/" + std::string(CMAKE_INTDIR)); //TODO this is windows specific
+        "Path to the file containing the script") 
+{    
     pyInviwo_->addObserver(&pythonLogger_);
-
-
-
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         auto filename = pythonScriptArg_.getValue();
         if (!filesystem::fileExists(filename)) {
@@ -63,6 +58,17 @@ Python3Module::Python3Module(InviwoApplication* app)
         s.run();
     }, 100);
 
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->registerLogger(logger);
+
+    PythonScript tmp;
+    tmp.setSource("import sys\nfor p in sys.path:\n\tprint(p)");
+    tmp.run();
+
+
+    PythonScript tmp2;
+    tmp2.setSource("import inviwopy\nprint(inviwopy.app)\nprint(inviwopy.app.displayName)");
+    tmp2.run();
 
     PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
 }

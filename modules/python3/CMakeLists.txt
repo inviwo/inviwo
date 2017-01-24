@@ -147,21 +147,6 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 #)
 #ivw_add_unittest(${TEST_FILES})
 
-
-
-
-ivw_get_pybind_output_path(pybind_output_path)
-
-ivw_add_definition(PYBIND_OUTPUT_PATH="${pybind_output_path}")
-
-
-
-
-
-
-
-
-
 set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.h
 )
@@ -174,17 +159,11 @@ set(INTERFACE_SRC_FILES
 #ivw_group("Source Files" ${INTERFACE_SRC_FILES})
 
 
-
-
-
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
-
-
 ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
-
 
 #--------------------------------------------------------------------
 # Add Python to package
