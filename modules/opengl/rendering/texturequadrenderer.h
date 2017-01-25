@@ -43,13 +43,16 @@ class Texture2D;
 
 /**
  * \class TextureQuadRenderer
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * \brief This class provides functionality for rendering an image, a layer, or a texture
+ * onto the current render target.
  */
 class IVW_MODULE_OPENGL_API TextureQuadRenderer { 
 public:
     TextureQuadRenderer();
+    TextureQuadRenderer(const Shader &shader);
     virtual ~TextureQuadRenderer();
+
+    Shader& getShader();
 
     /**
      * \brief renders an image at position pos onto the current canvas. The image
@@ -62,7 +65,7 @@ public:
      * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
      *                   or Picking
      */
-    void render(std::shared_ptr<Image> image, ivec2 pos, size2_t canvasSize,
+    void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
                 LayerType layerType = LayerType::Color);
 
     /**
@@ -75,7 +78,7 @@ public:
     * @param canvasSize   dimensions of the current render target
     * @param colorLayerIndex defines which color layer of the input image will be rendered.
     */
-    void render(std::shared_ptr<Image> image, ivec2 pos, size2_t canvasSize,
+    void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
                 std::size_t colorLayerIndex);
 
     /**
@@ -87,7 +90,7 @@ public:
     * @param pos     position of lower left corner in screen space coordinates
     * @param canvasSize   dimensions of the current render target
     */
-    void render(std::shared_ptr<Layer> layer, ivec2 pos, size2_t canvasSize);
+    void render(const std::shared_ptr<Layer> &image, const ivec2 &pos, const size2_t &canvasSize);
 
     /**
     * \brief renders a texture at position pos onto the current canvas. The texture
@@ -98,7 +101,67 @@ public:
     * @param pos     position of lower left corner in screen space coordinates
     * @param canvasSize   dimensions of the current render target
     */
-    void render(std::shared_ptr<Texture2D> texture, ivec2 pos, size2_t canvasSize);
+    void render(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
+                const size2_t &canvasSize);
+
+    /**
+    * \brief renders an image at position pos onto the current canvas with the given
+    * extent. The covered area is defined by the extent (in pixel). The anchor point
+    * of the image is in the lower left corner. By default, the first color layer is 
+    * rendered.
+    *
+    * @param image   input image which is to be rendered onto the current render target
+    * @param pos     position of lower left corner in screen space coordinates
+    * @param extent      extent covered by the rendered texture in screen space coordinates
+    * @param canvasSize   dimensions of the current render target
+    * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
+    *                   or Picking
+    */
+    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                const ivec2 &extent, const size2_t &canvasSize,
+                LayerType layerType = LayerType::Color);
+
+    /**
+    * \brief renders a color layer of an image at position pos onto the current canvas 
+    * with the given extent. The covered area is defined by the extent (in pixel). 
+    * The anchor point of the image is in the lower left corner. By default, 
+    * the first color layer is rendered.
+    *
+    * @param image   input image which is to be rendered onto the current render target
+    * @param pos     position of lower left corner in screen space coordinates
+    * @param extent      extent covered by the rendered texture in screen space coordinates
+    * @param canvasSize   dimensions of the current render target
+    * @param colorLayerIndex defines which color layer of the input image will be rendered.
+    */
+    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                const ivec2 &extent, const size2_t &canvasSize,
+                std::size_t colorLayerIndex);
+
+    /**
+    * \brief renders a layer at position pos onto the current canvas with the given
+    * extent. The covered area is defined by the extent (in pixel). The anchor point
+    * of the layer is in the lower left corner.
+    *
+    * @param layer   layer which is to be rendered onto the current render target
+    * @param pos     position of lower left corner in screen space coordinates
+    * @param extent      extent covered by the rendered texture in screen space coordinates
+    * @param canvasSize   dimensions of the current render target
+    */
+    void renderToRect(const std::shared_ptr<Layer> &image, const ivec2 &pos,
+                const ivec2 &extent, const size2_t &canvasSize);
+
+    /**
+    * \brief renders a texture at position pos onto the current canvas with the given
+    * extent. The covered area is defined by the extent (in pixel). The anchor point 
+    * of the texture is in the lower left corner.
+    *
+    * @param texture     texture which is to be rendered onto the current render target
+    * @param pos         position of lower left corner in screen space coordinates
+    * @param extent      extent covered by the rendered texture in screen space coordinates
+    * @param canvasSize  dimensions of the current render target
+    */
+    void renderToRect(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
+                      const ivec2 &extent, const size2_t &canvasSize);
 
 private:
     Shader shader_;
