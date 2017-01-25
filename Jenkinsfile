@@ -91,8 +91,8 @@ node {
     } finally {
         stage('Publish') {
             publishHTML([
-                allowMissing: false, 
-                alwaysLinkToLastBuild: false, 
+                allowMissing: true, 
+                alwaysLinkToLastBuild: true, 
                 keepAll: false, 
                 reportDir: 'regress', 
                 reportFiles: 'report.html', 
