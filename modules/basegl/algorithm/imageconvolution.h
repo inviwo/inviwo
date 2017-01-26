@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,62 +27,46 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGELOWPASS_H
-#define IVW_IMAGELOWPASS_H
+#ifndef IVW_IMAGECONVOLUTION_H
+#define IVW_IMAGECONVOLUTION_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/basegl/algorithm/imageconvolution.h>
+#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
- /** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
- * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
- *
- * Applies a low pass filter on the input image.
- *
- *
- * ### Inports
- *   * __inputImage__ Input image.
- *
- * ### Outports
- *   * __outputImage__ Lowpass filtered image.
- *
- * ### Properties
- *   * __Kernel Size__ Size of the kernel to use.
- *   * __Use Gaussian weights__ Whether to use Gaussian weights or constant weights.
- *   * __Sigma__ Controls the shape of the Gaussian bell curve. 
- */
-
-/**
- * \class ImageLowPass
- *
- * \brief Applies a low pass filter on the input image using either constant weight or Gaussian weights
- */
-class IVW_MODULE_BASEGL_API ImageLowPass : public Processor {
+class IVW_MODULE_BASEGL_API ImageConvolution {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    ImageLowPass();
-    virtual ~ImageLowPass() {}
+    template <typename Callback>
+    ImageConvolution(Callback C) : ImageConvolution() {
+        shader_.onReload(C);
+    }
+    ImageConvolution() : shader_("img_convolution.frag", false) {}
+    virtual ~ImageConvolution() {}
+
+    std::shared_ptr<Image> convolution(const Layer &layer, std::function<float(vec2)> kernelWeight,
+                                       const float &kernelScale, ivec2 kernelSize);
+
+    std::shared_ptr<Image> convolution_seprable(const Layer &layer, std::function<float(float)>,
+                                                int kernelSize, const float &kernelScale);
+
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize);
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, float sigma);
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize, float sigma);
+
+    std::shared_ptr<Image> lowpass(const Layer &layer, int kernelSize);
 
 protected:
-    virtual void process() override;
+    Shader shader_;
 
-private:
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    IntProperty kernelSize_;
-    BoolProperty gaussian_;
-    FloatProperty sigma_;
-
-    ImageConvolution convolution_;
+    std::shared_ptr<Image> convolution_internal(const Layer &layer, int kw, int kh,
+                                                const std::vector<float> &kernel,
+                                                const float &kernelScale);
 };
 
 }  // namespace
 
-#endif  // IVW_IMAGELOWPASS_H
+#endif  // IVW_IMAGECONVOLUTION_H
