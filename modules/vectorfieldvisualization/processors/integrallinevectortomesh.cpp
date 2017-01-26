@@ -77,15 +77,15 @@ namespace inviwo {
     }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
-    "org.inviwo.IntegralLineVectorToMesh",      // Class identifier
-    "Integral Line Vector To Mesh",                // Display name
-    "Vector Field Visualization",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
-};
-const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const {
-    return processorInfo_;
+    const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
+        "org.inviwo.IntegralLineVectorToMesh",  // Class identifier
+        "Integral Line Vector To Mesh",         // Display name
+        "Vector Field Visualization",           // Category
+        CodeState::Experimental,                // Code state
+        Tags::None,                             // Tags
+    };
+    const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const {
+        return processorInfo_;
 }
 
 IntegralLineVectorToMesh::IntegralLineVectorToMesh()
