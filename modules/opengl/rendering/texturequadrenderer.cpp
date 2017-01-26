@@ -44,10 +44,18 @@ namespace inviwo {
 TextureQuadRenderer::TextureQuadRenderer()
     : shader_("rendertexturequad.vert", "rendertexturequad.frag") {}
 
+TextureQuadRenderer::TextureQuadRenderer(const Shader &shader) : shader_(shader) {}
+
+TextureQuadRenderer::TextureQuadRenderer(Shader &&shader) : shader_(std::move(shader)) {}
+
 TextureQuadRenderer::~TextureQuadRenderer() = default;
 
-void TextureQuadRenderer::render(std::shared_ptr<Image> image, ivec2 pos, size2_t canvasSize,
-                                 LayerType layerType) {
+Shader &TextureQuadRenderer::getShader() { return shader_; }
+
+const Shader &TextureQuadRenderer::getShader() const { return shader_; }
+
+void TextureQuadRenderer::render(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                                 const size2_t &canvasSize, LayerType layerType) {
     if (image) {
         if (auto layer = image->getLayer(layerType)) {
             render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
@@ -55,8 +63,8 @@ void TextureQuadRenderer::render(std::shared_ptr<Image> image, ivec2 pos, size2_
     }
 }
 
-void TextureQuadRenderer::render(std::shared_ptr<Image> image, ivec2 pos, size2_t canvasSize,
-                                 std::size_t colorLayerIndex) {
+void TextureQuadRenderer::render(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                                 const size2_t &canvasSize, std::size_t colorLayerIndex) {
     if (image) {
         if (auto layer = image->getLayer(LayerType::Color, colorLayerIndex)) {
             render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
@@ -64,14 +72,50 @@ void TextureQuadRenderer::render(std::shared_ptr<Image> image, ivec2 pos, size2_
     }
 }
 
-void TextureQuadRenderer::render(std::shared_ptr<Layer> layer, ivec2 pos, size2_t canvasSize) {
+void TextureQuadRenderer::render(const std::shared_ptr<Layer> &layer, const ivec2 &pos,
+                                 const size2_t &canvasSize) {
     if (layer) {
         render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
     }
 }
 
-void TextureQuadRenderer::render(std::shared_ptr<Texture2D> texture, ivec2 pos,
-                                 size2_t canvasSize) {
+void TextureQuadRenderer::render(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
+                                 const size2_t &canvasSize) {
+
+    renderToRect(texture, pos, ivec2(texture->getDimensions()), canvasSize);
+}
+
+void TextureQuadRenderer::renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                                       const ivec2 &extent, const size2_t &canvasSize,
+                                       LayerType layerType) {
+    if (image) {
+        if (auto layer = image->getLayer(layerType)) {
+            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent,
+                         canvasSize);
+        }
+    }
+}
+
+void TextureQuadRenderer::renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
+                                       const ivec2 &extent, const size2_t &canvasSize,
+                                       std::size_t colorLayerIndex) {
+    if (image) {
+        if (auto layer = image->getLayer(LayerType::Color, colorLayerIndex)) {
+            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent,
+                         canvasSize);
+        }
+    }
+}
+
+void TextureQuadRenderer::renderToRect(const std::shared_ptr<Layer> &layer, const ivec2 &pos,
+                                       const ivec2 &extent, const size2_t &canvasSize) {
+    if (layer) {
+        renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent, canvasSize);
+    }
+}
+
+void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
+                                       const ivec2 &extent, const size2_t &canvasSize) {
     // scaling factor from screen coords to normalized dev coords
     vec2 scaling(vec2(2.0f) / vec2(canvasSize));
     vec2 position(vec2(pos) * scaling);
@@ -87,10 +131,9 @@ void TextureQuadRenderer::render(std::shared_ptr<Texture2D> texture, ivec2 pos,
     shader_.setUniform("tex", texUnit);
     shader_.setUniform("geometry_.dataToWorld",
                        glm::translate(vec3(-1.0f + position.x, -1.0f + position.y, 0.0f)) *
-                           glm::scale(vec3(scaling * vec2(texture->getDimensions()), 1.f)));
+                           glm::scale(vec3(scaling * vec2(extent), 1.f)));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glScissor(0, 0, 0, 1);
 
     shader_.deactivate();
 }
