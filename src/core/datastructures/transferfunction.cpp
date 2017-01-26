@@ -97,11 +97,11 @@ TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
 
 TransferFunction::~TransferFunction() = default;
 
-const TransferFunctionDataPoint* TransferFunction::getPoint(int i) const {
+const TransferFunctionDataPoint* TransferFunction::getPoint(size_t i) const {
     return points_[i].get();
 }
 
-TransferFunctionDataPoint* TransferFunction::getPoint(int i) {
+TransferFunctionDataPoint* TransferFunction::getPoint(size_t i) {
     return points_[i].get();
 }
 
@@ -109,10 +109,10 @@ void TransferFunction::addPoint(const vec2& pos) {
     // determine color
     vec4 color = vec4(0.5f, 0.5f, 0.5f, pos.y);
     if (points_.size() > 0) {
-        int leftNeighborID = 0;
-        int rightNeighborID = 0;
+        size_t leftNeighborID = 0;
+        size_t rightNeighborID = 0;
 
-        for (int i = 0; i < static_cast<int>(points_.size()); i++) {
+        for (size_t i = 0; i < points_.size(); i++) {
             if (points_[i]->getPos().x <= pos.x) {
                 leftNeighborID = i;
             } else if (rightNeighborID == 0 && points_[i]->getPos().x > pos.x) {
