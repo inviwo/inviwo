@@ -73,7 +73,9 @@ public:
 
     
     Shader(const Shader &rhs);
+    Shader(Shader &&rhs);
     Shader &operator=(const Shader &that);
+    Shader &operator=(Shader &&that);
 
     virtual ~Shader();
 

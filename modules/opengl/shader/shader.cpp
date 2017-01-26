@@ -97,6 +97,18 @@ Shader::Shader(const Shader &rhs) : id_{glCreateProgram()}, warningLevel_{rhs.wa
     ShaderManager::getPtr()->registerShader(this);
 }
 
+Shader::Shader(Shader &&rhs) : id_{ rhs.id_ }, warningLevel_{ rhs.warningLevel_ } {
+    rhs.id_ = 0;
+    rhs.objectCallbacks_.clear();
+
+    shaderObjects_ = std::move(rhs.shaderObjects_);
+    for (auto &elem : shaderObjects_) {
+        objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
+    }
+        
+    ShaderManager::getPtr()->registerShader(this);
+}
+
 Shader &Shader::operator=(const Shader &that) {
     if (this != &that) {
         shaderObjects_.clear();
@@ -106,6 +118,26 @@ Shader &Shader::operator=(const Shader &that) {
         warningLevel_ = that.warningLevel_;
 
         if (that.isReady()) build();
+    }
+    return *this;
+}
+
+Shader &Shader::operator=(Shader &&that) {
+    if (this != &that) {
+        shaderObjects_.clear();
+        objectCallbacks_.clear();
+        glDeleteProgram(id_);
+
+        id_ = that.id_;
+        warningLevel_ = that.warningLevel_;
+
+        that.id_ = 0;
+        that.objectCallbacks_.clear();
+
+        shaderObjects_ = std::move(that.shaderObjects_);
+        for (auto &elem : shaderObjects_) {
+            objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
+        }
     }
     return *this;
 }

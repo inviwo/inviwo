@@ -50,9 +50,11 @@ class IVW_MODULE_OPENGL_API TextureQuadRenderer {
 public:
     TextureQuadRenderer();
     TextureQuadRenderer(const Shader &shader);
+    TextureQuadRenderer(Shader &&shader);
     virtual ~TextureQuadRenderer();
 
     Shader& getShader();
+    const Shader& getShader() const;
 
     /**
      * \brief renders an image at position pos onto the current canvas. The image

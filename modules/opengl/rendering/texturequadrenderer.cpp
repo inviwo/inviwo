@@ -46,9 +46,13 @@ TextureQuadRenderer::TextureQuadRenderer()
 
 TextureQuadRenderer::TextureQuadRenderer(const Shader &shader) : shader_(shader) {}
 
+TextureQuadRenderer::TextureQuadRenderer(Shader &&shader) : shader_(std::move(shader)) {}
+
 TextureQuadRenderer::~TextureQuadRenderer() = default;
 
-inviwo::Shader &TextureQuadRenderer::getShader() { return shader_; }
+Shader &TextureQuadRenderer::getShader() { return shader_; }
+
+const Shader &TextureQuadRenderer::getShader() const { return shader_; }
 
 void TextureQuadRenderer::render(const std::shared_ptr<Image> &image, const ivec2 &pos,
                                  const size2_t &canvasSize, LayerType layerType) {
