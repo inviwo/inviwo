@@ -45,7 +45,7 @@ public:
     PropertyLink& operator=(const PropertyLink&) = default;
     virtual ~PropertyLink() = default;
     /**
-     * Method to test if both aource and destination properties are valid, eg not nullptr
+     * Method to test if both source and destination properties are valid, eg not nullptr
      * @return false if at least one of the properties is null
      */
     operator bool() const;
