@@ -90,7 +90,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     
 
 
-    app->dispatchFront([&](){PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();});
+  //  app->dispatchFront([&](){PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();});
     
 }
 
