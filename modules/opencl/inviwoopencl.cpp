@@ -121,40 +121,43 @@ bool OpenCL::isOpenGLSharingEnabled() const {
     *  \return True if any device found, false otherwise.
     */
 bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform) {
-    bool foundDevice = false;
     std::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
-    cl_uint maxComputeUnits = 0;
-    cl_device_type deviceType = CL_DEVICE_TYPE_DEFAULT;
-    // Search for best device
-    for (::size_t i = 0; i < platforms.size(); ++i) {
-        std::vector<cl::Device> devices;
-
+    auto glVendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    std::vector<cl::Device> devices;
+    for(auto &platform : platforms) {
         try {
-            platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
-
-            // platforms[i].getDevices(CL_DEVICE_TYPE_CPU, &devices);
-            for (::size_t j = 0; j < devices.size(); ++j) {
-                cl_uint tmpMaxComputeUnits;
-                devices[j].getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &tmpMaxComputeUnits);
-                cl_device_type otherDeviceType = devices[j].getInfo<CL_DEVICE_TYPE>();
-                // Select if the current device is not a GPU device
-                // or if the new one has more compute units than the previous GPU device
-                if (deviceType != CL_DEVICE_TYPE_GPU || (otherDeviceType == CL_DEVICE_TYPE_GPU &&
-                                                         maxComputeUnits < tmpMaxComputeUnits)) {
-                    bestDevice = devices[j];
-                    onPlatform = platforms[i];
-                    maxComputeUnits = tmpMaxComputeUnits;
-                    deviceType = otherDeviceType;
-                    foundDevice = true;
-                }
-            }
+            std::vector<cl::Device> platFOrmdevices;
+            platform.getDevices(CL_DEVICE_TYPE_ALL, &platFOrmdevices);
+            devices.insert(devices.end(), platFOrmdevices.begin(),platFOrmdevices.end());
         } catch (cl::Error&) {
             // Error getting device, continue with others
         }
     }
 
-    return foundDevice;
+    if(devices.empty()) return false;
+        std::sort(devices.begin(),devices.end(),[&](cl::Device &a,cl::Device &b){
+            cl_int err;
+            std::string AVendor = a.getInfo<CL_DEVICE_VENDOR>(&err);
+            std::string BVendor = b.getInfo<CL_DEVICE_VENDOR>(&err);
+
+            if(AVendor == glVendor && BVendor != glVendor) return true;
+            if(AVendor != glVendor && BVendor == glVendor) return false;
+
+            auto AType = a.getInfo<CL_DEVICE_TYPE>(&err);
+            auto BType = b.getInfo<CL_DEVICE_TYPE>(&err);
+
+            if(AType != BType){
+                if (AType == CL_DEVICE_TYPE_GPU) return true;
+                else if (BType == CL_DEVICE_TYPE_GPU) return false;
+            }
+
+            return a.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err) > b.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
+        });
+
+    bestDevice = devices.front();
+    onPlatform = bestDevice.getInfo<CL_DEVICE_PLATFORM>();
+    return true;
 }
 
 void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,
