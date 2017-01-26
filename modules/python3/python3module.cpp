@@ -87,11 +87,10 @@ Python3Module::Python3Module(InviwoApplication* app)
 */
 // pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are 
 #endif
-    
 
-
-  //  app->dispatchFront([&](){PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();});
-    
+    app->dispatchFront([&]() { 
+        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run(); 
+    });
 }
 
 Python3Module::~Python3Module() {

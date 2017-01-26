@@ -63,6 +63,49 @@ template <typename T, typename V, unsigned C, typename std::enable_if<C == 16, i
 namespace inviwo {
    
 
+    template <typename T,typename GLM> void common(py::class_<GLM> &pyc){
+        pyc
+            .def(py::init<T>())
+            .def(py::init<>())
+            .def("__repr__", [](GLM &v) { return glm::to_string(v); })
+            .def(py::self + py::self)
+            .def(py::self - py::self)
+            .def(py::self += py::self)
+            .def(py::self -= py::self)
+            .def(py::self == py::self)
+            .def(py::self != py::self)
+
+
+
+            .def(py::self + T())
+            .def(py::self - T())
+            .def(py::self * T())
+            .def(py::self / T())
+            .def(py::self += T())
+            .def(py::self -= T())
+            .def(py::self *= T())
+            .def(py::self /= T())
+
+            .def("__getitem__", [](GLM &v, int idx) { return v[idx]; })
+
+            //.def("sign", [](GLM &v) {return glm::sign(v); })
+            //.def("abs", [](GLM &v) {return glm::abs(v); })
+            //.def("round", [](GLM &v) {return glm::round(v); })
+            //.def("roundEven", [](GLM &v) {return glm::roundEven(v); })
+            //.def("ceil", [](GLM &v) {return glm::ceil(v); })
+            //.def("floor", [](GLM &v) {return glm::floor(v); })
+            //.def("fract", [](GLM &v) {return glm::fract(v); })
+            //.def("isinf", [](GLM &v) {return glm::isinf(v); })
+            //.def("isnan", [](GLM &v) {return glm::isnan(v); })
+            //.def("min", [](GLM &a, GLM &b) {return glm::min(a, b); })
+            //.def("max", [](GLM &a, GLM &b) {return glm::max(a, b); })
+            //.def("mix", [](GLM &a, GLM &b, double d) {return glm::mix(a, b, d); })
+            //.def("fma", [](GLM &a, GLM &b, GLM &c) {return glm::fma(a,b,c); })
+            //.def("clamp", [](GLM &v, T minVal, T maxVal) {return glm::clamp(v, minVal, maxVal); })
+            ;
+
+    }
+
 
     template <typename T,unsigned A>
     void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
@@ -70,29 +113,28 @@ namespace inviwo {
         std::stringstream classname;
         classname << prefix << name << A << postfix;
         py::class_<V> pyv(m, classname.str().c_str());
+        common<T>(pyv);
+        addInit<T, V, A>(pyv);
         pyv
-            .def(py::init<T>())
-            .def(py::init<>())
-            .def("__repr__", [](V &v) { return glm::to_string(v); })
-            .def(py::self + py::self)
-            .def(py::self - py::self)
             .def(py::self * py::self)
             .def(py::self / py::self)
-            .def(py::self += py::self)
-            .def(py::self -= py::self)
             .def(py::self *= py::self)
             .def(py::self /= py::self)
-            .def(py::self == py::self)
-            .def(py::self != py::self)
-            .def("__getitem__", [](V &v, int idx) { return v[idx]; })
-            .def("__setitm__", [](V &v, int idx, T &t) { return v[idx] = t; })
-            //.def(py::self < py::self)
-            //.def(py::self > py::self)
-            //.def(py::self >= py::self)
-            //.def(py::self <= py::self)
+
+            .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; })
+
+
+//            .def("dot", [](V &v, V &v2) {return glm::dot(v, v2); })
+//            .def("cross", [](V &v, V &v2) {return glm::cross(v, v2); })
+//            .def("distance", [](V &v, V &v2) {return glm::distance(v, v2); })
+//            .def("distance2", [](V &v, V &v2) {return glm::distance2(v, v2); })
+//            .def("length", [](V &v) {return glm::length(v); })
+//            .def("length2", [](V &v) {return glm::length2(v); })
+//            .def("normalize", [](V &v) {return glm::normalize(v); })
+
+
             ;
 
-        addInit<T, V, A>(pyv);
     }
 
     template <typename T>
@@ -106,6 +148,12 @@ namespace inviwo {
     template <typename T, unsigned COLS, unsigned ROWS>
     void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
         using M = typename util::glmtype<T, COLS, ROWS>::type;
+        using M2 = typename util::glmtype<T, 2, ROWS>::type;
+        using M3 = typename util::glmtype<T, 3, ROWS>::type;
+        using M4 = typename util::glmtype<T, 4, ROWS>::type;
+        using Ma2 = typename util::glmtype<T,  ROWS,2>::type;
+        using Ma3 = typename util::glmtype<T,  ROWS,3>::type;
+        using Ma4 = typename util::glmtype<T,  ROWS,4>::type;
         using Va = Vector<COLS, T>;
         using Vb = Vector<ROWS, T>;
 
@@ -119,24 +167,25 @@ namespace inviwo {
         M masdf2(glm::vec3(), glm::vec3());
 
         py::class_<M> pym(m, classname.str().c_str());
-        pym
-            .def(py::init<T>())
-            .def(py::init<>())
-            .def("__repr__", [](M &m) { return glm::to_string(m); })
-            .def(py::self + py::self)
-            .def(py::self - py::self)
-//            .def(py::self * py::self)
-//            .def(py::self / py::self)
-            .def(py::self == py::self)
-            .def(py::self != py::self)
-            //.def(py::self < py::self)
-            //.def(py::self > py::self)
-            //.def(py::self >= py::self)
-            //.def(py::self <= py::self)
-            ;
-
+        common<T>(pym);
         addInit<T, M, COLS*ROWS>(pym);
         addInit<typename M::col_type, M, ROWS>(pym);
+        pym
+            .def(py::self * Vb())
+            .def(py::self * Ma2())
+            .def(py::self * Ma3())
+            .def(py::self * Ma4())
+
+            .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
+
+            .def("__setitem__", [](M &m, int idx, Va &t) { return m[idx] = t; })
+            .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
+
+//            .def("transpose", [](M &m) {return glm::transpose(m); })
+//            .def("inverse", [](M &m) {return glm::inverse(m); })
+//            .def("determinant", [](M &m) {return glm::determinant(m); })
+            ;
+
     }
 
     template <typename T, unsigned COLS>

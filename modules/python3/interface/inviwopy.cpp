@@ -1,9 +1,11 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/pytypes.h>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 
-#include <pybind11/stl.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyowner.h>
@@ -25,23 +27,121 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
+#include <modules/base/processors/volumesource.h>
+#include <inviwo/core/util/commandlineparser.h>
+
+
+
+//
+//template<typename T>
+//class ProcessorHolder {
+//
+//public:
+//    ProcessorHolder() : processor_(nullptr) {}
+//    ProcessorHolder(T *t) : processor_(t) {}
+//    ProcessorHolder(const ProcessorHolder &ph) : processor_(ph.processor_) {}
+//
+//    ProcessorHolder& operator=(ProcessorHolder &&r) {
+//        if (*this != r) {
+//            processor_ = r.processor_;
+//            r.processor_ = nullptr;
+//        }
+//        return *this;
+//    }
+//
+//
+//
+//    ProcessorHolder& operator=(T *r) {
+//        if (processor_ != r) {
+//            if (processor_ && processor_->getNetwork() == nullptr) {
+//                delete processor_;
+//            }
+//            processor_ = r;
+//        }
+//        return *this;
+//    }
+//
+//    ProcessorHolder(ProcessorHolder &&ph) : processor_(ph.processor_) {
+//        ph.processor_ = nullptr;
+//    }
+//
+//    virtual ~ProcessorHolder() {
+//
+//        if (processor_ && processor_->getNetwork() == nullptr) {
+//            delete processor_;
+//        }
+//    }
+//
+//
+//
+//private:
+//
+//    T* processor_;
+//
+//};
+//
+//PYBIND11_DECLARE_HOLDER_TYPE(inviwo::Processor*, ProcessorHolder<inviwo::Processor*>);
+
+
+template<typename T>
+using ListCasterBase = pybind11::detail::list_caster<std::vector<T *>, T *>;
+
+namespace pybind11 {
+    namespace detail {
+        using namespace inviwo;
+        template<> struct type_caster<std::vector<Processor *>> : ListCasterBase<Processor> {
+            static handle cast(const std::vector<Processor *> &src, return_value_policy, handle parent) {
+                return ListCasterBase<Processor>::cast(src, return_value_policy::reference, parent);
+            }
+            static handle cast(const std::vector<Processor *> *src, return_value_policy pol, handle parent) {
+                return cast(*src, pol, parent);
+            }
+        };
+
+
+
+        template<> struct type_caster<std::vector<CanvasProcessor *>> : ListCasterBase<CanvasProcessor> {
+            static handle cast(const std::vector<CanvasProcessor *> &src, return_value_policy, handle parent) {
+                return ListCasterBase<CanvasProcessor>::cast(src, return_value_policy::reference, parent);
+            }
+            static handle cast(const std::vector<CanvasProcessor *> *src, return_value_policy pol, handle parent) {
+                return cast(*src, pol, parent);
+            }
+        };
+
+
+    }
+}
+
+
 
 
 namespace py = pybind11;
 
-template <typename T, typename P>
-void pyTemplateProperty(py::class_<P> &prop) {
+
+template<typename T> void addProcessorDefs(T class_) {
+    class_.def(py::init<>());
+}
+
+
+//PYBIND11_MAKE_OPAQUE(std::vector<inviwo::Processor*>);
+
+template<typename T>
+struct HasOwnerDeleter { void operator()(T* p) { if (p && p->getOwner() == nullptr) delete p; } };
+
+template <typename T, typename P , typename C>
+void pyTemplateProperty(C &prop) {
     using namespace inviwo;
-    prop.def("set", [](P &p, T t) { p.set(t); }).def("get", [](P &p) { p.get(); });
+    prop.def_property("value", [](P &p) { p.get(); }, [](P &p, T t) { p.set(t); });
 }
 
 template <typename T>
-auto pyOrdinalProperty(py::module &m, py::class_<inviwo::Property> &parent) {
+auto pyOrdinalProperty(py::module &m) {
     using namespace inviwo;
     using P = OrdinalProperty<T>;
     auto classname = Defaultvalues<T>::getName() + "Property";
 
-    py::class_<P> pyOrdinal(m, classname.c_str(), parent);
+    py::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(m, classname.c_str());
     pyOrdinal
         .def("__init__",
              [](P &instance, const std::string &identifier, const std::string &displayName,
@@ -49,17 +149,12 @@ auto pyOrdinalProperty(py::module &m, py::class_<inviwo::Property> &parent) {
                 const T &minValue = Defaultvalues<T>::getMin(),
                 const T &maxValue = Defaultvalues<T>::getMax(),
                 const T &increment = Defaultvalues<T>::getInc()) {
-                 //(&instance) = new P(identifier, displayName, value, minValue, maxValue,
-                 // increment);
-                 new (&instance) P(identifier, displayName, value, minValue, maxValue, increment);
-             })
-        .def("getMinValue", &P::getMinValue)
-        .def("getMaxValue", &P::getMaxValue)
-        .def("getIncrement", &P::getIncrement)
-        .def("setMinValue", &P::setMinValue)
-        .def("setMaxValue", &P::setMaxValue)
-        .def("setIncrement", &P::setIncrement);
-
+        new (&instance) P(identifier, displayName, value, minValue, maxValue, increment);
+    })
+        .def_property("minValue", &P::getMinValue, &P::setMinValue)
+        .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
+        .def_property("increment", &P::getIncrement, &P::setIncrement)
+        ;
     pyTemplateProperty<T, P>(pyOrdinal);
 
     return pyOrdinal;
@@ -67,13 +162,18 @@ auto pyOrdinalProperty(py::module &m, py::class_<inviwo::Property> &parent) {
 
 PYBIND11_PLUGIN(inviwopy) {
 
+
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+    VLDDisable();
+#endif
+
     using namespace inviwo;
+    //pybind11::module m("inviwopy", "Python interface for Inviwo");
     PyBindModule m("inviwopy", "Python interface for Inviwo");
 
     addGLMTypes(m.mainModule_);
 
     m.addClass<InviwoApplication>("InviwoApplication")
-    //py::class_<InviwoApplication>(m.mainModule_, "InviwoApplication")
         .def("getProcessorNetwork", &InviwoApplication::getProcessorNetwork,
              py::return_value_policy::reference)
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
@@ -96,20 +196,24 @@ PYBIND11_PLUGIN(inviwopy) {
                                py::return_value_policy::reference)
         //.def("getModuleFactoryObjects", &InviwoApplication::getModuleFactoryObjects)
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
-        py::return_value_policy::reference)
+             py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
-        py::return_value_policy::reference)
+             py::return_value_policy::reference)
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
+
+        .def("getOutputPath",
+             [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
+
         ;
 
     m.addClass<InviwoModule>("InviwoModule")
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
-   //     .def("getPath", [](InviwoModule *m , ModulePath type) { return m->getPath(type); }) //TODO expost modulePath
+        //     .def("getPath", [](InviwoModule *m , ModulePath type) { return m->getPath(type); }) //TODO expost modulePath
         .def_property_readonly("version", &InviwoModule::getVersion)
         ;
 
@@ -117,13 +221,13 @@ PYBIND11_PLUGIN(inviwopy) {
     py::class_<PortConnection>(m.mainModule_, "PortConnection")
         .def(py::init<Outport *, Inport *>())
         .def_property_readonly("inport", &PortConnection::getInport,
-                               py::return_value_policy::reference)
+            py::return_value_policy::reference)
         .def_property_readonly("outport", &PortConnection::getOutport,
-                               py::return_value_policy::reference);
+            py::return_value_policy::reference);
 
     py::class_<PropertyLink>(m.mainModule_, "PropertyLink")
-        .def(py::init<Property *, Property *>() , py::arg("src"), py::arg("dst"))
-        .def_property_readonly("source", &PropertyLink::getSource , py::return_value_policy::reference)
+        .def(py::init<Property *, Property *>(), py::arg("src"), py::arg("dst"))
+        .def_property_readonly("source", &PropertyLink::getSource, py::return_value_policy::reference)
         .def_property_readonly("destination", &PropertyLink::getDestination, py::return_value_policy::reference)
         ;
 
@@ -135,10 +239,13 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("__getattr__",
              [](ProcessorNetwork &po, std::string key) { return po.getProcessorByIdentifier(key); },
              py::return_value_policy::reference)
-        .def("addProcessor", &ProcessorNetwork::addProcessor)
-        .def_property_readonly("connections", &ProcessorNetwork::getConnections)
-        //.def("removeProcessor", &ProcessorNetwork::removeProcessor)
-        //.def("removeAndDeleteProcessor", &ProcessorNetwork::removeAndDeleteProcessor)
+        .def("addProcessor",
+             [](ProcessorNetwork *pn, Processor *processor) { pn->addProcessor(processor); })
+        .def("removeProcessor",
+             [](ProcessorNetwork *pn, Processor *processor) { pn->removeProcessor(processor); })
+
+        .def_property_readonly("connections", &ProcessorNetwork::getConnections,
+                               py::return_value_policy::reference)
         .def("addConnection", [&](ProcessorNetwork *on, Outport *sourcePort,
                                   Inport *destPort) { on->addConnection(sourcePort, destPort); },
              py::arg("sourcePort"), py::arg("destPort"))
@@ -158,7 +265,8 @@ PYBIND11_PLUGIN(inviwopy) {
                                 Inport *destPort) { on->isConnected(sourcePort, destPort); },
              py::arg("sourcePort"), py::arg("destPort"))
         .def("isPortInNetwork", &ProcessorNetwork::isPortInNetwork)
-        .def_property_readonly("links", &ProcessorNetwork::getLinks, py::return_value_policy::reference)
+        .def_property_readonly("links", &ProcessorNetwork::getLinks,
+                               py::return_value_policy::reference)
         .def("addLink",
              [](ProcessorNetwork *pn, Property *src, Property *dst) { pn->addLink(src, dst); })
         .def("addLink", [](ProcessorNetwork *pn, PropertyLink &link) { pn->addLink(link); })
@@ -169,7 +277,9 @@ PYBIND11_PLUGIN(inviwopy) {
              [](ProcessorNetwork *pn, Property *src, Property *dst) { pn->removeLink(src, dst); })
         .def("isLinked", [](ProcessorNetwork *pn, PropertyLink &link) { pn->isLinked(link); })
         .def("isLinkedBidirectional", &ProcessorNetwork::isLinkedBidirectional)
-        .def("getLinksBetweenProcessors", &ProcessorNetwork::getLinksBetweenProcessors, py::return_value_policy::reference)
+        .def("getLinksBetweenProcessors", &ProcessorNetwork::getLinksBetweenProcessors,
+             py::return_value_policy::reference)
+        .def_property_readonly("canvases", &ProcessorNetwork::getProcessorsByType<CanvasProcessor>, py::return_value_policy::reference)
         .def("getProperty", &ProcessorNetwork::getProperty, py::return_value_policy::reference)
         .def("getPropertiesLinkedTo", &ProcessorNetwork::getPropertiesLinkedTo,
              py::return_value_policy::reference)
@@ -204,70 +314,76 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("hasKey", [](ProcessorFactory *pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](ProcessorFactory *pf) { return pf->getKeys(); })
         .def("create",
-             [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); },
-             py::return_value_policy::reference)
+            [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); })
         .def("create",
-             [](ProcessorFactory *pf, std::string key, ivec2 pos) {
-                 auto p = pf->create(key).release();
-                 p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                     ->setPosition(pos);
-                 return p;
-             },
-             py::return_value_policy::reference);
+            [](ProcessorFactory *pf, std::string key, ivec2 pos) {
+        auto p = pf->create(key);
+        p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+            ->setPosition(pos);
+        return p.release();
+    }  );
 
-    py::class_<PropertyOwner> pyPropertyOwner(m.mainModule_, "PropertyOwner");
-    pyPropertyOwner.def("getPath", &PropertyOwner::getPath)
-        .def_property_readonly("properties", &PropertyOwner::getProperties,
-                               py::return_value_policy::reference)
+    //struct propertyOwnerDelete {
+    //    void operator()(PropertyOwner* p) {
+    //        if (auto pr = dynamic_cast<Processor*>(p)) {
+    //            if (pr->getNetwork() == nullptr) {
+    //                delete pr;
+    //            }
+    //        }
+    //    }
+    //};
+    py::class_<PropertyOwner , std::unique_ptr<PropertyOwner, py::nodelete>>(m.mainModule_, "PropertyOwner")
+        .def("getPath", &PropertyOwner::getPath)
+        .def_property_readonly("properties", &PropertyOwner::getProperties,py::return_value_policy::reference)
         .def("__getattr__",
-             [](PropertyOwner &po, std::string key) { return po.getPropertyByIdentifier(key); },
-             py::return_value_policy::reference)
+            [](PropertyOwner &po, std::string key) { return po.getPropertyByIdentifier(key); },
+            py::return_value_policy::reference)
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
         .def("addProperty",
-             [](PropertyOwner &po, Property *pr) { po.addProperty(pr->clone(), true); })
+            [](PropertyOwner &po, Property *pr) { po.addProperty(pr->clone(), true); })
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
-             py::return_value_policy::reference, py::arg("identifier"),
-             py::arg("recursiveSearch") = false)
+            py::return_value_policy::reference, py::arg("identifier"),
+            py::arg("recursiveSearch") = false)
         .def("getPropertyByPath", &PropertyOwner::getPropertyByPath,
-             py::return_value_policy::reference)
+            py::return_value_policy::reference)
         .def("size", &PropertyOwner::size)
         //.def("setValid", &PropertyOwner::setValid)
         //.def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
         //.def("invalidate", &PropertyOwner::invalidate)
         .def_property_readonly("processor", [](PropertyOwner &p) { return p.getProcessor(); },
-                               py::return_value_policy::reference)
+            py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
-             &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
+            &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
-    py::class_<Port> pyPort(m.mainModule_, "Port");
-    pyPort.def_property_readonly("identifier", &Port::getIdentifier);
-    pyPort.def_property_readonly("processor", &Port::getProcessor,
-                                 py::return_value_policy::reference);
-    pyPort.def_property_readonly("classIdentifier", &Port::getClassIdentifier);
-    pyPort.def_property_readonly("contentInfo", &Port::getContentInfo);
-    pyPort.def("isConnected", &Port::isConnected);
-    pyPort.def("isReady", &Port::isReady);
+    py::class_<Port>(m.mainModule_, "Port")
+    .def_property_readonly("identifier", &Port::getIdentifier)
+    .def_property_readonly("processor", &Port::getProcessor,
+        py::return_value_policy::reference)
+    .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
+    .def_property_readonly("contentInfo", &Port::getContentInfo)
+    .def("isConnected", &Port::isConnected)
+    .def("isReady", &Port::isReady);
 
-    py::class_<Inport> pyInport(m.mainModule_, "Inport", pyPort);
-    pyInport.def_property("optional", &Inport::isOptional, &Inport::setOptional);
-    pyInport.def("canConnectTo", &Inport::canConnectTo);
-    pyInport.def("connectTo", &Inport::connectTo);
-    pyInport.def("disconnectFrom", &Inport::disconnectFrom);
-    pyInport.def("isConnectedTo", &Inport::isConnectedTo);
-    pyInport.def("getConnectedOutport", &Inport::getConnectedOutport,
-                 py::return_value_policy::reference);
-    pyInport.def("getConnectedOutports", &Inport::getConnectedOutports,
-                 py::return_value_policy::reference);
-    pyInport.def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections);
-    pyInport.def("getNumberOfConnections", &Inport::getNumberOfConnections);
-    pyInport.def("getChangedOutports", &Inport::getChangedOutports);
+    py::class_<Inport,Port>(m.mainModule_, "Inport")
+        .def_property("optional", &Inport::isOptional, &Inport::setOptional)
+        .def("canConnectTo", &Inport::canConnectTo)
+        .def("connectTo", &Inport::connectTo)
+        .def("disconnectFrom", &Inport::disconnectFrom)
+        .def("isConnectedTo", &Inport::isConnectedTo)
+        .def("getConnectedOutport", &Inport::getConnectedOutport,
+            py::return_value_policy::reference)
+        .def("getConnectedOutports", &Inport::getConnectedOutports,
+            py::return_value_policy::reference)
+        .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
+        .def("getNumberOfConnections", &Inport::getNumberOfConnections)
+        .def("getChangedOutports", &Inport::getChangedOutports);
 
-    py::class_<Outport> pyOutport(m.mainModule_, "Outport", pyPort);
+    py::class_<Outport,Port> pyOutport(m.mainModule_, "Outport");
     pyOutport.def("isConnectedTo", &Outport::isConnectedTo);
     pyOutport.def("getConnectedInports", &Outport::getConnectedInports);
 
-    py::class_<ProcessorWidget> (m.mainModule_, "ProcessorWidget")
+    py::class_<ProcessorWidget>(m.mainModule_, "ProcessorWidget")
         .def_property("visibility", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions, &ProcessorWidget::setDimensions)
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
@@ -276,17 +392,19 @@ PYBIND11_PLUGIN(inviwopy) {
         ;
 
 
-    py::class_<Settings> pySettings(m.mainModule_, "Settings", pyPropertyOwner);
+    py::class_<Settings, PropertyOwner , std::unique_ptr<Settings , py::nodelete>>(m.mainModule_, "Settings");
 
-    py::class_<Processor> pyProcessor(m.mainModule_, "Processor", pyPropertyOwner);
-    pyProcessor.def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
+    struct processorDelete { void operator()(Processor* p) { if (p && p->getNetwork() == nullptr) delete p; } };
+    //py::class_<Processor, PropertyOwner >(m.mainModule_, "Processor")
+    py::class_<Processor, PropertyOwner, std::unique_ptr<Processor, processorDelete > >(m.mainModule_, "Processor")
+        .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property_readonly("displayName", &Processor::getDisplayName)
         .def_property_readonly("category", &Processor::getCategory)
         .def_property_readonly("codeState", &Processor::getCodeState)  // TODO expose states
         .def_property_readonly("tags", &Processor::getTags)            // TODO expose tags
         .def_property("identifier", &Processor::getIdentifier, &Processor::setIdentifier)
         .def("hasProcessorWidget", &Processor::hasProcessorWidget)
-        .def_property_readonly("widget",&Processor::getProcessorWidget)
+        .def_property_readonly("widget", &Processor::getProcessorWidget)
         .def_property_readonly("network", &Processor::getNetwork,
                                py::return_value_policy::reference)
         .def_property_readonly("inports", &Processor::getInports,
@@ -327,57 +445,58 @@ PYBIND11_PLUGIN(inviwopy) {
                               ->setVisible(selected);
                       });
 
-    py::class_<CanvasProcessor>(m.mainModule_, "CanvasProcessor", pyProcessor)
+    py::class_<CanvasProcessor, Processor> canvasPorcessor(m.mainModule_, "CanvasProcessor");
+    canvasPorcessor
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
-        //.def("saveImageLayer", &CanvasProcessor::saveImageLayer)
-        //.def("saveImageLayer", &CanvasProcessor::saveImageLayer)
-        //.def("getVisibleLayer", &CanvasProcessor::getVisibleLayer)
-        //.def("getImage", &CanvasProcessor::getImage)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def_property("fullScreen", &CanvasProcessor::isFullScreen, &CanvasProcessor::setFullScreen)
         .def("snapshot", [](CanvasProcessor *canvas, std::string filepath) {
-            auto ext = filesystem::getFileExtension(filepath);
+        auto ext = filesystem::getFileExtension(filepath);
 
-            auto writer = canvas->getNetwork()
-                              ->getApplication()
-                              ->getDataWriterFactory()
-                              ->getWriterForTypeAndExtension<Layer>(ext);
-            if (!writer) {
-                std::stringstream ss;
-                ss << "No write for extension " << ext;
-                throw Exception(ss.str().c_str());
-            }
+        auto writer = canvas->getNetwork()
+            ->getApplication()
+            ->getDataWriterFactory()
+            ->getWriterForTypeAndExtension<Layer>(ext);
+        if (!writer) {
+            std::stringstream ss;
+            ss << "No write for extension " << ext;
+            throw Exception(ss.str().c_str());
+        }
 
-            auto layer = canvas->getVisibleLayer();
-            writer->writeData(layer, filepath);
-        });
+        auto layer = canvas->getVisibleLayer();
+        writer->writeData(layer, filepath);
+    });
+
 
     py::class_<PropertyWidget>(m.mainModule_, "PropertyWidget")
         .def_property_readonly("editorWidget", &PropertyWidget::getEditorWidget,
-                               py::return_value_policy::reference)
+            py::return_value_policy::reference)
         .def_property_readonly("property", &PropertyWidget::getProperty,
-                               py::return_value_policy::reference);
+            py::return_value_policy::reference);
 
     py::class_<PropertyEditorWidget>(m.mainModule_, "PropertyEditorWidget")
         .def_property("visibility", &PropertyEditorWidget::isVisible,
-                      &PropertyEditorWidget::setVisibility)
+            &PropertyEditorWidget::setVisibility)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
-                      &PropertyEditorWidget::setDimensions)
+            &PropertyEditorWidget::setDimensions)
         .def_property("position", &PropertyEditorWidget::getPosition,
-                      &PropertyEditorWidget::setPosition)
+            &PropertyEditorWidget::setPosition)
         //.def_property("dockStatus", &PropertyEditorWidget::getDockStatus,
         //&PropertyEditorWidget::setDockStatus) //TODO expose dock status
         .def_property("sticky", &PropertyEditorWidget::isSticky, &PropertyEditorWidget::setSticky)
         ;
 
-    py::class_<Property> pyproperty(m.mainModule_, "Property", pyPropertyOwner);
-    pyproperty.def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
+
+    struct propertyDelete { void operator()(Property* p) { if (p && p->getOwner() == nullptr) delete p; } };
+
+    py::class_<Property , std::unique_ptr<Property, HasOwnerDeleter<Property>>> (m.mainModule_, "Property")
+        .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
         .def_property("semantics", &Property::getSemantics,
-                      &Property::setSemantics)  // TODO expose semantics
+            &Property::setSemantics)  // TODO expose semantics
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)
         .def_property_readonly("invalidationLevel", &Property::getInvalidationLevel)
@@ -387,55 +506,63 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState);
 
-    pyOrdinalProperty<float>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<int>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<size_t>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<glm::i64>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<double>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<vec2>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<vec3>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<vec4>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dvec2>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dvec3>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dvec4>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<ivec2>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<ivec3>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<ivec4>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<size2_t>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<size3_t>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<size4_t>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<mat2>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<mat3>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<mat4>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dmat2>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dmat3>(m.mainModule_, pyproperty);
-    pyOrdinalProperty<dmat4>(m.mainModule_, pyproperty);
 
-    py::class_<ButtonProperty>(m.mainModule_, "ButtonProperty", pyproperty)
+    py::class_<CompositeProperty, Property, PropertyOwner , std::unique_ptr<CompositeProperty, HasOwnerDeleter<CompositeProperty>> >(m.mainModule_, "CompositeProperty")
+        .def("__getattr__",
+            [](CompositeProperty &po, std::string key) { return po.getPropertyByIdentifier(key); },
+            py::return_value_policy::reference)
+        ;
+
+
+    pyOrdinalProperty<float>(m.mainModule_);
+    pyOrdinalProperty<int>(m.mainModule_);
+    pyOrdinalProperty<size_t>(m.mainModule_);
+    pyOrdinalProperty<glm::i64>(m.mainModule_);
+    pyOrdinalProperty<double>(m.mainModule_);
+    pyOrdinalProperty<vec2>(m.mainModule_);
+    pyOrdinalProperty<vec3>(m.mainModule_);
+    pyOrdinalProperty<vec4>(m.mainModule_);
+    pyOrdinalProperty<dvec2>(m.mainModule_);
+    pyOrdinalProperty<dvec3>(m.mainModule_);
+    pyOrdinalProperty<dvec4>(m.mainModule_);
+    pyOrdinalProperty<ivec2>(m.mainModule_);
+    pyOrdinalProperty<ivec3>(m.mainModule_);
+    pyOrdinalProperty<ivec4>(m.mainModule_);
+    pyOrdinalProperty<size2_t>(m.mainModule_);
+    pyOrdinalProperty<size3_t>(m.mainModule_);
+    pyOrdinalProperty<size4_t>(m.mainModule_);
+    pyOrdinalProperty<mat2>(m.mainModule_);
+    pyOrdinalProperty<mat3>(m.mainModule_);
+    pyOrdinalProperty<mat4>(m.mainModule_);
+    pyOrdinalProperty<dmat2>(m.mainModule_);
+    pyOrdinalProperty<dmat3>(m.mainModule_);
+    pyOrdinalProperty<dmat4>(m.mainModule_);
+
+    py::class_<ButtonProperty, Property , std::unique_ptr<ButtonProperty, HasOwnerDeleter<ButtonProperty>>>(m.mainModule_, "ButtonProperty")
         .def("pressButton", &ButtonProperty::pressButton);
 
-    py::class_<CameraProperty>(m.mainModule_, "CameraProperty", pyproperty)
+    py::class_<CameraProperty, CompositeProperty , std::unique_ptr<CameraProperty, HasOwnerDeleter<CameraProperty>>>(m.mainModule_, "CameraProperty")
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo)
         .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp)
         .def_property_readonly("lookRight", &CameraProperty::getLookRight)
         .def_property("aspectRatio", &CameraProperty::getAspectRatio,
-                      &CameraProperty::setAspectRatio)
+            &CameraProperty::setAspectRatio)
         .def_property("nearPlane", &CameraProperty::getNearPlaneDist,
-                      &CameraProperty::setNearPlaneDist)
+            &CameraProperty::setNearPlaneDist)
         .def_property("farPlane", &CameraProperty::getFarPlaneDist,
-                      &CameraProperty::setFarPlaneDist)
+            &CameraProperty::setFarPlaneDist)
         .def("setLook", &CameraProperty::setLook)
         .def_property_readonly("lookFromMinValue", &CameraProperty::getLookFromMinValue)
         .def_property_readonly("lookFromMaxValue", &CameraProperty::getLookFromMaxValue)
         .def_property_readonly("lookToMinValue", &CameraProperty::getLookToMinValue)
         .def_property_readonly("lookToMaxValue", &CameraProperty::getLookToMaxValue)
         .def("getWorldPosFromNormalizedDeviceCoords",
-             &CameraProperty::getWorldPosFromNormalizedDeviceCoords)
+            &CameraProperty::getWorldPosFromNormalizedDeviceCoords)
         .def("getClipPosFromNormalizedDeviceCoords",
-             &CameraProperty::getClipPosFromNormalizedDeviceCoords)
+            &CameraProperty::getClipPosFromNormalizedDeviceCoords)
         .def("getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth",
-             &CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth)
+            &CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth)
         .def_property_readonly("viewMatrix", &CameraProperty::viewMatrix)
         .def_property_readonly("projectionMatrix", &CameraProperty::projectionMatrix)
         .def_property_readonly("inverseViewMatrix", &CameraProperty::inverseViewMatrix)
@@ -443,28 +570,27 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
         .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
 
-    py::class_<TransferFunctionProperty>(m.mainModule_, "TransferFunctionProperty", pyproperty)
+    py::class_<TransferFunctionProperty, Property , std::unique_ptr<TransferFunctionProperty, HasOwnerDeleter<TransferFunctionProperty>>>(m.mainModule_, "TransferFunctionProperty")
         .def_property("mask", &TransferFunctionProperty::getMask,
-                      &TransferFunctionProperty::setMask)
+            &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,
-                      &TransferFunctionProperty::setZoomH)
+            &TransferFunctionProperty::setZoomH)
         .def_property("zoomV", &TransferFunctionProperty::getZoomV,
-                      &TransferFunctionProperty::setZoomV)
+            &TransferFunctionProperty::setZoomV)
         .def("save",
-             [](TransferFunctionProperty *tf, std::string filename) {
+            [](TransferFunctionProperty *tf, std::string filename) {
                  tf->get().save(filename);
-             })
+    })
         .def("load",
-             [](TransferFunctionProperty *tf, std::string filename) {
+            [](TransferFunctionProperty *tf, std::string filename) {
                  tf->get().load(filename);
-             })
+    })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
         .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
-            tp.get().addPoint(pos, vec4(color, pos.y));
-        });
+        tp.get().addPoint(pos, vec4(color, pos.y));
+    });
 
     m.mainModule_.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
-   // m.def("getApp" ,&InviwoApplication::getPtr, py::return_value_policy::reference);
 
     py::enum_<inviwo::PathType>(m.mainModule_, "PathType")
         .value("Data", PathType::Data)
@@ -480,11 +606,24 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
+    
+
+
+
+
+
+
+
 
     auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
     if (module) {
         module->invokePythonInitCallbacks(&m);
     }
+
+
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+    VLDEnable();
+#endif
 
     return m.mainModule_.ptr();
 }
