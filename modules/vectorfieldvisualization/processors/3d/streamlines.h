@@ -70,7 +70,7 @@ public:
 
 protected:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
-    SeedPointsInport seedPoints_;
+    SeedPoints3DInport seedPoints_;
     VolumeInport volume_;
     MeshOutport linesStripsMesh_;
     IntegralLineSetOutport lines_;

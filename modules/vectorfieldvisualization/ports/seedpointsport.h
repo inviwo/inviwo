@@ -37,9 +37,18 @@
 
 namespace inviwo {
 
+
     using SeedPointVector = std::vector<vec3>;
     using SeedPointsInport = DataInport<SeedPointVector, 0>;
     using SeedPointsOutport = DataOutport<SeedPointVector>;
+
+    using SeedPoint3DVector = std::vector<vec3>;
+    using SeedPoints3DInport = DataInport<SeedPoint3DVector, 0>;
+    using SeedPoints3DOutport = DataOutport<SeedPoint3DVector>;
+
+    using SeedPoint4DVector = std::vector<vec4>;
+    using SeedPoints4DInport = DataInport<SeedPoint4DVector, 0>;
+    using SeedPoints4DOutport = DataOutport<SeedPoint4DVector>;
 
 } // namespace
 

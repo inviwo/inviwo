@@ -58,8 +58,10 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerProcessor<IntegralLineVectorToMesh>();
 
-    registerPort < SeedPointsOutport>("SeedPointsOutport");
-    registerPort < SeedPointsInport>("SeedPointsInport");
+    registerPort < SeedPoints3DOutport>("SeedPointsOutport");
+    registerPort < SeedPoints3DInport>("SeedPointsInport");
+    registerPort < SeedPoints4DOutport>("SeedPoints4DOutport");
+    registerPort < SeedPoints4DInport>("SeedPoints4DInport");
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();

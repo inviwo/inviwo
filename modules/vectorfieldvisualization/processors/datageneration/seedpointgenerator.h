@@ -76,7 +76,7 @@ public:
     void onGeneratorChange();
 
 private:
-    SeedPointsOutport seedPoints_;
+    SeedPoints3DOutport seedPoints_;
     
     CompositeProperty lineGroup_;
     CompositeProperty planeGroup_;
