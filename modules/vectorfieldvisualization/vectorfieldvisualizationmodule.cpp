@@ -42,6 +42,8 @@
 
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
+#include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
+#include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
 
 namespace inviwo {
 
@@ -57,6 +59,8 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<StreamRibbons>();
 
     registerProcessor<IntegralLineVectorToMesh>();
+    registerProcessor<Seed3Dto4D>();
+    registerProcessor<SeedsFromMaskSequence>();
 
     registerPort < SeedPoints3DOutport>("SeedPointsOutport");
     registerPort < SeedPoints3DInport>("SeedPointsInport");

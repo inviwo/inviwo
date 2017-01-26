@@ -19,6 +19,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.h
@@ -41,6 +43,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.cpp
