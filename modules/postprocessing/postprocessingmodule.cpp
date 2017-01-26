@@ -35,6 +35,7 @@
 #include <modules/postprocessing/processors/imageopacity.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/postprocessing/processors/imagesharpen.h>
+#include <modules/postprocessing/processors/depthdarkening.h>
 
 namespace inviwo {
 
@@ -49,6 +50,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app) : InviwoModul
     registerProcessor<SSAO>();
     registerProcessor<FXAA>();
     registerProcessor<ImageBrightnessContrast>();
+    registerProcessor<DepthDarkening>();
     registerProcessor<ImageHueSaturationLuminance>();
     registerProcessor<ImageSharpen>();
     registerProcessor<ImageOpacity>();

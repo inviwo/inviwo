@@ -5,6 +5,7 @@ ivw_module(PostProcessing)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.h
@@ -17,6 +18,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.cpp
@@ -34,6 +36,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/colortools.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/common.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthdarkening.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/displaytex.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.geom
