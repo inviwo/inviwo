@@ -36,6 +36,24 @@ IntegralLine::IntegralLine()
     : positions_(), metaData_(), terminationReason_(TerminationReason::Steps) , length_(-1)
 {}
 
+IntegralLine::IntegralLine(const IntegralLine &rhs)
+    : positions_(rhs.positions_)
+    , metaData_(rhs.metaData_)
+    , terminationReason_(rhs.terminationReason_)
+    , length_(rhs.length_)
+    , idx_(rhs.idx_) {}
+
+inviwo::IntegralLine &IntegralLine::operator=(const IntegralLine &that) {
+    if (&that != this) {
+        positions_ = that.positions_;
+        metaData_ = that.metaData_;
+        terminationReason_ = that.terminationReason_;
+        length_ = that.length_;
+        idx_ = that.idx_;
+    }
+    return *this;
+}
+
 IntegralLine::~IntegralLine() {}
 
 const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }

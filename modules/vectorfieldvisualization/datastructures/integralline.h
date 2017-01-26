@@ -53,6 +53,10 @@ public:
     };
 
     IntegralLine();
+    IntegralLine(const IntegralLine &rhs);
+
+    IntegralLine &operator=(const IntegralLine &that);
+
     virtual ~IntegralLine();
 
     void setTerminationReason(TerminationReason terminationReason) {
