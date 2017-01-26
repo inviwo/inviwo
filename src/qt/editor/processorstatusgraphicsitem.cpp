@@ -85,7 +85,7 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
             ledColor = baseColor;
             break;
         case State::Running:
-            ledColor = Qt::yellow;
+            ledColor = QColor(255, 221, 85);
             break;
         case State::Invalid:
             ledColor = baseColor.dark(400);

@@ -30,7 +30,7 @@
 
 /* General styles */
 QWidget {
-    font-family: "Calibra";
+    font-family: "Segoe UI";
     color: #9d9995;
     background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;

@@ -43,6 +43,12 @@
 #include <QCursor>
 #include <warn/pop>
 
+#ifdef WIN32
+#  define NOMINMAX
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#endif // WIN32
+
 namespace inviwo {
 
 InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, char** argv)
@@ -59,6 +65,25 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
 
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+
+#ifdef WIN32
+    // set default font since the QApplication font is not properly initialized
+    // (see https://bugreports.qt.io/browse/QTBUG-22572)
+    //
+    // query system font and font size, then set the QApplication font (Win7: Segoe UI, 9pt)
+    //
+    NONCLIENTMETRICS metrics ={ sizeof(NONCLIENTMETRICS) };
+    SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &metrics, 0);
+    int pointSize = metrics.lfMessageFont.lfHeight;
+    if (pointSize < 0) {
+        // height is in pixels, convert to points
+        HDC hDC = GetDC(NULL);
+        pointSize = MulDiv(abs(pointSize), 72, GetDeviceCaps(hDC, LOGPIXELSY));
+        ReleaseDC(NULL, hDC);
+    }
+
+    setFont(QFont(QString::fromWCharArray(metrics.lfMessageFont.lfFaceName), pointSize));
+#endif // WIN32
 
     // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
@@ -173,9 +198,9 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
    
     
     #if defined(__APPLE__) 
-    // There is some weird bug on mac that sets compains about
+    // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
-    // Does not seem to be a reall problem lets, ignore it.
+    // Does not seem to be a real problem lets, ignore it.
     //http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
     if (msg.contains("Attempt to set a screen on a child window")) return;
     #endif
