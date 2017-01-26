@@ -89,7 +89,7 @@ namespace inviwo {
         * @return true, if script execution has been successful
         */
         bool run(const VariableMap& extraLocalVariables = VariableMap(),
-            std::function<void(pybind11::dict&)> callback = [](pybind11::dict &dict) {});
+            std::function<void(pybind11::dict)> callback = [](pybind11::dict dict) {});
 
         void setFilename(std::string filename);
 

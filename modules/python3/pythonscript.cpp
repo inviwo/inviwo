@@ -39,8 +39,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/python3/python3module.h>
 
-
-
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 
@@ -71,7 +69,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     }
 
     bool PythonScript::run(const VariableMap& extraLocalVariables,
-        std::function<void(pybind11::dict&)> callback) {
+        std::function<void(pybind11::dict)> callback) {
 
         if (isCompileNeeded_ && !compile()) {
             LogError("Failed to run script, script could not be compiled");
@@ -95,7 +93,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         bool success = checkRuntimeError();
         if (success) {
-            callback(pyutil::toPyBindObject<pybind11::dict>(copy));
+            callback(pyutil::toPyBindObjectBorrow<pybind11::dict>(copy));
         }
 
         Py_XDECREF(ret);

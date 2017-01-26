@@ -63,7 +63,7 @@ NumPyMeshCreateTest::NumPyMeshCreateTest()
 }
     
 void NumPyMeshCreateTest::process() {
-    script_.run( { } , [&](pybind11::dict &dict){
+    script_.run( { } , [&](pybind11::dict dict){
         auto pyMesh  = dict["mesh"];
         
         auto mesh = util::toMesh(pyMesh.ptr());
