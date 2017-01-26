@@ -43,62 +43,47 @@
 
 namespace inviwo {
 
-    namespace pyutil {
+    class PyBindModule {
+    public:
+        PyBindModule(std::string name, std::string docstring)
+            : mainModule_(name.c_str(), docstring.c_str()) {}
 
-        
-
-
-        /*IVW_MODULE_PYTHON3_API InviwoApplication* getApplication();
-        IVW_MODULE_PYTHON3_API ProcessorNetwork* getNetwork();
-        IVW_MODULE_PYTHON3_API Processor* getProcessor(std::string id);*/
-
-       /* template <typename T>
-        T* getTypedProcessor(std::string id) {
-            auto p = getProcessor(id);
-            auto pt = dynamic_cast<T*>(p);
-            if (!pt) {
-                std::stringstream ss;
-                ss << "Wrong Processor type. Processor with identifier " << id << " is of type"
-                   << p->getClassIdentifier();
-
-                throw std::exception(ss.str().c_str());
-            }
-            return pt;
+        template<typename T>
+        pybind11::class_<T> addClass(std::string className){
+            pybind11::class_<T> pyclass(mainModule_, className.c_str());
+            classes_[className] = pyclass;
+            return pyclass;
         }
 
-*/
-        /*template<typename T>
-        T parse(PyObject *obj) {
-            return pybind11::handle(obj).cast<T>();
-        }//*/
-
-       /* template<typename T>
-        T parse(const pybind11::object &obj) {
-            return obj.cast<T>();
-        }*/
-
-        /*  template<typename T>
-          bool is(PyObject *obj) {
-              auto type1 = pybind11::handle::handle(obj).get_type();
-              auto type2 = pybind11::cast<T>(T()).get_type();
-              return type1 == type2;
-          }
+        pybind11::module mainModule_;
+        std::unordered_map<std::string, pybind11::detail::generic_type> classes_;
+    };
 
 
-          template<typename T>
-          bool is(const pybind11::object &obj) {
-              auto type1 = obj.get_type();
-              auto type2 = pybind11::cast<T>(T()).get_type();
-              return type1 == type2;
-          }
+    namespace pyutil {
+        template<typename T> pybind11::object toPyBindObject(const T &t) {
+            return pybind11::cast(t);
+        }
 
+        template <typename T>
+        T toPyBindObjectBorrow(PyObject *obj) {
+            return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
+        }
 
-          */
-          
-          template<typename T> pybind11::object toPyBindObject(const T &t) {
-              return pybind11::cast(t);
-          }
+        template <typename T>
+        T toPyBindObjectSteal(PyObject *obj) {
+            return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
+        }
 
+        template <typename T>
+        T toPyBindObject(PyObject *obj, bool steal = false) {
+            if (steal) {
+                return toPyBindObjectSteal<T>(obj);
+            }
+            else {
+                return toPyBindObjectBorrow<T>(obj);
+            }
+        }
     }
 
 

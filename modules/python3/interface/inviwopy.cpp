@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 
+#include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterface/pyvalueparser.h>
 
 #include <pybind11/stl.h>
 
@@ -68,11 +68,12 @@ auto pyOrdinalProperty(py::module &m, py::class_<inviwo::Property> &parent) {
 PYBIND11_PLUGIN(inviwopy) {
 
     using namespace inviwo;
-    py::module m("inviwopy", "Python interface for Inviwo");
+    PyBindModule m("inviwopy", "Python interface for Inviwo");
 
-    inviwo::addGLMTypes(m);
+    addGLMTypes(m.mainModule_);
 
-    py::class_<InviwoApplication>(m, "InviwoApplication")
+    m.addClass<InviwoApplication>("InviwoApplication")
+    //py::class_<InviwoApplication>(m.mainModule_, "InviwoApplication")
         .def("getProcessorNetwork", &InviwoApplication::getProcessorNetwork,
              py::return_value_policy::reference)
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
@@ -104,7 +105,7 @@ PYBIND11_PLUGIN(inviwopy) {
                                py::return_value_policy::reference)
         ;
 
-    py::class_<InviwoModule>(m, "InviwoModule")
+    m.addClass<InviwoModule>("InviwoModule")
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
@@ -113,20 +114,20 @@ PYBIND11_PLUGIN(inviwopy) {
         ;
 
 
-    py::class_<PortConnection>(m, "PortConnection")
+    py::class_<PortConnection>(m.mainModule_, "PortConnection")
         .def(py::init<Outport *, Inport *>())
         .def_property_readonly("inport", &PortConnection::getInport,
                                py::return_value_policy::reference)
         .def_property_readonly("outport", &PortConnection::getOutport,
                                py::return_value_policy::reference);
 
-    py::class_<PropertyLink>(m, "PropertyLink")
+    py::class_<PropertyLink>(m.mainModule_, "PropertyLink")
         .def(py::init<Property *, Property *>() , py::arg("src"), py::arg("dst"))
         .def_property_readonly("source", &PropertyLink::getSource , py::return_value_policy::reference)
         .def_property_readonly("destination", &PropertyLink::getDestination, py::return_value_policy::reference)
         ;
 
-    py::class_<ProcessorNetwork>(m, "ProcessorNetwork")
+    py::class_<ProcessorNetwork>(m.mainModule_, "ProcessorNetwork")
         .def_property_readonly("processors", &ProcessorNetwork::getProcessors,
                                py::return_value_policy::reference)
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,
@@ -199,7 +200,7 @@ PYBIND11_PLUGIN(inviwopy) {
                                                                  // the exception on to python)
         });
 
-    py::class_<ProcessorFactory>(m, "ProcessorFactory")
+    py::class_<ProcessorFactory>(m.mainModule_, "ProcessorFactory")
         .def("hasKey", [](ProcessorFactory *pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](ProcessorFactory *pf) { return pf->getKeys(); })
         .def("create",
@@ -214,7 +215,7 @@ PYBIND11_PLUGIN(inviwopy) {
              },
              py::return_value_policy::reference);
 
-    py::class_<PropertyOwner> pyPropertyOwner(m, "PropertyOwner");
+    py::class_<PropertyOwner> pyPropertyOwner(m.mainModule_, "PropertyOwner");
     pyPropertyOwner.def("getPath", &PropertyOwner::getPath)
         .def_property_readonly("properties", &PropertyOwner::getProperties,
                                py::return_value_policy::reference)
@@ -239,7 +240,7 @@ PYBIND11_PLUGIN(inviwopy) {
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
-    py::class_<Port> pyPort(m, "Port");
+    py::class_<Port> pyPort(m.mainModule_, "Port");
     pyPort.def_property_readonly("identifier", &Port::getIdentifier);
     pyPort.def_property_readonly("processor", &Port::getProcessor,
                                  py::return_value_policy::reference);
@@ -248,7 +249,7 @@ PYBIND11_PLUGIN(inviwopy) {
     pyPort.def("isConnected", &Port::isConnected);
     pyPort.def("isReady", &Port::isReady);
 
-    py::class_<Inport> pyInport(m, "Inport", pyPort);
+    py::class_<Inport> pyInport(m.mainModule_, "Inport", pyPort);
     pyInport.def_property("optional", &Inport::isOptional, &Inport::setOptional);
     pyInport.def("canConnectTo", &Inport::canConnectTo);
     pyInport.def("connectTo", &Inport::connectTo);
@@ -262,11 +263,11 @@ PYBIND11_PLUGIN(inviwopy) {
     pyInport.def("getNumberOfConnections", &Inport::getNumberOfConnections);
     pyInport.def("getChangedOutports", &Inport::getChangedOutports);
 
-    py::class_<Outport> pyOutport(m, "Outport", pyPort);
+    py::class_<Outport> pyOutport(m.mainModule_, "Outport", pyPort);
     pyOutport.def("isConnectedTo", &Outport::isConnectedTo);
     pyOutport.def("getConnectedInports", &Outport::getConnectedInports);
 
-    py::class_<ProcessorWidget> (m, "ProcessorWidget")
+    py::class_<ProcessorWidget> (m.mainModule_, "ProcessorWidget")
         .def_property("visibility", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions, &ProcessorWidget::setDimensions)
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
@@ -275,9 +276,9 @@ PYBIND11_PLUGIN(inviwopy) {
         ;
 
 
-    py::class_<Settings> pySettings(m, "Settings", pyPropertyOwner);
+    py::class_<Settings> pySettings(m.mainModule_, "Settings", pyPropertyOwner);
 
-    py::class_<Processor> pyProcessor(m, "Processor", pyPropertyOwner);
+    py::class_<Processor> pyProcessor(m.mainModule_, "Processor", pyPropertyOwner);
     pyProcessor.def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property_readonly("displayName", &Processor::getDisplayName)
         .def_property_readonly("category", &Processor::getCategory)
@@ -326,7 +327,7 @@ PYBIND11_PLUGIN(inviwopy) {
                               ->setVisible(selected);
                       });
 
-    py::class_<CanvasProcessor>(m, "CanvasProcessor", pyProcessor)
+    py::class_<CanvasProcessor>(m.mainModule_, "CanvasProcessor", pyProcessor)
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
@@ -353,13 +354,13 @@ PYBIND11_PLUGIN(inviwopy) {
             writer->writeData(layer, filepath);
         });
 
-    py::class_<PropertyWidget>(m, "PropertyWidget")
+    py::class_<PropertyWidget>(m.mainModule_, "PropertyWidget")
         .def_property_readonly("editorWidget", &PropertyWidget::getEditorWidget,
                                py::return_value_policy::reference)
         .def_property_readonly("property", &PropertyWidget::getProperty,
                                py::return_value_policy::reference);
 
-    py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget")
+    py::class_<PropertyEditorWidget>(m.mainModule_, "PropertyEditorWidget")
         .def_property("visibility", &PropertyEditorWidget::isVisible,
                       &PropertyEditorWidget::setVisibility)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
@@ -371,7 +372,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def_property("sticky", &PropertyEditorWidget::isSticky, &PropertyEditorWidget::setSticky)
         ;
 
-    py::class_<Property> pyproperty(m, "Property", pyPropertyOwner);
+    py::class_<Property> pyproperty(m.mainModule_, "Property", pyPropertyOwner);
     pyproperty.def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
@@ -386,34 +387,34 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState);
 
-    pyOrdinalProperty<float>(m, pyproperty);
-    pyOrdinalProperty<int>(m, pyproperty);
-    pyOrdinalProperty<size_t>(m, pyproperty);
-    pyOrdinalProperty<glm::i64>(m, pyproperty);
-    pyOrdinalProperty<double>(m, pyproperty);
-    pyOrdinalProperty<vec2>(m, pyproperty);
-    pyOrdinalProperty<vec3>(m, pyproperty);
-    pyOrdinalProperty<vec4>(m, pyproperty);
-    pyOrdinalProperty<dvec2>(m, pyproperty);
-    pyOrdinalProperty<dvec3>(m, pyproperty);
-    pyOrdinalProperty<dvec4>(m, pyproperty);
-    pyOrdinalProperty<ivec2>(m, pyproperty);
-    pyOrdinalProperty<ivec3>(m, pyproperty);
-    pyOrdinalProperty<ivec4>(m, pyproperty);
-    pyOrdinalProperty<size2_t>(m, pyproperty);
-    pyOrdinalProperty<size3_t>(m, pyproperty);
-    pyOrdinalProperty<size4_t>(m, pyproperty);
-    pyOrdinalProperty<mat2>(m, pyproperty);
-    pyOrdinalProperty<mat3>(m, pyproperty);
-    pyOrdinalProperty<mat4>(m, pyproperty);
-    pyOrdinalProperty<dmat2>(m, pyproperty);
-    pyOrdinalProperty<dmat3>(m, pyproperty);
-    pyOrdinalProperty<dmat4>(m, pyproperty);
+    pyOrdinalProperty<float>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<int>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<size_t>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<glm::i64>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<double>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<vec2>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<vec3>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<vec4>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dvec2>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dvec3>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dvec4>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<ivec2>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<ivec3>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<ivec4>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<size2_t>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<size3_t>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<size4_t>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<mat2>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<mat3>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<mat4>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dmat2>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dmat3>(m.mainModule_, pyproperty);
+    pyOrdinalProperty<dmat4>(m.mainModule_, pyproperty);
 
-    py::class_<ButtonProperty>(m, "ButtonProperty", pyproperty)
+    py::class_<ButtonProperty>(m.mainModule_, "ButtonProperty", pyproperty)
         .def("pressButton", &ButtonProperty::pressButton);
 
-    py::class_<CameraProperty>(m, "CameraProperty", pyproperty)
+    py::class_<CameraProperty>(m.mainModule_, "CameraProperty", pyproperty)
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo)
         .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp)
@@ -442,7 +443,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
         .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
 
-    py::class_<TransferFunctionProperty>(m, "TransferFunctionProperty", pyproperty)
+    py::class_<TransferFunctionProperty>(m.mainModule_, "TransferFunctionProperty", pyproperty)
         .def_property("mask", &TransferFunctionProperty::getMask,
                       &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,
@@ -465,10 +466,10 @@ PYBIND11_PLUGIN(inviwopy) {
             tp.get().addPoint(pos, vec4(color, pos.y));
         });
 
-    m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
+    m.mainModule_.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
    // m.def("getApp" ,&InviwoApplication::getPtr, py::return_value_policy::reference);
 
-    py::enum_<inviwo::PathType>(m, "PathType")
+    py::enum_<inviwo::PathType>(m.mainModule_, "PathType")
         .value("Data", PathType::Data)
         .value("Volumes", PathType::Volumes)
         .value("Workspaces", PathType::Workspaces)
@@ -482,5 +483,11 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
-    return m.ptr();
+
+    auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
+    if (module) {
+        module->invokePythonInitCallbacks(&m);
+    }
+
+    return m.mainModule_.ptr();
 }

@@ -33,22 +33,35 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/python3/pythonlogger.h>
-
 #include <string>
 
 namespace inviwo {
 
-class PyInviwo;
+class PythonInterpreter;
+class PyBindModule;
 
 class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
 public:
     Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
+    using PythonInitCallback = std::function<void(PyBindModule * objects)>;
+
+    void regiserPythonInitCallback(PythonInitCallback callback){callbackObjects_.push_back( callback);}
+    void invokePythonInitCallbacks(PyBindModule * objects){
+        for(auto &c : callbackObjects_){
+            c(objects);
+        }
+    }
+
+    PythonInterpreter* getPythonInterpreter() {return pythonInterpreter_.get();}
+
 private:
-    std::unique_ptr<PyInviwo> pyInviwo_;
+    std::unique_ptr<PythonInterpreter> pythonInterpreter_;
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     PythonLogger pythonLogger_;
+
+    std::vector<PythonInitCallback> callbackObjects_;
 };
 
 }  // namespace

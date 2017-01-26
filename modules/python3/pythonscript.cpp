@@ -33,8 +33,13 @@
 #include <inviwo/core/util/filesystem.h>
 
 #include <modules/python3/pythonexecutionoutputobservable.h>
-#include <modules/python3/pythoninterface/pyvalueparser.h>
-#include <modules/python3/pyinviwo.h>
+#include <modules/python3/pythoninterpreter.h>
+
+#include <modules/python3/pybindutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <modules/python3/python3module.h>
+
+
 
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
@@ -90,9 +95,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         bool success = checkRuntimeError();
         if (success) {
-            pybind11::handle dict_handle( copy);
-            auto pybinddict = pybind11::reinterpret_borrow<pybind11::dict>(dict_handle);
-            callback(pybinddict);
+            callback(pyutil::toPyBindObject<pybind11::dict>(copy));
         }
 
         Py_XDECREF(ret);
@@ -138,11 +141,9 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         // convert error to string, if it could not be parsed
         if (log.empty()) {
             LogWarn("Failed to parse exception, printing as string:");
-            PyObject* s = PyObject_Str(errvalue);
-
-            if (s && PyValueParser::is<std::string>(s)) {
-                log = std::string(PyValueParser::parse<std::string>(s));
-                Py_XDECREF(s);
+            auto s = pyutil::toPyBindObjectSteal<pybind11::str>(PyObject_Str(errvalue));
+            if (s.check()) {
+                log = s;
             }
         }
 
@@ -176,14 +177,16 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
                 if (frame && frame->f_code) {
                     PyCodeObject* codeObject = frame->f_code;
 
-                    if (PyValueParser::is<std::string>(codeObject->co_filename))
-                        stacktraceLine.append(std::string("  File \"") + PyValueParser::parse<std::string>(codeObject->co_filename) + std::string("\", "));
+                    auto co_filename = pyutil::toPyBindObjectBorrow<pybind11::str>(codeObject->co_filename);
+                    if (co_filename)
+                        stacktraceLine.append(std::string("  File \"") + std::string(co_filename) + std::string("\", "));
 
                     errorLine = PyCode_Addr2Line(codeObject, frame->f_lasti);
                     stacktraceLine.append(std::string("line ") + toString(errorLine));
 
-                    if (PyValueParser::is<std::string>(codeObject->co_name))
-                        stacktraceLine.append(std::string(", in ") + PyValueParser::parse<std::string>(codeObject->co_name));
+                    auto co_name = pyutil::toPyBindObjectBorrow<pybind11::str>(codeObject->co_name);
+                    if (co_name)
+                        stacktraceLine.append(std::string(", in ") + std::string(co_name));
                 }
 
                 stacktraceLine.append("\n");
@@ -196,24 +199,23 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         s << errorLine;
         pyException.append(std::string("[") + s.str() + std::string("] "));
 
-        if (pyError_value && (pyError_string = PyObject_Str(pyError_value)) != nullptr &&
-            (PyValueParser::is<std::string>(pyError_string))) {
-                 pyException.append(PyValueParser::parse<std::string>(pyError_string));
-                 Py_XDECREF(pyError_string);
-                 pyError_string = nullptr;
-                 }
-                 else {
-                 pyException.append("<No data available>");
-                 }
-                 
+        if (pyError_value){
+            auto pyError_string = pyutil::toPyBindObjectSteal<pybind11::str>(PyObject_Str(pyError_value));
+            if(pyError_string){
+                pyException.append(pyError_string);
+            }
+        }
+        else {
+            pyException.append("<No data available>");
+        }
+
         pyException.append("\n");
 
         // finally append stacktrace string
         if (!stacktraceStr.empty()) {
             pyException.append("Stacktrace (most recent call first):\n");
             pyException.append(stacktraceStr);
-        }
-        else {
+        } else {
             pyException.append("<No stacktrace available>");
             LogWarn("Failed to parse traceback");
         }
@@ -222,7 +224,10 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         Py_XDECREF(pyError_value);
         Py_XDECREF(pyError_traceback);
         LogError(pyException);
-        PyInviwo::getPtr()->pythonExecutionOutputEvent(pyException, sysstderr);
+        InviwoApplication::getPtr()
+            ->getModuleByType<Python3Module>()
+            ->getPythonInterpreter()
+            ->pythonExecutionOutputEvent(pyException, sysstderr);
         return false;
     }
 

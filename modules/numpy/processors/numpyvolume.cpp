@@ -29,7 +29,6 @@
 
 #include <modules/numpy/processors/numpyvolume.h>
 #include <modules/numpy/numpymodule.h>
-#include <python3/pythoninterface/pyvalueparser.h>
 #include <modules/numpy/numpyobjectwrapper.h>
 #include <pybind11/pybind11.h>
 

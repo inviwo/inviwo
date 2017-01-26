@@ -87,21 +87,10 @@ add_dependency_libs_to_module(${PYTHON_LIB})
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycamera.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pynetwork.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessorwidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyproperties.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyutil.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyvolume.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/utilities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pyinviwo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pythonparameterparser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pyvalueparser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.h
 )
@@ -110,20 +99,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycamera.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pynetwork.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyprocessorwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyproperties.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyutil.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyvolume.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/utilities.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pyinviwo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pythonparameterparser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterface/pyvalueparser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.cpp
 )

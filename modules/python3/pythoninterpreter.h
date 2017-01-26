@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,38 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYNETWORK_H
-#define IVW_PYNETWORK_H
+#ifndef IVW_PYTHONINTERPRETER_H
+#define IVW_PYTHONINTERPRETER_H
 
 #include <modules/python3/python3moduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/singleton.h>
+#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/pythonincluder.h>
 
 namespace inviwo {
+class PyModule;
+class Python3Module;
 
-PyObject* py_getFactoryProcessors(PyObject* /*self*/, PyObject* /*args*/);
+class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
+public:
+    PythonInterpreter(Python3Module* module);
+    virtual ~PythonInterpreter();
 
-PyObject* py_getProcessors(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_addProcessor(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_removeProcessor(PyObject* /*self*/, PyObject* /*args*/);
+    void addModulePath(const std::string& path);
+    void importModule(const std::string& moduleName);
 
-PyObject* py_getConnections(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_addConnection(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_removeConnection(PyObject* /*self*/, PyObject* /*args*/);
+protected:
+    void init(Python3Module* module);
+    void initOutputRedirector(Python3Module* module);
 
-PyObject* py_getLinks(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_addLink(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_removeLink(PyObject* /*self*/, PyObject* /*args*/);
+private:
+    bool isInit_;
+    PyObject* dict_;
 
-PyObject* py_clearNetwork(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_loadNetwork(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_saveNetwork(PyObject* /*self*/, PyObject* /*args*/);
+    std::vector<PyModule*> registeredModules_;
+};
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PYNETWORK_H
-
+#endif  // IVW_PYINVIWO_H

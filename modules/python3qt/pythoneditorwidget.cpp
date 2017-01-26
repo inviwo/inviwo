@@ -40,7 +40,7 @@
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <modules/python3/pyinviwo.h>
+#include <modules/python3/pythoninterpreter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -407,7 +407,10 @@ void PythonEditorWidget::run() {
     util::OnScopeExit reenable([&]() {
         runAction_->setEnabled(true);
     });
-    PyInviwo::getPtr()->addObserver(this);
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->addObserver(this);
     if (!appendLog_->isChecked()) {
         clearOutput();
     }
@@ -422,7 +425,10 @@ void PythonEditorWidget::run() {
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
-    PyInviwo::getPtr()->removeObserver(this);
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->removeObserver(this);
 }
 
 void PythonEditorWidget::show() {

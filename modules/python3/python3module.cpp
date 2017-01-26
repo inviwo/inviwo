@@ -29,7 +29,7 @@
 
 #include <modules/python3/pythonincluder.h>
 #include <modules/python3/python3module.h>
-#include <modules/python3/pyinviwo.h>
+#include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -37,8 +37,6 @@
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
-
-#include <modules/python3/pybindutils.h>
 
 #if defined(__unix__)
 #include <unistd.h>
@@ -48,11 +46,11 @@ namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pyInviwo_(util::make_unique<PyInviwo>(this))
+    , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
         "Path to the file containing the script") 
 {    
-    pyInviwo_->addObserver(&pythonLogger_);
+    pythonInterpreter_->addObserver(&pythonLogger_);
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         auto filename = pythonScriptArg_.getValue();
         if (!filesystem::fileExists(filename)) {
@@ -78,26 +76,26 @@ Python3Module::Python3Module(InviwoApplication* app)
 
     std::string execpath(executablePath);
     auto folder = filesystem::getFileDirectory(execpath);
-    pyInviwo_->addModulePath(folder);
+    pythonInterpreter_->addModulePath(folder);
 #elif defined(__APPLE__)
     //TODO add output path
-    //pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are 
+/*
+    To future mac user who will fix this.
+    On windows the path to the bin folder is already in sys.path and 'import inviwopy' will locate
+   inviwopy without modifying the sys.path. On Linux the path is not added and need to be added
+   manually and I belive something similar has to be done on mac as well
+*/
+// pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are 
 #endif
-
-    PythonScript tmp;
-    tmp.setSource("import sys\nfor p in sys.path:\n\tprint(p)");
-    tmp.run();
+    
 
 
-    PythonScript tmp2;
-    tmp2.setSource("import inviwopy\nprint(inviwopy.app)\nprint(inviwopy.app.displayName)");
-    tmp2.run();
-
-    PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+    app->dispatchFront([&](){PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();});
+    
 }
 
 Python3Module::~Python3Module() {
-    pyInviwo_->removeObserver(&pythonLogger_);
+    pythonInterpreter_->removeObserver(&pythonLogger_);
 }
 
 }  // namespace
