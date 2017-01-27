@@ -63,6 +63,8 @@ uniform RaycastingParameters raycasting;
 
 uniform int channel;
 
+uniform vec4 surfaceColor = vec4(1);
+
 #define ERT_THRESHOLD 0.95  // set threshold for early ray termination
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
@@ -112,7 +114,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the inreasing
             // direction)
-            result.rgb = APPLY_LIGHTING(lighting, vec3(1.0), vec3(1.0), vec3(1.0),
+            result.rgb = APPLY_LIGHTING(lighting, surfaceColor.rgb, surfaceColor.rgb, vec3(1.0),
                                         worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
             tDepth = t;

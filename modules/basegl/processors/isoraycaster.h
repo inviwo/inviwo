@@ -89,6 +89,8 @@ private:
     ImageInport backgroundPort_;
     ImageOutport outport_;
 
+    FloatVec4Property surfaceColor_;
+
     OptionPropertyInt channel_;
     
     SimpleRaycastingProperty raycasting_;
