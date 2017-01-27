@@ -55,6 +55,7 @@ ISORaycaster::ISORaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
+    , surfaceColor_("surfaceColor","Surface Color" , vec4(1,1,1,1))
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 3.5f), vec3(0.0f, 0.0f, 0.0f),
@@ -69,6 +70,8 @@ ISORaycaster::ISORaycaster()
     addPort(outport_, "ImagePortGroup1");
     addPort(backgroundPort_, "ImagePortGroup1");
     
+    surfaceColor_.setSemantics(PropertySemantics::Color);
+
     backgroundPort_.setOptional(true);
 
     volumePort_.onChange(this, &ISORaycaster::onVolumeChange);
@@ -76,6 +79,8 @@ ISORaycaster::ISORaycaster()
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
+
+    addProperty(surfaceColor_);
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(camera_);
@@ -128,7 +133,7 @@ void ISORaycaster::process() {
         
     }
 
-    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
+    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_,surfaceColor_);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
