@@ -37,3 +37,6 @@ ivw_add_definition(IVW_PYTHON3_QT)
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+
+
+#target_link_libraries(${${mod}_target} pybind11::module)

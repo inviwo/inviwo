@@ -30,16 +30,19 @@
 #ifndef IVW_PYTHONINCLUDER_H
 #define IVW_PYTHONINCLUDER_H
 
-#pragma warning(push)
-#pragma warning(disable: 4273)
-#if !defined(IVW_PYTHON_LINK_DEBUG) &&  defined(_DEBUG)
-    #undef _DEBUG //Prevent linking debug build of python
-    #include <Python.h>
-    #define _DEBUG 1
-#else
-    #include <Python.h>
-#endif
-#pragma warning(pop)
+//#pragma warning(push)
+//#pragma warning(disable: 4273)
+//#if !defined(IVW_PYTHON_LINK_DEBUG) &&  defined(_DEBUG)
+//    #undef _DEBUG //Prevent linking debug build of python
+//    #include <Python.h>
+//    #define _DEBUG 1
+//#else
+//    #include <Python.h>
+//#endif
+//#pragma warning(pop)
+
+
+#include <pybind11/pybind11.h>
 
 
 #endif // IVW_PYTHONINCLUDER_H

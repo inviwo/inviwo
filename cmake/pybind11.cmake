@@ -29,10 +29,6 @@
 
  ### Generate python binding targets for modules. ###
 
-if(IVW_MODULE_PYTHON3)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/ext/pybind11)
-endif()
-
 function (ivw_add_py_wrapper name)
     if(IVW_MODULE_PYTHON3)
         pybind11_add_module(${name} ${ARGN})
@@ -44,13 +40,13 @@ function (ivw_add_py_wrapper name)
         endif()
 
         set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        target_link_libraries(${name} PUBLIC inviwo-module-python3)
+        #target_link_libraries(${name} PUBLIC inviwo-module-python3)
         target_link_libraries(${name} PUBLIC ${${mod}_target})
 
 
-        ivw_define_standard_definitions(${name} ${name})
+        #ivw_define_standard_definitions(${name} ${name})
         ivw_folder(${name} pybind11modules)
-        ivw_make_package(${name} ${name})
-        add_dependency_libs_to_module(${name})
+        #ivw_make_package(${name} ${name})
+        #add_dependency_libs_to_module(${name})
     endif()
 endfunction()
