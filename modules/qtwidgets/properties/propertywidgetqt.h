@@ -115,6 +115,9 @@ protected:
 
     // Context menu
     void generateContextMenu();
+    void generatePresetMenuActions();
+    void updatePresetMenuActions();
+
     void generateModuleMenuActions();
     void updateModuleMenuActions();
 
@@ -142,6 +145,9 @@ private:
     const BaseCallBack* appModeCallback_;
     QMenu* contextMenu_;
     std::unordered_map<std::string, std::unique_ptr<QMenu>> moduleSubMenus_;
+    QMenu* appPresetMenu_;
+    QMenu* workspacePresetMenu_;
+    QMenu* propertyPresetMenu_;
 
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;

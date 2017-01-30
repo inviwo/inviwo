@@ -140,8 +140,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/datainport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/dataoutport.h
@@ -203,6 +203,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyownerobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertypresetmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertysemantics.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyvisibility.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
@@ -393,8 +394,8 @@ set(SOURCE_FILES
     network/processornetworkconverter.cpp
     network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
-    network/workspacemanager.cpp
     network/processornetworkobserver.cpp
+    network/workspacemanager.cpp
     ports/imageport.cpp
     ports/inport.cpp
     ports/outport.cpp
@@ -440,6 +441,7 @@ set(SOURCE_FILES
     properties/propertyobserver.cpp
     properties/propertyowner.cpp
     properties/propertyownerobserver.cpp
+    properties/propertypresetmanager.cpp
     properties/propertysemantics.cpp
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
