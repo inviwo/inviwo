@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.4.4)
-set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
+#cmake_minimum_required(VERSION 2.4.4)
+#set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
 ivw_project(zlib C)
 

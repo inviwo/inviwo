@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+#CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 
 OPTION(OpenEXR_GENERATE_LUT "Enable the generation of lookup tables used by OpenEXR (pre-computed LuTs will be used if disabled)" OFF)
