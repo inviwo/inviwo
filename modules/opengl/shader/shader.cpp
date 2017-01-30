@@ -97,11 +97,16 @@ Shader::Shader(const Shader &rhs) : id_{glCreateProgram()}, warningLevel_{rhs.wa
     ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(Shader &&rhs) : id_{ rhs.id_ }, warningLevel_{ rhs.warningLevel_ } {
+Shader::Shader(Shader &&rhs) : id_{rhs.id_}, ready_(rhs.ready_), warningLevel_{rhs.warningLevel_} {
+    
+    ShaderManager::getPtr()->unregisterShader(&rhs);
+        
     rhs.id_ = 0;
     rhs.objectCallbacks_.clear();
+    rhs.ready_ = false;
 
     shaderObjects_ = std::move(rhs.shaderObjects_);
+
     for (auto &elem : shaderObjects_) {
         objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
     }
@@ -124,30 +129,37 @@ Shader &Shader::operator=(const Shader &that) {
 
 Shader &Shader::operator=(Shader &&that) {
     if (this != &that) {
+        ShaderManager::getPtr()->unregisterShader(this);
+
         shaderObjects_.clear();
         objectCallbacks_.clear();
         glDeleteProgram(id_);
 
         id_ = that.id_;
+        ready_ = that.ready_;
         warningLevel_ = that.warningLevel_;
 
         that.id_ = 0;
+        ready_ = false;
         that.objectCallbacks_.clear();
 
         shaderObjects_ = std::move(that.shaderObjects_);
         for (auto &elem : shaderObjects_) {
             objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
         }
+        ShaderManager::getPtr()->registerShader(this);
     }
     return *this;
 }
 
 Shader::~Shader() {
-    ShaderManager::getPtr()->unregisterShader(this);
-
+    // clear shader objects before the program is deleted
     shaderObjects_.clear();
 
-    glDeleteProgram(id_);
+    if (id_ != 0) {
+        ShaderManager::getPtr()->unregisterShader(this);
+        glDeleteProgram(id_);
+    }
     LGL_ERROR;
 }
 
@@ -165,9 +177,12 @@ void Shader::createAndAddShader(ShaderType type, std::shared_ptr<const ShaderRes
 }
 
 void Shader::createAndAddHelper(ShaderObject *object) {
-    auto ptr = ShaderObjectPtr(object, [this](ShaderObject *shaderObject) {
-        detachShaderObject(shaderObject);
-        delete shaderObject;
+    auto ptr = ShaderObjectPtr(object, [shaderId = id_](ShaderObject *shaderObject) {
+        if (shaderObject != nullptr) {
+            glDetachShader(shaderId, shaderObject->getID());
+            LGL_ERROR;
+            delete shaderObject;
+        }
     });
 
     objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebuildShader(o); }));
