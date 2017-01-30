@@ -80,6 +80,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
+class PropertyPresetManager;
 
 
 /**
@@ -136,6 +137,7 @@ public:
     ProcessorNetwork* getProcessorNetwork();
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
     WorkspaceManager* getWorkspaceManager();
+    PropertyPresetManager* getPropertyPresetManager();
 
     template <class T>
     T* getSettingsByType();
@@ -250,10 +252,15 @@ protected:
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
+    std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
 
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;
     WorkspaceManager::DeserializationHandle networkDeserializationHandle_;
+
+    WorkspaceManager::ClearHandle presetsClearHandle_;
+    WorkspaceManager::SerializationHandle presetsSerializationHandle_;
+    WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
 
 };
 
