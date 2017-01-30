@@ -17,10 +17,10 @@ ivw_group("Source Files" ${SOURCE_FILES} )
 add_library(libpng ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
-# Define defintions
-if(BUILD_SHARED_LIBS)
-	#target_compile_definitions(libpng PRIVATE PNG_BUILD_DLL)
-    #ivw_add_definition_to_list(PNG_USE_DLL)
+# Define definitions for build on windows
+if(BUILD_SHARED_LIBS AND WIN32)
+    target_compile_definitions(libpng PRIVATE PNG_BUILD_DLL)
+    ivw_add_definition_to_list(PNG_USE_DLL)
 endif()
 
 #--------------------------------------------------------------------
