@@ -34,6 +34,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/metadata/metadatafactory.h>
 
 namespace inviwo {
 
@@ -136,7 +138,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
                                          Property* property) {
     switch (type) {
         case PropertyPresetType::Property: {
-            if (!property) false;
+            if (!property) return false;
             auto& pmap = getPropertyPresets(property);
             return pmap.erase(name) > 0;
         }
