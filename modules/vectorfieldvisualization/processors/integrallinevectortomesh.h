@@ -71,7 +71,8 @@ public:
     enum class ColoringMethod {
         Velocity,
         Timestamp,
-        ColorPort
+        ColorPort,
+        Curvature
     };
     IntegralLineVectorToMesh();
     virtual ~IntegralLineVectorToMesh() = default;
@@ -98,6 +99,8 @@ private:
     TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
+    FloatProperty curvatureScale_;
+    StringProperty maxCurvature_;
 };
 
 } // namespace
