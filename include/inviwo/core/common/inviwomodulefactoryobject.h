@@ -76,9 +76,9 @@ public:
 // Returns a pointer to a InviwoModuleFactoryObject without any input arguments
 #ifdef WIN32
 // __stdcall is the convention used by the WinAPI
-typedef InviwoModuleFactoryObject*(__stdcall* f_getModule)();
+using f_getModule = InviwoModuleFactoryObject*(__stdcall*)();
 #else
-typedef InviwoModuleFactoryObject*(* f_getModule)();
+using f_getModule = InviwoModuleFactoryObject*(*)();
 #endif
 
 template <typename T>

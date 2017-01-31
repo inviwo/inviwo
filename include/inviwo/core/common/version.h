@@ -83,22 +83,15 @@ public:
      * Patch and build versions are ignored since API should not have changed in those cases.
      * @return bool true if major and minor versions are equal, false otherwise.
      */
-    friend bool operator==(const Version& lhs, const Version& rhs) {
-        if (lhs.major < 1 || rhs.major < 1) {
+    bool semanticVersionEqual(const Version& other) const {
+        if (major < 1 || other.major < 1) {
             // Each version increment is a breaking change
             // when major version is 0
-            return std::tie(lhs.major, lhs.minor, lhs.patch) ==
-                   std::tie(rhs.major, rhs.minor, rhs.patch);
+            return std::tie(major, minor, patch) ==
+                   std::tie(other.major, other.minor, other.patch);
         } else {
-            return std::tie(lhs.major, lhs.minor) == std::tie(rhs.major, rhs.minor);
+            return std::tie(major, minor) == std::tie(other.major, other.minor);
         }
-    }
-
-    /**
-     * @see operator==
-     */
-    friend bool operator!=(const Version& lhs, const Version& rhs) {
-        return !(lhs == rhs);
     }
 
     unsigned int major = 1; ///< Increases when you make incompatible API changes

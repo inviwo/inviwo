@@ -244,7 +244,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
             return toLower(module->name) == lowerCaseDep;
         });
         // Check if dependent module is of correct version
-        if (it != modulesFactoryObjects_.end() && Version((*it)->version) == Version(depVersions)) {
+        if (it != modulesFactoryObjects_.end() && Version((*it)->version).semanticVersionEqual(Version(depVersions))) {
             return true;
         }
         else {
@@ -258,7 +258,7 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
         }
         postProgress("Loading module: " + moduleObj->name);
         // Make sure that the module supports the current inviwo core version
-        if (Version(IVW_VERSION) != Version(moduleObj->inviwoCoreVersion)) {
+        if (!Version(IVW_VERSION).semanticVersionEqual(Version(moduleObj->inviwoCoreVersion))) {
             LogError("Failed to register module: " + moduleObj->name);
             LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion + ", current version is " + IVW_VERSION);
             util::push_back_unique(failed, toLower(moduleObj->name));
