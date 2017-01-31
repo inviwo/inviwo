@@ -38,7 +38,13 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGridLayout>
+#include <QApplication>
+#include <QClipboard>
+#include <QPixmap>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
+#include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
 
@@ -191,6 +197,65 @@ void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
     RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getIdentifier());
 }
+
+#ifndef QT_NO_CONTEXTMENU
+void CanvasProcessorWidgetQt::contextMenuEvent(QContextMenuEvent* event) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor_)) {
+        QMenu menu(this);
+
+        auto visibleLayer = canvasProcessor->getVisibleLayer();
+        auto img = canvasProcessor->getImage();
+
+        connect(menu.addAction("Select processor") , &QAction::triggered , [&](){
+            processor_->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)->setSelected(true);
+        });
+
+        for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
+            std::ostringstream oss;
+            oss << "color layer " << i << " to clipboard";
+            auto layer = img->getColorLayer(i);
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
+            connect(copyAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy picking layer to clipboard";
+            auto layer = img->getPickingLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto pickingAction = menu.addAction(oss.str().c_str());
+            connect(pickingAction, &QAction::triggered, [&]() {
+                auto qimg = utilqt::layerToQImage(*layer);
+                QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy depth layer to clipboard";
+            auto layer = img->getDepthLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto depthAction = menu.addAction(oss.str().c_str());
+            connect(depthAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        menu.exec(event->globalPos());
+    }
+}
+#endif
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {
     if(ignoreUpdate_) return;
