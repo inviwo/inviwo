@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2016 Inviwo Foundation
+ * Copyright (c) 2015-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,7 @@ ImageGradient::ImageGradient()
     , renormalization_("renormalization", "Renormalization", true)
 {
     dataFormat_ = DataVec2Float32::get();
+    swizzleMask_ = swizzlemasks::redGreen;
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();

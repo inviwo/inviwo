@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,11 +97,11 @@ TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
 
 TransferFunction::~TransferFunction() = default;
 
-const TransferFunctionDataPoint* TransferFunction::getPoint(int i) const {
+const TransferFunctionDataPoint* TransferFunction::getPoint(size_t i) const {
     return points_[i].get();
 }
 
-TransferFunctionDataPoint* TransferFunction::getPoint(int i) {
+TransferFunctionDataPoint* TransferFunction::getPoint(size_t i) {
     return points_[i].get();
 }
 
@@ -109,10 +109,10 @@ void TransferFunction::addPoint(const vec2& pos) {
     // determine color
     vec4 color = vec4(0.5f, 0.5f, 0.5f, pos.y);
     if (points_.size() > 0) {
-        int leftNeighborID = 0;
-        int rightNeighborID = 0;
+        size_t leftNeighborID = 0;
+        size_t rightNeighborID = 0;
 
-        for (int i = 0; i < static_cast<int>(points_.size()); i++) {
+        for (size_t i = 0; i < points_.size(); i++) {
             if (points_[i]->getPos().x <= pos.x) {
                 leftNeighborID = i;
             } else if (rightNeighborID == 0 && points_[i]->getPos().x > pos.x) {
@@ -235,23 +235,16 @@ void TransferFunction::deserialize(Deserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
 
-    TFPoints toAdd;
-    std::vector<TransferFunctionDataPoint*> toRemove;
-
-    auto desPoints =
-        util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
-            .setMakeNew([this]() { return std::unique_ptr<TransferFunctionDataPoint>(); })
-            .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
-                toAdd.push_back(std::move(point));
-            })
-            .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
-                toRemove.push_back(point.get());
-                return false;
-            });
-    desPoints(d, points_);
-
-    for (auto point : toRemove) removePoint(point);
-    for (auto& point : toAdd) addPoint(std::move(point));
+    util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
+        .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+            auto ptr = point.get();
+            ptr->addObserver(this);
+            std::stable_sort(points_.begin(), points_.end(), comparePtr{});
+            notifyControlPointAdded(ptr);
+        })
+        .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
+            notifyControlPointRemoved(point.get());
+        })(d, points_);
 
     invalidate();
 }
@@ -261,9 +254,9 @@ vec4 TransferFunction::sample(double v) const {
 }
 
 vec4 TransferFunction::sample(float v) const {
-    if (v < 0) {
+    if (v <= 0) {
         return points_.front()->getRGBA();
-    } else if (v > 1) {
+    } else if (v >= 1) {
         return points_.back()->getRGBA();
     }
 
@@ -379,7 +372,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
     std::string extension = toLower(filesystem::getFileExtension(filename));
 
     if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
-        Deserializer deserializer(InviwoApplication::getPtr(), filename);
+        Deserializer deserializer(filename);
         deserialize(deserializer);
     } else {
         auto factory = InviwoApplication::getPtr()->getDataReaderFactory();

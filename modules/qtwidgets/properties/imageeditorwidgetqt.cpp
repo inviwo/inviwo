@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ SimpleWithRectangleLabel::SimpleWithRectangleLabel(QPointF rectSize, QGraphicsSc
     label_->setPos(0, 0);
     label_->setDefaultTextColor(Qt::black);
     label_->setFont(QFont("Segoe", 10, QFont::Black, false));
-    label_->setCrop(9, 8);
+    label_->setCrop(rectSize.x());
 }
 
 SimpleWithRectangleLabel::~SimpleWithRectangleLabel() {}

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,6 +88,8 @@ private:
     ImageInport exitPort_;
     ImageInport backgroundPort_;
     ImageOutport outport_;
+
+    FloatVec4Property surfaceColor_;
 
     OptionPropertyInt channel_;
     

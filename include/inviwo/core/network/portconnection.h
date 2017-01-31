@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,10 @@ public:
     PortConnection& operator=(const PortConnection&) = default;
     virtual ~PortConnection() = default;
 
+    /**
+     * Method to test if both outport and inport is valid, eg not nullptr
+     * @return false if the outport and/or the inport is nullptr
+     */
     operator bool() const;
 
     Inport* getInport() const { return inport_; }

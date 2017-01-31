@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-# Inviwo Qt Widgets
+# Inviwo Qt ApplicationBase
 ivw_project(inviwo-qtapplicationbase)
 
 #--------------------------------------------------------------------

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,6 +116,8 @@ private:
 *
 * ### Properties
 *   * __Overlay Interaction__ Allow interactions on overlay images.
+*   * __Pass Events to Main View__  Events unhandled by the overlay will be passed 
+*                           on to the main view
 *   * __Size__              Size of the overlay image.
 *   * __Position__          Position of the overlay image.
 *   * __Anchor Position__   Anchor of the overlay image for alignment.
@@ -151,6 +153,7 @@ private:
     BoolProperty enabled_;
     BoolProperty overlayInteraction_;  //<! allows to interact with overlay images, otherwise only
                                        //the source image will receive interaction events
+    BoolProperty passThroughEvent_;
 
     // TODO: replace this with std::vector to match multi-inport
     OverlayProperty overlayProperty_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,6 +81,8 @@
 #include <QTimer>
 #include <QPainter>
 #include <QMimeData>
+#include <QMargins>
+#include <QPdfWriter>
 #include <warn/pop>
 
 namespace inviwo {
@@ -1008,99 +1010,6 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
     for (auto& con : newConnections) network_->addConnection(con);
 }
 
-///////////////////////////////
-//   SERIALIZATION METHODS   //
-///////////////////////////////
-void NetworkEditor::clearNetwork() {
-    NetworkLock lock(network_);
-
-    // We need to clear the portInspectors manually otherwise the pointers in the
-    // PortInspector networks won't be cleared
-    PortInspectorMap portInspectors = portInspectors_;
-    for (auto& portInspector : portInspectors) removePortInspector(portInspector.first);
-
-    network_->clear();
-    ResourceManager::getPtr()->clearAllResources();
-
-    setModified(true);
-}
-
-bool NetworkEditor::saveNetwork(std::string fileName, bool setAsFilename) {
-    try {
-        Serializer xmlSerializer(fileName);
-        network_->serialize(xmlSerializer);
-        xmlSerializer.writeFile();
-        if (setAsFilename) filename_ = fileName;
-        setModified(false);
-        LogInfo("Workspace saved to: " << fileName);
-    } catch (SerializationException& exception) {
-        util::log(exception.getContext(),
-                  "Unable to save network " + fileName + " due to " + exception.getMessage(),
-                  LogLevel::Error);
-        return false;
-    }
-    return true;
-}
-
-bool NetworkEditor::saveNetwork(std::ostream stream) {
-    try {
-        Serializer xmlSerializer(filename_);
-        network_->serialize(xmlSerializer);
-        xmlSerializer.writeFile(stream);
-        setModified(false);
-    } catch (SerializationException& exception) {
-        util::log(exception.getContext(),
-                  "Unable to save network " + filename_ + " due to " + exception.getMessage(),
-                  LogLevel::Error);
-        return false;
-    }
-    return true;
-}
-
-bool NetworkEditor::loadNetwork(std::string fileName) {
-    std::ifstream fileStream(fileName.c_str());
-    if (!fileStream) {
-        LogError("Could not open workspace file: " << fileName);
-        fileStream.close();
-        return false;
-    }
-    bool loaded = loadNetwork(fileStream, fileName);
-    fileStream.close();
-
-    return loaded;
-}
-
-bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
-    // Clean the current network
-    clearNetwork();
-    {
-        // Lock the network that so no evaluations are triggered during the de-serialization
-        NetworkLock lock(network_);
-
-        // Deserialize processor network
-        try {
-            Deserializer xmlDeserializer(mainwindow_->getInviwoApplication(), stream, path);
-            network_->deserialize(xmlDeserializer);
-        } catch (const AbortException& exception) {
-            util::log(exception.getContext(),
-                      "Unable to load network " + path + " due to " + exception.getMessage(),
-                      LogLevel::Error);
-            clearNetwork();
-            return false;
-        } catch (const IgnoreException& exception) {
-            util::log(exception.getContext(),
-                      "Incomplete network loading " + path + " due to " + exception.getMessage(),
-                      LogLevel::Error);
-        }
-        forEachObserver([&](NetworkEditorObserver* o) { o->onNetworkEditorFileChanged(path); });
-        InviwoApplicationQt::processEvents();  // make sure the gui is ready before we unlock.
-    }
-
-    setModified(false);
-    filename_ = path;
-    return true;
-}
-
 bool NetworkEditor::event(QEvent* e) {
     if (e->type() == PortInspectorEvent::type()) {
         e->accept();
@@ -1168,6 +1077,32 @@ void NetworkEditor::selectAll() {
     for(auto i : items()) i->setSelected(true);
 }
 
+void NetworkEditor::saveNetworkImage(const std::string& filename) {
+    QRectF rect(itemsBoundingRect());
+
+    QMargins margins(25, 25, 25, 25);
+    rect += margins;
+
+    QRect destRect(QPoint(0, 0), rect.size().toSize());
+
+    if (toLower(filesystem::getFileExtension(filename)) == "pdf") {
+        QPdfWriter pdfwriter(QString::fromStdString(filename));
+        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfwriter.setResolution(72);
+        QPainter painter(&pdfwriter);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+    } else {
+        QImage image(destRect.size(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+        image.save(QString::fromStdString(filename));
+    }
+}
+
 ////////////////////////
 //   HELPER METHODS   //
 ////////////////////////
@@ -1202,16 +1137,20 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->drawLines(linesX.data(), linesX.size());
     painter->drawLines(linesY.data(), linesY.size());
     painter->restore();
+}
 
+void NetworkEditor::drawForeground(QPainter* painter, const QRectF& rect) {
     // For testing purpuses only. Draw bounding rects around all graphics items
-    // QList<QGraphicsItem*> items = QGraphicsScene::items(Qt::DescendingOrder);
-    // painter->setPen(Qt::magenta);
-    // for (QList<QGraphicsItem*>::iterator it = items.begin(); it != items.end(); ++it) {
-    //    QRectF br = (*it)->sceneBoundingRect();
-    //    painter->drawRect(br);
-    //}
-    // painter->setPen(Qt::red);
-    // painter->drawRect(QGraphicsScene::itemsBoundingRect());
+    /*
+    QList<QGraphicsItem*> items = QGraphicsScene::items(Qt::DescendingOrder);
+    painter->setPen(Qt::magenta);
+    for (QList<QGraphicsItem*>::iterator it = items.begin(); it != items.end(); ++it) {
+        QRectF br = (*it)->sceneBoundingRect();
+        painter->drawRect(br);
+    }
+    painter->setPen(Qt::red);
+    painter->drawRect(QGraphicsScene::itemsBoundingRect());
+    */
 }
 
 void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {

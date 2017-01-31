@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,6 @@ LinkGraphicsItem::LinkGraphicsItem(QPointF startPoint, QPointF endPoint, ivec3 c
     , startDir_(startDir)
     , endDir_(endDir) {
     setZValue(LINKGRAPHICSITEM_DEPTH);
-    QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
-    processorShadowEffect->setOffset(3.0);
-    processorShadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(processorShadowEffect);
 }
 
 LinkGraphicsItem::~LinkGraphicsItem() {}

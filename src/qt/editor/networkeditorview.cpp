@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,9 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setCacheMode(QGraphicsView::CacheBackground);
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
+        [this](Deserializer&) { fitNetwork(); });
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
@@ -189,13 +192,12 @@ void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
     QPointF numPixels = e->pixelDelta() / 5.0;
     QPointF numDegrees = e->angleDelta() / 8.0 / 15;
-
+    
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
-            zoom(qPow(1.05,  numPixels.y()));
-
+            zoom(qPow(1.025, std::max(-15.0, std::min(15.0, numPixels.y()))));
         } else if (!numDegrees.isNull()) {
-            zoom(qPow(1.05,  numDegrees.y()));
+            zoom(qPow(1.025, std::max(-15.0, std::min(15.0, numDegrees.y()))));
         }
     } else {
         QGraphicsView::wheelEvent(e);
@@ -216,10 +218,9 @@ void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
 }
 
 void NetworkEditorView::zoom(double dz) {
-    if (matrix().m11() > 2 || matrix().m11() < 0.25) return;
+    if ((dz > 1.0 && matrix().m11() > 8.0) || (dz < 1.0 && matrix().m11() < 0.125)) return;
     scale(dz, dz);
 }
-
 
 void NetworkEditorView::onNetworkEditorFileChanged(const std::string& newFilename) {
     fitNetwork();

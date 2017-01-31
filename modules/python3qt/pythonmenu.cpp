@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        menu_ = win->menuBar()->addMenu("Python");
+        auto menu = utilqt::addMenu("&Python");
         QAction* pythonEditorOpen =
             menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
         editor_ = new PythonEditorWidget(win, app);

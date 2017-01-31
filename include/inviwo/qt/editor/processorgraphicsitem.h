@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -127,9 +127,6 @@ private:
     std::map<Outport*, ProcessorOutportGraphicsItem*> outportItems_;
     
     bool highlight_;
-
-    static const float roundedCorners_;
-    static const int labelHeight_;
 
     #if IVW_PROFILING 
     size_t processCount_;

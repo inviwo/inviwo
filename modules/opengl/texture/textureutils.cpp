@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 #include <modules/opengl/canvasgl.h>
@@ -46,63 +45,71 @@ namespace inviwo {
 
 namespace utilgl {
 
-void activateTarget(Image& image, ImageType type) {
-    auto outImageGL = image.getEditableRepresentation<ImageGL>();
+void activateTarget(Image& targetImage, ImageType type) {
+    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
 }
 
-void activateTarget(ImageOutport& outport, ImageType type) {
-    if (!outport.hasEditableData()) {
-       outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat())); 
+void activateTarget(ImageOutport& targetOutport, ImageType type) {
+    if (!targetOutport.hasEditableData()) {
+        targetOutport.setData(
+            std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = outport.getEditableData();
+    auto outImage = targetOutport.getEditableData();
     activateTarget(*outImage, type);
 }
 
-void activateAndClearTarget(ImageOutport& outport, ImageType type) {
-    activateTarget(outport, type);
+void activateAndClearTarget(Image& targetImage, ImageType type) {
+    activateTarget(targetImage, type);
     clearCurrentTarget();
 }
 
-void activateAndClearTarget(Image& image, ImageType type) {
-    activateTarget(image, type);
+void activateAndClearTarget(ImageOutport& targetOutport, ImageType type) {
+    activateTarget(targetOutport, type);
     clearCurrentTarget();
 }
 
-void activateTargetAndCopySource(Image& outImage, ImageInport& inport, ImageType type) {
-    auto outImageGL = outImage.getEditableRepresentation<ImageGL>();
+void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, ImageType type) {
+    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
+    sourceImage.getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+    outImageGL->activateBuffer(type);
+}
 
-    if (auto inImage = inport.getData()) {
-        if (auto inImageGL = inImage->getRepresentation<ImageGL>()) {
-            inImageGL->copyRepresentationsTo(outImageGL);
-        }
+void activateTargetAndCopySource(Image& targetImage, ImageInport& sourceInport, ImageType type) {
+    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
+
+    if (auto inImage = sourceInport.getData()) {
+        inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
         LogWarnCustom("TextureUtils", "Trying to copy empty image inport: \""
-                                          << inport.getIdentifier() << "\" in processor: \""
-                                          << inport.getProcessor()->getIdentifier() << "\"");
+                                          << sourceInport.getIdentifier() << "\" in processor: \""
+                                          << sourceInport.getProcessor()->getIdentifier() << "\"");
     }
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, ImageType type) {
-    if (!outport.hasEditableData()) {
-        outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat()));
+void activateTargetAndCopySource(ImageOutport& targetOutport, ImageInport& sourceInport,
+                                 ImageType type) {
+    if (!targetOutport.hasEditableData()) {
+        targetOutport.setData(
+            std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = outport.getEditableData();
-    activateTargetAndCopySource(*outImage, inport, type);
+    auto outImage = targetOutport.getEditableData();
+    activateTargetAndCopySource(*outImage, sourceInport, type);
 }
 
 void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
-void updateAndActivateTarget(ImageOutport& outport, ImageInport& inport) {
-    if (!outport.hasEditableData()) {
-        outport.setData(std::make_shared<Image>(outport.getDimensions(), outport.getDataFormat()));
+void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInport) {
+    if (!targetOutport.hasEditableData()) {
+        targetOutport.setData(
+            std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = outport.getEditableData();
+    auto outImage = targetOutport.getEditableData();
     auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
-    outImageGL->updateFrom(inport.getData()->getRepresentation<ImageGL>());
+    outImageGL->updateFrom(sourceInport.getData()->getRepresentation<ImageGL>());
     outImageGL->activateBuffer();
 }
 
@@ -181,8 +188,7 @@ void bindTextures(const ImageInport& inport, GLenum colorTexUnit, GLenum depthTe
 
 void bindTextures(const ImageOutport& outport, GLenum colorTexUnit, GLenum depthTexUnit,
                   GLenum pickingTexUnit) {
-    bindTextures(*outport.getData(), true, true, true, colorTexUnit, depthTexUnit,
-                 pickingTexUnit);
+    bindTextures(*outport.getData(), true, true, true, colorTexUnit, depthTexUnit, pickingTexUnit);
 }
 
 void bindColorTexture(const Image& image, const TextureUnit& texUnit) {
@@ -240,8 +246,8 @@ void bindTextures(const Image& image, const TextureUnit& colorTexUnit,
 
 void bindTextures(const ImageInport& inport, const TextureUnit& colorTexUnit,
                   const TextureUnit& depthTexUnit, const TextureUnit& pickingTexUnit) {
-    bindTextures(*inport.getData(), true, true, true, colorTexUnit.getEnum(), depthTexUnit.getEnum(),
-                 pickingTexUnit.getEnum());
+    bindTextures(*inport.getData(), true, true, true, colorTexUnit.getEnum(),
+                 depthTexUnit.getEnum(), pickingTexUnit.getEnum());
 }
 
 void bindTextures(const ImageOutport& outport, const TextureUnit& colorTexUnit,
@@ -337,14 +343,12 @@ void setShaderUniforms(Shader& shader, const ImageOutport& outport, const std::s
                       samplerID.empty() ? outport.getIdentifier() + "Parameters" : samplerID);
 }
 
-
-
 std::unique_ptr<Mesh> planeRect() {
     auto verticesBuffer =
-        util::makeBuffer<vec2>({ {-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f} });
+        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
     auto texCoordsBuffer =
-        util::makeBuffer<vec2>({ {0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f} });
-    auto indices_ = util::makeIndexBuffer({ 0, 1, 2, 3 });
+        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
     auto m = util::make_unique<Mesh>();
     m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
@@ -374,22 +378,21 @@ void bindTexture(const Texture& texture, GLenum texUnit) {
     glActiveTexture(GL_TEXTURE0);
 }
 
-
 void bindTexture(const Texture& texture, const TextureUnit& texUnit) {
     glActiveTexture(texUnit.getEnum());
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-    const Texture& texture, const std::string samplerID) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Texture& texture,
+                        const std::string samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);
     shader.setUniform(samplerID, unit);
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) { 
+void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
     if (auto tfLayer = tfp.get().getData()) {
         auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
         transferFunctionGL->bindTexture(texUnit.getEnum());
@@ -397,7 +400,7 @@ void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit
 }
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-    const TransferFunctionProperty& tf) {
+                        const TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
@@ -472,7 +475,6 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageOutport
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
-
 }
 
 }  // namespace

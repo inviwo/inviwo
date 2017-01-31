@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,8 +74,6 @@ public:
     EditorGraphicsItem(QGraphicsItem* parent);
     virtual ~EditorGraphicsItem();
     QPoint mapPosToSceen(QPointF pos) const;
-
-    static const QPainterPath makeRoundedBox(QRectF rect, float radius );
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* event);
     void showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const;

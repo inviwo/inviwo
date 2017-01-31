@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,10 +55,6 @@ CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3
     , selectedBorderColor_() {
 
     setZValue(DRAGING_ITEM_DEPTH);
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect();
-    shadowEffect->setOffset(3.0);
-    shadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(shadowEffect);
     resetBorderColors();
 }
 

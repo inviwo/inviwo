@@ -143,6 +143,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/datainport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/dataoutport.h
@@ -204,6 +205,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyownerobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertypresetmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertysemantics.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyvisibility.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
@@ -398,6 +400,7 @@ set(SOURCE_FILES
     network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
+    network/workspacemanager.cpp
     ports/imageport.cpp
     ports/inport.cpp
     ports/outport.cpp
@@ -443,6 +446,7 @@ set(SOURCE_FILES
     properties/propertyobserver.cpp
     properties/propertyowner.cpp
     properties/propertyownerobserver.cpp
+    properties/propertypresetmanager.cpp
     properties/propertysemantics.cpp
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
@@ -623,5 +627,8 @@ option(IVW_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of usin
 if(IVW_EMBED_BUILDINFO)
     add_dependencies("inviwo-core" "inviwo-buildinfo-header")
     target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
+else()
+    ## ensure that the ini file containing the build info is packaged and installed to the bin folder
+    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION bin COMPONENT modules CONFIGURATIONS Release Debug)
 endif()
 #--------------------------------------------------------------------

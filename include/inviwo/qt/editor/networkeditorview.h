@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -74,6 +75,7 @@ private:
     NetworkEditor* networkEditor_;
     std::unordered_map<std::string, QMetaObject::Connection> connections_;
     ivec2 scrollPos_;
+    WorkspaceManager::DeserializationHandle loadHandle_;
 };
 
 }  // namespace

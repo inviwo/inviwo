@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,13 @@ vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 sa
     return (texture(volume, samplePos) + volumeParams.formatOffset)
         * (1.0 - volumeParams.formatScaling);
 }
+
+float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos,int channel) {
+    vec4 v = getNormalizedVoxel(volume,volumeParams,samplePos);
+    return v[channel];
+}
+
+
 // Return a value mapped from data range [min,max] to [-1,1]
 // Same as getNormalizedVoxel but for signed types. 
 vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {

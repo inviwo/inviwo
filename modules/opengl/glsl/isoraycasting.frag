@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,14 +63,17 @@ uniform RaycastingParameters raycasting;
 
 uniform int channel;
 
+uniform vec4 surfaceColor = vec4(1);
+
 #define ERT_THRESHOLD 0.95  // set threshold for early ray termination
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
-    float tIncr = min(
-        tEnd, tEnd / (raycasting.samplingRate * length(rayDirection * volumeParameters.dimensions)));
+    float tIncr =
+        min(tEnd,
+            tEnd / (raycasting.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
     float t = 0.5f * tIncr;
@@ -89,7 +92,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
     samplePos = entryPoint + t * rayDirection;
     bool outside =
-        getNormalizedVoxel(volume, volumeParameters, samplePos)[channel] < raycasting.isoValue;
+        getNormalizedVoxelChannel(volume, volumeParameters, samplePos,channel) < raycasting.isoValue;
     t += tIncr;
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
@@ -111,10 +114,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the inreasing
             // direction)
-            result.rgb = APPLY_LIGHTING(lighting, vec3(1.0), vec3(1.0), vec3(1.0),
+            result.rgb = APPLY_LIGHTING(lighting, surfaceColor.rgb, surfaceColor.rgb, vec3(1.0),
                                         worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
-			tDepth = t;
+            tDepth = t;
             t += tEnd;
             break;
         } else if (sampOutside != outside) {
@@ -130,24 +133,22 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera, tDepth/tEnd, texture(entryDepth, texCoords).x,
+        tDepth = calculateDepthValue(camera, tDepth / tEnd, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
     } else {
         tDepth = 1.0;
     }
 
-
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     {
-        float d = texture(bgDepth,texCoords).x;
-        if(tDepth == 1 || d < tDepth){
+        float d = texture(bgDepth, texCoords).x;
+        if (tDepth == 1 || d < tDepth) {
             result = vec4(0);
-            result = drawBackground(texture(bgColor,texCoords),0,0,result,0);
+            result = drawBackground(texture(bgColor, texCoords), 0, 0, result, 0, tDepth);
             tDepth = d;
         }
     }
 #endif
-
 
     gl_FragDepth = tDepth;
     return result;
@@ -158,20 +159,20 @@ void main() {
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
-    vec4 color;
+    vec4 color = vec4(0);
 
-#ifdef HAS_BG
+#ifdef HAS_BACKGROUND
     color = texture(bgColor, texCoords);
     gl_FragDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else
     PickingData = vec4(0);
-    if (entryPoint == exitPoint){
+    if (entryPoint == exitPoint) {
         discard;
     }
 #endif
-    if (entryPoint != exitPoint){
-        color = rayTraversal(entryPoint, exitPoint, texCoords);   
+    if (entryPoint != exitPoint) {
+        color = rayTraversal(entryPoint, exitPoint, texCoords);
     }
 
     FragData0 = color;

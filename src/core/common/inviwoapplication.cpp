@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/resources/resourcemanager.h>
@@ -109,7 +110,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{
-          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
+          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())}
+    , workspaceManager_{ util::make_unique<WorkspaceManager>(this)}
+    , propertyPresetManager_{ util::make_unique<PropertyPresetManager>() }
+{
+
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
         auto dir = filesystem::getFileDirectory(filename);
@@ -139,6 +144,26 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
             resizePool(static_cast<size_t>(sys->poolSize_.get()));
         });
     }
+
+    workspaceManager_->registerFactory(getProcessorFactory());
+    workspaceManager_->registerFactory(getMetaDataFactory());
+    workspaceManager_->registerFactory(getPropertyFactory());
+    workspaceManager_->registerFactory(getInportFactory());
+    workspaceManager_->registerFactory(getOutportFactory());
+
+    networkClearHandle_ = workspaceManager_->onClear([&]() { processorNetwork_->clear(); });
+    networkSerializationHandle_ = workspaceManager_->onSave(
+        [&](Serializer& s) { s.serialize("ProcessorNetwork", *processorNetwork_); });
+    networkDeserializationHandle_ = workspaceManager_->onLoad(
+        [&](Deserializer& d) { d.deserialize("ProcessorNetwork", *processorNetwork_); });
+
+    presetsClearHandle_ =
+        workspaceManager_->onClear([&]() { propertyPresetManager_->clearWorkspacePresets(); });
+    presetsSerializationHandle_ = workspaceManager_->onSave(
+        [&](Serializer& s) { propertyPresetManager_->saveWorkspacePresets(s); });
+    presetsDeserializationHandle_ = workspaceManager_->onLoad(
+        [&](Deserializer& d) { propertyPresetManager_->loadWorkspacePresets(d); });
+
     // Make sure that all data formats are initialized in this library.
     // Need to be done when libraries are loaded at runtime since the
     // data format may be used first in one of the loaded libraries
@@ -577,6 +602,12 @@ ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNet
 
 ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {
     return processorNetworkEvaluator_.get();
+}
+
+WorkspaceManager* InviwoApplication::getWorkspaceManager() { return workspaceManager_.get(); }
+
+PropertyPresetManager* InviwoApplication::getPropertyPresetManager() {
+    return propertyPresetManager_.get();
 }
 
 const CommandLineParser& InviwoApplication::getCommandLineParser() const {

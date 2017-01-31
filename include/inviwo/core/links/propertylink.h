@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,10 @@ public:
     PropertyLink(const PropertyLink&) = default;
     PropertyLink& operator=(const PropertyLink&) = default;
     virtual ~PropertyLink() = default;
-
+    /**
+     * Method to test if both source and destination properties are valid, eg not nullptr
+     * @return false if at least one of the properties is null
+     */
     operator bool() const;
 
     Property* getSource() const { return src_; }

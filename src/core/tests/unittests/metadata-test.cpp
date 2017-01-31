@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2016 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ void testserialization(T def, T in) {
     Serializer serializer(filename);
     mdo1->getMetaDataMap()->serialize(serializer);
     serializer.writeFile(ss);
-    Deserializer deserializer(nullptr, ss, filename);  // probabably we need all the factories here.
+    Deserializer deserializer(ss, filename);
     mdo2->getMetaDataMap()->deserialize(deserializer);
     T outdata2 = def;
     outdata2 = mdo2->getMetaData<M>("data", outdata2);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,8 +110,8 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     colors_.setOptional(true);
     
     addPort(lines_);
-    addPort(brushingList_);
     addPort(colors_);
+    addPort(brushingList_);
     addPort(mesh_);
 
     addProperty(ignoreBrushingList_);
@@ -217,6 +217,7 @@ void IntegralLineVectorToMesh::process() {
             }
             else {
                 c = colors_.getData()->at(idx);
+                //c = colors_.getData()->at(line.getIndex());
             }
         }
         idx++;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2016 Inviwo Foundation
+ * Copyright (c) 2013-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,80 +31,93 @@
 
 namespace inviwo {
 
-Timer::Timer(duration_t interval, std::function<void()> callback)
+Timer::Timer(Milliseconds interval, std::function<void()> callback)
     : callback_{std::make_shared<Callback>(std::move(callback))}
     , interval_{interval} {}
 
 Timer::Timer(size_t interval, std::function<void()> callback)
-    : Timer(std::chrono::milliseconds(interval), std::move(callback)) {}
+    : Timer(Milliseconds(interval), std::move(callback)) {}
 
 Timer::~Timer() { stop(); }
 
 
 void Timer::start(size_t interval) {
-    start(std::chrono::milliseconds(interval));
+    start(Milliseconds(interval));
 }
 
-void Timer::start(duration_t interval) {
+void Timer::start(Milliseconds interval) {
     interval_ = interval; 
     start();
 }
 
 void Timer::start() {
+    std::unique_lock<std::recursive_mutex> l(callback_->mutex);
     if (!callback_->enabled) {
         callback_->enabled = true;
-        thread_ = std::thread(&Timer::timer, this);
+        callback_->thread = std::thread(&Timer::timer, this);
     }
 }
 
 void Timer::setInterval(size_t interval) {
-    setInterval(std::chrono::milliseconds(interval));
+    setInterval(Milliseconds(interval));
 }
 
-void Timer::setInterval(duration_t interval) {
-    std::lock_guard<std::mutex> lock{callback_->mutex};
+void Timer::setInterval(Milliseconds interval) {
+    std::lock_guard<std::recursive_mutex> lock{callback_->mutex};
     interval_ = interval;
 }
 
-Timer::duration_t Timer::getInterval() const {
-    std::lock_guard<std::mutex> lock{callback_->mutex};
+Timer::Milliseconds Timer::getInterval() const {
+    std::lock_guard<std::recursive_mutex> lock{callback_->mutex};
     return interval_;
 }
 
 void Timer::stop() {
+    // Stop has to wait until any current callback is done.
+    // But we might be in that callback, hence a recursive mutex
     if (callback_->enabled) {
         {
-            std::unique_lock<std::mutex> l(callback_->mutex);
+            std::unique_lock<std::recursive_mutex> l(callback_->mutex);
             callback_->enabled = false;
         }
         callback_->cvar.notify_one();
-        thread_.join();
     }
 }
 
 void Timer::timer() {
-    auto deadline = std::chrono::steady_clock::now() + interval_;
-    std::unique_lock<std::mutex> lock{callback_->mutex};
+    auto callback = callback_;
     
-    while (callback_->enabled) {
-        if (callback_->cvar.wait_until(lock, deadline) == std::cv_status::timeout) {
+    auto deadline = std::chrono::steady_clock::now() + interval_;
+    std::unique_lock<std::recursive_mutex> lock{callback->mutex};
+
+
+    while (callback->enabled) {
+        if (callback->cvar.wait_until(lock, deadline) == std::cv_status::timeout) {
             lock.unlock();
             // skip if previous not done.
             if (!result_.valid() ||
                 result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                     std::future_status::ready) {
-                auto tmp = callback_;
-                result_ = dispatchFront([tmp]() { 
-                    std::unique_lock<std::mutex> l(tmp->mutex, std::try_to_lock);
-                    if (l && tmp->enabled) (tmp->callback)();                     
-                }
-                );
+
+                result_ = dispatchFront([callback]() {
+                    std::unique_lock<std::recursive_mutex> l(callback->mutex, std::try_to_lock);
+                    if (l && callback->enabled) (callback->callback)();
+                });
             }
             deadline += interval_;
             lock.lock();
         }
     }
+
+    dispatchFront([callback]() { callback->thread.join(); });
 }
+
+
+
+
+////////////
+// Delay
+////////////
 
 Delay::Delay(duration_t interval, std::function<void()> callback)
     : callback_{std::make_shared<std::function<void()>>(std::move(callback))}

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2016 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorpreview.h>
@@ -80,8 +81,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , app_(app)
     , networkEditor_(nullptr)
     , appUsageModeProp_(nullptr)
-    , exampleWorkspaceOpen_(false)
-
     , snapshotArg_("s", "snapshot",
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
                    false, "", "file name")
@@ -174,7 +173,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
         .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
-    settings.endGroup();
+    settings.endGroup(); 
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
 
@@ -221,18 +220,11 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
 void InviwoMainWindow::addActions() {
     auto menu = menuBar();
 
-    auto fileMenuItem = new QMenu(tr("&File"), menu);
-    auto editMenuItem = new QMenu(tr("&Edit"), menu);
-    auto viewMenuItem = new QMenu(tr("&View"), menu);
-    auto evalMenuItem = new QMenu(tr("&Evaluation"), menu);
-    auto helpMenuItem = new QMenu(tr("&Help"), menu);
-
-    QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
-    menu->insertMenu(first, fileMenuItem);
-    menu->insertMenu(first, editMenuItem);
-    menu->insertMenu(first, viewMenuItem);
-    menu->insertMenu(first, evalMenuItem);
-    menu->addMenu(helpMenuItem);
+    auto fileMenuItem = menu->addMenu(tr("&File"));
+    auto editMenuItem = menu->addMenu(tr("&Edit"));
+    auto viewMenuItem = menu->addMenu(tr("&View"));
+    auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
+    auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
@@ -308,25 +300,12 @@ void InviwoMainWindow::addActions() {
             saveFileDialog.addExtension("png", "PNG");
             saveFileDialog.addExtension("jpg", "JPEG");
             saveFileDialog.addExtension("bmp", "BMP");
+            saveFileDialog.addExtension("pdf", "PDF");
 
             if (saveFileDialog.exec()) {
                 QString path = saveFileDialog.selectedFiles().at(0);
-
-                auto rect = networkEditor_->itemsBoundingRect();
-
-                QPointF margins(25, 25);
-                auto TL = rect.topLeft() - margins;
-                auto BR = rect.bottomRight() + margins;
-                QRect rect2(TL.toPoint(), BR.toPoint());
-                QRect sourceRect(QPoint(0, 0), rect2.size());
-
-                QImage image(sourceRect.size(), QImage::Format_ARGB32);
-                QPainter painter(&image);
-                painter.setRenderHint(QPainter::Antialiasing);
-                networkEditor_->render(&painter, sourceRect, rect2);
-                image.save(saveFileDialog.selectedFiles().at(0));
-                LogInfo("Saved image of network as "
-                    << saveFileDialog.selectedFiles().at(0).toLocal8Bit().constData());
+                networkEditor_->saveNetworkImage(path.toStdString());
+                LogInfo("Saved image of network as " << path.toStdString());
             }
 
         });
@@ -799,47 +778,64 @@ void InviwoMainWindow::newWorkspace() {
     if (currentWorkspaceFileName_ != "")
         if (!askToSaveWorkspaceChanges()) return;
 
-    exampleWorkspaceOpen_ = false;
-    getNetworkEditor()->clearNetwork();
+    app_->getWorkspaceManager()->clear();
+
     setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
     getNetworkEditor()->setModified(false);
-    updateWindowTitle();
 }
 
 void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
+    openWorkspace(workspaceFileName, false);
+}
+
+void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWorkspace) {
     std::string fileName{workspaceFileName.toStdString()};
     fileName = filesystem::cleanupPath(fileName);
+    workspaceFileName = QString::fromStdString(fileName);
 
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
         return;
     }
 
-    exampleWorkspaceOpen_ = false;
-    bool loaded = getNetworkEditor()->loadNetwork(fileName);
+    {
+        NetworkLock lock(app_->getProcessorNetwork());
+        app_->getWorkspaceManager()->clear();
+        try {
+            app_->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+                try {
+                    throw;
+                } catch (const IgnoreException& e) {
+                    util::log(e.getContext(), "Incomplete network loading " + fileName +
+                                                  " due to " + e.getMessage(),
+                              LogLevel::Error);
+                }
+            });
 
-    if (loaded) {
-        onNetworkEditorFileChanged(fileName);
-        saveWindowState();
-    } else {
-        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
-        getNetworkEditor()->setModified(false);
-        updateWindowTitle();
+            if (exampleWorkspace) {
+                setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+            } else {
+                setCurrentWorkspace(workspaceFileName);
+                addToRecentWorkspaces(workspaceFileName);
+            }
+        } catch (const Exception& e) {
+            util::log(e.getContext(),
+                      "Unable to load network " + fileName + " due to " + e.getMessage(),
+                      LogLevel::Error);
+            app_->getWorkspaceManager()->clear();
+            setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+        }
+        app_->processEvents();  // make sure the gui is ready before we unlock.
+    }
+    saveWindowState();
+    getNetworkEditor()->setModified(false);
+}
+void InviwoMainWindow::openExampleWorkspace() {
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action && askToSaveWorkspaceChanges()) {
+        openWorkspace(action->data().toString(), true);
     }
 }
-
-void InviwoMainWindow::onNetworkEditorFileChanged(const std::string& filename) {
-    if (exampleWorkspaceOpen_) {
-        // ignore file change events for example workspaces
-        return;
-    }
-
-    QString str{QString::fromStdString(filename)};
-    setCurrentWorkspace(str);
-    addToRecentWorkspaces(str);
-}
-
-void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWindowTitle(); }
 
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     workspace = filesystem::cleanupPath(workspace);
@@ -855,12 +851,9 @@ void InviwoMainWindow::openLastWorkspace(std::string workspace) {
 void InviwoMainWindow::openWorkspace() {
     if (askToSaveWorkspaceChanges()) {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
-
         openFileDialog.addSidebarPath(PathType::Workspaces);
         openFileDialog.addSidebarPath(workspaceFileDir_);
-
         openFileDialog.addExtension("inv", "Inviwo File");
-
         openFileDialog.setFileMode(FileMode::AnyFile);
 
         if (openFileDialog.exec()) {
@@ -876,27 +869,26 @@ void InviwoMainWindow::openRecentWorkspace() {
     }
 }
 
-void InviwoMainWindow::openExampleWorkspace() {
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action && askToSaveWorkspaceChanges()) {
-        std::string fileName = action->data().toString().toStdString();
-        if (!filesystem::fileExists(fileName)) {
-            LogError("Could not find example workspace: " << fileName);
-            return;
-        }
+void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
+    std::string fileName{workspaceFileName.toStdString()};
+    fileName = filesystem::cleanupPath(fileName);
 
-        exampleWorkspaceOpen_ = true;
-        bool loaded = getNetworkEditor()->loadNetwork(fileName);
-        if (loaded) {
-            // FIXME: example data sets are no longer added to recent files
-            // addToRecentWorkspaces(action->data().toString());
-            saveWindowState();
-        }
-        // reset workspace title in every case, we don't want to overwrite the
-        // existing example workspace
-        setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+    try {
+        app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
+            try {
+                throw;
+            } catch (const IgnoreException& e) {
+                util::log(e.getContext(),
+                          "Incomplete network save " + fileName + " due to " + e.getMessage(),
+                          LogLevel::Error);
+            }
+        });
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
+    } catch (const Exception& e) {
+        util::log(e.getContext(),
+                  "Unable to save network " + fileName + " due to " + e.getMessage(),
+                  LogLevel::Error);
     }
 }
 
@@ -904,8 +896,7 @@ void InviwoMainWindow::saveWorkspace() {
     if (currentWorkspaceFileName_.contains("untitled.inv"))
         saveWorkspaceAs();
     else {
-        getNetworkEditor()->saveNetwork(currentWorkspaceFileName_.toLocal8Bit().constData());
-        updateWindowTitle();
+        saveWorkspace(currentWorkspaceFileName_);
     }
 }
 
@@ -922,10 +913,9 @@ void InviwoMainWindow::saveWorkspaceAs() {
 
     if (saveFileDialog.exec()) {
         QString path = saveFileDialog.selectedFiles().at(0);
-
         if (!path.endsWith(".inv")) path.append(".inv");
 
-        getNetworkEditor()->saveNetwork(path.toStdString());
+        saveWorkspace(path);
         setCurrentWorkspace(path);
         addToRecentWorkspaces(path);
     }
@@ -948,11 +938,13 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 
         if (!path.endsWith(".inv")) path.append(".inv");
 
-        getNetworkEditor()->saveNetwork(path.toStdString());
+        saveWorkspace(path);
         addToRecentWorkspaces(path);
     }
     saveWindowState();
 }
+
+void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
     auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();
@@ -1110,7 +1102,8 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    getNetworkEditor()->clearNetwork();
+    app_->getWorkspaceManager()->clear();
+
     saveWindowState();
 
     QSettings settings("Inviwo", "Inviwo");
