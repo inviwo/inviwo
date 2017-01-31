@@ -1,7 +1,7 @@
 #cmake_minimum_required(VERSION 2.4.4)
 #set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
-ivw_project(zlib C)
+ivw_project(zlib1 C)
 
 set(VERSION "1.2.11")
 
@@ -184,13 +184,13 @@ if(MINGW)
 endif(MINGW)
 
 if (BUILD_SHARED_LIBS)
-	add_library(zlib SHARED ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_DLL_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-	set_target_properties(zlib PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
-	set_target_properties(zlib PROPERTIES SOVERSION 1)
-    ivw_suppress_compiler_warnings(zlib)
+	add_library(zlib1 SHARED ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_DLL_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+	set_target_properties(zlib1 PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
+	set_target_properties(zlib1 PROPERTIES SOVERSION 1)
+    ivw_suppress_compiler_warnings(zlib1)
 else()
-	add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-    ivw_suppress_compiler_warnings(zlib)
+	add_library(zlib1 STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    ivw_suppress_compiler_warnings(zlib1)
 endif()
 
 
@@ -204,18 +204,18 @@ if((NOT CYGWIN) AND BUILD_SHARED_LIBS)
     #
     # This has no effect with MSVC, on that platform the version info for
     # the DLL comes from the resource file win32/zlib1.rc
-    set_target_properties(zlib PROPERTIES VERSION ${ZLIB_FULL_VERSION})
+    set_target_properties(zlib1 PROPERTIES VERSION ${ZLIB_FULL_VERSION})
 endif()
 
 if(UNIX)
     # On unix-like platforms the library is almost always called libz
-    set_target_properties(zlib PROPERTIES OUTPUT_NAME z)
+    set_target_properties(zlib1 PROPERTIES OUTPUT_NAME z)
     if((NOT APPLE) AND BUILD_SHARED_LIBS)
-        set_target_properties(zlib PROPERTIES LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/zlib.map\"")
+        set_target_properties(zlib1 PROPERTIES LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/zlib.map\"")
     endif()
 elseif(BUILD_SHARED_LIBS AND WIN32)
     # Creates zlib1.dll when building shared library version
-    #set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
+    #set_target_properties(zlib1 PROPERTIES SUFFIX "1.dll")
 endif()
 
 # if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
@@ -257,23 +257,28 @@ endif()
 # endif()
 
 
-SET_TARGET_PROPERTIES ( zlib
+SET_TARGET_PROPERTIES ( zlib1
   PROPERTIES
   OUTPUT_NAME "zlib1"
 )
 
 #--------------------------------------------------------------------
+# add library path directory 
+ivw_link_directories(${LIBRARY_OUTPUT_PATH})
+
+#--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(zlib)
+ivw_default_install_targets(zlib1)
 
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_folder(zlib ext)
+ivw_folder(zlib1 ext)
 
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(zlib)
-ivw_make_package(ZLIB zlib)
+ivw_set_cpack_name(zlib1)
+ivw_make_package(ZLIB zlib1)
+

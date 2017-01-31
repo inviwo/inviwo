@@ -32,7 +32,7 @@ target_include_directories(libpng INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(ZLIB REQUIRED)
 target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIR})
 target_link_libraries(libpng PRIVATE ${ZLIB_LIBRARIES})
-add_dependencies(libpng zlib)
+add_dependencies(libpng zlib1)
 
 #--------------------------------------------------------------------
 # Supress warnings
