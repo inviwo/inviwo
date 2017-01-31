@@ -227,6 +227,50 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
     throw Exception("No Qt main window found");
 }
 
+
+void myImageCleanupHandler(void *info){
+    delete static_cast<std::vector<unsigned char>*>(info); 
+}
+
+QImage layerToQImage(const Layer &layer){
+    auto data = layer.getAsCodedBuffer("raw");
+
+    // do manual conversion from raw to png via QImage
+    QImage::Format format = QImage::Format_Invalid;
+    auto dims = layer.getDimensions();
+    if (data->size() == dims.x * dims.y) {
+#if QT_VERSION >= 0x050500
+        format = QImage::Format_Grayscale8;
+#else
+        format = QImage::Format_RGB888;
+        // duplicate grayscale data into 3 channels
+        auto newData = std::make_unique<std::vector<unsigned char>>();
+        newData->reserve(data->size() * 3);
+
+        for (auto value : *data.get()) {
+            newData->insert(newData->end(), 3, value);
+        }
+        data = std::move(newData);
+#endif
+    }
+    else if (data->size() == dims.x * dims.y * 3) {
+        format = QImage::Format_RGB888;
+    }
+    else if (data->size() == dims.x * dims.y * 4) {
+        format = QImage::Format_RGBA8888;
+    }
+
+    return {reinterpret_cast<const unsigned char*>(&(data->front())),
+            static_cast<int>(dims.x),
+            static_cast<int>(dims.y),
+            format,
+            /*[&](void* info) {
+                delete static_cast<std::vector<unsigned char>*>(info); 
+            },*/
+            myImageCleanupHandler,
+            data.release()};
+}
+
 } // namespace utilqt
 
 }  // namespace
