@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
@@ -51,7 +52,8 @@ void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
     Serializer xmlSerializer(app->getBasePath());
     
     try {
-        InviwoApplication::getPtr()->getProcessorNetwork()->serialize(xmlSerializer);
+        app->getWorkspaceManager()->save(stream, app->getBasePath());
+        
         xmlSerializer.writeFile(stream);
     }
     catch (SerializationException& exception) {
@@ -60,7 +62,7 @@ void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
             LogLevel::Error);
         return;
     }
-    // Unregister modules
+    // Unregister modules and clear network
     app->unregisterModules();
 
     // Register modules again
@@ -72,9 +74,7 @@ void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
     // De-serialize network
     try {
         // Lock the network that so no evaluations are triggered during the de-serialization
-        NetworkLock lock(InviwoApplication::getPtr()->getProcessorNetwork());
-        Deserializer xmlDeserializer(app, stream, app->getBasePath());
-        InviwoApplication::getPtr()->getProcessorNetwork()->deserialize(xmlDeserializer);
+        app->getWorkspaceManager()->load(stream, app->getBasePath());
     }
     catch (SerializationException& exception) {
         util::log(exception.getContext(),
