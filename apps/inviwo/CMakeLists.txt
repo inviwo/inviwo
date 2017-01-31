@@ -59,24 +59,11 @@ list(REMOVE_ITEM package_list InviwoSDLModule)
 ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
-# Determine dendendencies
+# Determine dendendencies and set runtime module loading defines
 set(dependencies "")
-if(IVW_RUNTIME_MODULE_LOADING)
-	# Application does not need to depend on all modules
-	# if they are loaded at runtime.
-	set(dependencies ${core_dependencies})
-	add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
-	if (IVW_RUNTIME_MODULE_RELOADING)
-		add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
-	endif()
-
-	# Specify which modules to load at runtime (all will be loaded if not existing)
-	ivw_create_enabled_modules_file("inviwo" ${package_list})
-	if(WIN32)
-		ivw_create_enabled_modules_file("inviwo-cli" ${package_list})
-	endif()
-else()
-	set(dependencies ${package_list})
+ivw_configure_application_module_dependencies("inviwo" ${core_dependencies} ${package_list} dependencies)
+if(WIN32)
+    ivw_configure_application_module_dependencies("inviwo-cli" ${core_dependencies} ${package_list} dependencies)
 endif()
 
 # Need to add dependent directories before creating application

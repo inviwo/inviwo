@@ -94,6 +94,35 @@ macro(ivw_register_use_of_modules)
 endmacro()
 
 #--------------------------------------------------------------------
+# Determine application dependencies. 
+# Core dependencies are chosen if runtime module loading is enabled
+# Enabled modules are chosen otherwise.
+# Creates a list of enabled modules in executable directory if runtime
+# module loading is enabled.
+# Returns chosen dependencies in retVal
+macro(ivw_configure_application_module_dependencies target_name core_dependencies enabled_modules retVal)
+    
+    if(IVW_RUNTIME_MODULE_LOADING)
+        # Application does not need to depend on all modules
+        # if they are loaded at runtime.
+        set(${retVal} ${core_dependencies} PARENT_SCOPE)
+        add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
+        #target_compile_definitions(${target_name} PUBLIC -DIVW_RUNTIME_MODULE_LOADING)
+        if (IVW_RUNTIME_MODULE_RELOADING)
+            #target_compile_definitions(${target_name} PUBLIC -DIVW_RUNTIME_MODULE_RELOADING)
+            add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
+        endif()
+
+        # Specify which modules to load at runtime (all will be loaded if not existing)
+        ivw_create_enabled_modules_file(${target_name} ${enabled_modules})
+ 
+    else()
+        set(${retVal} ${enabled_modules} PARENT_SCOPE)
+    endif()
+
+endmacro()
+
+#--------------------------------------------------------------------
 # Retrieve all modules as a list
 function(ivw_retrieve_all_modules module_list)
     set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)

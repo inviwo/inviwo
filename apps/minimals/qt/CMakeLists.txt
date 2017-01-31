@@ -37,22 +37,9 @@ list(REMOVE_ITEM package_list InviwoUnitTestsModule)
 ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
-# Determine dendendencies
+# Determine dendendencies and set runtime module loading defines
 set(dependencies "")
-if(IVW_RUNTIME_MODULE_LOADING)
-	# Application does not need to depend on all modules
-	# if they are loaded at runtime.
-	set(dependencies ${core_dependencies})
-	add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
-	if (IVW_RUNTIME_MODULE_RELOADING)
-		add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
-	endif()
-
-	# Specify which modules to load at runtime (all will be loaded if not existing)
-	ivw_create_enabled_modules_file("inviwo_qtminimum" ${package_list})
-else()
-	set(dependencies ${package_list})
-endif()
+ivw_configure_application_module_dependencies("inviwo_qtminimum" ${core_dependencies} ${package_list} dependencies)
 
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${dependencies})
