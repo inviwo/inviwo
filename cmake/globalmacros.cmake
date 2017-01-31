@@ -134,7 +134,7 @@ endfunction()
 # Usage: ivw_create_enabled_modules_file("application_name" ${enabled_modules})
 # where enabled_modules is a list of module names (i.e. InviwoBaseModule)
 macro(ivw_create_enabled_modules_file executable_name)
-	foreach(mod ${ARGN})  
+    foreach(mod ${ARGN})  
 		ivw_mod_name_to_dir(mod_name ${mod})
 		set(enabled_modules "${enabled_modules}${mod_name}\n") 
 	endforeach()
@@ -176,95 +176,90 @@ endfunction()
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
 function(ivw_private_generate_module_registration_file modules_var)
-    set(headers "")
     
-	if(IVW_RUNTIME_MODULE_LOADING)
-		# Export a module factory function for all modules.
-		# Function will be requested by the application after loading the library (dll/so)
-		# Does not require modules to be linked to the application
-		foreach(mod ${${modules_var}})   
-			set(header
-				"#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
-			)   
-			join(";" "" header ${header})
-			ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
-			list_to_stringvector(module_depends_vector ${module_dependencies})
-			string(TOUPPER ${${mod}_class} u_module)
+	# Export a module factory function for all modules.
+	# Function will be requested by the application after loading the library (dll/so)
+	# Does not require modules to be linked to the application
+	foreach(mod ${${modules_var}})   
+		set(header
+			"#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+		)   
+		join(";" "" header ${header})
+		ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
+		list_to_stringvector(module_depends_vector ${module_dependencies})
+		string(TOUPPER ${${mod}_class} u_module)
 
-			list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
-			set(create_module_object
-				"IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
-				"    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-				"        \"${${mod}_class}\",// Module name \n"
-				"        \"${${mod}_version}\",// Module version\n"
-				"        \"${${mod}_description}\", // Description\n" 
-				"        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
-				"        ${module_depends_vector}, // Dependencies\n" 
-				"        ${module_depends_version_vector} // Version number of dependencies\n" 
-				"        )__SEMICOLON__\n"
-				"}\n"
-				"\n"
-			)
-			join(";" "" create_module_object ${create_module_object})
-			set(module_header ${header})
-			# undo encoding of linebreaks and semicolon in the module description read from file
-			# linebreaks are replaced with '\n"'
-			string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" create_module_object "${create_module_object}")
-			string(REPLACE "__SEMICOLON__" ";" create_module_object "${create_module_object}")
-
-			string(REPLACE ":" ";" MODULE_DEFINE_HEADER "${module_header}")   
-			string(REPLACE ":" ";" CREATE_MODULE_FUNCTION "${create_module_object}")
-
-			configure_file(${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
-						${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp @ONLY)
-		endforeach()
-		configure_file(${IVW_CMAKE_TEMPLATES}/mod_runtime_registration_template.h 
-						${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
-	else()
-		# Generate function for creating modules in a single function
-		# Requires all modules to be linked to the application
-		set(functions "")
-		foreach(mod ${${modules_var}}) 
-			set(header
-				"#ifdef REG_${mod}\n"
-				"#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
-				"#endif\n"
-			)
-			join(";" "" header ${header})
-
-			ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
-			list_to_stringvector(module_depends_vector ${module_dependencies})
-			set(factory_object
-				"    #ifdef REG_${mod}\n" 
-				"    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-				"        \"${${mod}_class}\",\n"
-				"        \"${${mod}_description}\",\n" 
-				"        ${module_depends_vector}\n" 
-				"        )\n"
-				"    )__SEMICOLON__\n"
-				"    #endif\n"
-				"\n"
-			)
-			join(";" "" factory_object ${factory_object})
-
-			list(APPEND headers ${header})
-			list(APPEND functions ${factory_object})
-		endforeach()
-		join(";" "" headers ${headers})
-		join(";" "" functions ${functions})
-
+		list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
+		set(create_module_object
+			"IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
+			"    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+			"        \"${${mod}_class}\",// Module name \n"
+			"        \"${${mod}_version}\",// Module version\n"
+			"        \"${${mod}_description}\", // Description\n" 
+			"        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
+			"        ${module_depends_vector}, // Dependencies\n" 
+			"        ${module_depends_version_vector} // Version number of dependencies\n" 
+			"        )__SEMICOLON__\n"
+			"}\n"
+			"\n"
+		)
+		join(";" "" create_module_object ${create_module_object})
+		set(module_header ${header})
 		# undo encoding of linebreaks and semicolon in the module description read from file
 		# linebreaks are replaced with '\n"'
-		string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" functions "${functions}")
-		string(REPLACE "__SEMICOLON__" ";" functions "${functions}")
+		string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" create_module_object "${create_module_object}")
+		string(REPLACE "__SEMICOLON__" ";" create_module_object "${create_module_object}")
 
-		string(REPLACE ":" ";" MODULE_HEADERS "${headers}")   
-		string(REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+		string(REPLACE ":" ";" MODULE_DEFINE_HEADER "${module_header}")   
+		string(REPLACE ":" ";" CREATE_MODULE_FUNCTION "${create_module_object}")
 
+		configure_file(${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
+					${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp @ONLY)
+	endforeach()
 
-		configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
-					${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
-	endif()
+	# Generate function for creating modules in a single function
+	# Requires all modules to be linked to the application
+    set(headers "")
+	set(functions "")
+	foreach(mod ${${modules_var}}) 
+		set(header
+			"#ifdef REG_${mod}\n"
+			"#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+			"#endif\n"
+		)
+		join(";" "" header ${header})
+
+		ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
+		list_to_stringvector(module_depends_vector ${module_dependencies})
+		set(factory_object
+			"    #ifdef REG_${mod}\n" 
+			"    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+			"        \"${${mod}_class}\",\n"
+			"        \"${${mod}_description}\",\n" 
+			"        ${module_depends_vector}\n" 
+			"        )\n"
+			"    )__SEMICOLON__\n"
+			"    #endif\n"
+			"\n"
+		)
+		join(";" "" factory_object ${factory_object})
+
+		list(APPEND headers ${header})
+		list(APPEND functions ${factory_object})
+	endforeach()
+	join(";" "" headers ${headers})
+	join(";" "" functions ${functions})
+
+	# undo encoding of linebreaks and semicolon in the module description read from file
+	# linebreaks are replaced with '\n"'
+	string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" functions "${functions}")
+	string(REPLACE "__SEMICOLON__" ";" functions "${functions}")
+
+	string(REPLACE ":" ";" MODULE_HEADERS "${headers}")   
+	string(REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+
+    configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
+        ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 endfunction()
 
 function(ivw_private_create_pyconfig modulepaths activemodules)

@@ -15,6 +15,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
