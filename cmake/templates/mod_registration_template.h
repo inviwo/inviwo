@@ -9,7 +9,7 @@ namespace inviwo {
      *
      * @return std::vector<std::unique_ptr<InviwoModuleFactoryObject>> Factories of enabled modules
      */
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> getModuleList() {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
 
         @MODULE_CLASS_FUNCTIONS@

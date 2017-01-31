@@ -22,7 +22,7 @@ namespace inviwo {
  * /../../lib"
  * @return List of paths to directories
  */
-std::vector<std::string> registerAllModules() {
+std::vector<std::string> getModuleList() {
     auto paths = std::vector<std::string>{
         inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
         inviwo::filesystem::getPath(inviwo::PathType::Modules)};

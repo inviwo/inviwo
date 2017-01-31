@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.registerModules(std::move(inviwo::registerAllModules())
+    inviwoApp.registerModules(std::move(inviwo::getModuleList())
 #ifdef IVW_RUNTIME_MODULE_RELOADING 
         , true
 #endif
