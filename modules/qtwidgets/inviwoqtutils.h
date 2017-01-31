@@ -45,7 +45,9 @@
 #include <QSizeF>
 #include <QSize>
 #include <QMainWindow>
+#include <QImage>
 #include <warn/pop>
+#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 
@@ -123,6 +125,8 @@ IVW_MODULE_QTWIDGETS_API QPoint offsetWidget();
 IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, std::string before);
 IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu * before = nullptr);
 IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFound = false);
+
+IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer &layer);
 
 
 } // namespace utilqt
