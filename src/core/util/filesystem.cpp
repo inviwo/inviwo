@@ -113,7 +113,7 @@ std::string getExecutablePath() {
     return std::string(executablePath);
 }
 
-IVW_CORE_API std::string getInviwoApplicationPath() {
+IVW_CORE_API std::string getInviwoUserCachePath() {
     std::stringstream ss;
 #ifdef _WIN32
     PWSTR path;
@@ -497,10 +497,10 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, c
             break;
 
         case PathType::Settings:
-            result = getInviwoApplicationPath();
+            result = getInviwoUserCachePath();
             break;
         case PathType::Modules:
-            result = getInviwoApplicationPath() + "/modules";
+            result = getInviwoUserCachePath() + "/modules";
             break;
         case PathType::Help:
             result += "/data/help";

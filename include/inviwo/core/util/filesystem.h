@@ -65,7 +65,7 @@ IVW_CORE_API std::string getExecutablePath();
  * Not to be confused with the path where the executable is.
  * @return std::string Inviwo application folder
  */
-IVW_CORE_API std::string getInviwoApplicationPath();
+IVW_CORE_API std::string getInviwoUserCachePath();
 
 /**
  * \brief Check if a file exists.

@@ -461,7 +461,7 @@ void InviwoApplication::registerModules(
     std::vector<std::string> tmpSharedLibraryFiles;
     std::vector<std::string> originalLibraryFiles;
     std::string tmpLibraryDir =
-        filesystem::getInviwoApplicationPath() + "/temporary-module-libraries";
+        filesystem::getInviwoUserCachePath() + "/temporary-module-libraries";
 
     if (reloadLibrariesWhenChanged
 #if WIN32
