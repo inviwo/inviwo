@@ -163,6 +163,10 @@ struct CImgNormalizedLayerDispatcher {
 
         CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
+        
+        if (inputLayer->getDataFormat()->getComponents() == 1) {
+            normalizedImg.mirror('y');
+        }
 
         auto data = util::make_unique<std::vector<unsigned char>>(
             &normalizedImg[0], &normalizedImg[normalizedImg.size()]);
