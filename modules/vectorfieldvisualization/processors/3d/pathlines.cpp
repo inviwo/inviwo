@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 
 namespace inviwo {
 
@@ -229,6 +230,10 @@ void PathLines::process() {
     mesh->addVertices(vertices);
 
     linesStripsMesh_.setData(mesh);
+
+    util::curvature(*lines);
+    util::tortuosity(*lines);
+
     lines_.setData(lines);
     maxVelocity_.set(toString(maxVelocity));
 

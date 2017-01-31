@@ -6,6 +6,7 @@ ivw_module(VectorFieldVisualization)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithms/integrallineoperations.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
@@ -31,6 +32,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithms/integrallineoperations.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
