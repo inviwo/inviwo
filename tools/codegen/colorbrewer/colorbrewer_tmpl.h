@@ -42,14 +42,10 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo{
 namespace colorbrewer {
 
-    class ColorBrewerException : public Exception {
-    public:
-        ColorBrewerException(const std::string &message) : Exception(message, ExceptionContext()) {}
-        virtual ~ColorBrewerException() throw() {}
-    };
-
 ##PLACEHOLDER##
 
+IVW_CORE_API std::vector<dvec4> colormap(Colormap colormap);
+IVW_CORE_API std::string colormapName(Colormap colormap);
 } // namespace
 }
 #endif // COLORBREWER_H
