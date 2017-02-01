@@ -44,7 +44,7 @@ namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        auto menu = utilqt::addMenu("&Python");
+        menu_ = utilqt::addMenu("&Python");
         QAction* pythonEditorOpen =
             menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
         editor_ = new PythonEditorWidget(win, app);
@@ -54,11 +54,9 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
 
 PythonMenu::~PythonMenu() {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        win->disconnect(editor_);
-        win->layout()->removeWidget(editor_);
-        win->removeDockWidget(editor_);
-        
-        win->menuBar()->removeAction(menu_->menuAction());
+        // Delete menu_ and editor_ since the MainWindow is parent and will
+        // not delete menu_ until after module has been deinitialized.
+        // Destructors will remove the created widgets, actions and signals
         delete menu_;
         delete editor_;
     }
