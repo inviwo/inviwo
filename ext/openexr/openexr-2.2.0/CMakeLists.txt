@@ -122,41 +122,45 @@ CHECK_CXX_SOURCE_COMPILES (
 ##########################
 # OpenEXRConfig.h generation
 ##########################
+
+set(openexrConfigFile ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h)
+set(tmpOpenexrConfigFile ${openexrConfigFile}.tmp)
+
 IF (WIN32)
-  FILE ( WRITE ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
+  FILE ( WRITE ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
 ELSEIF (APPLE)
-  FILE ( WRITE ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_DARWIN 1\n" )
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#include <string.h>\n" )
+  FILE ( WRITE ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_DARWIN 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#include <string.h>\n" )
 ELSE ()
   # Linux
-  FILE ( WRITE ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LINUX_PROCFS 1\n" )
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LARGE_STACK 1\n" )
+  FILE ( WRITE ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_LINUX_PROCFS 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_LARGE_STACK 1\n" )
 ENDIF()
   
 IF (NAMESPACE_VERSIONING)
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 1\n")
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_${OPENEXR_VERSION_API}\n\n" )
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 1\n")
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_NAMESPACE Imf\n" )
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_${OPENEXR_VERSION_API}\n\n" )
 ELSE ()
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0\n")
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf\n\n" )
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0\n")
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_NAMESPACE Imf\n" )
+    FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf\n\n" )
 ENDIF ()
 
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_VERSION_STRING \"${OPENEXR_VERSION}\"\n" )
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_PACKAGE_STRING \"OpenEXR ${OPENEXR_VERSION}\"\n" )
+FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_VERSION_STRING \"${OPENEXR_VERSION}\"\n" )
+FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_PACKAGE_STRING \"OpenEXR ${OPENEXR_VERSION}\"\n" )
 
 
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "
+FILE ( APPEND ${tmpOpenexrConfigFile} "
 #define OPENEXR_VERSION_MAJOR ${OPENEXR_VERSION_MAJOR}
 #define OPENEXR_VERSION_MINOR ${OPENEXR_VERSION_MINOR}
 #define OPENEXR_VERSION_PATCH ${OPENEXR_VERSION_PATCH}
 ")
 
 
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "
+  FILE ( APPEND ${tmpOpenexrConfigFile} "
 // Version as a single hex number, e.g. 0x01000300 == 1.0.3
 #define OPENEXR_VERSION_HEX ((OPENEXR_VERSION_MAJOR << 24) | \\
                              (OPENEXR_VERSION_MINOR << 16) | \\
@@ -164,13 +168,31 @@ FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h
 ")
 
 IF (HAVE_GCC_INLINE_ASM_AVX)
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX 1\n" )
 ENDIF()
   
 IF (HAVE_SYSCONF_NPROCESSORS_ONLN)
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN 1\n" )
+  FILE ( APPEND ${tmpOpenexrConfigFile} "#define OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN 1\n" )
 ENDIF()
   
+## check if the newly created temporary config file is different from the existing one 
+## and overwrite it if necessary
+##
+## use md5 checksums to check for differences
+if (EXISTS ${openexrConfigFile})
+    file(MD5 ${openexrConfigFile} openexrConfigMD5)
+else()
+    set(openexrConfigMD5 "")
+endif()
+file(MD5 ${tmpOpenexrConfigFile} tmpOpenexrConfigMD5)
+
+if(NOT "${openexrConfigMD5}" STREQUAL "${tmpOpenexrConfigMD5}")
+    file(RENAME ${tmpOpenexrConfigFile} ${openexrConfigFile})
+else()
+    file(REMOVE ${tmpOpenexrConfigFile})
+endif()
+
+
 SET (OPENEXR_LIBSUFFIX "")
 SET (ILMBASE_LIBSUFFIX "")
 IF (NAMESPACE_VERSIONING)

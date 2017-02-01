@@ -113,48 +113,74 @@ ADD_SUBDIRECTORY ( IexMath )
 ADD_SUBDIRECTORY ( Imath )
 ADD_SUBDIRECTORY ( IlmThread )
 
+##########################
+# IlmBaseConfig.h generation
+##########################
+set(ilmConfigFile ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h)
+set(tmpIlmConfigFile ${ilmConfigFile}.tmp)
+
 IF (WIN32)
-  FILE ( COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.windows/IlmBaseConfig.h
-    DESTINATION ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr
-    )
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.windows/IlmBaseConfig.h 
+                 ${tmpIlmConfigFile} 
+                 COPYONLY)
 ELSE ()
   IF (APPLE)
-    FILE ( WRITE  ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define HAVE_PTHREAD 1\n" )
+    FILE ( WRITE  ${tmpIlmConfigFile} "#define HAVE_PTHREAD 1\n" )
   ELSE ()
-    FILE ( WRITE  ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define HAVE_PTHREAD 1\n" )
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_HAVE_LARGE_STACK  1\n" )
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define HAVE_POSIX_SEMAPHORES 1\n" )
-    FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_HAVE_CONTROL_REGISTER_SUPPORT 1\n")
+    FILE ( WRITE  ${tmpIlmConfigFile} "#define HAVE_PTHREAD 1\n" )
+    FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_HAVE_LARGE_STACK  1\n" )
+    FILE ( APPEND ${tmpIlmConfigFile} "#define HAVE_POSIX_SEMAPHORES 1\n" )
+    FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_HAVE_CONTROL_REGISTER_SUPPORT 1\n")
   ENDIF ()
 ENDIF ()
 
 IF (NAMESPACE_VERSIONING)
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_INTERNAL_NAMESPACE_CUSTOM 1\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IMATH_INTERNAL_NAMESPACE Imath_${ILMBASE_VERSION_API}\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IEX_INTERNAL_NAMESPACE Iex_${ILMBASE_VERSION_API}\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread_${ILMBASE_VERSION_API}\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_INTERNAL_NAMESPACE_CUSTOM 1\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define IMATH_INTERNAL_NAMESPACE Imath_${ILMBASE_VERSION_API}\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define IEX_INTERNAL_NAMESPACE Iex_${ILMBASE_VERSION_API}\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread_${ILMBASE_VERSION_API}\n")
 ELSE ()
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_INTERNAL_NAMESPACE_CUSTOM 0\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IMATH_INTERNAL_NAMESPACE Imath\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IEX_INTERNAL_NAMESPACE Iex\n")
-  FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_INTERNAL_NAMESPACE_CUSTOM 0\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define IMATH_INTERNAL_NAMESPACE Imath\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define IEX_INTERNAL_NAMESPACE Iex\n")
+  FILE ( APPEND ${tmpIlmConfigFile} "#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread\n")
 ENDIF ()
 
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IMATH_NAMESPACE Imath\n")
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define IEX_NAMESPACE Iex\n")
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMTHREAD_NAMESPACE IlmThread\n")
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_VERSION_STRING \"${ILMBASE_VERSION}\"\n" )
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_PACKAGE_STRING \"IlmBase ${ILMBASE_VERSION}\"\n" )
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_VERSION_MAJOR ${ILMBASE_VERSION_MAJOR}\n" )
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_VERSION_MINOR ${ILMBASE_VERSION_MINOR}\n" )
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "#define ILMBASE_VERSION_PATCH ${ILMBASE_VERSION_PATCH}\n" )
+FILE ( APPEND ${tmpIlmConfigFile} "#define IMATH_NAMESPACE Imath\n")
+FILE ( APPEND ${tmpIlmConfigFile} "#define IEX_NAMESPACE Iex\n")
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMTHREAD_NAMESPACE IlmThread\n")
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_VERSION_STRING \"${ILMBASE_VERSION}\"\n" )
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_PACKAGE_STRING \"IlmBase ${ILMBASE_VERSION}\"\n" )
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_VERSION_MAJOR ${ILMBASE_VERSION_MAJOR}\n" )
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_VERSION_MINOR ${ILMBASE_VERSION_MINOR}\n" )
+FILE ( APPEND ${tmpIlmConfigFile} "#define ILMBASE_VERSION_PATCH ${ILMBASE_VERSION_PATCH}\n" )
 
-FILE ( APPEND ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/IlmBaseConfig.h "
+FILE ( APPEND ${tmpIlmConfigFile} "
 // Version as a single hex number, e.g. 0x01000300 == 1.0.3
 #define ILMBASE_VERSION_HEX ((ILMBASE_VERSION_MAJOR << 24) | \\
                              (ILMBASE_VERSION_MINOR << 16) | \\
                              (ILMBASE_VERSION_PATCH <<  8))
 ")
+
+## check if the newly created temporary config file is different from the existing one 
+## and overwrite it if necessary
+##
+## use md5 checksums to check for differences
+if (EXISTS ${ilmConfigFile})
+    file(MD5 ${ilmConfigFile} ilmConfigMD5)
+else()
+    set(ilmConfigMD5 "")
+endif()
+file(MD5 ${tmpIlmConfigFile} tmpIlmConfigMD5)
+
+if(NOT "${ilmConfigMD5}" STREQUAL "${tmpIlmConfigMD5}")
+    ## replace current config with the new one
+    file(RENAME ${tmpIlmConfigFile} ${ilmConfigFile})
+else()
+    ## no changes, delete temporary config
+    file(REMOVE ${tmpIlmConfigFile})
+endif()
+
 
 SET (ILMBASE_LIBSUFFIX "")
 IF (NAMESPACE_VERSIONING)
