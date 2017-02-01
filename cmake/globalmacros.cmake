@@ -649,7 +649,7 @@ macro(ivw_make_package package_name project_name)
     # retrieve target definitions
     get_target_property(ivw_target_defs ${project_name} INTERFACE_COMPILE_DEFINITIONS)
     if(ivw_target_defs)
-        prepend(ivw_target_defs "-D" ${ivw_target_defs})
+        ivw_prepend(ivw_target_defs "-D" ${ivw_target_defs})
         list(APPEND _allDefinitions ${ivw_target_defs})
     endif()
 
