@@ -39,7 +39,7 @@
 # _cpackName -> modules or qt_modules if QT
 # _pchDisabledForThisModule -> FALSE 
 macro(ivw_project project_name)
-    project(${project_name})
+    project(${project_name} ${ARGN})
     set(_projectName ${project_name})
     set(_allLibsDir "")
     set(_allDefinitions "")
@@ -640,13 +640,24 @@ endmacro()
 macro(ivw_make_package package_name project_name)
     ivw_private_install_package(${project_name})
 
-    list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
+    # retrieve output name of target, use project name if not set
+    get_target_property(ivw_output_name ${project_name} OUTPUT_NAME)
+    if(NOT ivw_output_name)
+        set(ivw_output_name ${project_name})
+    endif()
+
+    # retrieve target definitions
+    get_target_property(ivw_target_defs ${project_name} INTERFACE_COMPILE_DEFINITIONS)
+    if(ivw_target_defs)
+        ivw_prepend(ivw_target_defs "-D" ${ivw_target_defs})
+        list(APPEND _allDefinitions ${ivw_target_defs})
+    endif()
 
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
+        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
     else()
-       set(PROJECT_LIBRARIES ${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
+       set(PROJECT_LIBRARIES ${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
     
     get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)

@@ -61,6 +61,17 @@ function(join sep glue output)
 endfunction()
 
 #--------------------------------------------------------------------
+# ivw_prepend(output str)
+# ivw_prepends str to each element of the input
+function(ivw_prepend var prefix)
+   set(listVar "")
+   foreach(f ${ARGN})
+      list(APPEND listVar "${prefix}${f}")
+   endforeach(f)
+   set(${var} "${listVar}" PARENT_SCOPE)
+endfunction(ivw_prepend)
+
+#--------------------------------------------------------------------
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
