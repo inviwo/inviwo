@@ -68,6 +68,26 @@
 #include <string>
 namespace inviwo {
 
+namespace util {
+/*
+ * Make sure that all data formats are initialized.
+ * Should only be called in the core library, i.e. in InviwoApplication constructor.
+ *
+ * Need to be done when libraries are loaded at runtime since the
+ * data format may be used first in one of the loaded libraries
+ * but will not be cleaned up when the module is unloaded.
+ *
+ */
+void dataFormatDummyInitialization() {
+    #include <warn/push>
+    #include <warn/ignore/unused-variable>
+    #define DataFormatIdMacro(i) {const DataFormatBase* dummyInitialization =  Data##i::get();}
+    #include <inviwo/core/util/formatsdefinefunc.h>
+    #include <warn/pop>
+}
+    
+} // namespace util
+    
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
     , binaryPath_(filesystem::getFileDirectory(argv[0]))
@@ -164,12 +184,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     presetsDeserializationHandle_ = workspaceManager_->onLoad(
         [&](Deserializer& d) { propertyPresetManager_->loadWorkspacePresets(d); });
 
-    // Make sure that all data formats are initialized in this library.
+    // Make sure that all data formats are initialized.
+    // Should only be called in the core library, i.e. in InviwoApplication constructor.
+    //
     // Need to be done when libraries are loaded at runtime since the
     // data format may be used first in one of the loaded libraries
     // but will not be cleaned up when the module is unloaded.
-#define DataFormatIdMacro(i) {const DataFormatBase* dummyInitialization =  Data##i::get();}
-#include <inviwo/core/util/formatsdefinefunc.h>
+    util::dataFormatDummyInitialization();
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
@@ -253,10 +274,11 @@ void InviwoApplication::registerModules(std::vector<std::unique_ptr<InviwoModule
     };
 
     for (auto& moduleObj : modulesFactoryObjects_) {
+        postProgress("Loading module: " + moduleObj->name);
         if (util::contains_if(modules_, [&](const auto& module) { return module->getIdentifier().compare(moduleObj->name) == 0; })) {
             continue;
         }
-        postProgress("Loading module: " + moduleObj->name);
+        
         // Make sure that the module supports the current inviwo core version
         if (!Version(IVW_VERSION).semanticVersionEqual(Version(moduleObj->inviwoCoreVersion))) {
             LogError("Failed to register module: " + moduleObj->name);
@@ -402,16 +424,20 @@ void InviwoApplication::registerModules(
     for (auto path : librarySearchPaths) {
         // Make sure that we have an absolute path to avoid duplicates
         path = filesystem::cleanupPath(path);
-        auto filesInPath = getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
-        auto directories = getDirectoryContentsRecursively(path, filesystem::ListMode::Directories);
-        files.insert(
-            std::make_move_iterator(filesInPath.begin()),
-            std::make_move_iterator(filesInPath.end())
-        );
-        libraryDirectories.insert(
-            std::make_move_iterator(directories.begin()),
-            std::make_move_iterator(directories.end())
-        );
+        try {
+            auto filesInPath = getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
+            auto directories = getDirectoryContentsRecursively(path, filesystem::ListMode::Directories);
+            files.insert(
+                         std::make_move_iterator(filesInPath.begin()),
+                         std::make_move_iterator(filesInPath.end())
+                         );
+            libraryDirectories.insert(
+                                      std::make_move_iterator(directories.begin()),
+                                      std::make_move_iterator(directories.end())
+                                      );
+        } catch(FileException&) {
+            // Invalid path, ignore it
+        }
     }
     // Determines if a library is already loaded into the application
     auto isModuleLibraryLoaded = [&](const std::string path) {
@@ -426,9 +452,17 @@ void InviwoApplication::registerModules(
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
     // otherwise load all modules
     std::vector<std::string> enabledModules;
+    auto enabledModuleFileName = filesystem::getFileNameWithoutExtension(filesystem::getExecutablePath()) +
+    "-enabled-modules.txt";
+#ifdef __APPLE__
+    // Executable path is inviwo.app/Content/MacOs
+    std::ifstream enabledModulesFile(filesystem::getFileDirectory(filesystem::getExecutablePath())
+                                     + "/../../../" +
+                                     enabledModuleFileName);
+#else
     std::ifstream enabledModulesFile(filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/" +
-        filesystem::getFileNameWithoutExtension(filesystem::getExecutablePath()) +
-        "-enabled-modules.txt");
+                                     enabledModuleFileName);
+#endif
 
     std::copy(std::istream_iterator<std::string>(enabledModulesFile),
         std::istream_iterator<std::string>(),
