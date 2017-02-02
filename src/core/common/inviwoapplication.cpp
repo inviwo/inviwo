@@ -585,6 +585,9 @@ void InviwoApplication::registerModules(
                         moduleLibraryObserver_->startFileObservation(filePath);
                     }
                 }
+            } else {
+                LogInfo("Could not find 'createModule' function needed for creating the module in " + tmpPath + ". Make sure that you have compiled the library and exported the function.");
+                
             }
         } catch (Exception ex) {
             // Library dependency is probably missing.
