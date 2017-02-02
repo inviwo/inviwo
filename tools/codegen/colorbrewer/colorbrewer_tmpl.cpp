@@ -38,17 +38,19 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo {
 namespace colorbrewer {
 
-std::vector<dvec4> colormap(Colormap colormap){
+const std::vector<dvec4> &colormap(Colormap colormap){
     switch(colormap){
 ##PLACEHOLDER##
     }
 }
 
 
-std::string colormapName(Colormap colormap){
+std::ostream& operator<<(std::ostream& os,Colormap colormap){
     switch(colormap){
 ##PLACEHOLDER_NAMES##
     }
+
+    return os;
 }
 
 } // namespace

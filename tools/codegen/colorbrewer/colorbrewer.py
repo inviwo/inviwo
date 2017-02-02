@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     with open('colorbrewer.json','r') as cb_file:
         cb = json.load(cb_file);
-        for fam,arr in cb.items():
+        for fam,arr in sorted(cb.items()):
             arrs = {};
             for a,b in arr.items():
                 try:
@@ -57,8 +57,13 @@ if __name__ == '__main__':
                     c = ','.join([str(r),str(g),str(b),"1.0"]);
                     colors.append('dvec4( '+c+' )');
 
-                impls += " return std::vector<dvec4>({"+','.join(colors)+"});\n"
-                names += "\tcase Colormap::" + enumname + ": return \"" + enumname + "\";\n";
+#                vector = "std::vector<dvec4>({"+','.join(colors)+"});"
+                vector = "std::vector<dvec4> "+ enumname.lower()  +"({"+','.join(colors)+"});"
+
+                impls += "\n\t{\n\t\tstatic const " + vector + "\n\t\treturn "+ enumname.lower() +";\n\t}\n"
+
+                #impls += " return "+vector+"\n"
+                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\";\n";
 
     enum += "\n\tNumberOfMaps\n};\n\n"
 

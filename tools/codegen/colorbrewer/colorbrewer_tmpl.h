@@ -44,8 +44,10 @@ namespace colorbrewer {
 
 ##PLACEHOLDER##
 
-IVW_CORE_API std::vector<dvec4> colormap(Colormap colormap);
-IVW_CORE_API std::string colormapName(Colormap colormap);
+IVW_CORE_API const std::vector<dvec4> &colormap(Colormap colormap);
+
+IVW_CORE_API std::ostream& operator<<(std::ostream&,Colormap colormap);
+
 } // namespace
 }
 #endif // COLORBREWER_H
