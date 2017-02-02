@@ -151,7 +151,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         countLabel_ = new LabelGraphicsItem(this, 100, Qt::AlignRight | Qt::AlignBottom);
         countLabel_->setPos(rect().bottomRight() + QPointF(-5.0, 0.0));
         countLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont font("Segoe", labelHeight_, QFont::Normal, true);
+        QFont font("Segoe", labelHeight_, QFont::Normal, false);
         font.setPixelSize(pointSizeToPixelSize(labelHeight_));
         countLabel_->setFont(font);
     }
