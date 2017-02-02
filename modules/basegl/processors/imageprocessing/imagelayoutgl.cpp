@@ -206,16 +206,16 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewManager_.clear();
-    int smallWindowHeight = dim.y / 3.0f;
+    const int smallWindowHeight = dim.y / 3.0f;
 
-    int extra1 = dim.y % 3 >= 1 ? 1 : 0;
-    int extra2 = dim.y % 3 >= 2 ? 1 : 0;
+    const int extra1 = dim.y % 3 >= 1 ? 1 : 0; // add extra pixels to the small "windows" if the 
+    const int extra2 = dim.y % 3 >= 2 ? 1 : 0; // size is not divisable by 3 to avoid black borders
 
-    int midx = verticalSplitter_ * dim.x;
-    int midy = horizontalSplitter_ * dim.y;
+    const int midx = verticalSplitter_ * dim.x;
+    const int midy = horizontalSplitter_ * dim.y;
 
-    int leftWindow3L1RX = vertical3Left1RightSplitter_ * dim.x;
-    int leftWindow3R1LX = vertical3Right1LeftSplitter_ * dim.x;
+    const int leftWindow3L1RX = vertical3Left1RightSplitter_ * dim.x;
+    const int leftWindow3R1LX = vertical3Right1LeftSplitter_ * dim.x;
 
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
