@@ -38,19 +38,27 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <vector>
+#include <ostream>
 
 namespace inviwo{
 namespace colorbrewer {
 
-    class ColorBrewerException : public Exception {
-    public:
-        ColorBrewerException(const std::string &message) : Exception(message, ExceptionContext()) {}
-        virtual ~ColorBrewerException() throw() {}
-    };
-
 ##PLACEHOLDER##
 
+IVW_CORE_API const std::vector<dvec4> &colormap(Colormap colormap);
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ,Colormap colormap){
+    switch(colormap){
+##PLACEHOLDER_NAMES##
+    }
+
+    return os;
+}
+
 } // namespace
+
+
 }
 #endif // COLORBREWER_H
 

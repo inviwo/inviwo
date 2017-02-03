@@ -9,6 +9,8 @@ def dictToOrderedList(d):
     for a,b in sorted(d.items()):
         yield b
 
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Add new modules to inviwo', 
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -20,17 +22,21 @@ if __name__ == '__main__':
     else:
         ivwpath = args.ivwpath
 
-    defs = {};
-    imps = [];
+
+    enum = "enum class Colormap{";
+
+
+    impls = "";
+    names = "";
+
+    lastEnum = "";
+    firstEnum = "";
 
 #colorbrewer.json is downlaoded from http://colorbrewer2.org/# 
 
     with open('colorbrewer.json','r') as cb_file:
         cb = json.load(cb_file);
-        for fam,arr in cb.items():
-
-            defs[fam] =  "IVW_CORE_API std::vector<dvec4> " + fam + "(int dataClasses);"
-        
+        for fam,arr in sorted(cb.items()):
             arrs = {};
             for a,b in arr.items():
                 try:
@@ -38,11 +44,16 @@ if __name__ == '__main__':
                 except:
                     pass
 
-            imp = ["std::vector<dvec4> " + fam + "(int dataClasses){"
-                ,  "\tswitch(dataClasses){"
-            ];
+            enum += "\n\t"
+            imp = []
             for a,b in sorted(arrs.items()):
-                imp.append("\tcase " + str(a) + ":")
+                enumname = fam +"_" + str(a);
+                enum += enumname + ", ";
+                lastEnum = enumname;
+                if len(firstEnum) == 0:
+                    firstEnum = enumname;
+
+                impls += "\tcase Colormap::" + enumname + ":"
                 colors = []
                 for color in b:
                     r,g,b = color[4:-1].split(',')
@@ -52,17 +63,16 @@ if __name__ == '__main__':
                     c = ','.join([str(r),str(g),str(b),"1.0"]);
                     colors.append('dvec4( '+c+' )');
 
-                imp.append("\t\t return std::vector<dvec4>({"+','.join(colors)+"});")
+#                vector = "std::vector<dvec4>({"+','.join(colors)+"});"
+                vector = "std::vector<dvec4> "+ enumname.lower()  +"({"+','.join(colors)+"});"
 
-            imp.append("\tdefault:")
-            imp.append('\t\tthrow ColorBrewerException("unsupported number of colors");')
-            imp.append('\t\treturn std::vector<dvec4>();')
+                impls += "\n\t{\n\t\tstatic const " + vector + "\n\t\treturn "+ enumname.lower() +";\n\t}\n"
 
-            imp.append("\t};")
-            imp.append("};")
-            imp.append("")
-            imps.append('\n'.join(imp));
+                #impls += " return "+vector+"\n"
+                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
 
+
+    enum += "\n\tFirstMap=" + firstEnum + ", LastMap=" + lastEnum + "\n};\n\n"
 
     header = ""
     src = ""
@@ -73,8 +83,12 @@ if __name__ == '__main__':
 
 
 
-    header = header.replace("##PLACEHOLDER##",'\n'.join(dictToOrderedList(defs)));
-    src = src.replace("##PLACEHOLDER##",'\n'.join((imps)));
+
+
+
+    header = header.replace("##PLACEHOLDER##",enum);
+    src = src.replace("##PLACEHOLDER##",impls);
+    header = header.replace("##PLACEHOLDER_NAMES##",names);
 
 
     with open(ivwpath + '/include/inviwo/core/util/colorbrewer.h','w') as header_file:
