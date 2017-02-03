@@ -45,14 +45,6 @@ const std::vector<dvec4> &colormap(Colormap colormap){
 }
 
 
-std::ostream& operator<<(std::ostream& os,Colormap colormap){
-    switch(colormap){
-##PLACEHOLDER_NAMES##
-    }
-
-    return os;
-}
-
 } // namespace
 } // namespace
 

@@ -29,6 +29,9 @@ if __name__ == '__main__':
     impls = "";
     names = "";
 
+    lastEnum = "";
+    firstEnum = "";
+
 #colorbrewer.json is downlaoded from http://colorbrewer2.org/# 
 
     with open('colorbrewer.json','r') as cb_file:
@@ -46,6 +49,9 @@ if __name__ == '__main__':
             for a,b in sorted(arrs.items()):
                 enumname = fam +"_" + str(a);
                 enum += enumname + ", ";
+                lastEnum = enumname;
+                if len(firstEnum) == 0:
+                    firstEnum = enumname;
 
                 impls += "\tcase Colormap::" + enumname + ":"
                 colors = []
@@ -63,9 +69,10 @@ if __name__ == '__main__':
                 impls += "\n\t{\n\t\tstatic const " + vector + "\n\t\treturn "+ enumname.lower() +";\n\t}\n"
 
                 #impls += " return "+vector+"\n"
-                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\";\n";
+                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
 
-    enum += "\n\tNumberOfMaps\n};\n\n"
+
+    enum += "\n\tFirstMap=" + firstEnum + ", LastMap=" + lastEnum + "\n};\n\n"
 
     header = ""
     src = ""
@@ -81,7 +88,7 @@ if __name__ == '__main__':
 
     header = header.replace("##PLACEHOLDER##",enum);
     src = src.replace("##PLACEHOLDER##",impls);
-    src = src.replace("##PLACEHOLDER_NAMES##",names);
+    header = header.replace("##PLACEHOLDER_NAMES##",names);
 
 
     with open(ivwpath + '/include/inviwo/core/util/colorbrewer.h','w') as header_file:
