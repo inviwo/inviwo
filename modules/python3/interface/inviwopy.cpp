@@ -452,14 +452,11 @@ PYBIND11_PLUGIN(inviwopy) {
                       &TransferFunctionProperty::setZoomV)
         .def("save",
              [](TransferFunctionProperty *tf, std::string filename) {
-                 Serializer serializer(filename);
-                 tf->serialize(serializer);
-                 serializer.writeFile();
+                 tf->get().save(filename);
              })
         .def("load",
              [](TransferFunctionProperty *tf, std::string filename) {
-                 Deserializer deserializer(filename);
-                 tf->deserialize(deserializer);
+                 tf->get().load(filename);
              })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
         .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
