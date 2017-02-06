@@ -33,8 +33,8 @@ namespace inviwo {
 
 namespace hdf5 {
 
-Exception::Exception(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
+Exception::Exception(const std::string& message,
+                     ExceptionContext context): ::inviwo::Exception(message, context) {}
 
 }  // namespace
 

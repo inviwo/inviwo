@@ -33,22 +33,37 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Define HDF5 Components
-
-set(IVW_HDF_ROOT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH "HDF root dir")
-if(IVW_HDF_ROOT_PATH)
-    set(CMAKE_MODULE_PATH ${IVW_HDF_ROOT_PATH}/cmake ${CMAKE_MODULE_PATH})
-endif()
-find_package(HDF5 REQUIRED NAMES hdf5 COMPONENTS C HL CXX CXX_HL shared)
 
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
+#--------------------------------------------------------------------
+# HDF5 Components
+set(HDF5_EXTERNALLY_CONFIGURED 1)
+set(HDF5_EXPORTED_TARGETS "inviwo-hdf5-targets")
+set(HDF5_EXTERNAL_LIB_PREFIX "ivw")
+set(HDF5_INSTALL_NO_DEVELOPMENT ON)
+
+set(HDF5_ENABLE_Z_LIB_SUPPORT OFF)
+#find_package(ZLIB REQUIRED)
+#set(H5_ZLIB_HEADER "zlib.h")
+#set(ZLIB_USE_EXTERNAL ON)
+#set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}")
+#set(ZLIB_LIBRARIES "${ZLIB_LIBRARIES}")
+
+# config
+set(HDF5_BUILD_EXAMPLES OFF)
+set(HDF5_BUILD_TOOLS OFF)
+set(BUILD_TESTING OFF)
+
+add_subdirectory(ext/hdf5)
+
 target_link_libraries(inviwo-module-hdf5
-    hdf5::hdf5-shared
-    hdf5::hdf5_hl-shared
-    hdf5::hdf5_cpp-shared
-    hdf5::hdf5_hl_cpp-shared
+    hdf5-shared
+    hdf5_hl-shared
+    hdf5_cpp-shared
+    hdf5_hl_cpp-shared
 )
+# not sure why this dir is nto picked up automatically
+target_include_directories(inviwo-module-hdf5 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/ext/hdf5)
