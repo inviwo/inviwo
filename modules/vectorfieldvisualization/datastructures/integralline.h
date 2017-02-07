@@ -71,12 +71,16 @@ public:
 
     double getLength()const;
 
+    double distBetweenPoints(size_t a,size_t b) const;
+
     dvec3 getPointAtDistance(double d)const;
 
     size_t getIndex()const { return idx_; }
     void setIndex(size_t idx ) { idx_  = idx; }
 
 private:
+    double calcLength( std::vector<dvec3>::const_iterator start ,   std::vector<dvec3>::const_iterator end ) const;
+
     std::vector<dvec3> positions_;
     std::map<std::string, std::vector<dvec3>> metaData_;
     TerminationReason terminationReason_;

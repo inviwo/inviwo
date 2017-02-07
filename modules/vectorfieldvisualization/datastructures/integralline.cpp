@@ -83,8 +83,8 @@ bool IntegralLine::hasMetaData(const std::string &name) const
 }
 
 double IntegralLine::getLength() const {
-    if (length_ == -1 ||true) {
-        
+    if (length_ == -1) {
+
         length_ = 0;
         if (positions_.size() > 1) {
             auto next = positions_.begin();
@@ -96,6 +96,12 @@ double IntegralLine::getLength() const {
         }
     }
     return length_;
+}
+
+double IntegralLine::distBetweenPoints(size_t a, size_t b)const {
+    if(a==b) return 0;
+    if(a>b) return distBetweenPoints(b,a);
+    return calcLength( positions_.begin()+a,positions_.begin()+b+1 );
 }
 
 dvec3 IntegralLine::getPointAtDistance(double d) const {
@@ -118,6 +124,20 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
 
 
 
+}
+
+double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
+                                std::vector<dvec3>::const_iterator end) const {
+    auto length = 0.0;
+    if (positions_.size() > 1) {
+        auto next = start;
+        auto prev = next++;
+        while (next != end) {
+            length += glm::distance(*prev, *next);
+            prev = next++;
+        }
+    }
+    return length;
 }
 
 }  // namespace
