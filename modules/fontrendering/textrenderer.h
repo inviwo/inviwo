@@ -198,6 +198,14 @@ protected:
     std::shared_ptr<Texture2D> prevTexture_; //<! 2D texture handle which was used previously in renderToTexture()
 };
 
+
+
+namespace util{
+IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
+    TextRenderer &textRenderer_, std::string text, int fontSize, vec4 fontColor,
+    std::shared_ptr<Texture2D> tex = nullptr);
+}
+
 }  // namespace
 
 #endif  // IVW_TEXTRENDERER_H
