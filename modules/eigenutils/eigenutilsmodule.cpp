@@ -28,10 +28,13 @@
  *********************************************************************************/
 
 #include <modules/eigenutils/eigenutilsmodule.h>
+#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
+#include <modules/eigenutils/ports.h>
 
 namespace inviwo {
 
 EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {   
+    registerProcessor<EigenMatrixToImage>();
     // Add a directory to the search path of the Shadermanager
     //ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
     
@@ -52,7 +55,10 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
 
     // Ports
     // registerPort<EigenUtilsOutport>("EigenUtilsOutport"));
-    // registerPort<EigenUtilsInport>("EigenUtilsInport"));
+    registerPort<EigenMatrixInport>("EigenMatrixXf");
+    registerPort<EigenMatrixOutport>("EigenMatrixXf");
+
+    registerPortInspector("EigenMatrixXfOutport", this->getPath(ModulePath::PortInspectors) +  "/eigenmatrix.inv");
 
     // PropertyWidgets
     // registerPropertyWidget<EigenUtilsPropertyWidget, EigenUtilsProperty>("Default");
@@ -64,7 +70,6 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerCapabilities(util::make_unique<EigenUtilsCapabilities>()));
     // registerSettings(util::make_unique<EigenUtilsSettings>());
     // registerMetaData(util::make_unique<EigenUtilsMetaData>());   
-    // registerPortInspector("EigenUtilsOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
     // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());  
 }
