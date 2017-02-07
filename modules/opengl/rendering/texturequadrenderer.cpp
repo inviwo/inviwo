@@ -128,6 +128,8 @@ void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture
     utilgl::Enable<MeshGL> enable(rect);
     utilgl::DepthFuncState depth(GL_ALWAYS);
 
+    utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     shader_.setUniform("tex", texUnit);
     shader_.setUniform("geometry_.dataToWorld",
                        glm::translate(vec3(-1.0f + position.x, -1.0f + position.y, 0.0f)) *
