@@ -33,8 +33,8 @@
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
-#ifndef GLM_SWIZZLE
-#define GLM_SWIZZLE
+#ifndef GLM_FORCE_SWIZZLE
+#define GLM_FORCE_SWIZZLE
 #endif
 #ifndef GLM_FORCE_SIZE_T_LENGTH
 #define GLM_FORCE_SIZE_T_LENGTH
@@ -59,6 +59,7 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <half/half.hpp>
 
