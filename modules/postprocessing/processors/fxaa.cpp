@@ -72,6 +72,7 @@ FXAA::FXAA()
     : Processor()
     , inport_("inport")
     , outport_("outport")
+    , enable_("enable","Enable Operation" , true)
     , dither_("dither", "Dither")
     , quality_("quality", "Quality", 0.5f, 0.f, 1.f, 0.1f)
     , fxaa_("fullscreenquad.vert", "fxaa.frag", false)
@@ -80,6 +81,7 @@ FXAA::FXAA()
     addPort(inport_);
     addPort(outport_);
 
+    addProperty(enable_);
     addProperty(dither_);
     addProperty(quality_);
 
@@ -128,6 +130,10 @@ void FXAA::initializeResources() {
 }
     
 void FXAA::process() {
+    if(!enable_.get()){
+        outport_.setData(inport_.getData());
+        return;
+    }
     int width = outport_.getDimensions().x;
     int height = outport_.getDimensions().y;
 

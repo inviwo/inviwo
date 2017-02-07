@@ -128,6 +128,7 @@ private:
     ImageInport inport_;
     ImageOutport outport_;
 
+    BoolProperty enable_;
     OptionPropertyInt technique_;
     FloatProperty radius_;
     FloatProperty intensity_;

@@ -79,6 +79,8 @@ private:
     ImageInport inport_;
     ImageOutport outport_;
 
+    BoolProperty enable_;
+
     OptionPropertyInt dither_;
     FloatProperty quality_;
 
