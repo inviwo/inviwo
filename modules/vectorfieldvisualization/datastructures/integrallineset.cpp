@@ -73,8 +73,7 @@ void IntegralLineSet::push_back(const IntegralLine &line) {
 void IntegralLineSet::push_back(const IntegralLine &line, size_t idx)
 {
     IntegralLine copy(line);
-    copy.setIndex(idx);
-    lines_.push_back(copy);
+    push_back(copy,idx);
 }
 
 }  // namespace

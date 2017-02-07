@@ -57,6 +57,7 @@ inviwo::IntegralLine &IntegralLine::operator=(const IntegralLine &that) {
 IntegralLine::~IntegralLine() {}
 
 const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
+std::vector<dvec3> &IntegralLine::getPositions() { return positions_; }
 
 const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
     auto it = metaData_.find(name);
@@ -82,7 +83,7 @@ bool IntegralLine::hasMetaData(const std::string &name) const
 }
 
 double IntegralLine::getLength() const {
-    if (length_ == -1) {
+    if (length_ == -1 ||true) {
         
         length_ = 0;
         if (positions_.size() > 1) {

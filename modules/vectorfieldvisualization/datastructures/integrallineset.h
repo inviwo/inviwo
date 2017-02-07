@@ -57,6 +57,12 @@ public:
     std::vector<IntegralLine>::iterator begin();
     std::vector<IntegralLine>::iterator end();
 
+    const IntegralLine& back() const { return lines_.back(); }
+    IntegralLine& back() { return lines_.back(); }
+
+    const IntegralLine& front() const { return lines_.front(); }
+    IntegralLine& front() { return lines_.front(); }
+
     size_t size() const;
 
     IntegralLine& operator[](size_t idx);

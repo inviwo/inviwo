@@ -19,7 +19,7 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
@@ -33,9 +33,9 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Seed3Dto4D::processorInfo_{
-    "org.inviwo.Seed3Dto4D",      // Class identifier
-    "Seed3Dto4D",                // Display name
-    "Undefined",              // Category
+    "org.inviwo.Seed3Dto4D",  // Class identifier
+    "Seed3Dto4D",             // Display name
+    "Seeding",                // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
@@ -57,8 +57,9 @@ Seed3Dto4D::Seed3Dto4D()
 void Seed3Dto4D::process() {
     auto inData = seed3d_.getData();
     auto inVec = *inData;
-    auto outvec = std::make_shared<SeedPoint4DVector>(inVec.size());
-    for(auto p : inVec){
+    auto outvec = std::make_shared<SeedPoint4DVector>();
+    outvec->reserve(inVec.size());
+    for(const auto &p : inVec){
         outvec->emplace_back(p,w_.get());
     }
     seed4d_.setData(outvec);
