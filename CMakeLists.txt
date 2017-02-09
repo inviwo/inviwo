@@ -76,8 +76,8 @@ option(SHARED_LIBS "Build shared libs, else static libs" ON)
 
 
 #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
-add_subdirectory(${CMAKE_SOURCE_DIR}/ext/pybind11)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/python3/ext/pybind11/tools")
+add_subdirectory(${CMAKE_SOURCE_DIR}/modules/python3/ext/pybind11)
 
 set(PythonLibsNew_FIND_REQUIRED 3)
 set(Python_ADDITIONAL_VERSIONS 3.5)

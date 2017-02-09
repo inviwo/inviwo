@@ -3,8 +3,6 @@
 ivw_module(Python3)
 
 
-include(${CMAKE_SOURCE_DIR}/cmake/pybind11.cmake)
-
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
 ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
 
