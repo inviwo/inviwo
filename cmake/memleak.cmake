@@ -28,17 +28,15 @@
  #################################################################################
 
  ####  Memory leak checks ####
-
 IF(WIN32 AND MSVC)
-   	option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
+    option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
     if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        add_definitions(-DIVW_ENABLE_MSVC_MEM_LEAK_TEST)
         add_subdirectory(${IVW_EXTENSIONS_DIR}/vld)
-    endif()    
+    endif()
 ENDIF()
 
 function(ivw_memleak_setup target)
-	if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        add_dependencies(${target} vld)
-	endif()
+    if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
+        target_link_libraries(${target} vld-interface)
+    endif()
 endfunction()
