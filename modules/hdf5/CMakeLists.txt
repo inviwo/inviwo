@@ -40,30 +40,37 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # HDF5 Components
-set(HDF5_EXTERNALLY_CONFIGURED 1)
-set(HDF5_EXPORTED_TARGETS "inviwo-hdf5-targets")
-set(HDF5_EXTERNAL_LIB_PREFIX "ivw")
+set(HDF5_EXTERNALLY_CONFIGURED  1)
+set(HDF5_EXPORTED_TARGETS       "inviwo-hdf5-targets")
+set(HDF5_EXTERNAL_LIB_PREFIX    "ivw-")
 set(HDF5_INSTALL_NO_DEVELOPMENT ON)
+set(HDF5_ENABLE_Z_LIB_SUPPORT   ON)
 
-set(HDF5_ENABLE_Z_LIB_SUPPORT OFF)
-#find_package(ZLIB REQUIRED)
-#set(H5_ZLIB_HEADER "zlib.h")
-#set(ZLIB_USE_EXTERNAL ON)
-#set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}")
-#set(ZLIB_LIBRARIES "${ZLIB_LIBRARIES}")
-
-# config
-set(HDF5_BUILD_EXAMPLES OFF)
-set(HDF5_BUILD_TOOLS OFF)
-set(BUILD_TESTING OFF)
+set(HDF5_BUILD_EXAMPLES         OFF)
+set(HDF5_BUILD_TOOLS            OFF)
+set(BUILD_TESTING               OFF)
 
 add_subdirectory(ext/hdf5)
 
-target_link_libraries(inviwo-module-hdf5
-    hdf5-shared
-    hdf5_hl-shared
-    hdf5_cpp-shared
-    hdf5_hl_cpp-shared
-)
+set(h5-static hdf5-static hdf5_hl-static hdf5_cpp-static hdf5_hl_cpp-static)
+set(h5-shared hdf5-shared hdf5_hl-shared hdf5_cpp-shared hdf5_hl_cpp-shared)
+set(h5-cmake H5detect H5make_libsettings)
+set(h5-targets ${h5-static} ${h5-shared} ${h5-cmake})
+set_target_properties(${h5-targets} PROPERTIES FOLDER ext/hdf5)
+ivw_suppress_compiler_warnings(${h5-targets})
+
+# Configure some specific warnings.
+foreach(target ${h5-targets})
+    target_compile_options(${target} PRIVATE "/w24005")
+endforeach()
+set_property(TARGET ${h5-static} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS " /IGNORE:4221")
+
+if(${BUILD_SHARED_LIBS})
+    target_link_libraries(inviwo-module-hdf5 ${h5-shared})
+else()
+    target_link_libraries(inviwo-module-hdf5 ${h5-static})
+endif()
+
 # not sure why this dir is nto picked up automatically
+# Needed to pick up some generated headers.
 target_include_directories(inviwo-module-hdf5 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/ext/hdf5)
