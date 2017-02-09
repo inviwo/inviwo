@@ -124,8 +124,8 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
 
 IndexBufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
-    auto indices_ = std::make_shared<IndexBuffer>(indicesRam);
-    addIndicies(Mesh::MeshInfo(dt, ct), indices_);
+    auto indices = std::make_shared<IndexBuffer>(indicesRam);
+    addIndicies(Mesh::MeshInfo(dt, ct), indices);
     return indicesRam.get();
 }
 

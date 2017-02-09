@@ -373,14 +373,13 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapGestureEvent(QGestureEvent* ge) {
-    QGesture* gesture = nullptr;
     QPanGesture* panGesture = nullptr;
     QPinchGesture* pinchGesture = nullptr;
 
-    if ((gesture = ge->gesture(Qt::PanGesture))) {
+    if (auto gesture = ge->gesture(Qt::PanGesture)) {
         panGesture = static_cast<QPanGesture*>(gesture);
     }
-    if ((gesture = ge->gesture(Qt::PinchGesture))) {
+    if (auto gesture = ge->gesture(Qt::PinchGesture)) {
         pinchGesture = static_cast<QPinchGesture*>(gesture);
     }
     ge->accept();

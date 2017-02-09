@@ -134,8 +134,8 @@ void RandomMeshGenerator::process() {
     for (int i = 0; i < numberOfToruses_.get(); i++) {
         auto center = randVec3();
         auto up = glm::normalize(randVec3());
-        auto r2 = randD(0.1, 0.5f);
-        auto r1 = randD(0.1 + r2, 1.0f + r2);
+        auto r2 = randD(0.1f, 0.5f);
+        auto r1 = randD(0.1f + r2, 1.0f + r2);
         auto color = randColor();
         auto mesh2 = BasicMesh::torus(center, up, r1, r2, ivec2(32, 8), color);
         mesh->append(mesh2.get());

@@ -172,15 +172,15 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         } else {
             img = utilqt::generatePreview(cid);
             if (img.isNull()) return QVariant();
-            QByteArray data;
-            QBuffer buffer(&data);
+            QByteArray imgData;
+            QBuffer buffer(&imgData);
             buffer.open(QIODevice::WriteOnly);
             img.save(&buffer, "PNG");
 
             QImageWriter writer(imgname);
             writer.write(img);
 
-            return data;
+            return imgData;
         }
     }
 
@@ -194,18 +194,18 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         QFile newfile(file);
 
         if (newfile.exists() && newfile.open(QIODevice::ReadOnly)) {
-            QByteArray data = newfile.readAll();
-            return data;
+            QByteArray imgData = newfile.readAll();
+            return imgData;
         }
     }
 #endif
 
-    QByteArray data = helpEngine_->fileData(url);
+    QByteArray fileData = helpEngine_->fileData(url);
     switch (type) {
         case QTextDocument::HtmlResource:
-            return data;
+            return fileData;
         case QTextDocument::ImageResource: {
-            auto image = QImage::fromData(data, QFileInfo(url.path()).suffix().toLatin1().data());
+            auto image = QImage::fromData(fileData, QFileInfo(url.path()).suffix().toLatin1().data());
             QImage resized{image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
             QByteArray smalldata;
@@ -214,7 +214,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
             return smalldata;
         }
         case QTextDocument::StyleSheetResource:
-            return data;
+            return fileData;
     }
     return QTextBrowser::loadResource(type, url);
 }
