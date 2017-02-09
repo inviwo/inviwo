@@ -501,56 +501,7 @@ inline void hash_combine(std::size_t& seed, const T& v) {
 }  // namespace util
 }  // namespace inviwo
 
-// namespace std {
-// template <typename T, glm::precision P, template<typename, glm::precision> class VecType>
-// struct hash<VecType<T, P>> {
-//     size_t operator()(const VecType<T, P>& v) const {
-//         size_t h = 0;
-//         for (size_t i = 0; i < inviwo::util::flat_extent<VecType<T, P>>::value; ++i) {
-//             T& val = inviwo::util::glmcomp<const VecType<T, P>&>(v, i);
-//             inviwo::util::hash_combine(h, val);
-//         }
-//         return h;
-//     }
-// };
-// 
-
 namespace std {
-template <typename T, glm::precision P>
-struct hash<glm::tvec2<T, P>> {
-    size_t operator()(const glm::tvec2<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec2<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
-template <typename T, glm::precision P>
-struct hash<glm::tvec3<T, P>>
-{
-    size_t operator()(const glm::tvec3<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec3<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
-template <typename T, glm::precision P>
-struct hash<glm::tvec4<T, P>>
-{
-    size_t operator()(const glm::tvec4<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec4<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
 
 template <typename T, typename U>
 struct hash<std::pair<T, U>> {
