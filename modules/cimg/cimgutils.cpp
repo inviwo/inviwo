@@ -36,6 +36,12 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#if (_MSC_VER)
+#pragma warning(disable : 4456)
+#pragma warning(disable : 4458)
+#pragma warning(disable : 4146)
+#pragma warning(disable : 4324)
+#endif
 #define cimg_verbosity 0 //Disable all cimg output
 #define cimg_display 0 // Do not use any gui stuff
 #include <modules/cimg/ext/cimg/CImg.h>
@@ -45,7 +51,6 @@
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
 #if (_MSC_VER)
-#pragma warning(disable : 4146)
 #pragma warning(disable : 4197)
 #pragma warning(disable : 4297)
 #pragma warning(disable : 4267)
@@ -255,7 +260,9 @@ struct CImgSaveLayerDispatcher {
         try {
             img->save(filePath);
         } catch (CImgIOException& e) {
-            throw DataWriterException("Failed to save image to: " + std::string(filePath), IvwContext);
+            throw DataWriterException("Failed to save image to: " + std::string(filePath) +
+                                          " Reason: " + std::string(e.what()),
+                                      IvwContext);
         }
     }
 };

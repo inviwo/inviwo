@@ -136,10 +136,10 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
 }
 
 void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
-    auto data = drop->mimeData();
-    if (data->hasUrls()) {
-        if(data->urls().size()>0) {
-            auto url = data->urls().first();
+    auto mineData = drop->mimeData();
+    if (mineData->hasUrls()) {
+        if(mineData->urls().size()>0) {
+            auto url = mineData->urls().first();
             property_->set(url.toLocalFile().toStdString());
 
             drop->accept();
@@ -155,10 +155,10 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
         }
         case AcceptMode::Open: {
             if (event->mimeData()->hasUrls()) {
-                auto data = event->mimeData();
-                if (data->hasUrls()) {
-                    if (data->urls().size() > 0) {
-                        auto url = data->urls().first();
+                auto mimeData = event->mimeData();
+                if (mimeData->hasUrls()) {
+                    if (mimeData->urls().size() > 0) {
+                        auto url = mimeData->urls().first();
                         auto file = url.toLocalFile().toStdString();
                         
                         switch (property_->getFileMode()) {

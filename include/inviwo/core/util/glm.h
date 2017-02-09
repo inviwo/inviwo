@@ -660,7 +660,7 @@ To glm_convert_normalized(From x) {
 
 // vector like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-auto glmcomp(T& elem, size_t i) -> T& {
+auto glmcomp(T& elem, size_t) -> T& {
     return elem;
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
