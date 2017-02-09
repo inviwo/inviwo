@@ -12,6 +12,10 @@ def update():
     except: 
         pass
 
+def getCanvases():
+    import inviwopy as i
+    for p in i.app.network.processors:
+        print([type(p),p])
 
 def snapshotAllCanvasesWithWorkspace(basePath: str , workspaceName  , canvasFilenamePrefix="" , canvasFilenameSufix = "" , filetype="png"):
     import inviwo as i

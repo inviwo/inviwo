@@ -35,8 +35,12 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add script files
 set(SCRIPT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/documentgenerator.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/inviwo_utils.py
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/outputredirector.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/__init__.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/animation.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/camera.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/regression.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/utils.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
