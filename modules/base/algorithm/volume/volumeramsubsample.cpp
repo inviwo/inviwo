@@ -37,7 +37,6 @@ namespace inviwo {
 std::shared_ptr<VolumeRAM> util::volumeSubSample(const VolumeRAM* volume, size3_t f) {
     return volume->dispatch<std::shared_ptr<VolumeRAM>>(
         [&f](auto srcVol) -> std::shared_ptr<VolumeRAM> {
-            using VolumeType = util::PrecsionType<decltype(srcVol)>;
             using ValueType = util::PrecsionValueType<decltype(srcVol)>;
 
             // use a double type to perform the summation

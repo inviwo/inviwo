@@ -60,6 +60,7 @@ static const int faceAxis_[6] = {
     0, 0, 1, 1, 2, 2
 };
 
+/*
 static const vec3 faceCenters_[6] = {
     vec3(1.f, 0.5f, 0.5f),
     vec3(0.f, 0.5f, 0.5f),
@@ -68,6 +69,7 @@ static const vec3 faceCenters_[6] = {
     vec3(0.5f, 0.5f, 1.f),
     vec3(0.5f, 0.5f, 0.f)
 };
+*/
 
 static const vec3 faceNormals_[6] = {
     vec3(1.f, 0.f, 0.f),

@@ -27,7 +27,6 @@
  * 
  *********************************************************************************/
 
-#pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/serializeconstants.h>
 
 namespace inviwo {

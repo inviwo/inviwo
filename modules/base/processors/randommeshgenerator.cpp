@@ -46,16 +46,14 @@ const ProcessorInfo RandomMeshGenerator::getProcessorInfo() const { return proce
 RandomMeshGenerator::RandomMeshGenerator()
     : Processor()
     , mesh_("mesh")
-    , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , rand_()
+    , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , reseed_("reseed_", "Seed")
     , numberOfBoxes_("numberOf_", "Number of Boxes", 1, 0, 100)
     , numberOfSpheres_("numberOfSpheres_", "Number of Spheres", 1, 0, 100)
     , numberOfCylinders_("numberOfCylinders_", "Number of cylinders", 1, 0, 100)
     , numberOfCones_("numberOfCones_", "Number of Cones", 1, 0, 100)
-    , numberOfToruses_("numberOfToruses", "Number of Toruses", 1, 0, 100)
-
-{
+    , numberOfToruses_("numberOfToruses", "Number of Toruses", 1, 0, 100) {
 
     addPort(mesh_);
     addProperty(numberOfBoxes_);

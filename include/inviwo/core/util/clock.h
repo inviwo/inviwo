@@ -100,12 +100,8 @@ private:
     // ScopedClockCPU() {};
     Clock clock_;
 
-// We can safely ingnore the C4251 warning for private members.
-#pragma warning( push )
-#pragma warning( disable: 4251 )
     std::string logSource_;
     std::string logMessage_;
-#pragma warning( pop )
 
     float logIfAtLeastMilliSec_;
 };

@@ -57,15 +57,16 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , disableTF_("disableTF", "Disable transfer function", false,
                  InvalidationLevel::InvalidResources)
     , tf_("transferfunction", "Transfer function", TransferFunction(), &volume_)
-    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
-    , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag")
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
 	, renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
 	, renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , nearestInterpolation_("nearestInterpolation", "Use nearest neighbor interpolation", false)
     , camera_("camera", "Camera")
-    , trackball_(&camera_) {
+    , trackball_(&camera_)
+    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
+    , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag") {
+    
     addPort(volume_);
     addPort(imageInport_);
     addPort(outport_);

@@ -42,7 +42,7 @@
 namespace inviwo {
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
-    : shaderType_{shaderType}, resource_{resource}, id_{glCreateShader(shaderType)} {
+    : shaderType_{shaderType}, id_{glCreateShader(shaderType)}, resource_{resource} {
     if (!shaderType_) throw OpenGLException("Invalid shader type", IvwContext);
  
     // Help developer to spot errors
@@ -67,8 +67,8 @@ ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
-    , resource_(rhs.resource_)
     , id_(glCreateShader(rhs.shaderType_))
+    , resource_(rhs.resource_)
     , outDeclarations_(rhs.outDeclarations_)
     , shaderDefines_(rhs.shaderDefines_)
     , shaderExtensions_(rhs.shaderExtensions_) {
@@ -79,8 +79,8 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
         glDeleteShader(id_);
         
         shaderType_ = that.shaderType_;
-        resource_ = that.resource_;
         id_ = glCreateShader(shaderType_);
+        resource_ = that.resource_;
         outDeclarations_ = that.outDeclarations_;
         shaderDefines_ = that.shaderDefines_;
         shaderExtensions_ = that.shaderExtensions_;

@@ -42,16 +42,17 @@ Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, 
     , filtering_(filtering)
     , level_(level)
     , pboBackIsSetup_(false)
-    , pboBackHasData_(false)
-{
+    , pboBackHasData_(false) {
+    
     glGenTextures(1, &id_);
     numChannels_ = glFormat.channels;
-    byteSize_ = numChannels_*glFormat.typeSize;
+    byteSize_ = numChannels_ * glFormat.typeSize;
     glGenBuffers(1, &pboBack_);
     LGL_ERROR_SUPPRESS;
 }
 
-Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level)
+Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
+                 GLenum filtering, GLint level)
     : Observable<TextureObserver>()
     , target_(target)
     , format_(format)
@@ -60,8 +61,8 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     , filtering_(filtering)
     , level_(level)
     , pboBackIsSetup_(false)
-    , pboBackHasData_(false)
-{
+    , pboBackHasData_(false) {
+
     glGenTextures(1, &id_);
     setNChannels();
     setSizeInBytes();
@@ -80,14 +81,14 @@ Texture::Texture(const Texture& other)
     , byteSize_(other.byteSize_)
     , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
-    , pboBackHasData_(false)
-{
+    , pboBackHasData_(false) {
+
     glGenTextures(1, &id_);
     glGenBuffers(1, &pboBack_);
     LGL_ERROR_SUPPRESS;
 }
 
-Texture::Texture(Texture&& other) 
+Texture::Texture(Texture&& other)
     : Observable<TextureObserver>(std::move(other))
     , target_(other.target_)
     , format_(other.format_)
@@ -95,14 +96,13 @@ Texture::Texture(Texture&& other)
     , dataType_(other.dataType_)
     , filtering_(other.filtering_)
     , level_(other.level_)
+    , id_(other.id_)  // Steal texture
+    , pboBack_(other.pboBack_)
     , byteSize_(other.byteSize_)
     , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
-    , pboBackHasData_(false)
-    // Steal texture
-    , id_(other.id_) 
-    , pboBack_(other.pboBack_)
-{
+    , pboBackHasData_(false) {
+
     // Free resources from other
     other.id_ = 0;
     other.pboBack_ = 0;
@@ -151,48 +151,30 @@ Texture& Texture::operator=(Texture&& rhs) {
 
 Texture::~Texture() {
     if (id_ != 0 || pboBack_ != 0) {
-        // These functions silently ignores zeros, 
+        // These functions silently ignores zeros,
         // which happens when move operations has been used
-        glDeleteTextures(1, &id_); 
+        glDeleteTextures(1, &id_);
         glDeleteBuffers(1, &pboBack_);
     }
 }
 
-GLuint Texture::getID() const {
-    return id_;
-}
+GLuint Texture::getID() const { return id_; }
 
-GLenum Texture::getTarget() const {
-    return target_;
-}
+GLenum Texture::getTarget() const { return target_; }
 
-GLenum Texture::getFormat() const {
-    return format_;
-}
+GLenum Texture::getFormat() const { return format_; }
 
-GLenum Texture::getInternalFormat() const {
-    return internalformat_;
-}
+GLenum Texture::getInternalFormat() const { return internalformat_; }
 
-GLenum Texture::getDataType() const {
-    return dataType_;
-}
+GLenum Texture::getDataType() const { return dataType_; }
 
-GLenum Texture::getFiltering() const {
-    return filtering_;
-}
+GLenum Texture::getFiltering() const { return filtering_; }
 
-GLint Texture::getLevel() const {
-    return level_;
-}
+GLint Texture::getLevel() const { return level_; }
 
-GLuint Texture::getNChannels() const {
-    return numChannels_;
-}
+GLuint Texture::getNChannels() const { return numChannels_; }
 
-GLuint Texture::getSizeInBytes() const {
-    return byteSize_;
-}
+GLuint Texture::getSizeInBytes() const { return byteSize_; }
 
 void Texture::setTextureParameters(std::function<void(Texture*)> fun) {
     bind();

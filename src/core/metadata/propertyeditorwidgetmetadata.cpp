@@ -121,7 +121,7 @@ void PropertyEditorWidgetMetaData::setDockStatus(PropertyEditorWidgetDockStatus&
     dockStatus_ = dockStatus;
 }
 
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
+PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
     return dockStatus_;
 }
 

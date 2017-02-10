@@ -76,9 +76,9 @@ public:
     const Animation* getAnimation() const;
     const AnimationState& getState() const;
     const PlaybackMode& getPlaybackMode() const;
-    const Seconds getCurrentTime() const;
-    const Seconds getPlaySpeedTime() const;
-    const double getPlaySpeedFps() const;
+    Seconds getCurrentTime() const;
+    Seconds getPlaySpeedTime() const;
+    double getPlaySpeedFps() const;
 
 protected:
     void setTime(Seconds time); // Use eval to set time in the public interface.

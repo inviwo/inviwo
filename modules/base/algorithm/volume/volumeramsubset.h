@@ -59,7 +59,6 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::dispatch(const VolumeRepre
                                                                const VolumeBorders& border,
                                                                bool clampBorderOutsideVolume) {
     using T = typename DataType::type;
-    using P = typename util::same_extent<T, double>::type;
 
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
     if (!volume) return nullptr;

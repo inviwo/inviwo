@@ -68,8 +68,6 @@ private:
     ImageOutport outport_;
     FileProperty file_;
     IntVec2Property imageDimension_;
-
-    bool isDeserializing_;
 };
 
 } // namespace

@@ -118,13 +118,12 @@ private:
     
     FloatVec3Property position1_;
     FloatVec3Property position2_;
+    BasisProperty basis_;
     FloatVec3Property normal_;
     FloatVec4Property color_;
     FloatProperty torusRadius1_;
     FloatProperty torusRadius2_;
     
-    BasisProperty basis_;
-
     FloatProperty meshScale_; // Scale size of mesh
     IntVec2Property meshRes_; // mesh resolution
     TemplateOptionProperty<MeshType> meshType_;

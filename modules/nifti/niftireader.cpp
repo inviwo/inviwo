@@ -79,11 +79,11 @@ const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiData
 
 std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string filePath) {
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0), nifti_image_free);
+    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0),
+                                            nifti_image_free);
     if (!niftiImage) {
-        throw DataReaderException(
-            "Error: failed to read NIfTI image in file: " + filePath,
-            IvwContextCustom("NiftiReader"));
+        throw DataReaderException("Error: failed to read NIfTI image in file: " + filePath,
+                                  IvwContextCustom("NiftiReader"));
     }
 
     const DataFormatBase* format = nullptr;
@@ -93,14 +93,15 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     // 5, 6, 7 for anything else needed.
     size3_t dim(niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3]);
     if (glm::any(glm::equal(dim, size3_t(0)))) {
-        std::stringstream dims; dims << dim;
+        std::stringstream dims;
+        dims << dim;
         throw DataReaderException(
             "Error: Unsupported dimension (" + dims.str() + ") in nifti file: " + filePath,
             IvwContextCustom("NiftiReader"));
     }
     glm::mat4 basisAndOffset(2.0f);
     glm::vec3 spacing(niftiImage->pixdim[1], niftiImage->pixdim[2], niftiImage->pixdim[3]);
-    
+
     format = niftiDataTypeToInviwoDataFormat(niftiImage->datatype);
     if (format == nullptr) {
         std::string datatype(nifti_datatype_string(niftiImage->datatype));
@@ -108,7 +109,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
             "Error: Unsupported format (" + datatype + ") in nifti file: " + filePath,
             IvwContextCustom("NiftiReader"));
     }
-    
+
     auto volume = std::make_shared<Volume>(dim);
 
     std::string descrip(niftiImage->descrip);
@@ -117,33 +118,41 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         volume->setMetaData<StringMetaData>("description", descrip);
     }
     mat4 niftiIndexToModel;
-    
+
     // qform_code / sform_code
     // NIFTI_XFORM_UNKNOWN      0 /! Arbitrary coordinates (Method 1). /
     // NIFTI_XFORM_SCANNER_ANAT 1 /! Scanner-based anatomical coordinates /
-    // NIFTI_XFORM_ALIGNED_ANAT 2 /! Coordinates aligned to another file's, or to anatomical "truth".            /
-    // NIFTI_XFORM_TALAIRACH    3 /! Coordinates aligned to Talairach-Tournoux Atlas; (0,0,0)=AC, etc. /
+    // NIFTI_XFORM_ALIGNED_ANAT 2 /! Coordinates aligned to another file's, or to anatomical
+    // "truth".            /
+    // NIFTI_XFORM_TALAIRACH    3 /! Coordinates aligned to Talairach-Tournoux Atlas; (0,0,0)=AC,
+    // etc. /
     // NIFTI_XFORM_MNI_152      4 /! MNI 152 normalized coordinates. /
     if (niftiImage->qform_code > 0) {
         // Represents the nominal voxel locations
-        // as reported by the scanner, or as rotated 
+        // as reported by the scanner, or as rotated
         // to some fiducial orientation and location.
         // The origin of coordinates would generally be whatever
         // the scanner origin is; for example, in MRI, (0, 0, 0) is the center
         // of the gradient coil
-        niftiIndexToModel = glm::mat4x4(niftiImage->qto_xyz.m[0][0], niftiImage->qto_xyz.m[1][0], niftiImage->qto_xyz.m[2][0], niftiImage->qto_xyz.m[3][0],
-                                         niftiImage->qto_xyz.m[0][1], niftiImage->qto_xyz.m[1][1], niftiImage->qto_xyz.m[2][1], niftiImage->qto_xyz.m[3][1],
-                                         niftiImage->qto_xyz.m[0][2], niftiImage->qto_xyz.m[1][2], niftiImage->qto_xyz.m[2][2], niftiImage->qto_xyz.m[3][2],
-                                         niftiImage->qto_xyz.m[0][3], niftiImage->qto_xyz.m[1][3], niftiImage->qto_xyz.m[2][3], niftiImage->qto_xyz.m[3][3]);
+        niftiIndexToModel = glm::mat4x4(
+            niftiImage->qto_xyz.m[0][0], niftiImage->qto_xyz.m[1][0], niftiImage->qto_xyz.m[2][0],
+            niftiImage->qto_xyz.m[3][0], niftiImage->qto_xyz.m[0][1], niftiImage->qto_xyz.m[1][1],
+            niftiImage->qto_xyz.m[2][1], niftiImage->qto_xyz.m[3][1], niftiImage->qto_xyz.m[0][2],
+            niftiImage->qto_xyz.m[1][2], niftiImage->qto_xyz.m[2][2], niftiImage->qto_xyz.m[3][2],
+            niftiImage->qto_xyz.m[0][3], niftiImage->qto_xyz.m[1][3], niftiImage->qto_xyz.m[2][3],
+            niftiImage->qto_xyz.m[3][3]);
     } else if (niftiImage->sform_code > 0) {
         // give the location of the voxels in some standard space.
         // The origin of coordinates would depend on the value
         // of sform_code; for example, for the Talairach coordinate system,
         // (0, 0, 0) corresponds to the Anterior Commissure.
-        niftiIndexToModel = glm::mat4x4(niftiImage->sto_xyz.m[0][0], niftiImage->sto_xyz.m[1][0], niftiImage->sto_xyz.m[2][0], niftiImage->sto_xyz.m[3][0],
-            niftiImage->sto_xyz.m[0][1], niftiImage->sto_xyz.m[1][1], niftiImage->sto_xyz.m[2][1], niftiImage->sto_xyz.m[3][1],
-            niftiImage->sto_xyz.m[0][2], niftiImage->sto_xyz.m[1][2], niftiImage->sto_xyz.m[2][2], niftiImage->sto_xyz.m[3][2],
-            niftiImage->sto_xyz.m[0][3], niftiImage->sto_xyz.m[1][3], niftiImage->sto_xyz.m[2][3], niftiImage->sto_xyz.m[3][3]);
+        niftiIndexToModel = glm::mat4x4(
+            niftiImage->sto_xyz.m[0][0], niftiImage->sto_xyz.m[1][0], niftiImage->sto_xyz.m[2][0],
+            niftiImage->sto_xyz.m[3][0], niftiImage->sto_xyz.m[0][1], niftiImage->sto_xyz.m[1][1],
+            niftiImage->sto_xyz.m[2][1], niftiImage->sto_xyz.m[3][1], niftiImage->sto_xyz.m[0][2],
+            niftiImage->sto_xyz.m[1][2], niftiImage->sto_xyz.m[2][2], niftiImage->sto_xyz.m[3][2],
+            niftiImage->sto_xyz.m[0][3], niftiImage->sto_xyz.m[1][3], niftiImage->sto_xyz.m[2][3],
+            niftiImage->sto_xyz.m[3][3]);
     } else {
         // METHOD 1 (the "old" way, used only when qform_code = 0)
         niftiIndexToModel[0][0] = -0.5f * niftiImage->pixdim[1];
@@ -154,18 +163,21 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         niftiIndexToModel[3][1] = offset[1];
         niftiIndexToModel[3][2] = offset[2];
     }
-   
+
     // Compute the extent of the entire data set
     // Nifti supplies a matrix to compute the center position of the voxel.
     // Here we compute the start basis vectors spanning the data set
-    basisAndOffset[0] = niftiIndexToModel*vec4(dim[0] - 0.5f, 0.f, 0.f, 1.f) - niftiIndexToModel*vec4(-0.5f, 0.f, 0.f, 1.f);
-    basisAndOffset[1] = niftiIndexToModel*vec4(0.f, dim[1] - 0.5f, 0.f, 1.f) - niftiIndexToModel*vec4(0.f, -0.5f, 0.f, 1.f);
-    basisAndOffset[2] = niftiIndexToModel*vec4(0.f, 0.f, dim[2] - 0.5f, 1.f) - niftiIndexToModel*vec4(0.f, 0.f, -0.5f, 1.f);
-    basisAndOffset[3] = niftiIndexToModel*vec4(-0.5f, -0.5f, -0.5f, 1.f);
+    basisAndOffset[0] = niftiIndexToModel * vec4(dim[0] - 0.5f, 0.f, 0.f, 1.f) -
+                        niftiIndexToModel * vec4(-0.5f, 0.f, 0.f, 1.f);
+    basisAndOffset[1] = niftiIndexToModel * vec4(0.f, dim[1] - 0.5f, 0.f, 1.f) -
+                        niftiIndexToModel * vec4(0.f, -0.5f, 0.f, 1.f);
+    basisAndOffset[2] = niftiIndexToModel * vec4(0.f, 0.f, dim[2] - 0.5f, 1.f) -
+                        niftiIndexToModel * vec4(0.f, 0.f, -0.5f, 1.f);
+    basisAndOffset[3] = niftiIndexToModel * vec4(-0.5f, -0.5f, -0.5f, 1.f);
 
     // Flip coordinate system and data if the data is provided in neurological convention
     auto modelToWorld = volume->getWorldMatrix();
-    std::array<bool, 3> flipAxis = { false, false, false };
+    std::array<bool, 3> flipAxis = {false, false, false};
     if (niftiIndexToModel[0][0] < 0.f) {
         // flip x-axis
         modelToWorld[0] *= -1.f;
@@ -184,24 +196,25 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         modelToWorld[3][2] *= -1.f;
         flipAxis[2] = true;
     }
-    
+
     // Debug:
-    //auto firstVoxelCoordCenter = basisAndOffset*vec4(0.f, 0.f, 0.f, 1.f);
-    //auto lastVoxelCoord = basisAndOffset*vec4(1.f);
-    //auto indexToModel = glm::mat4x4(nim->qto_xyz.m[0][0], nim->qto_xyz.m[1][0], nim->qto_xyz.m[2][0], nim->qto_xyz.m[3][0],
+    // auto firstVoxelCoordCenter = basisAndOffset*vec4(0.f, 0.f, 0.f, 1.f);
+    // auto lastVoxelCoord = basisAndOffset*vec4(1.f);
+    // auto indexToModel = glm::mat4x4(nim->qto_xyz.m[0][0], nim->qto_xyz.m[1][0],
+    // nim->qto_xyz.m[2][0], nim->qto_xyz.m[3][0],
     //    nim->qto_xyz.m[0][1], nim->qto_xyz.m[1][1], nim->qto_xyz.m[2][1], nim->qto_xyz.m[3][1],
     //    nim->qto_xyz.m[0][2], nim->qto_xyz.m[1][2], nim->qto_xyz.m[2][2], nim->qto_xyz.m[3][2],
     //    nim->qto_xyz.m[0][3], nim->qto_xyz.m[1][3], nim->qto_xyz.m[2][3], nim->qto_xyz.m[3][3]);
-    //vec4 niftiStart = indexToModel*vec4(-0.5f, -0.5f, -0.5f, 1.f);
-    //vec4 niftiEnd = indexToModel*vec4(vec3(dim) - 0.5f, 1.f);
+    // vec4 niftiStart = indexToModel*vec4(-0.5f, -0.5f, -0.5f, 1.f);
+    // vec4 niftiEnd = indexToModel*vec4(vec3(dim) - 0.5f, 1.f);
     ///**
     //* Returns the matrix transformation mapping from model space coordinates
     //* to voxel index coordinates, i.e. from (data min, data max) to [0, number of voxels)
     //*/
-    //volume->setModelMatrix(basisAndOffset);
-    //auto toIndex = volume->getCoordinateTransformer().getModelToIndexMatrix();
-    //auto firstVoxelIndex = toIndex*niftiStart;
-    //auto lastVoxelIndex = toIndex*niftiEnd;
+    // volume->setModelMatrix(basisAndOffset);
+    // auto toIndex = volume->getCoordinateTransformer().getModelToIndexMatrix();
+    // auto firstVoxelIndex = toIndex*niftiStart;
+    // auto lastVoxelIndex = toIndex*niftiEnd;
     //// This should be true:
     //// firstVoxelIndex == niftiStart
     //// lastVoxelIndex == niftiEnd
@@ -212,8 +225,9 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     volume->dataMap_.initWithFormat(format);
     volume->setDataFormat(format);
 
-    std::array<int, 7> start_index = { 0, 0, 0, 0, 0, 0, 0 };
-    std::array<int, 7> region_size = { niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, 1, 1, 1 };
+    std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
+    std::array<int, 7> region_size = {
+        niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, 1, 1, 1};
     NiftiVolumeRAMLoader loader(niftiImage, start_index, region_size, flipAxis);
     // Load in data to determine data/value ranges if necessary
     auto volRAM = std::static_pointer_cast<VolumeRAM>(loader.createRepresentation());
@@ -243,28 +257,39 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         // y = "true" voxel value
         // Note: Only tested on 8-bit data, other types might need to change data range as well.
         volume->dataMap_.valueRange.x = static_cast<double>(niftiImage->scl_inter);
-        volume->dataMap_.valueRange.y = volume->dataMap_.valueRange.x + static_cast<double>(niftiImage->scl_slope)*(volume->dataMap_.valueRange.y - volume->dataMap_.valueRange.x);
-    } else if(format->getId() == DataFormatId::Float32) {
+        volume->dataMap_.valueRange.y =
+            volume->dataMap_.valueRange.x +
+            static_cast<double>(niftiImage->scl_slope) *
+                (volume->dataMap_.valueRange.y - volume->dataMap_.valueRange.x);
+    } else if (format->getId() == DataFormatId::Float32) {
         // These formats do not contain information about data range
         // so we need to compute it for valid display ranges
-        auto minmax = std::minmax_element(reinterpret_cast<const DataFloat32::type*>(data),
-            reinterpret_cast<const DataFloat32::type*>(reinterpret_cast<const char*>(data)+volRAM->getNumberOfBytes()));
+        auto minmax = std::minmax_element(
+            reinterpret_cast<const DataFloat32::type*>(data),
+            reinterpret_cast<const DataFloat32::type*>(reinterpret_cast<const char*>(data) +
+                                                       volRAM->getNumberOfBytes()));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
         volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
     } else if (format->getId() == DataFormatId::Float64) {
-        auto minmax = std::minmax_element(reinterpret_cast<const DataFloat64::type*>(data),
-            reinterpret_cast<const DataFloat64::type*>(reinterpret_cast<const char*>(data)+volRAM->getNumberOfBytes()));
+        auto minmax = std::minmax_element(
+            reinterpret_cast<const DataFloat64::type*>(data),
+            reinterpret_cast<const DataFloat64::type*>(reinterpret_cast<const char*>(data) +
+                                                       volRAM->getNumberOfBytes()));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
         volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
     } else if (format->getId() == DataFormatId::UInt16) {
         // This might be 12-bit data
-        auto minmax = std::minmax_element(reinterpret_cast<const DataUInt16::type*>(data),
-            reinterpret_cast<const DataUInt16::type*>(reinterpret_cast<const char*>(data)+volRAM->getNumberOfBytes()));
+        auto minmax = std::minmax_element(
+            reinterpret_cast<const DataUInt16::type*>(data),
+            reinterpret_cast<const DataUInt16::type*>(reinterpret_cast<const char*>(data) +
+                                                      volRAM->getNumberOfBytes()));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
         volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
     } else if (format->getId() == DataFormatId::Int16) {
-        auto minmax = std::minmax_element(reinterpret_cast<const DataInt16::type*>(data),
-            reinterpret_cast<const DataInt16::type*>(reinterpret_cast<const char*>(data)+volRAM->getNumberOfBytes()));
+        auto minmax = std::minmax_element(
+            reinterpret_cast<const DataInt16::type*>(data),
+            reinterpret_cast<const DataInt16::type*>(reinterpret_cast<const char*>(data) +
+                                                     volRAM->getNumberOfBytes()));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
         volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
     }
@@ -276,20 +301,25 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         volumes->push_back(std::shared_ptr<Volume>(volume->clone()));
         auto diskRepr = std::make_shared<VolumeDisk>(filePath, dim, format);
         start_index[3] = t;
-        diskRepr->setLoader(new NiftiVolumeRAMLoader(niftiImage, start_index, region_size, flipAxis));
+        diskRepr->setLoader(
+            new NiftiVolumeRAMLoader(niftiImage, start_index, region_size, flipAxis));
         volumes->back()->addRepresentation(diskRepr);
     }
     // Add ram representation after cloning volume and creating disk representations
     volume->addRepresentation(volRAM);
     volumes->push_back(std::move(volume));
     return volumes;
-
 }
 
 NiftiVolumeRAMLoader::NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_,
                                            std::array<int, 7> start_index_,
-                                           std::array<int, 7> region_size_, std::array<bool, 3> flipAxis_)
-    : DiskRepresentationLoader(), nim{nim_}, start_index(start_index_), region_size(region_size_), flipAxis(flipAxis_) {}
+                                           std::array<int, 7> region_size_,
+                                           std::array<bool, 3> flipAxis_)
+    : DiskRepresentationLoader()
+    , start_index(start_index_)
+    , region_size(region_size_)
+    , flipAxis(flipAxis_)
+    , nim{nim_} {}
 
 NiftiVolumeRAMLoader* NiftiVolumeRAMLoader::clone() const {
     return new NiftiVolumeRAMLoader(*this);
@@ -316,7 +346,7 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
         std::unique_ptr<char[]> tmp(new char[volumeDst->getNumberOfBytes()]);
         std::memcpy(tmp.get(), data, volumeDst->getNumberOfBytes());
-        auto dim = size3_t{ region_size[0], region_size[1], region_size[2] };
+        auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
         util::IndexMapper3D mapper(dim);
         auto sizeOfDataType = volumeDst->getDataFormat()->getSize();
         for (auto z = 0; z < region_size[2]; ++z) {

@@ -302,8 +302,8 @@ struct same_extent<G<T,P>, U> { typedef G<U,P> type; };
 
 
 // disable conversion warning
-#pragma warning(push)
-#pragma warning(disable: 4244)
+#include <warn/push>
+#include <warn/ignore/conversion>
 
 // Standard conversion simple casts
 // Just using standard casts. When targets has more dimensions then the source
@@ -655,7 +655,7 @@ To glm_convert_normalized(From x) {
     return res;
 }
 
-#pragma warning(pop)
+#include <warn/pop>
 
 // GLM element access wrapper functions.
 
