@@ -71,7 +71,7 @@ public:
 
     ~Handle();
 
-    virtual std::string getDataInfo() const;
+    std::string getDataInfo() const;
 
     const H5::Group& getGroup() const;
 

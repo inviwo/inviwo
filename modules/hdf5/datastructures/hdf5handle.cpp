@@ -192,7 +192,6 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>([&](
         auto vrprecision) {
-        using VolumeType = ::inviwo::util::PrecsionType<decltype(vrprecision)>;
         using ValueType = ::inviwo::util::PrecsionValueType<decltype(vrprecision)>;
 
         ValueType* data = vrprecision->getDataTyped();
@@ -203,13 +202,13 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
             throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IvwContext);
         }
 
-        auto minmax = ::inviwo::util::dataMinMax(data, selectionSize);
+        auto res = ::inviwo::util::dataMinMax(data, selectionSize);
 
         LogInfo("Read HDF volume type: " << DataFormat<ValueType>::str()
-                                         << " data range: " << minmax.first << ", " << minmax.second
+                                         << " data range: " << res.first << ", " << res.second
                                          << " file: " << dataset.getFileName());
 
-        return minmax;
+        return res;
     });
 
     auto volume = std::make_shared<Volume>();
