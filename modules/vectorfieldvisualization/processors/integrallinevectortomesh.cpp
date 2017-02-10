@@ -96,15 +96,16 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , mesh_("mesh")
     , ignoreBrushingList_("ignoreBrushingList", "Ignore Brushing List", false)
 
+    , stride_("stride","Vertex stride",1,1,10)
+    
     , timeBasedFiltering_("timeBasedFiltering","Time Based Filtering" , false)
     , minMaxT_("minMaxT","Min/Max Timestep", -1,1,-10,10)
     , setFromData_("setFromData","Set from data")
 
-    , coloringMethod_("coloringMethod", "Color by")
     , tf_("transferFunction", "Transfer Function")
+    , coloringMethod_("coloringMethod", "Color by")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
-    , stride_("stride","Vertex stride",1,1,10)
 
 {
     colors_.setOptional(true);

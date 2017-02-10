@@ -48,24 +48,23 @@ const ProcessorInfo RBFVectorFieldGenerator2D::processorInfo_{
     CodeState::Experimental,                 // Code state
     Tags::CPU,                               // Tags
 };
-const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()
     , vectorField_("vectorField", DataVec2Float32::get(), false)
     , size_("size", "Volume size", ivec2(700, 700), ivec2(1, 1), ivec2(1024, 1024))
     , seeds_("seeds", "Number of seeds", 9, 1, 100)
-    , shape_("shape", "Shape Parameter", 1.2f, 0.0001f, 10.0f, 0.0001f)
-    , gaussian_("gaussian", "Gaussian")
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, std::numeric_limits<int>::max())
+    , shape_("shape", "Shape Parameter", 1.2f, 0.0001f, 10.0f, 0.0001f)
+    , gaussian_("gaussian", "Gaussian")
     , rd_()
     , mt_(rd_())
     , theta_(0, 2 * M_PI)
     , x_(-1.0, 1.0) {
+
     addPort(vectorField_);
 
     addProperty(size_);
@@ -76,7 +75,10 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); samples_.clear(); });
+    useSameSeed_.onChange([&]() {
+        seed_.setVisible(useSameSeed_.get());
+        samples_.clear();
+    });
     seed_.onChange([&]() { samples_.clear(); });
 }
 
@@ -109,7 +111,8 @@ void RBFVectorFieldGenerator2D::process() {
     xy = solverY.solve(by);
 
     auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
-    img->getColorLayer()->setSwizzleMask({ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
+    img->getColorLayer()->setSwizzleMask(
+        {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
     auto data =
         static_cast<vec2 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
 
@@ -144,8 +147,7 @@ dvec2 RBFVectorFieldGenerator2D::randomVector() {
     return (mat2(c, s, -s, c) * v) * static_cast<float>((x_(mt_) * 2 - 1));
 }
 
-void RBFVectorFieldGenerator2D::createSamples()
-{
+void RBFVectorFieldGenerator2D::createSamples() {
     samples_.clear();
 
     if (useSameSeed_.get()) {
@@ -154,38 +156,39 @@ void RBFVectorFieldGenerator2D::createSamples()
 
     samples_.resize(seeds_.get());
 
-    std::generate(samples_.begin(), samples_.end(),
-        [&]() { auto x = x_(mt_); auto y = x_(mt_);return std::make_pair(dvec2(x, y), randomVector()); });
+    std::generate(samples_.begin(), samples_.end(), [&]() {
+        auto x = x_(mt_);
+        auto y = x_(mt_);
+        return std::make_pair(dvec2(x, y), randomVector());
+    });
 }
 
-void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
+void RBFVectorFieldGenerator2D::serialize(Serializer &s) const {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
-    
+
     for (auto sample : samples_) {
         sx.push_back(sample.first);
         sy.push_back(sample.second);
     }
-    
+
     s.serialize("samplesx", sx, "samplex");
     s.serialize("samplesy", sy, "sampley");
 
     Processor::serialize(s);
 }
 
-void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
+void RBFVectorFieldGenerator2D::deserialize(Deserializer &d) {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
     d.deserialize("samplesx", sx, "samplex");
     d.deserialize("samplesy", sy, "sampley");
 
     Processor::deserialize(d);
-    
+
     for (size_t i = 0; i < sx.size(); i++) {
         samples_.emplace_back(sx[i], sy[i]);
     }
-
 }
 
 }  // namespace
-

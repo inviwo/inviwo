@@ -51,15 +51,16 @@ const ProcessorInfo LorenzSystem::getProcessorInfo() const {
 LorenzSystem::LorenzSystem()
     : Processor()
     , outport_("outport")
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "lorenzsystem.frag")
-    , fbo_()
     , size_("size", "Volume size", size3_t(32, 32, 32), size3_t(1, 1, 1), size3_t(1024, 1024, 1024))
     , xRange_("xRange", "X Range", -20, 20, -100, 100)
     , yRange_("yRange", "Y Range", -30, 30, -100, 100)
     , zRange_("zRange", "Z Range", 0, 50, 0, 100)
     , rhoValue_("rho", "&rho; Value", 28, 0, 100)
     , sigmaValue_("sigma", "&sigma; Value", 10, 0, 100)
-    , betaValue_("beta", "&beta; Value", 8.0f / 3, 0, 100) {
+    , betaValue_("beta", "&beta; Value", 8.0f / 3, 0, 100)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "lorenzsystem.frag")
+    , fbo_() {
+    
     addPort(outport_);
 
     addProperty(size_);
