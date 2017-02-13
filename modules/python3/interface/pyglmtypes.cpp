@@ -163,9 +163,6 @@ namespace inviwo {
             classname << "x" << ROWS;
         }
 
-        M masdf(glm::vec2(), glm::vec2(), glm::vec2());
-        M masdf2(glm::vec3(), glm::vec3());
-
         py::class_<M> pym(m, classname.str().c_str());
         common<T>(pym);
         addInit<T, M, COLS*ROWS>(pym);
