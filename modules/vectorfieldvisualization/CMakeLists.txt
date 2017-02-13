@@ -19,6 +19,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/discardshortlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.h
@@ -44,6 +45,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/discardshortlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.cpp

@@ -44,6 +44,7 @@
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 #include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
+#include <modules/vectorfieldvisualization/processors/discardshortlines.h>
 
 namespace inviwo {
 
@@ -61,6 +62,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<IntegralLineVectorToMesh>();
     registerProcessor<Seed3Dto4D>();
     registerProcessor<SeedsFromMaskSequence>();
+    registerProcessor<DiscardShortLines>();
 
     registerPort < SeedPoints3DOutport>("SeedPointsOutport");
     registerPort < SeedPoints3DInport>("SeedPointsInport");
