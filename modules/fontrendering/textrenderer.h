@@ -201,6 +201,24 @@ protected:
 
 
 namespace util{
+
+/**
+ * \brief Creates a texture with the for a text string
+ *
+ * Creates a texture with the for a text string using the specifed renderer, fontSize and color. May
+ * take an additional variable tex of an existing texture that can be reused to reduce the number of
+ * times we need to allocating new textures.
+ *
+ * The size of the texture will be the smallest possible for the given text and the pixels containng
+ * no text will have zero alpha
+ *
+ * @param textRenderer_ The renderer that will be used to render the text
+ * @param text text to be rendered
+ * @param fontSize size of the text in pt
+ * @param fontColor the final color of the text
+ * @param tex optional cache texture which will be reused if possible
+ * @return std::shared_ptr<Texture2D> The texture containing the text.
+ */
 IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
     TextRenderer &textRenderer_, std::string text, int fontSize, vec4 fontColor,
     std::shared_ptr<Texture2D> tex = nullptr);
