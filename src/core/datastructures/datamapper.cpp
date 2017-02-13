@@ -55,7 +55,7 @@ DataMapper& DataMapper::operator=(const DataMapper& that) {
 }
 DataMapper* DataMapper::clone() const {
     return new DataMapper(*this);
-};
+}
 
 void DataMapper::initWithFormat(const DataFormatBase* format){
     dataRange.y = format->getMax();

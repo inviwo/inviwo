@@ -88,7 +88,7 @@ public:
     FloatVec4Property bgColor_;
     size_t sharedPoolSize_;
 
-	int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
+    int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
 };
 
 class IVW_MODULE_ABUFFERGL_API Inviwo_ABufferGL4 {
@@ -129,6 +129,9 @@ public:
     Shader resetABufferShader_;
 
 protected:
+    // Global init function
+    void init(void);
+
     void aBuffer_incrementSharedPoolSize();
     bool aBuffer_isMemoryReallocationRequired(ivec2 currentPortDim);
     bool abuffer_isMemoryPoolExpansionRequired();
@@ -153,9 +156,6 @@ protected:
     std::vector<TextureUnit*> texUnits_;
 
     ivec2 dim_;
-
-    // Global init function
-    void init(void);
 };
 
 }  // namespace

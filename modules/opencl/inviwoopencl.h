@@ -58,58 +58,62 @@ using cl::ImageFormat;
 
 namespace inviwo {
 
-// This macro will create an OpenCL event called "profilingEvent" that should be
-// used when executing the kernel. If IVW_PROFILING is defined it will 
-// call LogInfo with the execution time.
-// Example:
-// IVW_OPENCL_PROFILING(profilingEvent, "")
-// OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*ernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, nullptr, profilingEvent);
-// 
+/**
+ * This macro will create an OpenCL event called "profilingEvent" that should be
+ * used when executing the kernel. If IVW_PROFILING is defined it will
+ * call LogInfo with the execution time.
+ * Example:
+ * IVW_OPENCL_PROFILING(profilingEvent, "")
+ * OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*ernel_, cl::NullRange, globalWorkGroupSize,
+ *      localWorkGroupSize, nullptr, profilingEvent);
+ */
 
-//#if IVW_PROFILING 
-//    #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = new cl::Event(); 
-//#else 
-//    #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = nullptr; 
-//#endif 
-//#if IVW_PROFILING 
-//    #define  \
-//    try { \
-//        profilingEvent->wait(); \
-//        LogInfo("Exec time: " << profilingEvent->getElapsedTime() << " ms"); \
-//    } catch (cl::Error& err) { \
-//        LogError(getCLErrorString(err)); \
-//    } \
-//    delete profilingEvent; 
-//#else 
-//    #define 
-//#endif
-//
-//#if IVW_PROFILING 
-//#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = new cl::Event(); 
-//#else 
-//#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = nullptr; 
-//#endif 
-//#if IVW_PROFILING 
-//#define N(name) \
-//    try { \
-//    name->wait(); \
-//    LogInfo(#name " exec time: " << name->getElapsedTime() << " ms"); \
-//} catch (cl::Error& err) { \
-//    LogError(getCLErrorString(err)); \
-//} \
-//    delete name; 
-//#else 
-//#define N(name)
-//#endif
+/*
+#if IVW_PROFILING 
+   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = new cl::Event(); 
+#else 
+   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = nullptr; 
+#endif 
+#if IVW_PROFILING 
+   #define  \
+   try { \
+       profilingEvent->wait(); \
+       LogInfo("Exec time: " << profilingEvent->getElapsedTime() << " ms"); \
+   } catch (cl::Error& err) { \
+       LogError(getCLErrorString(err)); \
+   } \
+   delete profilingEvent; 
+#else 
+   #define 
+#endif
+
+#if IVW_PROFILING 
+#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = new cl::Event(); 
+#else 
+#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = nullptr; 
+#endif 
+#if IVW_PROFILING 
+#define N(name) \
+   try { \
+   name->wait(); \
+   LogInfo(#name " exec time: " << name->getElapsedTime() << " ms"); \
+} catch (cl::Error& err) { \
+   LogError(getCLErrorString(err)); \
+} \
+   delete name; 
+#else 
+#define N(name)
+#endif
+*/
 
 /** \class OpenCL
- *
  * Singleton class that manages OpenCL context and queues.
- *
  */
 class IVW_MODULE_OPENCL_API OpenCL: public Singleton<OpenCL> {
 public:
     OpenCL();
+    OpenCL(OpenCL const&) = delete;
+    void operator=(OpenCL const&) = delete;
 
     /**
      * Get queue that can perform tasks in serial (no need to explicitly manage events).
@@ -212,9 +216,6 @@ public:
      */
     static bool getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform);
 private:
-    OpenCL(OpenCL const&) {};
-    void operator=(OpenCL const&) {};
-
     /// Initialize OpenCL context and queues.
     void initialize(bool enableOpenGLSharing);
 

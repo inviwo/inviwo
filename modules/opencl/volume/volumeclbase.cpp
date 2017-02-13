@@ -36,15 +36,15 @@
 
 namespace inviwo {
 
-    VolumeCLBase::VolumeCLBase()
-        : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {
-        ivwAssert(volumeStruct_.getSize() == 512,
-                  "VolumeParameters must have a size that is power of two, currently "
-                  << volumeStruct_.getSize())
-    }
+VolumeCLBase::VolumeCLBase()
+    : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {
+    ivwAssert(volumeStruct_.getSize() == 512,
+              "VolumeParameters must have a size that is power of two, currently "
+              << volumeStruct_.getSize());
+}
 
-    VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
-        : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {}
+VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
+    : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {}
 
 vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
     // Note: The basically the same code is used in VolumeCLGL and VolumeGL as well.

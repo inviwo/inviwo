@@ -32,10 +32,9 @@
 namespace inviwo {
 
 PropertySemantics::PropertySemantics() : Serializable(), semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic)
-    : Serializable(), semantic_(semantic) {}
+PropertySemantics::PropertySemantics(std::string semantic) : Serializable(), semantic_(semantic) {}
 PropertySemantics::PropertySemantics(const PropertySemantics& rhs)
-    : Serializable(), semantic_(rhs.semantic_) {};
+    : Serializable(), semantic_(rhs.semantic_){}
 PropertySemantics& PropertySemantics::operator=(const PropertySemantics& that) {
     if (this != &that) semantic_ = that.semantic_;
 

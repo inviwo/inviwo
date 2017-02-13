@@ -47,8 +47,7 @@ DatVolumeReader::DatVolumeReader()
     , littleEndian_(true)
     , dimensions_(0)
     , format_(nullptr)
-    , enableLogOutput_(true)
-{
+    , enableLogOutput_(true) {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
@@ -59,7 +58,7 @@ DatVolumeReader::DatVolumeReader(const DatVolumeReader& rhs)
     , littleEndian_(rhs.littleEndian_)
     , dimensions_(rhs.dimensions_)
     , format_(rhs.format_)
-    , enableLogOutput_(true) {};
+    , enableLogOutput_(true) {}
 
 DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
     if (this != &that) {

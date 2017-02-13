@@ -150,6 +150,6 @@ private:
 #define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)
 #endif
 
-};  // namespace inviwo
+}  // namespace inviwo
 
 #endif  // IVW_TIMER_H

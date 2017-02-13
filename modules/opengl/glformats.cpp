@@ -130,7 +130,7 @@ const GLFormats::GLFormat& GLFormats::getGLFormat(DataFormatId id) const {
                               IvwContext);
     }
     return glFormatArray_[static_cast<size_t>(id)];
-};
+}
 
 const GLFormats::GLFormat& GLFormats::get(DataFormatId id) {
     static const GLFormats glFormats = GLFormats();

@@ -43,7 +43,7 @@ namespace inviwo {
 
 enum class GestureType { Pan = 1 << 0, Pinch = 1 << 1, Swipe = 1 << 2 };
 
-ALLOW_FLAGS_FOR_ENUM(GestureType);
+ALLOW_FLAGS_FOR_ENUM(GestureType)
 using GestureTypes = flags::flags<GestureType>;
 
 enum class GestureState {
@@ -54,7 +54,7 @@ enum class GestureState {
     Canceled   = 1 << 5
 };
 
-ALLOW_FLAGS_FOR_ENUM(GestureState);
+ALLOW_FLAGS_FOR_ENUM(GestureState)
 using GestureStates = flags::flags<GestureState>;
 
 template <class Elem, class Traits>

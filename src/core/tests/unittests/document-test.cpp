@@ -41,9 +41,7 @@ namespace inviwo {
 
 TEST(DocumentTest, Minimal) {
     Document doc;
-    
-    using P = Document::PathComponent;
-    
+        
     doc.append("html").append("body").append("table").append("tr").append("td", "hej");
     std::string res{doc};
     

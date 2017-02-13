@@ -163,6 +163,6 @@ private:
     std::unique_ptr<tinydir_dir_hack> resource_;
 };
 
-}; // namespace inviwo
+}  // namespace inviwo
 
 #endif // IVW_TINYDIR_INTERFACE_H

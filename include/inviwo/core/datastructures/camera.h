@@ -345,7 +345,7 @@ inline void PerspectiveCamera::setAspectRatio(float val) {
 
 inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
-};
+}
 
 inline const vec4& OrthographicCamera::getFrustum() const { return frustum_; }
 
@@ -357,7 +357,7 @@ inline void OrthographicCamera::setFrustum(inviwo::vec4 val) {
 inline mat4 OrthographicCamera::calculateProjectionMatrix() const {
     return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlaneDist_,
                       farPlaneDist_);
-};
+}
 
 inline const vec4& SkewedPerspectiveCamera::getFrustum() const { return frustum_; }
 
@@ -365,6 +365,7 @@ inline void SkewedPerspectiveCamera::setFrustum(inviwo::vec4 val) {
     frustum_ = val;
     invalidateProjectionMatrix();
 }
+
 
 inline const vec2& SkewedPerspectiveCamera::getFrustumOffset() const { return frustumSkewOffset_; }
 inline void SkewedPerspectiveCamera::setFrustumOffset(vec2 offset) {

@@ -37,7 +37,7 @@ Exception::Exception(const std::string& message, ExceptionContext context)
 
 Exception::~Exception() throw() {}
 
-std::string Exception::getMessage() const throw() { return message_; };
+std::string Exception::getMessage() const throw() { return message_; }
 const char* Exception::what() const throw() { return message_.c_str(); }
 
 const ExceptionContext& Exception::getContext() const { return context_; }

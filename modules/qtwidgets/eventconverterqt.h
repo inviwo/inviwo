@@ -76,8 +76,9 @@ namespace utilqt {
     IVW_MODULE_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
 
     IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
-};
 
-} // namespace
+}  // namespace
+
+}  // namespace
 
 #endif // IVW_EVENTCONVERTERQT_H

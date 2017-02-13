@@ -196,7 +196,7 @@ void InviwoMainWindow::showWindow() {
         showMaximized();
     else
         show();
-};
+}
 
 void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     if (path.empty()) path = app_->getPath(PathType::Images);

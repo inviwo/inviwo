@@ -41,7 +41,7 @@ namespace inviwo {
 class Property;
 
 enum class PropertyPresetType { Property = 1, Workspace = 2, Application = 4 };
-ALLOW_FLAGS_FOR_ENUM(PropertyPresetType);
+ALLOW_FLAGS_FOR_ENUM(PropertyPresetType)
 using PropertyPresetTypes = flags::flags<PropertyPresetType>;
 
 /**

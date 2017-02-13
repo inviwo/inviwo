@@ -112,6 +112,6 @@ private:
     std::condition_variable cvar_;
 };
 
-}; // namespace inviwo
+}  // namespace inviwo
 
 #endif // IVW_TIMER_H

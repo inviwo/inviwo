@@ -40,7 +40,7 @@ namespace {
     std::string idToString (const size_t& id){
         if (id == 0) return "";
         return inviwo::toString(id);
-    };
+    }
 }
 
 namespace inviwo {

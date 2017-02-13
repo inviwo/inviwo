@@ -48,7 +48,7 @@ enum class TouchState {
     Finished   = 1 << 3, // Released
 };
 
-ALLOW_FLAGS_FOR_ENUM(TouchState);
+ALLOW_FLAGS_FOR_ENUM(TouchState)
 using TouchStates = flags::flags<TouchState>;
 
 template <class Elem, class Traits>

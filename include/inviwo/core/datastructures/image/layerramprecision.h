@@ -146,7 +146,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
     }
 
     return *this;
-};
+}
 
 template <typename T>
 LayerRAMPrecision<T>* LayerRAMPrecision<T>::clone() const {
