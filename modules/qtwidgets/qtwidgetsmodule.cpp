@@ -121,6 +121,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("Default");
     registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("ImageEditor");
 
+    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetQt, IntSizeTMinMaxProperty>("Default");
+    registerPropertyWidget<Int64MinMaxPropertyWidgetQt, Int64MinMaxProperty>("Default");
     registerPropertyWidget<IntMinMaxPropertyWidgetQt, IntMinMaxProperty>("Default");
     registerPropertyWidget<IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty>("Text");
     registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Default");

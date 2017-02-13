@@ -112,6 +112,8 @@ private:
 
 using FloatMinMaxProperty = MinMaxProperty<float>;
 using DoubleMinMaxProperty = MinMaxProperty<double>;
+using IntSizeTMinMaxProperty = MinMaxProperty<size_t>;
+using Int64MinMaxProperty = MinMaxProperty<glm::i64>;
 using IntMinMaxProperty = MinMaxProperty<int>;
 
 template <typename T>
@@ -323,7 +325,7 @@ void MinMaxProperty<T>::validateValues() {
     val.y = std::min(std::max(val.y, range_.value.x), range_.value.y);
 
     // check whether updated min/max values are separated properly, i.e. > minSeparation_
-    if (std::abs(val.y - val.x) < minSeparation_ - glm::epsilon<T>()) {
+    if (glm::abs(val.y - val.x) < minSeparation_ - glm::epsilon<T>()) {
         // adjust max value if possible, i.e. less equal than max range
         if (val.x + minSeparation_ < range_.value.y + glm::epsilon<T>()) {
             val.y = std::max(val.x + minSeparation_.value, val.y);
