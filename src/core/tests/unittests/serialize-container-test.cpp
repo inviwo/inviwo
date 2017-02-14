@@ -352,8 +352,6 @@ TEST(ContainerSerialitionTest, ContainerTest6) {
     map.erase("b");
     map["d"] = 20;
 
-    using Item = std::pair<const std::string, int>;
-
     Deserializer deserializer(ss, "");
     auto des = util::MapDeserializer<std::string, int>("Map", "Item")
                    .setMakeNew([]() { return 0; })

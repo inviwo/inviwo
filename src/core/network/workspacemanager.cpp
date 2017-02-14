@@ -123,7 +123,7 @@ struct ErrorHandle {
 };
 
 
-WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {};
+WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
 
 WorkspaceManager::~WorkspaceManager() = default;
 

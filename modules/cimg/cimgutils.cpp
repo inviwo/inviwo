@@ -166,6 +166,7 @@ struct CImgNormalizedLayerDispatcher {
     std::unique_ptr<std::vector<unsigned char>> dispatch(const LayerRAM* inputLayer) {
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, false);
 
+        // TODO this does not work for signed char... 255 out of range
         CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
 

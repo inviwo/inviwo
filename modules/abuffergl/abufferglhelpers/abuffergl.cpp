@@ -107,9 +107,9 @@ std::string ABufferGLCompositeProperty::getClassIdentifierForWidget() const {
 //////////////////////////////////////////////////////////////////////////
 
 Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
-    : resolveABufferShader_("abufferresolve.hglsl")
+    : settings_("abuffer-settings-property", "ABuffer Settings")
+    , resolveABufferShader_("abufferresolve.hglsl")
     , resetABufferShader_("abufferreset.hglsl")
-    , settings_("abuffer-settings-property", "ABuffer Settings")
     , abuffInteractionHandler_(this)
     , shared_RGBA_DataListBuffID_(0)
     , shared_Ext_DataListBuffID_(0)

@@ -53,37 +53,38 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
 
     dvec2 dataRange = volume->dataMap_.dataRange;
     DataMapper defaultRange(volume->getDataFormat());
-    double typescale = getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).scaling;
+    double typescale = CLFormats::get(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;
 
+    // We are not using the signed versions for now.
     double scalingFactor = 1.0;
-    double signedScalingFactor = 1.0;
+    //double signedScalingFactor = 1.0;
     double offset = 0.0;
-    double signedOffset = 0.0;
+    //double signedOffset = 0.0;
 
     double invRange = 1.0 / (dataRange.y - dataRange.x);
     double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
-    switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
+    switch (CLFormats::get(volume->getDataFormat()->getId()).normalization) {
         case CLFormats::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;
-            signedScalingFactor = scalingFactor;
-            signedOffset = offset;
+            //signedScalingFactor = scalingFactor;
+            //signedOffset = offset;
             break;
         case CLFormats::Normalization::Normalized:
             scalingFactor = defaultToDataRange;
             offset = -defaultToDataOffset;
-            signedScalingFactor = scalingFactor;
-            signedOffset = offset;
+            //signedScalingFactor = scalingFactor;
+            //signedOffset = offset;
             break;
         case CLFormats::Normalization::SignNormalized:
             scalingFactor = 0.5 * defaultToDataRange;
             offset = 1.0 - 2 * defaultToDataOffset;
-            signedScalingFactor = defaultToDataRange;
-            signedOffset = -defaultToDataOffset;
+            //signedScalingFactor = defaultToDataRange;
+            //signedOffset = -defaultToDataOffset;
             break;
     }
     return vec2(offset, scalingFactor);
@@ -120,7 +121,7 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
 
     dvec2 dataRange = volume->dataMap_.dataRange;
     DataMapper defaultRange(volume->getDataFormat());
-    double typescale = getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).scaling;
+    double typescale = CLFormats::get(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;
 
     double formatScalingFactor = 1.0;
@@ -133,7 +134,7 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
-    switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
+    switch (CLFormats::get(volume->getDataFormat()->getId()).normalization) {
         case CLFormats::Normalization::None:
             formatScalingFactor = invRange;
             formatOffset = -dataRange.x;

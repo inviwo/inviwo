@@ -166,7 +166,7 @@ void PerspectiveCamera::deserialize(Deserializer& d) {
 
 OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                        float farPlane, vec4 frustum)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum){};
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum) {}
 
 OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
 
@@ -178,7 +178,6 @@ bool OrthographicCamera::update(const Camera* source) {
         return false;
     }
 }
-
 
 void OrthographicCamera::configureProperties(CompositeProperty* comp) {
     auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));

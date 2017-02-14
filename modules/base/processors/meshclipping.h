@@ -80,8 +80,7 @@ protected:
     void onMovePointAlongNormalToggled();
     void onAlignPlaneNormalToCameraNormalPressed();
 
-    Mesh* clipGeometryAgainstPlaneRevised(const Mesh*, Plane);
-    Mesh* clipGeometryAgainstPlane(const Mesh*, Plane);
+    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh*, Plane);
     float degreeToRad(float);
 
 private:
