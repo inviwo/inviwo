@@ -58,14 +58,16 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     LIC2D();
-    virtual ~LIC2D() = default;
-
+    virtual ~LIC2D(){}
+     
     virtual void process() override;
-
+    
 protected:
+
     ImageInport vectorField_;
     ImageInport noiseTexture_;
     ImageOutport LIC2D_;
+
 
     IntProperty samples_;
     FloatProperty stepLength_;
@@ -75,7 +77,9 @@ protected:
 
     Shader shader_;
 
+
 private:
+
 };
 
 } // namespace

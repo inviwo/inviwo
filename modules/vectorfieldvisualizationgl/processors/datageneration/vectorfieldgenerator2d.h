@@ -49,33 +49,36 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator2D : public Processor {
-public:
-    VectorFieldGenerator2D();
-    virtual ~VectorFieldGenerator2D();
+    class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator2D : public Processor {
+    public:
+        VectorFieldGenerator2D();
+        virtual ~VectorFieldGenerator2D();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
+        virtual void initializeResources()override;
 
-protected:
-    virtual void process() override;
 
-    ImageOutport outport_;
-    std::shared_ptr<Image> image_;
+    protected:
+        virtual void process() override;
 
-    IntVec2Property size_;
 
-    FloatMinMaxProperty xRange_;
-    FloatMinMaxProperty yRange_;
+        ImageOutport outport_;
+        std::shared_ptr<Image> image_;
 
-    StringProperty xValue_;
-    StringProperty yValue_;
+        IntVec2Property size_;
 
-    Shader shader_;
-    FrameBufferObject fbo_;
-};
+        FloatMinMaxProperty xRange_;
+        FloatMinMaxProperty yRange_;
+
+        StringProperty xValue_;
+        StringProperty yValue_;
+
+        Shader shader_;
+        FrameBufferObject fbo_;
+
+    };
 
 } // namespace
 

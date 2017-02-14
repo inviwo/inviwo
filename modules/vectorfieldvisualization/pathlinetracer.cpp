@@ -33,17 +33,19 @@
 
 namespace inviwo {
 
-PathLineTracer::PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler,
-                               const PathLineProperties &properties)
-    : IntegralLineTracer(properties)
-    , invBasis_(glm::inverse(mat3(sampler->getModelMatrix())))
-    , sampler_(sampler) {}
+    PathLineTracer::PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler, const PathLineProperties &properties)
+        : IntegralLineTracer(properties)
+        , sampler_(sampler)
+        , invBasis_(glm::inverse(mat3(sampler->getModelMatrix())))
+    {
 
-PathLineTracer::~PathLineTracer() = default;
+    }
 
-IntegralLine PathLineTracer::traceFrom(const vec4 &p) { return traceFrom(dvec4(p)); }
+PathLineTracer::~PathLineTracer() {}
 
-IntegralLine PathLineTracer::traceFrom(const dvec4 &p) {
+inviwo::IntegralLine PathLineTracer::traceFrom(const vec4 &p) { return traceFrom(dvec4(p)); }
+
+inviwo::IntegralLine PathLineTracer::traceFrom(const dvec4 &p) {
     IntegralLine line;
 
     auto direction = dir_;
@@ -106,15 +108,17 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
         line.metaData_["velocity"].push_back(worldVelocty);
         line.metaData_["timestamp"].push_back(dvec3(curPos.a));
 
-        curPos += dvec4(velocity, stepSize_ * (fwd ? 1.0 : -1.0));
+        curPos += dvec4(velocity, stepSize_* (fwd ? 1.0 : -1.0));
     }
 }
 
-dvec3 PathLineTracer::sample(const dvec4 &pos) { return sampler_->sample(pos); }
+dvec3 PathLineTracer::sample(const dvec4 &pos) {
+    return sampler_->sample(pos);
+}
 
-dvec3 PathLineTracer::euler(const dvec4 &curPos) { return sample(curPos); }
+inviwo::dvec3 PathLineTracer::euler(const dvec4 &curPos) { return sample(curPos); }
 
-dvec3 PathLineTracer::rk4(const dvec4 &curPos, bool fwd) {
+inviwo::dvec3 PathLineTracer::rk4(const dvec4 &curPos, bool fwd) {
     auto h = stepSize_;
     if (!fwd) h = -h;
     auto h2 = h / 2;
