@@ -68,8 +68,9 @@ node {
                               -DIVW_MODULE_ABUFFERGL=ON \
                               -DIVW_MODULE_ANIMATION=ON \
                               -DIVW_MODULE_ANIMATIONQT=ON \
+                              -DIVW_MODULE_POSTPROCESSING=ON \
                               ../inviwo
- 
+
                         make -j 6
                     """
                 }

@@ -45,26 +45,27 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.SSAO, SSAO}
  * ![](org.inviwo.SSAO.png?classIdentifier=org.inviwo.SSAO)
- * Use any image with a proper depth channel as input. It will compute SSAO using the depth and then apply the occlusion to the color-layer.
+ * Use any image with a proper depth channel as input. It will compute Screen space ambient
+ * occlusion (SSAO) using the depth and then apply the occlusion to the color-layer.
  *
  * ### Inports
  *   * __ImageInport__ Input Image.
  *
  * ### Outports
  *   * __ImageOutport__ Output Image.
- * 
+ *
  * ### Properties
  *   * __Technique__ SSAO Technique.
  *   * __Radius__ Radius of hemisphere used to compute the ambient occlusion.
  *   * __Intensity__ Intensity of the ambient occlusion.
- *   * __Angle Bias__ Offsets the minimum angle of samples used in the computation. (Good for hiding AO effects on low-tess geometry)
+ *   * __Angle Bias__ Offsets the minimum angle of samples used in the computation. (Good for hiding
+ * AO effects on low-tess geometry)
  *   * __Directions__ Number of directions used to sample the hemisphere.
  *   * __Steps/Dir__ Number of samples used for each direction.
  *   * __Use Normal__ Orients the hemisphere using an approximated surface normal.
  *   * __Enable Blur__ Apply a bilateral blur filter.
  *   * __Blur Sharpness__ Controls the sharpness of the blur, small number -> large filter
  */
-
 
 /**
  * \class SSAO
@@ -133,9 +134,9 @@ private:
     FloatProperty radius_;
     FloatProperty intensity_;
     FloatProperty bias_;
-	IntProperty directions_;
-	IntProperty steps_;
-	BoolProperty useNormal_;
+    IntProperty directions_;
+    IntProperty steps_;
+    BoolProperty useNormal_;
     BoolProperty enableBlur_;
     FloatProperty blurSharpness_;
     CameraProperty camera_;

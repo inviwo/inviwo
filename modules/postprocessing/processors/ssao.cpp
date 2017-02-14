@@ -89,11 +89,11 @@ static void delBuffer(GLuint id) {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SSAO::processorInfo_{
-    "org.inviwo.SSAO",          // Class identifier
-    "SSAO",                     // Display name
-    "Postprocessing",           // Category
-    CodeState::Experimental,    // Code state
-    Tags::GL,                   // Tags
+    "org.inviwo.SSAO",  // Class identifier
+    "SSAO",             // Display name
+    "Postprocessing",   // Category
+    CodeState::Stable,  // Code state
+    Tags::GL,           // Tags
 };
 
 const ProcessorInfo SSAO::getProcessorInfo() const {
@@ -109,9 +109,9 @@ SSAO::SSAO()
     , radius_("radius", "Radius", 2.f, 0.f, 128.f, 0.05f)
     , intensity_("intensity", "Intensity", 1.5f, 0.f, 5.f)
     , bias_("bias", "Angle Bias", 0.1f, 0.f, 0.5f, 0.01f)
-	, directions_("directions", "Directions", 8, 4, 32)
-	, steps_("steps", "Steps / Dir", 4, 2, 32)
-	, useNormal_("normal", "Use Normal", true)
+    , directions_("directions", "Directions", 8, 4, 32)
+    , steps_("steps", "Steps / Dir", 4, 2, 32)
+    , useNormal_("normal", "Use Normal", true)
     , enableBlur_("enable-blur", "Enable Blur", true)
     , blurSharpness_("blur-sharpness", "Blur Sharpness", 40.f, 0.f, 200.f)
     , camera_("camera", "Camera")
@@ -133,9 +133,9 @@ SSAO::SSAO()
     addProperty(radius_);
     addProperty(intensity_);
     addProperty(bias_);
-	addProperty(directions_);
-	addProperty(steps_);
-	addProperty(useNormal_);
+    addProperty(directions_);
+    addProperty(steps_);
+    addProperty(useNormal_);
     addProperty(blurSharpness_);
     addProperty(enableBlur_);
     addProperty(camera_);
@@ -144,9 +144,9 @@ SSAO::SSAO()
     initFramebuffers(512, 512);
 
     initializeResources();
-	directions_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-	steps_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-	useNormal_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    directions_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    steps_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    useNormal_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     depthLinearize_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoCalc_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoCalcBlur_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -172,16 +172,16 @@ void SSAO::initializeResources() {
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "0");
     hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
-	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
-	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
-	hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
+    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
+    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalc_.build();
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "1");
     hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
-	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
-	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
-	hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
+    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
+    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalcBlur_.build();
     hbaoBlurHoriz_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR_PRESENT", "0");
     hbaoBlurHoriz_.build();
@@ -233,7 +233,7 @@ void SSAO::process() {
 
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
     auto outFbo = outImageGL->getFBO()->getID();
-	
+    
     if (technique_.get() == 1) {
         // This geometry is actually never used, but a valid VAO and VBO is required to kick off the drawcalls
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
@@ -459,7 +459,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
     glDisable(GL_SAMPLE_MASK);
-    glSampleMaski(0, ~0);
+    glSampleMaski(0, ~0u);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1);

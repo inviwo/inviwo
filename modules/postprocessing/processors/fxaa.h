@@ -43,7 +43,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.FXAA, FXAA}
  * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies anti-aliasing as a postprocessing operation
+ * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
  * 
  *
  * ### Inports
