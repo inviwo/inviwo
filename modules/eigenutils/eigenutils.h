@@ -45,7 +45,7 @@ namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glm2eigen(T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
-    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value> a;
+    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
     }
