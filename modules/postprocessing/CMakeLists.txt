@@ -30,24 +30,25 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bilateralblur.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/colortools.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/displaytex.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fxaa.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/Fxaa3_11.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_blur.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_deinterleave.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_reinterleave.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/viewnormal.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/Fxaa3_11.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fxaa.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/huesaturationluminance.frag
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagesharpen.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imageopacity.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagesharpen.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/viewnormal.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
@@ -55,7 +56,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/postprocessing-test.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/tests/postprocessing-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
