@@ -222,7 +222,8 @@ const Prop* PropertyTrack<Prop, Key>::getProperty() const {
 
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::setProperty(Property* property) {
-    if ((property_ = dynamic_cast<Prop*>(property))) {
+    if (auto prop = dynamic_cast<Prop*>(property)) {
+        property_ = prop;
         setIdentifier(property_->getIdentifier());
         setName(property_->getDisplayName());
     } else {
