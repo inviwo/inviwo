@@ -275,4 +275,20 @@ double TextRenderer::getFontDescent() const {
     return (fontface_->descender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 
+namespace util {
+std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer_, std::string text,
+                                             int fontSize, vec4 fontColor,
+                                             std::shared_ptr<Texture2D> tex) {
+    textRenderer_.setFontSize(fontSize);
+    size2_t labelSize(textRenderer_.computeTextSize(text));
+
+    if (!tex || tex->getDimensions() != labelSize) {
+        tex = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
+        tex->initialize(nullptr);
+    }
+    textRenderer_.renderToTexture(tex, text, fontColor);
+    return tex;
+}
+}
+
 }  // namespace
