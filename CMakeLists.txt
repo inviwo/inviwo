@@ -124,6 +124,7 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
+    "Nifti"
     "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
