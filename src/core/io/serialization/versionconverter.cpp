@@ -286,11 +286,7 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
 
     std::vector<xml::ElementMatcher> selector;
     for (const auto& kind : path) {
-        ElementMatcher m1 = {kind.list(), {}};
-        ElementMatcher m2 = {kind.name(), {{"type", kind.type()}}};
-
-        selector.push_back(m1);
-        selector.push_back(m2);
+        selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
     }
     selector.back().attributes.push_back({attribute, oldValue});
 
@@ -303,19 +299,22 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
 }
 
 
+xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
+    : name_(name), list_(list), type_(type) {
 
-xml::Kind xml::Kind::processor(const std::string& type) {
-    return Kind("Processor", "Processors", type);
+    ElementMatcher m1 = { list_, {} };
+    ElementMatcher m2 = { name_, {{"type", type_}} };
+
+    matchers_.push_back(m1);
+    matchers_.push_back(m2);
+
 }
 
-xml::Kind::Kind(Kind&& rhs) : name_(std::move(rhs.name_)), list_(std::move(rhs.list_)), type_(std::move(rhs.type_)) {} 
-xml::Kind& xml::Kind::operator=(Kind&& that) {
-    if (this != &that) {
-        name_ = std::move(that.name_);
-        list_ = std::move(that.list_);
-        type_ = std::move(that.type_);
-    }
-    return *this;
+xml::Kind xml::Kind::processor(const std::string& type) {
+    Kind kind("Processor", "Processors", type);
+    ElementMatcher m = { "ProcessorNetwork", {} };
+    kind.matchers_.insert(kind.matchers_.begin(), m);
+    return kind;
 }
 
 xml::Kind xml::Kind::inport(const std::string& type) { return Kind("InPort", "InPorts", type); }
@@ -336,8 +335,9 @@ const std::string& xml::Kind::list() const { return list_; }
 
 const std::string& xml::Kind::type() const { return type_; }
 
-xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
-    : name_(name), list_(list), type_(type) {}
+const std::vector<xml::ElementMatcher>& xml::Kind::getMatchers() const {
+    return matchers_;
+}
 
 xml::IdentifierReplacement::IdentifierReplacement(const std::vector<xml::Kind>& p,
                                                   const std::string& oi, const std::string& ni)
