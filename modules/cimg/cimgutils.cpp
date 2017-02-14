@@ -37,10 +37,15 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #if (_MSC_VER)
+#pragma warning(disable : 4146)
+#pragma warning(disable : 4197)
+#pragma warning(disable : 4293)
+#pragma warning(disable : 4309)
+#pragma warning(disable : 4319)
+#pragma warning(disable : 4324)
 #pragma warning(disable : 4456)
 #pragma warning(disable : 4458)
-#pragma warning(disable : 4146)
-#pragma warning(disable : 4324)
+#pragma warning(disable : 4611)
 #endif
 #define cimg_verbosity 0 //Disable all cimg output
 #define cimg_display 0 // Do not use any gui stuff
@@ -51,10 +56,8 @@
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
 #if (_MSC_VER)
-#pragma warning(disable : 4197)
 #pragma warning(disable : 4297)
 #pragma warning(disable : 4267)
-#pragma warning(disable : 4293)
 #endif
 
 // Added in Cimg.h below struct type<float>...
@@ -131,9 +134,10 @@ template <typename T>
 struct LayerToCImg {
     static std::unique_ptr<CImg<T>> convert(const LayerRAM* inputLayerRAM, bool permute = true) {
         // Single channel means we can do xyzc, as no permutation is needed
-        auto img = util::make_unique<CImg<T>>(static_cast<const T*>(inputLayerRAM->getData()),
-                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
-                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
+        auto img = util::make_unique<CImg<T>>(
+            static_cast<const T*>(inputLayerRAM->getData()),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
 
         return img;
     }
@@ -152,7 +156,8 @@ struct LayerToCImg<G<T, glm::defaultp>> {
         // of cxyz
         auto img = util::make_unique<CImg<T>>(
             glm::value_ptr(*typedDataPtr), dataFormat->getComponents(),
-            inputLayerRAM->getDimensions().x, inputLayerRAM->getDimensions().y, 1, false);
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, false);
 
         if (permute) img->permute_axes("yzcx");
 
