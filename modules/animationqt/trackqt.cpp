@@ -65,7 +65,7 @@ void TrackQt::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
 void TrackQt::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* sequence) {
     util::erase_remove_if(sequences_, [&](auto& sequenceqt) {
         if (&(sequenceqt->getKeyframeSequence()) == sequence) {
-            scene()->removeItem(sequenceqt.get());
+            this->scene()->removeItem(sequenceqt.get());
             return true;
         } else {
             return false;
