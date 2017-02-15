@@ -480,8 +480,8 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-function(ivw_folder project_name folder_name)
-    set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
+function(ivw_folder target folder_name)
+    set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
 endfunction()
 
 #--------------------------------------------------------------------
@@ -490,7 +490,9 @@ endfunction()
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
         # Specify warnings
-        if(CMAKE_COMPILER_IS_GNUCC OR APPLE)
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
             list(APPEND comp_opts "-Wall")
             list(APPEND comp_opts "-Wextra")
@@ -498,7 +500,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
             list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
             set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
-        elseif(MSVC)
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
             get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
             string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}") # remove any other waning level
             #list(APPEND comp_opts "/nologo") # Suppress Startup Banner
@@ -517,7 +519,7 @@ function(ivw_define_standard_properties)
             set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
         endif()
 
-        if(APPLE)
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
             set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
             set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
@@ -543,27 +545,16 @@ macro(ivw_define_standard_definitions project_name target_name)
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
 
-    if(WIN32)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support
-        if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
-            if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
-            endif()
-            if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
-            if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
+        if(CMAKE_SIZEOF_VOID_P MATCHES 4)
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /LARGEADDRESSAWARE") 
         endif()
-    else()
-        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
-    endif()
-        
-    if(MSVC)
         target_compile_definitions(${target_name} PRIVATE -DUNICODE)
         target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS 
                                                           -D_CRT_SECURE_NO_DEPRECATE)
+    else()
+        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
     endif()
 
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
@@ -645,7 +636,7 @@ macro(ivw_create_module)
     # Add stuff to the installer
     ivw_private_install_module_dirs()
 
-    ivw_make_unittest_target("${_projectName}" "${${mod}_dependencies}")
+    ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 endmacro()
 
 #--------------------------------------------------------------------
@@ -1060,11 +1051,12 @@ endmacro()
 # ivw_suppress_compiler_warnings(target1 [target2 ...])
 function(ivw_suppress_compiler_warnings)
     foreach(target ${ARGN})
-        if(CMAKE_COMPILER_IS_GNUCC)
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS -w)
-        elseif(APPLE)
-            set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-        elseif(WIN32)
+
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
             get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
             string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}")
             list(APPEND comp_opts "/W0")
@@ -1077,6 +1069,10 @@ function(ivw_suppress_compiler_warnings)
             set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
             
             set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /IGNORE:4006")
+        endif()
+
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
         endif()
     endforeach()
 endfunction()

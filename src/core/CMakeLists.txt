@@ -585,7 +585,7 @@ ivw_set_cpack_name(core)
 ivw_make_package(InviwoCore inviwo-core)
 
 if(IVW_UNITTESTS)
-    ivw_make_unittest_target("inviwo-core" "")
+    ivw_make_unittest_target(core inviwo-core)
 endif()
 
 
