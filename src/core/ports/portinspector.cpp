@@ -52,7 +52,7 @@ PortInspector::PortInspector(std::string portClassIdentifier,
     deserializer.registerFactory(app->getInportFactory());
     deserializer.registerFactory(app->getOutportFactory());
     inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
-    inspectorNetwork_->deserialize(deserializer);
+    deserializer.deserialize("ProcessorNetwork", inspectorNetwork_);
     processors_ = inspectorNetwork_->getProcessors();
 
     for (auto processor : processors_) {
