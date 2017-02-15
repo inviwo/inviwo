@@ -255,6 +255,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<DoubleVec2Property>();
     registerProperty<DoubleVec3Property>();
     registerProperty<DoubleVec4Property>();
+    registerProperty<DoubleMinMaxProperty>();
     registerProperty<FileProperty>();
     registerProperty<FilePatternProperty>();
     registerProperty<MultiFileProperty>();
