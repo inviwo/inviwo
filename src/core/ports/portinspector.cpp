@@ -27,8 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/portinspector.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -36,6 +37,7 @@
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 namespace inviwo {
 PortInspector::PortInspector(std::string portClassIdentifier,
@@ -45,12 +47,10 @@ PortInspector::PortInspector(std::string portClassIdentifier,
 
     // Deserialize the network
     auto app = InviwoApplication::getPtr();
-    Deserializer deserializer(inspectorNetworkFileName_);
-    deserializer.registerFactory(app->getProcessorFactory());
-    deserializer.registerFactory(app->getMetaDataFactory());
-    deserializer.registerFactory(app->getPropertyFactory());
-    deserializer.registerFactory(app->getInportFactory());
-    deserializer.registerFactory(app->getOutportFactory());
+
+    auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
+        std::ifstream(inspectorNetworkFileName_), inspectorNetworkFileName_);
+
     inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
     deserializer.deserialize("ProcessorNetwork", inspectorNetwork_);
     processors_ = inspectorNetwork_->getProcessors();

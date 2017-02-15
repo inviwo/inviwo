@@ -33,14 +33,8 @@
 
 namespace inviwo {
 
-SerializeBase::ReferenceDataContainer::ReferenceDataContainer() {
-    referenceCount_ = 0;
-}
-
-SerializeBase::ReferenceDataContainer::~ReferenceDataContainer() {
-}
-
-size_t SerializeBase::ReferenceDataContainer::insert(const void* data, TxElement* node, bool isPointer) {
+size_t SerializeBase::ReferenceDataContainer::insert(const void* data, TxElement* node,
+                                                     bool isPointer) {
     SerializeBase::ReferenceData refData;
     refData.node_ = node;
     refData.isPointer_ = isPointer;
@@ -48,29 +42,25 @@ size_t SerializeBase::ReferenceDataContainer::insert(const void* data, TxElement
     return referenceMap_.count(data);
 }
 
-
 void SerializeBase::ReferenceDataContainer::setReferenceAttributes() {
-    std::pair<RefMap::const_iterator, RefMap::const_iterator> sameKeys;
-
-    // Loop over all different key valus.
-    for (RefMap::const_iterator uniqueKey = referenceMap_.begin();
-         uniqueKey != referenceMap_.end();
+    // Loop over all different key values.
+    for (auto uniqueKey = referenceMap_.begin(); uniqueKey != referenceMap_.end();
          uniqueKey = referenceMap_.upper_bound(uniqueKey->first)) {
-        sameKeys = referenceMap_.equal_range(uniqueKey->first);
+        auto sameKeys = referenceMap_.equal_range(uniqueKey->first);
 
-        if (std::distance(sameKeys.first, sameKeys.second)<=1) continue;
+        if (std::distance(sameKeys.first, sameKeys.second) <= 1) continue;
 
         std::stringstream ss;
-        ss<<"ref";
-        ss<<referenceCount_;
+        ss << "ref";
+        ss << referenceCount_;
 
         // Loop over all items with the same key as uniqueKey.
-        for (RefMap::const_iterator item = sameKeys.first;
-             item != sameKeys.second; ++item) {
-            if (item->second.isPointer_)
+        for (auto item = sameKeys.first; item != sameKeys.second; ++item) {
+            if (item->second.isPointer_) {
                 item->second.node_->SetAttribute(SerializeConstants::RefAttribute, ss.str());
-            else
+            } else {
                 item->second.node_->SetAttribute(SerializeConstants::IDAttribute, ss.str());
+            }
         }
 
         referenceCount_++;
@@ -81,11 +71,11 @@ size_t SerializeBase::ReferenceDataContainer::find(const void* data) {
     return referenceMap_.count(data);
 }
 
-void* SerializeBase::ReferenceDataContainer::find(const std::string& type, const std::string& reference_or_id) {
+void* SerializeBase::ReferenceDataContainer::find(const std::string& type,
+                                                  const std::string& reference_or_id) {
     void* data = nullptr;
 
-    if (reference_or_id.empty())
-        return data;
+    if (reference_or_id.empty()) return data;
 
     for (auto& elem : referenceMap_) {
         std::string type_attrib("");
@@ -95,7 +85,8 @@ void* SerializeBase::ReferenceDataContainer::find(const std::string& type, const
         elem.second.node_->GetAttribute(SerializeConstants::RefAttribute, &ref_attrib, false);
         elem.second.node_->GetAttribute(SerializeConstants::IDAttribute, &id_attrib, false);
 
-        if (type_attrib == type && (ref_attrib == reference_or_id || id_attrib == reference_or_id)) {
+        if (type_attrib == type &&
+            (ref_attrib == reference_or_id || id_attrib == reference_or_id)) {
             data = const_cast<void*>(elem.first);
             break;
         }
@@ -122,39 +113,18 @@ TxElement* SerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
     return nodeCopy;
 }
 
-SerializeBase::SerializeBase(bool allowReference/*=true*/)
-    : allowRef_(allowReference)
-    , retrieveChild_(true) {
-}
-
-SerializeBase::SerializeBase(SerializeBase& s, bool allowReference)
-    : fileName_(s.fileName_)
-    , doc_(s.fileName_)
-    , allowRef_(allowReference)
-    , retrieveChild_(true) {
-}
+SerializeBase::SerializeBase(bool allowReference)
+    : allowRef_(allowReference), retrieveChild_(true) {}
 
 SerializeBase::SerializeBase(std::string fileName, bool allowReference)
-    : fileName_(fileName)
-    , doc_(fileName)
-    , allowRef_(allowReference)
-    , retrieveChild_(true) {
-}
+    : fileName_(fileName), doc_(fileName), allowRef_(allowReference), retrieveChild_(true) {}
 
 SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool allowReference)
-    : fileName_(path)
-    , allowRef_(allowReference)
-    , retrieveChild_(true) {
+    : fileName_(path), allowRef_(allowReference), retrieveChild_(true) {
     stream >> doc_;
 }
 
-SerializeBase::~SerializeBase() {
-}
-
-
-const std::string& SerializeBase::getFileName() const {
-    return fileName_;
-}
+const std::string& SerializeBase::getFileName() const { return fileName_; }
 
 bool SerializeBase::isPrimitiveType(const std::type_info& type) const {
     if (type == typeid(bool)
@@ -208,6 +178,6 @@ NodeSwitch::~NodeSwitch() {
     serializer_.retrieveChild_ = storedRetrieveChild_;
 }
 
-NodeSwitch::operator bool() const { return serializer_.rootElement_ != nullptr;}
+NodeSwitch::operator bool() const { return serializer_.rootElement_ != nullptr; }
 
 } //namespace

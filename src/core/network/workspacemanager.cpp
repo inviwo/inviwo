@@ -144,33 +144,12 @@ void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
 
 void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
-    Deserializer deserializer(stream, refPath);
-    for (const auto& factory : registeredFactories_) {
-        deserializer.registerFactory(factory);
-    }
-    
-    
-    if (SerializeConstants::InviwoWorkspaceVersion != deserializer.getInviwoWorkspaceVersion()) {
-        WorkspaceConverter converter(deserializer.getInviwoWorkspaceVersion());
-        deserializer.convertVersion(&converter);
-    }
 
-    InviwoSetupInfo info; 
+    auto deserializer = createWorkspaceDeserializer(stream, refPath);
+    
+    InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
-
-    for (const auto& module : app_->getModules()) {
-        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
-            if (minfo->version_ < module->getVersion()) {
-                auto converter = module->getConverter(minfo->version_);
-                deserializer.convertVersion(converter.get());
-                LogNetworkWarn("Loading old workspace ("
-                               << deserializer.getFileName() << ") " << module->getIdentifier()
-                               << "Module version: " << minfo->version_
-                               << ". Updating to version: " << module->getVersion() << ".");
-            }
-        }
-    }
-
+    
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
     deserializers_.invoke(deserializer, exceptionHandler);
@@ -195,6 +174,38 @@ void WorkspaceManager::load(const std::string& path, const ExceptionHandler& exc
 
 void WorkspaceManager::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
+}
+
+Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
+                                                           const std::string& refPath) const {
+
+    Deserializer deserializer(stream, refPath);
+    for (const auto& factory : registeredFactories_) {
+        deserializer.registerFactory(factory);
+    }
+
+    if (SerializeConstants::InviwoWorkspaceVersion != deserializer.getInviwoWorkspaceVersion()) {
+        WorkspaceConverter converter(deserializer.getInviwoWorkspaceVersion());
+        deserializer.convertVersion(&converter);
+    }
+
+    InviwoSetupInfo info;
+    deserializer.deserialize("InviwoSetup", info);
+
+    for (const auto& module : app_->getModules()) {
+        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
+            if (minfo->version_ < module->getVersion()) {
+                auto converter = module->getConverter(minfo->version_);
+                deserializer.convertVersion(converter.get());
+                LogNetworkWarn("Loading old workspace ("
+                               << deserializer.getFileName() << ") " << module->getIdentifier()
+                               << "Module version: " << minfo->version_
+                               << ". Updating to version: " << module->getVersion() << ".");
+            }
+        }
+    }
+
+    return deserializer;
 }
 
 WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& callback) {
