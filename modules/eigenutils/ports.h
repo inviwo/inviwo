@@ -36,22 +36,20 @@
 
 namespace inviwo {
 
-    using EigenMatrixOutport = DataOutport<Eigen::MatrixXf>;
-    using EigenMatrixInport = DataInport<Eigen::MatrixXf>;
+using EigenMatrixOutport = DataOutport<Eigen::MatrixXf>;
+using EigenMatrixInport = DataInport<Eigen::MatrixXf>;
 
+template <>
+struct port_traits<Eigen::MatrixXf> {
+    static std::string class_identifier() { return "EigenMatrixXf"; }
+    static uvec3 color_code() { return uvec3(141, 211, 199); }
+    static std::string data_info(const Eigen::MatrixXf* data) {
+        std::ostringstream oss;
+        oss << "Eigen MatrixXf " << data->rows() << "-by-" << data->cols();
+        return oss.str();
+    }
+};
 
-    template <>
-    struct port_traits<Eigen::MatrixXf> {
-        static std::string class_identifier() { return "EigenMatrixXf"; }
-        static uvec3 color_code() { return uvec3(141,211,199); }
-        static std::string data_info(const Eigen::MatrixXf* data) {
-            std::ostringstream oss;
-            oss << "Eigen MatrixXf " << data->rows() << "-by-" << data->cols() ;
-            return oss.str();
-        }
-    };
+}  // namespace
 
-} // namespace
-
-#endif // IVW_PORTS_H
-
+#endif  // IVW_PORTS_H
