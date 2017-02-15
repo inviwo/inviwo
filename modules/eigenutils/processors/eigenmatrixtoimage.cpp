@@ -39,26 +39,19 @@ const ProcessorInfo EigenMatrixToImage::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
 
 EigenMatrixToImage::EigenMatrixToImage()
-    : Processor()
-    , matrix_("matrix")
-    , image_("image")
-    , flipY_("flipy","Flip Y-axis",true)
-{
-    
+    : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {
+
     addPort(matrix_);
     addPort(image_);
 
     addProperty(flipY_);
 }
-    
+
 void EigenMatrixToImage::process() {
-    image_.setData(util::eigenMatToImage(*matrix_.getData(),flipY_.get()));
+    image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
 }
 
-} // namespace
-
+}  // namespace

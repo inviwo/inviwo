@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EIGENMATRIXTOIMAGE_H
@@ -38,15 +38,16 @@
 
 namespace inviwo {
 
-class IVW_MODULE_EIGENUTILS_API EigenMatrixToImage : public Processor { 
+class IVW_MODULE_EIGENUTILS_API EigenMatrixToImage : public Processor {
 public:
     EigenMatrixToImage();
     virtual ~EigenMatrixToImage() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     EigenMatrixInport matrix_;
     ImageOutport image_;
@@ -54,7 +55,6 @@ private:
     BoolProperty flipY_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_EIGENMATRIXTOIMAGE_H
-
+#endif  // IVW_EIGENMATRIXTOIMAGE_H
