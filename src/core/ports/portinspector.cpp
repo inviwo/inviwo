@@ -48,8 +48,9 @@ PortInspector::PortInspector(std::string portClassIdentifier,
     // Deserialize the network
     auto app = InviwoApplication::getPtr();
 
+    std::ifstream instream(inspectorNetworkFileName_);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
-        std::ifstream(inspectorNetworkFileName_), inspectorNetworkFileName_);
+        instream, inspectorNetworkFileName_);
 
     inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
     deserializer.deserialize("ProcessorNetwork", inspectorNetwork_);
