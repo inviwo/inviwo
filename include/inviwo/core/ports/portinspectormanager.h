@@ -44,6 +44,7 @@ class InviwoApplication;
 class Image;
 class ProcessorWidget;
 class PortInspector;
+class ProcessorNetwork;
 
 /**
  * \class PortInspectorManager

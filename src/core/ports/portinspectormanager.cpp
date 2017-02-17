@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
