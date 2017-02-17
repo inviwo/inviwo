@@ -333,6 +333,18 @@ if(IVW_PROFILING)
     add_definitions(-DIVW_PROFILING)
 endif(IVW_PROFILING)
 
+#--------------------------------------------------------------------
+# Add option to enable include-what-you-use 
+# https://github.com/include-what-you-use/include-what-you-use
+if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
+    find_program(iwyu_path NAMES include-what-you-use iwyu)
+    if(iwyu_path)
+        option(IVW_ENABLE_INCLUDE_WHAT_YOU_USE "Enable include-what-you-use" OFF)
+        if(IVW_ENABLE_INCLUDE_WHAT_YOU_USE)
+            set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+        endif()
+    endif()
+endif()
 
 #--------------------------------------------------------------------
 # Precompile headers
