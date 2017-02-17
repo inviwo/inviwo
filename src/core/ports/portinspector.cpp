@@ -33,71 +33,98 @@
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/metadata/processormetadata.h>
-#include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/core/metadata/metadatafactory.h>
-#include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/network/workspacemanager.h>
 
 namespace inviwo {
+
+PortInspector::PortInspector() : network_(InviwoApplication::getPtr()) {
+
+}
+
 PortInspector::PortInspector(std::string portClassIdentifier,
                              std::string inspectorWorkspaceFileName)
     : inspectorNetworkFileName_(inspectorWorkspaceFileName)
-    , portClassIdentifier_(portClassIdentifier) {
+    , portClassIdentifier_(portClassIdentifier)
+    , network_(InviwoApplication::getPtr()) {
 
     // Deserialize the network
-    auto app = InviwoApplication::getPtr();
+    if (auto istream = std::ifstream(inspectorNetworkFileName_)) {
+        auto app = InviwoApplication::getPtr();
+        auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
+            istream, inspectorNetworkFileName_);
+        deserializer.deserialize("ProcessorNetwork", network_);
 
-    std::ifstream instream(inspectorNetworkFileName_);
-    auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
-        instream, inspectorNetworkFileName_);
+        for (auto processor : network_.getProcessors()) {
+            // Set Identifiers
+            std::string newIdentifier = dotSeperatedToPascalCase(getPortClassName()) +
+                                        "PortInspector" + processor->getIdentifier();
+            processor->setIdentifier(newIdentifier);
 
-    inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
-    deserializer.deserialize("ProcessorNetwork", inspectorNetwork_);
-    processors_ = inspectorNetwork_->getProcessors();
+            // Find the and save inports.
+            for (auto& inport : processor->getInports()) {
+                if (!inport->isConnected()) inPorts_.push_back(inport);
+            }
 
-    for (auto processor : processors_) {
-        // Set Identifiers
-        std::string newIdentifier = dotSeperatedToPascalCase(getPortClassName()) +
-            "PortInspector" + processor->getIdentifier();
-        processor->setIdentifier(newIdentifier);
+            auto meta =
+                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            meta->setVisible(false);
+            meta->setSelected(false);
 
-        // Find the and save inports.
-        for (auto& inport : processor->getInports()) {
-            if (!inport->isConnected()) inPorts_.push_back(inport);
+            // Find and save the canvasProcessor
+            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor)) {
+                canvasProcessor_ = canvasProcessor;
+                // Mark the widget as a "PortInspector"
+                auto md = canvasProcessor->createMetaData<BoolMetaData>("PortInspector");
+                md->set(true);
+            }
         }
 
-        auto meta =
-            processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        meta->setVisible(false);
-        meta->setSelected(false);
-
-        // Find and save the canvasProcessor
-        if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor)) {
-            canvasProcessor_ = canvasProcessor;
+        // Store the connections and and disconnect them.
+        auto connections = network_.getConnections();
+        for (auto& connection : connections) {
+            connections_.emplace_back(connection.getOutport(), connection.getInport());
+            network_.removeConnection(connection.getOutport(), connection.getInport());
         }
-    }
 
-    // Store the connections and and disconnect them.
-    auto connections = inspectorNetwork_->getConnections();
-    for (auto& connection : connections) {
-        connections_.emplace_back(connection.getOutport(), connection.getInport());
-        inspectorNetwork_->removeConnection(connection.getOutport(), connection.getInport());
+        // store the processor links.
+        propertyLinks_ = network_.getLinks();
+        
+    } else {
+        throw Exception("Could not open port inspector file: " + inspectorNetworkFileName_,
+                        IvwContext);
     }
-
-    // store the processor links.
-    propertyLinks_ = inspectorNetwork_->getLinks();
 }
 
-void PortInspector::setActive(bool val) { active_ = val; }
-bool PortInspector::isActive() { return active_; }
+const std::string& PortInspector::getInspectorNetworkFileName() const {
+    return inspectorNetworkFileName_;
+}
+const std::string& PortInspector::getPortClassName() const { return portClassIdentifier_; }
+const std::vector<Inport*>& PortInspector::getInports() const { return inPorts_; }
+CanvasProcessor* PortInspector::getCanvasProcessor() const { return canvasProcessor_; }
+const std::vector<PortConnection>& PortInspector::getConnections() const { return connections_; }
+const std::vector<PropertyLink>& PortInspector::getPropertyLinks() const { return propertyLinks_; }
+std::vector<Processor*> PortInspector::getProcessors() const {
+    return network_.getProcessors();
+}
 
-std::string PortInspector::getInspectorNetworkFileName() { return inspectorNetworkFileName_; }
-std::string PortInspector::getPortClassName() { return portClassIdentifier_; }
-std::vector<Inport*>& PortInspector::getInports() { return inPorts_; }
-CanvasProcessor* PortInspector::getCanvasProcessor() { return canvasProcessor_; }
-std::vector<PortConnection>& PortInspector::getConnections() { return connections_; }
-std::vector<PropertyLink>& PortInspector::getPropertyLinks() { return propertyLinks_; }
-std::vector<Processor*>& PortInspector::getProcessors() { return processors_; }
+void PortInspector::serialize(Serializer& s) const {
+    s.serialize("portClassIdentifier", portClassIdentifier_);
+    s.serialize("inspectorNetworkFileName", inspectorNetworkFileName_);
+    s.serialize("network", network_);
+    s.serialize("inports", inPorts_, "inport");
+    s.serialize("connections", connections_, "connection");
+    s.serialize("links", propertyLinks_, "link");
+    s.serialize("canvas", canvasProcessor_);
+}
+
+void PortInspector::deserialize(Deserializer& d) {
+    d.deserialize("portClassIdentifier", portClassIdentifier_);
+    d.deserialize("inspectorNetworkFileName", inspectorNetworkFileName_);
+    d.deserialize("network", network_);
+    d.deserialize("inports", inPorts_, "inport");
+    d.deserialize("connections", connections_, "connection");
+    d.deserialize("links", propertyLinks_, "link");
+    d.deserialize("canvas", canvasProcessor_);
+}
 
 }  // namespace

@@ -104,7 +104,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 }
 
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
-    this->hide();
+
 }
 
 void CanvasProcessorWidgetQt::setVisible(bool visible) {

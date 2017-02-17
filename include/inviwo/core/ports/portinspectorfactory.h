@@ -44,12 +44,6 @@ class IVW_CORE_API PortInspectorFactory
 public:
     PortInspectorFactory() = default;
     virtual ~PortInspectorFactory() = default;
-    virtual PortInspector* createAndCache(const std::string& className) const;
-    using PortInsectorCache = std::map<std::string, std::vector<std::unique_ptr<PortInspector>>>;
-
-    void clearCache();
-private:
-    mutable PortInsectorCache cache_;
 };
 
 }  // namespace

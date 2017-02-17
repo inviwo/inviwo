@@ -99,11 +99,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , moudleCallbackActions_()
 
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
-    , processorNetworkEvaluator_{
-          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())}
-    , workspaceManager_{ util::make_unique<WorkspaceManager>(this)}
-    , propertyPresetManager_{ util::make_unique<PropertyPresetManager>() }
-{
+    , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
+          processorNetwork_.get())}
+    , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
+    , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
+    , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
 
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
@@ -141,11 +141,18 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     workspaceManager_->registerFactory(getInportFactory());
     workspaceManager_->registerFactory(getOutportFactory());
 
-    networkClearHandle_ = workspaceManager_->onClear([&]() { processorNetwork_->clear(); });
-    networkSerializationHandle_ = workspaceManager_->onSave(
-        [&](Serializer& s) { s.serialize("ProcessorNetwork", *processorNetwork_); });
-    networkDeserializationHandle_ = workspaceManager_->onLoad(
-        [&](Deserializer& d) { d.deserialize("ProcessorNetwork", *processorNetwork_); });
+    networkClearHandle_ = workspaceManager_->onClear([&]() { 
+        portInspectorManager_->clear();
+        processorNetwork_->clear(); 
+    });
+    networkSerializationHandle_ = workspaceManager_->onSave([&](Serializer& s) {
+        s.serialize("ProcessorNetwork", *processorNetwork_);
+        s.serialize("PortInspectors", *portInspectorManager_);
+    });
+    networkDeserializationHandle_ = workspaceManager_->onLoad([&](Deserializer& d) {
+        d.deserialize("ProcessorNetwork", *processorNetwork_);
+        d.deserialize("PortInspectors", *portInspectorManager_);
+    });
 
     presetsClearHandle_ =
         workspaceManager_->onClear([&]() { propertyPresetManager_->clearWorkspacePresets(); });
@@ -162,7 +169,6 @@ InviwoApplication::InviwoApplication(std::string displayName)
 
 InviwoApplication::~InviwoApplication() {
     resizePool(0);
-    portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
 }
 
@@ -266,6 +272,10 @@ WorkspaceManager* InviwoApplication::getWorkspaceManager() { return workspaceMan
 
 PropertyPresetManager* InviwoApplication::getPropertyPresetManager() {
     return propertyPresetManager_.get();
+}
+
+PortInspectorManager* InviwoApplication::getPortInspectorManager() {
+    return portInspectorManager_.get();
 }
 
 const CommandLineParser& InviwoApplication::getCommandLineParser() const {
