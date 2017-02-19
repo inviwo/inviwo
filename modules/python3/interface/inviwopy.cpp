@@ -178,8 +178,6 @@ PYBIND11_PLUGIN(inviwopy) {
     addGLMTypes(m.mainModule_);
 
     m.addClass<InviwoApplication>("InviwoApplication")
-        .def("getProcessorNetwork", &InviwoApplication::getProcessorNetwork,
-             py::return_value_policy::reference)
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
                                py::return_value_policy::reference)
         //.def("getProcessorNetworkEvaluator", &InviwoApplication::getProcessorNetworkEvaluator,
@@ -198,7 +196,6 @@ PYBIND11_PLUGIN(inviwopy) {
                                    return modules;
                                },
                                py::return_value_policy::reference)
-        //.def("getModuleFactoryObjects", &InviwoApplication::getModuleFactoryObjects)
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
@@ -206,7 +203,10 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
-                               py::return_value_policy::reference)
+            py::return_value_policy::reference)
+        .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
+                                       py::return_value_policy::reference)
+                                   
 
         .def("getOutputPath",
              [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
@@ -334,6 +334,19 @@ PYBIND11_PLUGIN(inviwopy) {
             ->setPosition(pos);
         return p.release();
     }  );
+    
+
+
+
+    py::class_<PropertyFactory>(m.mainModule_, "PropertyFactory")
+        .def("hasKey", [](PropertyFactory *pf, std::string key) { return pf->hasKey(key); })
+        .def_property_readonly("keys", [](PropertyFactory *pf) { return pf->getKeys(); })
+        .def("create",
+            [](PropertyFactory *pf, std::string key) { return pf->create(key).release(); })
+    ;
+
+
+
 
     //struct propertyOwnerDelete {
     //    void operator()(PropertyOwner* p) {
