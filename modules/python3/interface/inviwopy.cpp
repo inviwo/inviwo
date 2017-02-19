@@ -129,6 +129,10 @@ template<typename T> void addProcessorDefs(T class_) {
 template<typename T>
 struct HasOwnerDeleter { void operator()(T* p) { if (p && p->getOwner() == nullptr) delete p; } };
 
+template<typename T>
+using NoDelete = std::unique_ptr<T,HasOwnerDeleter<T>>;
+
+
 template <typename T, typename P , typename C>
 void pyTemplateProperty(C &prop) {
     using namespace inviwo;
@@ -237,7 +241,14 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,
              py::return_value_policy::reference)
         .def("__getattr__",
-             [](ProcessorNetwork &po, std::string key) { return po.getProcessorByIdentifier(key); },
+             [](ProcessorNetwork &po, std::string key) {
+                 auto p = po.getProcessorByIdentifier(key);
+                 if (auto cp = dynamic_cast<CanvasProcessor *>(p)) {
+                     return py::cast(cp);
+                 }
+                 return py::cast(p);
+
+             },
              py::return_value_policy::reference)
         .def("addProcessor",
              [](ProcessorNetwork *pn, Processor *processor) { pn->addProcessor(processor); })
@@ -279,7 +290,8 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("isLinkedBidirectional", &ProcessorNetwork::isLinkedBidirectional)
         .def("getLinksBetweenProcessors", &ProcessorNetwork::getLinksBetweenProcessors,
              py::return_value_policy::reference)
-        .def_property_readonly("canvases", &ProcessorNetwork::getProcessorsByType<CanvasProcessor>, py::return_value_policy::reference)
+        .def_property_readonly("canvases", &ProcessorNetwork::getProcessorsByType<CanvasProcessor>,
+                               py::return_value_policy::reference)
         .def("getProperty", &ProcessorNetwork::getProperty, py::return_value_policy::reference)
         .def("getPropertiesLinkedTo", &ProcessorNetwork::getPropertiesLinkedTo,
              py::return_value_policy::reference)
@@ -336,7 +348,14 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("getPath", &PropertyOwner::getPath)
         .def_property_readonly("properties", &PropertyOwner::getProperties,py::return_value_policy::reference)
         .def("__getattr__",
-            [](PropertyOwner &po, std::string key) { return po.getPropertyByIdentifier(key); },
+            [](PropertyOwner &po, std::string key) { 
+                auto prop = po.getPropertyByIdentifier(key);
+                if(auto cp = dynamic_cast<CompositeProperty*>(prop)){
+                    return py::cast(cp);
+                }else{
+                    return py::cast(prop);
+                }
+    },
             py::return_value_policy::reference)
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
         .def("addProperty",
@@ -538,10 +557,10 @@ PYBIND11_PLUGIN(inviwopy) {
     pyOrdinalProperty<dmat3>(m.mainModule_);
     pyOrdinalProperty<dmat4>(m.mainModule_);
 
-    py::class_<ButtonProperty, Property , std::unique_ptr<ButtonProperty, HasOwnerDeleter<ButtonProperty>>>(m.mainModule_, "ButtonProperty")
-        .def("pressButton", &ButtonProperty::pressButton);
+    py::class_<ButtonProperty, Property , NoDelete<ButtonProperty> >(m.mainModule_, "ButtonProperty")
+        .def("press", &ButtonProperty::pressButton);
 
-    py::class_<CameraProperty, CompositeProperty , std::unique_ptr<CameraProperty, HasOwnerDeleter<CameraProperty>>>(m.mainModule_, "CameraProperty")
+    py::class_<CameraProperty, CompositeProperty , NoDelete<CameraProperty>>(m.mainModule_, "CameraProperty")
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo)
         .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp)
@@ -570,7 +589,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
         .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
 
-    py::class_<TransferFunctionProperty, Property , std::unique_ptr<TransferFunctionProperty, HasOwnerDeleter<TransferFunctionProperty>>>(m.mainModule_, "TransferFunctionProperty")
+    py::class_<TransferFunctionProperty, Property , NoDelete<TransferFunctionProperty>>(m.mainModule_, "TransferFunctionProperty")
         .def_property("mask", &TransferFunctionProperty::getMask,
             &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,
@@ -589,6 +608,13 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
         tp.get().addPoint(pos, vec4(color, pos.y));
     });
+
+    py::class_<StringProperty, Property, NoDelete<StringProperty>> strProperty(m.mainModule_, "StringProperty");
+    pyTemplateProperty<std::string, StringProperty>(strProperty);
+
+
+    py::class_<FileProperty, Property, NoDelete<FileProperty>> fileProperty(m.mainModule_, "FileProperty");
+    pyTemplateProperty<std::string, FileProperty>(fileProperty);
 
     m.mainModule_.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
 
