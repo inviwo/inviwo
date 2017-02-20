@@ -16,6 +16,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -33,6 +34,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -52,6 +54,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator4d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tmip.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})

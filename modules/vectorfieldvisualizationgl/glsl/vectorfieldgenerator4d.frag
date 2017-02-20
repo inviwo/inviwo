@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,60 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VECTORFIELDGENERATOR3D_H
-#define IVW_VECTORFIELDGENERATOR3D_H
+uniform ivec3 volumeSize_;
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+in vec4 texCoord_;
+in vec4 dataposition_;
 
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+uniform vec2 xRange;
+uniform vec2 yRange;
+uniform vec2 zRange;
 
-namespace inviwo {
+uniform float t;
 
-/**
- * \class VectorFieldGenerator3D
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public Processor {
-public:
-    VectorFieldGenerator3D();
-    virtual ~VectorFieldGenerator3D();
+float getPos(float v ,vec2 range){ 
+	return range.x + v * (range.y - range.x);
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+vec4 getPos(){
+	return vec4(
+		      getPos(dataposition_.x , xRange)
+			, getPos(dataposition_.y , yRange)
+			, getPos(dataposition_.z , zRange)
+			, t
+		);
+}
 
-    virtual void initializeResources() override;
+void main() {
+    vec4 pos = getPos();
 
-protected:
-    virtual void process() override;
+    vec4 value = vec4(0,0,0,1);
+    value.x = X_VALUE(pos.x,pos.y,pos.z,pos.w);
+    value.y = Y_VALUE(pos.x,pos.y,pos.z,pos.w);
+    value.z = Z_VALUE(pos.x,pos.y,pos.z,pos.w);
 
-    VolumeOutport outport_;
-
-    OrdinalProperty<size3_t> size_;
-
-    FloatMinMaxProperty xRange_;
-    FloatMinMaxProperty yRange_;
-    FloatMinMaxProperty zRange_;
-
-    StringProperty xValue_;
-    StringProperty yValue_;
-    StringProperty zValue_;
-
-    Shader shader_;
-    FrameBufferObject fbo_;
-};
-
-}  // namespace
-
-#endif  // IVW_VECTORFIELDGENERATOR3D_H
+    FragData0 = value;
+}

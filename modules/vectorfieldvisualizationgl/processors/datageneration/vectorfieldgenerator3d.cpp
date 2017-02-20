@@ -42,7 +42,7 @@ const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
     "Vector Field Generator 3D",          // Display name
     "Data Creation",                      // Category
     CodeState::Experimental,              // Code state
-    "GL",                                 // Tags
+    Tags::GL,                             // Tags
 };
 const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 
@@ -69,6 +69,8 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
     addProperty(xRange_);
     addProperty(yRange_);
     addProperty(zRange_);
+
+        shader_.onReload([this]() { invalidate(InvalidationLevel::Valid); });
 }
 
 VectorFieldGenerator3D::~VectorFieldGenerator3D() {}
@@ -83,20 +85,19 @@ void VectorFieldGenerator3D::initializeResources() {
 
 void VectorFieldGenerator3D::process() {
 
-    volume_ = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume_->dataMap_.dataRange = vec2(0, 1);
-    volume_->dataMap_.valueRange = vec2(-1, 1);
-    outport_.setData(volume_);
+    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
+    volume->dataMap_.dataRange = vec2(0, 1);
+    volume->dataMap_.valueRange = vec2(-1, 1);
 
     shader_.activate();
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *volume_.get(), "volume");
+    utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
     utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
     const size3_t dim{size_.get()};
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
+    VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
@@ -125,8 +126,9 @@ void VectorFieldGenerator3D::process() {
     basis[2][0] = basisZ.x;
     basis[2][1] = basisZ.y;
     basis[2][2] = basisZ.z;
-    volume_->setBasis(basis);
-    volume_->setOffset(corners[0]);
+    volume->setBasis(basis);
+    volume->setOffset(corners[0]);
+    outport_.setData(volume);
 }
 
 }  // namespace

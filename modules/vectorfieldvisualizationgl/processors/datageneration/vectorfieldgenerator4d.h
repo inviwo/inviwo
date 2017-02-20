@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,18 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VECTORFIELDGENERATOR3D_H
-#define IVW_VECTORFIELDGENERATOR3D_H
+#ifndef IVW_VECTORFIELDGENERATOR4D_H
+#define IVW_VECTORFIELDGENERATOR4D_H
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -44,40 +43,57 @@
 
 namespace inviwo {
 
-/**
- * \class VectorFieldGenerator3D
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+/** \docpage{org.inviwo.VectorFieldGenerator4D, Vector Field Generator4D}
+ * ![](org.inviwo.VectorFieldGenerator4D.png?classIdentifier=org.inviwo.VectorFieldGenerator4D)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public Processor {
+
+
+/**
+ * \class VectorFieldGenerator4D
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator4D : public Processor { 
 public:
-    VectorFieldGenerator3D();
-    virtual ~VectorFieldGenerator3D();
+    VectorFieldGenerator4D();
+    virtual ~VectorFieldGenerator4D() = default;
+
+    virtual void initializeResources()override;
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+private:
+    VolumeSequenceOutport outport_;
 
-    virtual void initializeResources() override;
-
-protected:
-    virtual void process() override;
-
-    VolumeOutport outport_;
-
-    OrdinalProperty<size3_t> size_;
-
-    FloatMinMaxProperty xRange_;
-    FloatMinMaxProperty yRange_;
-    FloatMinMaxProperty zRange_;
+    OrdinalProperty<size4_t> size_;
 
     StringProperty xValue_;
     StringProperty yValue_;
     StringProperty zValue_;
 
+    FloatMinMaxProperty xRange_;
+    FloatMinMaxProperty yRange_;
+    FloatMinMaxProperty zRange_;
+    FloatMinMaxProperty tRange_;
+
+
     Shader shader_;
     FrameBufferObject fbo_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_VECTORFIELDGENERATOR3D_H
+#endif // IVW_VECTORFIELDGENERATOR4D_H
+
