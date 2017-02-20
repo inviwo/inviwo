@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -227,24 +228,23 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
     throw Exception("No Qt main window found");
 }
 
-
-void myImageCleanupHandler(void *info){
-    delete static_cast<std::vector<unsigned char>*>(info); 
-}
-
 QImage layerToQImage(const Layer &layer){
-    auto data = layer.getAsCodedBuffer("raw");
+    auto data = layer.getAsCodedBuffer("raw"); // This will convert the image to chars.
 
     // do manual conversion from raw to png via QImage
     QImage::Format format = QImage::Format_Invalid;
+    int bytesPerPixel = 1;
+
     auto dims = layer.getDimensions();
     if (data->size() == dims.x * dims.y) {
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         format = QImage::Format_Grayscale8;
+        bytesPerPixel = 1;
 #else
         format = QImage::Format_RGB888;
+        bytesPerPixel = 3;
         // duplicate grayscale data into 3 channels
-        auto newData = std::make_unique<std::vector<unsigned char>>();
+        auto newData = std::make_unique<std::vector<unsigned char> >();
         newData->reserve(data->size() * 3);
 
         for (auto value : *data.get()) {
@@ -252,23 +252,22 @@ QImage layerToQImage(const Layer &layer){
         }
         data = std::move(newData);
 #endif
-    }
-    else if (data->size() == dims.x * dims.y * 3) {
+    } else if (data->size() == dims.x * dims.y * 3) {
         format = QImage::Format_RGB888;
-    }
-    else if (data->size() == dims.x * dims.y * 4) {
+        bytesPerPixel = 3;
+    } else if (data->size() == dims.x * dims.y * 4) {
         format = QImage::Format_RGBA8888;
+        bytesPerPixel = 4;
     }
 
-    return {reinterpret_cast<const unsigned char*>(&(data->front())),
-            static_cast<int>(dims.x),
-            static_cast<int>(dims.y),
-            format,
-            /*[&](void* info) {
-                delete static_cast<std::vector<unsigned char>*>(info); 
-            },*/
-            myImageCleanupHandler,
-            data.release()};
+    const auto dataptr = reinterpret_cast<const unsigned char*>(data->data());
+    const auto width = static_cast<int>(dims.x);
+    const auto height = static_cast<int>(dims.y);
+    const auto bytesPerLine = static_cast<int>(dims.y * bytesPerPixel);
+
+    return { dataptr, width, height, bytesPerLine, format,
+             [](void* info) { delete static_cast<std::vector<unsigned char>*>(info); },
+             data.release() };
 }
 
 } // namespace utilqt
