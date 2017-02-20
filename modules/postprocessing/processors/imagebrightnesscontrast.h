@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,23 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_FXAA_H
-#define IVW_FXAA_H
+#ifndef IVW_IMAGEBRIGHTNESSCONTRAST_H
+#define IVW_IMAGEBRIGHTNESSCONTRAST_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.FXAA, FXAA}
- * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
- * 
+/** \docpage{org.inviwo.ImageBrightnessContrast, Image Brightness Contrast}
+ * ![](org.inviwo.ImageBrightnessContrast.png?classIdentifier=org.inviwo.ImageBrightnessContrast)
+ * Controls brightness and contrast of an image.
+ * The following manipulations are applied:
+ *
+ *     out.rgb = in.rgb - 0.5) * contrast + 0.5 + brightness
+ *     out.a = in.a
  *
  * ### Inports
  *   * __ImageInport__ Input image.
@@ -53,49 +52,31 @@ namespace inviwo {
  *   * __ImageOutport__ Output image.
  * 
  * ### Properties
- *   * __Dither__ Sets amount of dithering.
- *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
+ *   * __Brightness__ Controls brightness.
+ *   * __Contrast__ Controls contrast.
  */
-
 
 /**
- * \class FXAA
- * \brief Anti-aliasing post process
+ * \class ImageBrightnessContrast
+ * \brief Controls brightness and contrast of an image.
  */
-class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API ImageBrightnessContrast : public ImageGLProcessor { 
 public:
-    FXAA();
-    virtual ~FXAA();
+    ImageBrightnessContrast();
+    virtual ~ImageBrightnessContrast() = default;
     
-    virtual void initializeResources() override;
-    virtual void process() override;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
 private:
-    void initFramebuffer(int width, int height);
-
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    BoolProperty enable_;
-
-    OptionPropertyInt dither_;
-    FloatProperty quality_;
-
-    Shader fxaa_;
-    Shader prepass_;
-    
-    struct {
-        GLuint fbo = 0;
-        GLuint tex = 0;
-        int width = 0;
-        int height = 0;
-    } prepassFbo_;
+    FloatProperty brightness_;
+    FloatProperty contrast_;
 };
 
 } // namespace
 
-#endif // IVW_FXAA_H
+#endif // IVW_IMAGEBRIGHTNESSCONTRAST_H
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,78 +24,63 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_FXAA_H
-#define IVW_FXAA_H
+#ifndef IVW_IMAGEHUESATURATIONLUMINANCE_H
+#define IVW_IMAGEHUESATURATIONLUMINANCE_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.FXAA, FXAA}
- * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
+/** \docpage{org.inviwo.ImageHueSaturationLuminance, Image Hue Saturation Luminance}
+ * ![](org.inviwo.ImageHueSaturationLuminance.png?classIdentifier=org.inviwo.ImageHueSaturationLuminance)
+ * Controls hue, saturation and luminance of an image.
+ * Input image is in RGB color space. The colors are then converted into HSL and the following manipulations are performed:
  * 
+ *    hsl.r = mod(hsl.r + hue, 1.0);
+ *    hsl.g = clamp(hsl.g + sat, 0.0, 1.0);
+ *    hsl.b = clamp(hsl.b + lum, 0.0, 1.0); 
+ *
+ * Finally, the image is transformed back into RGB.
  *
  * ### Inports
  *   * __ImageInport__ Input image.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
- *   * __Dither__ Sets amount of dithering.
- *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
+ *   * __Hue__ Controls hue.
+ *   * __Saturation__ Controls saturation.
+ *   * __Luminance__ Controls luminance.
  */
-
 
 /**
- * \class FXAA
- * \brief Anti-aliasing post process
+ * \class ImageHueSaturationLuminance
+ * \brief Controls hue, saturation and luminance of an image.
  */
-class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API ImageHueSaturationLuminance : public ImageGLProcessor {
 public:
-    FXAA();
-    virtual ~FXAA();
-    
-    virtual void initializeResources() override;
-    virtual void process() override;
+    ImageHueSaturationLuminance();
+    virtual ~ImageHueSaturationLuminance() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
 private:
-    void initFramebuffer(int width, int height);
-
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    BoolProperty enable_;
-
-    OptionPropertyInt dither_;
-    FloatProperty quality_;
-
-    Shader fxaa_;
-    Shader prepass_;
-    
-    struct {
-        GLuint fbo = 0;
-        GLuint tex = 0;
-        int width = 0;
-        int height = 0;
-    } prepassFbo_;
+    FloatProperty hue_;
+    FloatProperty saturation_;
+    FloatProperty luminance_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_FXAA_H
-
+#endif  // IVW_IMAGEHUESATURATIONLUMINANCE_H

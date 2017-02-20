@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,78 +24,57 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_FXAA_H
-#define IVW_FXAA_H
+#ifndef IVW_IMAGEOPACITY_H
+#define IVW_IMAGEOPACITY_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.FXAA, FXAA}
- * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
- * 
+/** \docpage{org.inviwo.ImageOpacity, Image Opacity}
+ * ![](org.inviwo.ImageOpacity.png?classIdentifier=org.inviwo.ImageOpacity)
+ * Controls an image's opacity
+ *
+ *     out.rgb = in.rgb
+ *     out.a = alpha
  *
  * ### Inports
  *   * __ImageInport__ Input image.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
- *   * __Dither__ Sets amount of dithering.
- *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
+ *   * __Alpha__ Controls the opacity.
  */
-
 
 /**
- * \class FXAA
- * \brief Anti-aliasing post process
+ * \class ImageOpacity
+ * \brief Controls an image's opacity
  */
-class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API ImageOpacity : public ImageGLProcessor {
 public:
-    FXAA();
-    virtual ~FXAA();
+    ImageOpacity();
+    virtual ~ImageOpacity() = default; 
     
-    virtual void initializeResources() override;
-    virtual void process() override;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+    
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
-    void initFramebuffer(int width, int height);
-
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    BoolProperty enable_;
-
-    OptionPropertyInt dither_;
-    FloatProperty quality_;
-
-    Shader fxaa_;
-    Shader prepass_;
-    
-    struct {
-        GLuint fbo = 0;
-        GLuint tex = 0;
-        int width = 0;
-        int height = 0;
-    } prepassFbo_;
+    FloatProperty alpha_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_FXAA_H
-
+#endif  // IVW_IMAGEOPACITY_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,31 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_FXAA_H
-#define IVW_FXAA_H
+#ifndef IVW_IMAGESHARPEN_H
+#define IVW_IMAGESHARPEN_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.FXAA, FXAA}
- * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
- * 
+/** \docpage{org.inviwo.ImageSharpen, Image Sharpen}
+ * ![](org.inviwo.ImageSharpen.png?classIdentifier=org.inviwo.ImageSharpen)
+ * Applies a laplacian filter to the input image.
+ * Two kernels are available:
+ *
+ *     Filter1: -1  -1  -1
+ *              -1   8  -1
+ *              -1  -1  -1
+ *
+ *     Filter2:  0  -1   0
+ *              -1   4  -1
+ *               0  -1   0
  *
  * ### Inports
  *   * __ImageInport__ Input image.
@@ -53,49 +60,31 @@ namespace inviwo {
  *   * __ImageOutport__ Output image.
  * 
  * ### Properties
- *   * __Dither__ Sets amount of dithering.
- *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
+ *   * __Sharpen__ Turn filter on/off.
  */
-
 
 /**
- * \class FXAA
- * \brief Anti-aliasing post process
+ * \class ImageSharpen
+ * \brief Applies a laplacian filter to the input image.
  */
-class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor { 
 public:
-    FXAA();
-    virtual ~FXAA();
-    
-    virtual void initializeResources() override;
-    virtual void process() override;
+    ImageSharpen();
+    virtual ~ImageSharpen() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
+
 private:
-    void initFramebuffer(int width, int height);
-
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    BoolProperty enable_;
-
-    OptionPropertyInt dither_;
-    FloatProperty quality_;
-
-    Shader fxaa_;
-    Shader prepass_;
-    
-    struct {
-        GLuint fbo = 0;
-        GLuint tex = 0;
-        int width = 0;
-        int height = 0;
-    } prepassFbo_;
+    IntProperty passes_;
+    BoolProperty sharpen_;
+    OptionPropertyInt filter_;
 };
 
 } // namespace
 
-#endif // IVW_FXAA_H
+#endif // IVW_IMAGESHARPEN_H
 
