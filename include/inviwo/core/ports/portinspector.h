@@ -45,12 +45,12 @@ class IVW_CORE_API PortInspector : public Serializable {
 public:
     PortInspector(); // Should only be used for deserialization.
     PortInspector(std::string portClassIdentifier, std::string inspectorWorkspaceFileName);
-    virtual ~PortInspector() = default;
+    virtual ~PortInspector();
 
     const std::string& getInspectorNetworkFileName() const;
     const std::string& getPortClassName() const;
 
-    std::vector<Processor*> getProcessors() const;
+    const std::vector<Processor*>& getProcessors() const;
     const std::vector<Inport*>& getInports() const;
     CanvasProcessor* getCanvasProcessor() const;
     const std::vector<PortConnection>& getConnections() const;
@@ -63,9 +63,9 @@ public:
 private:
     std::string inspectorNetworkFileName_;
     std::string portClassIdentifier_;
-    ProcessorNetwork network_;
 
-    std::vector<Inport*> inPorts_;
+    std::vector<Processor*> processors_;
+    std::vector<Inport*> inports_;
     std::vector<PortConnection> connections_;
     std::vector<PropertyLink> propertyLinks_;
     CanvasProcessor* canvasProcessor_ = nullptr;
