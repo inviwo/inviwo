@@ -36,8 +36,11 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -106,7 +109,7 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
 
     auto rep = dynamic_cast<LayerRAMPrecision<T>*>(
-        img->getColorLayer(0)->getEditableRepresentation<LayerRAM>());
+        img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
     auto data = rep->getDataTyped();
 
     size_t idx = 0;
@@ -126,7 +129,7 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
     }
 
     if (name != "") {
-        img->setMetaData<StringMetaData>("name", name);
+        img->template setMetaData<StringMetaData>("name", name);
     }
 
     img->getColorLayer(0)->setSwizzleMask(swizzlemasks::luminance);
