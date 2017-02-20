@@ -21,6 +21,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <modules/python3/interface/pyglmtypes.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/processors/processorwidget.h>
@@ -143,8 +144,9 @@ template <typename T>
 auto pyOrdinalProperty(py::module &m) {
     using namespace inviwo;
     using P = OrdinalProperty<T>;
-    auto classname = Defaultvalues<T>::getName() + "Property";
 
+    auto classname = Defaultvalues<T>::getName() + "Property";
+    
     py::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(m, classname.c_str());
     pyOrdinal
         .def("__init__",
@@ -163,6 +165,56 @@ auto pyOrdinalProperty(py::module &m) {
 
     return pyOrdinal;
 }
+
+
+
+
+template <typename T>
+auto pyOptionProperty(py::module &m) {
+    using namespace inviwo;
+    using P = TemplateOptionProperty<T>;
+    using O = typename OptionPropertyOption<T>;
+
+    auto classname = "OptionProperty" + Defaultvalues<T>::getName();
+    auto optionclassname = Defaultvalues<T>::getName() + "Option";
+
+    py::class_<O>(m, optionclassname.c_str())
+        .def(py::init<>())
+        .def(py::init < std::string, std::string, T >())
+        .def_readwrite("id", &O::id_)
+        .def_readwrite("name", &O::name_)
+        .def_readwrite("value", &O::value_)
+        ;
+
+
+
+    py::class_<P, BaseOptionProperty, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOption(m, classname.c_str());
+    pyOption
+        .def(py::init < std::string, std::string >())
+        .def("addOption", [](P *p, std::string id, std::string displayName, T t) {
+            p->addOption(id, displayName, t);
+        })
+      
+        .def_property_readonly("values", &P::getValues)
+        .def("removeOption", &P::removeOption)
+
+        .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) {p->set(t); })
+
+   //     .def_property("selectedOption", &P::getSelectedOption, &P::setSelectedOption)
+        .def_property("selectedValue", &P::getSelectedValue , &P::setSelectedValue)
+
+        .def("replaceOptions", [](P* p, std::vector<std::string> ids, std::vector<std::string> displayNames,
+            std::vector<T> values) {p->replaceOptions(ids, displayNames, values); })
+
+        .def("replaceOptions", [](P* p, std::vector<OptionPropertyOption<T>> options) {p->replaceOptions(options); })
+
+        ;
+
+
+    return pyOption;
+
+}
+
 
 PYBIND11_PLUGIN(inviwopy) {
 
@@ -342,7 +394,18 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("hasKey", [](PropertyFactory *pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](PropertyFactory *pf) { return pf->getKeys(); })
         .def("create",
-            [](PropertyFactory *pf, std::string key) { return pf->create(key).release(); })
+            [](PropertyFactory *pf, std::string key) { 
+        auto p = pf->create(key).release();
+        if (auto cp = dynamic_cast<CompositeProperty*>(p)) {
+            return py::cast(cp);
+        }
+        else {
+            return py::cast(p);
+        }
+        
+         
+    
+    })
     ;
 
 
@@ -570,6 +633,32 @@ PYBIND11_PLUGIN(inviwopy) {
     pyOrdinalProperty<dmat3>(m.mainModule_);
     pyOrdinalProperty<dmat4>(m.mainModule_);
 
+
+    py::class_<BaseOptionProperty, Property, NoDelete<BaseOptionProperty> >(m.mainModule_, "BaseOptionProperty")
+        .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
+        .def_property_readonly("size", &BaseOptionProperty::size)
+        
+        .def_property("selectedIndex", &BaseOptionProperty::getSelectedIndex, &BaseOptionProperty::setSelectedIndex)
+        .def_property("selectedIdentifier", &BaseOptionProperty::getSelectedIdentifier, &BaseOptionProperty::setSelectedIdentifier)
+        .def_property("selectedDisplayName", &BaseOptionProperty::getSelectedDisplayName, &BaseOptionProperty::setSelectedDisplayName)
+
+        .def("isSelectedIndex", &BaseOptionProperty::isSelectedIndex)
+        .def("isSelectedIdentifier", &BaseOptionProperty::isSelectedIdentifier)
+        .def("isSelectedDisplayName", &BaseOptionProperty::isSelectedDisplayName)
+
+
+        .def_property_readonly("identifiers", &BaseOptionProperty::getIdentifiers)
+        .def_property_readonly("displayName", &BaseOptionProperty::getDisplayNames)
+
+
+        ;
+
+    pyOptionProperty<double>(m.mainModule_);
+    pyOptionProperty<float>(m.mainModule_);
+    pyOptionProperty<int>(m.mainModule_);
+    pyOptionProperty<std::string>(m.mainModule_);
+
+
     py::class_<ButtonProperty, Property , NoDelete<ButtonProperty> >(m.mainModule_, "ButtonProperty")
         .def("press", &ButtonProperty::pressButton);
 
@@ -628,6 +717,10 @@ PYBIND11_PLUGIN(inviwopy) {
 
     py::class_<FileProperty, Property, NoDelete<FileProperty>> fileProperty(m.mainModule_, "FileProperty");
     pyTemplateProperty<std::string, FileProperty>(fileProperty);
+
+
+    py::class_<BoolProperty, Property, NoDelete<BoolProperty>> boolProperty(m.mainModule_, "BoolProperty");
+    pyTemplateProperty<bool, BoolProperty>(boolProperty);
 
     m.mainModule_.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
 
