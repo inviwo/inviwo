@@ -9,6 +9,8 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen)
 set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/eigenutilsprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/eigenutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ports.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -16,6 +18,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/eigenutilsprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
