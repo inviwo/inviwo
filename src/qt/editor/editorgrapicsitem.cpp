@@ -152,15 +152,13 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 }
 
                 // add all layer images into the same row
-                auto tableCell = t.append("tr").append("td");
-                auto tableRow = tableCell.append("table").append("tr");
+                auto tableCell = t.append("tr").append("td").append("table").append("tr");
                 size_t perRow = std::ceil(std::sqrt(layers.size()));
                 size_t rowCount = 0;
                 for (auto item : layers) {
                     if (rowCount >= perRow) {
                         rowCount = 0;
-                        tableCell = t.append("tr").append("td");
-                        tableRow = tableCell.append("table").append("tr");
+                        tableCell = t.append("tr").append("td").append("table").append("tr");
                     }
                     auto name = item.first;
                     auto layer = item.second;
@@ -169,16 +167,16 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                     QBuffer buffer(&byteArray);
                     layerImage.save(&buffer, "PNG");
 
-                    auto item = tableRow.append("td").append("table");
+                    auto table = tableCell.append("td").append("table");
 
-                    item.append("tr").append("td").append(
+                    table.append("tr").append("td").append(
                         "img", "",
                         {{"width", std::to_string(portInspectorSize)},
                          {"height", std::to_string(portInspectorSize)},
                          {"src",
                           "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
                     if (!name.empty()) {
-                        item.append("tr").append("td", name);
+                        table.append("tr").append("td", name);
                     }
                     ++rowCount;
                 }
