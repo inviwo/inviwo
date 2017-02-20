@@ -74,6 +74,7 @@ class PropertyWidgetFactory;
 class OutportFactory;
 class InportFactory;
 class PortInspectorFactory;
+class PortInspectorManager;
 
 class Settings;
 class InviwoModule;
@@ -138,6 +139,7 @@ public:
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
     WorkspaceManager* getWorkspaceManager();
     PropertyPresetManager* getPropertyPresetManager();
+    PortInspectorManager* getPortInspectorManager();
 
     template <class T>
     T* getSettingsByType();
@@ -253,6 +255,7 @@ protected:
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
+    std::unique_ptr<PortInspectorManager> portInspectorManager_;
 
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;

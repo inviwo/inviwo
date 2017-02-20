@@ -90,21 +90,11 @@ public:
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
      *
-     * @param s object of similar type.
-     * @param allowReference disables or enables reference management schemes.
-     */
-    SerializeBase(SerializeBase& s, bool allowReference=true);
-    /**
-     * \brief Base class for Serializer and Deserializer.
-     *
-     * This class consists of features that are common to both serializer
-     * and de-serializer. Some of them are reference data manager,
-     * (ticpp::Node) node switch and factory registration.
-     *
      * @param fileName full path to xml file (for reading or writing).
      * @param allowReference disables or enables reference management schemes.
      */
     SerializeBase(std::string fileName, bool allowReference=true);
+
     /**
      * \brief Base class for Serializer and Deserializer.
      *
@@ -118,10 +108,12 @@ public:
      */
     SerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
     
-    /**
-     * \brief Destructor
-     */
-    virtual ~SerializeBase();
+    SerializeBase(const SerializeBase& rhs) = delete;
+    SerializeBase(SerializeBase&& rhs) = default;
+    SerializeBase& operator=(const SerializeBase&) = delete;
+    SerializeBase& operator=(SerializeBase&&) = default;
+
+    virtual ~SerializeBase() = default;
     
     /**
      * \brief gets the xml file name.
@@ -144,14 +136,18 @@ public:
         bool isPointer_; //Used to differentiate pointer and object.
     };
 
-    typedef std::pair<const void*, SerializeBase::ReferenceData> RefDataPair;
-    typedef std::multimap<const void*,ReferenceData> RefMap;
-    typedef std::vector<SerializeBase::ReferenceData> RefDataList;
+    using RefDataPair = std::pair<const void*, SerializeBase::ReferenceData>;
+    using RefMap = std::multimap<const void*, ReferenceData>;
 
     class IVW_CORE_API ReferenceDataContainer {
     public:
-        ReferenceDataContainer();
-        ~ReferenceDataContainer();
+        ReferenceDataContainer() = default;
+        ReferenceDataContainer(const ReferenceDataContainer&) = delete;
+        ReferenceDataContainer(ReferenceDataContainer&&) = default;
+        ReferenceDataContainer& operator=(const ReferenceDataContainer&) = delete;
+        ReferenceDataContainer& operator=(ReferenceDataContainer&&) = default;
+        ~ReferenceDataContainer() = default;
+
         size_t insert(const void* data, TxElement* node, bool isPointer=true);
         size_t find(const void* data);
         void* find(const std::string& key, const std::string& reference_or_id);
@@ -160,12 +156,11 @@ public:
 
     private:
         RefMap referenceMap_;
-        int referenceCount_;
+        int referenceCount_ = 0;
     };
 
 
     static std::string nodeToString(const TxElement& node);
-
 
 protected:
     friend class NodeSwitch;

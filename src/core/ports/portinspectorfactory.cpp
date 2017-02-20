@@ -28,33 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/ports/portinspectorfactory.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
-
-PortInspector* PortInspectorFactory::createAndCache(const std::string& className) const {
-    // Look in cache for an inactive port inspector.
-    auto cit = cache_.find(className);
-    if (cit != cache_.end()) {
-        for (auto& elem : cit->second) {
-            if (!elem->isActive()) return elem.get();
-        }
-    }
-
-    // Create a new port inspector
-    auto it = map_.find(className);
-    if (it != map_.end()) {
-        auto p = it->second->create();
-        auto res = p.get();
-        cache_[className].push_back(std::move(p));
-        return res;
-    }
-    return nullptr;
-}
-
-
-void PortInspectorFactory::clearCache() {
-    cache_.clear();
-}
 
 }  // namespace

@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/ports/inport.h>
@@ -40,30 +41,31 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortInspector {
+class IVW_CORE_API PortInspector : public Serializable {
 public:
+    PortInspector(); // Should only be used for deserialization.
     PortInspector(std::string portClassIdentifier, std::string inspectorWorkspaceFileName);
-    virtual ~PortInspector() = default;
+    virtual ~PortInspector();
 
-    std::string getInspectorNetworkFileName();
-    std::string getPortClassName();
-    void setActive(bool val);
-    bool isActive();
+    const std::string& getInspectorNetworkFileName() const;
+    const std::string& getPortClassName() const;
 
-    std::vector<Processor*>& getProcessors();
-    std::vector<Inport*>& getInports();
-    CanvasProcessor* getCanvasProcessor();
-    std::vector<PortConnection>& getConnections();
-    std::vector<PropertyLink>& getPropertyLinks();
+    const std::vector<Processor*>& getProcessors() const;
+    const std::vector<Inport*>& getInports() const;
+    CanvasProcessor* getCanvasProcessor() const;
+    const std::vector<PortConnection>& getConnections() const;
+    const std::vector<PropertyLink>& getPropertyLinks() const;
+
+    virtual void serialize(Serializer& s) const override;
+
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     std::string inspectorNetworkFileName_;
     std::string portClassIdentifier_;
-    bool active_ = false;
-    std::unique_ptr<ProcessorNetwork> inspectorNetwork_;
 
     std::vector<Processor*> processors_;
-    std::vector<Inport*> inPorts_;
+    std::vector<Inport*> inports_;
     std::vector<PortConnection> connections_;
     std::vector<PropertyLink> propertyLinks_;
     CanvasProcessor* canvasProcessor_ = nullptr;
