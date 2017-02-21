@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
