@@ -38,8 +38,8 @@ dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     , posNormalized_(posNormalized)
     , prevPosNormalized_(prevPosNormalized)
     , pressedPosNormalized_(pressedPosNormalized)
-    , canvasSize_(canvasSize)
     , pressure_(pressure)
+    , canvasSize_(canvasSize)
     , depth_(depth) {}
 
 TouchState TouchPoint::state() const { return state_; }

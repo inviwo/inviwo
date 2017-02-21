@@ -30,8 +30,11 @@
 #ifndef IVW_PYTHONINCLUDER_H
 #define IVW_PYTHONINCLUDER_H
 
+#if (_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable: 4273)
+#endif
+
 #if !defined(IVW_PYTHON_LINK_DEBUG) &&  defined(_DEBUG)
     #undef _DEBUG //Prevent linking debug build of python
     #include <Python.h>
@@ -39,8 +42,10 @@
 #else
     #include <Python.h>
 #endif
-#pragma warning(pop)
 
+#if (_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif // IVW_PYTHONINCLUDER_H
 

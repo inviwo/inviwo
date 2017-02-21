@@ -28,45 +28,52 @@
  *********************************************************************************/
 
 #include <modules/eigenutils/eigenutilsmodule.h>
+#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
+#include <modules/eigenutils/ports.h>
 
 namespace inviwo {
 
-EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {   
+EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {
+    registerProcessor<EigenMatrixToImage>();
     // Add a directory to the search path of the Shadermanager
-    //ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
-    
+    // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
+
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     // registerProcessor<EigenUtilsProcessor>());
-    
+
     // Properties
     // registerProperty<EigenUtilsProperty>());
-    
+
     // Readers and writes
     // registerDataReader(util::make_unique<EigenUtilsReader>());
     // registerDataWriter(util::make_unique<EigenUtilsWriter>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<EigenUtilsDisk2RAMConverter>());
 
     // Ports
     // registerPort<EigenUtilsOutport>("EigenUtilsOutport"));
-    // registerPort<EigenUtilsInport>("EigenUtilsInport"));
+    registerPort<EigenMatrixInport>("EigenMatrixXf");
+    registerPort<EigenMatrixOutport>("EigenMatrixXf");
+
+    registerPortInspector("EigenMatrixXfOutport",
+                          this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
 
     // PropertyWidgets
     // registerPropertyWidget<EigenUtilsPropertyWidget, EigenUtilsProperty>("Default");
-    
+
     // Dialogs
     // registerDialog<EigenUtilsDialog>(EigenUtilsOutport));
-    
+
     // Other varius things
     // registerCapabilities(util::make_unique<EigenUtilsCapabilities>()));
     // registerSettings(util::make_unique<EigenUtilsSettings>());
-    // registerMetaData(util::make_unique<EigenUtilsMetaData>());   
-    // registerPortInspector("EigenUtilsOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());  
+    // registerMetaData(util::make_unique<EigenUtilsMetaData>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget);
+    // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());
 }
 
-} // namespace
+}  // namespace

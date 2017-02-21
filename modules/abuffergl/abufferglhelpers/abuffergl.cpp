@@ -107,19 +107,19 @@ std::string ABufferGLCompositeProperty::getClassIdentifierForWidget() const {
 //////////////////////////////////////////////////////////////////////////
 
 Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
-    : abuffInteractionHandler_(this)
-    , dim_(dim)
-    , abufferPageIdxImgTexture_(nullptr)
-    , abufferFragCountImgTexture_(nullptr)
-    , semaphoreImgTexture_(nullptr)
-    , globalAtomicCounterBuffer_(nullptr)
+    : settings_("abuffer-settings-property", "ABuffer Settings")
+    , resolveABufferShader_("abufferresolve.hglsl")
+    , resetABufferShader_("abufferreset.hglsl")
+    , abuffInteractionHandler_(this)
     , shared_RGBA_DataListBuffID_(0)
     , shared_Ext_DataListBuffID_(0)
     , sharedLinkListBuffID_(0)
     , globalAtomicsBufferId_(0)
-    , resolveABufferShader_("abufferresolve.hglsl")
-    , resetABufferShader_("abufferreset.hglsl")
-    , settings_("abuffer-settings-property", "ABuffer Settings") {
+    , abufferPageIdxImgTexture_(nullptr)
+    , abufferFragCountImgTexture_(nullptr)
+    , semaphoreImgTexture_(nullptr)
+    , globalAtomicCounterBuffer_(nullptr)
+    , dim_(dim) {
     settings_.sharedPoolSize_ = dim_.x * dim_.y * settings_.getSquaredPageSize() * 40;
 }
 
@@ -770,10 +770,10 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
 
 Inviwo_ABufferGL4::ABufferGLInteractionHandler::ABufferGLInteractionHandler(
     Inviwo_ABufferGL4* parent)
-    : mousePressEvent_(MouseButton::Left, MouseState::Press)
+    : parent_(parent)
+    , mousePressEvent_(MouseButton::Left, MouseState::Press)
     , upEvent_(IvwKey::W, KeyState::Press, KeyModifier::Control)
-    , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control)
-    , parent_(parent) {}
+    , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control) {}
 
 std::string Inviwo_ABufferGL4::ABufferGLInteractionHandler::getClassIdentifier() const {
     return "org.inviwo.ABufferGLInteractionHandler";
@@ -784,8 +784,7 @@ void Inviwo_ABufferGL4::ABufferGLInteractionHandler::invokeEvent(Event* event) {
     if (mEvent) prevMousePos_ = glm::ivec2(mEvent->x(), mEvent->y());
 
     if (mEvent && (mEvent->state() & MouseState::Release) &&
-        (mEvent->button() & MouseButton::Right) &&
-        (mEvent->modifiers() & KeyModifier::Control)) {
+        (mEvent->button() & MouseButton::Right) && (mEvent->modifiers() & KeyModifier::Control)) {
         parent_->abuffer_printDebugInfo(glm::ivec2(mEvent->x(), mEvent->y()));
     }
 

@@ -36,8 +36,9 @@ namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                     std::shared_ptr<Texture2D> data, const SwizzleMask &swizzleMask)
-    : LayerRepresentation(dimensions, type, format)
+                     std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask)
+    : LayerCLBase()
+    , LayerRepresentation(dimensions, type, format)
     , texture_(data)
     , swizzleMask_(swizzleMask) {
     if (data) {
@@ -58,7 +59,10 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()), swizzleMask_(rhs.swizzleMask_) {
+    : LayerCLBase(rhs)
+    , LayerRepresentation(rhs)
+    , texture_(rhs.texture_->clone())
+    , swizzleMask_(rhs.swizzleMask_) {
     initialize(texture_.get());
 }
 

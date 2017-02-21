@@ -118,7 +118,7 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
                                                   const size3_t& localWorkgroupSize) {
     cl::Event events[2];
     try {
-        BufferCL* tmpVolumeCL;
+        BufferCL* tmpVolumeCL = nullptr;
         int argIndex = 0;
         kernel_->setArg(argIndex++, *volumeCL);
         kernel_->setArg(argIndex++,

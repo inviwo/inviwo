@@ -54,10 +54,10 @@ public:
 private:
 
 // We can safely ignore the C4251 warning for private members.
-#pragma warning( push )
-#pragma warning( disable: 4251 )
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     std::unordered_map<std::string, int> observedFiles_; ///< stores the files to be observed
-#pragma warning( pop )
+#include <warn/pop>
     ///< plus the number of observers for each
 };
 

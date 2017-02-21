@@ -123,7 +123,7 @@ TEST(DispatchTests, InstantiationTest2) {
     auto res = dispatch<float, dispatching::filter::Vecs>(buf.get(), [](auto b) {
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
-        using VT = typename DT::value_type;
+
         DT v1{0};
         DT v2{1};
         

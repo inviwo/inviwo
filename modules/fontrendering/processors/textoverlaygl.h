@@ -101,10 +101,9 @@ protected:
 private:
     ImageInport inport_;
     ImageOutport outport_;
-    StringProperty text_;
     
     BoolProperty enable_;
-
+    StringProperty text_;
     FloatVec4Property color_;
     OptionPropertyString fontFace_;
     OptionPropertyInt fontSize_;

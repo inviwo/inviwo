@@ -74,7 +74,7 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
 void AnimationEditorQt::onTrackRemoved(Track* track) {
     if (util::erase_remove_if(tracks_, [&](auto& trackqt) {
             if (&(trackqt->getTrack()) == track) {
-                removeItem(trackqt.get());
+                this->removeItem(trackqt.get());
                 return true;
             } else {
                 return false;

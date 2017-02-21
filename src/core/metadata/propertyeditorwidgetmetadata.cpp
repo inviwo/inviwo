@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-std::string mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus) {
+std::string util::mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus) {
     switch (dockStatus) {
         case PropertyEditorWidgetDockStatus::Floating:
             return "Floating";
@@ -44,7 +44,7 @@ std::string mapDockStatusToString(PropertyEditorWidgetDockStatus dockStatus) {
     }
 }
 
-PropertyEditorWidgetDockStatus mapStringToDockStatus(const std::string& str) {
+PropertyEditorWidgetDockStatus util::mapStringToDockStatus(const std::string& str) {
     if (str == "Floating") {
         return PropertyEditorWidgetDockStatus::Floating;
     } else if (str == "DockedLeft") {
@@ -57,26 +57,26 @@ PropertyEditorWidgetDockStatus mapStringToDockStatus(const std::string& str) {
     }
 }
 
-
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData()
-    : position_(0,0)
-    , dimensions_(256,256)
+    : MetaData()
+    , position_(0, 0)
+    , dimensions_(256, 256)
     , visibility_(false)
     , dockStatus_(PropertyEditorWidgetDockStatus::Floating)
-    , stickyFlag_(false)
-{}
+    , stickyFlag_(false) {}
 
 PropertyEditorWidgetMetaData::PropertyEditorWidgetMetaData(const PropertyEditorWidgetMetaData& rhs)
-    : position_(rhs.position_)
+    : MetaData(rhs)
+    , position_(rhs.position_)
     , dimensions_(rhs.dimensions_)
     , visibility_(rhs.visibility_)
     , dockStatus_(PropertyEditorWidgetDockStatus::Floating)
-    , stickyFlag_(rhs.stickyFlag_) {
-}
+    , stickyFlag_(rhs.stickyFlag_) {}
 
 PropertyEditorWidgetMetaData& PropertyEditorWidgetMetaData::operator=(
     const PropertyEditorWidgetMetaData& that) {
     if (this != &that) {
+        MetaData::operator=(that);
         position_ = that.position_;
         dimensions_ = that.dimensions_;
         visibility_ = that.visibility_;
@@ -121,7 +121,7 @@ void PropertyEditorWidgetMetaData::setDockStatus(PropertyEditorWidgetDockStatus&
     dockStatus_ = dockStatus;
 }
 
-const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
+PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDockStatus() const {
     return dockStatus_;
 }
 
@@ -138,7 +138,7 @@ void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
-    s.serialize("dockstatus", mapDockStatusToString(dockStatus_));
+    s.serialize("dockstatus", util::mapDockStatusToString(dockStatus_));
     s.serialize("stickyflag", stickyFlag_);
 }
 
@@ -150,7 +150,7 @@ void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
     d.deserialize("dockstatus", strDockStatus);
     d.deserialize("stickyflag", stickyFlag_);
     
-    dockStatus_ = mapStringToDockStatus(strDockStatus);
+    dockStatus_ = util::mapStringToDockStatus(strDockStatus);
 }
 
 bool PropertyEditorWidgetMetaData::equal(const MetaData& rhs) const {

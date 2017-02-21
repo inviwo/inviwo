@@ -133,6 +133,12 @@ public:
      */
     void registerFactory(FactoryBase* factory);
 
+    /**
+     *	Create a deserializer for a workspace stream, and apply all needed version updates.
+     */
+    Deserializer createWorkspaceDeserializer(std::istream& stream,
+                                             const std::string& refPath) const;
+
 private: 
     InviwoApplication* app_;
     std::vector<FactoryBase*> registeredFactories_;

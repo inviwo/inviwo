@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-bool parseBool(PyObject* args) { return PyObject_IsTrue(args) != 0; };
+bool parseBool(PyObject* args) { return PyObject_IsTrue(args) != 0; }
 
 std::string parseStr(PyObject* args) {
     PyObject* temp_bytes = PyUnicode_AsEncodedString(args, "ASCII", "strict");  // Owned reference
@@ -53,7 +53,7 @@ std::string parseStr(PyObject* args) {
         LogErrorCustom("PyValueParser", "TODO: Handle encoding error.");
         return "";
     }
-};
+}
 
 template <>
 bool PyValueParser::parse(PyObject* args) {

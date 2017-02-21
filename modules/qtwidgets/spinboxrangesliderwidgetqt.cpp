@@ -97,17 +97,17 @@ void SpinBoxRangeSliderQt::updateFromSpinBoxMax() {
     slider_->setMaxValue(val);
 }
 
-const int SpinBoxRangeSliderQt::getMinValue() {
+int SpinBoxRangeSliderQt::getMinValue() {
     return spinBoxMin_->value();
 }
 
-const int SpinBoxRangeSliderQt::getMaxValue() {
+int SpinBoxRangeSliderQt::getMaxValue() {
     return spinBoxMax_->value();
 }
 
-const int SpinBoxRangeSliderQt::getMinRange() {return minRange_;}
+int SpinBoxRangeSliderQt::getMinRange() {return minRange_;}
 
-const int SpinBoxRangeSliderQt::getMaxRange() {return maxRange_;}
+int SpinBoxRangeSliderQt::getMaxRange() {return maxRange_;}
 
 void SpinBoxRangeSliderQt::setMinValue(const int value) {
     slider_->setMinValue(value);

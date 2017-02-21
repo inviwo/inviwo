@@ -64,7 +64,7 @@ namespace inviwo {
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent)
     , tableView_(new QTableView(this))
-    , model_(tableView_)
+    , model_()
     , filter_(new QSortFilterProxyModel(this))
     , levelFilter_(new QSortFilterProxyModel(this))
     , filterPattern_(new QLineEdit(this))
@@ -507,8 +507,8 @@ void ConsoleWidget::closeEvent(QCloseEvent *event) {
     InviwoDockWidget::closeEvent(event);
 }
 
-LogTableModel::LogTableModel(QTableView* view)
-    : view_(view), model_(0, static_cast<int>(LogTableModelEntry::size())) {
+LogTableModel::LogTableModel()
+    :  model_(0, static_cast<int>(LogTableModelEntry::size())) {
     for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
         auto item = new QStandardItem(getName(static_cast<LogTableModelEntry::Columns>(i)));
         item->setTextAlignment(Qt::AlignLeft);

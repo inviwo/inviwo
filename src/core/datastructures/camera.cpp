@@ -118,7 +118,7 @@ PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, fl
                                      float farPlane, float fieldOfView, float aspectRatio)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane)
     , fovy_(fieldOfView)
-    , aspectRatio_(aspectRatio){};
+    , aspectRatio_(aspectRatio){}
 
 PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCamera(*this); }
 
@@ -162,11 +162,11 @@ void PerspectiveCamera::deserialize(Deserializer& d) {
     d.deserialize("fovy", fovy_);
     d.deserialize("aspectRatio", aspectRatio_);
     Camera::deserialize(d);
-};
+}
 
 OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                        float farPlane, vec4 frustum)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum){};
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum) {}
 
 OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
 
@@ -178,7 +178,6 @@ bool OrthographicCamera::update(const Camera* source) {
         return false;
     }
 }
-
 
 void OrthographicCamera::configureProperties(CompositeProperty* comp) {
     auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
@@ -237,23 +236,25 @@ void OrthographicCamera::deserialize(Deserializer& d) {
     Camera::deserialize(d);
 }
 
+SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
+                                                 float nearPlane, float farPlane, vec4 frustum,
+                                                 vec2 frustumOffset)
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane)
+    , frustum_(frustum)
+    , frustumSkewOffset_(frustumOffset){}
 
-SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
-    float farPlane, vec4 frustum, vec2 frustumOffset)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum), frustumSkewOffset_(frustumOffset){};
-
-SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const { return new SkewedPerspectiveCamera(*this); }
+SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
+    return new SkewedPerspectiveCamera(*this);
+}
 
 bool SkewedPerspectiveCamera::update(const Camera* source) {
     if (auto skewedPerspectiveCamera = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
         *this = *skewedPerspectiveCamera;
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
-
 
 void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
     auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("skewed-frustum-width"));
@@ -335,7 +336,7 @@ mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
     float up = f.z + frustumSkewOffset_.y;
     float down = (f.z + frustumSkewOffset_.y) + (f.w - f.z);
     return glm::frustum(left, right, up, down, nearPlaneDist_, farPlaneDist_);
-};
+}
 
 
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {

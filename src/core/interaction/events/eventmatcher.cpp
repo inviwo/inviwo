@@ -36,10 +36,10 @@
 
 namespace inviwo {
 
-void EventMatcher::setCurrentStateAsDefault(){};
-void EventMatcher::resetToDefaultState(){};
-void EventMatcher::serialize(Serializer& s) const {};
-void EventMatcher::deserialize(Deserializer& d){};
+void EventMatcher::setCurrentStateAsDefault(){}
+void EventMatcher::resetToDefaultState(){}
+void EventMatcher::serialize(Serializer& s) const {}
+void EventMatcher::deserialize(Deserializer& d){}
 
 KeyboardEventMatcher::KeyboardEventMatcher(IvwKey key, KeyStates states, KeyModifiers modifiers)
     : EventMatcher()

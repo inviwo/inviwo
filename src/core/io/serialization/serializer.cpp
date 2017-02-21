@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#pragma warning(disable : 4251)
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/util/exception.h>
-
 
 namespace inviwo {
 

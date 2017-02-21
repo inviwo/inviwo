@@ -33,11 +33,14 @@
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
-#ifndef GLM_SWIZZLE
-#define GLM_SWIZZLE
+#ifndef GLM_FORCE_SWIZZLE
+#define GLM_FORCE_SWIZZLE
 #endif
 #ifndef GLM_FORCE_SIZE_T_LENGTH
 #define GLM_FORCE_SIZE_T_LENGTH
+#endif
+#ifndef GLM_FORCE_CXX14
+#define GLM_FORCE_CXX14
 #endif
 
 #include <warn/push>
@@ -59,6 +62,7 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <half/half.hpp>
 
@@ -301,8 +305,8 @@ struct same_extent<G<T,P>, U> { typedef G<U,P> type; };
 
 
 // disable conversion warning
-#pragma warning(push)
-#pragma warning(disable: 4244)
+#include <warn/push>
+#include <warn/ignore/conversion>
 
 // Standard conversion simple casts
 // Just using standard casts. When targets has more dimensions then the source
@@ -654,13 +658,13 @@ To glm_convert_normalized(From x) {
     return res;
 }
 
-#pragma warning(pop)
+#include <warn/pop>
 
 // GLM element access wrapper functions.
 
 // vector like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-auto glmcomp(T& elem, size_t i) -> T& {
+auto glmcomp(T& elem, size_t) -> T& {
     return elem;
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>

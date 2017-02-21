@@ -171,8 +171,8 @@ public:
     Kind(const Kind&) = default;
     Kind& operator=(const Kind&) = default;
 
-    Kind(Kind&&);
-    Kind& operator=(Kind&&);
+    Kind(Kind&&) = default;
+    Kind& operator=(Kind&&) = default;
 
     static Kind processor(const std::string& type);
     static Kind inport(const std::string& type);
@@ -184,9 +184,12 @@ public:
     const std::string& list() const;
     const std::string& type() const;
 
+    const std::vector<ElementMatcher>& getMatchers() const;
+
 private:
     Kind(const std::string& name, const std::string& list, const std::string& type);
 
+    std::vector<ElementMatcher> matchers_;
     std::string name_;
     std::string list_;
     std::string type_;

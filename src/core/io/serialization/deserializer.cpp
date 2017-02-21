@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>

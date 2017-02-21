@@ -203,16 +203,7 @@ std::string TextOverlayGL::getString() const {
 void TextOverlayGL::updateCache() {
     textRenderer_.setFontSize(fontSize_.getSelectedValue());
     std::string str(getString());
-
-    size2_t labelSize(textRenderer_.computeTextSize(str));
-    if (!cacheTexture_ ||
-        (cacheTexture_->getDimensions() != labelSize)) {
-        auto texture = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA,
-                                                   GL_UNSIGNED_BYTE, GL_LINEAR);
-        texture->initialize(nullptr);
-        cacheTexture_ = texture;
-    }
-    textRenderer_.renderToTexture(cacheTexture_, str, color_.get());
+    cacheTexture_ = util::createTextTexture(textRenderer_ , str , fontSize_.getSelectedValue() , color_.get() , cacheTexture_ );
 }
 
 }  // namespace

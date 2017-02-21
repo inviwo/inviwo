@@ -93,7 +93,7 @@ struct LogTableModelEntry {
 
 class IVW_QTEDITOR_API LogTableModel {
 public:
-    LogTableModel(QTableView* view);
+    LogTableModel();
 
     QString getName(LogTableModelEntry::Columns ind) const;
     QStandardItemModel* model();
@@ -107,7 +107,6 @@ private:
     QColor warnTextColor_ = {221, 165, 8};
     QColor errorTextColor_ = {255, 107, 107};
 
-    QTableView* view_;
     QStandardItemModel model_;
 };
 

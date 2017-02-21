@@ -32,7 +32,9 @@ uniform sampler2D tex;
 in vec2 texCoord;
 
 void main(void) {
-    FragData0 = texture(tex, texCoord);
+    vec4 color = texture(tex, texCoord);
+    if(color.a==0) discard;
+    FragData0 = color;
 
     PickingData = vec4(0.0);
     gl_FragDepth = 0.0;

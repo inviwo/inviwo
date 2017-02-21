@@ -44,35 +44,30 @@ const ProcessorInfo VectorFieldGenerator2D::processorInfo_{
     CodeState::Experimental,              // Code state
     "GL",                                 // Tags
 };
-const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
-    VectorFieldGenerator2D::VectorFieldGenerator2D()
-        : Processor()
-        , outport_("outport", DataVec2Float32::get(),false)
-        , shader_("vectorfieldgenerator2d.frag", false)
-        , fbo_()
-        , size_("size", "Volume size", ivec2(16), ivec2(1), ivec2(1024))
-        , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
-        , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
-        , xRange_("xRange", "X Range", -1, 1, -10, 10)
-        , yRange_("yRange", "Y Range", -1, 1, -10, 10)
-    {
-        addPort(outport_);
-
-        addProperty(size_);
-        addProperty(xValue_);
-        addProperty(yValue_);
-
-        addProperty(xRange_);
-        addProperty(yRange_);
-    }
-
-VectorFieldGenerator2D::~VectorFieldGenerator2D()  {
+VectorFieldGenerator2D::VectorFieldGenerator2D()
+    : Processor()
+    , outport_("outport", DataVec2Float32::get(), false)
+    , size_("size", "Volume size", ivec2(16), ivec2(1), ivec2(1024))
+    , xRange_("xRange", "X Range", -1, 1, -10, 10)
+    , yRange_("yRange", "Y Range", -1, 1, -10, 10)
+    , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
+    , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
+    , shader_("vectorfieldgenerator2d.frag", false)
+    , fbo_() {
     
+    addPort(outport_);
+
+    addProperty(size_);
+    addProperty(xValue_);
+    addProperty(yValue_);
+
+    addProperty(xRange_);
+    addProperty(yRange_);
 }
 
+VectorFieldGenerator2D::~VectorFieldGenerator2D() {}
 
 void VectorFieldGenerator2D::initializeResources() {
     shader_.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y)", xValue_.get());
@@ -98,6 +93,5 @@ void VectorFieldGenerator2D::process() {
     outport_.setData(image_);
 }
 
-} // namespace
-
+}  // namespace
 

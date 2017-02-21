@@ -44,8 +44,10 @@ vec3 hsv2rgb(vec3 hsv) {
     double hue = hsv.x;
     double sat = hsv.y;
     double val = hsv.z;
-    double r, g, b;
-
+    double r = 0.0;
+    double g = 0.0;
+    double b = 0.0;
+     
     if (sat < 1.0e-8) { // only value, no saturation
         r = val;
         g = val;

@@ -49,10 +49,10 @@ class IVW_MODULE_QTWIDGETS_API SpinBoxRangeSliderQt : public QWidget {
 public:
     SpinBoxRangeSliderQt();
     virtual ~SpinBoxRangeSliderQt();
-    const int getMinValue();
-    const int getMaxValue();
-    const int getMinRange();
-    const int getMaxRange();
+    int getMinValue();
+    int getMaxValue();
+    int getMinRange();
+    int getMaxRange();
     void setMinValue(const int value);
     void setMaxValue(const int value);
     void setMinRange(const int minRange);

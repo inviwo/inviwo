@@ -1,7 +1,3 @@
-#--------------------------------------------------------------------
-# gtest Package
-ivw_project(gtest)
-
 ########################################################################
 # CMake build script for Google Test.
 #
@@ -41,7 +37,7 @@ endif()
 # as ${gtest_SOURCE_DIR} and to the root binary directory as
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
-project(gtest CXX C)
+ivw_project(gtest CXX C)
 cmake_minimum_required(VERSION 2.6.2)
 
 if (COMMAND set_up_hermetic_build)
@@ -82,6 +78,12 @@ endif()
 #--------------------------------------------------------------------
 # Creates VS folder structure
 ivw_folder(gtest ext)
+
+target_include_directories(gtest INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_definitions(gtest INTERFACE -DGTEST_HAS_TR1_TUPLE=0)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(gtest INTERFACE -DGTEST_LINKED_AS_SHARED_LIBRARY=1)
+endif()
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

@@ -63,6 +63,9 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+# option for setting the project/solution name of the Inviwo project
+set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
+
 if(IVW_PROJECT_NAME)
     project(${IVW_PROJECT_NAME})
 else()
@@ -79,7 +82,13 @@ option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
 #--------------------------------------------------------------------
-# Add externals
+# Add external libraries.
+# 
+# Dependencies between libraries are solved using the given order
+add_subdirectory(ext/zlib-1.2.11)
+add_subdirectory(ext/libpng)
+add_subdirectory(ext/libjpeg)
+add_subdirectory(ext/openexr)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
@@ -115,6 +124,7 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
+    "Nifti"
     "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"

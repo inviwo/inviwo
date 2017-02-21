@@ -59,11 +59,13 @@ public:
 
     virtual void process() override;
 
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    dvec2 randomVector();
+    void createSamples();
+
     ImageOutport vectorField_;
 
     IntVec2Property size_;
@@ -78,16 +80,10 @@ protected:
     std::random_device rd_;
     std::mt19937 mt_;
 
-    dvec2 randomVector();
-
-    void createSamples();
-
-
     std::uniform_real_distribution<double> theta_;
     std::uniform_real_distribution<double> x_;
 
     std::vector<std::pair<dvec2, dvec2>> samples_;
-   
 };
 
 }  // namespace

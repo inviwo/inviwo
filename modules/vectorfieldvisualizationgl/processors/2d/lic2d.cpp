@@ -43,22 +43,19 @@ const ProcessorInfo LIC2D::processorInfo_{
     CodeState::Experimental,       // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo LIC2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LIC2D::getProcessorInfo() const { return processorInfo_; }
 
 LIC2D::LIC2D()
-    : Processor() 
+    : Processor()
     , vectorField_("vectorField", true)
     , noiseTexture_("noiseTexture", true)
     , LIC2D_("LIC2D")
-    , samples_("samples","Number of steps", 20 , 3 , 100)
-    , stepLength_("stepLength", "Step Length" , 0.003f , 0.0001f , 0.01f , 0.0001f)
+    , samples_("samples", "Number of steps", 20, 3, 100)
+    , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
-    , shader_("lic2d.frag")
-    , useRK4_("useRK4","Use Runge-Kutta4",true)
-{
+    , useRK4_("useRK4", "Use Runge-Kutta4", true)
+    , shader_("lic2d.frag") {
     addPort(vectorField_);
     addPort(noiseTexture_);
     addPort(LIC2D_);
@@ -69,10 +66,9 @@ LIC2D::LIC2D()
     addProperty(intensityMapping_);
     addProperty(useRK4_);
 
-
-    shader_.onReload([this]() {invalidate(InvalidationLevel::InvalidOutput); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
-    
+
 void LIC2D::process() {
     utilgl::activateAndClearTarget(LIC2D_);
 
@@ -81,8 +77,8 @@ void LIC2D::process() {
     utilgl::bindAndSetUniforms(shader_, units, vectorField_, ImageType::ColorOnly);
     utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
 
-    utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_, intensityMapping_,useRK4_);
-    
+    utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_,
+                        intensityMapping_, useRK4_);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();

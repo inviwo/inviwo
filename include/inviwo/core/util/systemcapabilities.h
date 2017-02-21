@@ -100,13 +100,13 @@ public:
     virtual void retrieveDynamicInfo() override;
 
     std::string getBuildDateString() const;
-    const int getBuildTimeYear() const;
-    const int getBuildTimeMonth() const;
-    const int getBuildTimeDay() const;
-    const int getBuildTimeHour() const;
-    const int getBuildTimeMinute() const;
-    const int getBuildTimeSecond() const;
-    const std::size_t getGitNumberOfHashes() const;
+    int getBuildTimeYear() const;
+    int getBuildTimeMonth() const;
+    int getBuildTimeDay() const;
+    int getBuildTimeHour() const;
+    int getBuildTimeMinute() const;
+    int getBuildTimeSecond() const;
+    std::size_t getGitNumberOfHashes() const;
     const std::pair<std::string, std::string>& getGitHash(std::size_t i) const;
 
 private:

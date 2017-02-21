@@ -56,8 +56,7 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
     , processor_(parent)
     , port_(port)
     , size_(9.0f)
-    , lineWidth_(1.0f)
-    , up_(up) {
+    , lineWidth_(1.0f) {
     
     setRect(-(0.5f * size_ + lineWidth_), -(0.5f * size_ + lineWidth_), size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);

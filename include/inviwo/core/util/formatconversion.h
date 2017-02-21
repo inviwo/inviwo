@@ -51,7 +51,7 @@ IVW_CORE_API glm::u64 bytes_to_megabytes(glm::u64 bytes);
 IVW_CORE_API glm::u64 kilobytes_to_bytes(glm::u64 bytes);
 IVW_CORE_API glm::u64 megabytes_to_bytes(glm::u64 bytes);
 
-IVW_CORE_API std::string formatBytesToString(glm::u64 bytes);;
+IVW_CORE_API std::string formatBytesToString(glm::u64 bytes);
 
 } // namespace
 

@@ -49,7 +49,7 @@ enum class KeyModifier {
     Menu    = 1 << 4,
     Meta    = 1 << 5
 };
-ALLOW_FLAGS_FOR_ENUM(KeyModifier);
+ALLOW_FLAGS_FOR_ENUM(KeyModifier)
 using KeyModifiers = flags::flags<KeyModifier>;
 
 template <class Elem, class Traits>
@@ -91,7 +91,7 @@ enum class KeyState {
     Press = 1 << 0,
     Release = 1 << 1,
 };
-ALLOW_FLAGS_FOR_ENUM(KeyState);
+ALLOW_FLAGS_FOR_ENUM(KeyState)
 using KeyStates = flags::flags<KeyState>;
 
 template <class Elem, class Traits>

@@ -89,10 +89,10 @@ void BaseAnglePropertyWidgetQt::generatesSettingsWidget() {
         this,
         SLOT(setCurrentAsMax()));
 
-    QMenu* contextMenu_ = getContextMenu();
-    contextMenu_->addAction(settingsAction_);
-    contextMenu_->addAction(minAction_);
-    contextMenu_->addAction(maxAction_);
+    QMenu* menu = getContextMenu();
+    menu->addAction(settingsAction_);
+    menu->addAction(minAction_);
+    menu->addAction(maxAction_);
 }
 
 

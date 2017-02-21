@@ -47,7 +47,7 @@ enum class PickingState {
     Finished = 1 << 3,  // Released
 };
 
-ALLOW_FLAGS_FOR_ENUM(PickingState);
+ALLOW_FLAGS_FOR_ENUM(PickingState)
 using PickingStates = flags::flags<PickingState>;
 
 template <class Elem, class Traits>

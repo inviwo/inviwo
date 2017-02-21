@@ -99,7 +99,7 @@ template <typename Repr, typename T,
                                   int>::type = 0>
 std::shared_ptr<T> createGroupRepresentation() {
     return std::make_shared<T>();
-};
+}
 
 template <typename Repr, typename T,
           typename std::enable_if<std::is_abstract<T>::value ||
@@ -108,7 +108,7 @@ template <typename Repr, typename T,
                                   int>::type = 0>
 std::shared_ptr<T> createGroupRepresentation() {
     return std::shared_ptr<T>();
-};
+}
 }
 
 template <typename Self, typename Repr>

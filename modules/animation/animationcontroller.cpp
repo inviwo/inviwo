@@ -162,11 +162,11 @@ const inviwo::animation::PlaybackMode& AnimationController::getPlaybackMode() co
     return mode_;
 }
 
-const Seconds AnimationController::getCurrentTime() const { return currentTime_; }
+Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 
-const Seconds AnimationController::getPlaySpeedTime() const { return deltaTime_; }
+Seconds AnimationController::getPlaySpeedTime() const { return deltaTime_; }
 
-const double AnimationController::getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
+double AnimationController::getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 } // namespace
 

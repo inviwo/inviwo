@@ -36,8 +36,11 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -45,7 +48,7 @@ namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glm2eigen(T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
-    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value> a;
+    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
     }
@@ -102,16 +105,16 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
 
 template <typename T>
 std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m,
-                                       bool flippY = false, std::string name = "") {
+                                       bool flipY = false, std::string name = "") {
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
 
     auto rep = dynamic_cast<LayerRAMPrecision<T>*>(
-        img->getColorLayer(0)->getEditableRepresentation<LayerRAM>());
+        img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
     auto data = rep->getDataTyped();
 
     size_t idx = 0;
 
-    if (flippY) {
+    if (flipY) {
         for (int i = m.rows() - 1; i >= 0; i--) {
             for (int j = 0; j < m.cols(); j++) {
                 data[idx++] = m(i, j);
@@ -126,7 +129,7 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
     }
 
     if (name != "") {
-        img->setMetaData<StringMetaData>("name", name);
+        img->template setMetaData<StringMetaData>("name", name);
     }
 
     img->getColorLayer(0)->setSwizzleMask(swizzlemasks::luminance);

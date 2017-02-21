@@ -61,6 +61,17 @@ function(join sep glue output)
 endfunction()
 
 #--------------------------------------------------------------------
+# ivw_prepend(output str)
+# ivw_prepends str to each element of the input
+function(ivw_prepend var prefix)
+   set(listVar "")
+   foreach(f ${ARGN})
+      list(APPEND listVar "${prefix}${f}")
+   endforeach(f)
+   set(${var} "${listVar}" PARENT_SCOPE)
+endfunction(ivw_prepend)
+
+#--------------------------------------------------------------------
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
@@ -197,7 +208,8 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
     first_case_upper(dir_name_cap ${the_module})
 
     if(${mod_dep}_description)
-        set(desc "Build ${dir_name_cap} Module\n${${mod_dep}_description}")
+        decodeLineBreaks(decodedDesc ${${mod_dep}_description})
+        set(desc "Build ${dir_name_cap} Module\n${decodedDesc}")
     else()
         set(desc "Build ${dir_name_cap} Module")
     endif()
@@ -206,6 +218,9 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
         set(${mod_name} ${onoff} CACHE BOOL "${desc}" FORCE)
     elseif(NOT DEFINED ${mod_name})
         option(${mod_name} "${desc}" ${onoff})
+    else()
+        # need to do this to update the docstring
+        set(${mod_name} ${${mod_name}} CACHE BOOL "${desc}" FORCE)
     endif()
 endfunction()
 

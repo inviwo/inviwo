@@ -94,7 +94,7 @@ inline T linearVectorInterpolation(const T &a, const T &b, P x) {
     }
     return v * (l/lOut);
 }
-};
+}
 
 template <typename T, typename P>
 inline T Interpolation<T, P>::linear(const T &a, const T &b, P x) {

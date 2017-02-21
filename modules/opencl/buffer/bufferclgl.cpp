@@ -56,7 +56,8 @@ BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferUsage us
 }
 
 BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
-    : BufferRepresentation(rhs)
+    : BufferCLBase(rhs)
+    , BufferRepresentation(rhs)
     , bufferObject_(std::make_shared<BufferObject>(*rhs.getBufferGL().get()))
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {

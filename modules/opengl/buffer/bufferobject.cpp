@@ -66,18 +66,19 @@ BufferObject::BufferObject(const BufferObject& rhs)
     : Observable<BufferObjectObserver>()
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
-    , glFormat_(rhs.glFormat_) {
+    , glFormat_(rhs.glFormat_)
+    , sizeInBytes_(0) {
     glGenBuffers(1, &id_);
     *this = rhs;
 }
 
 BufferObject::BufferObject(BufferObject&& rhs)
     : Observable<BufferObjectObserver>(std::move(rhs))
+    , id_(rhs.id_) // Steal buffer
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    // Steal buffer
-    , id_(rhs.id_) {
+    , sizeInBytes_(rhs.sizeInBytes_) {
     // Free resources from other
     rhs.id_ = 0;
 }

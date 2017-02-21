@@ -38,7 +38,7 @@ endif(NOT GIT_COMMIT_HASH)
 include_directories(${CMAKE_BINARY_DIR})
 
 option(ASSIMP_OPT_BUILD_PACKAGES "Set to ON to generate CPack configuration files and packaging targets" OFF)
-set(CMAKE_MODULE_PATH       "${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules" )
+set(CMAKE_MODULE_PATH       "${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules" ${CMAKE_MODULE_PATH})
 set(LIBASSIMP_COMPONENT     "libassimp${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}.${ASSIMP_VERSION_PATCH}" )
 set(LIBASSIMP-DEV_COMPONENT "libassimp${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}.${ASSIMP_VERSION_PATCH}-dev" )
 set(CPACK_COMPONENTS_ALL assimp-bin ${LIBASSIMP_COMPONENT} ${LIBASSIMP-DEV_COMPONENT} assimp-dev)
@@ -139,29 +139,8 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 	"Disable Assimp's export functionality." 
 )
 
-# Search for external dependencies, and build them from source if not found
-# Search for zlib
-#find_package(ZLIB)
-#if( NOT ZLIB_FOUND )
-#  message(STATUS "compiling zlib from souces")
-#  include(CheckIncludeFile)
-#  include(CheckTypeSize)
-#  include(CheckFunctionExists)
-#  # compile from sources
-#  add_subdirectory(contrib/zlib)
-#  set(ZLIB_FOUND 1)
-#  set(ZLIB_LIBRARIES zlibstatic)
-#  set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/contrib/zlib ${CMAKE_CURRENT_BINARY_DIR}/contrib/zlib)
-#else(NOT ZLIB_FOUND)
-#  ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-#endif(NOT ZLIB_FOUND)
-
-if(NOT ZLIB_FOUND)
-  ivw_message(FATAL_ERROR "Could not locate zlib which is required by assimp (should be provided by the Inviwo zlib module)")
-else(NOT ZLIB_FOUND)
-  ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-endif(NOT ZLIB_FOUND)
-
+find_package(ZLIB REQUIRED)
+ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
 # Search for unzip

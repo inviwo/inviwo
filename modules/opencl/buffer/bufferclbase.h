@@ -40,14 +40,9 @@ namespace inviwo {
 // Buffer or BufferGL).
 class IVW_MODULE_OPENCL_API BufferCLBase {
 public:
-    BufferCLBase();
-    BufferCLBase(const BufferCLBase& other);
-    virtual ~BufferCLBase();
-
+    virtual ~BufferCLBase() = default;
     virtual cl::Buffer& getEditable() = 0;
     virtual const cl::Buffer& get() const = 0;
-
-
 };
 
 }  // namespace

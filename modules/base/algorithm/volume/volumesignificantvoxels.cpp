@@ -37,7 +37,6 @@ namespace inviwo {
 
 size_t util::volumeSignificantVoxels(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
     return volume->dispatch<size_t>([&ignore](auto vr) -> size_t {
-        using VolumeType = util::PrecsionType<decltype(vr)>;
         using ValueType = util::PrecsionValueType<decltype(vr)>;
 
         const auto data = vr->getDataTyped();

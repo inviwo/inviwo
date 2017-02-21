@@ -122,74 +122,63 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
                 bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr);
 
-                std::vector<const Layer *> layers;
+                std::vector<std::pair<std::string, const Layer*>> layers;
                 if (isImagePort) {
                     // register all color layers
-                    for (std::size_t i=0; i < image->getNumberOfColorLayers(); ++i) {
-                        layers.push_back(image->getColorLayer(i));
+                    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
+                        const auto layer = image->getColorLayer(i);
+                        std::stringstream ss;
+                        ss << "Color Layer " << i << " " << layer->getDataFormat()->getString();
+                        layers.push_back({ss.str(), layer});
                     }
+
                     // register picking layer
-                    layers.push_back(image->getPickingLayer());
+                    {
+                        std::stringstream ss;
+                        ss << "Picking Layer "
+                           << image->getPickingLayer()->getDataFormat()->getString();
+                        layers.push_back({ss.str(), image->getPickingLayer()});
+                    }
                     // register depth layer
-                    layers.push_back(image->getDepthLayer());
-                }
-                else {
+                    {
+                        std::stringstream ss;
+                        ss << "Depth Layer "
+                           << image->getDepthLayer()->getDataFormat()->getString();
+                        layers.push_back({ss.str(), image->getDepthLayer()});
+                    }
+                } else {
                     // outport is not an ImageOutport, show only first color layer
-                    layers.push_back(image->getColorLayer(0));
+                    layers.push_back({"", image->getColorLayer(0)});
                 }
 
                 // add all layer images into the same row
-                auto tableCell = t.append("tr").append("td");
-                for (auto layer : layers) {
-                    auto data = layer->getAsCodedBuffer(imageType);
-                    if (!data) continue; // no conversion possible
-
+                auto tableCell = t.append("tr").append("td").append("table").append("tr");
+                size_t perRow = std::ceil(std::sqrt(layers.size()));
+                size_t rowCount = 0;
+                for (auto item : layers) {
+                    if (rowCount >= perRow) {
+                        rowCount = 0;
+                        tableCell = t.append("tr").append("td").append("table").append("tr");
+                    }
+                    auto name = item.first;
+                    auto layer = item.second;
+                    QImage layerImage = utilqt::layerToQImage(*layer);
                     QByteArray byteArray;
+                    QBuffer buffer(&byteArray);
+                    layerImage.save(&buffer, "PNG");
 
-                    if (imageType == "png") {
-                        // input buffer is already stored as png 
-                        byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
-                                             static_cast<unsigned int>(data->size()));
-                    }
-                    else if (imageType == "raw") {
-                        // do manual conversion from raw to png via QImage
-                        QImage::Format format = QImage::Format_Invalid;
-                        if (data->size() == portInspectorSize * portInspectorSize) {
-#if QT_VERSION >= 0x050500
-                            format = QImage::Format_Grayscale8;
-#else
-                            format = QImage::Format_RGB888;
-                            // duplicate grayscale data into 3 channels
-                            auto newData = std::make_unique<std::vector<unsigned char>>();
-                            newData->reserve(data->size() * 3);
+                    auto table = tableCell.append("td").append("table");
 
-                            for (auto value : *data.get()) {
-                                newData->insert(newData->end(), 3, value);
-                            }
-                            data = std::move(newData);
-#endif
-                        }
-                        else if (data->size() == portInspectorSize * portInspectorSize * 3) {
-                            format = QImage::Format_RGB888;
-                        }
-                        else if (data->size() == portInspectorSize * portInspectorSize * 4) {
-                            format = QImage::Format_RGBA8888;
-                        }
-
-                        QImage qImage(reinterpret_cast<const unsigned char*>(&(data->front())),
-                                     static_cast<int>(portInspectorSize), static_cast<int>(portInspectorSize), format);
-                        QBuffer buffer(&byteArray);
-                        qImage.save(&buffer, "PNG");
-                    }
-                    else {
-                        throw Exception("Support for image type not yet implemented", IvwContext);
-                    }
-                    
-                    tableCell.append(
+                    table.append("tr").append("td").append(
                         "img", "",
-                        { {"width", std::to_string(portInspectorSize)},
+                        {{"width", std::to_string(portInspectorSize)},
                          {"height", std::to_string(portInspectorSize)},
-                         {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())} });
+                         {"src",
+                          "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
+                    if (!name.empty()) {
+                        table.append("tr").append("td", name);
+                    }
+                    ++rowCount;
                 }
             }
         }

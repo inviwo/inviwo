@@ -45,9 +45,9 @@ std::string& Document::Element::content() { return content_; }
 
 const std::string& Document::Element::content() const { return content_; }
 
-Document::Element::Element(Element* parent, const std::string& name, const std::string content,
+Document::Element::Element(const std::string& name, const std::string content,
                            const std::unordered_map<std::string, std::string>& attributes)
-    : parent_(parent), name_(name), attributes_(attributes), content_(content) {}
+    : name_(name), attributes_(attributes), content_(content) {}
 
 std::string& Document::Element::name() { return name_; }
 
@@ -155,7 +155,7 @@ Document::DocumentHandle Document::DocumentHandle::insert(
     auto iter = pos(elem_->children_);
 
     auto it =
-        elem_->children_.insert(iter, std::make_unique<Element>(elem_, name, content, attributes));
+        elem_->children_.insert(iter, std::make_unique<Element>(name, content, attributes));
 
     return DocumentHandle(doc_, it->get());
 }
@@ -172,7 +172,7 @@ const Document::Element* Document::DocumentHandle::element() const { return elem
 
 Document::DocumentHandle::operator bool() const { return elem_ != nullptr; }
 
-Document::Document() : root_{ std::make_unique<Element>(nullptr, "root") } {}
+Document::Document() : root_{ std::make_unique<Element>("root") } {}
 
 Document::DocumentHandle Document::handle() const {
     return DocumentHandle(this, root_.get());

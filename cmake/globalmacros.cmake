@@ -39,7 +39,7 @@
 # _cpackName -> modules or qt_modules if QT
 # _pchDisabledForThisModule -> FALSE 
 macro(ivw_project project_name)
-    project(${project_name})
+    project(${project_name} ${ARGN})
     set(_projectName ${project_name})
     set(_allLibsDir "")
     set(_allDefinitions "")
@@ -480,46 +480,61 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-function(ivw_folder project_name folder_name)
-    set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
+function(ivw_folder target folder_name)
+    set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
 endfunction()
 
 #--------------------------------------------------------------------
-# Specify console as target
-function(ivw_define_standard_properties project_name)
-    #if(NOT MSVC)
-    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 14)
-    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
-    #endif()
+# Specify standard compile options
+# ivw_define_standard_properties(target1 [target2 ...])
+function(ivw_define_standard_properties)
+    foreach(target ${ARGN})
+        # Specify warnings
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            list(APPEND comp_opts "-Wall")
+            list(APPEND comp_opts "-Wextra")
+            list(APPEND comp_opts "-pedantic")
+            list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
+            list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}") # remove any other waning level
+            #list(APPEND comp_opts "/nologo") # Suppress Startup Banner
+            list(APPEND comp_opts "/W4")     # Set default warning level to 4
+            list(APPEND comp_opts "/wd4005") # macro redefinition    https://msdn.microsoft.com/en-us/library/8d10sc3w.aspx
+            list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
+            list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
+            list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
+            list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
+            list(REMOVE_DUPLICATES comp_opts)
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+    
+            get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
+            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS") # https://msdn.microsoft.com/en-us/library/ms175759.aspx
+            list(REMOVE_DUPLICATES comp_defs)
+            set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
+        endif()
 
-    # Specify warnings
-    if(APPLE)
-        #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
-    elseif(MSVC)
-        set_property(TARGET ${project_name} APPEND_STRING PROPERTY 
-            COMPILE_FLAGS "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
-        # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
-        # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
-        # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-        # /w34189 # warn for declared but unused variable 
-        # /w34263 # warn for virtual functions that do not override something in base class
-        # /w34266 # warn if no override of function in base class
-        # /w34289 # loop control variable declared in the for-loop is used outside the for-loop scope
-        # /w34296 # expression is always false
-        # /wd4251 # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2
-    endif()
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
+         endif()
+    endforeach()
 endfunction()
 
 #--------------------------------------------------------------------
@@ -530,27 +545,16 @@ macro(ivw_define_standard_definitions project_name target_name)
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
 
-    if(WIN32)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support
-        if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
-            if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
-            endif()
-            if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
-            if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
+        if(CMAKE_SIZEOF_VOID_P MATCHES 4)
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /LARGEADDRESSAWARE") 
         endif()
-    else()
-        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
-    endif()
-        
-    if(MSVC)
         target_compile_definitions(${target_name} PRIVATE -DUNICODE)
         target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS 
                                                           -D_CRT_SECURE_NO_DEPRECATE)
+    else()
+        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
     endif()
 
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
@@ -632,7 +636,7 @@ macro(ivw_create_module)
     # Add stuff to the installer
     ivw_private_install_module_dirs()
 
-    ivw_make_unittest_target("${_projectName}" "${${mod}_dependencies}")
+    ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 endmacro()
 
 #--------------------------------------------------------------------
@@ -640,13 +644,24 @@ endmacro()
 macro(ivw_make_package package_name project_name)
     ivw_private_install_package(${project_name})
 
-    list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
+    # retrieve output name of target, use project name if not set
+    get_target_property(ivw_output_name ${project_name} OUTPUT_NAME)
+    if(NOT ivw_output_name)
+        set(ivw_output_name ${project_name})
+    endif()
+
+    # retrieve target definitions
+    get_target_property(ivw_target_defs ${project_name} INTERFACE_COMPILE_DEFINITIONS)
+    if(ivw_target_defs)
+        ivw_prepend(ivw_target_defs "-D" ${ivw_target_defs})
+        list(APPEND _allDefinitions ${ivw_target_defs})
+    endif()
 
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
+        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
     else()
-       set(PROJECT_LIBRARIES ${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
+       set(PROJECT_LIBRARIES ${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
     
     get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)
@@ -1033,16 +1048,33 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Suppres all compiler warnings
-macro(ivw_suppress_compiler_warnings target)
-    if(CMAKE_COMPILER_IS_GNUCC)
-        set_target_properties(${target} PROPERTIES COMPILE_FLAGS -w)
-    elseif(APPLE)
-        set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-    elseif(WIN32)
-        set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/W0 /D_CRT_SECURE_NO_WARNINGS")
-        set_target_properties(${target} PROPERTIES LINK_FLAGS "/IGNORE:4006")
-    endif()
-endmacro()
+# ivw_suppress_compiler_warnings(target1 [target2 ...])
+function(ivw_suppress_compiler_warnings)
+    foreach(target ${ARGN})
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS -w)
 
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}")
+            list(APPEND comp_opts "/W0")
+            list(REMOVE_DUPLICATES comp_opts)
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+    
+            get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
+            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS")
+            list(REMOVE_DUPLICATES comp_defs)
+            set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
+            
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /IGNORE:4006")
+        endif()
+
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+        endif()
+    endforeach()
+endfunction()
 
 

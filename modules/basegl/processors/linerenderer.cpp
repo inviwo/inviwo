@@ -35,30 +35,26 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LineRenderer::processorInfo_{
-    "org.inviwo.LineRenderer",      // Class identifier
-    "Line Renderer",                // Display name
-    "Rendering",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::GL,               // Tags
+    "org.inviwo.LineRenderer",  // Class identifier
+    "Line Renderer",            // Display name
+    "Rendering",                // Category
+    CodeState::Experimental,    // Code state
+    Tags::GL,                   // Tags
 };
-const ProcessorInfo LineRenderer::getProcessorInfo() const {
-    return processorInfo_;
-}
-
+const ProcessorInfo LineRenderer::getProcessorInfo() const { return processorInfo_; }
 
 LineRenderer::LineRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , camera_("camera", "Camera")
-    , trackball_(&camera_)
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
     , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
     , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
-    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) 
-{
+    , camera_("camera", "Camera")
+    , trackball_(&camera_)
+    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
     outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
@@ -69,7 +65,7 @@ LineRenderer::LineRenderer()
     addProperty(lineWidth_);
     addProperty(antialising_);
     addProperty(miterLimit_);
-    addProperty(useAdjacency_);    
+    addProperty(useAdjacency_);
 
     addProperty(camera_);
     addProperty(trackball_);
@@ -78,17 +74,17 @@ LineRenderer::LineRenderer()
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void LineRenderer::initializeResources() { 
-    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", useAdjacency_.get() ? "1" : "0");
+void LineRenderer::initializeResources() {
+    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY",
+                                                       useAdjacency_.get() ? "1" : "0");
 
     shader_.build();
 }
-    
+
 void LineRenderer::process() {
     if (imageInport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
-    }
-    else {
+    } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
@@ -101,7 +97,7 @@ void LineRenderer::process() {
     shader_.setUniform("lineWidth_", lineWidth_.get());
     shader_.setUniform("antialias_", antialising_.get());
     shader_.setUniform("miterLimit_", miterLimit_.get());
-    
+
     drawMeshes();
 
     shader_.deactivate();

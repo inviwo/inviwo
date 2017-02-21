@@ -71,6 +71,11 @@ public:
      */
     Deserializer(std::istream& stream, const std::string& refPath, bool allowReference = true);
 
+    Deserializer(const Deserializer&) = delete;
+    Deserializer(Deserializer&&) = default;
+    Deserializer& operator=(const Deserializer& that) = delete;
+    Deserializer& operator=(Deserializer&& that) = default;
+
     virtual ~Deserializer() = default;
 
     // std containers

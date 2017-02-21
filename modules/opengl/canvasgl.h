@@ -104,7 +104,6 @@ private:
     Shader* textureShader_ = nullptr; ///< non-owning reference
     Shader* noiseShader_ = nullptr;   ///< non-owning reference
 
-    size_t channels_ = 0;
     size_t activeRenderLayerIdx_ = 0;
 };
 

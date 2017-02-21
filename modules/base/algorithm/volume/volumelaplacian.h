@@ -63,7 +63,6 @@ std::shared_ptr<Volume> inviwo::util::detail::VolumeLaplacianDispatcher::dispatc
     using T = typename DF::type;
     constexpr size_t comp = DF::comp;
     using R = typename util::same_extent<T, float>::type;
-    using D = typename util::same_extent<T, double>::type;
     using Sampler = TemplateVolumeSampler<T, double, double>;
 
     static_assert(comp > 0, "zero extent");

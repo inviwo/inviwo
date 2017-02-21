@@ -10,6 +10,9 @@ if((CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_COMPILER_
   add_definitions( -fvisibility=hidden -Wall )
 endif()
 
+find_package(ZLIB REQUIRED)
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
 SUBDIRS(znzlib niftilib)
 #ADD_DEFINITIONS(-DHAVE_ZLIB)
 

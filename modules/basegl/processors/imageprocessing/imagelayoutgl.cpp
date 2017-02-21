@@ -206,10 +206,20 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewManager_.clear();
-    int smallWindowDim = dim.y / 3;
+    const int smallWindowHeight = dim.y / 3.0f;
+
+    const int extra1 = dim.y % 3 >= 1 ? 1 : 0; // add extra pixels to the small "windows" if the 
+    const int extra2 = dim.y % 3 >= 2 ? 1 : 0; // size is not divisable by 3 to avoid black borders
+
+    const int midx = verticalSplitter_ * dim.x;
+    const int midy = horizontalSplitter_ * dim.y;
+
+    const int leftWindow3L1RX = vertical3Left1RightSplitter_ * dim.x;
+    const int leftWindow3R1LX = vertical3Right1LeftSplitter_ * dim.x;
+
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
-
+        
             // #########
             // #   1   #
             // #-------#
@@ -217,12 +227,11 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewManager_.push_back(
-                ivec4(0, horizontalSplitter_ * dim.y, dim.x, (1.f - horizontalSplitter_) * dim.y));
-            viewManager_.push_back(ivec4(0, 0, dim.x, horizontalSplitter_ * dim.y));
+            viewManager_.push_back(ivec4(0, midy, dim.x, dim.y - midy));
+            viewManager_.push_back(ivec4(0, 0, dim.x, midy));
             break;
         case Layout::VerticalSplit:
-
+        
             // #########
             // #   |   #
             // # 1 | 2 #
@@ -230,9 +239,9 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewManager_.push_back(ivec4(0, 0, verticalSplitter_ * dim.x, dim.y));
-            viewManager_.push_back(
-                ivec4(verticalSplitter_ * dim.x, 0, (1.0f - verticalSplitter_) * dim.x, dim.y));
+
+            viewManager_.push_back(ivec4(0, 0, midx, dim.y));
+            viewManager_.push_back(ivec4(midx, 0, dim.x - midx, dim.y));
             break;
         case Layout::CrossSplit:
 
@@ -243,19 +252,19 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewManager_.push_back(ivec4(0, horizontalSplitter_ * dim.y, verticalSplitter_ * dim.x,
-                                        (1.0f - horizontalSplitter_) * dim.y));
+            viewManager_.push_back(ivec4(0, midy, midx,
+                                        dim.y-midy));
 
-            viewManager_.push_back(ivec4(verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y,
-                                        (1.0f - verticalSplitter_) * dim.x,
-                                        (1.0f - horizontalSplitter_) * dim.y));
+            viewManager_.push_back(ivec4(midx, midy,
+                                        dim.x - midx,
+                                        dim.y - midy));
 
             viewManager_.push_back(
-                ivec4(0, 0, verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y));
+                ivec4(0, 0, midx, midy));
 
-            viewManager_.push_back(ivec4(verticalSplitter_ * dim.x, 0,
-                                        (1.0f - verticalSplitter_) * dim.x,
-                                        horizontalSplitter_ * dim.y));
+            viewManager_.push_back(ivec4(midx, 0,
+                                        dim.x-midx,
+                                        midy));
             break;
         case Layout::ThreeLeftOneRight:
 
@@ -268,14 +277,10 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewManager_.push_back(
-                ivec4(0, 2 * smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewManager_.push_back(
-                ivec4(0, smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewManager_.push_back(
-                ivec4(0, 0, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewManager_.push_back(ivec4(vertical3Left1RightSplitter_ * dim.x, 0,
-                                        (1.f - vertical3Left1RightSplitter_) * dim.x, dim.y));
+            viewManager_.push_back( ivec4(0, 2 * smallWindowHeight+extra1+extra2,leftWindow3L1RX, smallWindowHeight));
+            viewManager_.push_back(ivec4(0,smallWindowHeight+extra1,leftWindow3L1RX, smallWindowHeight+extra2));
+            viewManager_.push_back(ivec4(0, 0, leftWindow3L1RX, smallWindowHeight+extra1));
+            viewManager_.push_back(ivec4(leftWindow3L1RX, 0, dim.x-leftWindow3L1RX, dim.y));
             break;
         case Layout::ThreeRightOneLeft:
 
@@ -288,16 +293,10 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 2 * smallWindowDim,
-                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
-                                        smallWindowDim));
-            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, smallWindowDim,
-                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
-                                        smallWindowDim));
-            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 0,
-                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
-                                        smallWindowDim));
-            viewManager_.push_back(ivec4(0, 0, vertical3Right1LeftSplitter_ * dim.x, dim.y));
+            viewManager_.push_back(ivec4(leftWindow3R1LX, 2 * smallWindowHeight+extra1+extra2, dim.x-leftWindow3R1LX, smallWindowHeight));
+            viewManager_.push_back(ivec4(leftWindow3R1LX, smallWindowHeight+extra1, dim.x - leftWindow3R1LX, smallWindowHeight+extra2));
+            viewManager_.push_back(ivec4(leftWindow3R1LX, 0, dim.x-leftWindow3R1LX, smallWindowHeight+extra1));
+            viewManager_.push_back(ivec4(0, 0, leftWindow3R1LX, dim.y));
             break;
         case Layout::Single:
         default:

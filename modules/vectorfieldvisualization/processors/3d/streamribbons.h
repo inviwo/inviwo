@@ -75,7 +75,7 @@ protected:
     virtual void process() override;
 
 
-    virtual bool isReady() const override {
+    inline virtual bool isReady() const override {
         if (Processor::isReady()) {
             return true;
         }

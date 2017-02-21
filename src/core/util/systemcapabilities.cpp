@@ -118,31 +118,31 @@ std::string SystemCapabilities::getBuildDateString() const {
     return ss.str();
 }
 
-const int SystemCapabilities::getBuildTimeYear() const {
+int SystemCapabilities::getBuildTimeYear() const {
     return buildInfo_.year;
 }
 
-const int SystemCapabilities::getBuildTimeMonth() const {
+int SystemCapabilities::getBuildTimeMonth() const {
     return buildInfo_.month;
 }
 
-const int SystemCapabilities::getBuildTimeDay() const {
+int SystemCapabilities::getBuildTimeDay() const {
     return buildInfo_.day;
 }
 
-const int SystemCapabilities::getBuildTimeHour() const {
+int SystemCapabilities::getBuildTimeHour() const {
     return buildInfo_.hour;
 }
 
-const int SystemCapabilities::getBuildTimeMinute() const {
+int SystemCapabilities::getBuildTimeMinute() const {
     return buildInfo_.minute;
 }
 
-const int SystemCapabilities::getBuildTimeSecond() const {
+int SystemCapabilities::getBuildTimeSecond() const {
     return buildInfo_.second;
 }
 
-const std::size_t SystemCapabilities::getGitNumberOfHashes() const {
+std::size_t SystemCapabilities::getGitNumberOfHashes() const {
     return buildInfo_.githashes.size();
 }
 
