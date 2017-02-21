@@ -47,7 +47,7 @@ Seed3Dto4D::Seed3Dto4D()
     : Processor()
     , seed3d_("seed3d_")
     , seed4d_("seed4d_")
-    , w_("w", "4th component", 0 , 0 , 1 , 0.01) {
+    , w_("w", "4th component", 0.f , 0.f , 1.f , 0.01f) {
     
     addPort(seed3d_);
     addPort(seed4d_);

@@ -49,7 +49,7 @@ DiscardShortLines::DiscardShortLines()
     , linesOut_("linesOut")
     , removedLines_("removedLines")
 
-    , minLength_("minLength","Min Length", 0.1 , 0 , 1 , 0.01)
+    , minLength_("minLength", "Min Length", 0.1, 0.0, 1.0, 0.01)
     , dataMinLength_("dataMinLength", "Min Length (data)" , 0 ,0, std::numeric_limits<double>::max() , 0.01 , InvalidationLevel::Valid , PropertySemantics::Text)
     , dataMaxLength_("dataMaxLength", "Max Length (data)" , 1 ,0, std::numeric_limits<double>::max() , 0.01 , InvalidationLevel::Valid , PropertySemantics::Text)
 

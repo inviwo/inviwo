@@ -53,7 +53,7 @@ SeedsFromMaskSequence::SeedsFromMaskSequence()
     : Processor()
     , sequence_("sequence")
     , seeds_("seeds_")
-    , randomSampling_("randomSampling", "Random sampling (keep percentage)", 1 , 0 , 1, 0.01) {
+    , randomSampling_("randomSampling", "Random sampling (keep percentage)", 1.f , 0.f , 1.f, 0.01f) {
     
     addPort(sequence_);
     addPort(seeds_);

@@ -73,10 +73,10 @@ private:
     IntegralLineSetOutport linesOut_;
     IntegralLineSetOutport removedLines_;
 
-    FloatProperty minLength_;
+    DoubleProperty minLength_;
 
-    FloatProperty dataMinLength_;
-    FloatProperty dataMaxLength_;
+    DoubleProperty dataMinLength_;
+    DoubleProperty dataMaxLength_;
  
 };
 
