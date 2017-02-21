@@ -28,10 +28,11 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/volumesequenceutils.h>
 #include <random>
 
