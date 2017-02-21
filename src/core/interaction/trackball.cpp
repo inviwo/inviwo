@@ -66,7 +66,7 @@ Trackball::Trackball(TrackballObject* object)
                    MouseState::Press | MouseState::Move)
 
     , mouseZoom_("trackballZoom", "Zoom", [this](Event* e) { zoom(e); }, MouseButton::Right,
-                 MouseState::Press | MouseState::Move)
+                 MouseState::Move)
 
     , mousePan_("trackballPan", "Pan", [this](Event* e) { pan(e); }, MouseButton::Middle,
                 MouseState::Press | MouseState::Move)
