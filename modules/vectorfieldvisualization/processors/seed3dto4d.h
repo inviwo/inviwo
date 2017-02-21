@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SEED3DTO4D_H
@@ -44,15 +44,16 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API Seed3Dto4D : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API Seed3Dto4D : public Processor {
 public:
     Seed3Dto4D();
     virtual ~Seed3Dto4D() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     SeedPointsInport seed3d_;
     SeedPoints4DOutport seed4d_;
@@ -60,7 +61,6 @@ private:
     FloatProperty w_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_SEED3DTO4D_H
-
+#endif  // IVW_SEED3DTO4D_H

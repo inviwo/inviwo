@@ -39,9 +39,7 @@ const ProcessorInfo DiscardShortLines::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
 };
-const ProcessorInfo DiscardShortLines::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo DiscardShortLines::getProcessorInfo() const { return processorInfo_; }
 
 DiscardShortLines::DiscardShortLines()
     : Processor()
@@ -50,14 +48,15 @@ DiscardShortLines::DiscardShortLines()
     , removedLines_("removedLines")
 
     , minLength_("minLength", "Min Length", 0.1, 0.0, 1.0, 0.01)
-    , dataMinLength_("dataMinLength", "Min Length (data)" , 0 ,0, std::numeric_limits<double>::max() , 0.01 , InvalidationLevel::Valid , PropertySemantics::Text)
-    , dataMaxLength_("dataMaxLength", "Max Length (data)" , 1 ,0, std::numeric_limits<double>::max() , 0.01 , InvalidationLevel::Valid , PropertySemantics::Text)
+    , dataMinLength_("dataMinLength", "Min Length (data)", 0, 0, std::numeric_limits<double>::max(),
+                     0.01, InvalidationLevel::Valid, PropertySemantics::Text)
+    , dataMaxLength_("dataMaxLength", "Max Length (data)", 1, 0, std::numeric_limits<double>::max(),
+                     0.01, InvalidationLevel::Valid, PropertySemantics::Text)
 
 {
     addPort(linesIn_);
     addPort(linesOut_);
     addPort(removedLines_);
-
 
     addProperty(minLength_);
     addProperty(dataMinLength_);
@@ -87,40 +86,32 @@ DiscardShortLines::DiscardShortLines()
                   (minLength_.getMaxValue() - minLength_.getMinValue());
         minLength_.setMinValue(minL);
         minLength_.setMaxValue(maxL);
-        minLength_.set(minL + t * (maxL-minL));
+        minLength_.set(minL + t * (maxL - minL));
     });
 }
-    
+
 void DiscardShortLines::process() {
-    
+
     auto linesData = linesIn_.getData();
     auto &lines = *linesData;
-
 
     auto outLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
     auto filteredLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
     auto &outLines = *outLinesData;
     auto &filteredLines = *filteredLinesData;
 
-
-
     for (const auto &line : lines) {
-        bool keep = line.getLength()>=minLength_.get();
+        bool keep = line.getLength() >= minLength_.get();
 
         if (keep) {
             outLines.push_back(line, line.getIndex());
-        }
-        else {
+        } else {
             filteredLines.push_back(line);
         }
     }
 
-
     linesOut_.setData(outLinesData);
     removedLines_.setData(filteredLinesData);
-        
-
 }
 
-} // namespace
-
+}  // namespace

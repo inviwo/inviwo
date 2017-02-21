@@ -39,27 +39,25 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SeedsFromMaskSequence::processorInfo_{
-    "org.inviwo.SeedsFromMaskSequence",      // Class identifier
-    "Seeds From Mask Sequence",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.SeedsFromMaskSequence",  // Class identifier
+    "Seeds From Mask Sequence",          // Display name
+    "Seed Points",                       // Category
+    CodeState::Experimental,             // Code state
+    Tags::None,                          // Tags
 };
-const ProcessorInfo SeedsFromMaskSequence::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo SeedsFromMaskSequence::getProcessorInfo() const { return processorInfo_; }
 
 SeedsFromMaskSequence::SeedsFromMaskSequence()
     : Processor()
     , sequence_("sequence")
     , seeds_("seeds_")
-    , randomSampling_("randomSampling", "Random sampling (keep percentage)", 1.f , 0.f , 1.f, 0.01f) {
-    
+    , randomSampling_("randomSampling", "Random sampling (keep percentage)", 1.f, 0.f, 1.f, 0.01f) {
+
     addPort(sequence_);
     addPort(seeds_);
     addProperty(randomSampling_);
 }
-    
+
 void SeedsFromMaskSequence::process() {
     auto inSequence = sequence_.getData();
     auto &volumes = *inSequence;
@@ -71,34 +69,30 @@ void SeedsFromMaskSequence::process() {
     std::uniform_real_distribution<> dis(0, 1);
 
     size_t volID = 0;
-    for(auto vol : volumes){
-        vol->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto typedVol)->void{
+    for (auto vol : volumes) {
+        vol->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto typedVol) -> void {
             float t = 0;
-            if(util::hasTimestamp(vol)){
+            if (util::hasTimestamp(vol)) {
                 t = util::getTimestamp(vol);
-            }else{
-                t = static_cast<float>(volID) /static_cast<float>(volumes.size()-1);
+            } else {
+                t = static_cast<float>(volID) / static_cast<float>(volumes.size() - 1);
             }
             auto data = typedVol->getDataTyped();
             auto dim = typedVol->getDimensions();
             auto dim2 = vol->getDimensions();
             util::IndexMapper3D index(dim);
             util::forEachVoxel(*typedVol, [&](const size3_t &pos) {
-                if(dis(gen)>randomSampling_.get()) return;
+                if (dis(gen) > randomSampling_.get()) return;
                 auto v = util::glm_convert<float>(data[index(pos)]);
                 if (v > 0) {
-                    points.emplace_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)),t);
+                    points.emplace_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)), t);
                 }
             });
             volID++;
         });
-        
     }
-
-
 
     seeds_.setData(outvec);
 }
 
-} // namespace
-
+}  // namespace

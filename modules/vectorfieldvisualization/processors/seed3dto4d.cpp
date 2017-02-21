@@ -39,31 +39,28 @@ const ProcessorInfo Seed3Dto4D::processorInfo_{
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo Seed3Dto4D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
 
 Seed3Dto4D::Seed3Dto4D()
     : Processor()
     , seed3d_("seed3d_")
     , seed4d_("seed4d_")
-    , w_("w", "4th component", 0.f , 0.f , 1.f , 0.01f) {
-    
+    , w_("w", "4th component", 0.f, 0.f, 1.f, 0.01f) {
+
     addPort(seed3d_);
     addPort(seed4d_);
     addProperty(w_);
 }
-    
+
 void Seed3Dto4D::process() {
     auto inData = seed3d_.getData();
     auto inVec = *inData;
     auto outvec = std::make_shared<SeedPoint4DVector>();
     outvec->reserve(inVec.size());
-    for(const auto &p : inVec){
-        outvec->emplace_back(p,w_.get());
+    for (const auto &p : inVec) {
+        outvec->emplace_back(p, w_.get());
     }
     seed4d_.setData(outvec);
 }
 
-} // namespace
-
+}  // namespace

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SEEDSFROMMASKSEQUENCE_H
@@ -40,32 +40,28 @@
 
 namespace inviwo {
 
-
 /**
  * \class SeedsFromMaskSequence
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsFromMaskSequence : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsFromMaskSequence : public Processor {
 public:
     SeedsFromMaskSequence();
     virtual ~SeedsFromMaskSequence() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
-    
     VolumeSequenceInport sequence_;
     SeedPoints4DOutport seeds_;
 
     FloatProperty randomSampling_;
-
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_SEEDSFROMMASKSEQUENCE_H
-
+#endif  // IVW_SEEDSFROMMASKSEQUENCE_H

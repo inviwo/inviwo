@@ -121,9 +121,8 @@ void tortuosity(IntegralLine &line, dmat4 toWorld) {
     auto &K = line.createMetaData("tortuosity");
     double acuDist = 0;
 
-
-    dvec3 start = positions.front();;
-    dvec3 prev = positions.front();;
+    dvec3 start = positions.front();
+    dvec3 prev = start;
 
     for (auto &p : positions) {
         auto div = [](auto a, auto b) {

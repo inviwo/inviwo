@@ -35,31 +35,24 @@
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
-
 namespace inviwo {
 
+namespace util {
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine curvature(const IntegralLine &line,
+                                                               dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet curvature(const IntegralLineSet &lines);
 
-    namespace util {
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine curvature(const IntegralLine &line,dmat4 toWorld);
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet curvature(const IntegralLineSet &lines);
-        
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLine &line,dmat4 toWorld);
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLineSet &lines);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLine &line, dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLineSet &lines);
 
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine tortuosity(const IntegralLine &line,
+                                                                dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet tortuosity(const IntegralLineSet &lines);
 
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLine &line, dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLineSet &lines);
+}
 
+}  // namespace
 
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine tortuosity(const IntegralLine &line, dmat4 toWorld);
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet tortuosity(const IntegralLineSet &lines);
-
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLine &line, dmat4 toWorld);
-        IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLineSet &lines);
-
-    }
-        
-
-
-} // namespace
-
-#endif // IVW_INTEGRALLINECURVATURE_H
-
+#endif  // IVW_INTEGRALLINECURVATURE_H
