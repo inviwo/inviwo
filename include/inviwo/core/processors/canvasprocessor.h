@@ -78,6 +78,8 @@ public:
     bool isFullScreen() const;
     void setFullScreen(bool fullscreen);
 
+    bool isContextMenuAllowed() const;
+
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
@@ -102,6 +104,8 @@ protected:
     CompositeProperty inputSize_;
     ButtonProperty toggleFullscreen_;
     EventProperty fullscreen_;
+
+    BoolProperty allowContextMenu_;
 
 private:
     void sizeChanged();

@@ -82,6 +82,8 @@ public:
     virtual bool isFullScreen() const override;
     virtual void setFullScreen(bool fullscreen) override;
 
+    bool blockContextMenu() const;
+
 protected:
     virtual bool event(QEvent *e) override;
 
@@ -103,6 +105,7 @@ private:
     Qt::GestureType lastType_;
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
+    bool blockContextMenu_;
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
@@ -111,7 +114,7 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 
 
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) {
+CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) , blockContextMenu_(false){
     QtBase::makeCurrent();
     RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
@@ -158,6 +161,11 @@ void inviwo::CanvasQtBase<T>::setFullScreen(bool fullscreen) {
 template <typename T>
 bool inviwo::CanvasQtBase<T>::isFullScreen() const {
     return this->parentWidget()->windowState() == Qt::WindowFullScreen;
+}
+
+template <typename T>
+bool inviwo::CanvasQtBase<T>::blockContextMenu() const {
+    return blockContextMenu_;
 }
 
 
@@ -213,6 +221,9 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+
+    blockContextMenu_ = e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
+
     return true;
 }
 
@@ -228,6 +239,7 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
     return true;
 }
 
@@ -243,6 +255,7 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
     return true;
 }
 

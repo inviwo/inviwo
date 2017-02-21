@@ -198,16 +198,23 @@ void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
     RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getIdentifier());
 }
 
-#ifndef QT_NO_CONTEXTMENU
 void CanvasProcessorWidgetQt::contextMenuEvent(QContextMenuEvent* event) {
     if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor_)) {
+        if (!canvasProcessor->isContextMenuAllowed()) {
+            return;
+        }
+        if (event->reason() == QContextMenuEvent::Mouse && canvas_->blockContextMenu()) {
+            return;
+        }
+
         QMenu menu(this);
 
         auto visibleLayer = canvasProcessor->getVisibleLayer();
         auto img = canvasProcessor->getImage();
 
-        connect(menu.addAction("Select processor") , &QAction::triggered , [&](){
-            processor_->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)->setSelected(true);
+        connect(menu.addAction("Select processor"), &QAction::triggered, [&]() {
+            processor_->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                ->setSelected(true);
         });
 
         for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
@@ -255,7 +262,6 @@ void CanvasProcessorWidgetQt::contextMenuEvent(QContextMenuEvent* event) {
         menu.exec(event->globalPos());
     }
 }
-#endif
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {
     if(ignoreUpdate_) return;
