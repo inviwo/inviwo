@@ -55,67 +55,74 @@ Shader &TextureQuadRenderer::getShader() { return shader_; }
 const Shader &TextureQuadRenderer::getShader() const { return shader_; }
 
 void TextureQuadRenderer::render(const std::shared_ptr<Image> &image, const ivec2 &pos,
-                                 const size2_t &canvasSize, LayerType layerType) {
+                                 const size2_t &canvasSize, LayerType layerType,
+                                 mat4 transformation) {
     if (image) {
         if (auto layer = image->getLayer(layerType)) {
-            render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
+            render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize,
+                   transformation);
         }
     }
 }
 
 void TextureQuadRenderer::render(const std::shared_ptr<Image> &image, const ivec2 &pos,
-                                 const size2_t &canvasSize, std::size_t colorLayerIndex) {
+                                 const size2_t &canvasSize, std::size_t colorLayerIndex,
+                                 mat4 transformation) {
     if (image) {
         if (auto layer = image->getLayer(LayerType::Color, colorLayerIndex)) {
-            render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
+            render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize,
+                   transformation);
         }
     }
 }
 
 void TextureQuadRenderer::render(const std::shared_ptr<Layer> &layer, const ivec2 &pos,
-                                 const size2_t &canvasSize) {
+                                 const size2_t &canvasSize, mat4 transformation) {
     if (layer) {
-        render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize);
+        render(layer->getRepresentation<LayerGL>()->getTexture(), pos, canvasSize, transformation);
     }
 }
 
 void TextureQuadRenderer::render(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                                 const size2_t &canvasSize) {
+                                 const size2_t &canvasSize, mat4 transformation) {
 
-    renderToRect(texture, pos, ivec2(texture->getDimensions()), canvasSize);
+    renderToRect(texture, pos, ivec2(texture->getDimensions()), canvasSize, transformation);
 }
 
 void TextureQuadRenderer::renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
                                        const ivec2 &extent, const size2_t &canvasSize,
-                                       LayerType layerType) {
+                                       LayerType layerType, mat4 transformation) {
     if (image) {
         if (auto layer = image->getLayer(layerType)) {
-            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent,
-                         canvasSize);
+            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent, canvasSize,
+                         transformation);
         }
     }
 }
 
 void TextureQuadRenderer::renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
                                        const ivec2 &extent, const size2_t &canvasSize,
-                                       std::size_t colorLayerIndex) {
+                                       std::size_t colorLayerIndex, mat4 transformation) {
     if (image) {
         if (auto layer = image->getLayer(LayerType::Color, colorLayerIndex)) {
-            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent,
-                         canvasSize);
+            renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent, canvasSize,
+                         transformation);
         }
     }
 }
 
 void TextureQuadRenderer::renderToRect(const std::shared_ptr<Layer> &layer, const ivec2 &pos,
-                                       const ivec2 &extent, const size2_t &canvasSize) {
+                                       const ivec2 &extent, const size2_t &canvasSize,
+                                       mat4 transformation) {
     if (layer) {
-        renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent, canvasSize);
+        renderToRect(layer->getRepresentation<LayerGL>()->getTexture(), pos, extent, canvasSize,
+                     transformation);
     }
 }
 
 void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                                       const ivec2 &extent, const size2_t &canvasSize) {
+                                       const ivec2 &extent, const size2_t &canvasSize,
+                                       mat4 transformation) {
     // scaling factor from screen coords to normalized dev coords
     vec2 scaling(vec2(2.0f) / vec2(canvasSize));
     vec2 position(vec2(pos) * scaling);
@@ -132,7 +139,7 @@ void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture
 
     shader_.setUniform("tex", texUnit);
     shader_.setUniform("geometry_.dataToWorld",
-                       glm::translate(vec3(-1.0f + position.x, -1.0f + position.y, 0.0f)) *
+                       glm::translate(vec3(-1.0f + position.x, -1.0f + position.y, 0.0f)) * transformation *
                            glm::scale(vec3(scaling * vec2(extent), 1.f)));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
