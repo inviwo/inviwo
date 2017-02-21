@@ -160,7 +160,6 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         PyObject* pyError_type = nullptr;
         PyObject* pyError_value = nullptr;
         PyObject* pyError_traceback = nullptr;
-        PyObject* pyError_string = nullptr;
         PyErr_Fetch(&pyError_type, &pyError_value, &pyError_traceback);
         int errorLine = -1;
         std::string stacktraceStr;
