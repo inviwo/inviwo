@@ -97,7 +97,9 @@ void ProcessorNetworkEvaluator::evaluate() {
     NetworkLock lock(processorNetwork_);
 
     notifyObserversProcessorNetworkEvaluationBegin();
-
+    
+    IVW_CPU_PROFILING_IF(500, "Evaluated Processor Network");
+    
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
