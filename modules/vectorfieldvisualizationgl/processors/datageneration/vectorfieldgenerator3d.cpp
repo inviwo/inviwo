@@ -105,27 +105,17 @@ void VectorFieldGenerator3D::process() {
     shader_.deactivate();
     fbo_.deactivate();
 
-    vec3 corners[5];
+     vec3 corners[4];
     corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
     corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
     corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
     corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
-    corners[4] = vec3(xRange_.get().y, yRange_.get().y, zRange_.get().y);
 
     mat3 basis;
-    vec3 basisX = corners[1] - corners[0];
-    vec3 basisY = corners[2] - corners[0];
-    vec3 basisZ = corners[3] - corners[0];
-
-    basis[0][0] = basisX.x;
-    basis[0][1] = basisX.y;
-    basis[0][2] = basisX.z;
-    basis[1][0] = basisY.x;
-    basis[1][1] = basisY.y;
-    basis[1][2] = basisY.z;
-    basis[2][0] = basisZ.x;
-    basis[2][1] = basisZ.y;
-    basis[2][2] = basisZ.z;
+    basis[0] = corners[1] - corners[0];
+    basis[1] = corners[2] - corners[0];
+    basis[2] = corners[3] - corners[0];
+    
     volume->setBasis(basis);
     volume->setOffset(corners[0]);
     outport_.setData(volume);

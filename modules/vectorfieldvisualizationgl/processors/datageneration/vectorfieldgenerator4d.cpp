@@ -94,66 +94,49 @@ void VectorFieldGenerator4D::process() {
 
     float dt = (tRange_.get().y - tRange_.get().x) / (size_.get().w - 1);
 
+    vec3 corners[4];
+    corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
+    corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
+    corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
+    corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
+
+    mat3 basis;
+    basis[0] = corners[1] - corners[0];
+    basis[1] = corners[2] - corners[0];
+    basis[2] = corners[3] - corners[0];
+    
+    shader_.activate();
+    fbo_.activate();
+    const size3_t dim{ size_.get() };
+    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     for (size_t i = 0; i < size_.get().w; ++i) {
-
-        auto volume = std::make_shared<Volume>(size_.get().xyz(), DataVec3Float32::get());
-
-
         float t = i;
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
         
+        auto volume = std::make_shared<Volume>(size_.get().xyz(), DataVec3Float32::get());
         volume->dataMap_.dataRange = vec2(0, 1);
         volume->dataMap_.valueRange = vec2(-1, 1);
         volume->setMetaData<DoubleMetaData>("timestamp", t);
         volume->setMetaData<DoubleMetaData>("duration", dt);
 
-        LogInfo(t << " " << dt);
-
-        shader_.activate();
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
 
-
         shader_.setUniform("t" ,t );
         utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
-        const size3_t dim{ size_.get() };
-        fbo_.activate();
-        glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
         VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
-        shader_.deactivate();
-        fbo_.deactivate();
-
-        vec3 corners[5];
-        corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
-        corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
-        corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
-        corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
-        corners[4] = vec3(xRange_.get().y, yRange_.get().y, zRange_.get().y);
-
-        mat3 basis;
-        vec3 basisX = corners[1] - corners[0];
-        vec3 basisY = corners[2] - corners[0];
-        vec3 basisZ = corners[3] - corners[0];
-
-        basis[0][0] = basisX.x;
-        basis[0][1] = basisX.y;
-        basis[0][2] = basisX.z;
-        basis[1][0] = basisY.x;
-        basis[1][1] = basisY.y;
-        basis[1][2] = basisY.z;
-        basis[2][0] = basisZ.x;
-        basis[2][1] = basisZ.y;
-        basis[2][2] = basisZ.z;
         volume->setBasis(basis);
         volume->setOffset(corners[0]);
         seq->push_back(volume);
     }
+    shader_.deactivate();
+    fbo_.deactivate();
 
     outport_.setData(seq);
 }
