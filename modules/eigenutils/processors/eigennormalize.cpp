@@ -27,23 +27,23 @@
  *
  *********************************************************************************/
 
-#include <modules/eigenutils/processors/normalize.h>
+#include <modules/eigenutils/processors/eigennormalize.h>
 
 #include <Eigen/Geometry>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Normalize::processorInfo_{
-    "org.inviwo.Normalize",   // Class identifier
-    "Matrix Normalization",   // Display name
-    "Eigen",                  // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+const ProcessorInfo EigenNormalize::processorInfo_{
+    "org.inviwo.EigenNormalize",   // Class identifier
+    "Matrix Normalization",        // Display name
+    "Eigen",                       // Category
+    CodeState::Experimental,       // Code state
+    Tags::None,                    // Tags
 };
-const ProcessorInfo Normalize::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo EigenNormalize::getProcessorInfo() const { return processorInfo_; }
 
-Normalize::Normalize()
+EigenNormalize::EigenNormalize()
     : Processor()
     , in_("in")
     , out_("out")
@@ -58,7 +58,7 @@ Normalize::Normalize()
     addProperty(method_);
 }
 
-void Normalize::process() {
+void EigenNormalize::process() {
     auto m = in_.getData();
     switch (method_.get()) {
         case Method::MaxElement: {

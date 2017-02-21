@@ -9,10 +9,10 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen)
 set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/eigenutilsprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/eigenutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ports.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenports.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mix.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/normalize.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmix.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigennormalize.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -21,8 +21,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/eigenutilsprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/normalize.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmix.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigennormalize.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

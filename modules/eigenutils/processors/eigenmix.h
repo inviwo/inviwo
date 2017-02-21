@@ -27,53 +27,44 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NORMALIZE_H
-#define IVW_NORMALIZE_H
+#ifndef IVW_EIGENMIX_H
+#define IVW_EIGENMIX_H
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/eigenutils/ports.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/eigenutils/eigenports.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Normalize, Matrix Normalization}
-* ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.Normalize)
+/** \docpage{org.inviwo.EigenMix, Mix}
+* ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
 *
-* A processor to normalize an Eigen::MatrixXf, supports following methods:
-* * MaxElement: Divide in element in the matrix by the value of the largest element
-* * MniMaxElement: Normalize each element based on the min and max value of the matrix
-* * Normalize: Uses the Eigens provided normalization method
+* Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
 *
 *
 * ### Inports
-*   * __in__ Unbormalized matrix
+*   * __a__ Matrix A
+*   * __b__ Matrix B
 *
 * ### Outports
-*   * __out__ Normalized matrix
+*   * __res__ Lineart mix of Matrix A and B
 *
 * ### Properties
-*   * __Method__ Select which method to use (see above)
+*   * __Mix factor__ Weighting factor, a low value favors A and high value favors B
 *
 */
 
 /**
- * \class Normalize
- * \brief A processor to normalize an Eigen::MatrixXf
- * A processor to normalize an Eigen::MatrixXf, supports following methods:
- * * MaxElement: Divide in element in the matrix by the value of the largest element
- * * MniMaxElement: Normalize each element based on the min and max value of the matrix
- * * Normalize: Uses the Eigens provided normalization method
+ * \class Mix
+ * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
  */
-class IVW_MODULE_EIGENUTILS_API Normalize : public Processor {
+class IVW_MODULE_EIGENUTILS_API EigenMix : public Processor {
 public:
-    enum class Method { MaxElement, MinMaxElement, Normalize };
-
-    Normalize();
-    virtual ~Normalize() = default;
+    EigenMix();
+    virtual ~EigenMix() = default;
 
     virtual void process() override;
 
@@ -81,12 +72,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    EigenMatrixInport in_;
-    EigenMatrixOutport out_;
+    EigenMatrixInport a_;
+    EigenMatrixInport b_;
+    EigenMatrixOutport res_;
 
-    TemplateOptionProperty<Method> method_;
+    FloatProperty w_;
 };
 
 }  // namespace
 
-#endif  // IVW_NORMALIZE_H
+#endif  // IVW_MIX_H

@@ -27,44 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MIX_H
-#define IVW_MIX_H
+#ifndef IVW_EIGENNORMALIZE_H
+#define IVW_EIGENNORMALIZE_H
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/eigenutils/ports.h>
+#include <modules/eigenutils/eigenports.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenMix, Mix}
-* ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
+/** \docpage{org.inviwo.EigenNormalize, Matrix Normalization}
+* ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.EigenNormalize)
 *
-* Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+* A processor to normalize an Eigen::MatrixXf, supports following methods:
+* * MaxElement: Divide in element in the matrix by the value of the largest element
+* * MniMaxElement: Normalize each element based on the min and max value of the matrix
+* * Normalize: Uses the Eigens provided normalization method
 *
 *
 * ### Inports
-*   * __a__ Matrix A
-*   * __b__ Matrix B
+*   * __in__ Unnormalized matrix
 *
 * ### Outports
-*   * __res__ Lineart mix of Matrix A and B
+*   * __out__ Normalized matrix
 *
 * ### Properties
-*   * __Mix factor__ Weighting factor, a low value favors A and high value favors B
+*   * __Method__ Select which method to use (see above)
 *
 */
 
 /**
- * \class Mix
- * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+ * \class EigenNormalize
+ * \brief A processor to normalize an Eigen::MatrixXf
+ * A processor to normalize an Eigen::MatrixXf, supports following methods:
+ * * MaxElement: Divide in element in the matrix by the value of the largest element
+ * * MniMaxElement: Normalize each element based on the min and max value of the matrix
+ * * Normalize: Uses the Eigens provided normalization method
  */
-class IVW_MODULE_EIGENUTILS_API Mix : public Processor {
+class IVW_MODULE_EIGENUTILS_API EigenNormalize : public Processor {
 public:
-    Mix();
-    virtual ~Mix() = default;
+    enum class Method { MaxElement, MinMaxElement, Normalize };
+
+    EigenNormalize();
+    virtual ~EigenNormalize() = default;
 
     virtual void process() override;
 
@@ -72,13 +81,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    EigenMatrixInport a_;
-    EigenMatrixInport b_;
-    EigenMatrixOutport res_;
+    EigenMatrixInport in_;
+    EigenMatrixOutport out_;
 
-    FloatProperty w_;
+    TemplateOptionProperty<Method> method_;
 };
 
 }  // namespace
 
-#endif  // IVW_MIX_H
+#endif  // IVW_EIGENNORMALIZE_H

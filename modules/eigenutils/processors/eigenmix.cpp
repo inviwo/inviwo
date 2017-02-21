@@ -27,21 +27,22 @@
  *
  *********************************************************************************/
 
-#include <modules/eigenutils/processors/mix.h>
+#include <modules/eigenutils/processors/eigenmix.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Mix::processorInfo_{
+const ProcessorInfo EigenMix::processorInfo_{
     "org.inviwo.EigenMix",    // Class identifier
     "Mix",                    // Display name
     "Eigen",                  // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo Mix::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo EigenMix::getProcessorInfo() const { return processorInfo_; }
 
-Mix::Mix() : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5, 0, 1, 0.1) {
+EigenMix::EigenMix()
+    : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5f, 0.f, 1.f, 0.1f) {
 
     addPort(a_);
     addPort(b_);
@@ -49,7 +50,7 @@ Mix::Mix() : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0
     addProperty(w_);
 }
 
-void Mix::process() {
+void EigenMix::process() {
     auto A = a_.getData();
     auto B = b_.getData();
     res_.setData(std::make_shared<Eigen::MatrixXf>((*A) + w_.get() * ((*B) - (*A))));

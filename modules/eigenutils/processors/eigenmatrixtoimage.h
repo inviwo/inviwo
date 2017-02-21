@@ -35,7 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <modules/eigenutils/ports.h>
+#include <modules/eigenutils/eigenports.h>
 
 namespace inviwo {
 
