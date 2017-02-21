@@ -71,7 +71,7 @@ void Normalize::process() {
             auto maxV = m->maxCoeff();
             auto m2 = std::make_shared<Eigen::MatrixXf>(*m);
             m2->array() -= minV;
-            m2->array() /= maxV-minV;
+            m2->array() /= maxV - minV;
             out_.setData(m2);
             break;
         }

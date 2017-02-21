@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NORMALIZE_H
@@ -38,46 +38,48 @@
 #include <modules/eigenutils/ports.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-
 namespace inviwo {
 
-/** \docpage{org.inviwo.Normalize, Normalize}
- * ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.Normalize)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
+/** \docpage{org.inviwo.Normalize, Matrix Normalization}
+* ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.Normalize)
+*
+* A processor to normalize an Eigen::MatrixXf, supports following methods:
+* * MaxElement: Divide in element in the matrix by the value of the largest element
+* * MniMaxElement: Normalize each element based on the min and max value of the matrix
+* * Normalize: Uses the Eigens provided normalization method
+*
+*
+* ### Inports
+*   * __in__ Unbormalized matrix
+*
+* ### Outports
+*   * __out__ Normalized matrix
+*
+* ### Properties
+*   * __Method__ Select which method to use (see above)
+*
+*/
 
 /**
  * \class Normalize
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief A processor to normalize an Eigen::MatrixXf
+ * A processor to normalize an Eigen::MatrixXf, supports following methods:
+ * * MaxElement: Divide in element in the matrix by the value of the largest element
+ * * MniMaxElement: Normalize each element based on the min and max value of the matrix
+ * * Normalize: Uses the Eigens provided normalization method
  */
-class IVW_MODULE_EIGENUTILS_API Normalize : public Processor { 
+class IVW_MODULE_EIGENUTILS_API Normalize : public Processor {
 public:
-    enum class Method{
-        MaxElement,
-        MinMaxElement,
-        Homogeneous ,
-        Normalize 
-    };
+    enum class Method { MaxElement, MinMaxElement, Normalize };
 
     Normalize();
     virtual ~Normalize() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     EigenMatrixInport in_;
     EigenMatrixOutport out_;
@@ -85,7 +87,6 @@ private:
     TemplateOptionProperty<Method> method_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_NORMALIZE_H
-
+#endif  // IVW_NORMALIZE_H

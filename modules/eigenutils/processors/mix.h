@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MIX_H
@@ -39,36 +39,38 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Mix, Mix}
- * ![](org.inviwo.Mix.png?classIdentifier=org.inviwo.Mix)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
+/** \docpage{org.inviwo.EigenMix, Mix}
+* ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
+*
+* Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+*
+*
+* ### Inports
+*   * __a__ Matrix A
+*   * __b__ Matrix B
+*
+* ### Outports
+*   * __res__ Lineart mix of Matrix A and B
+*
+* ### Properties
+*   * __Mix factor__ Weighting factor, a low value favors A and high value favors B
+*
+*/
 
 /**
  * \class Mix
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
  */
-class IVW_MODULE_EIGENUTILS_API Mix : public Processor { 
+class IVW_MODULE_EIGENUTILS_API Mix : public Processor {
 public:
     Mix();
     virtual ~Mix() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     EigenMatrixInport a_;
     EigenMatrixInport b_;
@@ -77,7 +79,6 @@ private:
     FloatProperty w_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MIX_H
-
+#endif  // IVW_MIX_H

@@ -33,35 +33,26 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Mix::processorInfo_{
-    "org.inviwo.Eigen.Mix",   // Class identifier
+    "org.inviwo.EigenMix",    // Class identifier
     "Mix",                    // Display name
     "Eigen",                  // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo Mix::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Mix::getProcessorInfo() const { return processorInfo_; }
 
-Mix::Mix()
-    : Processor()
-    , a_("a")
-    , b_("b")
-    , res_("res")
-    , w_("w","Mix factor" , 0.5 , 0 , 1, 0.1)
-{
-    
+Mix::Mix() : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5, 0, 1, 0.1) {
+
     addPort(a_);
     addPort(b_);
     addPort(res_);
     addProperty(w_);
 }
-    
+
 void Mix::process() {
     auto A = a_.getData();
     auto B = b_.getData();
-    res_.setData(  std::make_shared<Eigen::MatrixXf> ((*A) + w_.get() * ((*B)-(*A))) );
+    res_.setData(std::make_shared<Eigen::MatrixXf>((*A) + w_.get() * ((*B) - (*A))));
 }
 
-} // namespace
-
+}  // namespace
