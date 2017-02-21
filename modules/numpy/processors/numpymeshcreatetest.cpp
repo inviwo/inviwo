@@ -40,7 +40,7 @@ namespace inviwo {
 const ProcessorInfo NumPyMeshCreateTest::processorInfo_{
     "org.inviwo.NumPyMeshCreateTest",  // Class identifier
     "NumPy Mesh Create Test",          // Display name
-    "Undefined",                       // Category
+    "NumPy",                           // Category
     CodeState::Experimental,           // Code state
     Tags::None,                        // Tags
 };
