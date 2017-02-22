@@ -38,13 +38,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGridLayout>
-#include <QApplication>
-#include <QClipboard>
-#include <QPixmap>
-#include <QMenu>
-#include <QAction>
 #include <warn/pop>
-#include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
 

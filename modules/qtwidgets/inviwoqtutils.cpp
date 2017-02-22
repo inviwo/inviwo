@@ -228,7 +228,6 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
     throw Exception("No Qt main window found");
 }
 
-
 QImage layerToQImage(const Layer &layer){
     auto data = layer.getAsCodedBuffer("raw"); // This will convert the image to chars.
 
