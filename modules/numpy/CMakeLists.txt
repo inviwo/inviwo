@@ -93,6 +93,11 @@ ivw_include_directories(${PYTHON_NUMPY_INCLUDE_DIR})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
+target_compile_definitions(inviwo-module-numpy PUBLIC NPY_NO_DEPRECATED_API=NPY_1_11_API_VERSION)
+target_compile_definitions(inviwo-module-numpy PUBLIC NO_IMPORT_ARRAY)
+target_compile_definitions(inviwo-module-numpy PUBLIC NO_IMPORT)
+target_compile_definitions(inviwo-module-numpy PRIVATE PY_ARRAY_UNIQUE_SYMBOL=IVW_MODULE_NUMPY_ARRAY_API)
+
 #--------------------------------------------------------------------
 # Add shader directory to pack
 # ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
+
 #include <modules/numpy/numpyobjectwrapper.h>
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#define PY_ARRAY_UNIQUE_SYMBOL NUMPY_ARRAY_API
-#define NO_IMPORT_ARRAY
 #include <arrayobject.h>
 #include <ndarrayobject.h>
 
@@ -62,8 +60,7 @@ namespace {
             ndims[i] = dims[i];
         }
 
-
-        int nd = dims.size();
+        int nd = static_cast<int>(dims.size());
         return PyArray_New(&PyArray_Type, nd, ndims, typenum, NULL, data, 0, flags, NULL);
     }
 }
@@ -309,18 +306,24 @@ namespace util{
     }
 
     template <typename T>
-    std::vector<T> toVector(PyObject *obj) {
+    std::vector<T> toVector(PyObject* obj) {
         using ComponentType = util::value_type<T>::type;
-            std::vector<T> v;
-
+        std::vector<T> v;
 
         if (!PyArray_Check(obj)) {
             LogErrorCustom("numoyutils::toVector", "Not a NumPy Array");
             return v;
         }
 
-        auto nd = PyArray_NDIM(obj);
-        auto dims = PyArray_DIMS(obj);
+        PyArrayObject* arrobj;
+
+        if (!PyArray_OutputConverter(obj, &arrobj)) {
+            LogErrorCustom("numoyutils::toVector", "Something went wrong");
+            return v;
+        }
+
+        auto nd = PyArray_NDIM(arrobj);
+        auto dims = PyArray_DIMS(arrobj);
         int extent = 0;
         if (nd > 2) {
             LogErrorCustom("numoyutils::toVector", "Cant handle dimensions of size " << nd);
@@ -333,21 +336,21 @@ namespace util{
 
         if (extent != util::extent<T>::value) {
             LogErrorCustom("numoyutils::toVector",
-                "The extent of the NumPy vector does not match the output vector, got "
-                << extent << " expected " << util::extent<T>::value);
+                           "The extent of the NumPy vector does not match the output vector, got "
+                               << extent << " expected " << util::extent<T>::value);
             return v;
         }
 
-        if (PyArray_EquivTypenums(PyArray_TYPE(obj), df2numpyType<ComponentType>()) == NPY_FALSE) {
+        if (PyArray_EquivTypenums(PyArray_TYPE(arrobj), df2numpyType<ComponentType>()) ==
+            NPY_FALSE) {
             LogErrorCustom("numoyutils::toVector", "Data types do not match");
-            LogInfoCustom("", PyArray_TYPE(obj));
+            LogInfoCustom("", PyArray_TYPE(arrobj));
             LogInfoCustom("", df2numpyType<ComponentType>());
             return v;
         }
 
-
         v.resize(dims[0]);
-        memcpy(v.data(), PyArray_DATA(obj), dims[0] * sizeof(T));
+        memcpy(v.data(), PyArray_DATA(arrobj), dims[0] * sizeof(T));  //*/
         return v;
     }
 
