@@ -56,6 +56,8 @@
 #include <QGestureEvent>
 #include <QTouchEvent>
 #include <QThread>
+#include <QApplication>
+#include <QClipboard>
 #include <warn/pop>
 
 namespace inviwo {
@@ -82,7 +84,7 @@ public:
     virtual bool isFullScreen() const override;
     virtual void setFullScreen(bool fullscreen) override;
 
-    bool blockContextMenu() const;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
 protected:
     virtual bool event(QEvent *e) override;
@@ -164,10 +166,72 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
 }
 
 template <typename T>
-bool inviwo::CanvasQtBase<T>::blockContextMenu() const {
-    return blockContextMenu_;
-}
+void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(ownerWidget_->getProcessor())) {
 
+        if (!canvasProcessor->isContextMenuAllowed()) {
+            return;
+        }
+
+        if (event->reason() == QContextMenuEvent::Mouse && blockContextMenu_) {
+            return;
+        }
+
+        QMenu menu(this);
+
+        auto visibleLayer = canvasProcessor->getVisibleLayer();
+        auto img = canvasProcessor->getImage();
+
+        connect(menu.addAction("Select processor"), &QAction::triggered, [&]() {
+            canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                ->setSelected(true);
+        });
+
+        for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
+            std::ostringstream oss;
+            oss << "color layer " << i << " to clipboard";
+            auto layer = img->getColorLayer(i);
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
+            connect(copyAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy picking layer to clipboard";
+            auto layer = img->getPickingLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto pickingAction = menu.addAction(oss.str().c_str());
+            connect(pickingAction, &QAction::triggered, [&]() {
+                auto qimg = utilqt::layerToQImage(*layer);
+                QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy depth layer to clipboard";
+            auto layer = img->getDepthLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto depthAction = menu.addAction(oss.str().c_str());
+            connect(depthAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        menu.exec(event->globalPos());
+    }
+}
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>

@@ -68,8 +68,6 @@ public:
     // Override ProcessorObserver
     virtual void onProcessorIdentifierChange(Processor*) override;
 
-    void contextMenuEvent(QContextMenuEvent* event) override;
-
 protected:
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
