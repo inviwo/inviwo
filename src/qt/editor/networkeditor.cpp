@@ -520,10 +520,25 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 network_->removeAndDeleteProcessor(p);
             });
 
+
+            menu.addSeparator();
+            QAction* invalidateOutputAction = menu.addAction(tr("Invalidate Output"));
+            connect(invalidateOutputAction, &QAction::triggered, [this, processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
+            });
+
+            QAction* invalidateResourcesAction = menu.addAction(tr("Invalidate Resources"));
+            connect(invalidateResourcesAction, &QAction::triggered, [this, processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
+            });
+            menu.addSeparator();
+
             QAction* helpAction = menu.addAction(tr("Show Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
                 showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
+
+
 
             break;
         }
