@@ -62,6 +62,7 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QPixmap>
+#include <QAction>
 #include <QWidget>
 #include <warn/pop>
 
