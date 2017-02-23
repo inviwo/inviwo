@@ -172,7 +172,7 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
 
 template <typename T>
 void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
-    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(Canvas::ownerWidget_->getProcessor())) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(this->ownerWidget_->getProcessor())) {
 
         if (!canvasProcessor->isContextMenuAllowed()) {
             return;
@@ -187,7 +187,7 @@ void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
         auto visibleLayer = canvasProcessor->getVisibleLayer();
         auto img = canvasProcessor->getImage();
 
-        connect(menu.addAction("Select processor"), &QAction::triggered, [&]() {
+        this->connect(menu.addAction("Select processor"), &QAction::triggered, [&]() {
             canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setSelected(true);
         });
@@ -200,7 +200,7 @@ void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
                 oss << " (visible)";
             }
             auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
-            connect(copyAction, &QAction::triggered, [&]() {
+            this->connect(copyAction, &QAction::triggered, [&]() {
                 QApplication::clipboard()->setPixmap(
                     QPixmap::fromImage(utilqt::layerToQImage(*layer)));
             });
@@ -214,7 +214,7 @@ void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
                 oss << " (visible)";
             }
             auto pickingAction = menu.addAction(oss.str().c_str());
-            connect(pickingAction, &QAction::triggered, [&]() {
+            this->connect(pickingAction, &QAction::triggered, [&]() {
                 auto qimg = utilqt::layerToQImage(*layer);
                 QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
             });
@@ -228,7 +228,7 @@ void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
                 oss << " (visible)";
             }
             auto depthAction = menu.addAction(oss.str().c_str());
-            connect(depthAction, &QAction::triggered, [&]() {
+            this->connect(depthAction, &QAction::triggered, [&]() {
                 QApplication::clipboard()->setPixmap(
                     QPixmap::fromImage(utilqt::layerToQImage(*layer)));
             });
