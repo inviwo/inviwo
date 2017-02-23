@@ -34,10 +34,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo EigenMix::processorInfo_{
     "org.inviwo.EigenMix",    // Class identifier
-    "Mix",                    // Display name
+    "Matrix Mix",             // Display name
     "Eigen",                  // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "Eigen",                  // Tags
 };
 const ProcessorInfo EigenMix::getProcessorInfo() const { return processorInfo_; }
 

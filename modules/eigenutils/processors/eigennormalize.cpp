@@ -35,11 +35,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo EigenNormalize::processorInfo_{
-    "org.inviwo.EigenNormalize",   // Class identifier
-    "Matrix Normalization",        // Display name
-    "Eigen",                       // Category
-    CodeState::Experimental,       // Code state
-    Tags::None,                    // Tags
+    "org.inviwo.EigenNormalize",  // Class identifier
+    "Matrix Normalization",       // Display name
+    "Eigen",                      // Category
+    CodeState::Experimental,      // Code state
+    "Eigen",                      // Tags
 };
 const ProcessorInfo EigenNormalize::getProcessorInfo() const { return processorInfo_; }
 

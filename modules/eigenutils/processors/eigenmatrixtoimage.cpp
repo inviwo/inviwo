@@ -34,10 +34,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo EigenMatrixToImage::processorInfo_{
     "org.inviwo.EigenMatrixToImage",  // Class identifier
-    "Eigen Matrix To Image",          // Display name
+    "Matrix To Image",                // Display name
     "Eigen",                          // Category
     CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+    "Eigen",                          // Tags
 };
 const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
 
