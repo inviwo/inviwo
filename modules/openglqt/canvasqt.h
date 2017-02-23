@@ -62,6 +62,7 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QPixmap>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
