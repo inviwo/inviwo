@@ -40,6 +40,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/metadata/processormetadata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -59,6 +60,8 @@
 #include <QThread>
 #include <QApplication>
 #include <QClipboard>
+#include <QMenu>
+#include <QPixmap>
 #include <warn/pop>
 
 namespace inviwo {
