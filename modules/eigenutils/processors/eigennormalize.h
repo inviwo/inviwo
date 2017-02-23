@@ -27,22 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENMATRIXTOIMAGE_H
-#define IVW_EIGENMATRIXTOIMAGE_H
+#ifndef IVW_EIGENNORMALIZE_H
+#define IVW_EIGENNORMALIZE_H
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <modules/eigenutils/eigenports.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_EIGENUTILS_API EigenMatrixToImage : public Processor {
+/** \docpage{org.inviwo.EigenNormalize, Matrix Normalization}
+* ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.EigenNormalize)
+*
+* A processor to normalize an Eigen::MatrixXf, supports following methods:
+* * MaxElement: Divide in element in the matrix by the value of the largest element
+* * MniMaxElement: Normalize each element based on the min and max value of the matrix
+* * Normalize: Uses the Eigens provided normalization method
+*
+*
+* ### Inports
+*   * __in__ Unnormalized matrix
+*
+* ### Outports
+*   * __out__ Normalized matrix
+*
+* ### Properties
+*   * __Method__ Select which method to use (see above)
+*
+*/
+
+/**
+ * \class EigenNormalize
+ * \brief A processor to normalize an Eigen::MatrixXf
+ * A processor to normalize an Eigen::MatrixXf, supports following methods:
+ * * MaxElement: Divide in element in the matrix by the value of the largest element
+ * * MniMaxElement: Normalize each element based on the min and max value of the matrix
+ * * Normalize: Uses the Eigens provided normalization method
+ */
+class IVW_MODULE_EIGENUTILS_API EigenNormalize : public Processor {
 public:
-    EigenMatrixToImage();
-    virtual ~EigenMatrixToImage() = default;
+    enum class Method { MaxElement, MinMaxElement, Normalize };
+
+    EigenNormalize();
+    virtual ~EigenNormalize() = default;
 
     virtual void process() override;
 
@@ -50,12 +81,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    EigenMatrixInport matrix_;
-    ImageOutport image_;
+    EigenMatrixInport in_;
+    EigenMatrixOutport out_;
 
-    BoolProperty flipY_;
+    TemplateOptionProperty<Method> method_;
 };
 
 }  // namespace
 
-#endif  // IVW_EIGENMATRIXTOIMAGE_H
+#endif  // IVW_EIGENNORMALIZE_H

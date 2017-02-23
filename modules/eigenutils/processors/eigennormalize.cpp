@@ -27,31 +27,58 @@
  *
  *********************************************************************************/
 
-#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
+#include <modules/eigenutils/processors/eigennormalize.h>
+
+#include <Eigen/Geometry>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo EigenMatrixToImage::processorInfo_{
-    "org.inviwo.EigenMatrixToImage",  // Class identifier
-    "Matrix To Image",                // Display name
-    "Eigen",                          // Category
-    CodeState::Experimental,          // Code state
-    "Eigen",                          // Tags
+const ProcessorInfo EigenNormalize::processorInfo_{
+    "org.inviwo.EigenNormalize",  // Class identifier
+    "Matrix Normalization",       // Display name
+    "Eigen",                      // Category
+    CodeState::Experimental,      // Code state
+    "Eigen",                      // Tags
 };
-const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo EigenNormalize::getProcessorInfo() const { return processorInfo_; }
 
-EigenMatrixToImage::EigenMatrixToImage()
-    : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {
+EigenNormalize::EigenNormalize()
+    : Processor()
+    , in_("in")
+    , out_("out")
 
-    addPort(matrix_);
-    addPort(image_);
+    , method_("method", "Method", {{"maxelement", "Max Element", Method::MaxElement},
+                                   {"minmaxelement", "Min/Max Element", Method::MinMaxElement},
+                                   {"normalize", "Normalize", Method::Normalize}}) {
 
-    addProperty(flipY_);
+    addPort(in_);
+    addPort(out_);
+
+    addProperty(method_);
 }
 
-void EigenMatrixToImage::process() {
-    image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
+void EigenNormalize::process() {
+    auto m = in_.getData();
+    switch (method_.get()) {
+        case Method::MaxElement: {
+            auto maxV = m->maxCoeff();
+            out_.setData(std::make_shared<Eigen::MatrixXf>((*m) / maxV));
+            break;
+        }
+        case Method::MinMaxElement: {
+            auto minV = m->minCoeff();
+            auto maxV = m->maxCoeff();
+            auto m2 = std::make_shared<Eigen::MatrixXf>(*m);
+            m2->array() -= minV;
+            m2->array() /= maxV - minV;
+            out_.setData(m2);
+            break;
+        }
+        case Method::Normalize:
+            out_.setData(std::make_shared<Eigen::MatrixXf>(m->normalized()));
+            break;
+    }
 }
 
 }  // namespace

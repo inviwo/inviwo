@@ -27,31 +27,33 @@
  *
  *********************************************************************************/
 
-#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
+#include <modules/eigenutils/processors/eigenmix.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo EigenMatrixToImage::processorInfo_{
-    "org.inviwo.EigenMatrixToImage",  // Class identifier
-    "Matrix To Image",                // Display name
-    "Eigen",                          // Category
-    CodeState::Experimental,          // Code state
-    "Eigen",                          // Tags
+const ProcessorInfo EigenMix::processorInfo_{
+    "org.inviwo.EigenMix",    // Class identifier
+    "Matrix Mix",             // Display name
+    "Eigen",                  // Category
+    CodeState::Experimental,  // Code state
+    "Eigen",                  // Tags
 };
-const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo EigenMix::getProcessorInfo() const { return processorInfo_; }
 
-EigenMatrixToImage::EigenMatrixToImage()
-    : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {
+EigenMix::EigenMix()
+    : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5f, 0.f, 1.f, 0.1f) {
 
-    addPort(matrix_);
-    addPort(image_);
-
-    addProperty(flipY_);
+    addPort(a_);
+    addPort(b_);
+    addPort(res_);
+    addProperty(w_);
 }
 
-void EigenMatrixToImage::process() {
-    image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
+void EigenMix::process() {
+    auto A = a_.getData();
+    auto B = b_.getData();
+    res_.setData(std::make_shared<Eigen::MatrixXf>((*A) + w_.get() * ((*B) - (*A))));
 }
 
 }  // namespace

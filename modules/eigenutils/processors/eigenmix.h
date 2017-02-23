@@ -27,31 +27,58 @@
  *
  *********************************************************************************/
 
-#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
+#ifndef IVW_EIGENMIX_H
+#define IVW_EIGENMIX_H
+
+#include <modules/eigenutils/eigenutilsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/eigenutils/eigenports.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo EigenMatrixToImage::processorInfo_{
-    "org.inviwo.EigenMatrixToImage",  // Class identifier
-    "Matrix To Image",                // Display name
-    "Eigen",                          // Category
-    CodeState::Experimental,          // Code state
-    "Eigen",                          // Tags
+/** \docpage{org.inviwo.EigenMix, Mix}
+* ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
+*
+* Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+*
+*
+* ### Inports
+*   * __a__ Matrix A
+*   * __b__ Matrix B
+*
+* ### Outports
+*   * __res__ Lineart mix of Matrix A and B
+*
+* ### Properties
+*   * __Mix factor__ Weighting factor, a low value favors A and high value favors B
+*
+*/
+
+/**
+ * \class Mix
+ * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+ */
+class IVW_MODULE_EIGENUTILS_API EigenMix : public Processor {
+public:
+    EigenMix();
+    virtual ~EigenMix() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    EigenMatrixInport a_;
+    EigenMatrixInport b_;
+    EigenMatrixOutport res_;
+
+    FloatProperty w_;
 };
-const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
-
-EigenMatrixToImage::EigenMatrixToImage()
-    : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {
-
-    addPort(matrix_);
-    addPort(image_);
-
-    addProperty(flipY_);
-}
-
-void EigenMatrixToImage::process() {
-    image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
-}
 
 }  // namespace
+
+#endif  // IVW_MIX_H
