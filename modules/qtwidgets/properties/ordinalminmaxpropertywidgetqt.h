@@ -202,10 +202,11 @@ protected:
     MinMaxProperty<T>* minMaxProperty_;
 };
 
-typedef OrdinalMinMaxPropertyWidgetQt<double, double> DoubleMinMaxPropertyWidgetQt;
-typedef OrdinalMinMaxPropertyWidgetQt<float, float> FloatMinMaxPropertyWidgetQt;
-typedef OrdinalMinMaxPropertyWidgetQt<int, int> IntMinMaxPropertyWidgetQt;
-
+using DoubleMinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<double, double> ;
+using FloatMinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<float, float> ;
+using IntSizeTMinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<size_t, size_t> ;
+using Int64MinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<glm::i64, glm::i64> ;
+using IntMinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<int, int>;
 
 template <typename BT, typename T>
 OrdinalMinMaxPropertyWidgetQt<BT, T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property)
@@ -287,7 +288,7 @@ void OrdinalMinMaxPropertyWidgetQt<BT, T>::updateFromSlider(int valMin, int valM
     bool modified = false;
     V range = minMaxProperty_->get();
     
-    if (std::abs(min - range.x) > glm::epsilon<T>()) {
+    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
         modified = true;
         range.x = min;
         this->spinBoxMin_->blockSignals(true);
@@ -295,7 +296,7 @@ void OrdinalMinMaxPropertyWidgetQt<BT, T>::updateFromSlider(int valMin, int valM
         this->spinBoxMin_->blockSignals(false);
     }
     
-    if (std::abs(max - range.y) > glm::epsilon<T>()) {
+    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
         modified = true;
         range.y = max;
         this->spinBoxMax_->blockSignals(true);
@@ -316,7 +317,7 @@ void OrdinalMinMaxPropertyWidgetQt<BT, T>::updateFromSpinBoxMin(double minVal) {
     T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
     
-    if (std::abs(min - range.x) > glm::epsilon<T>()) {
+    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
         range.x = min;
         
         if (range.y-range.x < sep) {
@@ -345,7 +346,7 @@ void OrdinalMinMaxPropertyWidgetQt<BT, T>::updateFromSpinBoxMax(double maxVal) {
     T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
     
-    if (std::abs(max - range.y) > glm::epsilon<T>()) {
+    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
         range.y = max;
         
         if (range.y - range.x < sep) {
