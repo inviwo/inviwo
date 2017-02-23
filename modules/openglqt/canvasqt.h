@@ -171,7 +171,7 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
 
 template <typename T>
 void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
-    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(ownerWidget_->getProcessor())) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(Canvas::ownerWidget_->getProcessor())) {
 
         if (!canvasProcessor->isContextMenuAllowed()) {
             return;
