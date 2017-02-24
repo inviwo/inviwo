@@ -69,12 +69,14 @@ CanvasProcessor::CanvasProcessor()
     , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
     , fullscreen_("fullscreen", "FullScreen",
                   [this](Event* event) { setFullScreen(!isFullScreen()); }, IvwKey::F,
-                  KeyState::Press, KeyModifier::Shift)
+        KeyState::Press, KeyModifier::Shift)
+    , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
     , canvasWidget_(nullptr)
-    , queuedRequest_(false) {
+    , queuedRequest_(false) 
+{
     widgetMetaData_->addObserver(this);
     
     addPort(inport_);
@@ -164,6 +166,7 @@ CanvasProcessor::CanvasProcessor()
 
     addProperty(toggleFullscreen_);
     addProperty(fullscreen_);
+    addProperty(allowContextMenu_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
@@ -415,5 +418,7 @@ void CanvasProcessor::setFullScreen(bool fullscreen) {
         return canvasWidget_->getCanvas()->setFullScreen(fullscreen);
     }
 }
+
+bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_.get(); }
 
 }  // namespace
