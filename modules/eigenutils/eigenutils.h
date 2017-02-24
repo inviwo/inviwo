@@ -106,7 +106,7 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
 template <typename T>
 std::shared_ptr<Image> eigenMatToImage(const T& m,
                                        bool flipY = false, std::string name = "") {
-    using Type = T::value_type;
+    using Type = typename T::value_type;
     
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
 
