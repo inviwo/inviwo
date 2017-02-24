@@ -229,48 +229,36 @@ PYBIND11_PLUGIN(inviwopy) {
 
     addGLMTypes(m.mainModule_);
 
+    auto getModules = [](InviwoApplication *app) {
+        std::vector<InviwoModule *> modules;
+        for (auto &m : app->getModules()) {
+            modules.push_back(m.get());
+        }
+        return modules;
+    };
+
     m.addClass<InviwoApplication>("InviwoApplication")
-        .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
-                               py::return_value_policy::reference)
-        //.def("getProcessorNetworkEvaluator", &InviwoApplication::getProcessorNetworkEvaluator,
-        // py::return_value_policy::reference)
+        .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "", py::arg("createFolder") = false)
+        .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier, py::return_value_policy::reference)
+        .def("getModuleSettings", &InviwoApplication::getModuleSettings, py::return_value_policy::reference)
+        .def("waitForPool", &InviwoApplication::waitForPool)
+        .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
+        .def("getOutputPath", [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
+        .def_property_readonly("network", &InviwoApplication::getProcessorNetwork, py::return_value_policy::reference)
         .def_property_readonly("basePath", &InviwoApplication::getBasePath)
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
         .def_property_readonly("binaryPath", &InviwoApplication::getBinaryPath)
-        .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
-             py::arg("createFolder") = false)
-        .def_property_readonly("modules",
-                               [](InviwoApplication *app) {
-                                   std::vector<InviwoModule *> modules;
-                                   for (auto &m : app->getModules()) {
-                                       modules.push_back(m.get());
-                                   }
-                                   return modules;
-                               },
-                               py::return_value_policy::reference)
-        .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
-             py::return_value_policy::reference)
-        .def("getModuleSettings", &InviwoApplication::getModuleSettings,
-             py::return_value_policy::reference)
-        .def("waitForPool", &InviwoApplication::waitForPool)
-        .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
-        .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
-            py::return_value_policy::reference)
-        .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
-                                       py::return_value_policy::reference)
-                                   
-
-        .def("getOutputPath",
-             [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
-
+        .def_property_readonly("modules",getModules,py::return_value_policy::reference)
+        .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory, py::return_value_policy::reference)
+        .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory, py::return_value_policy::reference)
         ;
 
     m.addClass<InviwoModule>("InviwoModule")
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
-        //     .def("getPath", [](InviwoModule *m , ModulePath type) { return m->getPath(type); }) //TODO expost modulePath
         .def_property_readonly("version", &InviwoModule::getVersion)
+        .def("getPath", [](InviwoModule *m, ModulePath type) { return m->getPath(type); }) //TODO expost modulePath
         ;
 
 
@@ -738,9 +726,26 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
+
+    py::enum_<inviwo::ModulePath>(m.mainModule_, "ModulePath")
+        .value("Data", ModulePath::Data)
+        .value("Images", ModulePath::Images)
+        .value("PortInspectors", ModulePath::PortInspectors)
+        .value("Scripts", ModulePath::Scripts)
+        .value("Volumes", ModulePath::Volumes)
+        .value("Workspaces", ModulePath::Workspaces)
+        .value("Tests", ModulePath::Tests)
+        .value("TestImages", ModulePath::TestImages)
+        .value("TestVolumes", ModulePath::TestVolumes)
+        .value("UnitTests", ModulePath::UnitTests)
+        .value("RegressionTests", ModulePath::RegressionTests)
+        .value("GLSL", ModulePath::GLSL)
+        .value("CL", ModulePath::CL)
+        ;
+
     
 
-
+    
 
 
 
