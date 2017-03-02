@@ -31,6 +31,7 @@ import os
 import sys
 import re
 import argparse
+import time
 
 import ivwpy.colorprint as cp
 import ivwpy.util
@@ -38,23 +39,25 @@ import ivwpy.ivwpaths
 import ivwpy.cmake
 import ivwpy.moduleregistration
 
-def make_template(file, name, define, api, incfile, author = "<Author>" ):
+def make_template(file, name, define, api, incfile, author):
+	datetimestr = time.strftime("%A, %B %d, %Y - %H:%M:%S")
 	lines = []
 	with open(file,'r') as f:
 		for line in f:
 			line = line.replace("<name>", name)
-			line = line.replace("<dname>", re.sub("([a-z])([A-Z])","\g<1> \g<2>", name))
+			line = line.replace("<dname>", re.sub("([a-z])([A-Z])","\g<1> \g<2>", name.replace("Kx", "")))
 			line = line.replace("<lname>", name.lower())
 			line = line.replace("<uname>", name.upper())
 			line = line.replace("<api>", api)
 			line = line.replace("<define>", define)
 			line = line.replace("<incfile>", incfile)
-			line = line.replace("<Author>", author)
+			line = line.replace("<author>", author)
+			line = line.replace("<datetime>", datetimestr)
 			lines.append(line)
 		return "".join(lines)
 	
-    
-def write_file(paths, template, file, comment, force=False):
+
+def write_file(paths, template, file, comment, author, force=False):
 	(path, filename)  = os.path.split(file)
 	ivwpy.util.mkdir(path)
 
@@ -66,7 +69,7 @@ def write_file(paths, template, file, comment, force=False):
 	
 	with open(file, "w") as f:	
 		print(comment + f.name)
-		f.write(make_template(template, paths.class_name, paths.module_define,  paths.api_def, paths.include_define))
+		f.write(make_template(template, paths.class_name, paths.module_define,  paths.api_def, paths.include_define, author))
 
 	
 if __name__ == '__main__':
@@ -83,9 +86,13 @@ if __name__ == '__main__':
 						help="Make a skeleton inviwo processor")
 	parser.add_argument("-i", "--inviwo", type=str, dest="ivwpath", 
 						help="Path to the inviwo repository. If now given the script tries to find it in the current path")
+	parser.add_argument("-t", "--templates", type=str, dest="templatesdir", default='',
+						help="Path to the templates directory. If not given, the templates folder in the Inviwo-Tools folder will be used.")
 	parser.add_argument("-c", "--cmake", type=str, nargs=1, action="store", dest="builddir", 
 						help="Rerun CMake in the specified build directory")
 
+	parser.add_argument("-a", "--author", type=str, dest="author", default="<author>",
+						help="Author name for the new files.")
 	parser.add_argument("-nh", "--no-header", action="store_true", dest="header", 
 						help="Don't add header file")
 	parser.add_argument("-ns", "--no-source", action="store_true", dest="source", 
@@ -111,8 +118,12 @@ if __name__ == '__main__':
 		cp.print_error("Error could not find the inviwo repository, use --inviwo to specify where the inviwo repository is.")
 		sys.exit(1)
 
-	templates = os.sep.join([ivwpath, 'tools', 'templates'])
-		
+	#Get the folder with the templates
+	if args.templatesdir == "":
+		templates = os.sep.join([ivwpath, 'tools', 'templates'])
+	else:
+		templates = args.templatesdir
+
 	for name in args.names:
 		paths = ivwpy.ivwpaths.IvwPaths(name)
 		paths.info()
@@ -124,35 +135,35 @@ if __name__ == '__main__':
 			write_file(paths,
 					   os.sep.join([templates, "processor.h" if args.processor else "file.h"]), 	
 				       paths.file_name + ".h" if args.dummy else paths.header_file, 
-				       "... Writing header file: ", args.force)
+				       "... Writing header file: ", args.author, args.force)
 
 		if not args.source:
 			cmakefile.add_file("SOURCE_FILES",  paths.get_cmake_source())
 			write_file(paths,
 					   os.sep.join([templates, "processor.cpp" if args.processor else "file.cpp"]), 	
 				       paths.file_name + ".cpp" if args.dummy else paths.get_source_file(), 
-				       "... Writing source file: ", args.force)
+				       "... Writing source file: ", args.author, args.force)
 
 		if args.frag:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".frag"))
 			write_file(paths,
 					   os.sep.join([templates, "fragment.frag"]), 	
 				       paths.file_name + ".frag" if args.dummy else paths.get_glsl_file(".frag"), 
-				       "... Writing fragment file: ", args.force)
+				       "... Writing fragment file: ", args.author, args.force)
 				
 		if args.vert:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".vert"))
 			write_file(paths,
 					   os.sep.join([templates, "vertex.vert"]), 	
 				       paths.file_name + ".vert" if args.dummy else paths.get_glsl_file(".vert"), 
-				       "... Writing vertex file: ", args.force)		
+				       "... Writing vertex file: ", args.author, args.force)		
 
 		if args.geom:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".geom"))
 			write_file(paths,
 					   os.sep.join([templates, "geometry.geom"]), 	
 				       paths.file_name + ".geom" if args.dummy else paths.get_glsl_file(".geom"), 
-				       "... Writing geometry file: ", args.force)						 
+				       "... Writing geometry file: ", args.author, args.force)						 
 
 		cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
 
