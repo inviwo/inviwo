@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,36 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINEVECTORTOMESH_H
-#define IVW_INTEGRALLINEVECTORTOMESH_H
+#ifndef IVW_DISCARDSHORTLINES_H
+#define IVW_DISCARDSHORTLINES_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/meshport.h>
-
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.IntegralLineVectorToMesh, Integral Line Vector To Mesh}
- * ![](org.inviwo.IntegralLineVectorToMesh.png?classIdentifier=org.inviwo.IntegralLineVectorToMesh)
+/** \docpage{org.inviwo.DiscardShortLines, Discard Short Lines}
+ * ![](org.inviwo.DiscardShortLines.png?classIdentifier=org.inviwo.DiscardShortLines)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -61,49 +47,38 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor { 
+
+/**
+ * \class DiscardShortLines
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API DiscardShortLines : public Processor {
 public:
-    enum class ColoringMethod {
-        Velocity,
-        Timestamp,
-        ColorPort,
-        Curvature
-    };
-    IntegralLineVectorToMesh();
-    virtual ~IntegralLineVectorToMesh() = default;
-     
+    DiscardShortLines();
+    virtual ~DiscardShortLines() = default;
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
-    IntegralLineSetInport lines_;
-    BrushingAndLinkingInport brushingList_;
-    DataInport<std::vector<vec4>> colors_;
-    MeshOutport mesh_;
+    IntegralLineSetInport linesIn_;
+    IntegralLineSetOutport linesOut_;
+    IntegralLineSetOutport removedLines_;
 
-    BoolProperty ignoreBrushingList_;
+    DoubleProperty minLength_;
 
-    IntSizeTProperty stride_;
-
-    BoolCompositeProperty timeBasedFiltering_;
-    FloatMinMaxProperty minMaxT_;
-    ButtonProperty setFromData_ ;
-
-    TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
-    FloatProperty velocityScale_;
-    StringProperty maxVelocity_;
-    FloatProperty curvatureScale_;
-    StringProperty maxCurvature_;
+    DoubleProperty dataMinLength_;
+    DoubleProperty dataMaxLength_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INTEGRALLINEVECTORTOMESH_H
-
+#endif  // IVW_DISCARDSHORTLINES_H

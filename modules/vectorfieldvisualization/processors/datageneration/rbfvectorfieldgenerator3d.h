@@ -58,8 +58,6 @@ public:
     virtual void process() override;
 
 protected:
-    dvec3 randomVector();
-
     VolumeOutport volume_;
     MeshOutport mesh_;
 
@@ -80,6 +78,8 @@ protected:
 
     std::random_device rd_;
     std::mt19937 mt_;
+
+    dvec3 randomVector();
 
     std::uniform_real_distribution<double> theta_;
     std::uniform_real_distribution<double> x_;

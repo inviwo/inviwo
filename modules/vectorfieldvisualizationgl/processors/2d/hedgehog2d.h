@@ -52,9 +52,12 @@ namespace inviwo {
  *
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API HedgeHog2D : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API HedgeHog2D : public Processor { 
 
-    enum class GlyphType { Arrow, Quiver };
+    enum class GlyphType {
+        Arrow,
+        Quiver 
+    };
 
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -91,10 +94,8 @@ private:
 
     vec4 getColor(const dvec2 &velocity);
 
-    void createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy,
-                     const dvec2 &velocity);
-    void createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy,
-                      const dvec2 &velocity);
+    void createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy, const dvec2 &velocity);
+    void createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy, const dvec2 &velocity);
 };
 
 } // namespace

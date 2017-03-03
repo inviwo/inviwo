@@ -75,7 +75,7 @@ protected:
     virtual void process() override;
 
 
-    inline virtual bool isReady() const override {
+    virtual bool isReady() const override {
         if (Processor::isReady()) {
             return true;
         }
@@ -98,7 +98,7 @@ protected:
 private:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
     DataInport<SpatialSampler<3, 3, double>> vorticitySampler_;
-    SeedPointsInport seedPoints_;
+    SeedPoints3DInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
 
     VolumeInport volume_;

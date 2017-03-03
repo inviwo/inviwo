@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -19,70 +19,48 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_LIC2D_H
-#define IVW_LIC2D_H
-
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, LIC2D}
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public Processor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    LIC2D();
-    virtual ~LIC2D(){}
-     
-    virtual void process() override;
-    
-protected:
-
-    ImageInport vectorField_;
-    ImageInport noiseTexture_;
-    ImageOutport LIC2D_;
-
-
-    IntProperty samples_;
-    FloatProperty stepLength_;
-    BoolProperty normalizeVectors_;
-    BoolProperty intensityMapping_;
-    BoolProperty useRK4_;
-
-    Shader shader_;
-
-
-private:
-
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo Seed3Dto4D::processorInfo_{
+    "org.inviwo.Seed3Dto4D",  // Class identifier
+    "Seed3Dto4D",             // Display name
+    "Seeding",                // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
+const ProcessorInfo Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
 
-} // namespace
+Seed3Dto4D::Seed3Dto4D()
+    : Processor()
+    , seed3d_("seed3d_")
+    , seed4d_("seed4d_")
+    , w_("w", "4th component", 0.f, 0.f, 1.f, 0.01f) {
 
-#endif // IVW_LIC2D_H
+    addPort(seed3d_);
+    addPort(seed4d_);
+    addProperty(w_);
+}
 
+void Seed3Dto4D::process() {
+    auto inData = seed3d_.getData();
+    auto inVec = *inData;
+    auto outvec = std::make_shared<SeedPoint4DVector>();
+    outvec->reserve(inVec.size());
+    for (const auto &p : inVec) {
+        outvec->emplace_back(p, w_.get());
+    }
+    seed4d_.setData(outvec);
+}
+
+}  // namespace

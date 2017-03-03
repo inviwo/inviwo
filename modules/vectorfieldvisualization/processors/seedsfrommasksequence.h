@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,74 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINE_H
-#define IVW_INTEGRALLINE_H
+#ifndef IVW_SEEDSFROMMASKSEQUENCE_H
+#define IVW_SEEDSFROMMASKSEQUENCE_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
 
 /**
- * \class IntegralLine
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
+ * \class SeedsFromMaskSequence
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
-    friend class StreamLineTracer;
-    friend class PathLineTracer;
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsFromMaskSequence : public Processor {
 public:
-    enum class TerminationReason {
-        OutOfBounds, 
-        ZeroVelocity, 
-        Steps
-    };
+    SeedsFromMaskSequence();
+    virtual ~SeedsFromMaskSequence() = default;
 
-    IntegralLine();
-    IntegralLine(const IntegralLine &rhs);
+    virtual void process() override;
 
-    IntegralLine &operator=(const IntegralLine &that);
-
-    virtual ~IntegralLine();
-
-    void setTerminationReason(TerminationReason terminationReason) {
-        terminationReason_ = terminationReason;
-    }
-
-    const std::vector<dvec3> &getPositions() const;
-    std::vector<dvec3> &getPositions();
-    const std::vector<dvec3> &getMetaData(const std::string &name) const;
-    std::vector<dvec3> &createMetaData(const std::string &name);
-    bool hasMetaData(const std::string &name) const;
-    std::vector<std::string> getMetaDataKeys() const;
-
-
-    double getLength()const;
-
-    double distBetweenPoints(size_t a,size_t b) const;
-
-    dvec3 getPointAtDistance(double d)const;
-
-    size_t getIndex()const { return idx_; }
-    void setIndex(size_t idx ) { idx_  = idx; }
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    double calcLength( std::vector<dvec3>::const_iterator start ,   std::vector<dvec3>::const_iterator end ) const;
+    VolumeSequenceInport sequence_;
+    SeedPoints4DOutport seeds_;
 
-    std::vector<dvec3> positions_;
-    std::map<std::string, std::vector<dvec3>> metaData_;
-    TerminationReason terminationReason_;
-
-    mutable double length_;
-
-    size_t idx_;
-
-
-
+    FloatProperty randomSampling_;
 };
 
 }  // namespace
 
-#endif  // IVW_INTEGRALLINE_H
+#endif  // IVW_SEEDSFROMMASKSEQUENCE_H

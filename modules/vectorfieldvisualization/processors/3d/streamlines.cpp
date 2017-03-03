@@ -9,6 +9,8 @@
 #include <bitset>
 
 #include <inviwo/core/util/imagesampler.h>
+#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
+
 
 namespace inviwo {
 
@@ -159,6 +161,11 @@ void StreamLines::process() {
     maxVelocity_.set(toString(maxVelocity));
     
     linesStripsMesh_.setData(mesh);
+
+
+    util::curvature(*lines);
+    util::tortuosity(*lines);
+
     lines_.setData(lines);
 }
 
