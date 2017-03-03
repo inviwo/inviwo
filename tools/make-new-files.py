@@ -29,9 +29,7 @@
  
 import os
 import sys
-import re
 import argparse
-import time
 
 import ivwpy.colorprint as cp
 import ivwpy.util
@@ -132,38 +130,48 @@ if __name__ == '__main__':
 			
 		if not args.header:
 			cmakefile.add_file("HEADER_FILES", paths.cmake_header_file)
-			write_file(paths,
-					   os.sep.join([templates, "processor.h" if args.processor else "file.h"]), 	
-				       paths.file_name + ".h" if args.dummy else paths.header_file, 
-				       "... Writing header file: ", args.author, args.force)
+			ivwpy.util.writeTemplateFile(
+										 paths.file_name + ".h" if args.dummy else paths.header_file,
+										 os.sep.join([templates, "processor.h" if args.processor else "file.h"]),
+										 "... Writing header file: ",
+										 paths.class_name, paths.module_define, paths.api_def, paths.include_define,
+										 args.author, args.force, False)
 
 		if not args.source:
 			cmakefile.add_file("SOURCE_FILES",  paths.get_cmake_source())
-			write_file(paths,
-					   os.sep.join([templates, "processor.cpp" if args.processor else "file.cpp"]), 	
-				       paths.file_name + ".cpp" if args.dummy else paths.get_source_file(), 
-				       "... Writing source file: ", args.author, args.force)
+			ivwpy.util.writeTemplateFile(
+										 paths.file_name + ".cpp" if args.dummy else paths.get_source_file(),
+										 os.sep.join([templates, "processor.cpp" if args.processor else "file.cpp"]),
+										 "... Writing source file: ",
+										 paths.class_name, paths.module_define, paths.api_def, paths.include_define,
+										 args.author, args.force, False)
 
 		if args.frag:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".frag"))
-			write_file(paths,
-					   os.sep.join([templates, "fragment.frag"]), 	
-				       paths.file_name + ".frag" if args.dummy else paths.get_glsl_file(".frag"), 
-				       "... Writing fragment file: ", args.author, args.force)
-				
+			ivwpy.util.writeTemplateFile(
+										 paths.file_name + ".frag" if args.dummy else paths.get_glsl_file(".frag"),
+										 os.sep.join([templates, "fragment.frag"]),
+										 "... Writing fragment file: ",
+										 paths.class_name, paths.module_define, paths.api_def, paths.include_define,
+										 args.author, args.force, False)
+
 		if args.vert:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".vert"))
-			write_file(paths,
-					   os.sep.join([templates, "vertex.vert"]), 	
-				       paths.file_name + ".vert" if args.dummy else paths.get_glsl_file(".vert"), 
-				       "... Writing vertex file: ", args.author, args.force)		
+			ivwpy.util.writeTemplateFile(
+										 paths.file_name + ".vert" if args.dummy else paths.get_glsl_file(".vert"),
+										 os.sep.join([templates, "vertex.vert"]),
+										 "... Writing vertex file: ",
+										 paths.class_name, paths.module_define, paths.api_def, paths.include_define,
+										 args.author, args.force, False)
 
 		if args.geom:
 			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_glsl(".geom"))
-			write_file(paths,
-					   os.sep.join([templates, "geometry.geom"]), 	
-				       paths.file_name + ".geom" if args.dummy else paths.get_glsl_file(".geom"), 
-				       "... Writing geometry file: ", args.author, args.force)						 
+			ivwpy.util.writeTemplateFile(
+										 paths.file_name + ".geom" if args.dummy else paths.get_glsl_file(".geom"),
+										 os.sep.join([templates, "geometry.geom"]),
+										 "... Writing geometry file: ",
+										 paths.class_name, paths.module_define, paths.api_def, paths.include_define,
+										 args.author, args.force, False)
 
 		cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
 

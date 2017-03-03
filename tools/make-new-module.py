@@ -37,7 +37,7 @@ import ivwpy.util
 import ivwpy.ivwpaths
 import ivwpy.cmake
 
-def make_module(ivwpath, path, name, verbose, dummy):
+def make_module(ivwpath, path, name, verbose, dummy, templatesFolder, author, bNoEmptyDirs):
 	if os.path.exists(os.sep.join([path, name])):
 		cp.print_error("Error module: "+ name + ", already exits")
 		return
@@ -94,6 +94,8 @@ def make_module(ivwpath, path, name, verbose, dummy):
 		}
 	]
 
+	if (bNoEmptyDirs): dirs = []
+
 	templates = [
 		{"file" : "CMakeLists.txt" , "prefix" : ""    , "desc" : "CMake project definition"},
 		{"file" : "depends.cmake"  , "prefix" : ""    , "desc" : "List of dependencies to other modules / cmake packages"},
@@ -110,40 +112,28 @@ def make_module(ivwpath, path, name, verbose, dummy):
 	for dir in dirs:
 		print("... Create dir:  {0:.<30} {desc:<100}".format(os.sep.join([lname] + dir["path"])+" ", **dir))
 		if not dummy: os.mkdir(os.sep.join([module_dir] + dir["path"]))
-	
+
 	for template in templates:
 		try:
-			with open(os.sep.join([ivwpath, 'tools', 'templates', template["file"]]),'r') as f:
-				if verbose:
-					print("")
-					print("FILE: " + os.sep.join([module_dir, template["prefix"] + template["file"]]))
-					print("#"*60)
-					
-				lines = []
-				for line in f:
-					line = line.replace("<name>", name)
-					line = line.replace("<lname>", lname)
-					line = line.replace("<uname>", uname)
-					lines.append(line)
-					if verbose: print(line, end='')
-				
-				if verbose: print("")
-			
-				print("... Create file: {0:.<30} {desc:<100}".format(os.sep.join([lname, template["prefix"] + template["file"]])+" ", **template))	
-				if not dummy:
-					with open(os.sep.join([module_dir, template["prefix"] + template["file"]]),'w') as f:
-						for line in lines:
-							f.write(line)
-						if verbose: print(line)
-	
+			if verbose:
+				print("")
+				print("FILE: " + os.sep.join([module_dir, template["prefix"] + template["file"]]))
+				print("#"*60)
+
+			newfilename = os.sep.join([module_dir, template["prefix"] + template["file"]])
+			templatefilename = os.sep.join([templatesFolder, template["file"]])
+			comment = "... Create file: {0:.<30} {desc:<100}".format(os.sep.join([lname, template["prefix"] + template["file"]])+" ", **template)
+			ivwpy.util.writeTemplateFile(newfilename, templatefilename, comment,
+											name, "<define>", "<api>", "<incfile>", author, True, verbose)
+
 		except FileNotFoundError as err:
 			cp.print_error(err)
 			return
 
-					
 	print("... Done")
 
-				
+
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Add new modules to inviwo', 
 									 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -157,8 +147,15 @@ if __name__ == '__main__':
 		                help="Path to the inviwo repository. Tries to find it in the current path")
 	parser.add_argument("-c", "--cmake", type=str, nargs=1, action="store", dest="builddir", 
 						help="Rerun CMake in the specified build directory")
+	parser.add_argument("-t", "--templates", type=str, dest="templatesdir", default='',
+						help="Path to the templates directory. If not given, the templates folder in the Inviwo-Tools folder will be used.")
+	parser.add_argument("-a", "--author", type=str, dest="author", default="<author>",
+						help="Author name for the new files.")
+	parser.add_argument("-nd", "--no-empty-dirs", action="store_true", dest="bNoEmptyDirs", 
+		                help="Do not create empty directories")
 	args = parser.parse_args()
 
+	#Find Inviwo
 	if args.ivwpath == "":
 		ivwpath = ivwpy.ivwpaths.find_inv_path()
 	else:
@@ -170,12 +167,20 @@ if __name__ == '__main__':
 		sys.exit(1)
 	
 	print("Path to inviwo: " + ivwpath)
-		
+
+	#Get the folder with the templates
+	if args.templatesdir == "":
+		templatesFolder = os.sep.join([ivwpath, 'tools', 'templates'])
+	else:
+		templatesFolder = args.templatesdir
+
+	#Create module(s)
 	for pathname in args.modules:
 		path, name = os.path.split(pathname)
 		if path == "": path = "."
-		make_module(ivwpath, path, name, args.verbose, args.dummy)
+		make_module(ivwpath, path, name, args.verbose, args.dummy, templatesFolder, args.author, args.bNoEmptyDirs)
 
+	#Run CMake, if desired
 	if args.builddir != None:
 		ivwpy.cmake.runCMake(str(args.builddir[0]), ["-DIVW_MODULE_"+name.upper()+"=1"])
 	else: 
