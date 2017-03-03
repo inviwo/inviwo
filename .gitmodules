@@ -1,0 +1,3 @@
+[submodule "modules/eigenutils/ext/eigen"]
+	path = modules/eigenutils/ext/eigen
+	url = https://github.com/RLovelett/eigen
