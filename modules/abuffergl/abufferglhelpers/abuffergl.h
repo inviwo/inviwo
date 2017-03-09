@@ -86,6 +86,7 @@ public:
     ButtonProperty abufferReSize_;
     BoolProperty abufferWriteABufferInfoToFile_;
     FloatVec4Property bgColor_;
+    BoolProperty verboseLogging_;
     size_t sharedPoolSize_;
 
     int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
@@ -128,6 +129,9 @@ public:
     Shader resolveABufferShader_;
     Shader resetABufferShader_;
 
+    void setLogStatus(bool enable) { verboseLogging_ = enable; }
+    bool getLogStatus() const { return verboseLogging_; }
+
 protected:
     // Global init function
     void init(void);
@@ -156,6 +160,7 @@ protected:
     std::vector<TextureUnit*> texUnits_;
 
     ivec2 dim_;
+    bool verboseLogging_;
 };
 
 }  // namespace

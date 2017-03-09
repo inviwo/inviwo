@@ -62,9 +62,11 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     : MeshRenderProcessorGL()
     , abuffer_()
     , transparency_("transparency", "Global Transparency", 0.5f, 0.0f, 1.0f, 0.001f)
+    , verboseLogging_("logging", "Verbose Log", false)
     , abufferGeometryShader_("geometryrendering.vert", "abuffergeometrygl.frag", false) {
     addProperty(abuffer_.settings_);
     addProperty(transparency_);
+    addProperty(verboseLogging_);
 
     abuffer_.settings_.onChange(this, &ABufferGeometryGLProcessor::onAbufferSettingChanged);
     transparency_.onChange(this, &ABufferGeometryGLProcessor::onAbufferTransparencyChanged);
@@ -77,7 +79,11 @@ void ABufferGeometryGLProcessor::initializeResources() {
     MeshRenderProcessorGL::addCommonShaderDefines(abufferGeometryShader_);
 }
 
-void ABufferGeometryGLProcessor::process() { geometryRender(); }
+void ABufferGeometryGLProcessor::process() {
+    if (verboseLogging_.isModified()) {
+        abuffer_.setLogStatus(verboseLogging_.get());
+    }
+    geometryRender(); }
 
 void ABufferGeometryGLProcessor::geometryRender() {
     ABUFFER_PROFILE("Total-Time");
