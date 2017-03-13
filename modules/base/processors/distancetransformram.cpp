@@ -111,11 +111,19 @@ void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Prope
 
 void DistanceTransformRAM::process() {
     if (util::is_future_ready(newVolume_)) {
-        auto vol = newVolume_.get();
-        dataRange_.set(vol->dataMap_.dataRange);
-        outport_.setData(vol);
-        hasNewData_ = false;
-        btnForceUpdate_.setDisplayName("Update Distance Map");
+        try {
+            auto vol = newVolume_.get();
+            dataRange_.set(vol->dataMap_.dataRange);
+            outport_.setData(vol);
+            hasNewData_ = false;
+            btnForceUpdate_.setDisplayName("Update Distance Map");
+        } catch (Exception& e) {
+            // Need to reset the future, VS bug: http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
+            newVolume_ = {};
+            outport_.setData(nullptr);
+            hasNewData_ = false;
+            throw;
+        }
     } else if (!newVolume_.valid()) {  // We are not waiting for a calculation
         btnForceUpdate_.setDisplayName("Update Distance Map (dirty)");
         if (volumePort_.isChanged() || distTransformDirty_) {
