@@ -30,58 +30,7 @@
 #include <inviwo/core/util/exception.h>
 #include <modules/base/processors/volumesource.h>
 #include <inviwo/core/util/commandlineparser.h>
-
-
-
-//
-//template<typename T>
-//class ProcessorHolder {
-//
-//public:
-//    ProcessorHolder() : processor_(nullptr) {}
-//    ProcessorHolder(T *t) : processor_(t) {}
-//    ProcessorHolder(const ProcessorHolder &ph) : processor_(ph.processor_) {}
-//
-//    ProcessorHolder& operator=(ProcessorHolder &&r) {
-//        if (*this != r) {
-//            processor_ = r.processor_;
-//            r.processor_ = nullptr;
-//        }
-//        return *this;
-//    }
-//
-//
-//
-//    ProcessorHolder& operator=(T *r) {
-//        if (processor_ != r) {
-//            if (processor_ && processor_->getNetwork() == nullptr) {
-//                delete processor_;
-//            }
-//            processor_ = r;
-//        }
-//        return *this;
-//    }
-//
-//    ProcessorHolder(ProcessorHolder &&ph) : processor_(ph.processor_) {
-//        ph.processor_ = nullptr;
-//    }
-//
-//    virtual ~ProcessorHolder() {
-//
-//        if (processor_ && processor_->getNetwork() == nullptr) {
-//            delete processor_;
-//        }
-//    }
-//
-//
-//
-//private:
-//
-//    T* processor_;
-//
-//};
-//
-//PYBIND11_DECLARE_HOLDER_TYPE(inviwo::Processor*, ProcessorHolder<inviwo::Processor*>);
+#include <inviwo/core/util/logcentral.h>
 
 
 template<typename T>
@@ -98,8 +47,6 @@ namespace pybind11 {
                 return cast(*src, pol, parent);
             }
         };
-
-
 
         template<> struct type_caster<std::vector<CanvasProcessor *>> : ListCasterBase<CanvasProcessor> {
             static handle cast(const std::vector<CanvasProcessor *> &src, return_value_policy, handle parent) {
@@ -711,6 +658,9 @@ PYBIND11_PLUGIN(inviwopy) {
     pyTemplateProperty<bool, BoolProperty>(boolProperty);
 
     m.mainModule_.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
+    m.mainModule_.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
+    m.mainModule_.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
+    m.mainModule_.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
 
     py::enum_<inviwo::PathType>(m.mainModule_, "PathType")
         .value("Data", PathType::Data)
