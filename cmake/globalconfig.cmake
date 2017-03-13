@@ -55,7 +55,7 @@ else()
 endif()
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    mesage(WARNING "Inviwo is only supported for 64-bit architectures.")
+    message(WARNING "Inviwo is only supported for 64-bit architectures.")
 endif()
 
 
