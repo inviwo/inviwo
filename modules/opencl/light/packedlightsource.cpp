@@ -55,8 +55,8 @@ PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float r
     mat4 invTransform = glm::inverse(light.tm);
     vec4 transformedWidth = invTransform*vec4(lightsource->getSize().x, 0.f, 0.f, 0.f);
     vec4 transformedHeight = invTransform*vec4(0.f, lightsource->getSize().y, 0.f, 0.f);
-    light.size.x = glm::length((transformedWidth).xyz());
-    light.size.y = glm::length((transformedHeight).xyz());
+    light.size.x = glm::length(vec3(transformedWidth));
+    light.size.y = glm::length(vec3(transformedHeight));
 
     return light;
 }

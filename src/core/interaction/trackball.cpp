@@ -369,8 +369,8 @@ void Trackball::rotate(Event* event) {
             glm::distance(to, object_->getWorldPosFromNormalizedDeviceCoords(curNDC));
     } else {
         // Compute coordinates on a sphere to rotate from and to
-        const auto lastTBI = getTrackBallIntersection(lastNDC_.xy());
-        const auto curTBI = getTrackBallIntersection(curNDC.xy());
+        const auto lastTBI = getTrackBallIntersection(vec2(lastNDC_));
+        const auto curTBI = getTrackBallIntersection(vec2(curNDC));
 
         if (lastTBI.first && curTBI.first && gestureStartNDCDepth_ < 1) {
             const auto Pa = glm::normalize(lastTBI.second - to);
@@ -576,8 +576,8 @@ void Trackball::touchGesture(Event* event) {
                 glm::distance(to, object_->getWorldPosFromNormalizedDeviceCoords(curNDC));
         } else {
             // Compute coordinates on a sphere to rotate from and to
-            const auto lastTBI = getTrackBallIntersection(lastNDC_.xy());
-            const auto curTBI = getTrackBallIntersection(curNDC.xy());
+            const auto lastTBI = getTrackBallIntersection(vec2(lastNDC_));
+            const auto curTBI = getTrackBallIntersection(vec2(curNDC));
 
             if (lastTBI.first && curTBI.first && gestureStartNDCDepth_ < 1) {
                 const auto Pa = glm::normalize(lastTBI.second - to);

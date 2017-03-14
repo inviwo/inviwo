@@ -76,15 +76,15 @@ std::shared_ptr<Volume> inviwo::util::detail::VolumeLaplacianDispatcher::dispatc
     const dmat4 m{volume->getCoordinateTransformer().getDataToWorldMatrix()};
     const auto a = m * dvec4(0, 0, 0, 1);
     const auto b = m * dvec4(dvec3(1.0) / dvec3(volume->getDimensions() - size3_t(1)), 1);
-    const auto spacing = b - a;
+    const auto spacing = dvec3(b - a);
 
-    const auto o = glm::diagonal3x3(spacing.xyz());
+    const auto o = glm::diagonal3x3(spacing);
     const Sampler s(volume, CoordinateSpace::World);
 
     const util::IndexMapper3D index{volume->getDimensions()};
 
     const auto resDim = dvec3(1.0) / dvec3(volume->getDimensions() - size3_t(1));
-    const auto resSpace2 = dvec3(1.0) / (spacing.xyz() * spacing.xyz());
+    const auto resSpace2 = dvec3(1.0) / (spacing * spacing);
 
     auto minval(std::numeric_limits<double>::max());
     auto maxval(std::numeric_limits<double>::lowest());
