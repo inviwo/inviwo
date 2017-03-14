@@ -272,7 +272,7 @@ void HDF5ToVolume::onDataChange() {
         std::vector<OptionPropertyStringOption> basisOptions;
         basisOptions.emplace_back("default", "User defined basis", "default");
         basisOptions.emplace_back("default", "User defined spacing", "default");
-        for (const auto& meta : volumeMatches_) {
+        for (const auto& meta : basisMatches_) {
             basisOptions.emplace_back(meta.path_, getDescription(meta), meta.path_);
         }
         basisSelection_.replaceOptions(basisOptions);
