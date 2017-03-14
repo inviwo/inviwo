@@ -53,7 +53,9 @@ DistanceTransformRAM::DistanceTransformRAM()
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
-    , upsample_("upsample", "Up sample", size3_t(1), size3_t(1), size3_t(10))
+    , upsamleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
+    , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1), size3_t(10))
+    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", true)
     , dataRange_("dataRange", "Data Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
                  0.0, InvalidationLevel::Valid, PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range",
@@ -73,7 +75,17 @@ DistanceTransformRAM::DistanceTransformRAM()
     addProperty(normalize_);
     addProperty(resultDistScale_);
     addProperty(resultSquaredDist_);
-    addProperty(upsample_);
+    addProperty(uniformUpsampling_);
+    addProperty(upsampleFactorVec3_);
+    addProperty(upsamleFactorUniform_);
+
+    auto triggerUpdate = [&]() {
+        bool uniform = uniformUpsampling_.get();
+        upsampleFactorVec3_.setVisible(!uniform);
+        upsamleFactorUniform_.setVisible(uniform);
+    };
+    triggerUpdate();
+    uniformUpsampling_.onChange(triggerUpdate);
 
     dataRange_.setSerializationMode(PropertySerializationMode::None);
     dataRange_.setReadOnly(true);
@@ -88,6 +100,8 @@ DistanceTransformRAM::DistanceTransformRAM()
     });
 
     addProperty(btnForceUpdate_);
+
+    setAllPropertiesCurrentStateAsDefault();
 
     btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
 
@@ -143,10 +157,11 @@ void DistanceTransformRAM::updateOutport() {
 
     auto calc =
         [
-          pb = &progressBar_, upsample = upsample_.get(), threshold = threshold_.get(),
-          normalize = normalize_.get(), flip = flip_.get(), square = resultSquaredDist_.get(),
-          scale = resultDistScale_.get(), dataRangeMode = dataRangeMode_.get(),
-          customDataRange = customDataRange_.get(), done
+          pb = &progressBar_,
+          upsample = uniformUpsampling_.get() ? size3_t(upsamleFactorUniform_.get()) : upsampleFactorVec3_.get(),
+          threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+          square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
+          dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
         ](std::shared_ptr<const Volume> volume)
             ->std::shared_ptr<const Volume> {
 
