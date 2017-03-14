@@ -53,10 +53,10 @@ DistanceTransformRAM::DistanceTransformRAM()
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
-    , upsamleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
+    , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1), size3_t(10))
-    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", true)
-    , dataRange_("dataRange", "Data Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
+    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
+    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
                  0.0, InvalidationLevel::Valid, PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range",
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
@@ -77,32 +77,30 @@ DistanceTransformRAM::DistanceTransformRAM()
     addProperty(resultSquaredDist_);
     addProperty(uniformUpsampling_);
     addProperty(upsampleFactorVec3_);
-    addProperty(upsamleFactorUniform_);
+    addProperty(upsampleFactorUniform_);
 
     auto triggerUpdate = [&]() {
         bool uniform = uniformUpsampling_.get();
         upsampleFactorVec3_.setVisible(!uniform);
-        upsamleFactorUniform_.setVisible(uniform);
+        upsampleFactorUniform_.setVisible(uniform);
     };
-    triggerUpdate();
     uniformUpsampling_.onChange(triggerUpdate);
+    upsampleFactorUniform_.setVisible(false);
 
-    dataRange_.setSerializationMode(PropertySerializationMode::None);
-    dataRange_.setReadOnly(true);
+    dataRangeOutput_.setSerializationMode(PropertySerializationMode::None);
+    dataRangeOutput_.setReadOnly(true);
 
-    addProperty(dataRange_);
     addProperty(dataRangeMode_);
-
     addProperty(customDataRange_);
+
+    addProperty(dataRangeOutput_);
 
     dataRangeMode_.onChange([&](){
         customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
     });
 
     addProperty(btnForceUpdate_);
-
-    setAllPropertiesCurrentStateAsDefault();
-
+    
     btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
 
     progressBar_.hide();
@@ -127,7 +125,7 @@ void DistanceTransformRAM::process() {
     if (util::is_future_ready(newVolume_)) {
         try {
             auto vol = newVolume_.get();
-            dataRange_.set(vol->dataMap_.dataRange);
+            dataRangeOutput_.set(vol->dataMap_.dataRange);
             outport_.setData(vol);
             hasNewData_ = false;
             btnForceUpdate_.setDisplayName("Update Distance Map");
@@ -158,7 +156,7 @@ void DistanceTransformRAM::updateOutport() {
     auto calc =
         [
           pb = &progressBar_,
-          upsample = uniformUpsampling_.get() ? size3_t(upsamleFactorUniform_.get()) : upsampleFactorVec3_.get(),
+          upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get()) : upsampleFactorVec3_.get(),
           threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
           square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
           dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done

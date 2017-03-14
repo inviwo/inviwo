@@ -114,10 +114,10 @@ private:
     DoubleProperty resultDistScale_; // scaling factor for distances
     BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
     BoolProperty uniformUpsampling_;
-    IntProperty upsamleFactorUniform_; // uniform upscaling of the output field
+    IntProperty upsampleFactorUniform_; // uniform upscaling of the output field
     IntSize3Property upsampleFactorVec3_; // non-uniform upscaling of the output field 
     
-    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty dataRangeOutput_;
     TemplateOptionProperty<DataRangeMode> dataRangeMode_;
     DoubleMinMaxProperty customDataRange_;
 
