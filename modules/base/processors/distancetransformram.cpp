@@ -131,7 +131,7 @@ void DistanceTransformRAM::process() {
             outport_.setData(vol);
             hasNewData_ = false;
             btnForceUpdate_.setDisplayName("Update Distance Map");
-        } catch (Exception& e) {
+        } catch (Exception&) {
             // Need to reset the future, VS bug: http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
             newVolume_ = {};
             outport_.setData(nullptr);
