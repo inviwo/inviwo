@@ -104,7 +104,7 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd)
 
         dvec3 velocity = invBasis_ * (v * stepSize_ * (fwd ? 1.0 : -1.0));
 
-        line.positions_.push_back(curPos.xyz());
+        line.positions_.push_back(vec3(curPos));
         line.metaData_["velocity"].push_back(worldVelocty);
         line.metaData_["timestamp"].push_back(dvec3(curPos.a));
 

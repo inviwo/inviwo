@@ -97,7 +97,7 @@ void StreamLines::process() {
             for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
                 auto p = seeds->at(j);
                 vec4 P = m * vec4(p, 1.0f);
-                auto line = tracer.traceFrom(P.xyz());
+                auto line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
                 if (size > 1) {
 #pragma omp critical
@@ -112,7 +112,7 @@ void StreamLines::process() {
         for (const auto &seeds : seedPoints_) {
             for(const auto &p : *seeds.get()){
                 vec4 P = m * vec4(p, 1.0f);
-                auto line = tracer.traceFrom(P.xyz());
+                auto line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
                 if (size > 1) {
                     lines->push_back(line, startID);

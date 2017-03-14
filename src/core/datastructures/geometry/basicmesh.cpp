@@ -590,12 +590,12 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
 
 static vec3 V(const mat4& m, const vec3 v) {
     vec4 V = m * vec4(v, 1);
-    return V.xyz() / V.w;
+    return vec3(V) / V.w;
 }
 
 static vec3 N(const mat4& m, const vec3 v) {
     vec4 V = m * vec4(v, 0);
-    return V.xyz();
+    return vec3(V);
 }
 
 std::shared_ptr<BasicMesh> BasicMesh::cube(const mat4& m, const vec4& color) {

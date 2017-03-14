@@ -116,8 +116,8 @@ void OrientationIndicator::process() {
         auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
         auto point  = m * viewPos;
         auto point2 = m * viewPos2;
-        start = point.xyz() / point.w;
-        auto end = point2.xyz() / point2.w;
+        start = vec3(point) / point.w;
+        auto end = vec3(point2) / point2.w;
         scale = glm::distance(start, end);
     }
 

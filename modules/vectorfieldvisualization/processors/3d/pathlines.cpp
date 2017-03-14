@@ -150,7 +150,7 @@ void PathLines::process() {
         for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
             const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
+            auto line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
             if (size>1) {  
                 #pragma omp critical

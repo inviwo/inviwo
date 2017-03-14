@@ -123,8 +123,8 @@ template <typename T, typename P>
 inline T Interpolation<T, P>::trilinear(
     const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h,
     const Vector<3, P> &interpolants) {
-    return linear(bilinear(a, b, c, d, interpolants.xy()),
-                      bilinear(e, f, g, h, interpolants.xy()), interpolants.z);
+    return linear(bilinear(a, b, c, d, Vector<2, P>(interpolants)),
+                      bilinear(e, f, g, h,Vector<2, P>(interpolants)), interpolants.z);
 }
 
 template <typename T, typename P>
@@ -139,8 +139,8 @@ inline T Interpolation<T, P>::quadlinear(
     const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h,
     const T &i, const T &j, const T &k, const T &l, const T &m, const T &n, const T &o, const T &p,
     const Vector<4, P> &interpolants) {
-    return linear(trilinear(a, b, c, d, e, f, g, h, interpolants.xyz()),
-                      trilinear(i, j, k, l, m, n, o, p, interpolants.xyz()),
+    return linear(trilinear(a, b, c, d, e, f, g, h, Vector<3, P>(interpolants)),
+                      trilinear(i, j, k, l, m, n, o, p, Vector<3, P>(interpolants)),
                       interpolants.w);
 }
 

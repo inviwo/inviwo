@@ -175,7 +175,7 @@ PickingManager::Result PickingController::findPickingAction(const uvec2& coord) 
     if (src_ && pickingEnabled()) {
         auto value = src_->readPixel(size2_t(coord), LayerType::Picking);
         if (value.a > 0.0) {
-            return PickingManager::getPtr()->getPickingActionFromColor(uvec3(value.rgb()));
+            return PickingManager::getPtr()->getPickingActionFromColor(uvec3(value));
         }
     }
     return {0, nullptr};

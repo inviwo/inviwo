@@ -33,9 +33,6 @@
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
-#ifndef GLM_FORCE_SWIZZLE
-#define GLM_FORCE_SWIZZLE
-#endif
 #ifndef GLM_FORCE_SIZE_T_LENGTH
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
