@@ -72,8 +72,8 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer &cont) {
         updateMinMax();
     }
 
-    dvec3 min = min_.rgb();
-    dvec3 max = max_.rgb();
+    dvec3 min{min_};
+    dvec3 max{max_};
 
     if (zeroCentered_) {
         max = glm::max(glm::abs(min), glm::abs(max));

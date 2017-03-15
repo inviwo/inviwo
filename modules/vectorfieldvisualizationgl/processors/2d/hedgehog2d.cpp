@@ -121,8 +121,8 @@ void HedgeHog2D::process() {
                 jx = jitterx(mt_);
                 jy = jittery(mt_);
             }
-            auto v = sampler.sample(x + jx + dx / 2, y + jy + dy / 2).xy();
-            auto t = glyphType_.get();
+            const dvec3 v{sampler.sample(x + jx + dx / 2, y + jy + dy / 2)};
+            const auto t = glyphType_.get();
             switch (t) {
                 case GlyphType::Arrow:
                     createArrow(*(mesh.get()), *indexTriangles, x + jx, y + jy, dx, dy, v);

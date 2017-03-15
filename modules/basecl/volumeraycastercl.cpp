@@ -191,8 +191,8 @@ void VolumeRaycasterCL::setKernelArguments() {
     outputOffset(outputOffset_);
     outputSize(outputSize_);
     samplingRate(samplingRate());
-    setLightingProperties(light_.shadingMode, light_.position.xyz(), light_.ambientColor.xyz(),
-                          light_.diffuseColor.xyz(), light_.specularColor.xyz(),
+    setLightingProperties(light_.shadingMode, vec3(light_.position), vec3(light_.ambientColor),
+                          vec3(light_.diffuseColor), vec3(light_.specularColor),
                           light_.specularExponent);
 }
 

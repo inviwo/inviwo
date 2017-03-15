@@ -115,7 +115,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
         }
 
         
-        dvec3 worldVelocty = volumeSampler_->sample(curPos).xyz();
+        const dvec3 worldVelocty{volumeSampler_->sample(curPos)};
 
 
         if (normalizeSample_) v = glm::normalize(v);
@@ -131,7 +131,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
 }
 
 dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
-    return volumeSampler_->sample(curPos).xyz();
+    return dvec3(volumeSampler_->sample(curPos));
 }
 
 dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
@@ -149,19 +149,19 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
         }
     };
 
-    auto k1 = volumeSampler_->sample(curPos).xyz();
+    auto k1 = dvec3(volumeSampler_->sample(curPos));
     if (normalizeSample_) k1 = normalize(k1);
     auto K1 = m * k1;
-    auto k2 = volumeSampler_->sample(curPos + K1 * h2).xyz();
+    auto k2 = dvec3(volumeSampler_->sample(curPos + K1 * h2));
     if (normalizeSample_) k2 = normalize(k2);
     auto K2 = m * k2;
-    auto k3 = volumeSampler_->sample(curPos + K2 * h2).xyz();
+    auto k3 = dvec3(volumeSampler_->sample(curPos + K2 * h2));
     if (normalizeSample_) k3 = normalize(k3);
     auto K3 = m * k3;
-    auto k4 = volumeSampler_->sample(curPos + K3 * h).xyz();
+    auto k4 = dvec3(volumeSampler_->sample(curPos + K3 * h));
     if (normalizeSample_) k4 = normalize(k4);
 
-    return (k1+2.0*(k2+k3)+k4 )/6.0;
+    return (k1 + 2.0 * (k2 + k3) + k4) / 6.0;
 }
 
 }  // namespace

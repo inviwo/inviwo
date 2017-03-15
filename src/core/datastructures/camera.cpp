@@ -75,7 +75,7 @@ vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const 
     vec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
     vec4 worldCoords = getInverseViewMatrix() * eyeCoords;
     worldCoords /= worldCoords.w;
-    return worldCoords.xyz();
+    return vec3(worldCoords);
 }
 
 vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {

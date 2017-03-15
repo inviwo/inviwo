@@ -283,8 +283,8 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
 
         mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
 
-        worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
-        worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
+        worldMin = glm::min(worldMin, vec3(trans * vec4(minPos, 1.f)));
+        worldMax = glm::max(worldMax, vec3(trans * vec4(maxPos, 1.f)));
     }
     camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
 }
@@ -307,9 +307,8 @@ void MeshRenderProcessorGL::setNearFarPlane() {
     nearDist = std::numeric_limits<float>::infinity();
     farDist = 0;
     vec3 nearPos, farPos;
-    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                   vec4(camera_.getLookFrom(), 1.0))
-                      .xyz();
+    const vec3 camPos{geom->getCoordinateTransformer().getWorldToModelMatrix() *
+                      vec4(camera_.getLookFrom(), 1.0)};
     for (auto& po : pos) {
         auto d = glm::distance2(po, camPos);
         if (d < nearDist) {

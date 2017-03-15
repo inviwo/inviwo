@@ -131,7 +131,7 @@ void StreamRibbons::process() {
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(P.xyz());
+            auto line = tracer.traceFrom(vec3(P));
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();

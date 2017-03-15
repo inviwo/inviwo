@@ -51,7 +51,7 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
         dvec4 P = toWorld * dvec4(pos, 1);
-        return P.xyz() / P.w;
+        return dvec3(P) / P.w;
     });
 
     auto &K = line.createMetaData("curvature");
@@ -115,7 +115,7 @@ void tortuosity(IntegralLine &line, dmat4 toWorld) {
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
         dvec4 P = toWorld * dvec4(pos, 1);
-        return P.xyz() / P.w;
+        return dvec3(P) / P.w;
     });
 
     auto &K = line.createMetaData("tortuosity");

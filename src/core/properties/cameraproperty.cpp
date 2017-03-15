@@ -308,8 +308,8 @@ void CameraProperty::adjustCameraToData(const mat4& prevDataToWorldMatrix,
         // Transform to data space of old basis and then to world space in new basis.
         auto toNewSpace = newDataToWorldMatrix * glm::inverse(prevDataToWorldMatrix_);
 
-        auto newLookFrom = (toNewSpace * vec4(lookFrom_.get(), 1.f)).xyz();
-        auto newLookTo = (toNewSpace * vec4(lookTo_.get(), 1.f)).xyz();
+        auto newLookFrom = vec3(toNewSpace * vec4(lookFrom_.get(), 1.f));
+        auto newLookTo = vec3(toNewSpace * vec4(lookTo_.get(), 1.f));
         float depthRatio =
             glm::length(newLookTo - newLookFrom) / glm::length(camera_->getDirection());
         NetworkLock lock(this);
