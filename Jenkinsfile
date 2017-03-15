@@ -21,6 +21,16 @@ def getChangeString() {
     return changeString
 }
 
+def nicelog(env = [], fun) {
+    withEnv(['TERM=xterm'] + env) {
+        ansiColor {
+            timestamps {
+                fun()
+            }
+        }
+    }
+}
+
 node {
     properties([
         parameters([
@@ -53,35 +63,33 @@ node {
                 sh "rm -r build"
             }
             dir('build') {
-                wrap([$class: 'TimestamperBuildWrapper']) {
-                    withEnv(['TERM=xterm', 'CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
-                        sh """
-                            cmake -G \"Unix Makefiles\" -LA \
-                                  -DCMAKE_BUILD_TYPE=${params['Build Type']} \
-                                  -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
-                                  -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
-                                  -DCMAKE_PREFIX_PATH=/opt/Qt/5.6/gcc_64 \
-                                  -DIVW_CMAKE_DEBUG=ON \
-                                  -DBUILD_SHARED_LIBS=ON \
-                                  -DIVW_MODULE_GLFW=ON \
-                                  -DIVW_TINY_GLFW_APPLICATION=ON \
-                                  -DIVW_TINY_QT_APPLICATION=ON \
-                                  -DIVW_MODULE_ABUFFERGL=ON \
-                                  -DIVW_MODULE_ANIMATION=ON \
-                                  -DIVW_MODULE_ANIMATIONQT=ON \
-                                  -DIVW_MODULE_POSTPROCESSING=ON \
-                                  -DIVW_MODULE_HDF5=ON \
-                                  ../inviwo
+                nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
+                    sh """
+                        cmake -G \"Unix Makefiles\" -LA \
+                              -DCMAKE_BUILD_TYPE=${params['Build Type']} \
+                              -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
+                              -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
+                              -DCMAKE_PREFIX_PATH=/opt/Qt/5.6/gcc_64 \
+                              -DIVW_CMAKE_DEBUG=ON \
+                              -DBUILD_SHARED_LIBS=ON \
+                              -DIVW_MODULE_GLFW=ON \
+                              -DIVW_TINY_GLFW_APPLICATION=ON \
+                              -DIVW_TINY_QT_APPLICATION=ON \
+                              -DIVW_MODULE_ABUFFERGL=ON \
+                              -DIVW_MODULE_ANIMATION=ON \
+                              -DIVW_MODULE_ANIMATIONQT=ON \
+                              -DIVW_MODULE_POSTPROCESSING=ON \
+                              -DIVW_MODULE_HDF5=ON \
+                              ../inviwo
 
-                            make -j 6
-                        """
-                    }
+                        make -j 6
+                    """
                 }
             }
         }
         stage('Regression') {
             dir('regress') {
-                wrap([$class: 'TimestamperBuildWrapper']) {
+                nicelog {
                     sh """
                         export DISPLAY=:0
                         python3 ../inviwo/tools/regression.py \
@@ -100,11 +108,11 @@ node {
     } finally {
         stage('Publish') {
             publishHTML([
-                allowMissing: true, 
-                alwaysLinkToLastBuild: true, 
-                keepAll: false, 
-                reportDir: 'regress', 
-                reportFiles: 'report.html', 
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: false,
+                reportDir: 'regress',
+                reportFiles: 'report.html',
                 reportName: 'Regression Report'
             ])
 
