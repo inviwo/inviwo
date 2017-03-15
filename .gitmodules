@@ -1,3 +1,8 @@
 [submodule "modules/eigenutils/ext/eigen"]
-	path = modules/eigenutils/ext/eigen
-	url = https://github.com/RLovelett/eigen
+    path = modules/eigenutils/ext/eigen
+    url = https://github.com/RLovelett/eigen
+[submodule "modules/hdf5/ext/hdf5"]
+    path = modules/hdf5/ext/hdf5
+    url = https://github.com/live-clones/hdf5.git
+    branch = hdf5_1_10_0
+
