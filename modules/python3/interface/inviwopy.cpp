@@ -120,7 +120,7 @@ template <typename T>
 auto pyOptionProperty(py::module &m) {
     using namespace inviwo;
     using P = TemplateOptionProperty<T>;
-    using O = typename OptionPropertyOption<T>;
+    using O = OptionPropertyOption<T>;
 
     auto classname = "OptionProperty" + Defaultvalues<T>::getName();
     auto optionclassname = Defaultvalues<T>::getName() + "Option";
