@@ -140,6 +140,26 @@ void main(void) {
     float linewidth = lineWidth_ / screenDim.x;
     float w = linewidth / 2.0 + 1.5*antialias_ / screenDim.x;
 
+
+    // homogeneous clipping
+    if (gl_in[1].gl_Position.w * gl_in[2].gl_Position.w < 0.0) {
+        // line intersects with near clip plane
+        float s = 0.00001 - gl_in[1].gl_Position.w / (gl_in[1].gl_Position.w - gl_in[2].gl_Position.w);
+        vec4 pNew = mix(gl_in[1].gl_Position, gl_in[2].gl_Position, s);
+
+        if (gl_in[1].gl_Position.w > 0.0) {
+            // replace p2 and p3
+            p2 = pNew.xy / pNew.w;
+            p3 = p2;
+        } else {
+            // replace p1 and p0
+            p1 = pNew.xy / pNew.w;
+            p0 = p1;
+        }
+        return;
+    }
+
+
     segmentLength_ = length(p2-p1);
 
     // determine line directions
