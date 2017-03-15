@@ -138,7 +138,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
 dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
-    dvec3 spatialPos = pos.xyz();
+    auto spatialPos = dvec3(pos);
     double t = pos.w;
 
     if (t < timeRange_.x || t > timeRange_.y) {
@@ -159,11 +159,11 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
     --it;
     auto wrapper = *it;
 
-    auto val0 = wrapper->sampler_.sample(spatialPos).xyz();
+    auto val0 = dvec3(wrapper->sampler_.sample(spatialPos));
     if (wrapper->next_.expired()) {
         return val0;
     }
-    auto val1 = wrapper->next_.lock()->sampler_.sample(spatialPos).xyz();
+    auto val1 = dvec3(wrapper->next_.lock()->sampler_.sample(spatialPos));
 
     double x = (t - wrapper->timestamp_) / wrapper->duration_;
     return Interpolation<dvec3>::linear(val0, val1, x);
@@ -171,10 +171,10 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
 
 bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const {
     // TODO check also time
-    if (glm::any(glm::lessThan(pos.xyz(), dvec3(0.0)))) {
+    if (glm::any(glm::lessThan(dvec3(pos), dvec3(0.0)))) {
         return false;
     }
-    if (glm::any(glm::greaterThan(pos.xyz(), dvec3(1.0)))) {
+    if (glm::any(glm::greaterThan(dvec3(pos), dvec3(1.0)))) {
         return false;
     }
     return true;

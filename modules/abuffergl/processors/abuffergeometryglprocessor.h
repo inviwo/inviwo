@@ -43,6 +43,7 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/abuffergl/abufferglhelpers/abuffergl.h>
 
@@ -65,6 +66,7 @@ private:
     void geometryRender();
     Inviwo_ABufferGL4 abuffer_;
     FloatProperty transparency_;
+    BoolProperty verboseLogging_;
     bool updateRequried_;
     Shader abufferGeometryShader_;
 };

@@ -53,6 +53,10 @@ public:
     };
 
     IntegralLine();
+    IntegralLine(const IntegralLine &rhs);
+
+    IntegralLine &operator=(const IntegralLine &that);
+
     virtual ~IntegralLine();
 
     void setTerminationReason(TerminationReason terminationReason) {
@@ -60,10 +64,16 @@ public:
     }
 
     const std::vector<dvec3> &getPositions() const;
+    std::vector<dvec3> &getPositions();
     const std::vector<dvec3> &getMetaData(const std::string &name) const;
+    std::vector<dvec3> &createMetaData(const std::string &name);
     bool hasMetaData(const std::string &name) const;
+    std::vector<std::string> getMetaDataKeys() const;
+
 
     double getLength()const;
+
+    double distBetweenPoints(size_t a,size_t b) const;
 
     dvec3 getPointAtDistance(double d)const;
 
@@ -71,6 +81,8 @@ public:
     void setIndex(size_t idx ) { idx_  = idx; }
 
 private:
+    double calcLength( std::vector<dvec3>::const_iterator start ,   std::vector<dvec3>::const_iterator end ) const;
+
     std::vector<dvec3> positions_;
     std::map<std::string, std::vector<dvec3>> metaData_;
     TerminationReason terminationReason_;

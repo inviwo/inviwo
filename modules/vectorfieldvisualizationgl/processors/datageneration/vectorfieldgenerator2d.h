@@ -77,7 +77,6 @@ protected:
     FrameBufferObject fbo_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VECTORFIELDGENERATOR2D_H
-
+#endif  // IVW_VECTORFIELDGENERATOR2D_H

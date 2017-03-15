@@ -59,7 +59,8 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(std::string identifier,
     , abufferLocalMemorySize_("abuffer-local-memory", "ABuffer Local Memory", 128, 128, 256, 128)
     , abufferReSize_("abuffer-resize", "ABuffer Resize")
     , abufferWriteABufferInfoToFile_("abuffer-write-abuffer-info", "Write ABuffer To File", false)
-    , bgColor_("bgColor", "Background Color", vec4(1.0)) {
+    , bgColor_("bgColor", "Background Color", vec4(1.0))
+    , verboseLogging_("logging", "Verbose Log", false) {
     addProperty(abufferEnable_);
     addProperty(abufferPageSize_);
     addProperty(abufferLocalMemorySize_);
@@ -78,7 +79,9 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(const ABufferGLCompositeP
     , abufferLocalMemorySize_(rhs.abufferLocalMemorySize_)
     , abufferReSize_(rhs.abufferReSize_)
     , abufferWriteABufferInfoToFile_(rhs.abufferWriteABufferInfoToFile_)
-    , bgColor_(rhs.bgColor_) {
+    , bgColor_(rhs.bgColor_)
+    , verboseLogging_(rhs.verboseLogging_)
+{
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -90,6 +93,7 @@ ABufferGLCompositeProperty& ABufferGLCompositeProperty::operator=(const ABufferG
         abufferLocalMemorySize_ = that.abufferLocalMemorySize_;
         abufferReSize_ = that.abufferReSize_;
         abufferWriteABufferInfoToFile_ = that.abufferWriteABufferInfoToFile_;
+        verboseLogging_ = that.verboseLogging_;
     }
     return *this;
 }
@@ -119,7 +123,9 @@ Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
     , abufferFragCountImgTexture_(nullptr)
     , semaphoreImgTexture_(nullptr)
     , globalAtomicCounterBuffer_(nullptr)
-    , dim_(dim) {
+    , dim_(dim)
+    , verboseLogging_(false)
+{
     settings_.sharedPoolSize_ = dim_.x * dim_.y * settings_.getSquaredPageSize() * 40;
 }
 
@@ -162,7 +168,9 @@ bool Inviwo_ABufferGL4::abuffer_isMemoryPoolExpansionRequired() {
 
 void Inviwo_ABufferGL4::abuffer_allocateMemory() {
     // allocate abuffer - one time only
-    LogWarn("ABuffer allocate abuffer");
+    if (verboseLogging_) {
+        LogWarn("ABuffer allocate abuffer");
+    }
     if (abufferPageIdxImgTexture_) delete abufferPageIdxImgTexture_;
     if (abufferFragCountImgTexture_) delete abufferFragCountImgTexture_;
     if (semaphoreImgTexture_) delete semaphoreImgTexture_;
@@ -304,7 +312,9 @@ void Inviwo_ABufferGL4::abuffer_initABuffer(ivec2 dim, bool forceInitialization)
     glGetBufferParameterui64vNV(GL_TEXTURE_BUFFER, GL_BUFFER_GPU_ADDRESS_NV,
                                 &sharedLinkListAddress_);
 
-    LogWarn("ABuffer init called. This is expensive")
+    if (verboseLogging_) {
+        LogWarn("ABuffer init called. This is expensive")
+    }
 }
 
 void Inviwo_ABufferGL4::aBuffer_bindTextures() {
@@ -384,7 +394,9 @@ void Inviwo_ABufferGL4::abuffer_addUniforms(Shader* shader) {
 void Inviwo_ABufferGL4::aBuffer_incrementSharedPoolSize() {
     glm::uint newSize = dim_.x * dim_.y * settings_.getSquaredPageSize();
     settings_.sharedPoolSize_ += newSize;
-    LogWarn("Incrementing Shared Pool Size (Upper Bound)")
+    if (verboseLogging_) {
+        LogWarn("Incrementing Shared Pool Size (Upper Bound)")
+    }
 }
 
 void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {

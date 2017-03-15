@@ -49,6 +49,9 @@
 #include <QToolButton>
 #include <QPixmap>
 #include <QSettings>
+#include <QScrollBar>
+#include <QResizeEvent>
+#include <QWheelEvent>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
@@ -59,11 +62,43 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 
+MessageTableView::MessageTableView(QWidget* parent) : QTableView(parent) {
+    // set scroll mode of table view to pixel instead of cells/rows for scrolling through long messages
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    verticalScrollBar()->setSingleStep(1);
+    verticalScrollBar()->setPageStep(10);
+}
+
+void MessageTableView::wheelEvent(QWheelEvent *event) {
+    if (event->orientation() == Qt::Vertical) {
+        QPoint numPixels = event->pixelDelta();
+        QPoint numDegrees = event->angleDelta() / 8;
+
+        auto scrollBar = verticalScrollBar();
+        int delta = 0;
+        if (!numPixels.isNull()) {
+            delta = numPixels.y();
+        } else if (!numDegrees.isNull()) {
+            QPoint numSteps = numDegrees / 15;
+            delta = numSteps.y();
+        }
+
+        auto value = scrollBar->value();
+        value -= delta * scrollBar->singleStep();
+        // clamp value
+        value = std::max(scrollBar->minimum(), std::min(scrollBar->maximum(), value));
+        scrollBar->setValue(value);
+        event->accept();
+    } else {
+        QTableView::wheelEvent(event);
+    }
+}
+
 namespace inviwo {
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent)
-    , tableView_(new QTableView(this))
+    , tableView_(new MessageTableView(this))
     , model_()
     , filter_(new QSortFilterProxyModel(this))
     , levelFilter_(new QSortFilterProxyModel(this))

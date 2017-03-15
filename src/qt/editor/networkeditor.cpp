@@ -435,7 +435,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     for (auto& item : items(e->scenePos())) {
         if (auto outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
-            QAction* showPortInsector = menu.addAction(tr("Port Inspector"));
+            QAction* showPortInsector = menu.addAction(tr("Port &Inspector"));
             showPortInsector->setCheckable(true);
             if (pim->hasPortInspector(outport->getPort())) {
                 showPortInsector->setChecked(true);
@@ -446,7 +446,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         if (auto inport = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
-            QAction* showPortInsector = menu.addAction(tr("Port Inspector"));
+            QAction* showPortInsector = menu.addAction(tr("Port &Inspector"));
             showPortInsector->setCheckable(true);
             if (pim->hasPortInspector(inport->getPort()->getConnectedOutport())) {
                 showPortInsector->setChecked(true);
@@ -459,7 +459,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
             
-            QAction* renameAction = menu.addAction(tr("Rename Processor"));
+            QAction* renameAction = menu.addAction(tr("Rename &Processor"));
             connect(renameAction, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
@@ -468,13 +468,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
 
 #if IVW_PROFILING
-            QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset Time Measurements"));
+            QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset &Time Measurements"));
             connect(resetTimeMeasurementsAction, &QAction::triggered,
                     [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
             if (processor->getProcessor()->hasProcessorWidget()) {
-                QAction* showAction = menu.addAction(tr("Show Widget"));
+                QAction* showAction = menu.addAction(tr("&Show Widget"));
                 showAction->setCheckable(true);
                 if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
                     showAction->setChecked(processorWidget->isVisible());
@@ -488,7 +488,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 });
             }
 
-            QAction* delprocessor = menu.addAction(tr("Delete && Keep Connections"));
+            QAction* delprocessor = menu.addAction(tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
                 auto p = processor->getProcessor();
                 for (auto& prop : p->getPropertiesRecursive()) {
@@ -520,10 +520,25 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 network_->removeAndDeleteProcessor(p);
             });
 
-            QAction* helpAction = menu.addAction(tr("Show Help"));
+
+            menu.addSeparator();
+            QAction* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
+            connect(invalidateOutputAction, &QAction::triggered, [this, processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
+            });
+
+            QAction* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
+            connect(invalidateResourcesAction, &QAction::triggered, [this, processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
+            });
+            menu.addSeparator();
+
+            QAction* helpAction = menu.addAction(tr("Show &Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
                 showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
+
+
 
             break;
         }

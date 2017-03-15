@@ -268,6 +268,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<FloatVec3Property>();
     registerProperty<FloatVec4Property>();
     registerProperty<ImageEditorProperty>();
+    registerProperty<IntSizeTMinMaxProperty>();
+    registerProperty<Int64MinMaxProperty>();
     registerProperty<IntMinMaxProperty>();
     registerProperty<IntProperty>();
     registerProperty<IntVec2Property>();

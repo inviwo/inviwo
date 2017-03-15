@@ -30,6 +30,7 @@
 import os
 import re
 from . import util
+from pathlib import Path
 
 class IvwPaths:
 	""" 
@@ -75,7 +76,34 @@ class IvwPaths:
 			self.glsl_file_name = os.sep.join(abspath[:module_pos + 2] + ["glsl", self.file_name])
 			self.cmake_glsl_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  +  util.useForwardSlash(self.make_path_relative(self.glsl_file_name, self.cmake_file))
 			self.module_register_file = os.sep.join(abspath[:module_pos + 2] + [self.module_name + "module"])
+		else:
+			#~ Assume flat directory structure
+			FileName = Path(filepath) #get a proper data structure for paths
+			self.class_name = FileName.name
+			self.file_name = self.class_name.replace("Kx", "").lower()
+			ModuleDirectory = FileName.parent.resolve()
+			AbsolutePath = ModuleDirectory.joinpath(self.file_name)
+			self.module_name = ModuleDirectory.name
+			self.api_def = "IVW_MODULE_" + self.module_name.upper() + "_API"
+			self.module_define = "<" + str( AbsolutePath.with_name(self.module_name + "moduledefine.h").relative_to(ModuleDirectory.parent).as_posix() ) +">"
+			self.header_file = AbsolutePath.with_suffix(".h")
+			self.source = self.header_file.with_suffix("") #get_source_file will add .cpp later
+			self.include_define = "<" + str( self.header_file.relative_to(ModuleDirectory.parent).as_posix() ) +">"
+			self.cmake_file = AbsolutePath.with_name("CMakeLists.txt") #self.find_cmake_file(str(self.source))
+			self.cmake_header_file = "${CMAKE_CURRENT_SOURCE_DIR}/"  +  self.header_file.relative_to(self.cmake_file.parent).as_posix()
+			self.cmake_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  + self.source.relative_to(self.cmake_file.parent).as_posix()
+			self.glsl_file_name = ModuleDirectory.joinpath("glsl", self.file_name)
+			self.cmake_glsl_source = "${CMAKE_CURRENT_SOURCE_DIR}/"  +  self.glsl_file_name.relative_to(self.cmake_file.parent).as_posix()
+			self.module_register_file = ModuleDirectory.joinpath(self.module_name + "module")
 			
+			#~ Stringify
+			self.header_file = str(self.header_file)
+			self.source = str(self.source)
+			self.cmake_file = str(self.cmake_file)
+			self.glsl_file_name = str(self.glsl_file_name)
+			self.module_register_file = str(self.module_register_file)
+
+
 	def get_source_file(self, ext = ".cpp"):
 		return self.source + ext
 

@@ -151,7 +151,7 @@ uvec2 PickingEvent::getCanvasSize() const {
 }
 
 dvec2 PickingEvent::getPreviousPosition() const {
-    return dvec2(0.5) * (previousNDC_.xy() + dvec2(1.0));
+    return dvec2(0.5) * (dvec2(previousNDC_) + dvec2(1.0));
 }
 
 
@@ -161,7 +161,7 @@ double PickingEvent::getPreviousDepth() const {
 
 
 dvec2 PickingEvent::getPressedPosition() const {
-    return dvec2(0.5) * (pressedNDC_.xy() + dvec2(1.0));
+    return dvec2(0.5) * (dvec2(pressedNDC_) + dvec2(1.0));
 }
 
 

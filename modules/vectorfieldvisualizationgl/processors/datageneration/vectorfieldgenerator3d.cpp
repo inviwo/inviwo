@@ -44,36 +44,39 @@ const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
     CodeState::Experimental,              // Code state
     Tags::GL,                             // Tags
 };
-const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
-
-VectorFieldGenerator3D::VectorFieldGenerator3D()
-    : Processor()
-    , outport_("outport")
-    , size_("size", "Volume size", size3_t(16), size3_t(1), size3_t(1024))
-    , xRange_("xRange", "X Range", -1, 1, -10, 10)
-    , yRange_("yRange", "Y Range", -1, 1, -10, 10)
-    , zRange_("zRange", "Z Range", -1, 1, -10, 10)
-    , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
-    , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
-    , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag", false)
-    , fbo_() {
-    
-    addPort(outport_);
-
-    addProperty(size_);
-    addProperty(xValue_);
-    addProperty(yValue_);
-    addProperty(zValue_);
-
-    addProperty(xRange_);
-    addProperty(yRange_);
-    addProperty(zRange_);
-
-        shader_.onReload([this]() { invalidate(InvalidationLevel::Valid); });
+const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const {
+    return processorInfo_;
 }
 
-VectorFieldGenerator3D::~VectorFieldGenerator3D() {}
+    VectorFieldGenerator3D::VectorFieldGenerator3D()
+        : Processor()
+        , outport_("outport")
+        , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag", false)
+        , fbo_()
+        , size_("size", "Volume size", size3_t(16), size3_t(1), size3_t(1024))
+        , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
+        , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
+        , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
+        , xRange_("xRange", "X Range", -1, 1, -10, 10)
+        , yRange_("yRange", "Y Range", -1, 1, -10, 10)
+        , zRange_("zRange", "Z Range", -1, 1, -10, 10)
+    {
+        addPort(outport_);
+
+        addProperty(size_);
+        addProperty(xValue_);
+        addProperty(yValue_);
+        addProperty(zValue_);
+
+        addProperty(xRange_);
+        addProperty(yRange_);
+        addProperty(zRange_);
+          
+        shader_.onReload([this]() { invalidate(InvalidationLevel::Valid); });
+    }
+
+VectorFieldGenerator3D::~VectorFieldGenerator3D()  { }
+
 
 void VectorFieldGenerator3D::initializeResources() {
     shader_.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y,z)", xValue_.get());
@@ -93,7 +96,7 @@ void VectorFieldGenerator3D::process() {
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
     utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
-    const size3_t dim{size_.get()};
+    const size3_t dim{ size_.get() };
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
@@ -121,5 +124,6 @@ void VectorFieldGenerator3D::process() {
     outport_.setData(volume);
 }
 
-}  // namespace
+} // namespace
+
 

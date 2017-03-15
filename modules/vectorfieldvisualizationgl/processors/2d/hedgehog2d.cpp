@@ -50,8 +50,9 @@ HedgeHog2D::HedgeHog2D()
     , glyphScale_("glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f)
     , numberOfGlyphs_("numberOfGlyphs", "Number of Glyphs", ivec2(30), ivec2(1), ivec2(1000))
     , jitter_("jitter", "Jitter", false)
-    , glyphType_("glyphType", "Glyph Type")
     , color_("color", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
+
+    , glyphType_("glyphType", "Glyph Type")
 
     , arrowSettings_("arrowSettings", "Arrow Settings")
     , arrowBaseWidth_("baseWidth_", "Base Width", 0.1f, 0.001f, 1.0f, 0.001f)
@@ -64,7 +65,6 @@ HedgeHog2D::HedgeHog2D()
 
     , rd_()
     , mt_(rd_()) {
-    
     addPort(vectorFeild_);
     addPort(mesh_);
 
@@ -96,7 +96,7 @@ HedgeHog2D::HedgeHog2D()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-HedgeHog2D::~HedgeHog2D() = default;
+HedgeHog2D::~HedgeHog2D() {}
 
 void HedgeHog2D::process() {
     auto mesh = std::make_shared<BasicMesh>();
@@ -121,8 +121,8 @@ void HedgeHog2D::process() {
                 jx = jitterx(mt_);
                 jy = jittery(mt_);
             }
-            auto v = sampler.sample(x + jx + dx / 2, y + jy + dy / 2).xy();
-            auto t = glyphType_.get();
+            const dvec3 v{sampler.sample(x + jx + dx / 2, y + jy + dy / 2)};
+            const auto t = glyphType_.get();
             switch (t) {
                 case GlyphType::Arrow:
                     createArrow(*(mesh.get()), *indexTriangles, x + jx, y + jy, dx, dy, v);

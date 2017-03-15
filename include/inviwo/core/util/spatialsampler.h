@@ -97,7 +97,7 @@ Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
     const Vector<SpatialDims, double> &pos) const {
     if (space_ != Space::Data) {
         const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return sampleDataSpace(p.xyz() / p.w);
+        return sampleDataSpace(dvec3(p) / p.w);
     } else {
         return sampleDataSpace(pos);
     }
@@ -115,7 +115,7 @@ Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
     if (space != Space::Data) {
         const dmat4 m{spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data)};
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return sampleDataSpace(p.xyz() / p.w);
+        return sampleDataSpace(dvec3(p) / p.w);
     } else {
         return sampleDataSpace(pos);
     }
@@ -131,7 +131,7 @@ bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(
     const Vector<SpatialDims, double> &pos) const {
     if (space_ != Space::Data) {
         const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return withinBoundsDataSpace(p.xyz() / p.w);
+        return withinBoundsDataSpace(dvec3(p) / p.w);
     } else {
         return withinBoundsDataSpace(pos);
     }
@@ -149,7 +149,7 @@ bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<Spatial
     if (space != Space::Data) {
         const dmat4 m{ spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data) };
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return withinBoundsDataSpace(p.xyz() / p.w);
+        return withinBoundsDataSpace(dvec3(p) / p.w);
     } else {
         return withinBoundsDataSpace(pos);
     }

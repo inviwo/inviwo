@@ -85,11 +85,11 @@ std::string Spatial4DSampler<DataDims,T>::getDataInfo() const {
 template <unsigned DataDims, typename T>
 Vector<DataDims, T> Spatial4DSampler<DataDims,T>::sample(const dvec4 &pos,
                                                 Space space /*= Space::Data*/) const {
-    auto dataPos = pos.xyz();
+    auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
         auto p = m * vec4(static_cast<vec3>(pos), 1.0);
-        dataPos = p.xyz() / p.w;
+        dataPos = vec3(p) / p.w;
     }
 
     return sampleDataSpace(dvec4(dataPos, pos.w));
@@ -103,11 +103,11 @@ Vector<DataDims, T> Spatial4DSampler<DataDims,T>::sample(const vec4 &pos,
 
 template <unsigned DataDims, typename T>
 bool Spatial4DSampler<DataDims,T>::withinBounds(const dvec4 &pos, Space space /*= Space::Data*/) const {
-    auto dataPos = pos.xyz();
+    auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
         auto p = m * vec4(static_cast<vec3>(dataPos), 1.0f);
-        dataPos = p.xyz() / p.w;
+        dataPos = vec3(p) / p.w;
     }
 
     return withinBoundsDataSpace(dvec4(dataPos, pos.w));

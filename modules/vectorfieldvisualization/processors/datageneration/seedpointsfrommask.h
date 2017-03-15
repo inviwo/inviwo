@@ -51,7 +51,7 @@ protected:
     virtual void process() override;
 
     DataInport<Volume, 0> volumes_;
-    SeedPointsOutport seedPoints_;
+    SeedPoints3DOutport seedPoints_;
 };
 
 } // namespace

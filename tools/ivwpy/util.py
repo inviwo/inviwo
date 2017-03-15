@@ -33,6 +33,11 @@ import itertools
 import datetime
 import math
 import subprocess
+import time
+import re
+
+from . import colorprint as cp
+from . import util
 
 def subDirs(path):
 	if os.path.isdir(path):
@@ -140,3 +145,37 @@ def openWithDefaultApp(file):
 	    subprocess.call(["open", file])
 	elif sys.platform == "win32":
 	    os.startfile(file)
+
+def writeTemplateFile(newfilename, templatefilename, comment, name, define, api, incfile, author, force, verbose):
+	(path, filename)  = os.path.split(newfilename)
+	util.mkdir(path)
+
+	if os.path.exists(newfilename) and not force:
+		cp.print_error("... File exists: " + file + ", use --force or overwrite")
+		return
+	elif os.path.exists(newfilename) and force:
+		cp.print_warn("... Overwriting existing file")
+
+	#Create the template in memory
+	datetimestr = time.strftime("%A, %B %d, %Y - %H:%M:%S")
+	lines = []
+	with open(templatefilename,'r') as f:
+		for line in f:
+			line = line.replace("<name>", name)
+			line = line.replace("<dname>", re.sub("([a-z])([A-Z])","\g<1> \g<2>", name.replace("Kx", "")))
+			line = line.replace("<lname>", name.lower())
+			line = line.replace("<uname>", name.upper())
+			line = line.replace("<api>", api)
+			line = line.replace("<define>", define)
+			line = line.replace("<incfile>", incfile)
+			line = line.replace("<author>", author)
+			line = line.replace("<datetime>", datetimestr)
+			lines.append(line)
+			if verbose: print(line, end='')
+
+	if verbose: print("")
+	finaltext = "".join(lines)
+
+	with open(newfilename, "w") as f:
+		print(comment + f.name)
+		f.write(finaltext)

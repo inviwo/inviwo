@@ -29,12 +29,16 @@
 
 #include <modules/eigenutils/eigenutilsmodule.h>
 #include <modules/eigenutils/processors/eigenmatrixtoimage.h>
-#include <modules/eigenutils/ports.h>
+#include <modules/eigenutils/eigenports.h>
+#include <modules/eigenutils/processors/eigenmix.h>
+#include <modules/eigenutils/processors/eigennormalize.h>
 
 namespace inviwo {
 
 EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {
     registerProcessor<EigenMatrixToImage>();
+    registerProcessor<EigenMix>();
+    registerProcessor<EigenNormalize>();
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
 

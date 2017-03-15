@@ -199,6 +199,14 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
         } else if (!numDegrees.isNull()) {
             zoom(qPow(1.025, std::max(-15.0, std::min(15.0, numDegrees.y()))));
         }
+    } else if (e->modifiers() & Qt::ShiftModifier) {
+        // horizontal scrolling
+        auto modifiers = e->modifiers();
+        // remove the shift key temporarily from the event
+        e->setModifiers(e->modifiers() ^ Qt::ShiftModifier);
+        horizontalScrollBar()->event(e);
+        // restore previous modifiers
+        e->setModifiers(modifiers);
     } else {
         QGraphicsView::wheelEvent(e);
     }

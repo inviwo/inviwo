@@ -39,6 +39,8 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/metadata/processormetadata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -56,6 +58,12 @@
 #include <QGestureEvent>
 #include <QTouchEvent>
 #include <QThread>
+#include <QApplication>
+#include <QClipboard>
+#include <QMenu>
+#include <QPixmap>
+#include <QAction>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -82,6 +90,8 @@ public:
     virtual bool isFullScreen() const override;
     virtual void setFullScreen(bool fullscreen) override;
 
+    void contextMenuEvent(QContextMenuEvent* event) override;
+
 protected:
     virtual bool event(QEvent *e) override;
 
@@ -103,6 +113,7 @@ private:
     Qt::GestureType lastType_;
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
+    bool blockContextMenu_;
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
@@ -111,7 +122,7 @@ using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 
 
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) {
+CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) , blockContextMenu_(false){
     QtBase::makeCurrent();
     RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
@@ -160,6 +171,73 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
     return this->parentWidget()->windowState() == Qt::WindowFullScreen;
 }
 
+template <typename T>
+void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(this->ownerWidget_->getProcessor())) {
+
+        if (!canvasProcessor->isContextMenuAllowed()) {
+            return;
+        }
+
+        if (event->reason() == QContextMenuEvent::Mouse && blockContextMenu_) {
+            return;
+        }
+
+        QMenu menu(this);
+
+        auto visibleLayer = canvasProcessor->getVisibleLayer();
+        auto img = canvasProcessor->getImage();
+
+        this->connect(menu.addAction("Select processor"), &QAction::triggered, [&]() {
+            canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                ->setSelected(true);
+        });
+
+        for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
+            std::ostringstream oss;
+            oss << "color layer " << i << " to clipboard";
+            auto layer = img->getColorLayer(i);
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
+            this->connect(copyAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy picking layer to clipboard";
+            auto layer = img->getPickingLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto pickingAction = menu.addAction(oss.str().c_str());
+            this->connect(pickingAction, &QAction::triggered, [&]() {
+                auto qimg = utilqt::layerToQImage(*layer);
+                QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
+            });
+        }
+
+        {
+            std::ostringstream oss;
+            oss << "Copy depth layer to clipboard";
+            auto layer = img->getDepthLayer();
+            if (visibleLayer == layer) {
+                oss << " (visible)";
+            }
+            auto depthAction = menu.addAction(oss.str().c_str());
+            this->connect(depthAction, &QAction::triggered, [&]() {
+                QApplication::clipboard()->setPixmap(
+                    QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+            });
+        }
+
+        menu.exec(event->globalPos());
+    }
+}
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
@@ -213,6 +291,9 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+
+    blockContextMenu_ = e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
+
     return true;
 }
 
@@ -228,6 +309,7 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
     return true;
 }
 
@@ -243,6 +325,7 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
     return true;
 }
 

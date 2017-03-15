@@ -104,11 +104,13 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
 }
 
 template <typename T>
-std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m,
+std::shared_ptr<Image> eigenMatToImage(const T& m,
                                        bool flipY = false, std::string name = "") {
-    auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
+    using Type = typename T::value_type;
+    
+    auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
 
-    auto rep = dynamic_cast<LayerRAMPrecision<T>*>(
+    auto rep = dynamic_cast<LayerRAMPrecision<Type>*>(
         img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
     auto data = rep->getDataTyped();
 
@@ -117,13 +119,13 @@ std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Ei
     if (flipY) {
         for (int i = m.rows() - 1; i >= 0; i--) {
             for (int j = 0; j < m.cols(); j++) {
-                data[idx++] = m(i, j);
+                data[idx++] = m.coeff(i, j);
             }
         }
     } else {
         for (int i = 0; i < m.rows(); i++) {
             for (int j = 0; j < m.cols(); j++) {
-                data[idx++] = m(i, j);
+                data[idx++] = m.coeff(i, j);
             }
         }
     }

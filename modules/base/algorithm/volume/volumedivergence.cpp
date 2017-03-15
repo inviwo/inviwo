@@ -68,8 +68,8 @@ std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
             TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
             auto func = [&](const size3_t& pos) {
-                const vec3 world =
-                    (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
+                const vec3 world{m *
+                                 vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
 
                 auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
                 auto Fxm = static_cast<vec3>(sampler.sample(world - ox));

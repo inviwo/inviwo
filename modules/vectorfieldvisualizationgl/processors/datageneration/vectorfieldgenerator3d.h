@@ -49,35 +49,38 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public Processor {
-public:
-    VectorFieldGenerator3D();
-    virtual ~VectorFieldGenerator3D();
+    class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public Processor {
+    public:
+        VectorFieldGenerator3D();
+        virtual ~VectorFieldGenerator3D();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
+        virtual void initializeResources()override;
 
-protected:
-    virtual void process() override;
+    protected:
+        virtual void process() override;
 
-    VolumeOutport outport_;
+        VolumeOutport outport_;
+        std::shared_ptr<Volume> volume_;
 
-    OrdinalProperty<size3_t> size_;
+        OrdinalProperty<size3_t> size_;
 
-    FloatMinMaxProperty xRange_;
-    FloatMinMaxProperty yRange_;
-    FloatMinMaxProperty zRange_;
+        FloatMinMaxProperty xRange_;
+        FloatMinMaxProperty yRange_;
+        FloatMinMaxProperty zRange_;
 
-    StringProperty xValue_;
-    StringProperty yValue_;
-    StringProperty zValue_;
+        StringProperty xValue_;
+        StringProperty yValue_;
+        StringProperty zValue_;
 
-    Shader shader_;
-    FrameBufferObject fbo_;
-};
+        Shader shader_;
+        FrameBufferObject fbo_;
 
-}  // namespace
+    };
 
-#endif  // IVW_VECTORFIELDGENERATOR3D_H
+} // namespace
+
+#endif // IVW_VECTORFIELDGENERATOR3D_H
+
