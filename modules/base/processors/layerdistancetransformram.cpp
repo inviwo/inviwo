@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,41 @@
  *
  *********************************************************************************/
 
-#include "distancetransformram.h"
+#include <modules/base/processors/layerdistancetransformram.h>
+
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/base/algorithm/volume/volumeramdistancetransform.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <modules/base/algorithm/image/layerramdistancetransform.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 
 namespace inviwo {
 
-const ProcessorInfo DistanceTransformRAM::processorInfo_{
-    "org.inviwo.DistanceTransformRAM",  // Class identifier
-    "Volume Distance Transform",        // Display name
-    "Volume Operation",                 // Category
-    CodeState::Stable,                  // Code state
-    Tags::CPU,                          // Tags
+const ProcessorInfo LayerDistanceTransformRAM::processorInfo_{
+    "org.inviwo.LayerDistanceTransformRAM",  // Class identifier
+    "Layer Distance Transform",              // Display name
+    "Image Operation",                       // Category
+    CodeState::Stable,                       // Code state
+    Tags::CPU,                               // Tags
 };
-const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const {
+const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const {
     return processorInfo_;
 }
 
-DistanceTransformRAM::DistanceTransformRAM()
+LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     : Processor()
-    , volumePort_("inputVolume")
-    , outport_("outputVolume")
+    , imagePort_("inputImage")
+    , outport_("outputImage", DataVec4UInt8::get(), false)
     , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
     , flip_("flip", "Flip", false)
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
-    , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1), size3_t(10))
+    , upsampleFactorVec2_("upsampleFactorVec2", "Sampling Factor", size2_t(1), size2_t(1),
+                          size2_t(10))
     , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
-    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
-                 0.0, InvalidationLevel::Valid, PropertySemantics::Text)
+    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0,
+                       std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
+                       PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range",
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
     , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
@@ -68,7 +71,7 @@ DistanceTransformRAM::DistanceTransformRAM()
     , distTransformDirty_(true)
     , hasNewData_(false) {
 
-    addPort(volumePort_);
+    addPort(imagePort_);
     addPort(outport_);
 
     addProperty(threshold_);
@@ -77,12 +80,12 @@ DistanceTransformRAM::DistanceTransformRAM()
     addProperty(resultDistScale_);
     addProperty(resultSquaredDist_);
     addProperty(uniformUpsampling_);
-    addProperty(upsampleFactorVec3_);
+    addProperty(upsampleFactorVec2_);
     addProperty(upsampleFactorUniform_);
 
     auto triggerUpdate = [&]() {
         bool uniform = uniformUpsampling_.get();
-        upsampleFactorVec3_.setVisible(!uniform);
+        upsampleFactorVec2_.setVisible(!uniform);
         upsampleFactorUniform_.setVisible(uniform);
     };
     uniformUpsampling_.onChange(triggerUpdate);
@@ -96,20 +99,20 @@ DistanceTransformRAM::DistanceTransformRAM()
 
     addProperty(dataRangeOutput_);
 
-    dataRangeMode_.onChange([&](){
+    dataRangeMode_.onChange([&]() {
         customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
     });
 
     addProperty(btnForceUpdate_);
-    
-    btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
+
+    btnForceUpdate_.onChange(this, &LayerDistanceTransformRAM::paramChanged);
 
     progressBar_.hide();
 }
 
-DistanceTransformRAM::~DistanceTransformRAM() = default;
+LayerDistanceTransformRAM::~LayerDistanceTransformRAM() = default;
 
-void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Property* source) {
+void LayerDistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Property* source) {
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, source);
     if (!isValid() && hasNewData_) {
@@ -122,50 +125,52 @@ void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Prope
     }
 }
 
-void DistanceTransformRAM::process() {
-    if (util::is_future_ready(newVolume_)) {
+void LayerDistanceTransformRAM::process() {
+    if (util::is_future_ready(newImage_)) {
         try {
-            auto vol = newVolume_.get();
-            dataRangeOutput_.set(vol->dataMap_.dataRange);
-            outport_.setData(vol);
+            auto image = newImage_.get();
+            //dataRangeOutput_.set(image->dataMap_.dataRange);
+            outport_.setData(image);
             hasNewData_ = false;
             btnForceUpdate_.setDisplayName("Update Distance Map");
         } catch (Exception&) {
-            // Need to reset the future, VS bug: http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
-            newVolume_ = {};
-            outport_.setData(nullptr);
+            // Need to reset the future, VS bug:
+            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
+            newImage_ = {};
+            outport_.setData(static_cast<const Image*>(nullptr));
             hasNewData_ = false;
             throw;
         }
-    } else if (!newVolume_.valid()) {  // We are not waiting for a calculation
+    } else if (!newImage_.valid()) {  // We are not waiting for a calculation
         btnForceUpdate_.setDisplayName("Update Distance Map (dirty)");
-        if (volumePort_.isChanged() || distTransformDirty_) {
+        if (imagePort_.isChanged() || distTransformDirty_) {
             updateOutport();
         }
     }
 }
 
-void DistanceTransformRAM::updateOutport() {
+void LayerDistanceTransformRAM::updateOutport() {
     auto done = [this]() {
-        dispatchFront([this]() { 
+        dispatchFront([this]() {
             distTransformDirty_ = false;
             hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput); 
+            invalidate(InvalidationLevel::InvalidOutput);
         });
     };
 
     auto calc =
         [
           pb = &progressBar_,
-          upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get()) : upsampleFactorVec3_.get(),
+          upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                              : upsampleFactorVec2_.get(),
           threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
           square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
           dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
-        ](std::shared_ptr<const Volume> volume)
-            ->std::shared_ptr<const Volume> {
+        ](std::shared_ptr<const Image> image)
+            ->std::shared_ptr<const Image> {
 
-        auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
-        auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
+        auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
+        auto dstRepr = std::make_shared<LayerRAMPrecision<float>>(upsample * imgDim);
 
         const auto progress = [pb](double f) {
             dispatchFront([f, pb]() {
@@ -173,35 +178,36 @@ void DistanceTransformRAM::updateOutport() {
                 pb->updateProgress(f);
             });
         };
-        util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,
-                                      flip, square, scale, progress);
+        util::layerDistanceTransform(image->getColorLayer(), dstRepr.get(), upsample, threshold,
+                                     normalize, flip, square, scale, progress);
 
-        auto dstVol = std::make_shared<Volume>(dstRepr);
+        auto dstLayer = std::make_shared<Layer>(dstRepr);
         // pass meta data on
-        dstVol->setModelMatrix(volume->getModelMatrix());
-        dstVol->setWorldMatrix(volume->getWorldMatrix());
-        dstVol->copyMetaDataFrom(*volume);
+        dstLayer->setModelMatrix(image->getColorLayer()->getModelMatrix());
+        dstLayer->setWorldMatrix(image->getColorLayer()->getWorldMatrix());
+        auto dstImage = std::make_shared<Image>(dstLayer);
+        dstImage->copyMetaDataFrom(*image);
 
         switch (dataRangeMode) {
-            case DistanceTransformRAM::DataRangeMode::Diagonal: {
-                const auto basis = volume->getBasis();
-                const auto diagonal = basis[0]+basis[1]+basis[2];
+            case LayerDistanceTransformRAM::DataRangeMode::Diagonal: {
+                const auto basis = image->getColorLayer()->getBasis();
+                const auto diagonal = basis[0] + basis[1];
                 const auto maxDist = square ? glm::length2(diagonal) : glm::length(diagonal);
-                dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
-                dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
+                // dstLayer->dataMap_.dataRange = dvec2(0.0, maxDist);
+                // dstLayer->dataMap_.valueRange = dvec2(0.0, maxDist);
                 break;
             }
-            case DistanceTransformRAM::DataRangeMode::MinMax: {
+            case LayerDistanceTransformRAM::DataRangeMode::MinMax: {
                 auto minmax = util::dataMinMax(dstRepr->getDataTyped(),
                                                glm::compMul(dstRepr->getDimensions()));
 
-                dstVol->dataMap_.dataRange = dvec2(minmax.first[0], minmax.second[0]);
-                dstVol->dataMap_.valueRange = dvec2(minmax.first[0], minmax.second[0]);
+                // dstLayer->dataMap_.dataRange = dvec2(minmax.first[0], minmax.second[0]);
+                // dstLayer->dataMap_.valueRange = dvec2(minmax.first[0], minmax.second[0]);
                 break;
             }
-            case DistanceTransformRAM::DataRangeMode::Custom: {
-                dstVol->dataMap_.dataRange = customDataRange;
-                dstVol->dataMap_.valueRange = customDataRange;
+            case LayerDistanceTransformRAM::DataRangeMode::Custom: {
+                // dstLayer->dataMap_.dataRange = customDataRange;
+                // dstLayer->dataMap_.valueRange = customDataRange;
                 break;
             }
             default:
@@ -209,13 +215,13 @@ void DistanceTransformRAM::updateOutport() {
         }
 
         done();
-        return dstVol;
+        return dstImage;
     };
 
-    newVolume_ = dispatchPool(calc, volumePort_.getData());
+    newImage_ = dispatchPool(calc, imagePort_.getData());
 }
 
-void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
+void LayerDistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
 
-}  // namespace
+} // namespace
 
