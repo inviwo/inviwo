@@ -32,6 +32,14 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
+
+#include <inviwo/core/util/indexmapper.h>
+
 namespace inviwo {
 
 const ProcessorInfo VolumeSlice::processorInfo_{
@@ -101,7 +109,7 @@ void VolumeSlice::invokeEvent(Event* event) {
 }
 
 void VolumeSlice::shiftSlice(int shift) {
-    int newSlice = sliceNumber_.get() + shift;
+    auto newSlice = static_cast<size_t>(sliceNumber_.get() + shift);
     if (newSlice >= sliceNumber_.getMinValue() && newSlice <= sliceNumber_.getMaxValue())
         sliceNumber_.set(newSlice);
 }
@@ -123,22 +131,105 @@ void VolumeSlice::process() {
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
                 sliceNumber_.set(dims.y / 2);
+                sliceNumber_.setCurrentStateAsDefault();
             }
             break;
         case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
                 sliceNumber_.set(dims.z / 2);
+                sliceNumber_.setCurrentStateAsDefault();
             }
             break;
     }
 
-    VolumeSliceDispatcher disp;
-    image_ = vol->getDataFormat()->dispatch(
-        disp, *vol, static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-        static_cast<size_t>(sliceNumber_.get() - 1), image_);
+    auto image = vol->getRepresentation<VolumeRAM>()
+                 ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>([
+                     axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+                     slice = static_cast<size_t>(sliceNumber_.get() - 1)
+                 ](const auto vrprecision) {
+                     using T = util::PrecsionValueType<decltype(vrprecision)>;
 
-    outport_.setData(image_);
+                     const T* voldata = vrprecision->getDataTyped();
+                     const auto voldim = vrprecision->getDimensions();
+
+                     const auto imgdim = [&]() {
+                         switch (axis) {
+                             default:
+                             case CartesianCoordinateAxis::X:
+                                 return size2_t(voldim.z, voldim.y);
+
+                             case CartesianCoordinateAxis::Y:
+                                 return size2_t(voldim.x, voldim.z);
+
+                             case CartesianCoordinateAxis::Z:
+                                 return size2_t(voldim.x, voldim.y);
+                         }
+                     }();
+
+                     auto layerrep = std::make_shared<LayerRAMPrecision<T>>(imgdim);
+                     auto layer = std::make_shared<Layer>(layerrep);
+                     auto layerdata = layerrep->getDataTyped();
+                     switch (util::extent<T, 0>::value) {
+                         case 1:
+                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Zero,
+                                                        ImageChannel::Zero, ImageChannel::One}});
+                         case 2:
+                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                        ImageChannel::Zero, ImageChannel::One}});
+                         case 3:
+                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                        ImageChannel::Blue, ImageChannel::One}});
+                         default:
+                         case 4:
+                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                        ImageChannel::Blue, ImageChannel::Alpha}});
+                     }
+
+
+                     size_t offsetVolume;
+                     size_t offsetImage;
+                     switch (axis) {
+                         case CartesianCoordinateAxis::X: {
+                             util::IndexMapper3D vm(voldim);
+                             util::IndexMapper2D im(imgdim);
+                             auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
+                             for (size_t z = 0; z < voldim.z; z++) {
+                                 for (size_t y = 0; y < voldim.y; y++) {
+                                     offsetVolume = vm(slice, y, z);
+                                     offsetImage = im(z, y);
+                                     layerdata[offsetImage] = voldata[offsetVolume];
+                                 }
+                             }
+                             break;
+                         }
+                         case CartesianCoordinateAxis::Y: {
+                             auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
+                             const size_t dataSize = voldim.x;
+                             const size_t initialStartPos = y * voldim.x;
+                             for (size_t j = 0; j < voldim.z; j++) {
+                                 offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                                 offsetImage = j * voldim.x;
+                                 std::copy(voldata + offsetVolume,
+                                           voldata + offsetVolume + dataSize,
+                                           layerdata + offsetImage);
+                             }
+                             break;
+                         }
+                         case CartesianCoordinateAxis::Z: {
+                             auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
+                             const size_t dataSize = voldim.x * voldim.y;
+                             const size_t initialStartPos = z * voldim.x * voldim.y;
+
+                             std::copy(voldata + initialStartPos,
+                                       voldata + initialStartPos + dataSize, layerdata);
+                             break;
+                         }
+                     }
+                     return std::make_shared<Image>(layer);
+                 });
+
+    outport_.setData(image);
 }
 
 void VolumeSlice::eventShiftSlice(Event* event) {
