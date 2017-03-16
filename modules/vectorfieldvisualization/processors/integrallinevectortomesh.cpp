@@ -251,9 +251,7 @@ void IntegralLineVectorToMesh::process() {
             }
         }
         idx++;
-        auto vSize = vertices.size();
-        if (vSize != 0) vSize--;
-        indexBuffer->add(static_cast<uint32_t>( vSize));
+        indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
 
         bool first = true;

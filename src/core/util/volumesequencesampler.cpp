@@ -61,7 +61,9 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     auto size = static_cast<decltype(infsTime)>(wrappers_.size());
 
     if (infsTime == 0) {  // all volumes has timestamps, make sure the volumes are in sorted order,
-        std::sort(wrappers_.begin(), wrappers_.end());
+        std::sort(wrappers_.begin(), wrappers_.end() , [](auto a,auto b){
+            return *a < *b;
+        });
     }
 
     if (!(infsTime == 0 || infsTime == size)) {

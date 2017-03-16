@@ -33,6 +33,7 @@
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
+#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator4d.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h>
@@ -68,6 +69,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector3DCurl>();
     registerProcessor<Vector3DDivergence>();
     registerProcessor<TMIP>();
+    registerProcessor<VectorFieldGenerator4D>();
 }
 
 
