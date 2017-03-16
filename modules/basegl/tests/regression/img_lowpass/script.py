@@ -1,6 +1,6 @@
 # Inviwo Python script 
-import inviwo 
-import inviwoqt
+import inviwopy
+from inviwopy import qt as inviwoqt
 import math 
 import time
 
@@ -14,12 +14,9 @@ m = ivw.regression.Measurements()
 
 for kernelSize in range(1,25,2):
     start = time.clock()    
-    inviwo.setPropertyValue("Image Low Pass.kernelSize",kernelSize)
+    inviwopy.app.network.ImageLowPass,kernelSize.value =kernelSize 
     inviwoqt.update()
     ivw.regression.saveCanvas("Lowpass", "Lowpass-"+str(kernelSize) + "x" +str(kernelSize))
     end = time.clock()
     m.addFrequency('time-'+str(kernelSize) + "x" +str(kernelSize) , end - start );
-
-
-
 m.save()
