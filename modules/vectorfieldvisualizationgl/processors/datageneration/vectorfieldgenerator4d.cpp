@@ -114,7 +114,7 @@ void VectorFieldGenerator4D::process() {
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
         
-        auto volume = std::make_shared<Volume>(size_.get().xyz(), DataVec3Float32::get());
+        auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());
         volume->dataMap_.dataRange = vec2(0, 1);
         volume->dataMap_.valueRange = vec2(-1, 1);
         volume->setMetaData<DoubleMetaData>("timestamp", t);
