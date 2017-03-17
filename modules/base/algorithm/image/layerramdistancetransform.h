@@ -247,7 +247,7 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 
     const auto inputLayerRep = inLayer->getRepresentation<LayerRAM>();
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
-        layerRAMDistanceTransform(lrprecision, outDistanceField, inVolume->getBasis(), upsample,
+        layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(), upsample,
                                   predicate, valueTransform, callback);
 
     });
