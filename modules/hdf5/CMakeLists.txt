@@ -55,9 +55,9 @@ else()
     set(ZLIB_STATIC_LIBRARY "${ZLIB_LIBRARIES}")
 endif()
 
-set(HDF5_BUILD_EXAMPLES         OFF)
-set(HDF5_BUILD_TOOLS            OFF)
-set(BUILD_TESTING               OFF)
+set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(HDF5_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(ext/hdf5)
 
