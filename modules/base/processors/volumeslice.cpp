@@ -57,7 +57,11 @@ VolumeSlice::VolumeSlice()
     : Processor()
     , inport_("inputVolume")
     , outport_("outputImage", DataVec4UInt8::get(), false)
-    , sliceAlongAxis_("sliceAxis", "Slice along axis")
+    , sliceAlongAxis_("sliceAxis", "Slice along axis",
+                      {{"x", "X axis", CartesianCoordinateAxis::X},
+                       {"y", "Y axis", CartesianCoordinateAxis::Y},
+                       {"z", "Z axis", CartesianCoordinateAxis::Z}},
+                      0)
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
@@ -75,26 +79,19 @@ VolumeSlice::VolumeSlice()
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
           util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3)) {
-        
+
     addPort(inport_);
     addPort(outport_);
-    outport_.setHandleResizeEvents(false);
-    sliceAlongAxis_.addOption("x", "X axis", static_cast<int>(CartesianCoordinateAxis::X));
-    sliceAlongAxis_.addOption("y", "Y axis", static_cast<int>(CartesianCoordinateAxis::Y));
-    sliceAlongAxis_.addOption("z", "Z axis", static_cast<int>(CartesianCoordinateAxis::Z));
-    sliceAlongAxis_.setSelectedIndex(0);
-    sliceAlongAxis_.setCurrentStateAsDefault();
     addProperty(sliceAlongAxis_);
     addProperty(sliceNumber_);
-
     addProperty(handleInteractionEvents_);
+
+    addProperty(stepSliceUp_);
+    addProperty(stepSliceDown_);
 
     mouseShiftSlice_.setVisible(false);
     mouseShiftSlice_.setCurrentStateAsDefault();
     addProperty(mouseShiftSlice_);
-
-    addProperty(stepSliceUp_);
-    addProperty(stepSliceDown_);
 
     gestureShiftSlice_.setVisible(false);
     gestureShiftSlice_.setCurrentStateAsDefault();
@@ -110,124 +107,125 @@ void VolumeSlice::invokeEvent(Event* event) {
 
 void VolumeSlice::shiftSlice(int shift) {
     auto newSlice = static_cast<size_t>(sliceNumber_.get() + shift);
-    if (newSlice >= sliceNumber_.getMinValue() && newSlice <= sliceNumber_.getMaxValue())
+    if (newSlice >= sliceNumber_.getMinValue() && newSlice <= sliceNumber_.getMaxValue()) {
         sliceNumber_.set(newSlice);
+    }
 }
 
 void VolumeSlice::process() {
     auto vol = inport_.getData();
 
     const ivec3 dims(vol->getDimensions());
-
-    switch (static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get())) {
+    double pos {sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
+    switch (sliceAlongAxis_.get()) {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
-                sliceNumber_.set(dims.x / 2);
-                sliceNumber_.setCurrentStateAsDefault();
+                sliceNumber_.set(pos * dims.x);
             }
             break;
         case CartesianCoordinateAxis::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
-                sliceNumber_.set(dims.y / 2);
-                sliceNumber_.setCurrentStateAsDefault();
+                sliceNumber_.set(pos * dims.y);
             }
             break;
         case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
-                sliceNumber_.set(dims.z / 2);
-                sliceNumber_.setCurrentStateAsDefault();
+                sliceNumber_.set(pos * dims.z);
             }
             break;
     }
 
-    auto image = vol->getRepresentation<VolumeRAM>()
-                 ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>([
-                     axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-                     slice = static_cast<size_t>(sliceNumber_.get() - 1)
-                 ](const auto vrprecision) {
-                     using T = util::PrecsionValueType<decltype(vrprecision)>;
+    auto image =
+        vol->getRepresentation<VolumeRAM>()
+            ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>([
+                axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+                slice = static_cast<size_t>(sliceNumber_.get() - 1), &cache = imageCache_
+            ](const auto vrprecision) {
+                using T = util::PrecsionValueType<decltype(vrprecision)>;
 
-                     const T* voldata = vrprecision->getDataTyped();
-                     const auto voldim = vrprecision->getDimensions();
+                const T* voldata = vrprecision->getDataTyped();
+                const auto voldim = vrprecision->getDimensions();
 
-                     const auto imgdim = [&]() {
-                         switch (axis) {
-                             default:
-                             case CartesianCoordinateAxis::X:
-                                 return size2_t(voldim.z, voldim.y);
+                const auto imgdim = [&]() {
+                    switch (axis) {
+                        default:
+                        case CartesianCoordinateAxis::X:
+                            return size2_t(voldim.z, voldim.y);
 
-                             case CartesianCoordinateAxis::Y:
-                                 return size2_t(voldim.x, voldim.z);
+                        case CartesianCoordinateAxis::Y:
+                            return size2_t(voldim.x, voldim.z);
 
-                             case CartesianCoordinateAxis::Z:
-                                 return size2_t(voldim.x, voldim.y);
-                         }
-                     }();
-
-                     auto layerrep = std::make_shared<LayerRAMPrecision<T>>(imgdim);
-                     auto layer = std::make_shared<Layer>(layerrep);
-                     auto layerdata = layerrep->getDataTyped();
-                     switch (util::extent<T, 0>::value) {
-                         case 1:
-                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Zero,
-                                                        ImageChannel::Zero, ImageChannel::One}});
-                         case 2:
-                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                        ImageChannel::Zero, ImageChannel::One}});
-                         case 3:
-                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                        ImageChannel::Blue, ImageChannel::One}});
-                         default:
-                         case 4:
-                             layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                        ImageChannel::Blue, ImageChannel::Alpha}});
-                     }
+                        case CartesianCoordinateAxis::Z:
+                            return size2_t(voldim.x, voldim.y);
+                    }
+                }();
 
 
-                     size_t offsetVolume;
-                     size_t offsetImage;
-                     switch (axis) {
-                         case CartesianCoordinateAxis::X: {
-                             util::IndexMapper3D vm(voldim);
-                             util::IndexMapper2D im(imgdim);
-                             auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
-                             for (size_t z = 0; z < voldim.z; z++) {
-                                 for (size_t y = 0; y < voldim.y; y++) {
-                                     offsetVolume = vm(slice, y, z);
-                                     offsetImage = im(z, y);
-                                     layerdata[offsetImage] = voldata[offsetVolume];
-                                 }
-                             }
-                             break;
-                         }
-                         case CartesianCoordinateAxis::Y: {
-                             auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
-                             const size_t dataSize = voldim.x;
-                             const size_t initialStartPos = y * voldim.x;
-                             for (size_t j = 0; j < voldim.z; j++) {
-                                 offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
-                                 offsetImage = j * voldim.x;
-                                 std::copy(voldata + offsetVolume,
-                                           voldata + offsetVolume + dataSize,
-                                           layerdata + offsetImage);
-                             }
-                             break;
-                         }
-                         case CartesianCoordinateAxis::Z: {
-                             auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
-                             const size_t dataSize = voldim.x * voldim.y;
-                             const size_t initialStartPos = z * voldim.x * voldim.y;
+                auto res = cache.getTypedUnused<T>(imgdim);
+                auto sliceImage = res.first;
+                auto layerrep = res.second;
+                auto layerdata = layerrep->getDataTyped();
 
-                             std::copy(voldata + initialStartPos,
-                                       voldata + initialStartPos + dataSize, layerdata);
-                             break;
-                         }
-                     }
-                     return std::make_shared<Image>(layer);
-                 });
+                switch (util::extent<T, 0>::value) {
+                    case 1:
+                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Zero,
+                                                   ImageChannel::Zero, ImageChannel::One}});
+                    case 2:
+                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                   ImageChannel::Zero, ImageChannel::One}});
+                    case 3:
+                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                   ImageChannel::Blue, ImageChannel::One}});
+                    default:
+                    case 4:
+                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                   ImageChannel::Blue, ImageChannel::Alpha}});
+                }
+
+                size_t offsetVolume;
+                size_t offsetImage;
+                switch (axis) {
+                    case CartesianCoordinateAxis::X: {
+                        util::IndexMapper3D vm(voldim);
+                        util::IndexMapper2D im(imgdim);
+                        auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
+                        for (size_t z = 0; z < voldim.z; z++) {
+                            for (size_t y = 0; y < voldim.y; y++) {
+                                offsetVolume = vm(slice, y, z);
+                                offsetImage = im(z, y);
+                                layerdata[offsetImage] = voldata[offsetVolume];
+                            }
+                        }
+                        break;
+                    }
+                    case CartesianCoordinateAxis::Y: {
+                        auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
+                        const size_t dataSize = voldim.x;
+                        const size_t initialStartPos = y * voldim.x;
+                        for (size_t j = 0; j < voldim.z; j++) {
+                            offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                            offsetImage = j * voldim.x;
+                            std::copy(voldata + offsetVolume, voldata + offsetVolume + dataSize,
+                                      layerdata + offsetImage);
+                        }
+                        break;
+                    }
+                    case CartesianCoordinateAxis::Z: {
+                        auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
+                        const size_t dataSize = voldim.x * voldim.y;
+                        const size_t initialStartPos = z * voldim.x * voldim.y;
+
+                        std::copy(voldata + initialStartPos, voldata + initialStartPos + dataSize,
+                                  layerdata);
+                        break;
+                    }
+                }
+                cache.add(sliceImage);
+                return sliceImage;
+            });
 
     outport_.setData(image);
 }

@@ -37,7 +37,7 @@ namespace inviwo {
 
 const ProcessorInfo LayerDistanceTransformRAM::processorInfo_{
     "org.inviwo.LayerDistanceTransformRAM",  // Class identifier
-    "Layer Distance Transform",              // Display name
+    "Image Distance Transform",              // Display name
     "Image Operation",                       // Category
     CodeState::Stable,                       // Code state
     Tags::CPU,                               // Tags
@@ -59,14 +59,6 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     , upsampleFactorVec2_("upsampleFactorVec2", "Sampling Factor", size2_t(1), size2_t(1),
                           size2_t(10))
     , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
-    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0,
-                       std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
-                       PropertySemantics::Text)
-    , dataRangeMode_("dataRangeMode", "Data Range",
-                     {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
-    , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
-                       std::numeric_limits<double>::max(), 0.01, 0.0,
-                       InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , btnForceUpdate_("forceUpdate", "Update Distance Map")
     , distTransformDirty_(true)
     , hasNewData_(false) {
@@ -90,18 +82,6 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     };
     uniformUpsampling_.onChange(triggerUpdate);
     upsampleFactorUniform_.setVisible(false);
-
-    dataRangeOutput_.setSerializationMode(PropertySerializationMode::None);
-    dataRangeOutput_.setReadOnly(true);
-
-    addProperty(dataRangeMode_);
-    addProperty(customDataRange_);
-
-    addProperty(dataRangeOutput_);
-
-    dataRangeMode_.onChange([&]() {
-        customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
-    });
 
     addProperty(btnForceUpdate_);
 
@@ -129,7 +109,6 @@ void LayerDistanceTransformRAM::process() {
     if (util::is_future_ready(newImage_)) {
         try {
             auto image = newImage_.get();
-            //dataRangeOutput_.set(image->dataMap_.dataRange);
             outport_.setData(image);
             hasNewData_ = false;
             btnForceUpdate_.setDisplayName("Update Distance Map");
@@ -137,7 +116,7 @@ void LayerDistanceTransformRAM::process() {
             // Need to reset the future, VS bug:
             // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
             newImage_ = {};
-            outport_.setData(static_cast<const Image*>(nullptr));
+            outport_.setData(static_cast<Image*>(nullptr));
             hasNewData_ = false;
             throw;
         }
@@ -164,13 +143,21 @@ void LayerDistanceTransformRAM::updateOutport() {
           upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
                                               : upsampleFactorVec2_.get(),
           threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-          square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
-          dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
+          square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
+          &cache = imageCache_
         ](std::shared_ptr<const Image> image)
-            ->std::shared_ptr<const Image> {
+            ->std::shared_ptr<Image> {
 
         auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
-        auto dstRepr = std::make_shared<LayerRAMPrecision<float>>(upsample * imgDim);
+
+        auto res = cache.getTypedUnused<float>(upsample * imgDim);
+        std::shared_ptr<Image> dstImage = res.first;
+        LayerRAMPrecision<float>* dstRepr = res.second;
+
+        // pass meta data on
+        dstImage->getColorLayer()->setModelMatrix(image->getColorLayer()->getModelMatrix());
+        dstImage->getColorLayer()->setWorldMatrix(image->getColorLayer()->getWorldMatrix());
+        dstImage->copyMetaDataFrom(*image);
 
         const auto progress = [pb](double f) {
             dispatchFront([f, pb]() {
@@ -178,43 +165,11 @@ void LayerDistanceTransformRAM::updateOutport() {
                 pb->updateProgress(f);
             });
         };
-        util::layerDistanceTransform(image->getColorLayer(), dstRepr.get(), upsample, threshold,
+        util::layerDistanceTransform(image->getColorLayer(), dstRepr, upsample, threshold,
                                      normalize, flip, square, scale, progress);
 
-        auto dstLayer = std::make_shared<Layer>(dstRepr);
-        // pass meta data on
-        dstLayer->setModelMatrix(image->getColorLayer()->getModelMatrix());
-        dstLayer->setWorldMatrix(image->getColorLayer()->getWorldMatrix());
-        auto dstImage = std::make_shared<Image>(dstLayer);
-        dstImage->copyMetaDataFrom(*image);
-
-        switch (dataRangeMode) {
-            case LayerDistanceTransformRAM::DataRangeMode::Diagonal: {
-                const auto basis = image->getColorLayer()->getBasis();
-                const auto diagonal = basis[0] + basis[1];
-                const auto maxDist = square ? glm::length2(diagonal) : glm::length(diagonal);
-                // dstLayer->dataMap_.dataRange = dvec2(0.0, maxDist);
-                // dstLayer->dataMap_.valueRange = dvec2(0.0, maxDist);
-                break;
-            }
-            case LayerDistanceTransformRAM::DataRangeMode::MinMax: {
-                auto minmax = util::dataMinMax(dstRepr->getDataTyped(),
-                                               glm::compMul(dstRepr->getDimensions()));
-
-                // dstLayer->dataMap_.dataRange = dvec2(minmax.first[0], minmax.second[0]);
-                // dstLayer->dataMap_.valueRange = dvec2(minmax.first[0], minmax.second[0]);
-                break;
-            }
-            case LayerDistanceTransformRAM::DataRangeMode::Custom: {
-                // dstLayer->dataMap_.dataRange = customDataRange;
-                // dstLayer->dataMap_.valueRange = customDataRange;
-                break;
-            }
-            default:
-                break;
-        }
-
         done();
+        cache.add(dstImage);
         return dstImage;
     };
 

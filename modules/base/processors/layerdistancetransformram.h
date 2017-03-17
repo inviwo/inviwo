@@ -47,6 +47,8 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <modules/base/datastructures/imagereusecache.h>
+
 namespace inviwo {
 
 
@@ -104,7 +106,8 @@ private:
     ImageInport imagePort_;
     ImageOutport outport_;
 
-    std::future<std::shared_ptr<const Image>> newImage_;
+    std::future<std::shared_ptr<Image>> newImage_;   
+    ImageReuseCache imageCache_;
 
     DoubleProperty threshold_;
     BoolProperty flip_;
@@ -114,10 +117,6 @@ private:
     BoolProperty uniformUpsampling_;
     IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
     IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
-
-    DoubleMinMaxProperty dataRangeOutput_;
-    TemplateOptionProperty<DataRangeMode> dataRangeMode_;
-    DoubleMinMaxProperty customDataRange_;
 
     ButtonProperty btnForceUpdate_;
 

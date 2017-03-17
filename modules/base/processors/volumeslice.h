@@ -40,6 +40,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 
+#include <modules/base/datastructures/imagereusecache.h>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSlice, Volume Slice}
@@ -84,7 +86,9 @@ private:
     VolumeInport inport_;
     ImageOutport outport_;
 
-    OptionPropertyInt sliceAlongAxis_;
+    ImageReuseCache imageCache_;
+
+    TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
     IntSizeTProperty sliceNumber_;
 
     BoolProperty handleInteractionEvents_;
