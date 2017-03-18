@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenMix, Mix}
+/** \docpage{org.inviwo.EigenMix, EigenMix}
 * ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
 *
 * Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
@@ -58,7 +58,7 @@ namespace inviwo {
 */
 
 /**
- * \class Mix
+ * \class EigenMix
  * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
  */
 class IVW_MODULE_EIGENUTILS_API EigenMix : public Processor {
