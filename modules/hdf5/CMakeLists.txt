@@ -64,7 +64,12 @@ add_subdirectory(ext/hdf5)
 set(h5-static hdf5-static hdf5_hl-static hdf5_cpp-static hdf5_hl_cpp-static)
 set(h5-shared hdf5-shared hdf5_hl-shared hdf5_cpp-shared hdf5_hl_cpp-shared)
 set(h5-cmake H5detect H5make_libsettings)
-set(h5-targets ${h5-static} ${h5-shared} ${h5-cmake})
+
+set(h5-targets ${h5-static} ${h5-cmake})
+if(BUILD_SHARED_LIBS)
+    set(h5-targets ${h5-targets} ${h5-shared})
+endif()
+
 set_target_properties(${h5-targets} PROPERTIES FOLDER ext/hdf5)
 ivw_suppress_compiler_warnings(${h5-targets})
 
