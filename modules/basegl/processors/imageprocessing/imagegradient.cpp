@@ -33,23 +33,21 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageGradient::processorInfo_{
-    "org.inviwo.ImageGradient",      // Class identifier
-    "Image Gradient",                // Display name
-    "Image Operation",              // Category
-    CodeState::Stable,  // Code state
-    Tags::GL,               // Tags
+    "org.inviwo.ImageGradient",  // Class identifier
+    "Image Gradient",            // Display name
+    "Image Operation",           // Category
+    CodeState::Stable,           // Code state
+    Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageGradient::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageGradient::getProcessorInfo() const { return processorInfo_; }
 
 ImageGradient::ImageGradient()
     : ImageGLProcessor("imagegradient.frag")
     , channel_("channel", "Channel")
-    , renormalization_("renormalization", "Renormalization", true)
-{
+    , renormalization_("renormalization", "Renormalization", true) {
     dataFormat_ = DataVec2Float32::get();
-    swizzleMask_ = swizzlemasks::redGreen;
+    swizzleMask_ = {
+        {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}};
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();

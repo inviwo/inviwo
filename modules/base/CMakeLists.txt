@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
@@ -20,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
@@ -38,6 +40,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
@@ -87,6 +90,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
@@ -96,6 +100,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
@@ -111,6 +116,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp

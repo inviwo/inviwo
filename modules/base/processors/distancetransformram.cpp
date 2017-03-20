@@ -30,14 +30,15 @@
 #include "distancetransformram.h"
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/base/algorithm/volume/volumeramdistancetransform.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
 const ProcessorInfo DistanceTransformRAM::processorInfo_{
     "org.inviwo.DistanceTransformRAM",  // Class identifier
-    "Distance Transform",               // Display name
+    "Volume Distance Transform",        // Display name
     "Volume Operation",                 // Category
-    CodeState::Experimental,            // Code state
+    CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
 };
 const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const {
@@ -53,9 +54,9 @@ DistanceTransformRAM::DistanceTransformRAM()
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
+    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1), size3_t(10))
-    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
                  0.0, InvalidationLevel::Valid, PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range",

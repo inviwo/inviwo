@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_DISTANCETRANSFORMRAM_H
-#define IVW_DISTANCETRANSFORMRAM_H
+#ifndef IVW_LAYERDISTANCETRANSFORMRAM_H
+#define IVW_LAYERDISTANCETRANSFORMRAM_H
 
 #include <modules/base/basemoduledefine.h>
 
@@ -37,7 +37,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -45,27 +45,30 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
+#include <modules/base/datastructures/imagereusecache.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DistanceTransformRAM, Distance Transform}
-* ![](org.inviwo.DistanceTransformRAM.png?classIdentifier=org.inviwo.DistanceTransformRAM)
+
+/** \docpage{org.inviwo.LayerDistanceTransformRAM, Layer Distance Transform}
+* ![](org.inviwo.LayerDistanceTransformRAM.png?classIdentifier=org.inviwo.LayerDistanceTransformRAM)
 *
-* Computes the distance transform of a volume dataset using a threshold value
-* The result is the distance from each voxel to the closest feature. It will only work correctly for
-* volumes with a orthogonal basis. It uses the Saito's algorithm to compute the Euclidean distance.
+* Computes the distance transform of a layer dataset using a threshold value
+* The result is the distance from each pixel to the closest feature. It will only work correctly for
+* layers with a orthogonal basis. It uses the Saito's algorithm to compute the Euclidean distance.
 *
 * ### Inports
-*   * __inputVolume__ Input volume
+*   * __inputImage__ Input image
 *
 * ### Outports
-*   * __outputVolume__ Scalar volume representing the distance transform (float)
+*   * __outputImage__ Scalar image representing the distance transform (float)
 *
 * ### Properties
-*   * __Threshold__ Voxles with a value  __larger___ then the then the threshold will be considered
+*   * __Threshold__ Pixels with a value  __larger___ then the then the threshold will be considered
      as features, i.e. have a zero distance.
-*   * __Flip__ Consider features as voxels with a values __smaller__ then threshold instead.
+*   * __Flip__ Consider features as pixels with a values __smaller__ then threshold instead.
 *   * __Use normalized threshold__ Use normalized values when comparing to the threshold.
 *   * __Scaling Factor__ Scaling factor to apply to the output distance field.
 *   * __Squared Distance__ Output the squared distance field
@@ -80,14 +83,12 @@ namespace inviwo {
 *     computation is time consuming one has to manually trigger it.
 *
 */
+class IVW_MODULE_BASE_API LayerDistanceTransformRAM : public Processor, public ProgressBarOwner {
+public:
+    enum class DataRangeMode { Diagonal, MinMax, Custom };
 
-class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
-public:  
-    enum class DataRangeMode {Diagonal, MinMax, Custom};
-
-
-    DistanceTransformRAM();
-    virtual ~DistanceTransformRAM();
+    LayerDistanceTransformRAM();
+    virtual ~LayerDistanceTransformRAM();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -102,23 +103,20 @@ private:
     void updateOutport();
     void paramChanged();
 
-    VolumeInport volumePort_;
-    VolumeOutport outport_;
+    ImageInport imagePort_;
+    ImageOutport outport_;
 
-    std::future<std::shared_ptr<const Volume>> newVolume_;
+    std::future<std::shared_ptr<Image>> newImage_;   
+    ImageReuseCache imageCache_;
 
     DoubleProperty threshold_;
     BoolProperty flip_;
     BoolProperty normalize_;
-    DoubleProperty resultDistScale_; // scaling factor for distances
-    BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
+    DoubleProperty resultDistScale_;  // scaling factor for distances
+    BoolProperty resultSquaredDist_;  // determines whether output uses squared euclidean distances
     BoolProperty uniformUpsampling_;
-    IntProperty upsampleFactorUniform_; // uniform upscaling of the output field
-    IntSize3Property upsampleFactorVec3_; // non-uniform upscaling of the output field 
-    
-    DoubleMinMaxProperty dataRangeOutput_;
-    TemplateOptionProperty<DataRangeMode> dataRangeMode_;
-    DoubleMinMaxProperty customDataRange_;
+    IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
+    IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
 
     ButtonProperty btnForceUpdate_;
 
@@ -128,15 +126,15 @@ private:
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             DistanceTransformRAM::DataRangeMode m) {
+                                             LayerDistanceTransformRAM::DataRangeMode m) {
     switch (m) {
-        case DistanceTransformRAM::DataRangeMode::Diagonal:
+        case LayerDistanceTransformRAM::DataRangeMode::Diagonal:
             ss << "Diagonal";
             break;
-        case DistanceTransformRAM::DataRangeMode::MinMax:
+        case LayerDistanceTransformRAM::DataRangeMode::MinMax:
             ss << "MinMax";
             break;
-        case DistanceTransformRAM::DataRangeMode::Custom:
+        case LayerDistanceTransformRAM::DataRangeMode::Custom:
             ss << "Custom";
             break;
         default:
@@ -147,4 +145,5 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 } // namespace
 
-#endif // IVW_DISTANCETRANSFORMRAM_H
+#endif // IVW_LAYERDISTANCETRANSFORMRAM_H
+
