@@ -56,18 +56,6 @@ class QLineEdit;
 class QResizeEvent;
 class QWheelEvent;
 
-class IVW_QTEDITOR_API MessageTableView : public QTableView {
-    Q_OBJECT
-public:
-    MessageTableView(QWidget* parent=nullptr);
-    virtual ~MessageTableView() = default;
-
-protected:
-    virtual void wheelEvent(QWheelEvent *event) override;
-};
-    
-
-
 namespace inviwo {
 
 class InviwoMainWindow;
@@ -165,7 +153,7 @@ private:
     QModelIndex mapFromSource(int row, int col);
 
 
-    MessageTableView* tableView_;
+    QTableView* tableView_;
     LogTableModel model_;
     QSortFilterProxyModel* filter_;
     QSortFilterProxyModel* levelFilter_;
