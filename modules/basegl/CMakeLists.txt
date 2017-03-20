@@ -39,6 +39,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
@@ -94,6 +95,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
@@ -148,6 +150,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pointrenderer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pointrenderer.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert
