@@ -115,7 +115,7 @@ void VolumeSlice::shiftSlice(int shift) {
 void VolumeSlice::process() {
     auto vol = inport_.getData();
 
-    const ivec3 dims(vol->getDimensions());
+    const auto dims(vol->getDimensions());
     double pos {sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
     switch (sliceAlongAxis_.get()) {
         case CartesianCoordinateAxis::X:
@@ -152,17 +152,15 @@ void VolumeSlice::process() {
                 const auto imgdim = [&]() {
                     switch (axis) {
                         default:
+                            return size2_t(voldim.z, voldim.y);
                         case CartesianCoordinateAxis::X:
                             return size2_t(voldim.z, voldim.y);
-
                         case CartesianCoordinateAxis::Y:
                             return size2_t(voldim.x, voldim.z);
-
                         case CartesianCoordinateAxis::Z:
                             return size2_t(voldim.x, voldim.y);
                     }
                 }();
-
 
                 auto res = cache.getTypedUnused<T>(imgdim);
                 auto sliceImage = res.first;
@@ -194,7 +192,7 @@ void VolumeSlice::process() {
                         auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
                         for (size_t z = 0; z < voldim.z; z++) {
                             for (size_t y = 0; y < voldim.y; y++) {
-                                offsetVolume = vm(slice, y, z);
+                                offsetVolume = vm(x, y, z);
                                 offsetImage = im(z, y);
                                 layerdata[offsetImage] = voldata[offsetVolume];
                             }

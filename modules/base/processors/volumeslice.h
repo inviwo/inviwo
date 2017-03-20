@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
-
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <modules/base/datastructures/imagereusecache.h>
 
 namespace inviwo {
