@@ -66,6 +66,24 @@ private:
     int oldValue_;
 };
 
+struct IVW_MODULE_OPENGL_API TexEnv {
+    TexEnv() = delete;
+    TexEnv(TexEnv const&) = delete;
+    TexEnv& operator=(TexEnv const& that) = delete;
+
+    TexEnv(GLenum target, GLenum name, GLint value);
+
+    TexEnv(TexEnv&& rhs);
+    TexEnv& operator=(TexEnv&& that);
+
+    ~TexEnv();
+
+private:
+    GLenum target_;
+    GLenum name_;
+    int oldValue_;
+};
+
 struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState() = delete;
     GlBoolState(GlBoolState const&) = delete;
