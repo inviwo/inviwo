@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,36 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/linerenderer.h>
+#include <modules/basegl/processors/pointrenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LineRenderer::processorInfo_{
-    "org.inviwo.LineRenderer",  // Class identifier
-    "Line Renderer",            // Display name
-    "Mesh Rendering",           // Category
-    CodeState::Stable,          // Code state
-    Tags::GL,                   // Tags
+const ProcessorInfo PointRenderer::processorInfo_{
+    "org.inviwo.PointRenderer",  // Class identifier
+    "Point Renderer",            // Display name
+    "Mesh Rendering",            // Category
+    CodeState::Stable,           // Code state
+    Tags::GL,                    // Tags
 };
-const ProcessorInfo LineRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo PointRenderer::getProcessorInfo() const { return processorInfo_; }
 
-LineRenderer::LineRenderer()
+PointRenderer::PointRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
-    , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
-    , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
-    , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
+    , pointSize_("pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f)
+    , borderWidth_("borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f)
+    , borderColor_("borderColor", "Border Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
+                   vec4(1.0f))
+    , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
+    , shader_("pointrenderer.vert", "pointrenderer.frag") {
+
     outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
@@ -62,41 +64,40 @@ LineRenderer::LineRenderer()
     addPort(outport_);
     imageInport_.setOptional(true);
 
-    addProperty(lineWidth_);
+    borderColor_.setSemantics(PropertySemantics::Color);
+
+    addProperty(pointSize_);
+    addProperty(borderWidth_);
+    addProperty(borderColor_);
     addProperty(antialising_);
-    addProperty(miterLimit_);
-    addProperty(useAdjacency_);
 
     addProperty(camera_);
     addProperty(trackball_);
 
-    useAdjacency_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void LineRenderer::initializeResources() {
-    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY",
-                                                       useAdjacency_.get() ? "1" : "0");
-
-    shader_.build();
-}
-
-void LineRenderer::process() {
+void PointRenderer::process() {
     if (imageInport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
+    utilgl::GlBoolState nvPointSize(GL_VERTEX_PROGRAM_POINT_SIZE_NV, true);
+    utilgl::GlBoolState pointSprite(GL_POINT_SPRITE, true);
+    utilgl::TexEnv coordReplace(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+
+    utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader_.activate();
 
-    shader_.setUniform("screenDim_", vec2(outport_.getDimensions()));
     utilgl::setShaderUniforms(shader_, camera_, "camera_");
 
-    shader_.setUniform("lineWidth_", lineWidth_.get());
+    shader_.setUniform("pointSize_", pointSize_.get());
+    shader_.setUniform("borderWidth_", borderWidth_.get());
+    shader_.setUniform("borderColor_", borderColor_.get());
     shader_.setUniform("antialias_", antialising_.get());
-    shader_.setUniform("miterLimit_", miterLimit_.get());
 
     drawMeshes();
 
@@ -104,16 +105,13 @@ void LineRenderer::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void LineRenderer::drawMeshes() {
-    auto drawMode = (useAdjacency_.get() ? MeshDrawerGL::DrawMode::LineStripAdjacency
-                                         : MeshDrawerGL::DrawMode::LineStrip);
-
+void PointRenderer::drawMeshes() {
     for (auto& elem : inport_.getVectorData()) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
         utilgl::setShaderUniforms(shader_, *elem, "geometry_");
-        drawer.draw(drawMode);
+        drawer.draw(MeshDrawerGL::DrawMode::Points);
     }
 }
 
-}  // namespace
+}  // namespace inviwo
