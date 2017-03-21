@@ -37,8 +37,8 @@ namespace inviwo {
 const ProcessorInfo LineRenderer::processorInfo_{
     "org.inviwo.LineRenderer",  // Class identifier
     "Line Renderer",            // Display name
-    "Rendering",                // Category
-    CodeState::Experimental,    // Code state
+    "Mesh Rendering",           // Category
+    CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
 const ProcessorInfo LineRenderer::getProcessorInfo() const { return processorInfo_; }
@@ -116,5 +116,4 @@ void LineRenderer::drawMeshes() {
     }
 }
 
-} // namespace
-
+}  // namespace

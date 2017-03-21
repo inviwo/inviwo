@@ -37,8 +37,8 @@ namespace inviwo {
 const ProcessorInfo PointRenderer::processorInfo_{
     "org.inviwo.PointRenderer",  // Class identifier
     "Point Renderer",            // Display name
-    "Rendering",                 // Category
-    CodeState::Experimental,     // Code state
+    "Mesh Rendering",            // Category
+    CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
 const ProcessorInfo PointRenderer::getProcessorInfo() const { return processorInfo_; }
@@ -92,7 +92,6 @@ void PointRenderer::process() {
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader_.activate();
 
-    shader_.setUniform("screenDim_", vec2(outport_.getDimensions()));
     utilgl::setShaderUniforms(shader_, camera_, "camera_");
 
     shader_.setUniform("pointSize_", pointSize_.get());

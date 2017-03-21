@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,7 @@
 uniform GeometryParameters geometry_;
 uniform CameraParameters camera_;
 
-uniform vec2 screenRes_;
 uniform float pointSize_ = 5.0; // [pixel]
-
 uniform float borderWidth_ = 1.0; // [pixel]
 
 out vec4 worldPosition_;
@@ -42,16 +40,12 @@ out vec3 normal_;
 out vec4 color_;
 
 void main() {
-    vec2 scale = vec2(2.0) / screenRes_.x;
-
     worldPosition_ = geometry_.dataToWorld * in_Vertex;
-
-    // calculate window-space point size
-    //float dist = length(worldPosition_);
-    gl_PointSize = pointSize_ + 2 * borderWidth_; // / dist;
 
     color_ = in_Color;
 
     normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
     gl_Position = camera_.worldToClip * worldPosition_;
+
+    gl_PointSize = (pointSize_ + 2 * borderWidth_);
 }  

@@ -2,17 +2,17 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
- * Rerribution and use in source and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 1. Rerributions of source code must retain the above copyright notice, this
+ * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 2. Rerributions in binary form must reproduce the above copyright notice,
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the rribution.
+ * and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -40,8 +40,6 @@ in vec3 normal_;
 in vec4 color_;
 
 void main() {
-    //vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-
     // calculate normal from texture coordinates
     vec3 normal;
     normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
@@ -66,12 +64,4 @@ void main() {
 
     FragData0 = vec4(vec3(borderValue), 1.0);
     FragData0 = vec4(color.rgb, color.a * borderAlpha);
-/*
-    FragData0 = vec4(gl_PointCoord, 0.0, 1.0);
-
-    if (r < 1.0 - (borderWidth_ / (borderWidth_ + 0.5*pointSize_) )) {
-        FragData0 = vec4(1.0, 0.0, 0.0, 1.0);
-    }
-*/
-
 }
