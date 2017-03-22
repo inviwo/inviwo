@@ -277,7 +277,7 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     TransferFunction& transFunc = tfProperty_->get();
     QVector<QGradientStop> gradientStops;
 
-    for (int i = 0; i < transFunc.getNumPoints(); i++) {
+    for (sice_t i = 0; i < transFunc.getNumPoints(); i++) {
         const auto curPoint = transFunc.getPoint(i);
         vec4 curColor = curPoint->getRGBA();
 

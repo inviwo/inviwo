@@ -38,9 +38,11 @@
 #include <QFrame>
 #include <warn/pop>
 
+#include <functional>
+
 namespace inviwo {
 
-    class RangeSliderMiddle;
+class RangeSliderMiddle;
 
 class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
 #include <warn/push>
