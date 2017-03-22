@@ -53,9 +53,8 @@ class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public Fil
     Q_OBJECT
     #include <warn/pop>
 public:
-    InviwoFileDialog(QWidget *parent=nullptr, const std::string &title="",
-        const std::string &pathType = "default",
-        const std::string &path="");
+    InviwoFileDialog(QWidget *parent = nullptr, const std::string &title = "",
+                     const std::string &pathType = "default", const std::string &path = "");
 
     virtual bool show() override;
 
@@ -70,12 +69,13 @@ public:
     virtual inviwo::FileMode getFileMode() const override;
 
     /**
-    * \brief sets the current directory of the file dialog to the parent directory of the given
-    *   file name or, if it is referring to a directory, to the given path. The file will be
-    *   selected when the dialog is shown.
-    *
-    * @param filename  path and name of the file (can be either a file name or directory name including the full path)
-    */
+     * \brief sets the current directory of the file dialog to the parent directory of the given
+     *   file name or, if it is referring to a directory, to the given path. The file will be
+     *   selected when the dialog is shown.
+     *
+     * @param filename  path and name of the file (can be either a file name or directory name
+     * including the full path)
+     */
     virtual void setCurrentFile(const std::string &filename) override;
     virtual std::vector<std::string> getSelectedFiles() const override;
 

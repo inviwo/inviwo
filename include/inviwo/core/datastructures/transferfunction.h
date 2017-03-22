@@ -66,23 +66,48 @@ class IVW_CORE_API TransferFunction : public Serializable,
                                       public TransferFunctionPointObserver {
 
 public:
-    using TFPoints = std::vector<std::unique_ptr<TransferFunctionDataPoint>>;
+    using Point = TransferFunctionDataPoint::Point;
 
-    TransferFunction(int textureSize = 1024);
+    TransferFunction(size_t textureSize = 1024);
+    TransferFunction(const std::vector<Point>& points, size_t textureSize = 1024);
     TransferFunction(const TransferFunction& rhs);
     TransferFunction& operator=(const TransferFunction& rhs);
 
     virtual ~TransferFunction();
     
     const Layer* getData() const;
-    int getNumPoints() const;
-    int getTextureSize();
+    size_t getNumPoints() const;
+    size_t getTextureSize();
 
     TransferFunctionDataPoint* getPoint(size_t i);
     const TransferFunctionDataPoint* getPoint(size_t i) const;
 
-    void addPoint(const vec2& pos, const vec4& color);
+    /**
+     * Add a transfer function point at pos with value color
+     */
+    void addPoint(const float& pos, const vec4& color);
+
+    /**
+     * Add a transfer function point
+     */
+    void addPoint(const Point& point);
+
+    /**
+     * Add a transfer function point at pos.x() with alpha from pos.y and color interpolated from
+     * neighbors
+     */
     void addPoint(const vec2& pos);
+
+    /**
+     * Add a transfer function points
+     */
+    void addPoints(const std::vector<Point>& points);
+
+    /**
+     * Depricated. Add a transfer function point at pos.x() with value color, pos.y is not used.
+     */
+    void addPoint(const vec2& pos, const vec4& color);
+
     void removePoint(TransferFunctionDataPoint* dataPoint);
 
     void clearPoints();
@@ -111,15 +136,16 @@ public:
     void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
 protected:
-
     void addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint);
-
+    void removePoint(std::vector<std::unique_ptr<TransferFunctionDataPoint>>::iterator pos);
+    void sort();
     void calcTransferValues() const;
 
 private:
     float maskMin_;
     float maskMax_;
-    TFPoints points_;
+    std::vector<std::unique_ptr<TransferFunctionDataPoint>> points_;
+    std::vector<TransferFunctionDataPoint*> sorted_;
 
     mutable bool invalidData_;
     std::shared_ptr<LayerRAMPrecision<vec4>> dataRepr_;

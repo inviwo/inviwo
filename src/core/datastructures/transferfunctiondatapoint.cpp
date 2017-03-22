@@ -31,53 +31,63 @@
 
 namespace inviwo {
 
-TransferFunctionDataPoint::TransferFunctionDataPoint(const vec2& pos, const vec4& rgba)
-    : pos_(pos), rgba_(rgba) {}
+TransferFunctionDataPoint::TransferFunctionDataPoint(const Point& point) : point_(point) {}
+
+TransferFunctionDataPoint::TransferFunctionDataPoint(const float& pos, const vec4& rgba)
+    : TransferFunctionDataPoint(Point{ pos, rgba }) {}
 
 TransferFunctionDataPoint& TransferFunctionDataPoint::operator=(
     const TransferFunctionDataPoint& that) {
-    if (pos_ != that.pos_ || rgba_ != that.rgba_) {
-        pos_ = that.pos_;
-        rgba_ = that.rgba_;
+    if (point_ != that.point_) {
+        point_ = that.point_;
         notifyTransferFunctionPointObservers();
     }
     return *this;
 }
 
-void TransferFunctionDataPoint::setPos(const vec2& pos) {
-    if (pos == pos_ && pos.y == rgba_.a) return;
-    pos_ = pos;
-    rgba_.a = pos.y;
-    notifyTransferFunctionPointObservers();
+void TransferFunctionDataPoint::setPoint(const Point& point) {
+    if (point_ != point) {
+        point_ = point;
+        notifyTransferFunctionPointObservers();
+    }
+}
+
+void TransferFunctionDataPoint::setPos(const float& pos) {
+    if (point_.pos != pos) {
+        point_.pos = pos;
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 void TransferFunctionDataPoint::setRGBA(const vec4& rgba) {
-    if (rgba == rgba_ && rgba.a == pos_.y) return;
-    pos_.y = rgba.a;
-    rgba_ = rgba;
-    notifyTransferFunctionPointObservers();
+    if (point_.color != rgba) {
+        point_.color = rgba;
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 void TransferFunctionDataPoint::setRGB(const vec3& rgb) {
-    if (rgb.r == rgba_.r && rgb.g == rgba_.g && rgb.b == rgba_.b) return;
-    rgba_.r = rgb.r;
-    rgba_.g = rgb.g;
-    rgba_.b = rgb.b;
-    notifyTransferFunctionPointObservers();
+    if (rgb.r != point_.color.r || rgb.g != point_.color.g || rgb.b != point_.color.b) {
+        point_.color.r = rgb.r;
+        point_.color.g = rgb.g;
+        point_.color.b = rgb.b;
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 void TransferFunctionDataPoint::setA(float alpha) {
-    if (pos_.y == alpha && rgba_.a == alpha) return;
-    pos_.y = alpha;
-    rgba_.a = alpha;
-    notifyTransferFunctionPointObservers();
+    if (point_.color.a != alpha) {
+        point_.color.a = alpha;
+        notifyTransferFunctionPointObservers();
+    }
 }
 
-void TransferFunctionDataPoint::setPosA(const vec2& pos, float alpha) {
-    if (pos_ == pos && rgba_.a == alpha) return;
-    pos_ = pos;
-    rgba_.a = alpha;
-    notifyTransferFunctionPointObservers();
+void TransferFunctionDataPoint::setPosA(const float& pos, float alpha) {
+    if (point_.pos != pos || point_.color.a != alpha) {
+        point_.pos = pos;
+        point_.color.a = alpha;
+        notifyTransferFunctionPointObservers();
+    }
 }
 
 void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() {
@@ -86,22 +96,52 @@ void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() {
 }
 
 void TransferFunctionDataPoint::serialize(Serializer& s) const {
-    s.serialize("pos", pos_);
-    s.serialize("rgba", rgba_);
+    s.serialize("pos", point_.pos);
+    s.serialize("rgba", point_.color);
 }
 
 void TransferFunctionDataPoint::deserialize(Deserializer& d) {
-    auto oldPos = pos_;
-    auto oldRgba = rgba_;
-    d.deserialize("pos", pos_);
-    d.deserialize("rgba", rgba_);
-    if (oldPos != pos_ || oldRgba != rgba_) {
+    auto oldPos = point_.pos;
+    auto oldRgba = point_.color;
+    d.deserialize("pos", point_.pos);
+    d.deserialize("rgba", point_.color);
+    if (oldPos != point_.pos || oldRgba != point_.color) {
         notifyTransferFunctionPointObservers();
     }
 }
 
+bool operator==(const TransferFunctionDataPoint::Point& lhs,
+                const TransferFunctionDataPoint::Point& rhs) {
+    return lhs.pos == rhs.pos && lhs.color == rhs.color;
+}
+
+bool operator!=(const TransferFunctionDataPoint::Point& lhs,
+                const TransferFunctionDataPoint::Point& rhs) {
+    return !operator==(lhs, rhs);
+}
+
+bool operator<(const TransferFunctionDataPoint::Point& lhs,
+               const TransferFunctionDataPoint::Point& rhs) {
+    return lhs.pos < rhs.pos;
+}
+
+bool operator>(const TransferFunctionDataPoint::Point& lhs,
+               const TransferFunctionDataPoint::Point& rhs) {
+    return rhs < lhs;
+}
+
+bool operator<=(const TransferFunctionDataPoint::Point& lhs,
+                const TransferFunctionDataPoint::Point& rhs) {
+    return !(rhs < lhs);
+}
+
+bool operator>=(const TransferFunctionDataPoint::Point& lhs,
+                const TransferFunctionDataPoint::Point& rhs) {
+    return !(lhs < rhs);
+}
+
 bool operator==(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {
-    return lhs.getPos() == rhs.getPos() && lhs.getRGBA() == rhs.getRGBA();
+    return lhs.getPoint() == rhs.getPoint();
 }
 
 bool operator!=(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {
@@ -109,7 +149,7 @@ bool operator!=(const TransferFunctionDataPoint& lhs, const TransferFunctionData
 }
 
 bool operator<(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {
-    return lhs.getPos().x < rhs.getPos().x;
+    return lhs.getPoint() < rhs.getPoint();
 }
 
 bool operator>(const TransferFunctionDataPoint& lhs, const TransferFunctionDataPoint& rhs) {

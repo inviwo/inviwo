@@ -63,6 +63,8 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
         case 12:
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
+        case 13:
+            traverseNodes(root, &ProcessorNetworkConverter::updateTransferfunctions);
             return true; // Changes has been made.
         default:
             return false; // No changes
@@ -436,6 +438,27 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
 
             node->SetAttribute("identifier", identifier);
         }
+    }
+}
+
+void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "transferFunction") {
+        node->SetValue("TransferFunction");
+
+        xml::visitMatchingNodes(node, {{"dataPoints", {}}},
+                                [](TxElement* node) { node->SetValue("Points"); });
+
+        xml::visitMatchingNodes(node, {{"Points", {}}, {"point", {}}},
+                                [](TxElement* node) { node->SetValue("Point"); });
+
+        xml::visitMatchingNodes(node, {{"Points", {}}, {"Point", {}}, {"pos", {}}},
+                                [](TxElement* posNode) {
+                                    auto pos = posNode->GetAttributeOrDefault("x", "0.0");
+                                    posNode->SetAttribute("content", pos);
+                                });
     }
 }
 

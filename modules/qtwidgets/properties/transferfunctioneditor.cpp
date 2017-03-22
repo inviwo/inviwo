@@ -55,7 +55,7 @@ public:
         return editorPoint->getPoint() == p_;
     }
     bool operator<(TransferFunctionEditorControlPoint* editorPoint) {
-        return editorPoint->getPoint()->getPos().x < p_->getPos().x;
+        return editorPoint->getPoint()->getPos() < p_->getPos();
     }
 
 private:

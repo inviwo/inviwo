@@ -137,20 +137,25 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
     }
 
     // Check if point is within any desktops rect (with some extra padding applied).
-    static constexpr int padding = 10;
-    bool withinAnyDesktop = false;
-    for (int i = 0; i < desktop->screenCount(); i++) {
-        auto geom = desktop->screenGeometry(i).marginsAdded({padding, padding, padding, padding});
-        if (geom.contains(pos)) {
-            withinAnyDesktop = true;
-            break;
+    static constexpr int leftPadding = 0;
+    static constexpr int topPadding = 0;
+    static constexpr int rightPadding = 10;
+    static constexpr int bottomPadding = 10;
+    const bool withinAnyDesktop = [&]() {
+        for (int i = 0; i < desktop->screenCount(); i++) {
+            auto geom = desktop->screenGeometry(i).marginsRemoved(
+                {leftPadding, topPadding, rightPadding, bottomPadding});
+            if (geom.contains(pos)) {
+                return true;
+            }
         }
-    }
+        return false;
+    }();
 
     if (!withinAnyDesktop) {
         // If the widget is outside visible screen
         auto mainWindow = getApplicationMainWindow();
-        QPoint appPos;
+        QPoint appPos(0,0);
         if (mainWindow) {
             appPos = mainWindow->pos();
         }

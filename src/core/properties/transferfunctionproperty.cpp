@@ -34,21 +34,19 @@ namespace inviwo {
 
 PropertyClassIdentifier(TransferFunctionProperty, "org.inviwo.TransferFunctionProperty");
 
-TransferFunctionProperty::TransferFunctionProperty(const std::string &identifier,
-                                                   const std::string &displayName,
-                                                   const TransferFunction &value,
-                                                   VolumeInport* volumeInport,
-                                                   InvalidationLevel invalidationLevel,
-                                                   PropertySemantics semantics)
-    : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel, semantics)
+TransferFunctionProperty::TransferFunctionProperty(
+    const std::string& identifier, const std::string& displayName, const TransferFunction& value,
+    VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel,
+                                         semantics)
     , TransferFunctionObserver()
     , zoomH_("zoomH_", vec2(0.0f, 1.0f))
     , zoomV_("zoomV_", vec2(0.0f, 1.0f))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
-    
+
     // rename the "value" to make the serialized file easier to understand.
-    this->value_.name = "transferFunction";
+    this->value_.name = "TransferFunction";
     this->value_.value.addObserver(this);
 }
 

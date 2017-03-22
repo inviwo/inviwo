@@ -103,16 +103,6 @@ struct ValueWrapper {
     T value;
     T defaultValue;
     std::string name;
-
-    template <typename U>
-    friend bool operator==(const ValueWrapper<U>& lhs, const ValueWrapper<U>& rhs);
-    template <typename U>
-    friend bool operator<(const ValueWrapper<U>& lhs, const ValueWrapper<U>& rhs);
-
-    template <typename U>
-    friend bool operator==(const ValueWrapper<U>& lhs, const U& rhs);
-    template <typename U>
-    friend bool operator<(const ValueWrapper<U>& lhs, const U& rhs);
 };
 
 template <typename T>
