@@ -191,6 +191,8 @@ std::string TextOverlayGL::getString() const {
                 if (numDigits > 2) printWarning = true;
                 offset += 1 + numDigits;
             }
+        } else {
+            ++offset;
         }
     }
 
