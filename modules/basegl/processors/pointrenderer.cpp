@@ -86,7 +86,6 @@ void PointRenderer::process() {
 
     utilgl::GlBoolState nvPointSize(GL_VERTEX_PROGRAM_POINT_SIZE_NV, true);
     utilgl::GlBoolState pointSprite(GL_POINT_SPRITE, true);
-    utilgl::TexEnv coordReplace(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
     utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
