@@ -74,6 +74,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
+#include <QClipboard>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
@@ -442,6 +443,46 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             }
             connect(showPortInsector, &QAction::triggered,
                     [this, outport]() { contextMenuShowInspector(outport); });
+
+            if (auto imgPort = dynamic_cast<ImageOutport*>(outport->getPort())) {
+                auto img = imgPort->getData();
+                if (img) {
+                    menu.addSeparator();
+                    for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
+                        std::ostringstream oss;
+                        oss << "color layer " << i;
+                        auto layer = img->getColorLayer(i);
+                        auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
+                        this->connect(copyAction, &QAction::triggered, [&]() {
+                            QApplication::clipboard()->setPixmap(
+                                QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+                        });
+                    }
+
+                    {
+                        std::ostringstream oss;
+                        oss << "Copy picking layer to clipboard";
+                        auto layer = img->getPickingLayer();
+                        auto pickingAction = menu.addAction(oss.str().c_str());
+                        this->connect(pickingAction, &QAction::triggered, [&]() {
+                            auto qimg = utilqt::layerToQImage(*layer);
+                            QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
+                        });
+                    }
+
+                    {
+                        std::ostringstream oss;
+                        oss << "Copy depth layer to clipboard";
+                        auto layer = img->getDepthLayer();
+                        auto depthAction = menu.addAction(oss.str().c_str());
+                        this->connect(depthAction, &QAction::triggered, [&]() {
+                            QApplication::clipboard()->setPixmap(
+                                QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+                        });
+                    }
+                }
+            }
+
             break;
         }
 
