@@ -268,7 +268,7 @@ QImage layerToQImage(const Layer &layer){
     const auto dataptr = reinterpret_cast<const unsigned char*>(data->data());
     const auto width = static_cast<int>(dims.x);
     const auto height = static_cast<int>(dims.y);
-    const auto bytesPerLine = static_cast<int>(dims.y * bytesPerPixel);
+    const auto bytesPerLine = static_cast<int>(dims.x * bytesPerPixel);
 
     return { dataptr, width, height, bytesPerLine, format,
              [](void* info) { delete static_cast<std::vector<unsigned char>*>(info); },
