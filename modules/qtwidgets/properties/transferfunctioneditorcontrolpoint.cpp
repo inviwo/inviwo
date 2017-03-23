@@ -90,12 +90,12 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
         labelStream.setRealNumberPrecision(3);
         labelStream << "a("
                     << dataMap_.valueRange.x +
-                           dataPoint_->getPos().x * (dataMap_.valueRange.y - dataMap_.valueRange.x)
+                           dataPoint_->getPos() * (dataMap_.valueRange.y - dataMap_.valueRange.x)
                     << ")=";
         labelStream << dataPoint_->getRGBA().a;
 
         Qt::AlignmentFlag align;
-        if (dataPoint_->getPos().x > 0.5f) {
+        if (dataPoint_->getPos() > 0.5f) {
             align = Qt::AlignRight;
         } else {
             align = Qt::AlignLeft;
@@ -200,9 +200,8 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
         // update the associated transfer function data point
         if (!isEditingPoint_) {
             isEditingPoint_ = true;
-            dataPoint_->setPosA(
-                vec2(static_cast<float>( currentPos_.x() / rect.width()), static_cast<float>(currentPos_.y() / rect.height())),
-                static_cast<float>(currentPos_.y() / rect.height()));
+            dataPoint_->setPosA(static_cast<float>(currentPos_.x() / rect.width()),
+                                static_cast<float>(currentPos_.y() / rect.height()));
             isEditingPoint_ = false;
         }
 
@@ -220,20 +219,21 @@ void TransferFunctionEditorControlPoint::onTransferFunctionPointChange(
     if (!isEditingPoint_) {
         isEditingPoint_ = true;
         QRectF rect = scene()->sceneRect();
-        QPointF newpos(p->getPos().x * rect.width(), p->getPos().y * rect.height());
+        QPointF newpos(p->getPos() * rect.width(), p->getRGBA().a * rect.height());
         if (newpos != pos()) setPos(newpos);
         isEditingPoint_ = false;
+        update();
     }
 }
 
 QRectF TransferFunctionEditorControlPoint::calculateLabelRect() const {
     QRectF rect;
-    if (dataPoint_->getPos().x > 0.5f) {
+    if (dataPoint_->getPos() > 0.5f) {
         rect.setX(-0.5 * size_ - textWidth_);
     } else {
         rect.setX(0.5 * size_);
     }
-    if (dataPoint_->getPos().y > 0.5f) {
+    if (dataPoint_->getRGBA().a > 0.5f) {
         rect.setY(0.5 * size_);
     } else {
         rect.setY(-0.5 * size_ - textHeight_);
@@ -247,7 +247,7 @@ void TransferFunctionEditorControlPoint::setDataMap(const DataMapper& dataMap) {
     dataMap_ = dataMap;
 }
 
-inviwo::DataMapper TransferFunctionEditorControlPoint::getDataMap() const {
+DataMapper TransferFunctionEditorControlPoint::getDataMap() const {
     return dataMap_;
 }
 

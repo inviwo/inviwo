@@ -38,9 +38,11 @@
 #include <QFrame>
 #include <warn/pop>
 
+#include <functional>
+
 namespace inviwo {
 
-    class RangeSliderMiddle;
+class RangeSliderMiddle;
 
 class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
 #include <warn/push>
@@ -49,7 +51,7 @@ class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
 #include <warn/pop>
 
 public:
-    RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr);
+    RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr, bool showTooltip = false);
     virtual ~RangeSliderQt() = default;
 
 public slots:
@@ -67,6 +69,10 @@ public slots:
     void setRange(int, int);
     void setMinRange(int);
     void setMaxRange(int);
+
+    virtual bool eventFilter(QObject *obj, QEvent *event) override;
+    void setTooltipFormat(std::function<std::string(int, int)> formater);
+
 
 signals:
     void valuesChanged(int min, int max);
@@ -87,6 +93,7 @@ private:
     int value_[2];
     RangeSliderMiddle* middle_;
     int minSeperation_;
+    std::function<std::string(int, int)> formatTooltip_;
 };
 
 class IVW_MODULE_QTWIDGETS_API RangeSliderMiddle : public QFrame {
@@ -95,7 +102,7 @@ class IVW_MODULE_QTWIDGETS_API RangeSliderMiddle : public QFrame {
     Q_OBJECT
     #include <warn/pop>
 public:
-    RangeSliderMiddle(QWidget* parent = nullptr);
+    RangeSliderMiddle(QWidget* parent = nullptr, Qt::Orientation orientation = Qt::Horizontal);
     virtual ~RangeSliderMiddle() = default;
 
 signals:
@@ -106,6 +113,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    Qt::Orientation orientation_;
     int lastMouseX_;
     bool drag_;
 };

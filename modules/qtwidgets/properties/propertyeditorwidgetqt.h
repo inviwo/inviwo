@@ -61,6 +61,8 @@ public:
     virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus) override;
     virtual void setSticky(bool sticky) override;
 
+    virtual bool isVisible() const override;
+
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void showEvent(QShowEvent *) override;

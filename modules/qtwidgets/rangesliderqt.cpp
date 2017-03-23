@@ -29,15 +29,25 @@
 
 #include <modules/qtwidgets/rangesliderqt.h>
 
+#include <inviwo/core/util/stringconversion.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QToolTip>
+#include <warn/pop>
+
 namespace inviwo {
 
 
-RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent) 
+RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool showTooltip) 
     : QSplitter(orientation, parent)
-    , minSeperation_(0) {
+    , minSeperation_(0)
+    , formatTooltip_{[](int hanlde, int pos) {
+        return toString(pos);
+    }}{
 
     QFrame* left = new QFrame(this);
-    middle_ = new RangeSliderMiddle(this);
+    middle_ = new RangeSliderMiddle(this, orientation);
     QFrame* right = new QFrame(this);
     addWidget(left);
     addWidget(middle_);
@@ -74,6 +84,11 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent)
     QSplitter::setChildrenCollapsible(false);    
     connect(this, SIGNAL(splitterMoved(int, int)), this, SLOT(updateSplitterPosition(int, int)));
     updateSlidersFromState();
+
+    if (showTooltip) {
+        handle(1)->installEventFilter(this);
+        handle(2)->installEventFilter(this);
+    }
 }
 
 int RangeSliderQt::minValue() {
@@ -236,8 +251,29 @@ void RangeSliderQt::middleMoved(int delta) {
     this->updateSplitterPosition(0, 0);
 }
 
-RangeSliderMiddle::RangeSliderMiddle(QWidget *parent)
+bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::ToolTip) {
+        QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
+        if (obj == handle(1)) {
+            QToolTip::showText(helpEvent->globalPos(),
+                               QString::fromStdString(formatTooltip_(0, value_[0])));
+        } else if (obj == handle(2)) {
+            QToolTip::showText(helpEvent->globalPos(),
+                               QString::fromStdString(formatTooltip_(1, value_[1])));
+        }
+        return true;
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
+}
+
+void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formater) {
+    formatTooltip_ = formater;
+}
+
+RangeSliderMiddle::RangeSliderMiddle(QWidget *parent, Qt::Orientation orientation)
     : QFrame(parent)
+    , orientation_(orientation)
     , lastMouseX_(0)
     , drag_(false) {
 }
@@ -245,7 +281,8 @@ RangeSliderMiddle::RangeSliderMiddle(QWidget *parent)
 void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         // map to global position since the widget will move
-        lastMouseX_ = this->mapToGlobal(event->pos()).x();
+        lastMouseX_ = orientation_ == Qt::Horizontal ? this->mapToGlobal(event->pos()).x()
+                                                     : this->mapToGlobal(event->pos()).y();
         drag_ = true;
     }
 }
@@ -260,7 +297,8 @@ void RangeSliderMiddle::mouseReleaseEvent(QMouseEvent *event) {
 void RangeSliderMiddle::mouseMoveEvent(QMouseEvent *event) {
     if (drag_) {
         // map to global position since the widget is about to be moved
-        int newX = this->mapToGlobal(event->pos()).x();
+        int newX = orientation_ == Qt::Horizontal ? this->mapToGlobal(event->pos()).x()
+                                                  : this->mapToGlobal(event->pos()).y();
         int delta = newX - lastMouseX_;
         lastMouseX_ = newX;
         if (delta != 0) {

@@ -42,11 +42,6 @@ class TransferFunctionProperty;
 class TFPushButton;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-
 public:
     TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
     virtual ~TransferFunctionPropertyWidgetQt();
@@ -58,16 +53,12 @@ public:
 private:
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;
-    mutable TransferFunctionPropertyDialog* transferFunctionDialog_ = nullptr;
+    mutable std::unique_ptr<TransferFunctionPropertyDialog> transferFunctionDialog_ = nullptr;
 
     void generateWidget();
 };
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
 public:
     TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
     virtual ~TFPushButton() = default;

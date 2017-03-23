@@ -90,13 +90,13 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string w
     QPoint newPos =
         utilqt::movePointOntoDesktop(utilqt::toQPoint(PropertyEditorWidget::getPosition()),
                                      utilqt::toQSize(widgetDimension), false);
-    if (!(newPos.x() == 0 && newPos.y() == 0)) {
-        InviwoDockWidget::move(newPos);
-    } else if (mainWindow) {  // We assume that this is a new widget and give it a new position
+
+    if (newPos == QPoint(0, 0) && mainWindow) {
+        // We assume that this is a new widget and give it a new position
         newPos = mainWindow->pos();
         newPos += utilqt::offsetWidget();
-        InviwoDockWidget::move(newPos);
     }
+    InviwoDockWidget::move(newPos);
 
     // set sticky flag
     InviwoDockWidget::setSticky(PropertyEditorWidget::isSticky());
@@ -151,6 +151,10 @@ void PropertyEditorWidgetQt::setSticky(bool sticky) {
     PropertyEditorWidget::setSticky(sticky);
 }
 
+
+bool PropertyEditorWidgetQt::isVisible() const {
+    return PropertyEditorWidget::isVisible();
+}
 
 void PropertyEditorWidgetQt::resizeEvent(QResizeEvent* event) {
     PropertyEditorWidget::updateDimensions(ivec2(event->size().width(), event->size().height()));

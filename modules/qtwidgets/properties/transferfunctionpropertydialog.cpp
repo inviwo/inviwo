@@ -58,7 +58,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
                                                                QWidget* parent)
     : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", parent)
     , TransferFunctionObserver()
-    , sliderRange_(1000)
+    , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr)
@@ -104,7 +104,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tfEditorView_->setScene(tfEditor_.get());
 
-    zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this);
+    zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this, true);
     zoomVSlider_->setRange(0, sliderRange_);
     zoomVSlider_->setMinSeparation(5);
     // flip slider values to compensate for vertical slider layout
@@ -114,7 +114,11 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(zoomVSlider_, SIGNAL(valuesChanged(int, int)), this,
             SLOT(changeVerticalZoom(int, int)));
 
-    zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this);
+    zoomVSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+        return toString(1.0f - static_cast<float>(val)/range);
+    });
+
+    zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
     zoomHSlider_->setRange(0, sliderRange_);
     zoomHSlider_->setMinSeparation(5);
     zoomHSlider_->setValue(static_cast<int>(tfProperty_->getZoomH().x * sliderRange_),
@@ -122,11 +126,19 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(zoomHSlider_, SIGNAL(valuesChanged(int, int)), this,
             SLOT(changeHorizontalZoom(int, int)));
 
-    maskSlider_ = new RangeSliderQt(Qt::Horizontal, this);
+    zoomHSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+        return toString(static_cast<float>(val) / range);
+    });
+
+    maskSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
     maskSlider_->setRange(0, sliderRange_);
     maskSlider_->setValue(static_cast<int>(tfProperty_->getMask().x * sliderRange_),
                           static_cast<int>(tfProperty_->getMask().y * sliderRange_));
     connect(maskSlider_, SIGNAL(valuesChanged(int, int)), this, SLOT(changeMask(int, int)));
+    maskSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+        return toString(static_cast<float>(val) / range);
+    });
+
 
     colorWheel_ = util::make_unique<ColorWheel>();
     connect(colorWheel_.get(), SIGNAL(colorChange(QColor)), this, SLOT(setPointColor(QColor)));
@@ -265,7 +277,7 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     TransferFunction& transFunc = tfProperty_->get();
     QVector<QGradientStop> gradientStops;
 
-    for (int i = 0; i < transFunc.getNumPoints(); i++) {
+    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
         const auto curPoint = transFunc.getPoint(i);
         vec4 curColor = curPoint->getRGBA();
 
@@ -274,7 +286,7 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
         curColor.a = 1.0f - factor * factor;
 
         gradientStops.append(
-            QGradientStop(curPoint->getPos().x,
+            QGradientStop(curPoint->getPos(),
                           QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
     }
 

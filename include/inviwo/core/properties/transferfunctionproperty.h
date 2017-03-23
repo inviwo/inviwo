@@ -67,14 +67,15 @@ class IVW_CORE_API TransferFunctionProperty
 
 public:
     InviwoPropertyInfo();
-    
-    TransferFunctionProperty(const std::string &identifier,
-                             const std::string &displayName,
-                             const TransferFunction &value = TransferFunction(),
-                             VolumeInport* volumeInport = nullptr,
-                             InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput,
-                             PropertySemantics semantics=PropertySemantics::Default);
-    
+
+    TransferFunctionProperty(
+        const std::string& identifier, const std::string& displayName,
+        const TransferFunction& value = TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                          {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+        VolumeInport* volumeInport = nullptr,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
+
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
     TransferFunctionProperty& operator=(const TransferFunctionProperty& that);  
     virtual TransferFunctionProperty* clone() const override;
