@@ -450,7 +450,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     menu.addSeparator();
                     for (size_t i = 0; i < img->getNumberOfColorLayers(); i++) {
                         std::ostringstream oss;
-                        oss << "color layer " << i;
+                        oss << "Copy color layer";
+                        if(img->getNumberOfColorLayers()>1){
+                            oss << " " << i;
+                        }
                         auto layer = img->getColorLayer(i);
                         auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
                         this->connect(copyAction, &QAction::triggered, [&]() {
@@ -460,10 +463,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     }
 
                     {
-                        std::ostringstream oss;
-                        oss << "Copy picking layer to clipboard";
                         auto layer = img->getPickingLayer();
-                        auto pickingAction = menu.addAction(oss.str().c_str());
+                        auto pickingAction = menu.addAction("Copy picking layer");
                         this->connect(pickingAction, &QAction::triggered, [&]() {
                             auto qimg = utilqt::layerToQImage(*layer);
                             QApplication::clipboard()->setPixmap(QPixmap::fromImage(qimg));
@@ -471,10 +472,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     }
 
                     {
-                        std::ostringstream oss;
-                        oss << "Copy depth layer to clipboard";
                         auto layer = img->getDepthLayer();
-                        auto depthAction = menu.addAction(oss.str().c_str());
+                        auto depthAction = menu.addAction("Copy depth layer");
                         this->connect(depthAction, &QAction::triggered, [&]() {
                             QApplication::clipboard()->setPixmap(
                                 QPixmap::fromImage(utilqt::layerToQImage(*layer)));
