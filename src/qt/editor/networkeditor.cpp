@@ -455,7 +455,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                             oss << " " << i;
                         }
                         auto layer = img->getColorLayer(i);
-                        auto copyAction = menu.addAction(("Copy " + oss.str()).c_str());
+                        auto copyAction = menu.addAction(oss.str().c_str());
                         this->connect(copyAction, &QAction::triggered, [&]() {
                             QApplication::clipboard()->setPixmap(
                                 QPixmap::fromImage(utilqt::layerToQImage(*layer)));
