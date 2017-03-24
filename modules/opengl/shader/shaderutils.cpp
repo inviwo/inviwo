@@ -142,8 +142,15 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     std::string allChannelsGradientKey = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
     std::string gradientValue = "";
-    std::string  singleChannelGradientValue = "";
+    std::string singleChannelGradientValue = "";
     std::string allChannelsGradientValue = "";
+	std::string channel = "channel";
+	std::string defaultChannel = "0";
+
+	if (property.classificationMode_.isSelectedIdentifier("voxel-value")) {
+		channel = "3";
+		defaultChannel = "3";
+	}
 
     if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
         gradientValue = "vec3(0)";
@@ -152,33 +159,33 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("forward")) {
         gradientValue = 
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, 0);";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
         singleChannelGradientValue = 
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, channel);";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
             "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos);";
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue = 
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, 0);";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
         singleChannelGradientValue = 
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, channel);";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
             "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos);";
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue = 
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, 0);";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
         singleChannelGradientValue = 
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, channel);";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
             "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos);";
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("backward")) {
         gradientValue = 
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, 0);";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
         singleChannelGradientValue = 
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, channel);";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
             "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos);";
     }
