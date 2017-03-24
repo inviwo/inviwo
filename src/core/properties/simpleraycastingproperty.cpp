@@ -46,6 +46,7 @@ SimpleRaycastingProperty::SimpleRaycastingProperty(std::string identifier, std::
     , isoValue_("isoValue", "Iso value", 0.5f, 0.0f, 1.0f) {
     classificationMode_.addOption("none", "None");
     classificationMode_.addOption("transfer-function", "Transfer function");
+    classificationMode_.addOption("voxel-value", "Voxel value");
     classificationMode_.setSelectedIdentifier("transfer-function");
     classificationMode_.setCurrentStateAsDefault();
     addProperty(classificationMode_);

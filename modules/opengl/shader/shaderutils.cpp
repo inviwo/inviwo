@@ -213,6 +213,8 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         classificationValue = "vec4(voxel.r);";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
         classificationValue = "applyTF(transferFunc, voxel.r);";
+    else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
+        classificationValue = "voxel;";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // classification of specific channel
@@ -222,6 +224,8 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         classificationValue = "vec4(voxel[channel]);";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
         classificationValue = "applyTF(transferFunc, voxel, channel);";
+    else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
+        classificationValue = "voxel;";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
