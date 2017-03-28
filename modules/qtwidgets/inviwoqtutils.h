@@ -128,6 +128,9 @@ IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFo
 
 IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer &layer);
 
+IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
+                                              LayerType visibleLayer = LayerType::Color,
+                                              size_t visibleIndex = 10000);
 
 } // namespace utilqt
 

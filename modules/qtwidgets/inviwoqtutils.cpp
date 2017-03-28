@@ -31,12 +31,15 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/io/imagewriterutil.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLocale>
 #include <QApplication>
+#include <QClipboard>
+#include <QPixmap>
 #include <QDesktopWidget>
 #include <QMenu>
 #include <QAction>
@@ -273,6 +276,34 @@ QImage layerToQImage(const Layer &layer){
     return { dataptr, width, height, bytesPerLine, format,
              [](void* info) { delete static_cast<std::vector<unsigned char>*>(info); },
              data.release() };
+}
+
+void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
+    QMenu* copy = menu.addMenu("Copy");
+    QMenu* save = menu.addMenu("Save");
+
+    auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
+        std::ostringstream oss;
+        oss << name << (visible ? " (Visible)" : "");
+        auto copyAction = copy->addAction(oss.str().c_str());
+        copyAction->connect(copyAction, &QAction::triggered, [layer]() {
+            QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+        });
+
+        auto saveAction = save->addAction(oss.str().c_str());
+        saveAction->connect(saveAction, &QAction::triggered, [layer]() {
+             util::saveLayer(*layer);
+        });
+    };
+
+    const auto nLayers = image.getNumberOfColorLayers();
+    for (size_t i = 0; i < nLayers; i++) {
+        addAction("Color Layer " + (nLayers > 1 ? toString(i) : ""), image.getColorLayer(i),
+                      visibleLayer == LayerType::Color && visibleIndex == i);
+    }
+
+    addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
+    addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
 } // namespace utilqt
