@@ -33,6 +33,8 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 #include <locale>
 #include <ios>
@@ -47,7 +49,7 @@
 #include <QMainWindow>
 #include <QImage>
 #include <warn/pop>
-#include <inviwo/core/datastructures/image/layer.h>
+
 
 namespace inviwo {
 
@@ -128,6 +130,9 @@ IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFo
 
 IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer &layer);
 
+IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
+                                              LayerType visibleLayer = LayerType::Color,
+                                              size_t visibleIndex = 10000);
 
 } // namespace utilqt
 

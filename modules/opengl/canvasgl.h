@@ -90,7 +90,6 @@ protected:
      */
     const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
 
-private:
     /**
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error

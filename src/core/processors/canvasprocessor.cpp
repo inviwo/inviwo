@@ -41,6 +41,7 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/io/imagewriterutil.h>
 
 namespace inviwo {
 
@@ -132,22 +133,10 @@ CanvasProcessor::CanvasProcessor()
     addProperty(saveLayerButton_);
 
     saveLayerToFileButton_.onChange([this]() {
-        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
-        if (!fileDialog) {
-            // no file dialog found, disable button
-            saveLayerToFileButton_.setReadOnly(true);
-            return;
-        }
-        fileDialog->setTitle("Save Layer to File...");
-        fileDialog->setAcceptMode(AcceptMode::Save);
-        fileDialog->setFileMode(FileMode::AnyFile);
-
-        auto writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
-        fileDialog->addExtensions(writerFactory->getExtensionsForType<Layer>());
-
-        if (fileDialog->show()) {
-            saveImageLayer(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());
+        if (auto layer = getVisibleLayer()) {
+            util::saveLayer(*layer);
+        } else {
+            LogError("Could not find visible layer");
         }
     });
     addProperty(saveLayerToFileButton_);
@@ -273,38 +262,10 @@ void CanvasProcessor::saveImageLayer() {
     saveImageLayer(snapshotPath, ext);
 }
 
-void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension &extension) {
+void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension& extension) {
     if (auto layer = getVisibleLayer()) {
-        auto writer = std::shared_ptr<DataWriterType<Layer>>(
-            InviwoApplication::getPtr()
-            ->getDataWriterFactory()
-            ->getWriterForTypeAndExtension<Layer>(extension));
-
-        if (!writer) {
-            // could not find a reader for the given extension, extension might be invalid
-            // try to get reader for the extension extracted from the file name, i.e. snapshotPath
-            const auto ext = filesystem::getFileExtension(snapshotPath);
-            writer = std::shared_ptr<DataWriterType<Layer>>(
-                InviwoApplication::getPtr()
-                ->getDataWriterFactory()
-                ->getWriterForTypeAndExtension<Layer>(ext));
-            if (!writer) {
-                LogError("Could not find a writer for the specified file extension (\""
-                         << ext << "\")");
-                return;
-            }
-        }
-
-        try {
-            writer->setOverwrite(true);
-            writer->writeData(layer, snapshotPath);
-            LogInfo("Canvas layer exported to disk: " << snapshotPath);
-        }
-        catch (DataWriterException const& e) {
-            LogError(e.getMessage());
-        }
-    }
-    else {
+        util::saveLayer(*layer, snapshotPath, extension);
+    } else {
         LogError("Could not find visible layer");
     }
 }
