@@ -33,6 +33,8 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 #include <locale>
 #include <ios>
@@ -47,7 +49,7 @@
 #include <QMainWindow>
 #include <QImage>
 #include <warn/pop>
-#include <inviwo/core/datastructures/image/layer.h>
+
 
 namespace inviwo {
 
