@@ -40,7 +40,7 @@ namespace inviwo {
 
 namespace util {
 
-void util::saveLayer(const Layer& layer, const std::string& path, const FileExtension& extension) {
+void saveLayer(const Layer& layer, const std::string& path, const FileExtension& extension) {
     auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
 
     auto writer = std::shared_ptr<DataWriterType<Layer>>(
@@ -69,7 +69,7 @@ void util::saveLayer(const Layer& layer, const std::string& path, const FileExte
     }
 }
 
-IVW_CORE_API void saveLayer(const Layer& layer) {
+void saveLayer(const Layer& layer) {
     auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
         InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
     if (!fileDialog) {
