@@ -37,10 +37,15 @@
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/base/properties/basisproperty.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
+
+class PickingEvent;
 
 /** \docpage{org.inviwo.MeshCreator, Mesh Creator}
  * ![](org.inviwo.MeshCreator.png?classIdentifier=org.inviwo.MeshCreator)
@@ -111,8 +116,11 @@ private:
         Cylinder,
         Arrow,
         CoordAxes, 
-        Torus
+        Torus,
+        SphereOpt
     };
+
+    void handlePicking(PickingEvent*);
 
     MeshOutport outport_;
     
@@ -127,6 +135,10 @@ private:
     FloatProperty meshScale_; // Scale size of mesh
     IntVec2Property meshRes_; // mesh resolution
     TemplateOptionProperty<MeshType> meshType_;
+    BoolProperty enablePicking_;
+    PickingMapper picking_;
+    CameraProperty camera_;
+    std::function<void(PickingEvent*)> pickingUpdate_;
 };
 
 } // namespace

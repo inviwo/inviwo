@@ -27,8 +27,10 @@
  * 
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+layout(location = 4) in float in_PickId;
 
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 uniform GeometryParameters geometry_;
 uniform CameraParameters camera_;
@@ -38,6 +40,7 @@ out vec3 normal_;
 out vec3 viewNormal_;
 out vec4 color_;
 out vec3 texCoord_;
+flat out vec4 pickColor_;
  
 void main() {
     color_ = in_Color;
@@ -46,4 +49,5 @@ void main() {
     normal_ = geometry_.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     viewNormal_ = (camera_.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera_.worldToClip * worldPosition_;
+    pickColor_ = vec4(pickingIndexToColor(uint(in_PickId)), 1.0);
 }

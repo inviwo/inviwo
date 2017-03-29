@@ -27,6 +27,7 @@
  * 
  *********************************************************************************/
 
+
 #include "utils/shading.glsl"
 
 uniform LightParameters light_;
@@ -39,6 +40,7 @@ in vec3 normal_;
 in vec3 viewNormal_;
 in vec3 texCoord_;
 in vec4 color_;
+flat in vec4 pickColor_;
 
 void main() {
     vec4 fragColor = vec4(1.0);
@@ -64,4 +66,7 @@ void main() {
 #ifdef VIEW_NORMALS_LAYER
     view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
 #endif
+
+    PickingData = pickColor_;
+
 }
