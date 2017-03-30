@@ -72,7 +72,7 @@ PickingMapper::~PickingMapper() {
 }
 
 void PickingMapper::resize(size_t newSize) {
-    if (newSize == getPickingAction()->getSize()) {
+    if (pickingAction_ && newSize == getPickingAction()->getSize()) {
         //Same size or size zero, do nothing
         return;
     }
@@ -82,7 +82,7 @@ void PickingMapper::resize(size_t newSize) {
         manager_->unregisterPickingAction(pickingAction_);
         pickingAction_ = nullptr;
     }
-    if(newSize > 0 && manager_) {
+    if (newSize > 0 && manager_) {
         pickingAction_ = manager_->registerPickingAction(processor_, callback_, newSize);
         pickingAction_->setEnabled(enabled);
     }
