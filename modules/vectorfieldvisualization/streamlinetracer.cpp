@@ -34,14 +34,13 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler, const StreamLineProperties &properties)
+StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler,
+                                   const StreamLineProperties &properties)
     : IntegralLineTracer(properties)
-    , volumeSampler_(sampler)
-    , invBasis_(dmat3(glm::inverse(sampler->getBasis())))
-    , normalizeSample_(properties.getNormalizeSamples())
-{
 
-}
+    , invBasis_(dmat3(glm::inverse(sampler->getBasis())))
+    , volumeSampler_(sampler)
+    , normalizeSample_(properties.getNormalizeSamples()) {}
 
 StreamLineTracer::~StreamLineTracer() {}
 
@@ -49,16 +48,18 @@ void StreamLineTracer::addMetaVolume(const std::string &name, std::shared_ptr<co
     metaSamplers_.insert(std::make_pair(name, std::make_shared<VolumeDoubleSampler<3>>(vol)));
 }
 
-
-void StreamLineTracer::addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler) {
+void StreamLineTracer::addMetaSampler(const std::string &name,
+                                      std::shared_ptr<const SpatialSampler<3, 3, double>> sampler) {
     metaSamplers_.insert(std::make_pair(name, sampler));
 }
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     IntegralLine line;
 
-    bool fwd = dir_ == IntegralLineProperties::Direction::BOTH || dir_ == IntegralLineProperties::Direction::FWD;
-    bool bwd = dir_ == IntegralLineProperties::Direction::BOTH || dir_ == IntegralLineProperties::Direction::BWD;
+    bool fwd = dir_ == IntegralLineProperties::Direction::BOTH ||
+               dir_ == IntegralLineProperties::Direction::FWD;
+    bool bwd = dir_ == IntegralLineProperties::Direction::BOTH ||
+               dir_ == IntegralLineProperties::Direction::BWD;
     bool both = fwd && bwd;
 
     line.positions_.reserve(steps_ + 2);
@@ -68,7 +69,7 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     }
 
     if (bwd) {
-        step(steps_ / (both ? 2 : 1), p, line,false);
+        step(steps_ / (both ? 2 : 1), p, line, false);
     }
     if (both && !line.positions_.empty()) {
         std::reverse(line.positions_.begin(),

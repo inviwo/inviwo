@@ -57,11 +57,12 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     , vectorField_("vectorField", DataVec2Float32::get(), false)
     , size_("size", "Volume size", ivec2(700, 700), ivec2(1, 1), ivec2(1024, 1024))
     , seeds_("seeds", "Number of seeds", 9, 1, 100)
-    , shape_("shape", "Shape Parameter", 1.2f, 0.0001f, 10.0f, 0.0001f)
-    , gaussian_("gaussian", "Gaussian")
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, std::numeric_limits<int>::max())
+    , shape_("shape", "Shape Parameter", 1.2f, 0.0001f, 10.0f, 0.0001f)
+    , gaussian_("gaussian", "Gaussian")
+
     , rd_()
     , mt_(rd_())
     , theta_(0, 2 * M_PI)
@@ -109,7 +110,8 @@ void RBFVectorFieldGenerator2D::process() {
     xy = solverY.solve(by);
 
     auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
-    img->getColorLayer()->setSwizzleMask({ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
+    img->getColorLayer()->setSwizzleMask(
+        {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
     auto data =
         static_cast<vec2 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
 
@@ -144,8 +146,7 @@ dvec2 RBFVectorFieldGenerator2D::randomVector() {
     return (mat2(c, s, -s, c) * v) * static_cast<float>((x_(mt_) * 2 - 1));
 }
 
-void RBFVectorFieldGenerator2D::createSamples()
-{
+void RBFVectorFieldGenerator2D::createSamples() {
     samples_.clear();
 
     if (useSameSeed_.get()) {
@@ -154,8 +155,11 @@ void RBFVectorFieldGenerator2D::createSamples()
 
     samples_.resize(seeds_.get());
 
-    std::generate(samples_.begin(), samples_.end(),
-        [&]() { auto x = x_(mt_); auto y = x_(mt_);return std::make_pair(dvec2(x, y), randomVector()); });
+    std::generate(samples_.begin(), samples_.end(), [&]() {
+        auto x = x_(mt_);
+        auto y = x_(mt_);
+        return std::make_pair(dvec2(x, y), randomVector());
+    });
 }
 
 void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {

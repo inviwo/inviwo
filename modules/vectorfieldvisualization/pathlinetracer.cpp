@@ -33,13 +33,12 @@
 
 namespace inviwo {
 
-    PathLineTracer::PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler, const PathLineProperties &properties)
-        : IntegralLineTracer(properties)
-        , sampler_(sampler)
-        , invBasis_(glm::inverse(mat3(sampler->getModelMatrix())))
-    {
+PathLineTracer::PathLineTracer(std::shared_ptr<const Spatial4DSampler<3, double>> sampler,
+                               const PathLineProperties &properties)
+    : IntegralLineTracer(properties)
 
-    }
+    , invBasis_(glm::inverse(mat3(sampler->getModelMatrix())))
+    , sampler_(sampler) {}
 
 PathLineTracer::~PathLineTracer() {}
 
