@@ -255,7 +255,7 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 bool NetworkEditor::addPortInspector(Outport* outport, QPointF pos) {
     auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
     if (!pim->hasPortInspector(outport)) {
-        auto processorWidget = pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
+        pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
         return true;
     } else {
         return false;
@@ -263,7 +263,6 @@ bool NetworkEditor::addPortInspector(Outport* outport, QPointF pos) {
 }
 
 void NetworkEditor::removePortInspector(Outport* outport) {
-     auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
      mainwindow_->getInviwoApplication()->getPortInspectorManager()->removePortInspector(outport);
 }
 
