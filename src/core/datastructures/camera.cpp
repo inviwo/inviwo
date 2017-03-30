@@ -79,8 +79,8 @@ vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const 
 }
 
 vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
-    float clipW = projectionMatrix_[2][3] /
-                  (ndcCoords.z - (projectionMatrix_[2][2] / projectionMatrix_[3][2]));
+    const auto& projection = getProjectionMatrix();
+    const float clipW = projection[2][3] / (ndcCoords.z - (projection[2][2] / projection[3][2]));
     return vec4(ndcCoords * clipW, clipW);
 }
 
