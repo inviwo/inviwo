@@ -130,24 +130,7 @@ IndexBufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
 }
 
 void BasicMesh::append(const BasicMesh* mesh) {
-    size_t size = buffers_[0].second->getSize();
-
-    getEditableVerticesRAM()->append(mesh->getVerticesRAM()->getDataContainer());
-    getEditableTexCoordsRAM()->append(mesh->getTexCoordsRAM()->getDataContainer());
-    getEditableColorsRAM()->append(mesh->getColorsRAM()->getDataContainer());
-    getEditableNormalsRAM()->append(mesh->getNormalsRAM()->getDataContainer());
-
-    for (auto buffer : mesh->indices_) {
-        IndexBufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
-
-        const std::vector<unsigned int>& newinds =
-            static_cast<const IndexBufferRAM*>(buffer.second->getRepresentation<BufferRAM>())
-                ->getDataContainer();
-
-        for (const auto& newind : newinds) {
-            ind->add(static_cast<const unsigned int>(newind + size));
-        }
-    }
+    if (mesh) Mesh::append(*mesh);
 }
 
 const Buffer<vec3>* BasicMesh::getVertices() const { return vertices_.get(); }

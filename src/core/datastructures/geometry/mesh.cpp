@@ -122,6 +122,31 @@ size_t Mesh::getNumberOfBuffers() const { return buffers_.size(); }
 
 size_t Mesh::getNumberOfIndicies() const { return indices_.size(); }
 
+void Mesh::append(const Mesh& mesh) {
+    if (buffers_.size() != mesh.buffers_.size()) {
+        throw Exception("Mismatched meshed, number of buffer does not match", IvwContext);
+    }
+    for (size_t i = 0; i < buffers_.size(); ++i) {
+        if (buffers_[i].first != mesh.buffers_[i].first ||
+            buffers_[i].second->getDataFormat() != mesh.buffers_[i].second->getDataFormat()) {
+            throw Exception("Mismatched meshed, buffer types does not match", IvwContext);
+        }
+    }
+    size_t size = buffers_[0].second->getSize();
+    for (size_t i = 0; i < buffers_.size(); ++i) {
+        buffers_[i].second->append(*(mesh.buffers_[i].second));
+    }
+    for (auto indbuffer : mesh.indices_) {
+        const auto& inds = indbuffer.second->getRAMRepresentation()->getDataContainer();
+
+        std::vector<std::uint32_t> newInds;
+        newInds.reserve(inds.size());
+        std::transform(inds.begin(), inds.end(), std::back_inserter(newInds),
+                       [&](auto& i) { return i + size; });
+        addIndicies(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
+    }
+}
+
 const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
     const Camera& camera) const {
     return SpatialEntity<3>::getCoordinateTransformer(camera);
