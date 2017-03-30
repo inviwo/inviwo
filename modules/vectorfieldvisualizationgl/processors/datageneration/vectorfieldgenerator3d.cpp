@@ -51,15 +51,15 @@ const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const {
     VectorFieldGenerator3D::VectorFieldGenerator3D()
         : Processor()
         , outport_("outport")
-        , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag", false)
-        , fbo_()
         , size_("size", "Volume size", size3_t(16), size3_t(1), size3_t(1024))
-        , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
-        , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
-        , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
         , xRange_("xRange", "X Range", -1, 1, -10, 10)
         , yRange_("yRange", "Y Range", -1, 1, -10, 10)
         , zRange_("zRange", "Z Range", -1, 1, -10, 10)
+        , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
+        , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
+        , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
+        , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag", false)
+        , fbo_()
     {
         addPort(outport_);
 

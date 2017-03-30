@@ -80,7 +80,6 @@ void SeedsFromMaskSequence::process() {
             }
             auto data = typedVol->getDataTyped();
             auto dim = typedVol->getDimensions();
-            auto dim2 = vol->getDimensions();
             util::IndexMapper3D index(dim);
             util::forEachVoxel(*typedVol, [&](const size3_t &pos) {
                 if (dis(gen) > randomSampling_.get()) return;

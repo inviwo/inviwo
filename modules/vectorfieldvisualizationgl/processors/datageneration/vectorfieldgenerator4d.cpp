@@ -53,8 +53,7 @@ const ProcessorInfo VectorFieldGenerator4D::getProcessorInfo() const {
 VectorFieldGenerator4D::VectorFieldGenerator4D()
     : Processor()
     , outport_("outport")
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator4d.frag", false)
-    , fbo_()
+
     , size_("size", "Volume size", size4_t(16), size4_t(1), size4_t(1024))
     , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
@@ -63,7 +62,8 @@ VectorFieldGenerator4D::VectorFieldGenerator4D()
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , zRange_("zRange", "Z Range", -1, 1, -10, 10)
     , tRange_("tRange", "T Range", 0, 1, -10, 10)
-
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator4d.frag", false)
+    , fbo_()
 {
     addPort(outport_);
 

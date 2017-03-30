@@ -49,13 +49,13 @@ const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return pr
 VectorFieldGenerator2D::VectorFieldGenerator2D()
     : Processor()
     , outport_("outport", DataVec2Float32::get(), false)
-    , shader_("vectorfieldgenerator2d.frag", false)
-    , fbo_()
     , size_("size", "Volume size", ivec2(16), ivec2(1), ivec2(1024))
+    , xRange_("xRange", "X Range", -1, 1, -10, 10)
+    , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
-    , xRange_("xRange", "X Range", -1, 1, -10, 10)
-    , yRange_("yRange", "Y Range", -1, 1, -10, 10) {
+    , shader_("vectorfieldgenerator2d.frag", false)
+    , fbo_() {
     addPort(outport_);
 
     addProperty(size_);

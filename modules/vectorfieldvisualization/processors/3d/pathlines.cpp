@@ -56,15 +56,13 @@ PathLines::PathLines()
     , colors_("colors")
     , volume_("vectorvolume")
 
-    , linesStripsMesh_("linesStripsMesh_")
     , lines_("lines")
+    , linesStripsMesh_("linesStripsMesh_")
 
     , pathLineProperties_("pathLineProperties", "Path Line Properties")
-
-
-
-    , coloringMethod_("coloringMethod","Color by")
     , tf_("transferFunction", "Transfer Function")
+    , coloringMethod_("coloringMethod","Color by")
+
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
 

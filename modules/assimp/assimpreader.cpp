@@ -45,6 +45,7 @@
 #include <assimp/importerdesc.h>
 #include <assimp/Logger.hpp>
 #include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 
 #include <warn/pop>
 
@@ -52,6 +53,30 @@
 #include <ctime>
 
 namespace inviwo {
+
+/**
+ * \brief Assimp LogStream => Inviwo LogCentral
+ *
+ *  Derive Assimp::LogStream to forward logged messages from the library to Inviwos LogCentral.
+ */
+class InviwoAssimpLogStream : public Assimp::LogStream {
+private:
+    LogLevel loglevel;
+
+public:
+    InviwoAssimpLogStream(LogLevel ploglevel) { loglevel = ploglevel; }
+
+    virtual ~InviwoAssimpLogStream() = default;
+
+    void write(const char* message) {
+        std::string tmp(message);
+        while ('\n' == tmp.back()) tmp.pop_back();
+
+        inviwo::LogCentral::getPtr()->log("Assimp Geometry Importer", loglevel, LogAudience::User,
+                                          "<Assimp Bibliothek>", "<Funktion>", 0, tmp);
+    }
+};
+
 
 AssimpReader::AssimpReader()
     : DataReaderType<Mesh>()

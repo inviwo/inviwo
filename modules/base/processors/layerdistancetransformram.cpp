@@ -55,10 +55,10 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     , normalize_("normalize", "Use normalized threshold", true)
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , resultSquaredDist_("distSquared", "Squared Distance", false)
+    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec2_("upsampleFactorVec2", "Sampling Factor", size2_t(1), size2_t(1),
                           size2_t(10))
-    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , btnForceUpdate_("forceUpdate", "Update Distance Map")
     , distTransformDirty_(true)
     , hasNewData_(false) {
