@@ -30,6 +30,11 @@
 #include <modules/base/processors/randommeshgenerator.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -49,13 +54,49 @@ RandomMeshGenerator::RandomMeshGenerator()
     , rand_()
     , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , reseed_("reseed_", "Seed")
+    , scale_("scale", "Scale", 1.0f, 0.001, 1000, 0.1)
+    , size_("size", "Size", 1.0f, 0.001, 1000, 0.1)
     , numberOfBoxes_("numberOf_", "Number of Boxes", 1, 0, 100)
     , numberOfSpheres_("numberOfSpheres_", "Number of Spheres", 1, 0, 100)
     , numberOfCylinders_("numberOfCylinders_", "Number of cylinders", 1, 0, 100)
     , numberOfCones_("numberOfCones_", "Number of Cones", 1, 0, 100)
-    , numberOfToruses_("numberOfToruses", "Number of Toruses", 1, 0, 100) {
+    , numberOfToruses_("numberOfToruses", "Number of Toruses", 1, 0, 100)
+    , enablePicking_("enablePicking", "Enable Picking", false)
+    , boxPicking_(this, numberOfBoxes_.get(),
+                  [&](PickingEvent* p) {
+                      handlePicking(
+                          p, [&](vec3 delta) { boxes_[p->getPickedId()].position += delta; });
+                  })
+    , spherePicking_(this, numberOfSpheres_.get(),
+                     [&](PickingEvent* p) {
+                         handlePicking(
+                             p, [&](vec3 delta) { spheres_[p->getPickedId()].center += delta; });
+                     })
+    , cylinderPicking_(this, numberOfCylinders_.get(),
+                       [&](PickingEvent* p) {
+                           handlePicking(p, [&](vec3 delta) {
+                               cylinders_[p->getPickedId()].start += delta;
+                               cylinders_[p->getPickedId()].end += delta;
+                           });
+                       })
+    , conePicking_(this, numberOfCones_.get(),
+                   [&](PickingEvent* p) {
+                       handlePicking(p, [&](vec3 delta) {
+                           cones_[p->getPickedId()].start += delta;
+                           cones_[p->getPickedId()].end += delta;
+                       });
+                   })
+    , torusPicking_(this, numberOfToruses_.get(),
+                    [&](PickingEvent* p) {
+                        handlePicking(
+                            p, [&](vec3 delta) { toruses_[p->getPickedId()].center += delta; });
+                    })
+    , camera_("camera", "Camera") {
 
     addPort(mesh_);
+
+    addProperty(scale_);
+    addProperty(size_);
     addProperty(numberOfBoxes_);
     addProperty(numberOfSpheres_);
     addProperty(numberOfCylinders_);
@@ -65,79 +106,171 @@ RandomMeshGenerator::RandomMeshGenerator()
     addProperty(seed_);
     addProperty(reseed_);
 
+    addProperty(enablePicking_);
+    addProperty(camera_);
+    camera_.setInvalidationLevel(InvalidationLevel::Valid);
+    camera_.setCollapsed(true);
+
     reseed_.onChange([&]() {
-        seed_.set(rand());
+        seed_.set(rand(0.0, seed_.getMaxValue()));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
     });
 }
 
-float RandomMeshGenerator::randD() { return dis_(rand_); }
-
-float RandomMeshGenerator::randD(const float min, const float max) {
-    return min + randD() * (max - min);
-}
-
-inviwo::vec4 RandomMeshGenerator::randColor() {
-    float r = randD(0.5, 1.0);
-    float g = randD(0.5, 1.0);
-    float b = randD(0.5, 1.0);
-    return vec4(r, g, b, 1);
+float RandomMeshGenerator::rand(const float min, const float max) {
+    return min + dis_(rand_) * (max - min);
 }
 
 vec3 RandomMeshGenerator::randVec3(const float min, const float max) {
-    float x = randD(min, max);
-    float y = randD(min, max);
-    float z = randD(min, max);
+    float x = rand(min, max);
+    float y = rand(min, max);
+    float z = rand(min, max);
     return vec3(x, y, z);
 }
 
-void RandomMeshGenerator::process() {
-    auto mesh = std::make_shared<BasicMesh>();
-    mesh_.setData(mesh);
+void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
+    // Add picking ids
+    auto bufferRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
+    auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
+    auto& data = bufferRAM->getDataContainer();
+    std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
+    mesh.addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+}
 
+void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
+
+    if (enablePicking_) {
+        if (p->getState() == PickingState::Updated &&
+            p->getEvent()->hash() == MouseEvent::chash()) {
+            auto me = p->getEventAs<MouseEvent>();
+            if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
+                auto delta = getDelta(camera_, p);
+                callback(delta);
+                invalidate(InvalidationLevel::InvalidOutput);
+                p->markAsUsed();
+            }
+        } else if (p->getState() == PickingState::Updated &&
+                   p->getEvent()->hash() == TouchEvent::chash()) {
+
+            auto te = p->getEventAs<TouchEvent>();
+            if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+                auto delta = getDelta(camera_, p);
+                callback(delta);
+                invalidate(InvalidationLevel::InvalidOutput);
+                p->markAsUsed();
+            }
+        }
+    }
+}
+
+vec3 RandomMeshGenerator::getDelta(const Camera& camera, PickingEvent* p) {
+    auto currNDC = p->getNDC();
+    auto prevNDC = p->getPreviousNDC();
+
+    // Use depth of initial press as reference to move in the image plane.
+    auto refDepth = p->getPressedDepth();
+    currNDC.z = refDepth;
+    prevNDC.z = refDepth;
+
+    auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+    return (corrWorld - prevWorld);
+}
+
+void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
-    for (int i = 0; i < numberOfBoxes_.get(); i++) {
-        mat4 o = glm::rotate(mat4(1.0f), randD(0, 6.28f), vec3(1, 0, 0));
-        o = glm::rotate(o, randD(0, 6.28f), vec3(0, 1, 0));
-        o = glm::rotate(o, randD(0, 6.28f), vec3(0, 0, 1));
-        o = glm::translate(o, randVec3());
-        o = glm::scale(o, randVec3());
-        auto mesh2 = BasicMesh::cube(o, randColor());
-        mesh->append(mesh2.get());
+    auto randPos = [&](){return randVec3(-scale_.get(), scale_.get()); };
+    auto randSize = [&](){return randVec3(0, size_.get()); };
+    auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
+
+    const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified();
+
+    if (numberOfBoxes_.isModified() || dirty) {
+        boxes_.clear();
+        boxPicking_.resize(numberOfBoxes_);
+        for (int i = 0; i < numberOfBoxes_.get(); i++) {
+            boxes_.push_back({randVec3(0, 6.28f), randPos(), randSize(), randColor()});
+        }
     }
-    for (int i = 0; i < numberOfSpheres_.get(); i++) {
-        auto radius = randD(0.1f, 1.0f);
-        auto color = randColor();
-        auto center = randVec3();
-        BasicMesh::sphere(center, radius, color, mesh);
+    if (numberOfSpheres_.isModified() || dirty) {
+        spheres_.clear();
+        spherePicking_.resize(numberOfSpheres_);
+        for (int i = 0; i < numberOfSpheres_.get(); i++) {
+            spheres_.push_back({randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+        }
     }
-    for (int i = 0; i < numberOfCylinders_.get(); i++) {
-        auto radius = randD(0.1f, 1.0f);
-        auto color = randColor();
-        auto end = randVec3();
-        auto start = randVec3();
-        auto mesh2 = BasicMesh::cylinder(start, end, color, radius);
-        mesh->append(mesh2.get());
+    if (numberOfCylinders_.isModified() || dirty) {
+        cylinders_.clear();
+        cylinderPicking_.resize(numberOfCylinders_);
+        for (int i = 0; i < numberOfCylinders_.get(); i++) {
+            cylinders_.push_back({randPos(), randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+        }
     }
-    for (int i = 0; i < numberOfCones_.get(); i++) {
-        auto radius = randD(0.1f, 1.0f);
-        auto color = randColor();
-        auto end = randVec3();
-        auto start = randVec3();
-        auto mesh2 = BasicMesh::cone(start, end, color, radius);
-        mesh->append(mesh2.get());
+    if (numberOfCones_.isModified() || dirty) {
+        cones_.clear();
+        conePicking_.resize(numberOfCones_);
+        for (int i = 0; i < numberOfCones_.get(); i++) {
+            cones_.push_back({randPos(), randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+        }
+    }
+    if (numberOfToruses_.isModified() || dirty) {
+        toruses_.clear();
+        torusPicking_.resize(numberOfToruses_);
+        for (int i = 0; i < numberOfToruses_.get(); i++) {
+            const auto r2 =  size_.get()*rand(0.1f, 0.5f);
+            const auto r1 =  size_.get()*rand(0.1f + r2, 1.0f + r2);
+            toruses_.push_back({randPos(), glm::normalize(randVec3()), r2,
+                                rand(0.1f + r2, 1.0f + r2), randColor()});
+        }
     }
 
-    for (int i = 0; i < numberOfToruses_.get(); i++) {
-        auto center = randVec3();
-        auto up = glm::normalize(randVec3());
-        auto r2 = randD(0.1f, 0.5f);
-        auto r1 = randD(0.1f + r2, 1.0f + r2);
-        auto color = randColor();
-        auto mesh2 = BasicMesh::torus(center, up, r1, r2, ivec2(32, 8), color);
-        mesh->append(mesh2.get());
+    auto mesh = std::make_shared<BasicMesh>();
+    if (enablePicking_) addPickingBuffer(*mesh, 0);
+
+    size_t i = 0;
+    for (const auto& box : boxes_) {
+        mat4 o = glm::translate(mat4(1.0f), box.position);
+        o = glm::rotate(o, box.rotation.x, vec3(1, 0, 0));
+        o = glm::rotate(o, box.rotation.y, vec3(0, 1, 0));
+        o = glm::rotate(o, box.rotation.z, vec3(0, 0, 1));
+        o = glm::scale(o, box.scale);
+        auto mesh2 = BasicMesh::cube(o, box.color);
+        if (enablePicking_) addPickingBuffer(*mesh2, boxPicking_.getPickingId(i++));
+        mesh->Mesh::append(*mesh2);
     }
+
+    i = 0;
+    for (const auto& sphere : spheres_) {
+        auto mesh2 = BasicMesh::sphere(sphere.center, sphere.radius, sphere.color);
+        if (enablePicking_) addPickingBuffer(*mesh2, spherePicking_.getPickingId(i++));
+        mesh->Mesh::append(*mesh2);
+    }
+
+    i = 0;
+    for (const auto& cylinder : cylinders_) {
+        auto mesh2 =
+            BasicMesh::cylinder(cylinder.start, cylinder.end, cylinder.color, cylinder.radius);
+        if (enablePicking_) addPickingBuffer(*mesh2, cylinderPicking_.getPickingId(i++));
+        mesh->Mesh::append(*mesh2);
+    }
+
+    i = 0;
+    for (const auto& cone : cones_) {
+        auto mesh2 = BasicMesh::cone(cone.start, cone.end, cone.color, cone.radius);
+        if (enablePicking_) addPickingBuffer(*mesh2, conePicking_.getPickingId(i++));
+        mesh->Mesh::append(*mesh2);
+    }
+
+    i = 0;
+    for (const auto& torus : toruses_) {
+        auto mesh2 = BasicMesh::torus(torus.center, torus.up, torus.radius1, torus.radius2,
+                                      ivec2(32, 8), torus.color);
+        if (enablePicking_) addPickingBuffer(*mesh2, torusPicking_.getPickingId(i++));
+        mesh->Mesh::append(*mesh2);
+    }
+
+    mesh_.setData(mesh);
 }
 
 }  // namespace
