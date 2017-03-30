@@ -87,9 +87,14 @@ void BufferObjectArray::bind() const {
             if (auto bufferObject = attachedBuffers_[location]) {
                 glEnableVertexAttribArray(location);
                 bufferObject->bind();
-                glVertexAttribPointer(location, bufferObject->getGLFormat().channels,
-                                      bufferObject->getGLFormat().type, GL_FALSE, 0,
-                                      (void*)nullptr);
+                if (bufferObject->getDataFormat()->getNumericType() == NumericType::Float) {
+                    glVertexAttribPointer(location, bufferObject->getGLFormat().channels,
+                                          bufferObject->getGLFormat().type, GL_FALSE, 0,
+                                          (void*)nullptr);
+                } else {
+                    glVertexAttribIPointer(location, bufferObject->getGLFormat().channels,
+                                           bufferObject->getGLFormat().type, 0, (void*)nullptr);
+                }
             } else {
                 glDisableVertexAttribArray(location);
             }

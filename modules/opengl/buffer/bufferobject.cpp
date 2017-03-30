@@ -34,7 +34,8 @@ namespace inviwo {
 BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
                            BufferTarget target /*= BufferTarget::Data*/)
     : Observable<BufferObjectObserver>()
-    , glFormat_(GLFormats::get(format->getId())) {
+    , glFormat_(GLFormats::get(format->getId()))
+    , dataFormat_(format) {
     switch (usage) {
         case BufferUsage::Dynamic:
             usageGL_ = GL_DYNAMIC_DRAW;
@@ -144,6 +145,10 @@ GLuint BufferObject::getId() const { return id_; }
 void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
 void BufferObject::unbind() const { glBindBuffer(target_, 0); }
+
+void BufferObject::setSize(GLsizeiptr sizeInBytes) {
+    initialize(nullptr, sizeInBytes);
+}
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
