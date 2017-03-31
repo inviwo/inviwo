@@ -180,9 +180,11 @@ vec3 RandomMeshGenerator::getDelta(const Camera& camera, PickingEvent* p) {
 void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
-    auto randPos = [&](){return randVec3(-scale_.get(), scale_.get()); };
-    auto randSize = [&](){return randVec3(0, size_.get()); };
+    auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
+    auto randSize = [&]() { return size_.get()*randVec3(0.1, 1.0); };
     auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
+    auto randDir = [&]() { return glm::normalize(randVec3()); };
+    auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
 
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified();
 
@@ -197,31 +199,32 @@ void RandomMeshGenerator::process() {
         spheres_.clear();
         spherePicking_.resize(numberOfSpheres_);
         for (int i = 0; i < numberOfSpheres_.get(); i++) {
-            spheres_.push_back({randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+            spheres_.push_back({randPos(), randScale(), randColor()});
         }
     }
     if (numberOfCylinders_.isModified() || dirty) {
         cylinders_.clear();
         cylinderPicking_.resize(numberOfCylinders_);
         for (int i = 0; i < numberOfCylinders_.get(); i++) {
-            cylinders_.push_back({randPos(), randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+            const auto r = randPos();
+            cylinders_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfCones_.isModified() || dirty) {
         cones_.clear();
         conePicking_.resize(numberOfCones_);
         for (int i = 0; i < numberOfCones_.get(); i++) {
-            cones_.push_back({randPos(), randPos(), size_.get()*rand(0.1f, 1.0f), randColor()});
+            const auto r = randPos();
+            cones_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfToruses_.isModified() || dirty) {
         toruses_.clear();
         torusPicking_.resize(numberOfToruses_);
         for (int i = 0; i < numberOfToruses_.get(); i++) {
-            const auto r2 =  size_.get()*rand(0.1f, 0.5f);
-            const auto r1 =  size_.get()*rand(0.1f + r2, 1.0f + r2);
-            toruses_.push_back({randPos(), glm::normalize(randVec3()), r2,
-                                rand(0.1f + r2, 1.0f + r2), randColor()});
+            const auto r2 = size_.get() * rand(0.1f, 0.5f);
+            const auto r1 = size_.get() * rand(0.1f + r2, 1.0f + r2);
+            toruses_.push_back({randPos(), randDir(), r2, r1, randColor()});
         }
     }
 
