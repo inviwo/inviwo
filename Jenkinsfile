@@ -87,7 +87,6 @@ node {
                 }
             }
         }
-        def result = 'SUCCESS'
         try {
             stage('Regression') {
                 dir('regress') {
@@ -104,8 +103,7 @@ node {
                 }
             }
         } catch (e) {
-            result = 'FAILURE'
-            currentBuild.result = 'SUCCESS'
+            currentBuild.result = 'UNSTABLE'
         }
         stage('Publish') {
             publishHTML([
@@ -117,7 +115,6 @@ node {
                 reportName: 'Regression Report'
             ])
         }
-        currentBuild.result = result
     } catch (e) {
         currentBuild.result = 'FAILURE'
         throw e
