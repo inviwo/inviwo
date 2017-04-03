@@ -86,8 +86,18 @@ private:
     void drawMeshes();
 
     enum class RenderMode {
-        EntireMesh, //!< render all vertices of the input mesh as glyphs
-        PointsOnly, //!< render only parts of mesh with DrawType::Points
+        EntireMesh,  //!< render all vertices of the input mesh as glyphs
+        PointsOnly,  //!< render only parts of mesh with DrawType::Points
+    };
+    /**
+     * \enum GlyphClippingMode
+     * defines how glyphs are rendering if the first intersection, i.e. the front side,
+     * lies behind the camera.
+     */
+    enum class GlyphClippingMode {
+        None,    //!< glyph is not rendered
+        Hollow,  //!< glyph inside will be rendered
+        Solid,   //!< the cut surface is visible
     };
 
     MeshFlatMultiInport inport_;
@@ -95,6 +105,9 @@ private:
     ImageOutport outport_;
 
     TemplateOptionProperty<RenderMode> renderMode_;
+    TemplateOptionProperty<GlyphClippingMode> clipMode_;
+    FloatProperty clipShadingFactor_;  //!< multiplied with glyph color for clip surfaces
+    BoolProperty shadeClippedArea_;
 
     BoolProperty overwriteGlyphSize_;
     FloatProperty glyphSize_;

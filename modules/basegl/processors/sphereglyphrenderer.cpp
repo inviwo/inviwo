@@ -51,6 +51,14 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     , renderMode_("renderMode", "Render Mode",
                   {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
                    {"pointsOnly", "Points Only", RenderMode::PointsOnly}})
+    , clipMode_("clipMode", "Clip Mode", {
+        { "none", "None", GlyphClippingMode::None},
+        { "hollow", "Hollow", GlyphClippingMode::Hollow},
+        { "solid", "Solid", GlyphClippingMode::Solid}
+    }, 2, InvalidationLevel::InvalidResources)
+    , clipShadingFactor_("clipShadingFactor", "Clip Surface Shading", 0.9f, 0.0f, 2.0f)
+    , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
+                          InvalidationLevel::InvalidResources)
     , overwriteGlyphSize_("overwriteGlyphSize", "Overwrite Glyph Size", false,
                           InvalidationLevel::InvalidResources)
     , glyphSize_("glyphSize", "Glyph Size", 0.05f, 0.00001f, 10.0f, 0.1f)
@@ -74,6 +82,9 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     customColor_.setSemantics(PropertySemantics::Color);
 
     addProperty(renderMode_);
+    addProperty(clipMode_);
+    addProperty(clipShadingFactor_);
+    addProperty(shadeClippedArea_);
     addProperty(overwriteGlyphSize_);
     addProperty(glyphSize_);
     addProperty(overwriteColor_);
@@ -82,6 +93,11 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(trackball_);
+
+    clipMode_.onChange([&]() {
+        clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::None);
+        shadeClippedArea_.setReadOnly(clipMode_.get() == GlyphClippingMode::None);
+    });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -101,6 +117,7 @@ void SphereGlyphRenderer::process() {
                                          2.0f / outport_.getDimensions().y));
     shader_.setUniform("customColor_", customColor_);
     shader_.setUniform("customRadius_", glyphSize_.get() * 0.5f);
+    shader_.setUniform("clipShadingFactor_", clipShadingFactor_.get());
 
     drawMeshes();
 
@@ -122,6 +139,30 @@ void SphereGlyphRenderer::initializeResources() {
     } else {
         shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_COLOR");
     }
+
+    if (shadeClippedArea_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("SHADE_CLIPPED_AREA");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("SHADE_CLIPPED_AREA");
+    }
+
+    std::string clipModeKey =
+        "APPLY_GLYPH_CLIPPING(coord, intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
+    std::string value = "";
+
+    switch (clipMode_.get()) {
+    case GlyphClippingMode::None:
+        value = "discard";
+        break;
+    case GlyphClippingMode::Hollow:
+        value = "clipToHollowGlyph(intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
+        break;
+    case GlyphClippingMode::Solid:
+    default:
+        value = "clipToSolid(coord, srcColor, dstColor, dstDepth)";
+        break;
+    }
+    shader_.getFragmentShaderObject()->addShaderDefine(clipModeKey, value);
 
     shader_.build();
 }
