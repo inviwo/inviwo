@@ -75,7 +75,7 @@ auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     GlmMatrix outm;
     for (size_t row = 0; row < Rows; row++) {
         for (size_t col = 0; col < Cols; col++) {
-            outm[row][col] = m(col, row);
+            outm[col][row] = m(row, col);
         }
     }
     return outm;
