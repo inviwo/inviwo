@@ -39,13 +39,14 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SphereGlyphRenderer, SphereGlyph Renderer}
+/** \docpage{org.inviwo.SphereGlyphRenderer, Sphere Glyph Renderer}
  * ![](org.inviwo.SphereGlyphRenderer.png?classIdentifier=org.inviwo.SphereGlyphRenderer)
  * This processor renders a set of point meshes using spherical glyphs in OpenGL.
  * The glyphs are resolution independent and consist only of a single point.
@@ -57,11 +58,15 @@ namespace inviwo {
  *   * __imageInport__ Optional background image
  *
  * ### Outports
- *   * __image__ output image containing the rendered glyphs and the optional input image
+ *   * __image__    output image containing the rendered glyphs and the optional input image
  *
  * ### Properties
+ *   * __Render Mode__               render only input meshes marked as points or everything
+ *   * __Clip Mode__                 defines the handling of glyphs clipped at the camera
+ *   * __Clip Surface Adjustment__   brighten/darken glyph color on clip surface
+ *   * __Shaded Clipped Area__       enable illumination computations for the clipped surface
  *   * __Overwrite Glyph Size__   enable a fixed user-defined size for all sphere glyphs
- *   * __Glyph Size__          size of the rendered glyphs (in object coordinates)
+ *   * __Glyph Size__          size of the rendered glyphs (in world coordinates)
  *   * __Overwrite Color__     if enabled, all glyphs will share the same custom color
  *   * __Custom Color__        custom color when overwriting the input colors
  */
@@ -105,10 +110,13 @@ private:
     ImageOutport outport_;
 
     TemplateOptionProperty<RenderMode> renderMode_;
+
+    CompositeProperty clipping_;
     TemplateOptionProperty<GlyphClippingMode> clipMode_;
     FloatProperty clipShadingFactor_;  //!< multiplied with glyph color for clip surfaces
     BoolProperty shadeClippedArea_;
 
+    CompositeProperty glyphProperties_;
     BoolProperty overwriteGlyphSize_;
     FloatProperty glyphSize_;
     BoolProperty overwriteColor_;

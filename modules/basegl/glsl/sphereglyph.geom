@@ -30,6 +30,7 @@
 #extension GL_EXT_geometry_shader4 : enable
 
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 uniform GeometryParameters geometry_;
 uniform CameraParameters camera_;
@@ -49,10 +50,13 @@ uniform vec4 viewport_; // holds viewport offset x, offset y, 2 / viewport width
 in vec4 worldPosition_[];
 in vec4 glyphColor_[];
 flat in float glyphRadius_[];
+flat in uint pickID_[];
+
 out float radius_;
 out vec3 camPos_;
 out vec4 center_;
 out vec4 color_;
+flat out vec4 pickColor_;
 
 void main(void) {
     vec4 inPos = worldPosition_[0];
@@ -76,6 +80,8 @@ void main(void) {
 
     // send color to fragment shader
     color_ = glyphColor_[0];
+    // set picking color    
+    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), 1.0);
 
     // camera coordinate system in object space
     vec3 camUp = (modelViewMatrixInv_[1]).xyz;

@@ -41,6 +41,7 @@ in vec4 color_;
 in float radius_;
 in vec3 camPos_;
 in vec4 center_;
+flat in vec4 pickColor_;
 
 #if !defined(APPLY_GLYPH_CLIPPING)
 #  define APPLY_GLYPH_CLIPPING(coord, intersection, mvpTranspose, srcColor, dstColor, dstDepth) discard;
@@ -136,5 +137,5 @@ void main() {
 
     FragData0 = glyphColor;
     gl_FragDepth = depth;
-	PickingData = vec4(0);
+	PickingData = pickColor_;
 }

@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+layout(location = 4) in uint in_PickId;
+
 #include "utils/structs.glsl"
 
 uniform GeometryParameters geometry_;
@@ -38,6 +40,7 @@ uniform float customRadius_ = 0.1f;
 out vec4 worldPosition_;
 out vec4 glyphColor_;
 flat out float glyphRadius_;
+flat out uint pickID_;
 
 void main(void) {
 #if defined(UNIFORM_RADIUS)
@@ -56,5 +59,5 @@ void main(void) {
 
     gl_Position = worldPosition_;
 
-    //gl_ClipVertex = camera_.worldToClip * worldPosition_;
+    pickID_ = in_PickId;
 }

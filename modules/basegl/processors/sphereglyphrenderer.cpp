@@ -51,14 +51,16 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     , renderMode_("renderMode", "Render Mode",
                   {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
                    {"pointsOnly", "Points Only", RenderMode::PointsOnly}})
-    , clipMode_("clipMode", "Clip Mode", {
-        { "none", "None", GlyphClippingMode::None},
-        { "hollow", "Hollow", GlyphClippingMode::Hollow},
-        { "solid", "Solid", GlyphClippingMode::Solid}
-    }, 2, InvalidationLevel::InvalidResources)
-    , clipShadingFactor_("clipShadingFactor", "Clip Surface Shading", 0.9f, 0.0f, 2.0f)
+    , clipping_("clipping", "Clipping")
+    , clipMode_("clipMode", "Clip Mode",
+                {{"none", "None", GlyphClippingMode::None},
+                 {"hollow", "Hollow", GlyphClippingMode::Hollow},
+                 {"solid", "Solid", GlyphClippingMode::Solid}},
+                2, InvalidationLevel::InvalidResources)
+    , clipShadingFactor_("clipShadingFactor", "Clip Surface Adjustment", 0.9f, 0.0f, 2.0f)
     , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
-                          InvalidationLevel::InvalidResources)
+                        InvalidationLevel::InvalidResources)
+    , glyphProperties_("glyphProperties", "Glyph Properties")
     , overwriteGlyphSize_("overwriteGlyphSize", "Overwrite Glyph Size", false,
                           InvalidationLevel::InvalidResources)
     , glyphSize_("glyphSize", "Glyph Size", 0.05f, 0.00001f, 10.0f, 0.1f)
@@ -81,15 +83,19 @@ SphereGlyphRenderer::SphereGlyphRenderer()
 
     customColor_.setSemantics(PropertySemantics::Color);
 
-    addProperty(renderMode_);
-    addProperty(clipMode_);
-    addProperty(clipShadingFactor_);
-    addProperty(shadeClippedArea_);
-    addProperty(overwriteGlyphSize_);
-    addProperty(glyphSize_);
-    addProperty(overwriteColor_);
-    addProperty(customColor_);
+    clipping_.addProperty(clipMode_);
+    clipping_.addProperty(clipShadingFactor_);
+    clipping_.addProperty(shadeClippedArea_);
 
+    glyphProperties_.addProperty(overwriteGlyphSize_);
+    glyphProperties_.addProperty(glyphSize_);
+    glyphProperties_.addProperty(overwriteColor_);
+    glyphProperties_.addProperty(customColor_);
+
+    addProperty(renderMode_);
+    addProperty(glyphProperties_);
+    addProperty(clipping_);
+    
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(trackball_);
@@ -104,9 +110,9 @@ SphereGlyphRenderer::SphereGlyphRenderer()
 
 void SphereGlyphRenderer::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
     } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
     }
 
     shader_.activate();
@@ -151,16 +157,16 @@ void SphereGlyphRenderer::initializeResources() {
     std::string value = "";
 
     switch (clipMode_.get()) {
-    case GlyphClippingMode::None:
-        value = "discard";
-        break;
-    case GlyphClippingMode::Hollow:
-        value = "clipToHollowGlyph(intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
-        break;
-    case GlyphClippingMode::Solid:
-    default:
-        value = "clipToSolid(coord, srcColor, dstColor, dstDepth)";
-        break;
+        case GlyphClippingMode::None:
+            value = "discard";
+            break;
+        case GlyphClippingMode::Hollow:
+            value = "clipToHollowGlyph(intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
+            break;
+        case GlyphClippingMode::Solid:
+        default:
+            value = "clipToSolid(coord, srcColor, dstColor, dstDepth)";
+            break;
     }
     shader_.getFragmentShaderObject()->addShaderDefine(clipModeKey, value);
 
