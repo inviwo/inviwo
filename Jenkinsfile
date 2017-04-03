@@ -103,6 +103,7 @@ node {
                 }
             }
         } catch (e) {
+            // Mark as unstable, if we mark as failed, the report will not be published.
             currentBuild.result = 'UNSTABLE'
         }
         stage('Publish') {
