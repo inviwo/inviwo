@@ -168,12 +168,12 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
         shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
     }
 
-    // first two layers (color and picking) are reserved, but picking buffer will be removed since it is not drawn to
-    int layerID = 1;
+    // first two layers (color and picking) are reserved
+    int layerID = 2;
     if (texCoordLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
         shader.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
-        layerID++;
+        ++layerID;
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
     }
@@ -181,7 +181,7 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     if (normalsLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
         shader.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
-        layerID++;
+        ++layerID;
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
     }
@@ -189,14 +189,14 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     if (viewNormalsLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
         shader.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
-        layerID++;
+        ++layerID;
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
     // get a hold of the current output data
     auto prevData = outport_.getData();
-    auto numLayers = static_cast<std::size_t>(layerID);
+    auto numLayers = static_cast<std::size_t>(layerID-1); // Don't count picking
     if (prevData->getNumberOfColorLayers() != numLayers) {
         // create new image with matching number of layers
         auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
@@ -233,9 +233,9 @@ void MeshRenderProcessorGL::changeRenderMode() {
 
 void MeshRenderProcessorGL::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_);
     } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(outport_);
     }
 
     shader_.activate();

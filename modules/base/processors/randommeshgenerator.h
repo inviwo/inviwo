@@ -36,27 +36,66 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/cameraproperty.h>
+
 #include <random>
 
 namespace inviwo {
 
+class PickingEvent;
 
-
-class IVW_MODULE_BASE_API RandomMeshGenerator : public Processor { 
+class IVW_MODULE_BASE_API RandomMeshGenerator : public Processor {
 public:
     RandomMeshGenerator();
     virtual ~RandomMeshGenerator() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-private:
 
-    float randD();
-    float randD(const float min, const float max);
-    vec4 randColor();
+private:
+    struct Box {
+        vec3 rotation;
+        vec3 position;
+        vec3 scale;
+        vec4 color; 
+    };
+    struct Sphere {
+        vec3 center;
+        float radius;
+        vec4 color;
+    };
+    struct Cylinder {
+        vec3 start;
+        vec3 end;
+        float radius;
+        vec4 color;
+    };
+    struct Cone {
+        vec3 start;
+        vec3 end;
+        float radius;
+        vec4 color;
+    };
+    struct Torus {
+        vec3 center;
+        vec3 up;
+        float radius1;
+        float radius2;
+        vec4 color;
+    };
+
+    float rand(const float min, const float max);
     vec3 randVec3(const float min = 0, const float max = 1);
+
+    void addPickingBuffer(Mesh& mesh, size_t id);
+
+    void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
+
+    static vec3 getDelta(const Camera& camera, PickingEvent* p);
 
     MeshOutport mesh_;
 
@@ -64,13 +103,31 @@ private:
     std::uniform_real_distribution<float> dis_;
 
     Int64Property seed_;
-    ButtonProperty reseed_;
+    ButtonProperty reseed_; 
 
+    FloatProperty scale_;
+    FloatProperty size_;
     IntProperty numberOfBoxes_;
     IntProperty numberOfSpheres_;
     IntProperty numberOfCylinders_;
     IntProperty numberOfCones_;
     IntProperty numberOfToruses_;
+
+
+    std::vector<Box> boxes_;
+    std::vector<Sphere> spheres_;
+    std::vector<Cylinder> cylinders_;
+    std::vector<Cone> cones_;
+    std::vector<Torus> toruses_;
+
+
+    BoolProperty enablePicking_;
+    PickingMapper boxPicking_;
+    PickingMapper spherePicking_;
+    PickingMapper cylinderPicking_;
+    PickingMapper conePicking_;
+    PickingMapper torusPicking_;
+    CameraProperty camera_;
 };
 
 } // namespace

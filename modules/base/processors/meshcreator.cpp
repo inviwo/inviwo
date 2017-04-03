@@ -27,9 +27,15 @@
  *
  *********************************************************************************/
 
+
+#include <modules/base/processors/meshcreator.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include "meshcreator.h"
+
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 
@@ -55,7 +61,12 @@ MeshCreator::MeshCreator()
     , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3f)
     , meshScale_("scale", "Size scaling", 1.f, 0.01f, 10.f)
     , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
-    , meshType_("meshType", "Mesh Type") {
+    , meshType_("meshType", "Mesh Type")
+    , enablePicking_("enablePicking", "Enable Picking", false)
+    , picking_(this, 1, [&](PickingEvent* p) { if (enablePicking_) handlePicking(p); })
+    , camera_("camera", "Camera")
+    , pickingUpdate_{[](PickingEvent*){}} {
+    
     addPort(outport_);
 
     meshType_.addOption("sphere", "Sphere", MeshType::Sphere);
@@ -71,6 +82,7 @@ MeshCreator::MeshCreator()
     meshType_.addOption("arrow", "Arrow", MeshType::Arrow);
     meshType_.addOption("coordaxes", "Coordinate Indicator", MeshType::CoordAxes);
     meshType_.addOption("torus", "Torus", MeshType::Torus);
+    meshType_.addOption("sphereopt", "Sphere with Position", MeshType::SphereOpt);
 
     hide(position1_, position2_, normal_, basis_, color_ , torusRadius1_ , torusRadius2_);
     show(meshScale_, meshRes_);
@@ -78,63 +90,116 @@ MeshCreator::MeshCreator()
     meshType_.set(MeshType::Sphere);
     meshType_.setCurrentStateAsDefault();
 
-    meshType_.onChange([&]() {
-        hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_);
+    meshType_.onChange([this]() {
+        auto updateNone = [](PickingEvent* p) {};
+    
+        auto getDelta = [this](PickingEvent* p) {
+            auto currNDC = p->getNDC();
+            auto prevNDC = p->getPreviousNDC();
+
+            // Use depth of initial press as reference to move in the image plane.
+            auto refDepth = p->getPressedDepth();
+            currNDC.z = refDepth;
+            prevNDC.z = refDepth;
+
+            auto corrWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+            auto prevWorld =
+                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+            return (corrWorld - prevWorld);
+        };
+
+        auto updatePosition1 = [this, getDelta](PickingEvent* p) {
+            position1_.set(position1_.get() + getDelta(p));
+        };
         
+        auto updatePosition1and2 = [this, getDelta](PickingEvent* p) {
+            auto delta = getDelta(p);
+            position1_.set(position1_.get() + delta);
+            position2_.set(position2_.get() + delta);
+        };
+        auto updateBasis = [this, getDelta](PickingEvent* p) {
+            basis_.offset_.set(basis_.offset_.get() + getDelta(p));
+        };
+        
+        
+
+        hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_, torusRadius1_,
+             torusRadius2_);
+
         switch (meshType_.get()) {
             case MeshType::Sphere: {
+                pickingUpdate_ = updateNone;
                 show(meshScale_, meshRes_);
                 break;
             }
             case MeshType::ColorSphere: {
+                pickingUpdate_ = updatePosition1;
                 show(position1_, meshScale_);
                 break;
             }
             case MeshType::CubeBasicMesh: {
+                pickingUpdate_ = updatePosition1and2;
                 show(position1_, position2_, color_);
                 break;
             }
             case MeshType::CubeSimpleMesh: {
+                pickingUpdate_ = updatePosition1and2;
                 show(position1_, position2_);
                 break;
             }
             case MeshType::LineCube: {
+                pickingUpdate_ = updateBasis;
                 show(basis_, color_);
                 break;
             }
             case MeshType::LineCubeAdjacency: {
+                pickingUpdate_ = updateBasis;
                 show(basis_, color_);
                 break;
             }
             case MeshType::Plane: {
+                pickingUpdate_ = updatePosition1;
                 show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Disk: {
+                pickingUpdate_ = updatePosition1;
                 show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Cone: {
+                pickingUpdate_ = updatePosition1and2;
                 show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Cylinder: {
+                pickingUpdate_ = updatePosition1and2;
                 show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Arrow: {
+                pickingUpdate_ = updatePosition1and2;
                 show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::CoordAxes: {
+                pickingUpdate_ = updatePosition1;
                 show(position1_, meshScale_);
                 break;
             }
             case MeshType::Torus: {
+                pickingUpdate_ = updatePosition1;
                 show(position1_,torusRadius1_, torusRadius2_,meshRes_,color_);
                 break;
             }
+            case MeshType::SphereOpt: {
+                pickingUpdate_ = updatePosition1;
+                show(position1_, meshScale_, color_);
+                break;
+            }
             default: {
+                pickingUpdate_ = updateNone;
                 show(meshScale_, meshRes_);
                 break;
             }
@@ -152,6 +217,11 @@ MeshCreator::MeshCreator()
     addProperty(color_);
     addProperty(meshScale_);
     addProperty(meshRes_);
+    
+    addProperty(enablePicking_);
+    addProperty(camera_);
+    camera_.setInvalidationLevel(InvalidationLevel::Valid);
+    camera_.setCollapsed(true);
 }
 
 MeshCreator::~MeshCreator() {}
@@ -162,7 +232,6 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             return SimpleMeshCreator::sphere(0.5f * meshScale_.get(), meshRes_.get().y,
                                              meshRes_.get().x);
         case MeshType::ColorSphere:
-            // TODO: use given mesh resolution!
             return BasicMesh::colorsphere(position1_, meshScale_.get());
         case MeshType::CubeBasicMesh: {
             vec3 posLLF = position1_;
@@ -204,12 +273,47 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
         case MeshType::CoordAxes:
             return BasicMesh::coordindicator(position1_, meshScale_.get());
         case MeshType::Torus:
-            return BasicMesh::torus(position1_, vec3(0, 0, 1), torusRadius1_, torusRadius2_, meshRes_, color_);
+            return BasicMesh::torus(position1_, vec3(0, 0, 1), torusRadius1_, torusRadius2_,
+                                    meshRes_, color_);
+        case MeshType::SphereOpt:
+            return BasicMesh::sphere(position1_, meshScale_, color_);
         default:
             return SimpleMeshCreator::sphere(0.1f, meshRes_.get().x, meshRes_.get().y);
     }
 }
 
-void MeshCreator::process() { outport_.setData(createMesh()); }
+void MeshCreator::handlePicking(PickingEvent* p) {
+    if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
+        if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
+            pickingUpdate_(p);
+            p->markAsUsed();
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
+
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+            pickingUpdate_(p);
+            p->markAsUsed();
+        }
+    }
+}
+
+void MeshCreator::process() {
+    auto mesh = createMesh();
+
+    if (enablePicking_) {
+        // Add picking ids
+        auto bufferRAM =
+            std::make_shared<BufferRAMPrecision<uint32_t>>(mesh->getBuffer(0)->getSize());
+        auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
+        auto& data = bufferRAM->getDataContainer();
+        std::fill(data.begin(), data.end(), static_cast<uint32_t>(picking_.getPickingId(0)));
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+    }
+
+    outport_.setData(mesh);
+}
 
 }  // namespace

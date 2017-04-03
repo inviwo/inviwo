@@ -31,25 +31,22 @@
 #include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
-   
+
 size_t BufferObjectArray::maxSize() const {
-    static size_t size = [](){
+    static size_t size = []() {
         GLint glsize = 0;
-        // usually about 16 should be more than BufferType::NumberOfBufferTypes. 
+        // usually about 16 should be more than BufferType::NumberOfBufferTypes.
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);
         return static_cast<size_t>(glsize);
     }();
-    
+
     return size;
 }
 
-BufferObjectArray::BufferObjectArray()
-    : attachedBuffers_(maxSize(), nullptr) {
-}
+BufferObjectArray::BufferObjectArray() : attachedBuffers_(maxSize(), nullptr) {}
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : attachedBuffers_(rhs.attachedBuffers_) {
-}
+    : attachedBuffers_(rhs.attachedBuffers_) {}
 
 BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     if (this != &that) {
@@ -86,14 +83,19 @@ void BufferObjectArray::bind() const {
     }
     glBindVertexArray(id_);
     if (reattach_) {
-        for (GLuint location=0; location < attachedBuffers_.size(); ++location) {
+        for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
             if (auto bufferObject = attachedBuffers_[location]) {
                 glEnableVertexAttribArray(location);
                 bufferObject->bind();
-                glVertexAttribPointer(location, bufferObject->getGLFormat().channels, bufferObject->getGLFormat().type,
-                                      GL_FALSE, 0, (void*)nullptr);
-            }
-            else {
+                if (bufferObject->getDataFormat()->getNumericType() == NumericType::Float) {
+                    glVertexAttribPointer(location, bufferObject->getGLFormat().channels,
+                                          bufferObject->getGLFormat().type, GL_FALSE, 0,
+                                          (void*)nullptr);
+                } else {
+                    glVertexAttribIPointer(location, bufferObject->getGLFormat().channels,
+                                           bufferObject->getGLFormat().type, 0, (void*)nullptr);
+                }
+            } else {
                 glDisableVertexAttribArray(location);
             }
         }

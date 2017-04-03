@@ -139,6 +139,11 @@ public:
     size_t getNumberOfBuffers() const;
     size_t getNumberOfIndicies() const;
 
+    /**
+     * Append a mesh. requires that the meshes have a matching set of buffers.
+     */
+    void append(const Mesh& mesh);
+
     virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
         const Camera& camera) const;
     using SpatialEntity<3>::getCoordinateTransformer;
@@ -151,6 +156,20 @@ protected:
     IndexVector indices_;
     MeshInfo meshInfo_;
 };
+
+inline bool operator==(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) {
+    return (a.type == b.type) && (a.location == b.location);
+}
+inline bool operator!=(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) {
+    return !(a==b);
+}
+
+inline bool operator==(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
+    return (a.ct == b.ct) && (a.dt == b.dt);
+}
+inline bool operator!=(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
+    return !(a == b);
+}
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Mesh::BufferInfo info) {

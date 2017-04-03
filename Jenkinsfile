@@ -87,25 +87,25 @@ node {
                 }
             }
         }
-        stage('Regression') {
-            dir('regress') {
-                nicelog {
-                    sh """
-                        export DISPLAY=:0
-                        python3 ../inviwo/tools/regression.py \
-                                --inviwo ../build/bin/inviwo \
-                                --header ${env.JENKINS_HOME}/inviwo-config/header.html \
-                                --output . \
-                                --repos ../inviwo
-                    """
+        try {
+            stage('Regression') {
+                dir('regress') {
+                    nicelog {
+                        sh """
+                            export DISPLAY=:0
+                            python3 ../inviwo/tools/regression.py \
+                                    --inviwo ../build/bin/inviwo \
+                                    --header ${env.JENKINS_HOME}/inviwo-config/header.html \
+                                    --output . \
+                                    --repos ../inviwo
+                        """
+                    }
                 }
             }
+        } catch (e) {
+            // Mark as unstable, if we mark as failed, the report will not be published.
+            currentBuild.result = 'UNSTABLE'
         }
-        currentBuild.result = 'SUCCESS'
-    } catch (e) {
-        currentBuild.result = 'FAILURE'
-        throw e
-    } finally {
         stage('Publish') {
             publishHTML([
                 allowMissing: true,
@@ -115,7 +115,12 @@ node {
                 reportFiles: 'report.html',
                 reportName: 'Regression Report'
             ])
-
+        }
+    } catch (e) {
+        currentBuild.result = 'FAILURE'
+        throw e
+    } finally {
+        stage('Slack') {
             echo "result: ${currentBuild.result}"
             def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
             def color = res2color.containsKey(currentBuild.result) ? res2color[currentBuild.result] : 'warning'

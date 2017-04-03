@@ -53,7 +53,8 @@ public:
     GLenum getTarget() const;
     GLuint getId() const;
 
-    GLFormats::GLFormat getGLFormat() const { return glFormat_; }
+    GLFormats::GLFormat getGLFormat() const;
+    const DataFormatBase* getDataFormat() const;
 
     void bind() const;
     void unbind() const;
@@ -63,7 +64,7 @@ public:
      * Convenience function for calling initialize(nullptr, sizeInBytes)
      * @param sizeInBytes
      */
-    void setSize(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
+    void setSize(GLsizeiptr sizeInBytes);
 
     void upload(const void* data, GLsizeiptr sizeInBytes);
 
@@ -77,7 +78,13 @@ private:
     GLenum target_;
     GLFormats::GLFormat glFormat_;
     GLsizeiptr sizeInBytes_;
+    const DataFormatBase* dataFormat_;
+
 };
+
+inline GLFormats::GLFormat BufferObject::getGLFormat() const { return glFormat_; }
+inline const DataFormatBase* BufferObject::getDataFormat() const { return dataFormat_; }
+
 
 }  // namespace
 

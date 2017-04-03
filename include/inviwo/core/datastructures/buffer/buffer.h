@@ -60,6 +60,8 @@ public:
     BufferUsage getBufferUsage() const;
     BufferTarget getBufferTarget() const;
 
+    virtual void append(const BufferBase&) = 0;
+
     static uvec3 COLOR_CODE;
     static const std::string CLASS_IDENTIFIER;
 
@@ -87,9 +89,29 @@ public:
     BufferRAMPrecision<T, Target>* getEditableRAMRepresentation();
     const BufferRAMPrecision<T, Target>* getRAMRepresentation() const;
 
+
+    virtual void append(const BufferBase&) override;
+    void append(const Buffer<T, Target>&);
+
 protected:
     virtual std::shared_ptr<BufferRepresentation> createDefaultRepresentation() const override;
 };
+
+template <typename T, BufferTarget Target>
+void Buffer<T, Target>::append(const Buffer<T, Target>& buffer) {
+    getEditableRAMRepresentation()->append(buffer.getRAMRepresentation()->getDataContainer());
+}
+
+template <typename T, BufferTarget Target>
+void Buffer<T, Target>::append(const BufferBase& buffer) {
+    if (buffer.getDataFormat() != DataFormat<T>::get()) {
+        throw Exception("Mismatched buffers: types does not match", IvwContext);
+    }
+    if (buffer.getBufferTarget() != Target) {
+        throw Exception("Mismatched buffers: Targets does not match", IvwContext);
+    }
+    append(static_cast<const Buffer<T, Target>&>(buffer));
+}
 
 // Used for index buffers
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
@@ -103,7 +125,8 @@ inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::vector<std::uint32_t>&&
     return indices;
 }
 
-template <typename T = vec3, BufferUsage U = BufferUsage::Static, BufferTarget Target = BufferTarget::Data>
+template <typename T = vec3, BufferUsage U = BufferUsage::Static,
+          BufferTarget Target = BufferTarget::Data>
 std::shared_ptr<Buffer<T, Target>> makeBuffer(std::vector<T>&& data) {
     auto repr = std::make_shared<BufferRAMPrecision<T, Target>>(std::vector<T>(std::move(data)), U);
     auto buffer = std::make_shared<Buffer<T, Target>>(repr);
@@ -134,12 +157,11 @@ Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)
 }
 
 template <typename T, BufferTarget Target>
-Buffer<T, Target>::Buffer(size_t size, BufferUsage usage /*= BufferUsage::Static*/)
+Buffer<T, Target>::Buffer(size_t size, BufferUsage usage)
     : BufferBase(size, DataFormat<T>::get(), usage, Target) {}
 
 template <typename T, BufferTarget Target>
-Buffer<T, Target>::Buffer(BufferUsage usage /*= BufferUsage::Static*/)
-    : BufferBase(0, DataFormat<T>::get(), usage, Target) {}
+Buffer<T, Target>::Buffer(BufferUsage usage) : BufferBase(0, DataFormat<T>::get(), usage, Target) {}
 
 template <typename T, BufferTarget Target>
 Buffer<T, Target>* Buffer<T, Target>::clone() const {
@@ -148,20 +170,22 @@ Buffer<T, Target>* Buffer<T, Target>::clone() const {
 
 template <typename T, BufferTarget Target>
 const BufferRAMPrecision<T, Target>* Buffer<T, Target>::getRAMRepresentation() const {
-    if (auto res = dynamic_cast<const BufferRAMPrecision<T, Target>*>(getRepresentation<BufferRAM>())) {
-        return res;
-    } else {
-        throw Exception("Unable to create requested RAM representation", IvwContext);
-    }
+    auto bufferRAM = getRepresentation<BufferRAM>();
+    ivwAssert(bufferRAM->getDataFormat() == DataFormat<T>::get(),
+              "Invalid format for buffer representation");
+    ivwAssert(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
+
+    return static_cast<const BufferRAMPrecision<T, Target>*>(bufferRAM);
 }
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>* Buffer<T, Target>::getEditableRAMRepresentation() {
-    if (auto res = dynamic_cast<BufferRAMPrecision<T, Target>*>(getEditableRepresentation<BufferRAM>())) {
-        return res;
-    } else {
-        throw Exception("Unable to create requested RAM representation", IvwContext);
-    }
+    auto bufferRAM = getEditableRepresentation<BufferRAM>();
+    ivwAssert(bufferRAM->getDataFormat() == DataFormat<T>::get(),
+              "Invalid format for buffer representation");
+    ivwAssert(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
+
+    return static_cast<BufferRAMPrecision<T, Target>*>(bufferRAM);
 }
 
 template <typename T, BufferTarget Target>
