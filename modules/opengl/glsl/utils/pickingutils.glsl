@@ -40,9 +40,9 @@ uint reverseByte(uint b) {
 vec3 pickingIndexToColor(uint id) {
     uint index = id;
 
-    uint r = 0;
-    uint g = 0;
-    uint b = 0;
+    uint r = 0u;
+    uint g = 0u;
+    uint b = 0u;
 
     for (int i = 0; i < 8; ++i) {
         r |= ((index & uint(1 << (3 * i + 2))) >> (2 * i + 2));
@@ -58,7 +58,7 @@ uint pickingColorToIndex(vec3 color) {
     uint g = reverseByte(uint(color[1]*255.0));
     uint b = reverseByte(uint(color[2]*255.0));
 
-    uint index = 0;
+    uint index = 0u;
     for (int i = 0; i < 8; ++i) {
         index |= (((b & uint(1 << i)) << (0 + 2 * i)));
         index |= (((g & uint(1 << i)) << (1 + 2 * i)));
