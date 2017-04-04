@@ -91,10 +91,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #ifdef HAS_BACKGROUND
     {
         backgroundColor = texture(bgColor, texCoords);
-        float depthV = texture(bgDepth, texCoords).x;
-        if (depthV != 1) {  // convert to raycasting depth
-            bgTDepth = calculateTValueFromDepthValue(
-                camera, depthV, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);
+        if (backgroundDepth != 1) {  // convert to raycasting depth
+            bgTDepth = tEnd * calculateTValueFromDepthValue(
+                camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);
         }
     }
 
