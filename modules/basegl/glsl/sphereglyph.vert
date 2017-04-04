@@ -31,31 +31,31 @@ layout(location = 4) in uint in_PickId;
 
 #include "utils/structs.glsl"
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-uniform vec4 customColor_ = vec4(0, 0, 0, 1);
-uniform float customRadius_ = 0.1f;
+uniform vec4 customColor = vec4(1, 0, 0, 1);
+uniform float customRadius = 0.1f;
 
 out vec4 worldPosition_;
-out vec4 glyphColor_;
-flat out float glyphRadius_;
+out vec4 sphereColor_;
+flat out float sphereRadius_;
 flat out uint pickID_;
 
 void main(void) {
 #if defined(UNIFORM_RADIUS)
-    glyphRadius_ = customRadius_;
+    sphereRadius_ = customRadius;
 #else
-    glyphRadius_ = in_Vertex.w;
+    sphereRadius_ = in_Vertex.w;
 #endif  // UNIFORM_RADIUS
 
 #if defined(UNIFORM_COLOR)
-    glyphColor_ = customColor_;
+    sphereColor_ = customColor;
 #else
-    glyphColor_ = in_Color;
+    sphereColor_ = in_Color;
 #endif // UNIFORM_COLOR
 
-    worldPosition_ = geometry_.dataToWorld * vec4(in_Vertex.xyz, 1.0);
+    worldPosition_ = geometry.dataToWorld * vec4(in_Vertex.xyz, 1.0);
 
     gl_Position = worldPosition_;
 

@@ -40,6 +40,9 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 
+#include <modules/base/algorithm/dataminmax.h>
+
+
 #include <limits>
 
 namespace inviwo {
@@ -59,7 +62,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , imageInport_("imageInport")
     , outport_("image")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-        vec3(0.0f, 1.0f, 0.0f), &inport_)
+              vec3(0.0f, 1.0f, 0.0f), &inport_)
     , centerViewOnGeometry_("centerView", "Center view on geometry")
     , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
     , resetViewParams_("resetView", "Reset Camera")
@@ -69,11 +72,13 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f),
                      vec4(1.0f))
     , geomProperties_("geometry", "Geometry Rendering Properties")
-    , cullFace_("cullFace", "Cull Face")
-    , polygonMode_("polygonMode", "Polygon Mode")
-    , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
-    , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
-    , enableDepthTest_("enableDepthTest_","Enable Depth Test" , true)
+    , cullFace_("cullFace", "Cull Face",
+                {{"culldisable", "Disable", GL_NONE},
+                 {"cullfront", "Front", GL_FRONT},
+                 {"cullback", "Back", GL_BACK},
+                 {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
+                0)
+    , enableDepthTest_("enableDepthTest_", "Enable Depth Test", true)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , layers_("layers", "Output Layers")
     , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
@@ -84,6 +89,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
                         InvalidationLevel::InvalidResources)
     , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
+
     addPort(inport_);
     addPort(imageInport_);
     addPort(outport_);
@@ -100,40 +106,13 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     outport_.addResizeEventListener(&camera_);
     inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
 
-    cullFace_.addOption("culldisable", "Disable", GL_NONE);
-    cullFace_.addOption("cullfront", "Front", GL_FRONT);
-    cullFace_.addOption("cullback", "Back", GL_BACK);
-    cullFace_.addOption("cullfrontback", "Front & Back", GL_FRONT_AND_BACK);
-    cullFace_.set(GL_NONE);
-
-    polygonMode_.addOption("polypoint", "Points", GL_POINT);
-    polygonMode_.addOption("polyline", "Lines", GL_LINE);
-    polygonMode_.addOption("polyfill", "Fill", GL_FILL);
-    polygonMode_.set(GL_FILL);
-    polygonMode_.onChange(this, &MeshRenderProcessorGL::changeRenderMode);
-
     geomProperties_.addProperty(cullFace_);
-    geomProperties_.addProperty(polygonMode_);
-    geomProperties_.addProperty(renderPointSize_);
-    geomProperties_.addProperty(renderLineWidth_);
     geomProperties_.addProperty(enableDepthTest_);
-
     geomProperties_.addProperty(overrideColorBuffer_);
     geomProperties_.addProperty(overrideColor_);
     overrideColor_.setSemantics(PropertySemantics::Color);
     overrideColor_.setVisible(false);
     overrideColorBuffer_.onChange([&]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
-
-    float lineWidthRange[2];
-    float increment;
-    glGetFloatv(GL_LINE_WIDTH_RANGE, lineWidthRange);
-    glGetFloatv(GL_LINE_WIDTH_GRANULARITY, &increment);
-    renderLineWidth_.setMinValue(lineWidthRange[0]);
-    renderLineWidth_.setMaxValue(lineWidthRange[1]);
-    renderLineWidth_.setIncrement(increment);
-
-    renderLineWidth_.setVisible(false);
-    renderPointSize_.setVisible(false);
 
     addProperty(geomProperties_);
     addProperty(lightingProperty_);
@@ -145,53 +124,51 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     layers_.addProperty(normalsLayer_);
     layers_.addProperty(viewNormalsLayer_);
 
-    setAllPropertiesCurrentStateAsDefault();
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
+MeshRenderProcessorGL::~MeshRenderProcessorGL() = default;
 
-void MeshRenderProcessorGL::initializeResources() { addCommonShaderDefines(shader_); }
-
-void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
+void MeshRenderProcessorGL::initializeResources() {
     // shading defines
-    utilgl::addShaderDefines(shader, lightingProperty_);
+    utilgl::addShaderDefines(shader_, lightingProperty_);
 
     if (overrideColorBuffer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+        shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
     }
 
     if (colorLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
     }
 
     // first two layers (color and picking) are reserved
     int layerID = 2;
     if (texCoordLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
-        shader.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
+        shader_.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
         ++layerID;
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
     }
 
     if (normalsLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
-        shader.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
+        shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
         ++layerID;
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
     }
 
     if (viewNormalsLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
-        shader.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
+        shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
         ++layerID;
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
     // get a hold of the current output data
@@ -208,27 +185,7 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
         outport_.setData(image);
     }
 
-    shader.build();
-}
-
-void MeshRenderProcessorGL::changeRenderMode() {
-    switch (polygonMode_.get()) {
-        case GL_FILL: {
-            renderLineWidth_.setVisible(false);
-            renderPointSize_.setVisible(false);
-            break;
-        }
-        case GL_LINE: {
-            renderLineWidth_.setVisible(true);
-            renderPointSize_.setVisible(false);
-            break;
-        }
-        case GL_POINT: {
-            renderLineWidth_.setVisible(false);
-            renderPointSize_.setVisible(true);
-            break;
-        }
-    }
+    shader_.build();
 }
 
 void MeshRenderProcessorGL::process() {
@@ -240,16 +197,12 @@ void MeshRenderProcessorGL::process() {
 
     shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
-    utilgl::setShaderUniforms(shader_, overrideColor_);
-
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_.get());
     utilgl::CullFaceState culling(cullFace_.get());
-    utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
+    utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry");
         drawer.second->draw();
     }
 
@@ -257,36 +210,32 @@ void MeshRenderProcessorGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
+std::pair<vec3, vec3> MeshRenderProcessorGL::calcWorldBoundingBox() const {
+    vec3 worldMin(std::numeric_limits<float>::max());
+    vec3 worldMax(std::numeric_limits<float>::lowest());
+    for (const auto& mesh : inport_) {
+        const auto& buffers = mesh->getBuffers();
+        auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
+            return buff.first.type == BufferType::PositionAttrib;
+        });
+        if (it != buffers.end()) {
+            auto minmax = util::bufferMinMax(it->second.get());
+
+            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
+            worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
+            worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
+        }
+    }
+    return{ worldMin, worldMax };
+}
+
+
 void MeshRenderProcessorGL::centerViewOnGeometry() {
     if (!inport_.hasData()) return;
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
-
-    for (const auto& mesh : inport_) {
-        vec3 minPos(std::numeric_limits<float>::max());
-        vec3 maxPos(std::numeric_limits<float>::lowest());
-        for (auto buff : mesh->getBuffers()) {
-            if (buff.first.type == BufferType::PositionAttrib) {
-                const Vec3BufferRAM* posbuff =
-                    dynamic_cast<const Vec3BufferRAM*>(buff.second->getRepresentation<BufferRAM>());
-
-                if (posbuff) {
-                    const auto& pos = posbuff->getDataContainer();
-                    for (const auto& p : pos) {
-                        minPos = glm::min(minPos, p);
-                        maxPos = glm::max(maxPos, p);
-                    }
-                }
-            }
-        }
-
-        mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-
-        worldMin = glm::min(worldMin, vec3(trans * vec4(minPos, 1.f)));
-        worldMax = glm::max(worldMax, vec3(trans * vec4(maxPos, 1.f)));
-    }
-    camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
+    auto minmax = calcWorldBoundingBox();
+    camera_.setLook(camera_.getLookFrom(), 0.5f * (minmax.first + minmax.second),
+                    camera_.getLookUp());
 }
 
 void MeshRenderProcessorGL::setNearFarPlane() {
@@ -303,12 +252,12 @@ void MeshRenderProcessorGL::setNearFarPlane() {
 
     if (pos.empty()) return;
 
-    float nearDist, farDist;
-    nearDist = std::numeric_limits<float>::infinity();
-    farDist = 0;
-    vec3 nearPos, farPos;
-    const vec3 camPos{geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                      vec4(camera_.getLookFrom(), 1.0)};
+    float nearDist = std::numeric_limits<float>::infinity();
+    float farDist = 0;
+    vec3 nearPos;
+    vec3 farPos;
+    const vec3 camPos{ geom->getCoordinateTransformer().getWorldToModelMatrix() *
+                      vec4(camera_.getLookFrom(), 1.0) };
     for (auto& po : pos) {
         auto d = glm::distance2(po, camPos);
         if (d < nearDist) {
@@ -323,8 +272,8 @@ void MeshRenderProcessorGL::setNearFarPlane() {
 
     mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
 
-    camera_.setNearPlaneDist(std::max(0.0f, 0.99f * std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 1.01f * std::abs((m * vec4(farPos, 1.0f)).z)));
+    camera_.setNearPlaneDist(std::max(0.0f, 0.5f * std::abs((m * vec4(nearPos, 1.0f)).z)));
+    camera_.setFarPlaneDist(std::max(0.0f, 2.0f * std::abs((m * vec4(farPos, 1.0f)).z)));
 }
 
 void MeshRenderProcessorGL::updateDrawers() {

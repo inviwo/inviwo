@@ -30,12 +30,11 @@
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
-uniform LightParameters light_;
+uniform CameraParameters camera;
+uniform LightParameters lighting;
 
-uniform vec4 viewport_; // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
-uniform float clipShadingFactor_ = 0.9;
+uniform vec4 viewport; // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
+uniform float clipShadingFactor = 0.9;
 
 in vec4 color_;
 in float radius_;
@@ -55,12 +54,12 @@ void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float d
     // Use initial glyph coordinate for now since this should be precise enough for smaller glyphs.
 
     // clip surface is orthogonal to view direction of the camera, use viewDir as normal
-    vec3 normal = normalize((camera_.viewToWorld[2]).xyz);
-    vec3 shadedColor = color_.rgb * clipShadingFactor_;
-    dstColor.rgb = APPLY_LIGHTING(light_, srcColor, srcColor, vec3(1.0f), coord.xyz,
+    vec3 normal = normalize((camera.viewToWorld[2]).xyz);
+    vec3 shadedColor = color_.rgb * clipShadingFactor;
+    dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), coord.xyz,
                            normal, normalize(camPos_ - coord.xyz));
 #else
-    dstColor.rgb = color_.rgb * clipShadingFactor_;
+    dstColor.rgb = color_.rgb * clipShadingFactor;
 #endif // SHADE_CLIPPED_AREA
 }
 
@@ -73,24 +72,24 @@ void clipToHollowGlyph(in vec3 intersection, in mat4 mvpTranspose, in vec3 srcCo
 
 #if defined(SHADE_CLIPPED_AREA)
     vec3 normal = -intersection / radius_;
-    dstColor.rgb = APPLY_LIGHTING(light_, srcColor, srcColor, vec3(1.0f), intersection.xyz,
+    dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), intersection.xyz,
                            normal, normalize(camPos_ - intersection));
 #else
-    dstColor.rgb = color_.rgb * clipShadingFactor_;
+    dstColor.rgb = color_.rgb * clipShadingFactor;
 #endif // SHADE_CLIPPED_AREA
 }
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
-    pixelPos.xy -= viewport_.xy;
+    pixelPos.xy -= viewport.xy;
     // transform fragment coordinates from window coordinates to view coordinates.
     vec4 coord = pixelPos
-        * vec4(viewport_.z, viewport_.w, 2.0, 0.0)
+        * vec4(viewport.z, viewport.w, 2.0, 0.0)
         + vec4(vec3(-1.0), 1.0);
 
     // transform fragment coord into object space
     //coord = gl_ModelViewProjectionMatrixInverse * coord;
-    coord = camera_.clipToWorld * coord;
+    coord = camera.clipToWorld * coord;
     coord /= coord.w;
     coord -= center_;
     // setup viewing ray
@@ -114,12 +113,12 @@ void main() {
 
     // shading
     vec4 glyphColor;
-    glyphColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0f), intersection,
+    glyphColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), intersection,
                                normal, normalize(camPos_ - intersection));
     glyphColor.a = color_.a;
 
     // depth correction for glyph
-    mat4 mvpTranspose = transpose(camera_.worldToClip);
+    mat4 mvpTranspose = transpose(camera.worldToClip);
 
     vec4 pos = vec4(intersection + center_.xyz, 1.0);
     float depth = dot(mvpTranspose[2], pos);
@@ -131,11 +130,11 @@ void main() {
         // first intersection lies behind the camera, compute the second intersection
         vec3 secondIntersection = (d1 + sqrt(radicand))*ray + coord.xyz;
 
-        vec3 shadedColor = color_.rgb * clipShadingFactor_;
+        vec3 shadedColor = color_.rgb * clipShadingFactor;
         APPLY_GLYPH_CLIPPING(coord, secondIntersection, mvpTranspose, shadedColor, glyphColor, depth);
     }
 
     FragData0 = glyphColor;
     gl_FragDepth = depth;
-	PickingData = pickColor_;
+    PickingData = pickColor_;
 }

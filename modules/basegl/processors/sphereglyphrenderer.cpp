@@ -36,7 +36,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SphereGlyphRenderer::processorInfo_{
     "org.inviwo.SphereGlyphRenderer",  // Class identifier
-    "Sphere Glyph Renderer",           // Display name
+    "Sphere Renderer",                 // Display name
     "Mesh Rendering",                  // Category
     CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
@@ -60,11 +60,11 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     , clipShadingFactor_("clipShadingFactor", "Clip Surface Adjustment", 0.9f, 0.0f, 2.0f)
     , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
                         InvalidationLevel::InvalidResources)
-    , glyphProperties_("glyphProperties", "Glyph Properties")
-    , overwriteGlyphSize_("overwriteGlyphSize", "Overwrite Glyph Size", false,
+    , sphereProperties_("sphereProperties", "Sphere Properties")
+    , overrideSphereRadius_("overrideSphereRadius", "Override Sphere Radius", false,
                           InvalidationLevel::InvalidResources)
-    , glyphSize_("glyphSize", "Glyph Size", 0.05f, 0.00001f, 10.0f, 0.1f)
-    , overwriteColor_("overwriteColor", "Overwrite Color", false,
+    , customRadius_("customRadius", "Custom Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
+    , overrideSphereColor_("overrideSphereColor", "Override Sphere Color", false,
                       InvalidationLevel::InvalidResources)
     , customColor_("customColor", "Custom Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
@@ -87,13 +87,13 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     clipping_.addProperty(clipShadingFactor_);
     clipping_.addProperty(shadeClippedArea_);
 
-    glyphProperties_.addProperty(overwriteGlyphSize_);
-    glyphProperties_.addProperty(glyphSize_);
-    glyphProperties_.addProperty(overwriteColor_);
-    glyphProperties_.addProperty(customColor_);
+    sphereProperties_.addProperty(overrideSphereRadius_);
+    sphereProperties_.addProperty(customRadius_);
+    sphereProperties_.addProperty(overrideSphereColor_);
+    sphereProperties_.addProperty(customColor_);
 
     addProperty(renderMode_);
-    addProperty(glyphProperties_);
+    addProperty(sphereProperties_);
     addProperty(clipping_);
     
     addProperty(camera_);
@@ -106,6 +106,7 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.getVertexShaderObject()->addShaderExtension("GL_EXT_geometry_shader4", true);
 }
 
 void SphereGlyphRenderer::process() {
@@ -117,14 +118,10 @@ void SphereGlyphRenderer::process() {
 
     shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
-    shader_.setUniform("viewport_", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                         2.0f / outport_.getDimensions().y));
-    shader_.setUniform("customColor_", customColor_);
-    shader_.setUniform("customRadius_", glyphSize_.get() * 0.5f);
-    shader_.setUniform("clipShadingFactor_", clipShadingFactor_.get());
-
+    utilgl::setUniforms(shader_, camera_, lighting_, customColor_, customRadius_,
+                        clipShadingFactor_);
+    shader_.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
+                                        2.0f / outport_.getDimensions().y));
     drawMeshes();
 
     shader_.deactivate();
@@ -134,13 +131,13 @@ void SphereGlyphRenderer::process() {
 void SphereGlyphRenderer::initializeResources() {
     utilgl::addShaderDefines(shader_, lighting_);
 
-    if (overwriteGlyphSize_.get()) {
+    if (overrideSphereRadius_.get()) {
         shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_RADIUS");
     } else {
         shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_RADIUS");
     }
 
-    if (overwriteColor_.get()) {
+    if (overrideSphereColor_.get()) {
         shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_COLOR");
     } else {
         shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_COLOR");
@@ -177,10 +174,10 @@ void SphereGlyphRenderer::drawMeshes() {
     switch (renderMode_.get()) {
         case RenderMode::PointsOnly:
             // render only index buffers marked as points (or the entire mesh if none exists)
-            for (auto& elem : inport_.getVectorData()) {
+            for (auto& elem : inport_) {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry_");
+                utilgl::setShaderUniforms(shader_, *elem, "geometry");
                 if (elem->getNumberOfIndicies() > 0) {
                     for (size_t i = 0; i < elem->getNumberOfIndicies(); ++i) {
                         auto meshinfo = elem->getIndexMeshInfo(i);
@@ -201,10 +198,10 @@ void SphereGlyphRenderer::drawMeshes() {
         case RenderMode::EntireMesh:
         default:
             // render all parts of the input meshes as points
-            for (auto& elem : inport_.getVectorData()) {
+            for (auto& elem : inport_) {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry_");
+                utilgl::setShaderUniforms(shader_, *elem, "geometry");
                 drawer.draw(MeshDrawerGL::DrawMode::Points);
             }
             break;

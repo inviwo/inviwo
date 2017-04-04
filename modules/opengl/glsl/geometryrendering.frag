@@ -30,8 +30,8 @@
 
 #include "utils/shading.glsl"
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
 
 uniform vec4 overrideColor;
 
@@ -44,14 +44,14 @@ flat in vec4 pickColor_;
 
 void main() {
     vec4 fragColor = vec4(1.0);
-    vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
+    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
     #ifdef OVERRIDE_COLOR_BUFFER
     vec4 color = overrideColor;
     #else
     vec4 color = color_;
     #endif
 
-    fragColor.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
+    fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
 
 #ifdef COLOR_LAYER
