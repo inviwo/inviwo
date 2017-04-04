@@ -174,7 +174,7 @@ void SphereGlyphRenderer::drawMeshes() {
     switch (renderMode_.get()) {
         case RenderMode::PointsOnly:
             // render only index buffers marked as points (or the entire mesh if none exists)
-            for (auto& elem : inport_) {
+            for (const auto& elem : inport_) {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
                 utilgl::setShaderUniforms(shader_, *elem, "geometry");
@@ -198,7 +198,7 @@ void SphereGlyphRenderer::drawMeshes() {
         case RenderMode::EntireMesh:
         default:
             // render all parts of the input meshes as points
-            for (auto& elem : inport_) {
+            for (const auto& elem : inport_) {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
                 utilgl::setShaderUniforms(shader_, *elem, "geometry");
