@@ -307,7 +307,7 @@ namespace util{
 
     template <typename T>
     std::vector<T> toVector(PyObject* obj) {
-        using ComponentType = util::value_type<T>::type;
+        using ComponentType = typename util::value_type<T>::type;
         std::vector<T> v;
 
         if (!PyArray_Check(obj)) {

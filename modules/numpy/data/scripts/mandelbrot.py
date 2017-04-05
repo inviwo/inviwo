@@ -1,3 +1,5 @@
+import inviwopy
+from inviwopy.glm import *
 import numpy as np
 import math
 
