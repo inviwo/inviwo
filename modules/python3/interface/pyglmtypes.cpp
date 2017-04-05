@@ -88,7 +88,7 @@ namespace inviwo {
             .def(py::self *= T())
             .def(py::self /= T())
 
-            .def("__getitem__", [](GLM &v, int idx) { return v[idx]; } , py::return_value_policy::reference)
+            .def("__getitem__", [](GLM &v, int idx) { return &v[idx]; } , py::return_value_policy::reference_internal)
 
             //.def("sign", [](GLM &v) {return glm::sign(v); })
             //.def("abs", [](GLM &v) {return glm::abs(v); })
@@ -108,10 +108,10 @@ namespace inviwo {
 
     }
 
-    template<typename T, typename V, typename P,std::enable_if_t<!std::is_floating_point_v<T>>* =0>
+    template<typename T, typename V, typename P,std::enable_if_t<!std::is_floating_point<T>::value>* =0>
     void floatOnly(P &p) {}
 
-    template<typename T, typename V, typename P,std::enable_if_t<std::is_floating_point_v<T>>* =0>
+    template<typename T, typename V, typename P,std::enable_if_t<std::is_floating_point<T>::value>* =0>
     void floatOnly(P &p) {
         p.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
 //        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });

@@ -39,27 +39,18 @@ def rotation_matrix(axis, angle):
     v = a * math.sin(0.5 * angle)
     w = math.cos(0.5 * angle)
 
-    #m = np.zeros([3,3])
     m = mat3()
+    m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2]);
+    m[0][1] = 2 * (v[0] * v[1] + v[2] * w);
+    m[0][2] = 2 * (v[2] * v[0] - v[1] * w);
 
-    a = 1 - (2) * (v[1] * v[1] + v[2] * v[2]);
-    b = 2 * (v[0] * v[1] + v[2] * w);
-    c = 2 * (v[2] * v[0] - v[1] * w);
+    m[1][0] = 2 * (v[0] * v[1] - v[2] * w);
+    m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0]);
+    m[1][2] = 2 * (v[1] * v[2] + v[0] * w);
 
-    m[0] = vec3(a,b,c);
-
-    a = 2 * (v[0] * v[1] - v[2] * w);
-    b = 1 - (2) * (v[2] * v[2] + v[0] * v[0]);
-    c = 2 * (v[1] * v[2] + v[0] * w);
-
-    m[1] = vec3(a,b,c);
-
-    a = 2 * (v[2] * v[0] + v[1] * w);
-    b = 2 * (v[1] * v[2] - v[0] * w);
-    c = 1 - (2) * (v[1] * v[1] + v[0] * v[0]);
-
-    m[2] = vec3(a,b,c);
-
+    m[2][0] = 2 * (v[2] * v[0] + v[1] * w);
+    m[2][1] = 2 * (v[1] * v[2] - v[0] * w);
+    m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0]);
 
     return m
 
@@ -67,7 +58,7 @@ def rotation_matrix(axis, angle):
 class Camera:
     """
     Example:
-    with ivw.camera.Camera("EntryExitPoints.camera") as c:
+    with ivw.camera.Camera(app.network.EntryExitPoints.camera) as c:
         for step in c.rotate(2.0*math.pi/steps, steps, [0,0,1]): 
             print(step)
             inviwoqt.update()
@@ -107,13 +98,6 @@ class Camera:
         vec = self.lookfrom - self.lookto
 
         mat = rotation_matrix(axis, delta)
-        
-        print(vec)
-        print(mat)
-        print(self.lookup)
-        print(self.lookfrom)
-        print(self.lookto)
-        print("")
 
         for i in range(1, steps+1):
             vec = mat * vec
