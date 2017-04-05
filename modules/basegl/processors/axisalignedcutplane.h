@@ -180,16 +180,12 @@ void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<cons
 template <AxisAlignedCutPlane::Axis axis>
 void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader &shader) {
     if (!isChecked()) return;
-    LGL_ERROR;
-    utilgl::setShaderUniforms(shader, *mesh_, "geometry_");
-    LGL_ERROR;
+    utilgl::setShaderUniforms(shader, *mesh_, "geometry");
     drawer_->draw();
-    LGL_ERROR;
 }
 
 template <AxisAlignedCutPlane::Axis axis>
-vec3 inviwo::AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b,
-                                                                double t) {
+vec3 AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b, double t) {
     switch (axes) {
         case 0:
             return vec3(t, a, b);
