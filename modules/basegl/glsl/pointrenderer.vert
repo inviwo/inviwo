@@ -29,23 +29,23 @@
 
 #include "utils/structs.glsl"
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-uniform float pointSize_ = 5.0; // [pixel]
-uniform float borderWidth_ = 1.0; // [pixel]
+uniform float pointSize = 5.0; // [pixel]
+uniform float borderWidth = 1.0; // [pixel]
 
 out vec4 worldPosition_;
 out vec3 normal_;
 out vec4 color_;
 
 void main() {
-    worldPosition_ = geometry_.dataToWorld * in_Vertex;
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
 
     color_ = in_Color;
 
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
-    gl_Position = camera_.worldToClip * worldPosition_;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal;
+    gl_Position = camera.worldToClip * worldPosition_;
 
-    gl_PointSize = (pointSize_ + 2 * borderWidth_);
+    gl_PointSize = pointSize + 2 * borderWidth;
 }  

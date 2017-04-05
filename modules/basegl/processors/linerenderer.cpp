@@ -89,14 +89,10 @@ void LineRenderer::process() {
     }
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     shader_.activate();
-
-    shader_.setUniform("screenDim_", vec2(outport_.getDimensions()));
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-
-    shader_.setUniform("lineWidth_", lineWidth_.get());
-    shader_.setUniform("antialias_", antialising_.get());
-    shader_.setUniform("miterLimit_", miterLimit_.get());
+    shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
+    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_);
 
     drawMeshes();
 
@@ -108,10 +104,10 @@ void LineRenderer::drawMeshes() {
     auto drawMode = (useAdjacency_.get() ? MeshDrawerGL::DrawMode::LineStripAdjacency
                                          : MeshDrawerGL::DrawMode::LineStrip);
 
-    for (auto& elem : inport_.getVectorData()) {
+    for (const auto& elem : inport_) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader_, *elem, "geometry_");
+        utilgl::setShaderUniforms(shader_, *elem, "geometry");
         drawer.draw(drawMode);
     }
 }

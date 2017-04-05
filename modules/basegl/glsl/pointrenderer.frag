@@ -29,11 +29,11 @@
 
 #include "utils/structs.glsl"
 
-uniform float pointSize_; // [pixel]
-uniform float borderWidth_; // [pixel]
-uniform float antialias_ = 1.5; // [pixel]
+uniform float pointSize; // [pixel]
+uniform float borderWidth; // [pixel]
+uniform float antialising = 1.5; // [pixel]
 
-uniform vec4 borderColor_ = vec4(1.0, 0.0, 0.0, 1.0);
+uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 in vec4 worldPosition_;
 in vec3 normal_;
@@ -49,18 +49,18 @@ void main() {
     }
     normal.z = sqrt(1.0 - r);
 
-    float glyphRadius = pointSize_ * 0.5;
+    float glyphRadius = pointSize * 0.5;
     
-    r *= pointSize_ * 0.5 + borderWidth_;
+    r *= pointSize * 0.5 + borderWidth;
 
     // pseudo antialiasing with the help of the alpha channel
     // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    float outerglyphRadius = glyphRadius + borderWidth_ - antialias_; // used for adjusting the alpha value of the outer rim
+    float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
 
     float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius + 1) / 2), 0.0, 1.0);
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth_ - outerglyphRadius)), 0.0, 1.0);
+    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
 
-    vec4 color = mix(color_, borderColor_, borderValue);
+    vec4 color = mix(color_, borderColor, borderValue);
 
     FragData0 = vec4(vec3(borderValue), 1.0);
     FragData0 = vec4(color.rgb, color.a * borderAlpha);

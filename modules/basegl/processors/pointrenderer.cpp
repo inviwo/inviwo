@@ -91,12 +91,7 @@ void PointRenderer::process() {
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-
-    shader_.setUniform("pointSize_", pointSize_.get());
-    shader_.setUniform("borderWidth_", borderWidth_.get());
-    shader_.setUniform("borderColor_", borderColor_.get());
-    shader_.setUniform("antialias_", antialising_.get());
+    utilgl::setUniforms(shader_, camera_, pointSize_, borderWidth_, borderColor_, antialising_);
 
     drawMeshes();
 
@@ -108,7 +103,7 @@ void PointRenderer::drawMeshes() {
     for (auto& elem : inport_.getVectorData()) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader_, *elem, "geometry_");
+        utilgl::setShaderUniforms(shader_, *elem, "geometry");
         drawer.draw(MeshDrawerGL::DrawMode::Points);
     }
 }

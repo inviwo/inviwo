@@ -40,14 +40,10 @@ layout(lines) in;
 
 layout(triangle_strip, max_vertices=5) out;
 
-
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
-
-uniform vec2 screenDim_ = vec2(512, 512);
-uniform float antialias_ = 1.0; // width of antialised edged [pixel]
-uniform float lineWidth_ = 2.0; // line width [pixel]
-uniform float miterLimit_ = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
+uniform vec2 screenDim = vec2(512, 512);
+uniform float antialising = 1.0; // width of antialised edged [pixel]
+uniform float lineWidth = 2.0; // line width [pixel]
+uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 
 
 in vec4 vertexColor_[];
@@ -105,7 +101,7 @@ void renderLineWithoutJoints() {
     // determine normal
     vec2 normal = vec2(-v.y, v.x);
 
-    float halfWidth = lineWidth_ * 0.5;
+    float halfWidth = lineWidth * 0.5;
 
     vec4 offset = vec4(normal * halfWidth, 0.0, 0.0);
     segmentLength_ = length(pEnd - pStart);
@@ -130,15 +126,15 @@ void main(void) {
     // regular line rendering
     renderLineWithoutJoints();
 #else
-    vec2 screenDim = screenDim_ * 0.5;
+    vec2 halfScreenDim = screenDim * 0.5;
 
     // Get the four vertices passed to the shader
     vec2 p0 = gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
     vec2 p1 = gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
     vec2 p2 = gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
     vec2 p3 = gl_in[3].gl_Position.xy / gl_in[3].gl_Position.w;
-    float linewidth = lineWidth_ / screenDim.x;
-    float w = linewidth / 2.0 + 1.5*antialias_ / screenDim.x;
+    float sLinewidth = lineWidth / halfScreenDim.x;
+    float w = sLinewidth / 2.0 + 1.5*antialising / halfScreenDim.x;
 
 
     // homogeneous clipping
@@ -199,16 +195,16 @@ void main(void) {
 
     // avoid sharp corners by cutting them off
     // corner between previous segment and current one
-    if( dot( v0, v1 ) < -miterLimit_ ) {
+    if( dot( v0, v1 ) < -miterLimit ) {
         miterBegin = normalize(-n0 + n1);
-        length_a = linewidth * 0.5;
+        length_a = sLinewidth * 0.5;
 
         length_a = w / dot(miterBegin, n1);
     }
     // corner between current segment and next one
-    if( dot( v1, v2 ) < -miterLimit_ ) {
+    if( dot( v1, v2 ) < -miterLimit ) {
         miterEnd = normalize(-n2 + n1);
-        length_b = linewidth * 0.5;
+        length_b = sLinewidth * 0.5;
 
         length_b = w / dot(miterEnd, n1);
     }
