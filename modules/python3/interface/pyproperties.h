@@ -31,6 +31,8 @@
 #define IVW_PYPROPERTIES_H
 #include <pybind11/pybind11.h>
 
+#include <modules/python3/interface/inviwopy.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>

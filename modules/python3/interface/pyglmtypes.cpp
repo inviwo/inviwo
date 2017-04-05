@@ -39,6 +39,8 @@
 
 #include <pybind11/operators.h>
 
+#include <algorithm>
+
 namespace py = pybind11;
 
 

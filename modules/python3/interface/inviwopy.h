@@ -75,7 +75,7 @@ namespace inviwo{
 
     template <typename T>
     void addProcessorDefs(T class_) {
-        class_.def(py::init<>());
+        class_.def(pybind11::init<>());
     }
 
     template <typename T>
@@ -91,13 +91,13 @@ namespace inviwo{
     template <typename T>
     pybind11::object propertyToPyObject(T *prop) {
         if (auto cp = dynamic_cast<inviwo::CompositeProperty *>(prop)) {
-            return py::cast(cp);
+            return pybind11::cast(cp);
         }
         else if (auto op = dynamic_cast<inviwo::BaseOptionProperty *>(prop)) {
-            return py::cast(op);
+            return pybind11::cast(op);
         }
         else {
-            return py::cast(prop);
+            return pybind11::cast(prop);
         }
     }
 
