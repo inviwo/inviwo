@@ -85,7 +85,7 @@ public:
     MeshRenderProcessorGL(const MeshRenderProcessorGL&) = delete;
     MeshRenderProcessorGL& operator=(const MeshRenderProcessorGL&) = delete;
 
-    ~MeshRenderProcessorGL();
+    virtual ~MeshRenderProcessorGL();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
