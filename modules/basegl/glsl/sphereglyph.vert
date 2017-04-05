@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 layout(location = 4) in uint in_PickId;
+layout(location = 5) in float in_SphereRadii;
 
 #include "utils/structs.glsl"
 
@@ -46,7 +47,7 @@ void main(void) {
 #if defined(UNIFORM_RADIUS)
     sphereRadius_ = customRadius;
 #else
-    sphereRadius_ = in_Vertex.w;
+    sphereRadius_ = in_SphereRadii;
 #endif  // UNIFORM_RADIUS
 
 #if defined(UNIFORM_COLOR)
