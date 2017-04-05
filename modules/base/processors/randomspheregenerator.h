@@ -92,7 +92,7 @@ private:
     std::shared_ptr<BufferRAMPrecision<vec3>> positionBuffer_;
 
     mutable std::mt19937 rand_;
-    std::uniform_real_distribution<float> dis_;
+    mutable std::uniform_real_distribution<float> dis_;
 };
 
 } // namespace inviwo
