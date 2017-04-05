@@ -59,9 +59,9 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::t
 auto glm2eigen(T& elem)
     -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> {
     Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> a;
-    for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
-        for (size_t j = 0; j < util::extent<T, 1>::value; j++) {
-            a(i, j) = elem[i][j];
+    for (size_t row = 0; row < util::extent<T, 0>::value; row++) {
+        for (size_t col = 0; col < util::extent<T, 1>::value; col++) {
+            a(row, col) = elem[col][row];
         }
     }
     return a;
@@ -73,9 +73,9 @@ template <
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
     GlmMatrix outm;
-    for (size_t i = 0; i < Rows; i++) {
-        for (size_t j = 0; j < Cols; j++) {
-            outm[i][j] = m(j, i);
+    for (size_t row = 0; row < Rows; row++) {
+        for (size_t col = 0; col < Cols; col++) {
+            outm[col][row] = m(row, col);
         }
     }
     return outm;
@@ -86,8 +86,8 @@ template <typename T, unsigned Rows, unsigned Cols,
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Rows, 1>::type;
     GlmVector outv;
-    for (size_t i = 0; i < Rows; i++) {
-        outv[i] = m(i);
+    for (size_t row = 0; row < Rows; row++) {
+        outv[row] = m(row);
     }
     return outv;
 }
@@ -97,8 +97,8 @@ template <typename T, unsigned Rows, unsigned Cols,
 auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Cols, 1>::type;
     GlmVector outv;
-    for (size_t i = 0; i < Cols; i++) {
-        outv[i] = m(i);
+    for (size_t row = 0; row < Cols; row++) {
+        outv[row] = m(row);
     }
     return outv;
 }
