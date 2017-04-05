@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPHEREGLYPHRENDERER_H
-#define IVW_SPHEREGLYPHRENDERER_H
+#ifndef IVW_SPHERERENDERER_H
+#define IVW_SPHERERENDERER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -46,8 +46,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SphereGlyphRenderer, Sphere Glyph Renderer}
- * ![](org.inviwo.SphereGlyphRenderer.png?classIdentifier=org.inviwo.SphereGlyphRenderer)
+/** \docpage{org.inviwo.SphereRenderer, Sphere Renderer}
+ * ![](org.inviwo.SphereRenderer.png?classIdentifier=org.inviwo.SphereRenderer)
  * This processor renders a set of point meshes using spherical glyphs in OpenGL.
  * The glyphs are resolution independent and consist only of a single point.
  * The radius of each point is given in the w coordinate of the vertex position unless
@@ -72,13 +72,13 @@ namespace inviwo {
  */
 
 /**
- * \class SphereGlyphRenderer
+ * \class SphereRenderer
  * \brief Renders input geometry with 3D sphere glyphs using OpenGL shaders
  */
-class IVW_MODULE_BASEGL_API SphereGlyphRenderer : public Processor {
+class IVW_MODULE_BASEGL_API SphereRenderer : public Processor {
 public:
-    SphereGlyphRenderer();
-    virtual ~SphereGlyphRenderer() = default;
+    SphereRenderer();
+    virtual ~SphereRenderer() = default;
 
     virtual void process() override;
 
@@ -131,4 +131,4 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_SPHEREGLYPHRENDERER_H
+#endif  // IVW_SPHERERENDERER_H

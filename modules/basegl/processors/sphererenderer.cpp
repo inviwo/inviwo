@@ -27,23 +27,23 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/sphereglyphrenderer.h>
+#include <modules/basegl/processors/sphererenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo SphereGlyphRenderer::processorInfo_{
-    "org.inviwo.SphereGlyphRenderer",  // Class identifier
-    "Sphere Renderer",                 // Display name
-    "Mesh Rendering",                  // Category
-    CodeState::Stable,                 // Code state
-    Tags::GL,                          // Tags
+const ProcessorInfo SphereRenderer::processorInfo_{
+    "org.inviwo.SphereRenderer",  // Class identifier
+    "Sphere Renderer",            // Display name
+    "Mesh Rendering",             // Category
+    CodeState::Stable,            // Code state
+    Tags::GL,                     // Tags
 };
-const ProcessorInfo SphereGlyphRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo SphereRenderer::getProcessorInfo() const { return processorInfo_; }
 
-SphereGlyphRenderer::SphereGlyphRenderer()
+SphereRenderer::SphereRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
@@ -109,7 +109,7 @@ SphereGlyphRenderer::SphereGlyphRenderer()
     shader_.getVertexShaderObject()->addShaderExtension("GL_EXT_geometry_shader4", true);
 }
 
-void SphereGlyphRenderer::process() {
+void SphereRenderer::process() {
     if (imageInport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
     } else {
@@ -128,7 +128,7 @@ void SphereGlyphRenderer::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void SphereGlyphRenderer::initializeResources() {
+void SphereRenderer::initializeResources() {
     utilgl::addShaderDefines(shader_, lighting_);
 
     if (overrideSphereRadius_.get()) {
@@ -170,7 +170,7 @@ void SphereGlyphRenderer::initializeResources() {
     shader_.build();
 }
 
-void SphereGlyphRenderer::drawMeshes() {
+void SphereRenderer::drawMeshes() {
     switch (renderMode_.get()) {
         case RenderMode::PointsOnly:
             // render only index buffers marked as points (or the entire mesh if none exists)
