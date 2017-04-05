@@ -85,6 +85,7 @@ class Camera:
         self.cam.lookTo = self.lookto;
         self.cam.lookUp = self.lookup;
         self.cam.invalidate()
+        inviwopy.logInfo("Camera Set");
 
     def restore(self):
         self.cam.lookFrom = self.oldlookfrom;
