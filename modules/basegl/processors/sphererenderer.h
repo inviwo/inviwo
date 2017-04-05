@@ -97,12 +97,11 @@ private:
     /**
      * \enum GlyphClippingMode
      * defines how glyphs are rendering if the first intersection, i.e. the front side,
-     * lies behind the camera.
+     * lies behind the near clip plane of the camera.
      */
     enum class GlyphClippingMode {
-        None,    //!< glyph is not rendered
-        Hollow,  //!< glyph inside will be rendered
-        Solid,   //!< the cut surface is visible
+        Discard,    //!< glyph is not rendered
+        Cut,   //!< the cut surface is visible
     };
 
     MeshFlatMultiInport inport_;

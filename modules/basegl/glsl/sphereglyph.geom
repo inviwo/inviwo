@@ -55,24 +55,26 @@ out vec4 color_;
 flat out vec4 pickColor_;
 
 void main(void) {
-    vec4 inPos = worldPosition_[0];
+    center_ = worldPosition_[0];
+    radius_ = sphereRadius_[0];
 
-    // object pivot point in object space
-    center_ = inPos;
+    mat4 worldToViewMatrixInv = inverse(camera.worldToView);
 
-    mat4 modelViewMatrix = camera.worldToView;
-    mat4 modelViewMatrixInv = inverse(modelViewMatrix);
-    mat4 modelViewProjMatrix = camera.viewToClip * modelViewMatrix;
-
-    vec3 camPosModel =  modelViewMatrixInv[3].xyz;
-
-    // calculate cam position (in object space of the sphere!)
+    vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
+    vec3 camPosModel =  worldToViewMatrixInv[3].xyz;
+    // calculate cam position (in model space of the sphere)
     camPos_ = camPosModel - center_.xyz;
-    vec3 camDir = normalize((modelViewMatrixInv[2]).xyz);
-     
 
-    float glyphDepth = (modelViewProjMatrix * center_).z/(modelViewProjMatrix * center_).w;
-    vec4 centerPos = modelViewMatrix * vec4(center_.xyz, 1.0);
+#ifdef DISCARD_CLIPPED_GLYPHS
+    if (dot(camPos_, camDir) < camera.nearPlane + radius_) {
+        // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
+        EndPrimitive();
+        return;
+    }
+#endif // DISCARD_CLIPPED_GLYPHS
+
+    vec4 centerMVP = camera.worldToClip * center_;
+    float glyphDepth = centerMVP.z / centerMVP.w;
 
     // send color to fragment shader
     color_ = sphereColor_[0];
@@ -80,11 +82,10 @@ void main(void) {
     pickColor_ = vec4(pickingIndexToColor(pickID_[0]), 1.0);
 
     // camera coordinate system in object space
-    vec3 camUp = (modelViewMatrixInv[1]).xyz;
+    vec3 camUp = (worldToViewMatrixInv[1]).xyz;
     vec3 camRight = normalize(cross(camDir, camUp));
     camUp = normalize(cross(camDir, camRight));
 
-    radius_ = sphereRadius_[0];
 
     float rad2 = radius_*radius_;
     float depth = 0.0;
@@ -107,37 +108,37 @@ void main(void) {
     camUp *= h_hex;
 
     testPos = center_.xyz - camRight;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
     testPos = center_.xyz - camRight_half - camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
     testPos = center_.xyz - camRight_half + camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
     testPos = center_.xyz + camRight_half - camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
     testPos = center_.xyz + camRight_half + camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
     testPos = center_.xyz + camRight;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
@@ -148,39 +149,27 @@ void main(void) {
     camUp *= radius_ * 1.41421356;
 
     testPos = center_.xyz + camRight - camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    // dot products with ModelViewProjection transposed is slower!!
-    gl_Position.z =
-        (modelViewProjMatrix * center_).z / (modelViewProjMatrix * center_).w;  // glyphDepth;
     EmitVertex();
 
     testPos = center_.xyz - camRight - camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    // dot products with ModelViewProjection transposed is slower!!
-    gl_Position.z =
-        (modelViewProjMatrix * center_).z / (modelViewProjMatrix * center_).w;  // glyphDepth;
     EmitVertex();
 
     testPos = center_.xyz + camRight + camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    // dot products with ModelViewProjection transposed is slower!!
-    gl_Position.z =
-        (modelViewProjMatrix * center_).z / (modelViewProjMatrix * center_).w;  // glyphDepth;
     EmitVertex();
 
     testPos = center_.xyz - camRight + camUp;
-    projPos = modelViewProjMatrix * vec4(testPos, 1.0);
+    projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    // dot products with ModelViewProjection transposed is slower!!
-    gl_Position.z =
-        (modelViewProjMatrix * center_).z / (modelViewProjMatrix * center_).w;  // glyphDepth;
     EmitVertex();
 #endif // HEXAGON
 

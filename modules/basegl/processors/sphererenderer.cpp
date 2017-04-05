@@ -53,10 +53,9 @@ SphereRenderer::SphereRenderer()
                    {"pointsOnly", "Points Only", RenderMode::PointsOnly}})
     , clipping_("clipping", "Clipping")
     , clipMode_("clipMode", "Clip Mode",
-                {{"none", "None", GlyphClippingMode::None},
-                 {"hollow", "Hollow", GlyphClippingMode::Hollow},
-                 {"solid", "Solid", GlyphClippingMode::Solid}},
-                2, InvalidationLevel::InvalidResources)
+                {{"discard", "Discard Glyph", GlyphClippingMode::Discard},
+                 {"cut", "Cut Glypyh", GlyphClippingMode::Cut}},
+                0, InvalidationLevel::InvalidResources)
     , clipShadingFactor_("clipShadingFactor", "Clip Surface Adjustment", 0.9f, 0.0f, 2.0f)
     , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
                         InvalidationLevel::InvalidResources)
@@ -101,8 +100,8 @@ SphereRenderer::SphereRenderer()
     addProperty(trackball_);
 
     clipMode_.onChange([&]() {
-        clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::None);
-        shadeClippedArea_.setReadOnly(clipMode_.get() == GlyphClippingMode::None);
+        clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
+        shadeClippedArea_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
     });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -149,23 +148,13 @@ void SphereRenderer::initializeResources() {
         shader_.getFragmentShaderObject()->removeShaderDefine("SHADE_CLIPPED_AREA");
     }
 
-    std::string clipModeKey =
-        "APPLY_GLYPH_CLIPPING(coord, intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
-    std::string value = "";
-
-    switch (clipMode_.get()) {
-        case GlyphClippingMode::None:
-            value = "discard";
-            break;
-        case GlyphClippingMode::Hollow:
-            value = "clipToHollowGlyph(intersection, mvpTranspose, srcColor, dstColor, dstDepth)";
-            break;
-        case GlyphClippingMode::Solid:
-        default:
-            value = "clipToSolid(coord, srcColor, dstColor, dstDepth)";
-            break;
+    if (clipMode_.get() == GlyphClippingMode::Discard) {
+        shader_.getGeometryShaderObject()->addShaderDefine("DISCARD_CLIPPED_GLYPHS");
+        shader_.getFragmentShaderObject()->addShaderDefine("DISCARD_CLIPPED_GLYPHS");
+    } else {
+        shader_.getGeometryShaderObject()->removeShaderDefine("DISCARD_CLIPPED_GLYPHS");
+        shader_.getFragmentShaderObject()->removeShaderDefine("DISCARD_CLIPPED_GLYPHS");
     }
-    shader_.getFragmentShaderObject()->addShaderDefine(clipModeKey, value);
 
     shader_.build();
 }

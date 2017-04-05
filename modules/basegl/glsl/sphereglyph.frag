@@ -42,9 +42,6 @@ in vec3 camPos_;
 in vec4 center_;
 flat in vec4 pickColor_;
 
-#if !defined(APPLY_GLYPH_CLIPPING)
-#  define APPLY_GLYPH_CLIPPING(coord, intersection, mvpTranspose, srcColor, dstColor, dstDepth) discard;
-#endif
 
 void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float dstDepth) { 
     dstDepth = 0.000001;
@@ -58,22 +55,6 @@ void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float d
     vec3 shadedColor = color_.rgb * clipShadingFactor;
     dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), coord.xyz,
                            normal, normalize(camPos_ - coord.xyz));
-#else
-    dstColor.rgb = color_.rgb * clipShadingFactor;
-#endif // SHADE_CLIPPED_AREA
-}
-
-void clipToHollowGlyph(in vec3 intersection, in mat4 mvpTranspose, in vec3 srcColor, 
-                       out vec4 dstColor, out float dstDepth) {
-    vec4 pos = vec4(intersection + center_.xyz, 1.0);
-    float depth = dot(mvpTranspose[2], pos);
-    float depthW = dot(mvpTranspose[3], pos);
-    dstDepth = max(((depth / depthW) + 1.0) * 0.5, 0.000001);
-
-#if defined(SHADE_CLIPPED_AREA)
-    vec3 normal = -intersection / radius_;
-    dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), intersection.xyz,
-                           normal, normalize(camPos_ - intersection));
 #else
     dstColor.rgb = color_.rgb * clipShadingFactor;
 #endif // SHADE_CLIPPED_AREA
@@ -127,11 +108,12 @@ void main() {
     depth = ((depth / depthW) + 1.0) * 0.5;
 
     if (depth <= 0.0) {
-        // first intersection lies behind the camera, compute the second intersection
-        vec3 secondIntersection = (d1 + sqrt(radicand))*ray + coord.xyz;
-
-        vec3 shadedColor = color_.rgb * clipShadingFactor;
-        APPLY_GLYPH_CLIPPING(coord, secondIntersection, mvpTranspose, shadedColor, glyphColor, depth);
+        // first intersection lies behind the camera
+#ifdef DISCARD_CLIPPED_GLYPHS
+        discard;
+#else
+        clipToSolid(coord, color_.rgb * clipShadingFactor, glyphColor, depth);
+#endif // DISCARD_CLIPPED_GLYPHS
     }
 
     FragData0 = glyphColor;
