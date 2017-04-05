@@ -64,7 +64,6 @@ template <typename T, typename V, unsigned C, typename std::enable_if<C == 16, i
 
 namespace inviwo {
    
-
     template <typename T,typename GLM> void common(py::class_<GLM> &pyc){
         pyc
             .def(py::init<T>())
@@ -77,8 +76,6 @@ namespace inviwo {
             .def(py::self == py::self)
             .def(py::self != py::self)
 
-
-
             .def(py::self + T())
             .def(py::self - T())
             .def(py::self * T())
@@ -89,37 +86,26 @@ namespace inviwo {
             .def(py::self /= T())
 
             .def("__getitem__", [](GLM &v, int idx) { return &v[idx]; } , py::return_value_policy::reference_internal)
-
-            //.def("sign", [](GLM &v) {return glm::sign(v); })
-            //.def("abs", [](GLM &v) {return glm::abs(v); })
-            //.def("round", [](GLM &v) {return glm::round(v); })
-            //.def("roundEven", [](GLM &v) {return glm::roundEven(v); })
-            //.def("ceil", [](GLM &v) {return glm::ceil(v); })
-            //.def("floor", [](GLM &v) {return glm::floor(v); })
-            //.def("fract", [](GLM &v) {return glm::fract(v); })
-            //.def("isinf", [](GLM &v) {return glm::isinf(v); })
-            //.def("isnan", [](GLM &v) {return glm::isnan(v); })
-            //.def("min", [](GLM &a, GLM &b) {return glm::min(a, b); })
-            //.def("max", [](GLM &a, GLM &b) {return glm::max(a, b); })
-            //.def("mix", [](GLM &a, GLM &b, double d) {return glm::mix(a, b, d); })
-            //.def("fma", [](GLM &a, GLM &b, GLM &c) {return glm::fma(a,b,c); })
-            //.def("clamp", [](GLM &v, T minVal, T maxVal) {return glm::clamp(v, minVal, maxVal); })
             ;
-
     }
 
-    template<typename T, typename V, typename P,std::enable_if_t<!std::is_floating_point<T>::value>* =0>
-    void floatOnly(P &p) {}
+    template<typename T, typename V, typename P>
+    void floatOnlyVecs(P &p, std::false_type) {}
 
-    template<typename T, typename V, typename P,std::enable_if_t<std::is_floating_point<T>::value>* =0>
-    void floatOnly(P &p) {
+    template<typename T, typename V, typename P>
+    void floatOnlyVecs(P &p, std::true_type) {
+        //        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });
         p.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
-//        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });
         p.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
         p.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
         p.def("length", [](V &v) { return glm::length(v); });
         p.def("length2", [](V &v) { return glm::length2(v); });
         p.def("normalize", [](V &v) { return glm::normalize(v); });
+    }
+
+    template<typename T, typename V, typename P>
+    void floatOnlyVecs(P &p) {
+        floatOnlyVecs<T,V,P>(p,std::is_floating_point<T>());
     }
 
 
@@ -141,13 +127,7 @@ namespace inviwo {
             .def(py::self /= py::self)
 
             .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; })
-
-
-
-
-
             ;
-        floatOnly<T,V>(pyv);
 
     }
 
@@ -233,18 +213,5 @@ namespace inviwo {
         glmtypes<int>(glmModule, "i");
         glmtypes<unsigned int>(glmModule, "u");
         vec<size_t>(glmModule, "","size", "_t");
-        //glmtypes<glm::uint64>(glmModule, "u64");
-
-        /*if (std::is_same<glm::uint64, size_t>::value) {
-            glmtypes<size_t>(glmModule, "", "size", "_t");
-
-        }else{
-            glmtypes<size_t>(glmModule, "", "size", "_t");
-            glmtypes<glm::uint64>(glmModule, "u64");
-        }*/
-
-
-        
-
     }
 }

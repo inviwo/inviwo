@@ -35,6 +35,8 @@
 #include <modules/python3/pybindutils.h>
 #include <modules/python3qt/pythonmenu.h>
 
+#include <inviwo/core/util/exception.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QInputDialog>
@@ -65,7 +67,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 {
     auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
     if (module) {
-        module->regiserPythonInitCallback([&](auto module) {
+        module->registerPythonInitCallback([&](auto module) {
             auto m = module->mainModule_.def_submodule("qt","Qt dependent stuff");
 
             m.def("prompt",&prompt, pybind11::arg("title") , pybind11::arg("message") ,  pybind11::arg("defaultResponse") = "");
@@ -73,7 +75,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
         });
     }else{
-        LogError("bla bla");
+        throw Exception("Failed to get Python3Module");
     }
 }
 

@@ -47,7 +47,7 @@ public:
 
     using PythonInitCallback = std::function<void(PyBindModule * objects)>;
 
-    void regiserPythonInitCallback(PythonInitCallback callback){callbackObjects_.push_back( callback);}
+    void registerPythonInitCallback(PythonInitCallback callback){callbackObjects_.push_back( callback);}
     void invokePythonInitCallbacks(PyBindModule * objects){
         for(auto &c : callbackObjects_){
             c(objects);
