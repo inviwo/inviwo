@@ -87,6 +87,7 @@
 #include <modules/base/io/binarystlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
 #include <modules/base/processors/randommeshgenerator.h>
+#include <modules/base/processors/randomspheregenerator.h>
 
 namespace inviwo {
 
@@ -146,6 +147,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeLaplacianProcessor>();
     registerProcessor<MeshExport>();
     registerProcessor<RandomMeshGenerator>();
+    registerProcessor<RandomSphereGenerator>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
