@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,45 +24,16 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <modules/python3qt/pythonmenu.h>
-#include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMenu>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QAction>
-#include <warn/pop>
+#ifndef IVW_PYNETWORK_H
+#define IVW_PYNETWORK_H
+#include <pybind11/pybind11.h>
 
 namespace inviwo {
 
-PythonMenu::PythonMenu(InviwoApplication* app) {
-    if (auto win = utilqt::getApplicationMainWindow()) {
-        auto menu = utilqt::addMenu("&Python");
-        QAction* pythonEditorOpen =
-            menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
-        editor_ = new PythonEditorWidget(win, app);
-        win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
-
-        auto pyPropertoes = menu->addAction("&List unexposed properties");
-        win->connect(pyPropertoes, &QAction::triggered, [app]() {
-            auto mod = app->getModuleByType<Python3Module>();
-            PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
-        });
-
-    }
+void exposeNetwork(pybind11::module &m);
 }
 
-PythonMenu::~PythonMenu() = default;
-
-PythonEditorWidget* PythonMenu::getEditor() const {
-    return editor_;
-}
-
-} // namespace
-
+#endif  // IVW_PYNETWORK_H

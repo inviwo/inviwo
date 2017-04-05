@@ -137,6 +137,8 @@ namespace inviwo {
 
     }
 
+    
+
     template <typename T>
     void vec(py::module &m, std::string prefix , std::string name = "vec" , std::string postfix = "") {
         vecx<T, 2>(m, prefix, name, postfix);
@@ -201,20 +203,34 @@ namespace inviwo {
 
 
     template <typename T>
-    void glmtypes(py::module &m, std::string prefix, std::string postfix = "") {
+    void glmtypes(py::module &m, std::string prefix, std::string postfix = "" ) {
         vec<T>(m, prefix, "vec", postfix);
         mat<T>(m, prefix, "mat", postfix);
     }
 
-    void addGLMTypes(py::module &m) {
+    template <typename B>
+    struct A : public B{};
+
+    void exposeGLMTypes(py::module &m) {
         auto glmModule = m.def_submodule("glm", "Exposing glm vec and mat types");
 
-        glmtypes<float>(glmModule, "");
+        glmtypes<float>(glmModule, ""); 
         glmtypes<double>(glmModule, "d");
         glmtypes<int>(glmModule, "i");
-        glmtypes<glm::uint64>(glmModule, "u64");
         glmtypes<unsigned int>(glmModule, "u");
-    //    glmtypes<size_t>(glmModule, "" , "size" , "_t");
+        vec<size_t>(glmModule, "","size", "_t");
+        //glmtypes<glm::uint64>(glmModule, "u64");
+
+        /*if (std::is_same<glm::uint64, size_t>::value) {
+            glmtypes<size_t>(glmModule, "", "size", "_t");
+
+        }else{
+            glmtypes<size_t>(glmModule, "", "size", "_t");
+            glmtypes<glm::uint64>(glmModule, "u64");
+        }*/
+
+
+        
 
     }
 }

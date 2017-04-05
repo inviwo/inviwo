@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-    void addGLMTypes(pybind11::module &m);
+    void exposeGLMTypes(pybind11::module &m);
 
 }
 

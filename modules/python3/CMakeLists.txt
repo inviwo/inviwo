@@ -51,13 +51,20 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 #ivw_add_unittest(${TEST_FILES})
 
 set(INTERFACE_HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.h
 )
 #ivw_group("Header Files" ${INTERFACE_HEADER_FILES})
 
 set(INTERFACE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.cpp
 )
 #ivw_group("Source Files" ${INTERFACE_SRC_FILES})
 
