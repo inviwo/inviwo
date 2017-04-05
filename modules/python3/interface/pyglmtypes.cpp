@@ -88,7 +88,7 @@ namespace inviwo {
             .def(py::self *= T())
             .def(py::self /= T())
 
-            .def("__getitem__", [](GLM &v, int idx) { return v[idx]; })
+            .def("__getitem__", [](GLM &v, int idx) { return v[idx]; } , py::return_value_policy::reference)
 
             //.def("sign", [](GLM &v) {return glm::sign(v); })
             //.def("abs", [](GLM &v) {return glm::abs(v); })
@@ -108,6 +108,23 @@ namespace inviwo {
 
     }
 
+    template<typename T, typename V, typename P,std::enable_if_t<!std::is_floating_point_v<T>>* =0>
+    void floatOnly(P &p) {}
+
+    template<typename T, typename V, typename P,std::enable_if_t<std::is_floating_point_v<T>>* =0>
+    void floatOnly(P &p) {
+        p.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
+//        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });
+        p.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
+        p.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
+        p.def("length", [](V &v) { return glm::length(v); });
+        p.def("length2", [](V &v) { return glm::length2(v); });
+        p.def("normalize", [](V &v) { return glm::normalize(v); });
+    }
+
+
+
+
 
     template <typename T,unsigned A>
     void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
@@ -126,16 +143,11 @@ namespace inviwo {
             .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; })
 
 
-//            .def("dot", [](V &v, V &v2) {return glm::dot(v, v2); })
-//            .def("cross", [](V &v, V &v2) {return glm::cross(v, v2); })
-//            .def("distance", [](V &v, V &v2) {return glm::distance(v, v2); })
-//            .def("distance2", [](V &v, V &v2) {return glm::distance2(v, v2); })
-//            .def("length", [](V &v) {return glm::length(v); })
-//            .def("length2", [](V &v) {return glm::length2(v); })
-//            .def("normalize", [](V &v) {return glm::normalize(v); })
+
 
 
             ;
+        floatOnly<T,V>(pyv);
 
     }
 

@@ -120,7 +120,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("size", &PropertyOwner::size)
         //.def("setValid", &PropertyOwner::setValid)
         //.def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
-        //.def("invalidate", &PropertyOwner::invalidate)
+        .def("invalidate", [](PropertyOwner *po){po->invalidate(InvalidationLevel::InvalidOutput);})
         .def_property_readonly("processor", [](PropertyOwner &p) { return p.getProcessor(); },
                                py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
