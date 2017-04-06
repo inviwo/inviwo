@@ -91,9 +91,15 @@ Python3Module::Python3Module(InviwoApplication* app)
     if (path != "") {
         LogInfo(path);
         app->dispatchFront([=]() {
-            LogInfo(path);
+           /* LogInfo(path);
+            PythonScript ps;
+            ps.setSource("print(path_to_file)\n");
+            ps.run({ { "path_to_file", pybind11::cast(path) } });
+            LogInfo("qwer");
+
             PythonScriptDisk(getPath() + "/scripts/import_inviwo.py")
                 .run({{"path_to_file", pybind11::cast(path)}});
+            LogInfo("asdf");*/
         });
     } else {
         LogError("Failed to find .so file");
@@ -110,9 +116,9 @@ Python3Module::Python3Module(InviwoApplication* app)
 #endif
 
     app->dispatchFront([&]() { 
-        PythonScript ps;
-        ps.setSource("import inviwopy\n");
-        ps.run(); // import inviwopy once 
+        //PythonScript ps;
+        //ps.setSource("import inviwopy\n");
+        //ps.run(); // import inviwopy once 
 
         //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run(); 
     });
