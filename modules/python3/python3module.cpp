@@ -68,15 +68,36 @@ Python3Module::Python3Module(InviwoApplication* app)
     if (size != -1) {
         // readlink does not append a null character to the path
         executablePath[size] = '\0';
-    }
-    else {
+    } else {
         // Error retrieving path
-        executablePath[0] = '\0';;
+        executablePath[0] = '\0';
+        ;
     }
 
     std::string execpath(executablePath);
     auto folder = filesystem::getFileDirectory(execpath);
     pythonInterpreter_->addModulePath(folder);
+    auto content = filesystem::getDirectoryContents(folder, filesystem::ListMode::Files);
+
+    std::string path = "";
+
+    for (auto& s : content) {
+        if (s.substr(0, 8) == "inviwopy") {
+            path = folder + "/" + s;
+            break;
+        }
+    }
+
+    if (path != "") {
+        LogInfo(path);
+        app->dispatchFront([=]() {
+            LogInfo(path);
+            PythonScriptDisk(getPath() + "/scripts/documentgenerator.py")
+                .run({{"path_to_file", pybind11::cast(path)}});
+        });
+    } else {
+        LogError("Failed to find .so file");
+    }
 #elif defined(__APPLE__)
     //TODO add output path
 /*
