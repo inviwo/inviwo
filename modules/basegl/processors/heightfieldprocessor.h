@@ -32,15 +32,21 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/datastructures/light/baselightsource.h>
-
-#include <modules/basegl/processors/meshrenderprocessorgl.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/templateproperty.h>
-#include <vector>
+#include <inviwo/core/rendering/meshdrawer.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
@@ -80,7 +86,7 @@ namespace HeightFieldShading {
  * \brief Maps a heightfield onto a geometry and renders it to an image.
  *
  */
-class IVW_MODULE_BASEGL_API HeightFieldProcessor : public MeshRenderProcessorGL {
+class IVW_MODULE_BASEGL_API HeightFieldProcessor : public Processor {
 public:
     HeightFieldProcessor();
     ~HeightFieldProcessor();
@@ -89,17 +95,33 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
+    virtual void initializeResources() override;
     virtual void process() override;
 
 private:
     void heightfieldChanged();
+    void updateDrawers();
 
+    MeshFlatMultiInport inport_;
     ImageInport inportHeightfield_; //!< inport for the 2D heightfield texture
     ImageInport inportTexture_;     //!< inport for the 2D color texture (optional)
     ImageInport inportNormalMap_;   //!< inport for the 2D normal map texture (optional)
+    ImageInport imageInport_;
+    ImageOutport outport_;
 
     FloatProperty heightScale_;            //!< scaling factor for the input heightfield
     OptionPropertyInt terrainShadingMode_; //!< shading mode for coloring the heightfield
+
+    CameraProperty camera_;
+    ButtonProperty resetViewParams_;
+    CameraTrackball trackball_;
+
+    SimpleLightingProperty lightingProperty_;
+
+    Shader shader_;
+
+    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
+    DrawerMap drawers_;
 };
 
 } // namespace

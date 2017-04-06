@@ -33,10 +33,10 @@
 layout (depth_less) out float gl_FragDepth;
 #endif
 
-uniform vec2 screenDim_;
-uniform float antialias_;
-uniform float lineWidth_;
-uniform CameraParameters camera_;
+uniform vec2 screenDim = vec2(512, 512);
+uniform float antialising = 1.0; // width of antialised edged [pixel]
+uniform float lineWidth = 2.0; // line width [pixel]
+uniform CameraParameters camera;
 
 in float segmentLength_; // length of the current line segment in screen space
 in float objectLength_;  // length of line segment in world space
@@ -44,18 +44,16 @@ in vec2 texCoord_;
 in vec4 color_;
 
 float reconstructDepth(float z) {
-    float Zn = camera_.nearPlane;
-    float Zf = camera_.farPlane;
+    float Zn = camera.nearPlane;
+    float Zf = camera.farPlane;
 
-    //  Z = Zn*Zf / (Zf - z*(Zf - Zn))
     return Zn*Zf / (Zf - z*(Zf - Zn));
 }
 
 float computeDepth(float z) {
-    float Zn = camera_.nearPlane;
-    float Zf = camera_.farPlane;
     // compute depth in [-1,1]
-    //float depth = (Zf + Zn) / (2.0 * (Zf - Zn)) - (Zf * Zn) / (z * (Zf - Zn));
+    float Zn = camera.nearPlane;
+    float Zf = camera.farPlane;
     float depth = (Zf + Zn) / (Zf - Zn) + (-2.0 * Zf * Zn) / (z * (Zf - Zn));
     return (depth + 1.0) * 0.5;
     return depth;
@@ -63,9 +61,8 @@ float computeDepth(float z) {
 
 void main() {
     vec4 color = color_;
-    vec2 screenDim = screenDim_;
 
-    float linewidthHalf = lineWidth_ * 0.5;
+    float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
     float distance = abs(texCoord_.y);
@@ -76,13 +73,10 @@ void main() {
         distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
     }
 
-    float d = distance * screenDim.x * 0.5 - linewidthHalf + antialias_;
+    float d = distance * screenDim.x * 0.5 - linewidthHalf + antialising;
 
-
-    // default color
-    //color.rgb = vec3(0.7, 0.0, 0.0);
     // apply pseudo lighting
-    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialias_) * 1.2);
+    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialising) * 1.2);
 
     float alpha = 1.0;
     // line stippling
@@ -92,25 +86,18 @@ void main() {
     // }
     if( d > 0) {
         // apply antialising by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
-        d /= antialias_;
+        d /= antialising;
         alpha = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
     if (alpha < 0.2) discard;
 
     color.a = alpha;
-
     FragData0 = color;
-    //FragData0 = vec4(1, 0, 0, alpha);
-    //FragData0 = vec4(abs(texCoord_) * vec2(0.5, 10.0), 0.0, 1.0);
-    //FragData0 = vec4(vec3(distance), 1.0);
-    
-    //FragData0 = vec4(vec3(texCoord_.x), 1.0);
-    //FragData0 = vec4(vec3(objectLength_ * 0.1), 1.0);
 
     // correct depth
     float depth = reconstructDepth(gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialias_) / screenDim.x * 2.0;
+    float maxDist = (linewidthHalf + antialising) / screenDim.x * 2.0;
     // assume circular profile of line
     gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist);    
 }

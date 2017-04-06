@@ -85,7 +85,7 @@ public:
     MeshRenderProcessorGL(const MeshRenderProcessorGL&) = delete;
     MeshRenderProcessorGL& operator=(const MeshRenderProcessorGL&) = delete;
 
-    ~MeshRenderProcessorGL();
+    virtual ~MeshRenderProcessorGL();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -95,10 +95,10 @@ public:
 
 protected:
     void centerViewOnGeometry();
+    std::pair<vec3, vec3> calcWorldBoundingBox() const;
+
     void setNearFarPlane();
-    void changeRenderMode();
     void updateDrawers();
-    void addCommonShaderDefines(Shader& shader);
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
@@ -115,9 +115,6 @@ protected:
 
     CompositeProperty geomProperties_;
     OptionPropertyInt cullFace_;
-    OptionPropertyInt polygonMode_;
-    FloatProperty renderPointSize_;
-    FloatProperty renderLineWidth_;
     BoolProperty enableDepthTest_;
     SimpleLightingProperty lightingProperty_;
 

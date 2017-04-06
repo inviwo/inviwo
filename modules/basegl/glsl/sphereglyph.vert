@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2015-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,49 +24,41 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
+layout(location = 4) in uint in_PickId;
+layout(location = 5) in float in_SphereRadii;
 
-#include "utils/shading.glsl"
+#include "utils/structs.glsl"
 
-uniform LightParameters lighting;
+uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-uniform vec4 overrideColor;
+uniform vec4 customColor = vec4(1, 0, 0, 1);
+uniform float customRadius = 0.1f;
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec3 viewNormal_;
-in vec3 texCoord_;
-in vec4 color_;
-flat in vec4 pickColor_;
+out vec4 worldPosition_;
+out vec4 sphereColor_;
+flat out float sphereRadius_;
+flat out uint pickID_;
 
-void main() {
-    vec4 fragColor = vec4(1.0);
-    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
-    #ifdef OVERRIDE_COLOR_BUFFER
-    vec4 color = overrideColor;
-    #else
-    vec4 color = color_;
-    #endif
+void main(void) {
+#if defined(UNIFORM_RADIUS)
+    sphereRadius_ = customRadius;
+#else
+    sphereRadius_ = in_SphereRadii;
+#endif  // UNIFORM_RADIUS
 
-    fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
-                                   normalize(normal_), normalize(toCameraDir_));
+#if defined(UNIFORM_COLOR)
+    sphereColor_ = customColor;
+#else
+    sphereColor_ = in_Color;
+#endif // UNIFORM_COLOR
 
-#ifdef COLOR_LAYER
-    FragData0 = fragColor;
-#endif
-#ifdef TEXCOORD_LAYER
-    tex_coord_out = vec4(texCoord_,1.0f);
-#endif
-#ifdef NORMALS_LAYER
-    normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
-#endif
-#ifdef VIEW_NORMALS_LAYER
-    view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
-#endif
+    worldPosition_ = geometry.dataToWorld * vec4(in_Vertex.xyz, 1.0);
 
-    PickingData = pickColor_;
+    gl_Position = worldPosition_;
 
+    pickID_ = in_PickId;
 }

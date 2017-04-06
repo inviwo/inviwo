@@ -41,6 +41,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
@@ -97,6 +98,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
@@ -152,6 +154,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pointrenderer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pointrenderer.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert

@@ -42,8 +42,8 @@ const ProcessorInfo RandomMeshGenerator::processorInfo_{
     "org.inviwo.RandomMeshGenerator",  // Class identifier
     "Random Mesh Generator",           // Display name
     "Mesh Creation",                   // Category
-    CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    CodeState::Stable,                 // Code state
+    Tags::CPU,                        // Tags
 };
 
 const ProcessorInfo RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
@@ -54,8 +54,8 @@ RandomMeshGenerator::RandomMeshGenerator()
     , rand_()
     , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , reseed_("reseed_", "Seed")
-    , scale_("scale", "Scale", 1.0f, 0.001, 1000, 0.1)
-    , size_("size", "Size", 1.0f, 0.001, 1000, 0.1)
+    , scale_("scale", "Scale", 1.0f, 0.001f, 1000.0f, 0.1f)
+    , size_("size", "Size", 1.0f, 0.001f, 1000.0f, 0.1f)
     , numberOfBoxes_("numberOf_", "Number of Boxes", 1, 0, 100)
     , numberOfSpheres_("numberOfSpheres_", "Number of Spheres", 1, 0, 100)
     , numberOfCylinders_("numberOfCylinders_", "Number of cylinders", 1, 0, 100)

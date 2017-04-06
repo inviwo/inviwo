@@ -59,33 +59,82 @@ const ProcessorInfo ABufferGeometryGLProcessor::getProcessorInfo() const {
 }
 
 ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
-    : MeshRenderProcessorGL()
+    : Processor()
+    , inport_("geometry")
+    , imageInport_("imageInport")
+    , outport_("image")
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
+              vec3(0.0f, 1.0f, 0.0f), &inport_)
+    , resetViewParams_("resetView", "Reset Camera")
+    , trackball_(&camera_)
+    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
+                           InvalidationLevel::InvalidResources)
+    , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f),
+                     vec4(1.0f))
+    , geomProperties_("geometry", "Geometry Rendering Properties")
+    , cullFace_("cullFace", "Cull Face",
+                {{"culldisable", "Disable", GL_NONE},
+                 {"cullfront", "Front", GL_FRONT},
+                 {"cullback", "Back", GL_BACK},
+                 {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
+                0)
+    , enableDepthTest_("enableDepthTest_", "Enable Depth Test", true)
+    , lightingProperty_("lighting", "Lighting", &camera_)
+
     , abuffer_()
     , transparency_("transparency", "Global Transparency", 0.5f, 0.0f, 1.0f, 0.001f)
     , verboseLogging_("logging", "Verbose Log", false)
-    , abufferGeometryShader_("geometryrendering.vert", "abuffergeometrygl.frag", false) {
+    , shader_("geometryrendering.vert", "abuffergeometrygl.frag", false) {
+
+    addPort(inport_);
+    addPort(imageInport_);
+    addPort(outport_);
+
+    imageInport_.setOptional(true);
+
+    addProperty(camera_);
+    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
+    addProperty(resetViewParams_);
+    outport_.addResizeEventListener(&camera_);
+
+    inport_.onChange(this, &ABufferGeometryGLProcessor::updateDrawers);
+
+    geomProperties_.addProperty(cullFace_);
+    geomProperties_.addProperty(enableDepthTest_);
+    geomProperties_.addProperty(overrideColorBuffer_);
+    geomProperties_.addProperty(overrideColor_);
+    overrideColor_.setSemantics(PropertySemantics::Color);
+    overrideColor_.setVisible(false);
+    overrideColorBuffer_.onChange([&]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
+
+    addProperty(geomProperties_);
+    addProperty(lightingProperty_);
+    addProperty(trackball_);
+
     addProperty(abuffer_.settings_);
     addProperty(transparency_);
     addProperty(verboseLogging_);
 
     abuffer_.settings_.onChange(this, &ABufferGeometryGLProcessor::onAbufferSettingChanged);
     transparency_.onChange(this, &ABufferGeometryGLProcessor::onAbufferTransparencyChanged);
+
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-ABufferGeometryGLProcessor::~ABufferGeometryGLProcessor() {}
+ABufferGeometryGLProcessor::~ABufferGeometryGLProcessor() = default;
 
 void ABufferGeometryGLProcessor::initializeResources() {
-    MeshRenderProcessorGL::initializeResources();
-    MeshRenderProcessorGL::addCommonShaderDefines(abufferGeometryShader_);
+    // shading defines
+    utilgl::addShaderDefines(shader_, lightingProperty_);
+
+    shader_.build();
 }
 
 void ABufferGeometryGLProcessor::process() {
     if (verboseLogging_.isModified()) {
         abuffer_.setLogStatus(verboseLogging_.get());
     }
-    geometryRender(); }
 
-void ABufferGeometryGLProcessor::geometryRender() {
     ABUFFER_PROFILE("Total-Time");
 
     // tempImage_ = new Image(outport_.getDimensions());
@@ -110,7 +159,7 @@ void ABufferGeometryGLProcessor::geometryRender() {
         updateRequried_ = false;
     }
 
-    abuffer_.abuffer_addShaderDefinesAndBuild(&abufferGeometryShader_);
+    abuffer_.abuffer_addShaderDefinesAndBuild(&shader_);
 
     // Rendering
     {
@@ -124,29 +173,25 @@ void ABufferGeometryGLProcessor::geometryRender() {
             utilgl::activateAndClearTarget(outport_);
 
         // initialize shader
-        abufferGeometryShader_.activate();
-        // LGL_ERROR;
-        utilgl::setShaderUniforms(abufferGeometryShader_, camera_, "camera_");
-        // LGL_ERROR;
-        utilgl::setShaderUniforms(abufferGeometryShader_, lightingProperty_, "light_");
-        // LGL_ERROR;
+        shader_.activate();
+
+        utilgl::setUniforms(shader_, camera_, lightingProperty_);
 
         if (abufferEnabled) {
-            abuffer_.abuffer_addUniforms(&abufferGeometryShader_);
-            abufferGeometryShader_.setUniform("globalTransparency_", transparency_.get());
+            abuffer_.abuffer_addUniforms(&shader_);
+            shader_.setUniform("globalTransparency_", transparency_.get());
         }
 
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::CullFaceState culling(cullFace_.get());
-        utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
         for (auto& drawer : drawers_) {
-            utilgl::setShaderUniforms(abufferGeometryShader_, *(drawer.second->getMesh()),
-                                      "geometry_");
+            utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()),
+                                      "geometry");
             drawer.second->draw();
         }
 
-        abufferGeometryShader_.deactivate();
+        shader_.deactivate();
         utilgl::deactivateCurrentTarget();
 
         glMemoryBarrierEXT(GL_ALL_BARRIER_BITS_EXT);
@@ -164,6 +209,37 @@ void ABufferGeometryGLProcessor::geometryRender() {
 void ABufferGeometryGLProcessor::onAbufferSettingChanged() { updateRequried_ = true; }
 
 void ABufferGeometryGLProcessor::onAbufferTransparencyChanged() { /*updateRequried_ = true;*/ }
+
+
+void ABufferGeometryGLProcessor::updateDrawers() {
+    auto changed = inport_.getChangedOutports();
+    DrawerMap temp;
+    std::swap(temp, drawers_);
+
+    std::map<const Outport*, std::vector<std::shared_ptr<const Mesh>>> data;
+    for (auto& elem : inport_.getSourceVectorData()) {
+        data[elem.first].push_back(elem.second);
+    }
+
+    for (auto elem : data) {
+        auto ibegin = temp.lower_bound(elem.first);
+        auto iend = temp.upper_bound(elem.first);
+
+        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
+            static_cast<long>(elem.second.size()) !=
+            std::distance(ibegin, iend)) {  // data is changed or new.
+
+            for (auto geo : elem.second) {
+                auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
+                if (auto renderer = factory->create(geo.get())) {
+                    drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
+                }
+            }
+        } else {  // reuse the old data.
+            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
+        }
+    }
+}
 
 }  // namespace
 

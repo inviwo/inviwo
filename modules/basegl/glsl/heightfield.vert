@@ -29,28 +29,25 @@
 
 #include "utils/structs.glsl"
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-uniform sampler2D inportHeightfield_;
-uniform float heightScale_ = 1.0f;
+uniform sampler2D inportHeightfield;
+uniform float heightScale = 1.0f;
 
 out vec4 worldPosition_;
 out vec3 normal_;
 out vec4 color_;
 out vec3 texCoord_;
 
-out float height_;
-
 void main() {    
     color_ = in_Color;
     texCoord_ = in_TexCoord;
     
-    float height = texture(inportHeightfield_, texCoord_.xy).r;
-    height_ = height * heightScale_;
-    vec4 pos = in_Vertex + vec4(0.0f, 0.0f, height * heightScale_, 0.0f);
+    float height = texture(inportHeightfield, texCoord_.xy).r;
+    vec4 pos = in_Vertex + vec4(0.0f, 0.0f, height * heightScale, 0.0f);
 
-    worldPosition_ = geometry_.dataToWorld * pos;
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
-    gl_Position = camera_.worldToClip * worldPosition_;
+    worldPosition_ = geometry.dataToWorld * pos;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal;
+    gl_Position = camera.worldToClip * worldPosition_;
 }

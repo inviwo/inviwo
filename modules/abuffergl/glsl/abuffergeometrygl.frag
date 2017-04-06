@@ -31,8 +31,8 @@
 
 #include "utils/shading.glsl"
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
 
 in vec4 worldPosition_;
 in vec3 normal_;
@@ -44,28 +44,16 @@ uniform float globalTransparency_;
 
 void main() {
     vec4 fragColor = vec4(1.0);
-    vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
-    fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
+    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+    fragColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
 
     PickingData = vec4(0, 0, 0, 0);
-
-#ifdef COLOR_LAYER
     FragData0 = fragColor;
-#endif
-#ifdef TEXCOORD_LAYER
-    tex_coord_out = vec4(texCoord_, 1.0f);
-#endif
-#ifdef NORMALS_LAYER
-    normals_out = vec4((normalize(normal_) + 1.0) * 0.5, 1.0f);
-#endif
-#ifdef VIEW_NORMALS_LAYER
-    view_normals_out = vec4((normalize(viewNormal_) + 1.0) * 0.5, 1.0f);
-#endif
 
 #if (USE_ABUFFER == 1)
-	u8vec4 abufferFrag = u8vec4(FragData0.xyz * 255.0, (color_.a*globalTransparency_) * 255.0);
-	abufferFrag = clamp(abufferFrag, u8vec4(0), u8vec4(255));
+    u8vec4 abufferFrag = u8vec4(FragData0.xyz * 255.0, (color_.a*globalTransparency_) * 255.0);
+    abufferFrag = clamp(abufferFrag, u8vec4(0), u8vec4(255));
     buildABufferLinkList(ivec2(gl_FragCoord.x, gl_FragCoord.y),
                          abufferFrag,
                          gl_FragCoord.z);

@@ -29,60 +29,44 @@
 
 #include "utils/shading.glsl"
 
-uniform LightParameters light_;
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+uniform LightParameters lighting;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-uniform sampler2D inportHeightfield_;
-uniform sampler2D inportTexture_;
-uniform sampler2D inportNormalMap_;
+uniform sampler2D inportHeightfield;
+uniform sampler2D inportTexture;
+uniform sampler2D inportNormalMap;
 
-uniform int terrainShadingMode_ = 0;
-uniform int normalMapping_ = 0;
-uniform int lighting_ = 0;
+uniform int terrainShadingMode = 0;
+uniform int normalMapping = 0;
 
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec4 color_;
 in vec3 texCoord_;
 
-in float height_;
 
 void main() {
     vec4 fragColor = color_;
-    
-    if (terrainShadingMode_ == 1) { // color texture
-        fragColor = texture(inportTexture_, texCoord_.xy).rgba;
+
+    if (terrainShadingMode == 1) {  // color texture
+        fragColor = texture(inportTexture, texCoord_.xy).rgba;
+    } else if (terrainShadingMode == 2) {  // heightfield texture
+        fragColor = vec4(texture(inportHeightfield, texCoord_.xy).rrr, 1.0);
     }
-    else if (terrainShadingMode_ == 2) { // heightfield texture
-        fragColor = vec4(texture(inportHeightfield_, texCoord_.xy).rrr, 1.0);
-    }
-/*    else {
-        if (height_ < 0.1) 
-            fragColor = vec4(0.2, 0.2, 0.9, 1.0);
-        else if (height_ < 0.2)
-            fragColor = vec4(0.4, 0.35, 0.1, 1.0);
-        else if (height_ < 0.35)
-            fragColor = vec4(0.2, 0.5, 0.2, 1.0);
-        else if (height_ < 1.0)
-            fragColor = vec4(0.5, 0.5, 0.5, 1.0);
-    }
-    */
-    
+
     // normal mapping
     vec3 normal;
-    if (normalMapping_ == 1) {
-        normal = texture(inportNormalMap_, texCoord_.xy).rgb;
-        normal = normalize(geometry_.modelToWorldNormalMatrix * normal);
-    }
-    else {
+    if (normalMapping == 1) {
+        normal = texture(inportNormalMap, texCoord_.xy).rgb;
+        normal = normalize(geometry.modelToWorldNormalMatrix * normal);
+    } else {
         normal = normalize(normal_);
     }
-    
-    vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
-    fragColor.rgb = APPLY_LIGHTING(light_, fragColor.rgb, fragColor.rgb, fragColor.rgb, worldPosition_.xyz, normal, normalize(toCameraDir_));
-    
- //   fragColor.rgb = normalize(normal);
- //fragColor.rgb = texCoord_;
+
+    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+    fragColor.rgb = APPLY_LIGHTING(lighting, fragColor.rgb, fragColor.rgb, fragColor.rgb,
+                                   worldPosition_.xyz, normal, normalize(toCameraDir_));
+
     FragData0 = fragColor;
 }

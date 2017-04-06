@@ -31,25 +31,31 @@
 #define IVW_ABUFFER_GEOMETRYGL_RENDERING_PROCESSOR_H
 
 #include <modules/abuffergl/abufferglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/interaction/trackball.h>
-#include <modules/basegl/processors/meshrenderprocessorgl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/interaction/interactionhandler.h>
-#include <inviwo/core/properties/boolproperty.h>
 
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/abuffergl/abufferglhelpers/abuffergl.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
-class IVW_MODULE_ABUFFERGL_API ABufferGeometryGLProcessor : public MeshRenderProcessorGL {
+class IVW_MODULE_ABUFFERGL_API ABufferGeometryGLProcessor : public Processor {
 public:
     ABufferGeometryGLProcessor();
     virtual ~ABufferGeometryGLProcessor();
@@ -59,16 +65,38 @@ public:
 protected:
     virtual void initializeResources();
     virtual void process();
+
     void onAbufferSettingChanged();
     void onAbufferTransparencyChanged();
 
+    void updateDrawers();
+
 private:
-    void geometryRender();
+
+    MeshFlatMultiInport inport_;
+    ImageInport imageInport_;
+    ImageOutport outport_;
+
+    CameraProperty camera_;
+    ButtonProperty resetViewParams_;
+    CameraTrackball trackball_;
+
+    BoolProperty overrideColorBuffer_;
+    FloatVec4Property overrideColor_;
+
+    CompositeProperty geomProperties_;
+    OptionPropertyInt cullFace_;
+    BoolProperty enableDepthTest_;
+    SimpleLightingProperty lightingProperty_;
+
     Inviwo_ABufferGL4 abuffer_;
     FloatProperty transparency_;
     BoolProperty verboseLogging_;
     bool updateRequried_;
-    Shader abufferGeometryShader_;
+    Shader shader_;
+
+    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
+    DrawerMap drawers_;
 };
 
 }  // namespace
