@@ -92,7 +92,7 @@ Python3Module::Python3Module(InviwoApplication* app)
         LogInfo(path);
         app->dispatchFront([=]() {
             LogInfo(path);
-            PythonScriptDisk(getPath() + "/scripts/documentgenerator.py")
+            PythonScriptDisk(getPath() + "/scripts/import_inviwo.py")
                 .run({{"path_to_file", pybind11::cast(path)}});
         });
     } else {
