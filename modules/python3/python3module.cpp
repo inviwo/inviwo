@@ -116,9 +116,9 @@ Python3Module::Python3Module(InviwoApplication* app)
 #endif
 
     app->dispatchFront([&]() { 
-        //PythonScript ps;
-        //ps.setSource("import inviwopy\n");
-        //ps.run(); // import inviwopy once 
+        PythonScript ps;
+        ps.setSource("import inviwopy\n");
+        ps.run(); // import inviwopy once 
 
         //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run(); 
     });

@@ -77,44 +77,27 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         }
 
         ivwAssert(byteCode_ != nullptr, "No byte code");
-        if (byteCode_ == nullptr) {
-            LogError("No byte code");
-        }
-        LogInfo("debug info");
+
         auto m = PyImport_AddModule("__main__");
         if (m == NULL) return false;
-        LogInfo("debug info");
 
         PyObject* copy = PyDict_Copy(PyModule_GetDict(m));
-        LogInfo("debug info");
         for (auto ea : extraLocalVariables) {
-            LogInfo("debug info");
             PyDict_SetItemString(copy, ea.first.c_str(), ea.second.ptr());
-            LogInfo("debug info");
         }
-        LogInfo("debug info");
 
         InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
-        LogInfo("debug info");
 
         PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
-        LogInfo("debug info");
 
         InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
-        LogInfo("debug info");
         bool success = checkRuntimeError();
-        LogInfo("debug info");
         if (success) {
-            LogInfo("debug info");
             callback(pyutil::toPyBindObjectBorrow<pybind11::dict>(copy));
-            LogInfo("debug info");
         }
 
-        LogInfo("debug info");
         Py_XDECREF(ret);
-        LogInfo("debug info");
         Py_XDECREF(copy);
-        LogInfo("debug info");
         return success;
     }
 

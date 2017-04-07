@@ -105,7 +105,7 @@ void addOrdinalPropertyIterator(M &m , PC &pc,std::true_type) {
     using IT = OrdinalPropertyIterator<P, T>;
 
     pybind11::class_<IT>(m, itclassname.c_str())
-        .def(py::init<P*>())
+        .def(pybind11::init<P*>())
         .def("__next__", &IT::next)
         .def("__iter__", &IT::iter)
         ;
@@ -121,7 +121,7 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::false_type) {}
 
 template<typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc) {
-    addOrdinalPropertyIterator<T, P>(m, pc, std::conditional<util::rank<T>::value == 0,std::true_type,std::false_type>::type());
+    addOrdinalPropertyIterator<T, P>(m, pc, typename std::conditional<util::rank<T>::value == 0,std::true_type,std::false_type>::type());
 }
 
 struct OrdinalPropertyHelper {
