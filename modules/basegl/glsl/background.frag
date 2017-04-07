@@ -61,8 +61,9 @@ uniform vec4 bgColor2 = vec4(1, 1, 1, 1);
 #endif // BLEND
 
 vec4 checkerBoard(vec2 texCoord) {
-    vec2 t = floor(ivec2(gl_FragCoord.x, outportParameters.dimensions.y - gl_FragCoord.y) / checkerBoardSize);
-    return mix(bgColor2, bgColor1, mod(t.x + t.y, 2.0) < 1.0);
+    vec2 t = floor(ivec2(gl_FragCoord.x, outportParameters.dimensions.y - gl_FragCoord.y) /
+                   checkerBoardSize);
+    return mix(bgColor2, bgColor1, mod(t.x + t.y, 2.0) < 1.0 ? 1.0 : 0.0);
 }
 
 vec4 linearGradientHorizontal(vec2 texCoord) {
