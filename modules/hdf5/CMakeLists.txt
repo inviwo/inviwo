@@ -100,4 +100,14 @@ endif()
 
 # not sure why this dir is nto picked up automatically
 # Needed to pick up some generated headers.
-target_include_directories(inviwo-module-hdf5 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/ext/hdf5)
+set(hdf_inc_dirs "")
+foreach(target ${h5-targets})
+    get_target_property(inc_dirs ${target} INCLUDE_DIRECTORIES)
+    if(inc_dirs)
+        list(APPEND hdf_inc_dirs ${inc_dirs})
+    endif()
+endforeach()
+remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
+target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
+
+ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)
