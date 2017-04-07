@@ -87,12 +87,11 @@ public:
     virtual bool isFullScreen() const override;
     virtual void setFullScreen(bool fullscreen) override;
 
-    void contextMenuEvent(QContextMenuEvent* event) override;
-
 protected:
     virtual bool event(QEvent *e) override;
 
 private:
+    void doContextMenu(QMouseEvent* event);
     dvec2 normalPos(dvec2 pos) const;
 
     bool mapMousePressEvent(QMouseEvent* e);
@@ -123,6 +122,7 @@ CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name)
     QtBase::makeCurrent();
     RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
+    this->setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
 template <typename T>
@@ -169,16 +169,10 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
 }
 
 template <typename T>
-void CanvasQtBase<T>::contextMenuEvent(QContextMenuEvent* event) {
+void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
     if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(this->ownerWidget_->getProcessor())) {
 
-        if (!canvasProcessor->isContextMenuAllowed()) {
-            return;
-        }
-
-        if (event->reason() == QContextMenuEvent::Mouse && blockContextMenu_) {
-            return;
-        }
+        if (!canvasProcessor->isContextMenuAllowed()) return;
 
         QMenu menu(this);
 
@@ -252,9 +246,11 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-
-    blockContextMenu_ = e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
-
+    
+    if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) {
+        blockContextMenu_ = true;
+    }
+    
     return true;
 }
 
@@ -270,7 +266,9 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
@@ -286,7 +284,13 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-    blockContextMenu_ |= e->button() == Qt::RightButton && mouseEvent.hasBeenUsed();
+    
+    // Only show context menu when we have not used the event and the mouse have not been dragged.
+    if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
+        doContextMenu(e);
+    }
+    blockContextMenu_ = false;
+    
     return true;
 }
 
@@ -301,6 +305,9 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
