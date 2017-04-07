@@ -141,7 +141,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeMerger>();
 }
 
-int BaseGLModule::getVersion() const { return 1; }
+int BaseGLModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -150,7 +150,7 @@ std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const 
 BaseGLModule::Converter::Converter(int version) : version_(version) {}
 
 bool BaseGLModule::Converter::convert(TxElement* root) {
-    auto makerules = []() {
+    auto makerulesV1 = []() {
         std::vector<xml::IdentifierReplacement> repl = {
             // MeshRenderProcessorGL
             {{xml::Kind::processor("org.inviwo.GeometryRenderGL"),
@@ -281,14 +281,25 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         return repl;
     };
 
+    auto replV1 = makerulesV1();
+
     bool res = false;
     switch (version_) {
         case 0: {
-            auto repl = makerules();
-            res |= xml::changeIdentifiers(root, repl);
+            res |= xml::changeIdentifiers(root, replV1);
         }
-            return res;
+        case 1: {
+            res |= xml::changeIdentifier(root,
+                                         {{xml::Kind::processor("org.inviwo.Background"),
+                                           xml::Kind::property("org.inviwo.FloatVec4Property")}},
+                                         "color1", "bgColor1");
+            res |= xml::changeIdentifier(root,
+                                         {{xml::Kind::processor("org.inviwo.Background"),
+                                           xml::Kind::property("org.inviwo.FloatVec4Property")}},
+                                         "color2", "bgColor2");
 
+            return res;
+        }
         default:
             return false;  // No changes
     }

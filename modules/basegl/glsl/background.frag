@@ -31,36 +31,73 @@
 
 uniform sampler2D inportColor;
 
+#ifdef ADDITIONAL_COLOR_LAYERS
+ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
+#endif // ADDITIONAL_COLOR_LAYERS
+#ifdef PICKING_LAYER
+uniform sampler2D inportPicking;
+#endif // PICKING_LAYER
+#ifdef DEPTH_LAYER
+uniform sampler2D inportDepth;
+#endif // PICKING_LAYER
+
+
 uniform ImageParameters outportParameters;
+uniform ivec2 checkerBoardSize = ivec2(10, 10);
+uniform vec4 bgColor1 = vec4(0, 0, 0, 1);
+uniform vec4 bgColor2 = vec4(1, 1, 1, 1);
 
-uniform ivec2 checkerBoardSize;
-uniform vec4 color1;
-uniform vec4 color2;
 
-vec4 checkerBoard(vec2 texCoords) {
-    int a = int(gl_FragCoord.x) / checkerBoardSize.x;
-    int b = int(outportParameters.dimensions.y - gl_FragCoord.y) / checkerBoardSize.y;
-    
-    return  (((a + 1) % 2)*((b + 1) % 2) + (a % 2)*(b % 2)) * color1 +
-            (((a + 1) % 2)*(b % 2) + (a % 2)*((b + 1) % 2)) * color2;
+#if !defined(SRC_COLOR) 
+#  define SRC_COLOR vec4(0);
+#endif // SRC_COLOR
+
+#if !defined(BACKGROUND_STYLE_FUNCTION)
+#  define BACKGROUND_STYLE_FUNCTION linearGradientVertical(texCoord)
+#endif // BACKGROUND_STYLE_FUNCTION
+
+#if !defined(BLEND)
+#  define BLEND(src, dst) mix(dst, src, src.a)
+#endif // BLEND
+
+vec4 checkerBoard(vec2 texCoord) {
+    vec2 t = floor(ivec2(gl_FragCoord.x, outportParameters.dimensions.y - gl_FragCoord.y) /
+                   checkerBoardSize);
+    return mix(bgColor2, bgColor1, mod(t.x + t.y, 2.0) < 1.0 ? 1.0 : 0.0);
 }
 
-vec4 linearGradientHorizontal(vec2 texCoords) {
-    return texCoords.x * color1 + (1.0 - texCoords.x) * color2;
+vec4 linearGradientHorizontal(vec2 texCoord) {
+    return mix(bgColor2, bgColor1, texCoord.x);
 }
 
-
-vec4 linearGradientVertical(vec2 texCoords) {
-    return texCoords.y * color1 + (1.0 - texCoords.y) * color2;
+vec4 linearGradientVertical(vec2 texCoord) {
+    return mix(bgColor2, bgColor1, texCoord.y);
 }
 
 void main() {  
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec2 texCoord = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 srcColor = SRC_COLOR;
-    vec4 backgroundColor = BACKGROUND_STYLE_FUNCTION;
+    vec4 bgColor = BACKGROUND_STYLE_FUNCTION;
 
     // pre-multiplied alpha for background color
-    backgroundColor.rgb *= backgroundColor.a;
+    bgColor.rgb *= bgColor.a;
 
-    FragData0 = BLEND(srcColor,backgroundColor);
+    FragData0 = BLEND(srcColor, bgColor);
+
+#ifdef ADDITIONAL_COLOR_LAYERS
+    ADDITIONAL_COLOR_LAYER_WRITE
+#endif
+
+#ifdef PICKING_LAYER
+    PickingData = texture(inportPicking, texCoord.xy);
+#else
+    PickingData = vec4(0);
+#endif // PICKING_LAYER
+
+#ifdef DEPTH_LAYER
+    gl_FragDepth = texture(inportDepth, texCoord.xy).r;
+#else
+    // no depth input, reset depth to largest value
+    gl_FragDepth = 1.0;
+#endif // DEPTH_LAYER
 }

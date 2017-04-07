@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#include "background.h"
+#include <modules/basegl/processors/background.h>
+
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
@@ -42,22 +44,22 @@ const ProcessorInfo Background::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo Background::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Background::getProcessorInfo() const { return processorInfo_; }
 
 Background::Background()
     : Processor()
     , inport_("inport")
     , outport_("outport")
     , backgroundStyle_("backgroundStyle", "Style",
-                       {{"linearGradientVertical", "Linear gradient (Vertical)", 0},
-                        {"linearGradientHorizontal", "Linear gradient (Horizontal)", 1},
-                        {"uniformColor", "Uniform color", 2},
-                        {"checkerBoard", "Checker board", 3}},
+                       {{"linearGradientVertical", "Linear gradient (Vertical)",
+                         BackgroundStyle::LinearVertical},
+                        {"linearGradientHorizontal", "Linear gradient (Horizontal)",
+                         BackgroundStyle::LinearHorizontal},
+                        {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
+                        {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
                        0, InvalidationLevel::InvalidResources)
-    , color1_("color1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
-    , color2_("color2", "Color 2", vec4(1.0f))
+    , bgColor1_("bgColor1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
+    , bgColor2_("bgColor2", "Color 2", vec4(1.0f))
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
@@ -71,107 +73,156 @@ Background::Background()
     inport_.setOptional(true);
 
     addProperty(backgroundStyle_);
-    color1_.setSemantics(PropertySemantics::Color);
-    addProperty(color1_);
-    color2_.setSemantics(PropertySemantics::Color);
-    addProperty(color2_);
+    bgColor1_.setSemantics(PropertySemantics::Color);
+    addProperty(bgColor1_);
+    bgColor2_.setSemantics(PropertySemantics::Color);
+    addProperty(bgColor2_);
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
     addProperty(blendMode_);
-    
-    switchColors_.onChange(this, &Background::switchColors);
+
+    switchColors_.onChange([&]() {
+        vec4 tmp = bgColor1_.get();
+        bgColor1_.set(bgColor2_.get());
+        bgColor2_.set(tmp);
+    });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-Background::~Background() {}
-
-void Background::switchColors() {
-    vec4 tmp = color1_.get();
-    color1_.set(color2_.get());
-    color2_.set(tmp);
-}
+Background::~Background() = default;
 
 void Background::initializeResources() {
-    std::string shaderDefine;
-    checkerBoardSize_.setVisible(false);
+    std::string bgStyleValue;
 
     switch (backgroundStyle_.get()) {
-        case 0:  // linear gradient
-            shaderDefine = "linearGradientVertical(texCoords)";
+        default:
+        case BackgroundStyle::LinearVertical:  // linear gradient
+            bgStyleValue = "linearGradientVertical(texCoord)";
+            checkerBoardSize_.setVisible(false);
             break;
-        case 1:  // linear gradient
-            shaderDefine = "linearGradientHorizontal(texCoords)";
+        case BackgroundStyle::LinearHorizontal:  // linear gradient
+            bgStyleValue = "linearGradientHorizontal(texCoord)";
+            checkerBoardSize_.setVisible(false);
             break;
-
-        case 2:  // uniform color
-            shaderDefine = "color1";
+        case BackgroundStyle::Uniform:  // uniform color
+            bgStyleValue = "bgColor1";
+            checkerBoardSize_.setVisible(false);
             break;
-
-        case 3:  // checker board
-            shaderDefine = "checkerBoard(texCoords)";
+        case BackgroundStyle::CheckerBoard:  // checker board
+            bgStyleValue = "checkerBoard(texCoord)";
             checkerBoardSize_.setVisible(true);
             break;
     }
-
-    shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", shaderDefine);
+    shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", bgStyleValue);
 
     if (inport_.hasData()) {
         shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR",
-                                                           "texture(inportColor, texCoords)");
+                                                           "texture(inportColor, texCoord)");
+        // set shader inputs to match number of available color layers
+        updateShaderInputs();
+
+        shader_.getFragmentShaderObject()->addShaderDefine("PICKING_LAYER");
+        shader_.getFragmentShaderObject()->addShaderDefine("DEPTH_LAYER");
+
         hadData_ = true;
     } else {
-        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0.0,0.0,0.0,0.0)");
+        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0)");
+        shader_.getFragmentShaderObject()->removeShaderDefine("PICKING_LAYER");
+        shader_.getFragmentShaderObject()->removeShaderDefine("DEPTH_LAYER");
+
         hadData_ = false;
     }
 
     std::string blendMode = "";
     switch (blendMode_.get()) {
         case BlendMode::BackToFront:
-            blendMode = "srcColor + backgroundColor * (1.0 - srcColor.a)";
-            break;
-        case BlendMode::AlphaMixing:
-            blendMode = "srcColor*srcColor.a + backgroundColor * (1.0 - srcColor.a)";
+            blendMode = "srcColor + bgColor * (1.0 - srcColor.a)";
             break;
         default:
+        case BlendMode::AlphaMixing:
+            blendMode = "mix(bgColor, srcColor, srcColor.a)";
             break;
     }
 
-    shader_.getFragmentShaderObject()->addShaderDefine("BLEND(srcColor,dstColor)" , blendMode);
+    shader_.getFragmentShaderObject()->addShaderDefine("BLEND(srcColor, dstColor)", blendMode);
 
     shader_.build();
 }
 
 void Background::process() {
     if (inport_.hasData() != hadData_) initializeResources();
-    if (inport_.hasData()) {
 
-        //Check data format, make sure we always have 4 channels 
+    if (inport_.hasData()) {
+        // Check data format, make sure we always have 4 channels
         auto inDataFromat = inport_.getData()->getDataFormat();
-        auto format = DataFormatBase::get(inDataFromat->getNumericType(), 4, inDataFromat->getSize() * 8 / inDataFromat->getComponents());
+        auto format =
+            DataFormatBase::get(inDataFromat->getNumericType(), 4,
+                                inDataFromat->getSize() * 8 / inDataFromat->getComponents());
 
         if (outport_.getData()->getDataFormat() != format) {
             outport_.setData(std::make_shared<Image>(outport_.getDimensions(), format));
         }
-
-        utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
-    } else {
-        utilgl::activateTarget(outport_, ImageType::ColorOnly);
     }
-
-    // TODO: activateTargetAndCopySource activates all color layers, but only the 
-    //       first source layer is sampled (see issue #1338).
-    // ensure that only the first layer is written
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    utilgl::activateTarget(outport_, ImageType::AllLayers);
 
     shader_.activate();
-    TextureUnitContainer units;
-    if (inport_.hasData()) utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
-   
-    utilgl::setUniforms(shader_, outport_, color1_, color2_, checkerBoardSize_);
+
+    if (inport_.hasData()) {
+        TextureUnitContainer textureUnits;
+
+        auto image = inport_.getData();
+        utilgl::bindAndSetUniforms(shader_, textureUnits, inport_, ImageType::AllLayers);
+
+        {
+            // bind all additional color layers
+            const auto numColorLayers = image->getNumberOfColorLayers();
+            auto imageGL = image->getRepresentation<ImageGL>();
+            for (size_t i = 1; i < numColorLayers; ++i) {
+                TextureUnit texUnit;
+                imageGL->getColorLayerGL(i)->bindTexture(texUnit.getEnum());
+                shader_.setUniform("color" + toString<size_t>(i), texUnit.getUnitNumber());
+                textureUnits.push_back(std::move(texUnit));
+            }
+        }
+    }
+
+    utilgl::setUniforms(shader_, outport_, bgColor1_, bgColor2_, checkerBoardSize_);
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-}  // namespace
+void Background::updateShaderInputs() {
+    const auto numColorLayers = inport_.getData()->getNumberOfColorLayers();
 
+    if (numColorLayers > 1) {
+        // location 0 is reserved for FragData0, location 1 for PickingData
+        size_t outputLocation = 2;
+        std::stringstream ssUniform;
+        for (size_t i = 1; i < numColorLayers; ++i) {
+            ssUniform << "layout(location = " << outputLocation++ << ") out vec4 FragData" << i
+                      << "\n;";
+        }
+        for (size_t i = 1; i < numColorLayers; ++i) {
+            ssUniform << "uniform sampler2D color" << i << "\n;";
+        }
+        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
+                                                           ssUniform.str());
+
+        std::stringstream ssWrite;
+        for (size_t i = 1; i < numColorLayers; ++i) {
+            ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);\n";
+        }
+        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
+                                                           ssWrite.str());
+
+        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        shader_.getFragmentShaderObject()->removeShaderDefine(
+            "ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS");
+        shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
+    }
+}
+
+}  // namespace
