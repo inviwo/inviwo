@@ -132,9 +132,9 @@ void exposeProperties(py::module &m) {
         .def("press", &ButtonProperty::pressButton);
 
     py::class_<CameraProperty, CompositeProperty, NoDelete<CameraProperty>>(m, "CameraProperty")
-        .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom)
-        .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo)
-        .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp)
+        .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom , py::return_value_policy::copy)
+        .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo , py::return_value_policy::copy)
+        .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp , py::return_value_policy::copy)
         .def_property_readonly("lookRight", &CameraProperty::getLookRight)
         .def_property("aspectRatio", &CameraProperty::getAspectRatio,
                       &CameraProperty::setAspectRatio)

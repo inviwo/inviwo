@@ -32,7 +32,6 @@ import inviwopy
 from inviwopy.glm import ivec2,vec3,mat3
 
 import math
-#import numpy as np
 
 def rotation_matrix(axis, angle):
     a = axis.normalize()
@@ -85,7 +84,6 @@ class Camera:
         self.cam.lookTo = self.lookto;
         self.cam.lookUp = self.lookup;
         self.cam.invalidate()
-        inviwopy.logInfo("Camera Set");
 
     def restore(self):
         self.cam.lookFrom = self.oldlookfrom;
