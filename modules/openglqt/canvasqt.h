@@ -246,7 +246,11 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-
+    
+    if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) {
+        blockContextMenu_ = true;
+    }
+    
     return true;
 }
 
@@ -262,7 +266,9 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-    blockContextMenu_ = true;
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
@@ -299,6 +305,9 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
