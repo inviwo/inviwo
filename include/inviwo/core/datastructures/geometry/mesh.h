@@ -177,6 +177,14 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
+namespace meshutil {
+
+IVW_CORE_API bool hasPickIDBuffer(const Mesh* mesh);
+
+IVW_CORE_API bool hasRadiiBuffer(const Mesh* mesh);
+
+} // namespace meshutil
+
 }  // namespace
 
 #endif  // IVW_MESH_H

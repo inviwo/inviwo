@@ -179,4 +179,32 @@ std::string Mesh::getDataInfo() const {
     return doc;
 }
 
+namespace meshutil {
+
+bool hasPickIDBuffer(const Mesh* mesh) {
+    if (!mesh) return false;
+    for (auto buffer : mesh->getBuffers()) {
+        // FIXME: this assumes the picking data to be stored at location 4
+        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
+            (buffer.first.location == 4)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool hasRadiiBuffer(const Mesh* mesh) {
+    if (!mesh) return false;
+    for (auto buffer : mesh->getBuffers()) {
+        // FIXME: this assumes the radii to be stored at location 5
+        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
+            (buffer.first.location == 5)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+}  // namespace meshutil
+
 }  // namespace
