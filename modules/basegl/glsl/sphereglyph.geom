@@ -33,6 +33,8 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
+uniform bool pickingEnabled = false;
+
 // define HEXAGON for hexagonal glyphs instead of image-space quads
 //#define HEXAGON
 
@@ -78,8 +80,8 @@ void main(void) {
 
     // send color to fragment shader
     color_ = sphereColor_[0];
-    // set picking color    
-    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), 1.0);
+    // set picking color
+    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickingEnabled ? 1.0 : 0.0);
 
     // camera coordinate system in object space
     vec3 camUp = (worldToViewMatrixInv[1]).xyz;

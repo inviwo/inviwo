@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -116,6 +117,7 @@ void SphereRenderer::process() {
     }
 
     shader_.activate();
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_, lighting_, customColor_, customRadius_,
                         clipShadingFactor_);
@@ -167,6 +169,7 @@ void SphereRenderer::drawMeshes() {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
                 utilgl::setShaderUniforms(shader_, *elem, "geometry");
+                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
                 if (elem->getNumberOfIndicies() > 0) {
                     for (size_t i = 0; i < elem->getNumberOfIndicies(); ++i) {
                         auto meshinfo = elem->getIndexMeshInfo(i);
@@ -191,6 +194,7 @@ void SphereRenderer::drawMeshes() {
                 MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                                 elem->getDefaultMeshInfo());
                 utilgl::setShaderUniforms(shader_, *elem, "geometry");
+                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
                 drawer.draw(MeshDrawerGL::DrawMode::Points);
             }
             break;
