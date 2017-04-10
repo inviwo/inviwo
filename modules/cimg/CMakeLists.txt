@@ -32,5 +32,13 @@ ivw_add_definition(cimg_use_zlib)
 ivw_add_definition(cimg_use_openexr)
 
 #--------------------------------------------------------------------
+# Unit tests
+set(TEST_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/cimg-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/savetobuffer-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
+
+#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
