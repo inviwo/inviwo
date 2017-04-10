@@ -162,10 +162,9 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                     }
                     auto name = item.first;
                     auto layer = item.second;
-                    QImage layerImage = utilqt::layerToQImage(*layer);
-                    QByteArray byteArray;
-                    QBuffer buffer(&byteArray);
-                    layerImage.save(&buffer, "PNG");
+
+                    auto imgbuf = layer->getAsCodedBuffer("png");
+                    QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()), static_cast<int>(imgbuf->size()));
 
                     auto table = tableCell.append("td").append("table");
 
