@@ -5,19 +5,21 @@ ivw_module(CImg)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/CImg.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgsavebuffer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/CImg.h
 )
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgsavebuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.cpp
 )
 

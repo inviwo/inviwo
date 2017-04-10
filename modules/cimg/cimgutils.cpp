@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimgutils.h>
+#include <modules/cimg/cimgsavebuffer.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriter.h>
@@ -47,8 +48,8 @@
 #pragma warning(disable : 4458)
 #pragma warning(disable : 4611)
 #endif
-#define cimg_verbosity 0 //Disable all cimg output
-#define cimg_display 0 // Do not use any gui stuff
+#define cimg_verbosity 0  // Disable all cimg output
+#define cimg_display 0    // Do not use any gui stuff
 #include <modules/cimg/ext/cimg/CImg.h>
 #include <warn/pop>
 
@@ -155,9 +156,9 @@ struct LayerToCImg<G<T, glm::defaultp>> {
         // Permute from interleaved to planer format, does we need to specify yzcx as input instead
         // of cxyz
         auto img = util::make_unique<CImg<T>>(
-            glm::value_ptr(*typedDataPtr), dataFormat->getComponents(),
+            glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
-            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, false);
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
 
         if (permute) img->permute_axes("yzcx");
 
@@ -174,7 +175,7 @@ struct CImgNormalizedLayerDispatcher {
         // TODO this does not work for signed char... 255 out of range
         CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
-        
+
         if (inputLayer->getDataFormat()->getComponents() == 1) {
             normalizedImg.mirror('y');
         }
@@ -277,6 +278,61 @@ struct CImgSaveLayerDispatcher {
     }
 };
 
+struct CImgSaveLayerToBufferDispatcher {
+    using type = std::unique_ptr<std::vector<unsigned char>>;
+    template <typename T>
+    type dispatch(const LayerRAM* inputLayer, const std::string& extension) {
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+
+        // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
+        const DataFormatBase* outFormat = DataFloat32::get();
+        std::string fileExtension = toLower(extension);
+        if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+            outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
+        }
+
+        // Image is up-side-down
+        img->mirror('y');
+
+        const DataFormatBase* inFormat = inputLayer->getDataFormat();
+        double inMin = inFormat->getMin();
+        double inMax = inFormat->getMax();
+        double outMin = outFormat->getMin();
+        double outMax = outFormat->getMax();
+
+        // Special treatment for float data types:
+        // For float input images, we assume that the range is [0,1] (which is the same as rendered
+        // in a Canvas)
+        // For float output images, we normalize to [0,1]
+        // Note that no normalization is performed if both input and output are float images
+        if (inFormat->getNumericType() == NumericType::Float) {
+            inMin = 0.0;
+            inMax = 1.0;
+        }
+        if (outFormat->getNumericType() == NumericType::Float) {
+            outMin = 0.0;
+            outMax = 1.0;
+        }
+
+        // The image values should be rescaled if the ranges of the input and output are different
+        if (inMin != outMin || inMax != outMax) {
+            typename T::primitive* data = img->data();
+            double scale = (outMax - outMin) / (inMax - inMin);
+            for (size_t i = 0; i < img->size(); i++) {
+                auto dataValue = glm::clamp(static_cast<double>(data[i]), inMin, inMax);
+                data[i] = static_cast<typename T::primitive>((dataValue - inMin) * scale + outMin);
+            }
+        }
+        try {
+            return std::make_unique<std::vector<unsigned char>>(
+                std::move(cimgutil::saveCImgToBuffer(*img.get(), extension)));
+        } catch (CImgIOException& e) {
+            throw DataWriterException(
+                "Failed to save image to buffer. Reason: " + std::string(e.what()), IvwContext);
+        }
+    }
+};
+
 struct CImgRescaleLayerDispatcher {
     using type = void*;
     template <typename T>
@@ -316,7 +372,7 @@ struct CImgLoadVolumeDispatcher {
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
 void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-    DataFormatId& formatId, bool rescaleToDim) {
+                    DataFormatId& formatId, bool rescaleToDim) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
@@ -331,7 +387,7 @@ void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
 }
 
 void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
-    DataFormatId& formatId) {
+                     DataFormatId& formatId) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
@@ -347,19 +403,14 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
 void saveLayer(const std::string& filePath, const Layer* inputLayer) {
     CImgSaveLayerDispatcher disp;
     const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
-    inputLayer->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
+    inputLayerRam->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
 }
 
-std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& fileType,
+std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& extension,
                                                               const Layer* inputLayer) {
-    if (fileType != "raw") {
-        throw DataWriterException("CImage: cimgutil::saveLayerToBuffer() only supports \"raw\" format.",
-                                  IvwContextCustom("cimgutil::saveLayerToBuffer()"));
-    }
-
-    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();  
-    CImgNormalizedLayerDispatcher disp;
-    return inputLayer->getDataFormat()->dispatch(disp, inputLayerRam);
+    CImgSaveLayerToBufferDispatcher disp;
+    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
+    return inputLayerRam->getDataFormat()->dispatch(disp, inputLayerRam, extension);
 }
 
 void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim) {

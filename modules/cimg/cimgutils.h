@@ -41,8 +41,8 @@ namespace cimgutil {
     enum class InterpolationType : int {
         RawMemory = -1,       // raw memory resizing.
         NoInterpolation = 0,  // additional space is filled according to boundary_conditions.
-        Nearset = 1,          // nearest - neighbor interpolation.
-        moving = 2,           // moving average interpolation.
+        Nearest = 1,          // nearest - neighbor interpolation.
+        Moving = 2,           // moving average interpolation.
         Linear = 3,           // linear interpolation.
         Grid = 4,             // grid interpolation.
         Cubic = 5,            // cubic interpolation.
@@ -63,18 +63,18 @@ namespace cimgutil {
 
     /**
     * Saves an layer of an image to a specified filename.
-    * @param filePath the path including name to file that is to be stored.
+    * @param filePath the path including filename and extension, which is used to determine the image format
     * @param inputImage specifies the image that is to be saved.
     **/
     IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
 
     /**
-    * Saves an layer of an buffer.
-    * @param file type the requested file type, which can be altered by this method
+    * Saves an layer of an unsigned char buffer.
+    * @param extension  specifies the output image format
     * @param inputImage specifies the image that is to be saved.
     **/
     IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
-        const std::string& fileType, const Layer* inputImage);
+        const std::string& extension, const Layer* inputImage);
 
     /**
      * \brief Rescales Layer of given image data
