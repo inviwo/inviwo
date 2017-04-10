@@ -35,10 +35,6 @@ function (ivw_add_py_wrapper name)
         set_target_properties(${name} PROPERTIES DEBUG_POSTFIX "")
         set_target_properties(${name} PROPERTIES PREFIX "")
 
-        if(MSVC)
-            set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
-        endif()
-
         set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         target_link_libraries(${name} PUBLIC ${${mod}_target})
 
