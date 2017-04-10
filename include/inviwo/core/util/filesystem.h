@@ -147,7 +147,7 @@ IVW_CORE_API std::string findBasePath();
  * @return basePath +  pathType + suffix
  */
 IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = "",
-                                 const bool& createFolder = false);
+                                 const bool createFolder = false);
 
 IVW_CORE_API void createDirectoryRecursively(std::string path);
 
