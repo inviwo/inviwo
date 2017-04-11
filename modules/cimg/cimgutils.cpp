@@ -155,7 +155,7 @@ struct LayerToCImg<G<T, glm::defaultp>> {
         // Permute from interleaved to planer format, does we need to specify yzcx as input instead
         // of cxyz
         auto img = util::make_unique<CImg<T>>(
-            glm::value_ptr(*typedDataPtr), dataFormat->getComponents(),
+            glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, false);
 
