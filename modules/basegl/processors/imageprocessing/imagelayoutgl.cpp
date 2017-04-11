@@ -85,6 +85,8 @@ ImageLayoutGL::ImageLayoutGL()
     layout_.addOption("crossSplit", "Cross Split", Layout::CrossSplit);
     layout_.addOption("threeRightOneLeftSplit", "Three Left, One Right", Layout::ThreeLeftOneRight);
     layout_.addOption("threeLeftOneRightSplit", "Three Right, One Left", Layout::ThreeRightOneLeft);
+	layout_.addOption("horizontalSplitMultiple", "Horizontal Split Multiple", Layout::HorizontalSplitMultiple);
+	layout_.addOption("verticalSplitMultiple", "Vertical Split Multiple", Layout::VerticalSplitMultiple);
     layout_.setSelectedValue(Layout::CrossSplit);
     layout_.setCurrentStateAsDefault();
 
@@ -165,6 +167,8 @@ void ImageLayoutGL::onStatusChange() {
         case Layout::ThreeRightOneLeft:
             vertical3Right1LeftSplitter_.setVisible(true);
             break;
+		case Layout::HorizontalSplitMultiple:
+		case Layout::VerticalSplitMultiple:
         case Layout::Single:
         default:
             break;
@@ -216,6 +220,17 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
 
     const int leftWindow3L1RX = vertical3Left1RightSplitter_ * dim.x;
     const int leftWindow3R1LX = vertical3Right1LeftSplitter_ * dim.x;
+
+	const int portCount = static_cast<int>(multiinport_.getConnectedOutports().size());
+
+	const int widthMultiple  = portCount > 1 ? dim.x / portCount : dim.x;
+	const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;
+
+	auto extraPixelsH = dim.y % std::max(1, portCount);
+	auto extraPixelsW = dim.x % std::max(1, portCount);
+
+	int startH = 0;
+	int startW = 0;
 
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
@@ -298,6 +313,47 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             viewManager_.push_back(ivec4(leftWindow3R1LX, 0, dim.x-leftWindow3R1LX, smallWindowHeight+extra1));
             viewManager_.push_back(ivec4(0, 0, leftWindow3R1LX, dim.y));
             break;
+		case Layout::HorizontalSplitMultiple:
+
+			// #########
+			// #   1   #
+			// #-------#
+			// #   2   #
+			// #-------#
+			// #  ...  #
+			// #-------#
+			// #   N   #
+			// #########
+			// X, Y, W, H
+
+			for (auto i = 0; i < std::max(1, portCount); i++) {
+
+				auto height = (i < extraPixelsH) ? heightMultiple + 1 : heightMultiple;
+
+				viewManager_.push_back(ivec4(0, startH, dim.x, height));
+
+				startH += height;
+				
+			}
+			break;
+		case Layout::VerticalSplitMultiple:
+
+			// #################
+			// #   |   #   |   #
+			// # 1 | 2 # . | N #
+			// #   |   #   |   #
+			// #################
+			// X, Y, W, H
+
+			for (auto i = 0; i < std::max(1, portCount); i++) {
+
+				auto width = (i < extraPixelsW) ? widthMultiple + 1 : widthMultiple;
+
+				viewManager_.push_back(ivec4(startW, 0, width, dim.y));
+
+				startW += width;
+			}
+			break;
         case Layout::Single:
         default:
             viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));

@@ -58,6 +58,9 @@ namespace inviwo {
  *   <tr><td><tt>Cross Split</tt></td><td>Two-by-two layout of up to four images filled from left to right and top to bottom.</td></tr>
  *   <tr><td><tt>Three Left, One Right</tt></td><td>The first 3 images are vertically arranged on the left, the fourth is shown on the right.</td></tr>
  *   <tr><td><tt>Three Right, One Left</tt></td><td>The first 3 images are vertically arranged on the right, the fourth is shown on the left.</td></tr>
+ *   <tr><td><tt>Horizontal Split Multiple</tt></td><td>Two or more images are put on top of each other.</td></tr>
+ *   <tr><td><tt>Vertical Split Multiple</tt></td><td>Two or more images are put next to each other side by side.</td></tr>
+ *
  * </table>
  *
  * Clicking an image with the mouse will activate the area for mouse and key interactions.
@@ -85,6 +88,8 @@ public:
         CrossSplit,
         ThreeLeftOneRight,
         ThreeRightOneLeft,
+		HorizontalSplitMultiple,
+		VerticalSplitMultiple,
     };
 
     ImageLayoutGL();
