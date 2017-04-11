@@ -137,7 +137,7 @@ PYBIND11_PLUGIN(inviwopy) {
                                                                                  "Settings");
 
     m.mainModule_.attr("app") =
-        py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
+        py::cast(util::getInviwoApplication(), py::return_value_policy::reference);
     m.mainModule_.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
     m.mainModule_.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
     m.mainModule_.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
@@ -171,7 +171,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("GLSL", ModulePath::GLSL)
         .value("CL", ModulePath::CL);
 
-    auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
+    auto module = util::getInviwoApplication()->getModuleByType<Python3Module>();
     if (module) {
         module->invokePythonInitCallbacks(&m);
     }
