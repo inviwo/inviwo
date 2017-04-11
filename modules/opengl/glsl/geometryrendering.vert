@@ -35,6 +35,8 @@ layout(location = 4) in uint in_PickId;
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
+uniform bool pickingEnabled = false;
+
 out vec4 worldPosition_;
 out vec3 normal_;
 out vec3 viewNormal_;
@@ -49,5 +51,5 @@ void main() {
     normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera.worldToClip * worldPosition_;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), 1.0);
+    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

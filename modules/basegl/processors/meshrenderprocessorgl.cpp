@@ -199,10 +199,12 @@ void MeshRenderProcessorGL::process() {
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_.get());
     utilgl::CullFaceState culling(cullFace_.get());
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
     for (auto& drawer : drawers_) {
         utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer.second->getMesh()));
         drawer.second->draw();
     }
 
