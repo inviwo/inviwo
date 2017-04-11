@@ -59,9 +59,9 @@ ImageLowPass::ImageLowPass()
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(gaussian_);
     addProperty(kernelSize_);
     addProperty(sigma_);
+    addProperty(gaussian_);
     kernelSize_.setVisible(false);
     gaussian_.onChange([&]() {
         kernelSize_.setVisible(!gaussian_.get());
