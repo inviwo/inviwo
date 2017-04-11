@@ -142,7 +142,7 @@ void Mesh::append(const Mesh& mesh) {
         std::vector<std::uint32_t> newInds;
         newInds.reserve(inds.size());
         std::transform(inds.begin(), inds.end(), std::back_inserter(newInds),
-                       [&](auto& i) { return i + size; });
+                       [&](auto& i) { return i + static_cast<uint32_t>(size); });
         addIndicies(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
     }
 }

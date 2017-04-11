@@ -181,8 +181,8 @@ void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
     auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
-    auto randSize = [&]() { return size_.get()*randVec3(0.1, 1.0); };
-    auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
+    auto randSize = [&]() { return size_.get()*randVec3(0.1f, 1.0f); };
+    auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
     auto randDir = [&]() { return glm::normalize(randVec3()); };
     auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
 
