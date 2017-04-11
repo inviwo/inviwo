@@ -33,19 +33,18 @@ tools/codegen/colorbrewer/colorbrewer.py
 **/
 
 #include <inviwo/core/util/colorbrewer.h>
-#include <exception>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 namespace colorbrewer {
 
-const std::vector<dvec4> &colormap(Colormap colormap){
-    switch(colormap){
+const std::vector<dvec4> &colormap(Colormap colormap) {
+    switch (colormap) {
 ##PLACEHOLDER##
     }
+    throw Exception("invalid colorbrewer colormap");
 }
 
-
-} // namespace
 } // namespace
 
-
+} // namespace

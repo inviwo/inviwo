@@ -53,20 +53,20 @@ if __name__ == '__main__':
                 if len(firstEnum) == 0:
                     firstEnum = enumname;
 
-                impls += "\tcase Colormap::" + enumname + ":"
+                impls += "\t\tcase Colormap::" + enumname + ": {"
                 colors = []
                 for color in b:
                     r,g,b = color[4:-1].split(',')
                     r = int(r) / 255;
                     g = int(g) / 255;
                     b = int(b) / 255;
-                    c = ','.join([str(r),str(g),str(b),"1.0"]);
-                    colors.append('dvec4( '+c+' )');
+                    c = ', '.join([str(r),str(g),str(b),"1.0"]);
+                    colors.append('dvec4('+c+')');
 
 #                vector = "std::vector<dvec4>({"+','.join(colors)+"});"
-                vector = "std::vector<dvec4> "+ enumname.lower()  +"({"+','.join(colors)+"});"
+                vector = "std::vector<dvec4> "+ enumname.lower()  +"(\n\t\t\t\t{"+',\n\t\t\t\t '.join(colors)+"});"
 
-                impls += "\n\t{\n\t\tstatic const " + vector + "\n\t\treturn "+ enumname.lower() +";\n\t}\n"
+                impls += "\n\t\t\tstatic const " + vector + "\n\t\t\treturn "+ enumname.lower() +";\n\t\t}\n"
 
                 #impls += " return "+vector+"\n"
                 names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
@@ -90,6 +90,9 @@ if __name__ == '__main__':
     src = src.replace("##PLACEHOLDER##",impls);
     header = header.replace("##PLACEHOLDER_NAMES##",names);
 
+    # replace tabs with spaces
+    src = src.replace("\t","    ");
+    header = header.replace("\t","    ");
 
     with open(ivwpath + '/include/inviwo/core/util/colorbrewer.h','w') as header_file:
         print(header,file=header_file);

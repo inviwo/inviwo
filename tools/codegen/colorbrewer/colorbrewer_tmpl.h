@@ -48,7 +48,7 @@ namespace colorbrewer {
 IVW_CORE_API const std::vector<dvec4> &colormap(Colormap colormap);
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ,Colormap colormap){
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os, Colormap colormap){
     switch(colormap){
 ##PLACEHOLDER_NAMES##
     }
