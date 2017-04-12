@@ -42,7 +42,7 @@
 #include <QVariant>
 #include <QStandardItemModel>
 #include <QMetaType>
-
+#include <QItemDelegate>
 #include <warn/pop>
 
 #include <chrono>
@@ -61,7 +61,7 @@ namespace inviwo {
 class InviwoMainWindow;
 
 struct LogTableModelEntry {
-    enum class Columns {
+    enum class ColumnID {
         Date = 0,
         Time,
         Source,
@@ -75,7 +75,7 @@ struct LogTableModelEntry {
     };
 
     LogTableModelEntry() = default;
-    LogTableModelEntry(const LogTableModelEntry &other) = default;
+    LogTableModelEntry(const LogTableModelEntry& other) = default;
     ~LogTableModelEntry() = default;
 
     std::chrono::system_clock::time_point time;
@@ -90,39 +90,60 @@ struct LogTableModelEntry {
     std::string getDate() const;
     std::string getTime() const;
     static constexpr size_t size() { return 10; }
-    QStandardItem*  get(Columns ind) const;
+    QStandardItem* get(ColumnID ind) const;
+};
+
+class IVW_QTEDITOR_API TextSelectionDelegate : public QItemDelegate {
+public:
+    TextSelectionDelegate(QWidget* parent = nullptr);
+    virtual ~TextSelectionDelegate() = default;
+
+    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
+                                  const QModelIndex& index) const override;
+
+    // dummy function doing nothing to prevent writing stuff from the editor back to the model
+    virtual void setModelData(QWidget* editor, QAbstractItemModel* model,
+                              const QModelIndex& index) const override;
+};
+
+class IVW_QTEDITOR_API LogModel : public QStandardItemModel {
+public:
+    LogModel(int rows, int columns, QObject* parent = nullptr);
+    virtual ~LogModel() = default;
+
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
 };
 
 class IVW_QTEDITOR_API LogTableModel {
 public:
     LogTableModel();
 
-    QString getName(LogTableModelEntry::Columns ind) const;
-    QStandardItemModel* model();
-    
-    void clear();    
-    void log(LogTableModelEntry entry);
+    QString getName(LogTableModelEntry::ColumnID ind) const;
+    LogModel* model();
 
+    void clear();
+    void log(LogTableModelEntry entry);
 
 private:
     QColor infoTextColor_ = {153, 153, 153};
     QColor warnTextColor_ = {221, 165, 8};
     QColor errorTextColor_ = {255, 107, 107};
 
-    QStandardItemModel model_;
+    LogModel model_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
     ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
-             const char* functionName, int lineNumber, std::string logMsg) override;
+    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
+                     const char* fileName, const char* functionName, int lineNumber,
+                     std::string logMsg) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function,
@@ -132,7 +153,7 @@ public:
                             const char* function, int line) override;
 
     QAction* getClearAction();
-    QTableView* view() {return tableView_;}
+    QTableView* view() { return tableView_; }
 
 public slots:
     void logEntry(LogTableModelEntry);
@@ -145,18 +166,18 @@ signals:
 
 protected:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
-    virtual bool eventFilter(QObject *object, QEvent *event) override;
-    virtual void closeEvent(QCloseEvent *event) override;
+    virtual bool eventFilter(QObject* object, QEvent* event) override;
+    virtual void closeEvent(QCloseEvent* event) override;
 
 private:
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
 
-
     QTableView* tableView_;
     LogTableModel model_;
     QSortFilterProxyModel* filter_;
     QSortFilterProxyModel* levelFilter_;
+    TextSelectionDelegate* textSelectionDelegate_;
 
     struct Level {
         LogLevel level;
@@ -175,7 +196,7 @@ private:
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;
     std::unordered_map<std::string, QMetaObject::Connection> connections_;
-    
+
     bool hover_ = false;
     bool focus_ = false;
 };
