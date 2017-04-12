@@ -90,7 +90,7 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, co
     }
 
     auto it = memfile.getBuffer().begin();
-    std::vector<unsigned char> data(it, it + memfile.getNumberOfBytesInBuffer()); // std::advance(it, memfile.getNumberOfBytesInBuffer()));
+    std::vector<unsigned char> data(it, it + memfile.getNumberOfBytesInBuffer());
 
     return data;
 }
