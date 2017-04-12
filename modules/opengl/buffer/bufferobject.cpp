@@ -68,7 +68,8 @@ BufferObject::BufferObject(const BufferObject& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(0) {
+    , sizeInBytes_(0)
+    , dataFormat_(rhs.dataFormat_) {
     glGenBuffers(1, &id_);
     *this = rhs;
 }
@@ -79,7 +80,8 @@ BufferObject::BufferObject(BufferObject&& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(rhs.sizeInBytes_) {
+    , sizeInBytes_(rhs.sizeInBytes_)
+    , dataFormat_(rhs.dataFormat_) {
     // Free resources from other
     rhs.id_ = 0;
 }
@@ -98,6 +100,7 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
             // Initialize size of buffer
             initialize(nullptr, rhs.sizeInBytes_);
         }
+        dataFormat_ = rhs.dataFormat_;
         // Now bind the second buffer, this buffer is already bound
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)
@@ -123,6 +126,7 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
         usageGL_ = rhs.usageGL_;
         glFormat_ = rhs.glFormat_;
         sizeInBytes_ = rhs.sizeInBytes_;
+        dataFormat_ = rhs.dataFormat_;
 
         // Release resources from source object
         rhs.id_ = 0;
