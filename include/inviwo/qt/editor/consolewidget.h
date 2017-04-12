@@ -42,7 +42,7 @@
 #include <QVariant>
 #include <QStandardItemModel>
 #include <QMetaType>
-
+#include <QItemDelegate>
 #include <warn/pop>
 
 #include <chrono>
@@ -90,7 +90,35 @@ struct LogTableModelEntry {
     std::string getDate() const;
     std::string getTime() const;
     static constexpr size_t size() { return 10; }
-    QStandardItem*  get(Columns ind) const;
+    QStandardItem*  get(Columns ind) const;    
+};
+
+
+class IVW_QTEDITOR_API TextSelectionDelegate : public QItemDelegate {
+public:
+    TextSelectionDelegate(QWidget* parent=nullptr);
+    virtual ~TextSelectionDelegate() = default;
+
+    virtual QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+    // dummy function doing nothing to prevent writing stuff from the editor back to the model
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
+};
+
+class IVW_QTEDITOR_API LogModel : public QStandardItemModel {
+public:
+    LogModel(int rows, int columns, QObject* parent=nullptr) : QStandardItemModel(rows, columns, parent) {}
+    virtual ~LogModel() = default;
+
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const override {
+        auto flags = QStandardItemModel::flags(index);
+        // make only the message column editable
+        const auto col = static_cast<LogTableModelEntry::Columns>(index.column());
+        if (col == LogTableModelEntry::Columns::Message) {
+            flags |= Qt::ItemIsEditable;
+        }
+        return flags;
+    }
 };
 
 class IVW_QTEDITOR_API LogTableModel {
@@ -98,18 +126,17 @@ public:
     LogTableModel();
 
     QString getName(LogTableModelEntry::Columns ind) const;
-    QStandardItemModel* model();
+    LogModel* model();
     
     void clear();    
     void log(LogTableModelEntry entry);
-
 
 private:
     QColor infoTextColor_ = {153, 153, 153};
     QColor warnTextColor_ = {221, 165, 8};
     QColor errorTextColor_ = {255, 107, 107};
 
-    QStandardItemModel model_;
+    LogModel model_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
@@ -151,12 +178,12 @@ protected:
 private:
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
-
-
+    
     QTableView* tableView_;
     LogTableModel model_;
     QSortFilterProxyModel* filter_;
     QSortFilterProxyModel* levelFilter_;
+    TextSelectionDelegate* textSelectionDelegate_;
 
     struct Level {
         LogLevel level;

@@ -64,6 +64,28 @@
 
 namespace inviwo {
 
+TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QItemDelegate(parent) {}
+
+QWidget* TextSelectionDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    if (index.column() == static_cast<int>(LogTableModelEntry::Columns::Message)) {
+        auto value = index.model()->data(index, Qt::EditRole).toString();
+        auto widget = new QLineEdit(parent);
+        widget->setReadOnly(true);
+        widget->setText(value);
+        return widget;
+    } else {
+        return QItemDelegate::createEditor(parent, option, index);
+    }
+}
+
+void TextSelectionDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+    IVW_UNUSED_PARAM(editor);
+    IVW_UNUSED_PARAM(model);
+    IVW_UNUSED_PARAM(index);
+    // dummy function to prevent changing the model
+}
+
+
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent)
     , tableView_(new QTableView(this))
@@ -71,6 +93,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , filter_(new QSortFilterProxyModel(this))
     , levelFilter_(new QSortFilterProxyModel(this))
     , filterPattern_(new QLineEdit(this))
+    , textSelectionDelegate_(new TextSelectionDelegate(this))
     , mainwindow_(parent) {
 
     setObjectName("ConsoleWidget");
@@ -271,6 +294,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     setWidget(w);
     tableView_->installEventFilter(this);
     tableView_->setAttribute(Qt::WA_Hover);
+    tableView_->setItemDelegateForColumn(static_cast<int>(LogTableModelEntry::Columns::Message),
+                                         textSelectionDelegate_);
 
     connect(this, &ConsoleWidget::logSignal, this, &ConsoleWidget::logEntry);
     connect(this, &ConsoleWidget::clearSignal, this, &ConsoleWidget::clear);
@@ -550,7 +575,7 @@ void LogTableModel::log(LogTableModelEntry entry) {
     model_.appendRow(items);
 }
 
-QStandardItemModel* LogTableModel::model() {
+LogModel* LogTableModel::model() {
     return &model_;
 }
 
