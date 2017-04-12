@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "imagelayoutgl.h"
+#include <modules/basegl/processors/imageprocessing/imagelayoutgl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
@@ -44,15 +44,24 @@ const ProcessorInfo ImageLayoutGL::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageLayoutGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()
     , multiinport_("multiinport")
     , outport_("outport")
-    , layout_("layout", "Layout")
+    , layout_("layout", "Layout",
+              {{"single", "Single", Layout::Single},
+               {"horizontalSplit", "Horizontal Split", Layout::HorizontalSplit},
+               {"verticalSplit", "Vertical Split", Layout::VerticalSplit},
+               {"crossSplit", "Cross Split", Layout::CrossSplit},
+               {"threeRightOneLeftSplit", "Three Left, One Right", Layout::ThreeLeftOneRight},
+               {"threeLeftOneRightSplit", "Three Right, One Left", Layout::ThreeRightOneLeft},
+               {"horizontalSplitMultiple", "Horizontal Split Multiple",
+                Layout::HorizontalSplitMultiple},
+               {"verticalSplitMultiple", "Vertical Split Multiple", Layout::VerticalSplitMultiple}},
+              3)
+
     , horizontalSplitter_("horizontalSplitter", "Horizontal Split", 0.5f, 0.f, 1.f)
     , verticalSplitter_("verticalSplitter", "Vertical Split", 0.5f, 0.f, 1.f)
     , vertical3Left1RightSplitter_("vertical3Left1RightSplitter", "Split Position", 1.0f / 3.0f,
@@ -63,30 +72,22 @@ ImageLayoutGL::ImageLayoutGL()
     , viewManager_()
     , currentLayout_(Layout::CrossSplit)
     , currentDim_(0u, 0u) {
-    
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(multiinport_);
-    
-    multiinport_.onConnect([this](){
+
+    multiinport_.onConnect([this]() {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    
-    multiinport_.onDisconnect([this](){
+
+    multiinport_.onDisconnect([this]() {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    
+
     addPort(outport_);
-    layout_.addOption("single", "Single", Layout::Single);
-    layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
-    layout_.addOption("verticalSplit", "Vertical Split", Layout::VerticalSplit);
-    layout_.addOption("crossSplit", "Cross Split", Layout::CrossSplit);
-    layout_.addOption("threeRightOneLeftSplit", "Three Left, One Right", Layout::ThreeLeftOneRight);
-    layout_.addOption("threeLeftOneRightSplit", "Three Right, One Left", Layout::ThreeRightOneLeft);
-    layout_.setSelectedValue(Layout::CrossSplit);
-    layout_.setCurrentStateAsDefault();
 
     addProperty(layout_);
 
@@ -165,6 +166,8 @@ void ImageLayoutGL::onStatusChange() {
         case Layout::ThreeRightOneLeft:
             vertical3Right1LeftSplitter_.setVisible(true);
             break;
+        case Layout::HorizontalSplitMultiple:
+        case Layout::VerticalSplitMultiple:
         case Layout::Single:
         default:
             break;
@@ -208,8 +211,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     viewManager_.clear();
     const int smallWindowHeight = dim.y / 3.0f;
 
-    const int extra1 = dim.y % 3 >= 1 ? 1 : 0; // add extra pixels to the small "windows" if the 
-    const int extra2 = dim.y % 3 >= 2 ? 1 : 0; // size is not divisable by 3 to avoid black borders
+    const int extra1 = dim.y % 3 >= 1 ? 1 : 0;  // add extra pixels to the small "windows" if the
+    const int extra2 = dim.y % 3 >= 2 ? 1 : 0;  // size is not divisible by 3 to avoid black borders
 
     const int midx = verticalSplitter_ * dim.x;
     const int midy = horizontalSplitter_ * dim.y;
@@ -217,9 +220,20 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     const int leftWindow3L1RX = vertical3Left1RightSplitter_ * dim.x;
     const int leftWindow3R1LX = vertical3Right1LeftSplitter_ * dim.x;
 
+    const int portCount = static_cast<int>(multiinport_.getConnectedOutports().size());
+
+    const int widthMultiple = portCount > 1 ? dim.x / portCount : dim.x;
+    const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;
+
+    auto extraPixelsH = dim.y % std::max(1, portCount);
+    auto extraPixelsW = dim.x % std::max(1, portCount);
+
+    int startH = 0;
+    int startW = 0;
+
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
-        
+
             // #########
             // #   1   #
             // #-------#
@@ -231,14 +245,13 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             viewManager_.push_back(ivec4(0, 0, dim.x, midy));
             break;
         case Layout::VerticalSplit:
-        
+
             // #########
             // #   |   #
             // # 1 | 2 #
             // #   |   #
             // #########
             // X, Y, W, H
-
 
             viewManager_.push_back(ivec4(0, 0, midx, dim.y));
             viewManager_.push_back(ivec4(midx, 0, dim.x - midx, dim.y));
@@ -252,19 +265,10 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewManager_.push_back(ivec4(0, midy, midx,
-                                        dim.y-midy));
-
-            viewManager_.push_back(ivec4(midx, midy,
-                                        dim.x - midx,
-                                        dim.y - midy));
-
-            viewManager_.push_back(
-                ivec4(0, 0, midx, midy));
-
-            viewManager_.push_back(ivec4(midx, 0,
-                                        dim.x-midx,
-                                        midy));
+            viewManager_.push_back(ivec4(0, midy, midx, dim.y - midy));
+            viewManager_.push_back(ivec4(midx, midy, dim.x - midx, dim.y - midy));
+            viewManager_.push_back(ivec4(0, 0, midx, midy));
+            viewManager_.push_back(ivec4(midx, 0, dim.x - midx, midy));
             break;
         case Layout::ThreeLeftOneRight:
 
@@ -277,10 +281,12 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewManager_.push_back( ivec4(0, 2 * smallWindowHeight+extra1+extra2,leftWindow3L1RX, smallWindowHeight));
-            viewManager_.push_back(ivec4(0,smallWindowHeight+extra1,leftWindow3L1RX, smallWindowHeight+extra2));
-            viewManager_.push_back(ivec4(0, 0, leftWindow3L1RX, smallWindowHeight+extra1));
-            viewManager_.push_back(ivec4(leftWindow3L1RX, 0, dim.x-leftWindow3L1RX, dim.y));
+            viewManager_.push_back(ivec4(0, 2 * smallWindowHeight + extra1 + extra2,
+                                         leftWindow3L1RX, smallWindowHeight));
+            viewManager_.push_back(
+                ivec4(0, smallWindowHeight + extra1, leftWindow3L1RX, smallWindowHeight + extra2));
+            viewManager_.push_back(ivec4(0, 0, leftWindow3L1RX, smallWindowHeight + extra1));
+            viewManager_.push_back(ivec4(leftWindow3L1RX, 0, dim.x - leftWindow3L1RX, dim.y));
             break;
         case Layout::ThreeRightOneLeft:
 
@@ -293,10 +299,47 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewManager_.push_back(ivec4(leftWindow3R1LX, 2 * smallWindowHeight+extra1+extra2, dim.x-leftWindow3R1LX, smallWindowHeight));
-            viewManager_.push_back(ivec4(leftWindow3R1LX, smallWindowHeight+extra1, dim.x - leftWindow3R1LX, smallWindowHeight+extra2));
-            viewManager_.push_back(ivec4(leftWindow3R1LX, 0, dim.x-leftWindow3R1LX, smallWindowHeight+extra1));
+            viewManager_.push_back(ivec4(leftWindow3R1LX, 2 * smallWindowHeight + extra1 + extra2,
+                                         dim.x - leftWindow3R1LX, smallWindowHeight));
+            viewManager_.push_back(ivec4(leftWindow3R1LX, smallWindowHeight + extra1,
+                                         dim.x - leftWindow3R1LX, smallWindowHeight + extra2));
+            viewManager_.push_back(
+                ivec4(leftWindow3R1LX, 0, dim.x - leftWindow3R1LX, smallWindowHeight + extra1));
             viewManager_.push_back(ivec4(0, 0, leftWindow3R1LX, dim.y));
+            break;
+        case Layout::HorizontalSplitMultiple:
+
+            // #########
+            // #   1   #
+            // #-------#
+            // #   2   #
+            // #-------#
+            // #  ...  #
+            // #-------#
+            // #   N   #
+            // #########
+            // X, Y, W, H
+
+            for (auto i = 0; i < std::max(1, portCount); i++) {
+                auto height = (i < extraPixelsH) ? heightMultiple + 1 : heightMultiple;
+                viewManager_.push_back(ivec4(0, startH, dim.x, height));
+                startH += height;
+            }
+            break;
+        case Layout::VerticalSplitMultiple:
+
+            // #################
+            // #   |   #   |   #
+            // # 1 | 2 # . | N #
+            // #   |   #   |   #
+            // #################
+            // X, Y, W, H
+
+            for (auto i = 0; i < std::max(1, portCount); i++) {
+                auto width = (i < extraPixelsW) ? widthMultiple + 1 : widthMultiple;
+                viewManager_.push_back(ivec4(startW, 0, width, dim.y));
+                startW += width;
+            }
             break;
         case Layout::Single:
         default:
@@ -307,7 +350,4 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     currentLayout_ = layout_.get();
 }
 
-
-
 }  // namespace
-
