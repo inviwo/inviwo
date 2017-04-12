@@ -321,11 +321,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // X, Y, W, H
 
             for (auto i = 0; i < std::max(1, portCount); i++) {
-
                 auto height = (i < extraPixelsH) ? heightMultiple + 1 : heightMultiple;
-
                 viewManager_.push_back(ivec4(0, startH, dim.x, height));
-
                 startH += height;
             }
             break;
@@ -339,11 +336,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // X, Y, W, H
 
             for (auto i = 0; i < std::max(1, portCount); i++) {
-
                 auto width = (i < extraPixelsW) ? widthMultiple + 1 : widthMultiple;
-
                 viewManager_.push_back(ivec4(startW, 0, width, dim.y));
-
                 startW += width;
             }
             break;
