@@ -157,25 +157,51 @@ inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
 const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
 
 std::string Mesh::getDataInfo() const {
+    const int maxLines = 20;
+
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     Document doc;
     doc.append("b", "Mesh", {{"style", "color:white;"}});
+
     utildoc::TableBuilder tb(doc.handle(), P::end());
-
-    for (const auto& elem : indices_) {
-        std::stringstream ss;
-        ss << elem.first.dt << " " << elem.first.ct;
-        ss << " (" << elem.second->getSize() << ")";
-        tb(H("IndexBuffer"), ss.str());
-    }
-
+    
+    tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
+    
+    // show all the buffers
     for (const auto& elem : buffers_) {
-        std::stringstream ss;
-        ss << elem.first << " " << elem.second->getBufferUsage();
-        ss << " (" << elem.second->getSize() << ")";
-        tb(H("Buffer"), ss.str());
+        std::stringstream ss1;
+        ss1 << elem.first << ", " << elem.second->getBufferUsage();
+        std::stringstream ss2; 
+        ss2 << " (" << elem.second->getSize() << ")";
+        tb(ss1.str(), ss2.str());
     }
+
+    // ensure that at least one index buffer is shown
+    int maxPrintableIndexBuf = std::max<int>(maxLines - static_cast<int>(buffers_.size()), 1);
+    int numIndexBuffers = static_cast<int>(indices_.size());
+
+    if (!indices_.empty()) {
+        std::stringstream ss;
+        ss << "Indexbuffers (" << indices_.size() << ")";
+        tb(H(ss.str()));
+    }
+    int line = 0;
+    for (const auto& elem : indices_) {
+        std::stringstream ss1;
+        ss1 << elem.first.dt << ", " << elem.first.ct;
+        std::stringstream ss2;
+        ss2 << " (" << elem.second->getSize() << ")";
+        tb(ss1.str(), ss2.str());
+        ++line;
+        if (line >= maxPrintableIndexBuf) break;
+    }
+    if (maxPrintableIndexBuf < numIndexBuffers) {
+        std::stringstream ss;
+        ss << "... (" << (numIndexBuffers - maxPrintableIndexBuf) << " additional buffers)";
+        tb(ss.str());
+    }
+
     return doc;
 }
 
