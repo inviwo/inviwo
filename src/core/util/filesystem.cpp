@@ -292,7 +292,7 @@ std::string findBasePath() {
     return basePath;
 }
 
-IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, const bool& createFolder) {
+IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, const bool createFolder) {
     std::string result = findBasePath();
 
     switch (pathType) {

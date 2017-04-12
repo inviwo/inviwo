@@ -34,23 +34,23 @@
 namespace inviwo {
 
 CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
-    addExtension(FileExtension("raw", "RAW"));
 #ifdef cimg_use_png
     addExtension(FileExtension("png", "Portable Network Graphics"));
-#endif
-#ifdef cimg_use_tiff
-    addExtension(FileExtension("tif", "Tagged Image File Format"));
-    addExtension(FileExtension("tiff", "Tagged Image File Format"));
 #endif
 #ifdef cimg_use_jpeg
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
+#endif
+#ifdef cimg_use_tiff
+    addExtension(FileExtension("tif", "Tagged Image File Format"));
+    addExtension(FileExtension("tiff", "Tagged Image File Format"));
 #endif
     addExtension(FileExtension("bmp", "Windows bitmap"));
 #ifdef cimg_use_openexr
     addExtension(FileExtension("exr", "OpenEXR"));
 #endif
     addExtension(FileExtension("hdr", "Analyze 7.5"));
+    addExtension(FileExtension("raw", "RAW"));
 }
 
 CImgLayerWriter* CImgLayerWriter::clone() const { return new CImgLayerWriter(*this); }
