@@ -72,52 +72,52 @@ namespace inviwo {
  *   * __outport__      Resulting layout of input images
  * 
  * ### Properties
- *   * __Layout__         Applied layout <tt>Single</tt>, <tt>Horizontal Split</tt>, <tt>Cross Split</tt>, <tt>Three Left, One Right</tt>, <tt>Three Right, One Left</tt>
+ *   * __Layout__         Applied layout <tt>Single</tt>, <tt>Horizontal Split</tt>, <tt>Cross Split</tt>, <tt>Three Left, One Right</tt>, <tt>Three Right, One Left</tt>, <tt>Horizontal Split Multiple</tt> or <tt>Vertical Split Multiple</tt>
  *   * __Split Position__ Position of the layout splitter.
  *
  */
-class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
+    public:
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
-    enum class Layout {
-        Single,
-        HorizontalSplit,
-        VerticalSplit,
-        CrossSplit,
-        ThreeLeftOneRight,
-        ThreeRightOneLeft,
-		HorizontalSplitMultiple,
-		VerticalSplitMultiple,
+        enum class Layout {
+            Single,
+            HorizontalSplit,
+            VerticalSplit,
+            CrossSplit,
+            ThreeLeftOneRight,
+            ThreeRightOneLeft,
+            HorizontalSplitMultiple,
+            VerticalSplitMultiple,
+        };
+
+        ImageLayoutGL();
+        virtual ~ImageLayoutGL();
+
+        virtual void propagateEvent(Event*, Outport* source) override;
+
+    protected:
+        virtual void process() override;
+
+        void updateViewports(ivec2 size, bool force = false);
+        void onStatusChange();
+
+    private:
+        ImageMultiInport multiinport_;
+        ImageOutport outport_;
+
+        TemplateOptionProperty<Layout> layout_;
+        FloatProperty horizontalSplitter_;
+        FloatProperty verticalSplitter_;
+        FloatProperty vertical3Left1RightSplitter_;
+        FloatProperty vertical3Right1LeftSplitter_;
+
+        Shader shader_;
+        ViewManager viewManager_;
+        Layout currentLayout_;
+        ivec2 currentDim_;
     };
-
-    ImageLayoutGL();
-    virtual ~ImageLayoutGL();
-
-    virtual void propagateEvent(Event*, Outport* source) override;
-
-protected:
-    virtual void process() override;
-
-    void updateViewports(ivec2 size, bool force = false);
-    void onStatusChange();
-
-private:
-    ImageMultiInport multiinport_;
-    ImageOutport outport_;
-
-    TemplateOptionProperty<Layout> layout_;
-    FloatProperty horizontalSplitter_;
-    FloatProperty verticalSplitter_;
-    FloatProperty vertical3Left1RightSplitter_;
-    FloatProperty vertical3Right1LeftSplitter_;
-
-    Shader shader_;
-    ViewManager viewManager_;
-    Layout currentLayout_;
-    ivec2 currentDim_;
-};
 
 }  // namespace
 
