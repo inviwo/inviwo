@@ -185,37 +185,96 @@ void ShaderObject::addOutDeclarations(std::ostringstream& source) {
     }
 }
 
-void ShaderObject::addIncludes(std::ostringstream& source, std::shared_ptr<const ShaderResource> resource) {
+void ShaderObject::addIncludes(std::ostringstream& source,
+                               std::shared_ptr<const ShaderResource> resource) {
     std::ostringstream result;
     std::string curLine;
     includeResources_.push_back(resource);
     resourceCallbacks_.push_back(
         resource->onChange([this](const ShaderResource* res) { callbacks_.invoke(this); }));
-
     std::istringstream shaderSource(resource->source());
     int localLineNumber = 1;
-
+    bool isInsideBlockComment = false;
     while (std::getline(shaderSource, curLine)) {
-        auto posInclude = curLine.find("#include");
-        auto posComment = curLine.find("//");
+        size_t curPos = 0;
+        bool hasAddedInclude = false;
+        while (curPos != std::string::npos) {
+            if (isInsideBlockComment) {
+                // If we currently are inside a block comment, we only need to look for where it
+                // ends
+                curPos = curLine.find("*/", curPos);
+                isInsideBlockComment = curPos == std::string::npos;
+                if (!isInsideBlockComment) {
+                    curPos += 2;  // move curPos to the first character after the comment
+                }
 
-        if (posInclude != std::string::npos &&
-            (posComment == std::string::npos || posComment > posInclude)) {
-            auto pathBegin = curLine.find("\"", posInclude + 1);
-            auto pathEnd = curLine.find("\"", pathBegin + 1);
-            std::string incfile(curLine, pathBegin + 1, pathEnd - pathBegin - 1);
+            } else {
 
-            auto inc = ShaderManager::getPtr()->getShaderResource(incfile);
-            if (!inc) {
-                throw OpenGLException(
-                    "Include file " + incfile + " not found in shader search paths.", IvwContext);
+                auto posInclude = curLine.find("#include", curPos);
+                auto posLineComment = curLine.find("//", curPos);
+                auto posBlockCommentStart = curLine.find("/*", curPos);
+
+                // If we find two includes on the same line
+                if (hasAddedInclude && posInclude != std::string::npos) {
+                    std::ostringstream oss;
+                    oss << "Found more than one include on line " << localLineNumber
+                        << " in resource " << resource->key();
+                    throw OpenGLException(oss.str(), IvwContext);
+                }
+
+                // ignore everything after a line-comment "//" (unless it is inside a block comment)
+                if (posLineComment != std::string::npos && posLineComment < posInclude &&
+                    posLineComment < posBlockCommentStart) {
+                    break;
+                }
+
+                // there is a block comment starting on this line, before a include: update curPos
+                // and continue;
+                // the include should be found in the next iteration
+                if (posBlockCommentStart != std::string::npos &&
+                    posBlockCommentStart < posInclude) {
+                    isInsideBlockComment = true;
+                    curPos = posBlockCommentStart;
+                    continue;
+                }
+
+                // an include was found
+                if (posInclude != std::string::npos) {
+                    auto pathBegin = curLine.find("\"", posInclude + 1);
+                    auto pathEnd = curLine.find("\"", pathBegin + 1);
+                    std::string incfile(curLine, pathBegin + 1, pathEnd - pathBegin - 1);
+                    auto inc = ShaderManager::getPtr()->getShaderResource(incfile);
+                    if (!inc) {
+                        throw OpenGLException(
+                            "Include file " + incfile + " not found in shader search paths.",
+                            IvwContext);
+                    }
+                    auto it = util::find(includeResources_, inc);
+                    if (it == includeResources_.end()) {  // Only include files once.
+                        addIncludes(source, inc);
+                        source << curLine.substr(pathEnd + 1);
+                    }
+                    hasAddedInclude = true;
+                }
+
+                // after the include it can still be comments, we need to detect if a block comment
+                // starts
+
+                // if the next thing is a line comment, we continue to next line
+                if (posLineComment != std::string::npos && posLineComment < posBlockCommentStart) {
+                    // there is a line-comment after the include and before any block comment, then
+                    // go to next line
+                    break;
+                }
+
+                // set curPos to either npos or the pos of the start of the next block comment
+                curPos = posBlockCommentStart;  // will be npos of it has not been found
+                // updated the flag to tell if we are in a block comment or not
+                isInsideBlockComment = posBlockCommentStart != std::string::npos;
             }
-            auto it = util::find(includeResources_, inc);
-            if (it == includeResources_.end()) {  // Only include files once.
-                addIncludes(source, inc);
-            }
+        }
 
-        } else {
+        if (!hasAddedInclude) {  // include the whole line
             source << curLine << "\n";
             lineNumberResolver_.emplace_back(resource->key(), localLineNumber);
         }
