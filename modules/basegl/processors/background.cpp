@@ -201,10 +201,10 @@ void Background::updateShaderInputs() {
         std::stringstream ssUniform;
         for (size_t i = 1; i < numColorLayers; ++i) {
             ssUniform << "layout(location = " << outputLocation++ << ") out vec4 FragData" << i
-                      << "\n;";
+                      << ";\n";
         }
         for (size_t i = 1; i < numColorLayers; ++i) {
-            ssUniform << "uniform sampler2D color" << i << "\n;";
+            ssUniform << "uniform sampler2D color" << i << ";\n";
         }
         shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
                                                            ssUniform.str());
