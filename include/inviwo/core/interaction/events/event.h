@@ -63,6 +63,11 @@ public:
     // Processors are added in chronological order.
     const std::vector<Processor*>& getVisitedProcessors() const;
 
+    template <typename EventType>
+    EventType* getAs();
+    template <typename EventType>
+    const EventType* getAs() const;
+
 protected:
     Event() = default;
     Event(const Event& rhs) = default;
@@ -75,6 +80,21 @@ private:
     std::vector<Processor*> visitedProcessors_;
     #include <warn/pop>
 };
+
+template <typename EventType>
+EventType* Event::getAs() {
+    if (hash() == EventType::chash()) {
+        return static_cast<EventType*>(this);
+    }
+    return nullptr;
+}
+template <typename EventType>
+const EventType* Event::getAs() const {
+    if (hash() == EventType::chash()) {
+        return static_cast<const EventType*>(this);
+    }
+    return nullptr;
+}
 
 }  // namespace
 
