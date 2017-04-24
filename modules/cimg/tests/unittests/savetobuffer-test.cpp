@@ -60,57 +60,104 @@ std::wstring get_utf16(const std::string &str, int codepage) {
 }
 #endif
 
-std::string getTempFilename(const std::string& prefix, const std::string& suffix) {
+class TempFileHandle {
+public:
+    explicit TempFileHandle(const std::string& prefix = "", const std::string& suffix = "") {
+
 #ifdef WIN32
-    // get temp directory
-    std::array<wchar_t, MAX_PATH> tempPath;
-    std::array<wchar_t, MAX_PATH> tempFile;
-    auto retVal = GetTempPath(MAX_PATH, tempPath.data());
-    if ((retVal > MAX_PATH) || (retVal == 0)) {
-        throw Exception("could not locate temp folder");
-    }
-    // generate temp file name
-    std::wstring prefixW(prefix.begin(), prefix.end());
-    auto uRetVal = GetTempFileName(tempPath.data(), // directory for tmp files
-                                   prefixW.c_str(),     // temp file name prefix 
-                                   0,                // create unique name 
-                                   tempFile.data());  // buffer for name 
-    if (uRetVal == 0) {
-        throw Exception("could not create temporary file name");
-    }
+        // get temp directory
+        std::array<wchar_t, MAX_PATH> tempPath;
+        std::array<wchar_t, MAX_PATH> tempFile;
+        auto retVal = GetTempPath(MAX_PATH, tempPath.data());
+        if ((retVal > MAX_PATH) || (retVal == 0)) {
+            throw Exception("could not locate temp folder");
+        }
+        // generate temp file name
+        std::wstring prefixW(prefix.begin(), prefix.end());
+        auto uRetVal = GetTempFileName(tempPath.data(),   // directory for tmp files
+                                       prefixW.c_str(),   // temp file name prefix
+                                       0,                 // create unique name
+                                       tempFile.data());  // buffer for name
+        if (uRetVal == 0) {
+            throw Exception("could not create temporary file name");
+        }
 
-    return std::string(tempFile.begin(),
-                       tempFile.begin() + std::min<size_t>(wcslen(tempFile.data()), MAX_PATH)) +
-           suffix;
+        filename_.assign(tempFile.begin(),
+                        tempFile.begin() + std::min<size_t>(wcslen(tempFile.data()), MAX_PATH));
+        filename_ += suffix;
+        
+        handle_ = fopen(filename_.c_str(), "w");
+        if (!handle_) {
+            throw Exception("could not open temporary file");
+        }
 #else
-    std::array<char, L_tmpnam> tempFile;
-    auto retVal = tmpnam_r(tempFile.data());
-    if (retVal == nullptr) {
-        throw Exception("could not create temporary file name");
+
+        static const std::string unqiue = "XXXXXX";
+
+        const int suffixlen = suffix.size();
+
+        std::vector<char> fileTemplate;
+        fileTemplate.insert(fileTemplate.end(), prefix.begin(), prefix.end());
+        fileTemplate.insert(fileTemplate.end(), unqiue.begin(), unqiue.end());
+        fileTemplate.insert(fileTemplate.end(), suffix.begin(), suffix.end());
+        fileTemplate.push_back('\0');
+
+        int fd = mkstemps(fileTemplate.data(), suffixlen);
+        if (fd == -1) {
+            throw Exception("could not create temporary file");
+        }
+        handle_ = fdopen(fd, "w");
+        if (!handle_) {
+            throw Exception("could not open temporary file");
+        }
+        filename_.assign(fileTemplate.begin(), fileTemplate.end() - 1);
+#endif
     }
 
-    return std::string(tempFile.begin(),
-                       tempFile.begin() + std::min<size_t>(strlen(tempFile.data()), L_tmpnam)) +
-           suffix;
-#endif
-}
+    TempFileHandle(const TempFileHandle&) = delete;
+    TempFileHandle& operator=(const TempFileHandle&) = delete;
 
-struct TempFile {
-    TempFile(const std::string& prefix, const std::string& suffix) 
-    : filename(getTempFilename(prefix, suffix)) {}
-    ~TempFile() {
+    TempFileHandle(TempFileHandle&& rhs)
+        : handle_{rhs.handle_}, filename_{std::move(rhs.filename_)} {
+        rhs.handle_ = nullptr;
+        rhs.filename_ = "";
+    }
+    TempFileHandle& operator=(TempFileHandle&& rhs) {
+        if (this != &rhs) {
+            cleanup();
+            handle_ = rhs.handle_;
+            filename_ = std::move(rhs.filename_);
+            rhs.handle_ = nullptr;
+            rhs.filename_ = "";
+        }
+        return *this;
+    }
+
+    ~TempFileHandle() { cleanup(); }
+
+    const std::string& getFileName() const { return filename_; }
+
+    FILE* getHandle() { return handle_; }
+    operator FILE*() { return handle_; };
+
+private:
+    void cleanup() {
+        if (handle_) fclose(handle_);
+
+        if (!filename_.empty()) {
+
 #ifdef WIN32
-        std::wstring fileW(filename.begin(), filename.end());
-        DeleteFile(fileW.c_str());
+            std::wstring fileW(filename_.begin(), filename_.end());
+            DeleteFile(fileW.c_str());
 #else
-        remove(filename.c_str());
+            remove(filename_.c_str());
 #endif
+        }
     }
 
-    std::string filename;
+    FILE* handle_;
+    std::string filename_;
 };
-
-
 
 TEST(CImgUtils, cimgToBuffer) {
     // load source image
@@ -121,13 +168,13 @@ TEST(CImgUtils, cimgToBuffer) {
     const std::string testExtension = "png";
 
     // write layer to a temporary png file
-    TempFile tmpFile("cimg", std::string(".") + testExtension);
+    TempFileHandle tmpFile("cimg", std::string(".") + testExtension);
 
-    cimgutil::saveLayer(tmpFile.filename, layer.get());
+    cimgutil::saveLayer(tmpFile.getFileName(), layer.get());
 
     // read file contents
     std::vector<unsigned char> fileContents;
-    std::ifstream in(tmpFile.filename.c_str(), std::ifstream::binary);
+    std::ifstream in(tmpFile.getFileName().c_str(), std::ifstream::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
         size_t fileLen = in.tellg();

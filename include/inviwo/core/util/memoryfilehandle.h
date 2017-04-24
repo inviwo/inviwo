@@ -55,12 +55,18 @@ namespace util {
 class IVW_CORE_API MemoryFileHandle { 
 public:
     MemoryFileHandle() = delete;
-    MemoryFileHandle(const MemoryFileHandle&) = delete;
-
     explicit MemoryFileHandle(size_t bufferSize);
+   
+    MemoryFileHandle(const MemoryFileHandle&) = delete;
+    MemoryFileHandle& operator=(const MemoryFileHandle&) = delete;
+    
+    MemoryFileHandle(MemoryFileHandle&& rhs);
+    MemoryFileHandle& operator=(MemoryFileHandle&& rhs);
+
     ~MemoryFileHandle();
 
     FILE* getHandle();
+    operator FILE*();
 
     void reset();
 
@@ -83,10 +89,8 @@ public:
 
 private:
     void initBuffer();
-
     const unsigned char magicCode_ = 0xaf;
     FILE* handle_;
-    bool overflowFlag_;
     std::vector<unsigned char> buffer_;
 };
 
