@@ -237,45 +237,8 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
 }
 
 QImage layerToQImage(const Layer &layer){
-    auto data = layer.getAsCodedBuffer("raw"); // This will convert the image to chars.
-
-    // do manual conversion from raw to png via QImage
-    QImage::Format format = QImage::Format_Invalid;
-    int bytesPerPixel = 1;
-
-    auto dims = layer.getDimensions();
-    if (data->size() == dims.x * dims.y) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-        format = QImage::Format_Grayscale8;
-        bytesPerPixel = 1;
-#else
-        format = QImage::Format_RGB888;
-        bytesPerPixel = 3;
-        // duplicate grayscale data into 3 channels
-        auto newData = std::make_unique<std::vector<unsigned char> >();
-        newData->reserve(data->size() * 3);
-
-        for (auto value : *data.get()) {
-            newData->insert(newData->end(), 3, value);
-        }
-        data = std::move(newData);
-#endif
-    } else if (data->size() == dims.x * dims.y * 3) {
-        format = QImage::Format_RGB888;
-        bytesPerPixel = 3;
-    } else if (data->size() == dims.x * dims.y * 4) {
-        format = QImage::Format_RGBA8888;
-        bytesPerPixel = 4;
-    }
-
-    const auto dataptr = reinterpret_cast<const unsigned char*>(data->data());
-    const auto width = static_cast<int>(dims.x);
-    const auto height = static_cast<int>(dims.y);
-    const auto bytesPerLine = static_cast<int>(dims.x * bytesPerPixel);
-
-    return { dataptr, width, height, bytesPerLine, format,
-             [](void* info) { delete static_cast<std::vector<unsigned char>*>(info); },
-             data.release() };
+    auto data = layer.getAsCodedBuffer("png"); 
+    return QImage::fromData(data->data(), data->size());
 }
 
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
