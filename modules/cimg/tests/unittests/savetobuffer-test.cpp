@@ -82,9 +82,9 @@ public:
             throw Exception("could not create temporary file name");
         }
 
-        filename.assign(tempFile.begin(),
+        filename_.assign(tempFile.begin(),
                         tempFile.begin() + std::min<size_t>(wcslen(tempFile.data()), MAX_PATH));
-        filename += suffix;
+        filename_ += suffix;
         
         handle_ = fopen(filename_.c_str(), "w");
         if (!handle_) {
