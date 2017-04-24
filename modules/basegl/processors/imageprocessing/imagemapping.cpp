@@ -48,7 +48,7 @@ const ProcessorInfo ImageMapping::getProcessorInfo() const {
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
-    , transferFunction_("transferFunction", "Transfer Function", TransferFunction()) {
+    , transferFunction_("transferFunction", "Transfer Function") {
     addProperty(transferFunction_);
 }
 
