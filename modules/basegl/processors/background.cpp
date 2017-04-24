@@ -199,19 +199,24 @@ void Background::updateShaderInputs() {
         // location 0 is reserved for FragData0, location 1 for PickingData
         size_t outputLocation = 2;
         std::stringstream ssUniform;
+        ssUniform << "\n";
         for (size_t i = 1; i < numColorLayers; ++i) {
             ssUniform << "layout(location = " << outputLocation++ << ") out vec4 FragData" << i
-                      << "\n;";
+                      << ";\n";
         }
         for (size_t i = 1; i < numColorLayers; ++i) {
-            ssUniform << "uniform sampler2D color" << i << "\n;";
+            ssUniform << "uniform sampler2D color" << i << ";\n";
         }
         shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
                                                            ssUniform.str());
 
         std::stringstream ssWrite;
         for (size_t i = 1; i < numColorLayers; ++i) {
-            ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);\n";
+            ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord.xy);";
+            if(i<numColorLayers-1){
+                ssWrite << " \\";
+            }
+            ssWrite << "\n";
         }
         shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
                                                            ssWrite.str());
