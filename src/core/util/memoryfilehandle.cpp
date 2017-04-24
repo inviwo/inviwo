@@ -39,11 +39,30 @@ MemoryFileHandle::MemoryFileHandle(size_t bufferSize) : buffer_(bufferSize, magi
     initBuffer();
 }
 
+MemoryFileHandle::MemoryFileHandle(MemoryFileHandle&& rhs)
+    : handle_{rhs.handle_}, buffer_{std::move(rhs.buffer_)} {
+    rhs.handle_ = nullptr;
+}
+
+MemoryFileHandle& MemoryFileHandle::operator=(MemoryFileHandle&& rhs) {
+    if (this != &rhs) {
+        if (handle_) fclose(handle_);
+        handle_ = rhs.handle_;
+        buffer_ = std::move(rhs.buffer_);
+        rhs.handle_ = nullptr;
+    }
+    return *this;
+}
+
 MemoryFileHandle::~MemoryFileHandle() {
-    fclose(handle_);
+    if (handle_) fclose(handle_);
 }
 
 FILE* MemoryFileHandle::getHandle() {
+    return handle_;
+}
+
+MemoryFileHandle::operator FILE*() {
     return handle_;
 }
 
