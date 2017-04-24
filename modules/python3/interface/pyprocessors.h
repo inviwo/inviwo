@@ -33,6 +33,16 @@
 
 namespace inviwo {
 
+template <typename P>
+struct processorDelete {
+    void operator()(P *p) {
+        if (p && p->getNetwork() == nullptr) delete p;
+    }
+};
+
+template <typename P>
+using ProcessorPtr = std::unique_ptr<P, processorDelete<P>>;
+
 void exposeProcessors(pybind11::module &m);
 }
 

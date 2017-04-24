@@ -43,11 +43,7 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-struct processorDelete {
-    void operator()(Processor *p) {
-        if (p && p->getNetwork() == nullptr) delete p;
-    }
-};
+
 
 void exposeProcessors(py::module &m) {
 
@@ -71,8 +67,7 @@ void exposeProcessors(py::module &m) {
         .def("show", &ProcessorWidget::show)
         .def("hide", &ProcessorWidget::hide);
 
-    py::class_<Processor, PropertyOwner, std::unique_ptr<Processor, processorDelete>>(m,
-                                                                                      "Processor")
+    py::class_<Processor, PropertyOwner,ProcessorPtr<Processor>>(m,"Processor")
         .def("__getattr__", &getPropertyById<Processor>, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property_readonly("displayName", &Processor::getDisplayName)
@@ -122,7 +117,7 @@ void exposeProcessors(py::module &m) {
                               ->setVisible(selected);
                       });
 
-    py::class_<CanvasProcessor, Processor> canvasPorcessor(m, "CanvasProcessor");
+    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>> canvasPorcessor(m, "CanvasProcessor");
     canvasPorcessor
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
