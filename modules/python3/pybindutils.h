@@ -40,54 +40,34 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 
-
 namespace inviwo {
 
-    class PyBindModule {
-    public:
-        PyBindModule(std::string name, std::string docstring)
-            : mainModule_(name.c_str(), docstring.c_str()) {}
+namespace pyutil {
+template <typename T>
+pybind11::object toPyBindObject(const T &t) {
+    return pybind11::cast(t);
+}
 
-        template<typename T>
-        pybind11::class_<T> addClass(std::string className){
-            pybind11::class_<T> pyclass(mainModule_, className.c_str());
-            classes_[className] = pyclass;
-            return pyclass;
-        }
+template <typename T>
+T toPyBindObjectBorrow(PyObject *obj) {
+    return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
+}
 
-        pybind11::module mainModule_;
-        std::unordered_map<std::string, pybind11::detail::generic_type> classes_;
-    };
+template <typename T>
+T toPyBindObjectSteal(PyObject *obj) {
+    return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
+}
 
-
-    namespace pyutil {
-        template<typename T> pybind11::object toPyBindObject(const T &t) {
-            return pybind11::cast(t);
-        }
-
-        template <typename T>
-        T toPyBindObjectBorrow(PyObject *obj) {
-            return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
-        }
-
-        template <typename T>
-        T toPyBindObjectSteal(PyObject *obj) {
-            return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
-        }
-
-        template <typename T>
-        T toPyBindObject(PyObject *obj, bool steal = false) {
-            if (steal) {
-                return toPyBindObjectSteal<T>(obj);
-            }
-            else {
-                return toPyBindObjectBorrow<T>(obj);
-            }
-        }
+template <typename T>
+T toPyBindObject(PyObject *obj, bool steal = false) {
+    if (steal) {
+        return toPyBindObjectSteal<T>(obj);
+    } else {
+        return toPyBindObjectBorrow<T>(obj);
     }
+}
+}
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_NUMPYUTILS_H
-
+#endif  // IVW_NUMPYUTILS_H

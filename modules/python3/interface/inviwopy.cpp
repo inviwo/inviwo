@@ -56,20 +56,19 @@ PYBIND11_PLUGIN(inviwopy) {
 #endif
 
     using namespace inviwo;
-    // pybind11::module m("inviwopy", "Python interface for Inviwo");
-    PyBindModule m("inviwopy", "Python interface for Inviwo");
+    py::module m("inviwopy", "Python interface for Inviwo");
 
-    exposeGLMTypes(m.mainModule_);
+    exposeGLMTypes(m);
 
     auto getModules = [](InviwoApplication *app) {
         std::vector<InviwoModule *> modules;
-        for (auto &m : app->getModules()) {
-            modules.push_back(m.get());
+        for (auto &mod : app->getModules()) {
+            modules.push_back(mod.get());
         }
         return modules;
     };
 
-    m.addClass<InviwoApplication>("InviwoApplication")
+    py::class_<InviwoApplication>(m, "InviwoApplication")
         .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
              py::arg("createFolder") = false)
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
@@ -91,20 +90,16 @@ PYBIND11_PLUGIN(inviwopy) {
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
                                py::return_value_policy::reference);
 
-    m.addClass<InviwoModule>("InviwoModule")
+    py::class_<InviwoModule>(m, "InviwoModule")
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
         .def_property_readonly("version", &InviwoModule::getVersion)
         .def("getPath", [](InviwoModule *m,
-                           ModulePath type) { return m->getPath(type); })  // TODO expost modulePath
+                           ModulePath type) { return m->getPath(type); })  
         ;
 
-   
-
-
-    py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m.mainModule_,
-                                                                            "PropertyOwner")
+    py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
         .def("getPath", &PropertyOwner::getPath)
         .def_property_readonly("properties", &PropertyOwner::getProperties,
                                py::return_value_policy::reference)
@@ -120,29 +115,26 @@ PYBIND11_PLUGIN(inviwopy) {
         .def("size", &PropertyOwner::size)
         //.def("setValid", &PropertyOwner::setValid)
         //.def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
-        .def("invalidate", [](PropertyOwner *po){po->invalidate(InvalidationLevel::InvalidOutput);})
+        .def("invalidate",
+             [](PropertyOwner *po) { po->invalidate(InvalidationLevel::InvalidOutput); })
         .def_property_readonly("processor", [](PropertyOwner &p) { return p.getProcessor(); },
                                py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
-    exposeNetwork(m.mainModule_);
-    exposeProcessors(m.mainModule_);
-    exposeProperties(m.mainModule_);
+    exposeNetwork(m);
+    exposeProcessors(m);
+    exposeProperties(m);
 
+    py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
+    m.attr("app") = py::cast(util::getInviwoApplication(), py::return_value_policy::reference);
+    m.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
+    m.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
+    m.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
 
-    py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m.mainModule_,
-                                                                                 "Settings");
-
-    m.mainModule_.attr("app") =
-        py::cast(util::getInviwoApplication(), py::return_value_policy::reference);
-    m.mainModule_.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
-    m.mainModule_.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
-    m.mainModule_.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
-
-    py::enum_<inviwo::PathType>(m.mainModule_, "PathType")
+    py::enum_<inviwo::PathType>(m, "PathType")
         .value("Data", PathType::Data)
         .value("Volumes", PathType::Volumes)
         .value("Workspaces", PathType::Workspaces)
@@ -156,7 +148,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
-    py::enum_<inviwo::ModulePath>(m.mainModule_, "ModulePath")
+    py::enum_<inviwo::ModulePath>(m, "ModulePath")
         .value("Data", ModulePath::Data)
         .value("Images", ModulePath::Images)
         .value("PortInspectors", ModulePath::PortInspectors)
@@ -180,5 +172,5 @@ PYBIND11_PLUGIN(inviwopy) {
     VLDEnable();
 #endif
 
-    return m.mainModule_.ptr();
+    return m.ptr();
 }

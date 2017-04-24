@@ -48,20 +48,21 @@ Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-        "Path to the file containing the script") 
-{    
+                       "Path to the file containing the script") {
     pythonInterpreter_->addObserver(&pythonLogger_);
-    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        auto filename = pythonScriptArg_.getValue();
-        if (!filesystem::fileExists(filename)) {
-            LogWarn("Could not run script, file does not exist: " << filename);
-            return;
-        }
-        PythonScriptDisk s(filename);
-        s.run();
-    }, 100);
- 
-    
+    app->getCommandLineParser().add(
+        &pythonScriptArg_,
+        [this]() {
+            auto filename = pythonScriptArg_.getValue();
+            if (!filesystem::fileExists(filename)) {
+                LogWarn("Could not run script, file does not exist: " << filename);
+                return;
+            }
+            PythonScriptDisk s(filename);
+            s.run();
+        },
+        100);
+
 #if defined(__unix__)
     char executablePath[PATH_MAX];
     auto size = ::readlink("/proc/self/exe", executablePath, sizeof(executablePath) - 1);
@@ -71,61 +72,42 @@ Python3Module::Python3Module(InviwoApplication* app)
     } else {
         // Error retrieving path
         executablePath[0] = '\0';
-        ;
     }
 
     std::string execpath(executablePath);
     auto folder = filesystem::getFileDirectory(execpath);
     pythonInterpreter_->addModulePath(folder);
-    auto content = filesystem::getDirectoryContents(folder, filesystem::ListMode::Files);
-
-    std::string path = "";
-
-    for (auto& s : content) {
-        if (s.substr(0, 8) == "inviwopy") {
-            path = folder + "/" + s;
-            break;
-        }
-    }
-
-    if (path != "") {
-        LogInfo(path);
-        app->dispatchFront([=]() {
-           /* LogInfo(path);
-            PythonScript ps;
-            ps.setSource("print(path_to_file)\n");
-            ps.run({ { "path_to_file", pybind11::cast(path) } });
-            LogInfo("qwer");
-
-            PythonScriptDisk(getPath() + "/scripts/import_inviwo.py")
-                .run({{"path_to_file", pybind11::cast(path)}});
-            LogInfo("asdf");*/
-        });
-    } else {
-        LogError("Failed to find .so file");
-    }
 #elif defined(__APPLE__)
-    //TODO add output path
+// TODO add output path
 /*
-    To future mac user who will fix this.
-    On windows the path to the bin folder is already in sys.path and 'import inviwopy' will locate
+   To future mac user who will fix this.
+   On windows the path to the bin folder is already in sys.path and 'import inviwopy' will locate
    inviwopy without modifying the sys.path. On Linux the path is not added and need to be added
    manually and I belive something similar has to be done on mac as well
 */
-// pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are 
+// pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are
 #endif
 
-    app->dispatchFront([&]() { 
+    app->dispatchFront([&]() {
         PythonScript ps;
         ps.setSource("import inviwopy\n");
-        ps.run(); // import inviwopy once 
+        ps.run();  // we need to import inviwopy to trigger the initialization code in inviwopy.cpp,
+                   // this is needed to be able to cast cpp/inviwo objects to python objects
 
-        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run(); 
+        // PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
     });
 }
 
-Python3Module::~Python3Module() {
-    pythonInterpreter_->removeObserver(&pythonLogger_);
+Python3Module::~Python3Module() { pythonInterpreter_->removeObserver(&pythonLogger_); }
+
+void Python3Module::registerPythonInitCallback(PythonInitCallback callback) {
+    callbackObjects_.push_back(callback);
+}
+
+void Python3Module::invokePythonInitCallbacks(pybind11::module* objects) {
+    for (auto& c : callbackObjects_) {
+        c(objects);
+    }
 }
 
 }  // namespace

@@ -35,6 +35,10 @@
 #include <modules/python3/pythonlogger.h>
 #include <string>
 
+namespace pybind11{
+class module;
+}
+
 namespace inviwo {
 
 class PythonInterpreter;
@@ -45,14 +49,10 @@ public:
     Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
-    using PythonInitCallback = std::function<void(PyBindModule * objects)>;
+    using PythonInitCallback = std::function<void(pybind11::module* module)>;
 
-    void registerPythonInitCallback(PythonInitCallback callback){callbackObjects_.push_back( callback);}
-    void invokePythonInitCallbacks(PyBindModule * objects){
-        for(auto &c : callbackObjects_){
-            c(objects);
-        }
-    }
+    void registerPythonInitCallback(PythonInitCallback callback);
+    void invokePythonInitCallbacks(pybind11::module* objects);
 
     PythonInterpreter* getPythonInterpreter() {return pythonInterpreter_.get();}
 

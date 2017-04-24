@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -45,40 +45,38 @@
 
 namespace inviwo {
 
-    namespace{
-        pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
+namespace {
+pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
 
-            bool ok;
-            QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
-                defaultResponse.c_str(), &ok);
-            if (ok && !text.isEmpty()) {
-                return pybind11::str(text.toLocal8Bit().constData());
-            }
-            else if (ok) {
-                return pybind11::str("");
-            }
-            return pybind11::none();
-        }
+    bool ok;
+    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
+                                         defaultResponse.c_str(), &ok);
+    if (ok && !text.isEmpty()) {
+        return pybind11::str(text.toLocal8Bit().constData());
+    } else if (ok) {
+        return pybind11::str("");
     }
+    return pybind11::none();
+}
+}
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt")
-    , menu_(util::make_unique<PythonMenu>(app))
-{
+    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
     auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
     if (module) {
         module->registerPythonInitCallback([&](auto module) {
-            auto m = module->mainModule_.def_submodule("qt","Qt dependent stuff");
+            auto m = module->def_submodule("qt", "Qt dependent stuff");
 
-            m.def("prompt",&prompt, pybind11::arg("title") , pybind11::arg("message") ,  pybind11::arg("defaultResponse") = "");
-            m.def("update",[](){QCoreApplication::instance()->processEvents();});
+            m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+                  pybind11::arg("defaultResponse") = "");
+            m.def("update", []() { QCoreApplication::instance()->processEvents(); });
 
         });
-    }else{
+    } else {
         throw Exception("Failed to get Python3Module");
     }
 }
 
 Python3QtModule::~Python3QtModule() = default;
 
-} // namespace
+}  // namespace

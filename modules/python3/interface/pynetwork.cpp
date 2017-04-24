@@ -166,10 +166,10 @@ void exposeNetwork(py::module &m) {
              py::return_value_policy::reference)
         .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
-        .def("getChangedOutports", &Inport::getChangedOutports);
+        .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference);
 
     py::class_<Outport, Port> pyOutport(m, "Outport");
     pyOutport.def("isConnectedTo", &Outport::isConnectedTo);
-    pyOutport.def("getConnectedInports", &Outport::getConnectedInports);
+    pyOutport.def("getConnectedInports", &Outport::getConnectedInports, py::return_value_policy::reference);
 }
 }  // namespace
