@@ -132,7 +132,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
+void utilqt::saveProcessorPreviews(
     const std::string& path, const std::vector<std::string>& classIdentifiers) {
     for (const auto& classIdentifier : classIdentifiers) {
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
@@ -152,4 +152,30 @@ IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
     }
 }
 
+void utilqt::updateProcessorPreviews(InviwoApplication* app) {
+    for (auto& module : app->getModules()) {
+        const std::string path = module->getPath(ModulePath::Docs) + "/images/";
+
+        for (auto& pfo : module->getProcessors()) {
+            const auto& classIdentifier = pfo->getClassIdentifier();
+            QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));    
+            
+            if (!img.isNull()) {
+                QByteArray data;
+                QBuffer buffer(&data);
+                buffer.open(QIODevice::WriteOnly);
+                img.save(&buffer, "PNG");
+                if (!filesystem::directoryExists(path)) {
+                    filesystem::createDirectoryRecursively(path);
+                }
+                QImageWriter writer(QString::fromStdString(path + classIdentifier + ".png"));
+                writer.write(img);
+            } else {
+                LogWarnCustom("saveProcessorPreviews",
+                              "No preview generated for: \"" + classIdentifier + "\"");
+            }
+        }
+    }
+}
+    
 }  // namespace
