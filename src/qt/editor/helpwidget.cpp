@@ -33,13 +33,15 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <inviwo/core/util/fileobserver.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QTextBrowser>
 #include <QHelpEngineCore>
-
+#include <QEvent>
 #include <QMap>
 #include <QString>
 #include <QUrl>
@@ -49,14 +51,61 @@
 #include <QBuffer>
 #include <QFileInfo>
 #include <QImage>
-
 #include <QUrlQuery>
-#include <QImageReader>
-#include <QImageWriter>
-
+#include <QTextBrowser>
 #include <warn/pop>
 
 namespace inviwo {
+
+
+
+class HelpBrowser : public QTextBrowser {
+public:
+    HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine);
+    virtual ~HelpBrowser() = default;
+
+protected:
+    QVariant loadResource(int type, const QUrl& name);
+
+private:
+    HelpWidget* helpwidget_;
+    QHelpEngineCore* helpEngine_;
+};
+
+class QCHFileObserver : public FileObserver {
+public:
+    QCHFileObserver(InviwoApplication* app, QHelpEngineCore* engine) : app_(app), engine_(engine) {
+        app_->registerFileObserver(this);    
+    }
+
+    virtual ~QCHFileObserver() {
+        app_->unRegisterFileObserver(this);
+    }
+    void addFile(const std::string& fileName) {
+        reload(fileName);
+
+        if (!isObserved(fileName)) {
+            startFileObservation(fileName);
+        }
+    }
+
+    virtual void fileChanged(const std::string& fileName) override { reload(fileName); }
+
+private:
+    void reload(const std::string& fileName) {
+        const auto file = QString::fromStdString(fileName);
+        const auto ns = QHelpEngineCore::namespaceName(file);
+        engine_->unregisterDocumentation(ns);
+
+        if (!engine_->registerDocumentation(file)) {
+            LogWarn("Problem loading help file : " << fileName << " "
+                    << engine_->error().toStdString());
+        }
+    }
+
+    InviwoApplication* app_;
+    QHelpEngineCore* engine_;
+};
 
 /*
  * Paths: qthelp://org.inviwo/doc/<files>
@@ -78,8 +127,8 @@ namespace inviwo {
 HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     : InviwoDockWidget(tr("Help"), mainwindow)
     , mainwindow_(mainwindow)
-    , helpBrowser_(nullptr)
-    , helpEngine_(nullptr) {
+    , helpEngine_(nullptr) 
+    , helpBrowser_(nullptr) {
     setObjectName("HelpWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
@@ -88,10 +137,14 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     vLayout->setSpacing(7);
     vLayout->setContentsMargins(0, 0, 0, 0);
 
-    std::string helpfile =
-        mainwindow->getInviwoApplication()->getPath(PathType::Help, "/inviwo.qhc");
+    auto app = mainwindow->getInviwoApplication();
+
+    const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc");
 
     helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
+    for (const auto& ns : helpEngine_->registeredDocumentations()) {
+        helpEngine_->unregisterDocumentation(ns);
+    }
 
     helpBrowser_ = new HelpBrowser(this, helpEngine_);
     helpBrowser_->setHtml(QString("Hello world"));
@@ -99,27 +152,43 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
 
-    connect(helpEngine_, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
+    connect(helpEngine_, &QHelpEngineCore::setupFinished, this, [&]() {
+        if (!helpEngine_) return;
+        if (current_.empty()) {
+            helpBrowser_->setText("Select a processor in the processor list to see help");
+        } else {
+            showDocForClassName(current_);
+        }
+    });
 
     if (!helpEngine_->setupData()) {
         LogWarn("Failed to setup the help engine:" << helpEngine_->error().toUtf8().constData());
         delete helpEngine_;
         helpEngine_ = nullptr;
     }
+
+    fileObserver_ = util::make_unique<QCHFileObserver>(app, helpEngine_);
 }
 
-void HelpWidget::setupFinished() {
-    if (!helpEngine_) return;
-    showDocForClassName(current_);
+HelpWidget::~HelpWidget() = default;
+
+void HelpWidget::registerQCHFiles() {
+    auto app = mainwindow_->getInviwoApplication();
+    for (const auto& module : app->getModules()) {
+        const auto moduleQchFile =
+            module->getPath(ModulePath::Docs) + "/" + module->getIdentifier() + ".qch";
+        if (filesystem::fileExists(moduleQchFile)) {
+            fileObserver_->addFile(moduleQchFile);
+        }
+    }
 }
 
 void HelpWidget::showDocForClassName(std::string classIdentifier) {
-    current_ = classIdentifier;
-    
     if (!helpEngine_) return;
     
-    QString path("qthelp://org.inviwo/doc/docpage-%1.html");
-
+    current_ = classIdentifier;
+    
+    const QString path("qthelp:///doc/docpage-%1.html");
     QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
     if (foundUrl.isValid()) {
         helpBrowser_->setSource(foundUrl);
@@ -133,7 +202,8 @@ void HelpWidget::showDocForClassName(std::string classIdentifier) {
         return;
     }
 
-    helpBrowser_->setText(QString("No documentation available"));
+    helpBrowser_->setText(
+        QString::fromStdString("No documentation available for: " + current_));
 }
 
 void HelpWidget::resizeEvent(QResizeEvent * event) {
@@ -141,7 +211,7 @@ void HelpWidget::resizeEvent(QResizeEvent * event) {
     InviwoDockWidget::resizeEvent(event);
 }
 
-HelpWidget::HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
+HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
     : QTextBrowser(parent), helpwidget_(parent), helpEngine_(helpEngine) {
     setReadOnly(true);
     setUndoRedoEnabled(false);
@@ -149,9 +219,7 @@ HelpWidget::HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEn
     setAcceptRichText(false);
 }
 
-HelpWidget::HelpBrowser::~HelpBrowser() {}
-
-QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
+QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
     QUrl url(name);
     if (name.isRelative()) url = source().resolved(url);
 
@@ -159,62 +227,33 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     if (query.hasQueryItem("classIdentifier")) {
         QString cid = query.queryItemValue("classIdentifier");
 
-        auto imageCache =
-            helpwidget_->mainwindow_->getInviwoApplication()->getPath(PathType::Settings);
-        imageCache += "/image-cache";
-        filesystem::createDirectoryRecursively(imageCache);
+        auto img = utilqt::generatePreview(cid);
+        if (img.isNull()) return QVariant();
+        QByteArray imgData;
+        QBuffer buffer(&imgData);
+        buffer.open(QIODevice::WriteOnly);
+        img.save(&buffer, "PNG");
 
-        QString imgname(QString::fromStdString(imageCache) + "/" + cid + ".png");
-        QImageReader reader(imgname);
-        QImage img = reader.read();
-        if (!img.isNull()) {
-            return img;
-        } else {
-            img = utilqt::generatePreview(cid);
-            if (img.isNull()) return QVariant();
-            QByteArray imgData;
-            QBuffer buffer(&imgData);
-            buffer.open(QIODevice::WriteOnly);
-            img.save(&buffer, "PNG");
-
-            QImageWriter writer(imgname);
-            writer.write(img);
-
-            return imgData;
-        }
+        return imgData;
     }
-
-#ifdef IVW_DEBUG  // Look for the html in the doc-qt folder.
-    if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {
-        std::string docbase = helpwidget_->mainwindow_->getInviwoApplication()->getPath(
-            PathType::Data, "/../tools/doxygen/doc-qt/html");
-
-        QString file = name.toString();
-        file.replace("qthelp://org.inviwo/doc", QString::fromStdString(docbase));
-        QFile newfile(file);
-
-        if (newfile.exists() && newfile.open(QIODevice::ReadOnly)) {
-            QByteArray imgData = newfile.readAll();
-            return imgData;
-        }
-    }
-#endif
 
     QByteArray fileData = helpEngine_->fileData(url);
     switch (type) {
         case QTextDocument::HtmlResource:
             return fileData;
+        case QTextDocument::StyleSheetResource:
+            return fileData;
         case QTextDocument::ImageResource: {
-            auto image = QImage::fromData(fileData, QFileInfo(url.path()).suffix().toLatin1().data());
-            QImage resized{image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
+            auto image =
+                QImage::fromData(fileData, QFileInfo(url.path()).suffix().toLatin1().data());
+            QImage resized{
+                image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
             QByteArray smalldata;
             QBuffer buffer(&smalldata);
             resized.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
             return smalldata;
         }
-        case QTextDocument::StyleSheetResource:
-            return fileData;
     }
     return QTextBrowser::loadResource(type, url);
 }

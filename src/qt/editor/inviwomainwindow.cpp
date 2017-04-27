@@ -88,8 +88,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                      "file name")
     , saveProcessorPreviews_("", "save-previews", "Save processor previews to the supplied path",
                              false, "", "path")
-    , updateProcessorPreviews_("", "update-previews",
-                               "Update processor previews in the module/docs/images folders", false)
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
@@ -137,17 +135,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     app->getCommandLineParser().add(&saveProcessorPreviews_,
                                     [this]() {
                                         utilqt::saveProcessorPreviews(
-                                            saveProcessorPreviews_.getValue(),
-                                            app_->getProcessorFactory()->getKeys());
+                                            app_, saveProcessorPreviews_.getValue(), false);
 
                                     },
                                     1200);
-
-    app->getCommandLineParser().add(&updateProcessorPreviews_,
-                                    [this]() {
-                                        utilqt::updateProcessorPreviews(app_);
-                                    },
-                                    1210);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
@@ -195,6 +186,7 @@ InviwoMainWindow::~InviwoMainWindow() = default;
 void InviwoMainWindow::updateForNewModules() {
     settingsWidget_->updateSettingsWidget();
     processorTreeWidget_->addProcessorsToTree();
+    helpWidget_->registerQCHFiles();
     fillExampleWorkspaceMenu();
     fillTestWorkspaceMenu();
 }

@@ -196,7 +196,6 @@ private:
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
-    TCLAP::SwitchArg updateProcessorPreviews_;
     
     GlobalEventFilter eventFilter_;
     UndoManager undoManager_;

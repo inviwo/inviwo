@@ -132,9 +132,9 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-void utilqt::saveProcessorPreviews(
-    const std::string& path, const std::vector<std::string>& classIdentifiers) {
-    for (const auto& classIdentifier : classIdentifiers) {
+void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path, bool all) {
+
+    auto save = [&](const std::string& classIdentifier) {
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
         QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
         if (!img.isNull()) {
@@ -149,33 +149,20 @@ void utilqt::saveProcessorPreviews(
             LogWarnCustom("saveProcessorPreviews",
                           "No preview generated for: \"" + classIdentifier + "\"");
         }
-    }
-}
+    };
 
-void utilqt::updateProcessorPreviews(InviwoApplication* app) {
-    for (auto& module : app->getModules()) {
-        const std::string path = module->getPath(ModulePath::Docs) + "/images/";
-
-        for (auto& pfo : module->getProcessors()) {
-            const auto& classIdentifier = pfo->getClassIdentifier();
-            QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));    
-            
-            if (!img.isNull()) {
-                QByteArray data;
-                QBuffer buffer(&data);
-                buffer.open(QIODevice::WriteOnly);
-                img.save(&buffer, "PNG");
-                if (!filesystem::directoryExists(path)) {
-                    filesystem::createDirectoryRecursively(path);
-                }
-                QImageWriter writer(QString::fromStdString(path + classIdentifier + ".png"));
-                writer.write(img);
-            } else {
-                LogWarnCustom("saveProcessorPreviews",
-                              "No preview generated for: \"" + classIdentifier + "\"");
+    if (all) {
+        for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
+            save(classIdentifier);
+        }
+    } else {
+        for (auto& module : app->getModules()) {
+            for (const auto& pfo : module->getProcessors()) {
+                save(pfo->getClassIdentifier());
             }
         }
     }
 }
-    
+
+
 }  // namespace
