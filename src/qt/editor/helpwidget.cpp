@@ -32,7 +32,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
-
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/fileobserver.h>
 
 #include <warn/push>

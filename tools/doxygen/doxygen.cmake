@@ -443,7 +443,4 @@ function(make_doxygen_target modules_var)
             add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_class}")
         endif()
     endforeach()
-
-    #add_dependencies("DOXY-ALL" "DOXY-QCH")
-
  endfunction()
