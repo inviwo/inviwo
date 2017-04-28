@@ -470,8 +470,8 @@ std::string getFileExtension(const std::string& url) {
 }
 
 std::string replaceFileExtension(const std::string& url, const std::string& newFileExtension) {
-    size_t pos = url.rfind('.') + 1;
-    std::string newUrl = url.substr(0, pos) + newFileExtension;
+    size_t pos = url.rfind('.');
+    std::string newUrl = url.substr(0, pos) + "." + newFileExtension;
     return newUrl;
 }
 

@@ -172,9 +172,14 @@ IVW_CORE_API std::string getFileDirectory(const std::string& url);
 IVW_CORE_API std::string getFileNameWithExtension(const std::string& url);
 IVW_CORE_API std::string getFileNameWithoutExtension(const std::string& url);
 IVW_CORE_API std::string getFileExtension(const std::string& url);
+
+
+/**
+ * Replace the last file extension to newFileExtension, if no extension exists append
+ * newFileExtension. newFileExtension should not contain any leading "."
+ */
 IVW_CORE_API std::string replaceFileExtension(const std::string& url,
                                               const std::string& newFileExtension);
-
 
 /**
  *	\brief Make a path relative to basePath.
