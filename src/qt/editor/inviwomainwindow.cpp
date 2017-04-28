@@ -135,8 +135,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     app->getCommandLineParser().add(&saveProcessorPreviews_,
                                     [this]() {
                                         utilqt::saveProcessorPreviews(
-                                            saveProcessorPreviews_.getValue(),
-                                            app_->getProcessorFactory()->getKeys());
+                                            app_, saveProcessorPreviews_.getValue());
 
                                     },
                                     1200);
@@ -187,6 +186,7 @@ InviwoMainWindow::~InviwoMainWindow() = default;
 void InviwoMainWindow::updateForNewModules() {
     settingsWidget_->updateSettingsWidget();
     processorTreeWidget_->addProcessorsToTree();
+    helpWidget_->registerQCHFiles();
     fillExampleWorkspaceMenu();
     fillTestWorkspaceMenu();
 }

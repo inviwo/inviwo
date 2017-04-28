@@ -40,14 +40,15 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 namespace utilqt {
 /**
  * Generate an image of a processor
  */
 IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 
-IVW_QTEDITOR_API void saveProcessorPreviews(const std::string& path,
-                                            const std::vector<std::string>& classIdentifiers);
+IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string& path);
 
 } // namespace
 

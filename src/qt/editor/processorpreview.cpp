@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
@@ -132,9 +133,9 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
-    const std::string& path, const std::vector<std::string>& classIdentifiers) {
-    for (const auto& classIdentifier : classIdentifiers) {
+void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
+
+    auto save = [&](const std::string& classIdentifier) {
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
         QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
         if (!img.isNull()) {
@@ -149,6 +150,10 @@ IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
             LogWarnCustom("saveProcessorPreviews",
                           "No preview generated for: \"" + classIdentifier + "\"");
         }
+    };
+
+    for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
+        save(classIdentifier);
     }
 }
 
