@@ -133,7 +133,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path, bool all) {
+void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
     auto save = [&](const std::string& classIdentifier) {
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
@@ -152,18 +152,9 @@ void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path, bo
         }
     };
 
-    if (all) {
-        for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
-            save(classIdentifier);
-        }
-    } else {
-        for (auto& module : app->getModules()) {
-            for (const auto& pfo : module->getProcessors()) {
-                save(pfo->getClassIdentifier());
-            }
-        }
+    for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
+        save(classIdentifier);
     }
 }
-
 
 }  // namespace

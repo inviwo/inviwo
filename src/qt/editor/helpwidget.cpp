@@ -139,9 +139,11 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
 
     auto app = mainwindow->getInviwoApplication();
 
+    // The help engine needs a file backed db "inviwo.qhc", this file is created on demand. 
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc");
-
     helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
+    // Any old data will be left in the since last time, we want to clear that so we can load the
+    // new qch files.
     for (const auto& ns : helpEngine_->registeredDocumentations()) {
         helpEngine_->unregisterDocumentation(ns);
     }
@@ -162,9 +164,9 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     });
 
     if (!helpEngine_->setupData()) {
-        LogWarn("Failed to setup the help engine:" << helpEngine_->error().toUtf8().constData());
+        const std::string error{helpEngine_->error().toUtf8().constData()};
         delete helpEngine_;
-        helpEngine_ = nullptr;
+        throw Exception("Failed to setup the help engine:" + error);
     }
 
     fileObserver_ = util::make_unique<QCHFileObserver>(app, helpEngine_);

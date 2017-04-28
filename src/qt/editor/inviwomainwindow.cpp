@@ -135,7 +135,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     app->getCommandLineParser().add(&saveProcessorPreviews_,
                                     [this]() {
                                         utilqt::saveProcessorPreviews(
-                                            app_, saveProcessorPreviews_.getValue(), false);
+                                            app_, saveProcessorPreviews_.getValue());
 
                                     },
                                     1200);

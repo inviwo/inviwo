@@ -48,7 +48,7 @@ namespace utilqt {
  */
 IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 
-IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string& path, bool all);
+IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string& path);
 
 } // namespace
 
