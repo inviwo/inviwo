@@ -377,7 +377,7 @@ std::string DataFormat<T>::str() {
         case NumericType::UnsignedInteger: return "UINT" + toString(precision());
         case NumericType::NotSpecialized:
         default:
-            throw DataFormatException("Invalid format", IvwContextCustom("DataForrmat"));
+            throw DataFormatException("Invalid format", IvwContextCustom("DataFormat"));
     }
 }
 
