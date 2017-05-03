@@ -49,10 +49,10 @@ struct TestImgs {
 };
 
 TEST(ImageTests, ImageLoadWhite) {
-    std::string imgFile = TestImgs::white();
+    auto imgFile = TestImgs::white();
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    std::string ext = filesystem::getFileExtension(imgFile);
+    auto ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
     auto reader =
@@ -65,41 +65,37 @@ TEST(ImageTests, ImageLoadWhite) {
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
     ASSERT_TRUE(layerRam != 0);
 
-    uvec2 dim = layerRam->getDimensions();
+    auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
 
-    dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(0, 0));
-    dvec4 b = layerRam->getAsNormalizedDVec4(uvec2(0, 1));
-    dvec4 c = layerRam->getAsNormalizedDVec4(uvec2(1, 0));
-    dvec4 d = layerRam->getAsNormalizedDVec4(uvec2(1, 1));
+    auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
+    auto b = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
+    auto c = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
+    auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 1.0);
     EXPECT_DOUBLE_EQ(a.b, 1.0);
-    EXPECT_DOUBLE_EQ(a.a, 1.0);
     EXPECT_DOUBLE_EQ(b.r, 1.0);
     EXPECT_DOUBLE_EQ(b.g, 1.0);
     EXPECT_DOUBLE_EQ(b.b, 1.0);
-    EXPECT_DOUBLE_EQ(b.a, 1.0);
     EXPECT_DOUBLE_EQ(c.r, 1.0);
     EXPECT_DOUBLE_EQ(c.g, 1.0);
     EXPECT_DOUBLE_EQ(c.b, 1.0);
-    EXPECT_DOUBLE_EQ(c.a, 1.0);
     EXPECT_DOUBLE_EQ(d.r, 1.0);
     EXPECT_DOUBLE_EQ(d.g, 1.0);
     EXPECT_DOUBLE_EQ(d.b, 1.0);
-    EXPECT_DOUBLE_EQ(d.a, 1.0);
 }
 
 TEST(ImageTests, ImageLoadRGB) {
-    std::string imgFile = TestImgs::rgb();
-    ;
+    auto imgFile = TestImgs::rgb();
+    
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
     auto disk = std::make_shared<LayerDisk>(imgFile);
     ASSERT_TRUE(disk != 0);
 
-    std::string ext = filesystem::getFileExtension(imgFile);
+    auto ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
     auto reader =
@@ -112,29 +108,25 @@ TEST(ImageTests, ImageLoadRGB) {
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
     ASSERT_TRUE(layerRam != 0);
 
-    uvec2 dim = layerRam->getDimensions();
+    auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
-    dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(0, 0));
-    dvec4 b = layerRam->getAsNormalizedDVec4(uvec2(1, 0));
-    dvec4 c = layerRam->getAsNormalizedDVec4(uvec2(0, 1));
-    dvec4 d = layerRam->getAsNormalizedDVec4(uvec2(1, 1));
+    auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
+    auto b = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
+    auto c = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
+    auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 0.0);
     EXPECT_DOUBLE_EQ(a.b, 0.0);
-    EXPECT_DOUBLE_EQ(a.a, 1.0);
     EXPECT_DOUBLE_EQ(b.r, 0.0);
     EXPECT_DOUBLE_EQ(b.g, 1.0);
     EXPECT_DOUBLE_EQ(b.b, 0.0);
-    EXPECT_DOUBLE_EQ(b.a, 1.0);
     EXPECT_DOUBLE_EQ(c.r, 0.0);
     EXPECT_DOUBLE_EQ(c.g, 0.0);
     EXPECT_DOUBLE_EQ(c.b, 1.0);
-    EXPECT_DOUBLE_EQ(c.a, 1.0);
     EXPECT_DOUBLE_EQ(d.r, 50 / 255.0);
     EXPECT_DOUBLE_EQ(d.g, 100 / 255.0);
     EXPECT_DOUBLE_EQ(d.b, 150 / 255.0);
-    EXPECT_DOUBLE_EQ(d.a, 1.0);
 }
 
 TEST(ImageTests, ImageLoadRange) {
@@ -163,11 +155,10 @@ TEST(ImageTests, ImageLoadRange) {
     EXPECT_EQ(dim.y, 1);
 
     for (int i = 0; i < 255; i++) {
-        dvec4 a = layerRam->getAsNormalizedDVec4(uvec2(i, 0));
+        auto a = layerRam->getAsNormalizedDVec3(size2_t(i, 0));
         EXPECT_DOUBLE_EQ(a.r, i / 255.0);
         EXPECT_DOUBLE_EQ(a.g, i / 255.0);
         EXPECT_DOUBLE_EQ(a.b, i / 255.0);
-        EXPECT_DOUBLE_EQ(a.a, 1.0);
     }
 }
 

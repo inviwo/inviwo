@@ -45,59 +45,80 @@
 
 namespace inviwo {
 
+
+
+    template<typename T>
+    void testVolumeLoad(Volume *volume) {
+        
+        const VolumeRAMPrecision<T>* volumeRAM =
+            dynamic_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
+        ASSERT_TRUE(volumeRAM != nullptr);
+
+        const T* data = static_cast<const T*>(volumeRAM->getData());
+        ASSERT_TRUE(data != nullptr);
+
+        size3_t dim = volume->getDimensions();
+        long long ref0;
+        double ref1;
+        double ref2;
+        double ref3;
+        double val;
+        long long ty;
+        long long tz;
+        double mod = static_cast<double>(std::numeric_limits<T>::max())
+            - static_cast<double>(std::numeric_limits<T>::min());
+        double min = static_cast<double>(std::numeric_limits<T>::min());
+
+        for (long long z = 0; z < static_cast<long long>(dim.z); z++) {
+            tz = z*z*z*z*z*z*z*z;
+
+            for (long long y = 0; y < static_cast<long long>(dim.y); y++) {
+                ty = y*y*y*y;
+
+                for (long long x = 0; x < static_cast<long long>(dim.x); x++) {
+                    ref0 = x + x*ty + x*ty*tz;
+                    ref1 = static_cast<double>(ref0);
+                    ref2 = fmod(ref1, mod);
+                    ref3 = ref2 + min;
+                    val = static_cast<double>(data[x + (y*dim.x) + (z*dim.x *dim.y)]);
+                    EXPECT_EQ(ref3, val);
+                }
+            }
+        }
+
+
+    }
+
+
 template<typename T>
-void testVolumeLoad(std::string filename) {
-    std::string file = filesystem::getPath(PathType::Modules)
-                       + "/unittests/testdata/" + filename;
+void testDatVolumeLoad(std::string filename) {
+    std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
+    std::string fileExtension = filesystem::getFileExtension(file);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<VolumeSequence>(fileExtension);
+    ASSERT_TRUE(reader.get() != nullptr);
+    auto volumeSeq = reader->readData(file);
+    ASSERT_EQ(1,volumeSeq->size());
+
+    auto volume = volumeSeq->front();
+
+    testVolumeLoad<T>(volume.get());
+    
+}
+
+
+template<typename T>
+void testIvfVolumeLoad(std::string filename) {
+    std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
     std::string fileExtension = filesystem::getFileExtension(file);
     auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volume = reader->readData(file);
-    const VolumeRAMPrecision<T>* volumeRAM =
-        static_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
-    ASSERT_TRUE(volumeRAM != nullptr);
-    
-    const T* data = static_cast<const T*>(volumeRAM->getData());
-    ASSERT_TRUE(data != nullptr);
 
-    size3_t dim = volume->getDimensions();
-    long long ref0;
-    double ref1;
-    double ref2;
-    double ref3;
-    double val;
-    long long ty;
-    long long tz;
-    double mod = static_cast<double>(std::numeric_limits<T>::max())
-                 - static_cast<double>(std::numeric_limits<T>::min());
-    double min = static_cast<double>(std::numeric_limits<T>::min());
-
-    for (long long z = 0; z < static_cast<long long>(dim.z); z++) {
-        tz = z*z*z*z*z*z*z*z;
-
-        for (long long y = 0; y < static_cast<long long>(dim.y); y++) {
-            ty = y*y*y*y;
-
-            for (long long x = 0; x < static_cast<long long>(dim.x); x++) {
-                ref0 = x + x*ty + x*ty*tz;
-                ref1 = static_cast<double>(ref0);
-                ref2 = fmod(ref1, mod);
-                ref3 = ref2 + min;
-                val = static_cast<double>(data[x + (y*dim.x) + (z*dim.x *dim.y)]);
-                EXPECT_EQ(ref3, val);
-            }
-        }
-    }
+    testVolumeLoad<T>(volume.get());
 }
 
 template<typename T>
-void testVolumeClone(std::string filename) {
-    std::string file = filesystem::getPath(PathType::Modules)
-        + "/unittests/testdata/" + filename;
-    std::string fileExtension = filesystem::getFileExtension(file);
-    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
-    ASSERT_TRUE(reader.get() != nullptr);
-    auto volume = reader->readData(file);
+void testVolumeClone(Volume *volume) {
     Volume* volume1 = volume->clone();
 
     const VolumeRAMPrecision<T>* volumeRAM =
@@ -118,8 +139,8 @@ void testVolumeClone(std::string filename) {
     size3_t dim1 = volume1->getDimensions();
     size3_t dim2 = volume2->getDimensions();
 
-    EXPECT_EQ(dim,dim1);
-    EXPECT_EQ(dim,dim2);
+    EXPECT_EQ(dim, dim1);
+    EXPECT_EQ(dim, dim2);
 
     EXPECT_EQ(volume->getModelMatrix(), volume1->getModelMatrix());
     EXPECT_EQ(volume->getModelMatrix(), volume2->getModelMatrix());
@@ -172,169 +193,198 @@ void testVolumeClone(std::string filename) {
 
 
 
+template<typename T>
+void testDatVolumeClone(std::string filename) {
+    std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
+    std::string fileExtension = filesystem::getFileExtension(file);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<VolumeSequence>(fileExtension);
+    ASSERT_TRUE(reader.get() != nullptr);
+    auto volumeSeq = reader->readData(file);
+    ASSERT_EQ(1, volumeSeq->size());
+
+    auto volume = volumeSeq->front();
+
+    testVolumeClone<T>(volume.get());
+}
+
+
+
+template<typename T>
+void testIvfVolumeClone(std::string filename) {
+    std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
+    std::string fileExtension = filesystem::getFileExtension(file);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
+    ASSERT_TRUE(reader.get() != nullptr);
+    auto volume = reader->readData(file);
+
+    testVolumeClone<T>(volume.get());
+}
+
+
+
 
 // Test the .dat reader
 
 TEST(VolumeTest, DatReaderLoadTypeUINT8) {
-    testVolumeLoad<unsigned char>("testdata.UINT8.LittleEndian.dat");
+    testDatVolumeLoad<unsigned char>("testdata.UINT8.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT16) {
-    testVolumeLoad<unsigned short>("testdata.UINT16.LittleEndian.dat");
+    testDatVolumeLoad<unsigned short>("testdata.UINT16.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT32) {
-    testVolumeLoad<unsigned int>("testdata.UINT32.LittleEndian.dat");
+    testDatVolumeLoad<unsigned int>("testdata.UINT32.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT64) {
-    testVolumeLoad<unsigned long long>("testdata.UINT64.LittleEndian.dat");
+    testDatVolumeLoad<unsigned long long>("testdata.UINT64.LittleEndian.dat");
 }
 
 TEST(VolumeTest, DatReaderLoadTypeINT8) {
-    testVolumeLoad<char>("testdata.INT8.LittleEndian.dat");
+    testDatVolumeLoad<signed char>("testdata.INT8.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT16) {
-    testVolumeLoad<short>("testdata.INT16.LittleEndian.dat");
+    testDatVolumeLoad<short>("testdata.INT16.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT32) {
-    testVolumeLoad<int>("testdata.INT32.LittleEndian.dat");
+    testDatVolumeLoad<int>("testdata.INT32.LittleEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT64) {
-    testVolumeLoad<long long>("testdata.INT64.LittleEndian.dat");
+    testDatVolumeLoad<long long>("testdata.INT64.LittleEndian.dat");
 }
 
 TEST(VolumeTest, DatReaderLoadTypeUINT8BigEndian) {
-    testVolumeLoad<unsigned char>("testdata.UINT8.BigEndian.dat");
+    testDatVolumeLoad<unsigned char>("testdata.UINT8.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT16BigEndian) {
-    testVolumeLoad<unsigned short>("testdata.UINT16.BigEndian.dat");
+    testDatVolumeLoad<unsigned short>("testdata.UINT16.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT32BigEndian) {
-    testVolumeLoad<unsigned int>("testdata.UINT32.BigEndian.dat");
+    testDatVolumeLoad<unsigned int>("testdata.UINT32.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeUINT64BigEndian) {
-    testVolumeLoad<unsigned long long>("testdata.UINT64.BigEndian.dat");
+    testDatVolumeLoad<unsigned long long>("testdata.UINT64.BigEndian.dat");
 }
 
 TEST(VolumeTest, DatReaderLoadTypeINT8BigEndian) {
-    testVolumeLoad<char>("testdata.INT8.BigEndian.dat");
+    testDatVolumeLoad<signed char>("testdata.INT8.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT16BigEndian) {
-    testVolumeLoad<short>("testdata.INT16.BigEndian.dat");
+    testDatVolumeLoad<short>("testdata.INT16.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT32BigEndian) {
-    testVolumeLoad<int>("testdata.INT32.BigEndian.dat");
+    testDatVolumeLoad<int>("testdata.INT32.BigEndian.dat");
 }
 TEST(VolumeTest, DatReaderLoadTypeINT64BigEndian) {
-    testVolumeLoad<long long>("testdata.INT64.BigEndian.dat");
+    testDatVolumeLoad<long long>("testdata.INT64.BigEndian.dat");
 }
 
 
 // Test the .ivf reader
 
 TEST(VolumeTest, IvfReaderLoadTypeUINT8) {
-    testVolumeLoad<unsigned char>("testdata.UINT8.LittleEndian.ivf");
+    testIvfVolumeLoad<unsigned char>("testdata.UINT8.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT16) {
-    testVolumeLoad<unsigned short>("testdata.UINT16.LittleEndian.ivf");
+    testIvfVolumeLoad<unsigned short>("testdata.UINT16.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT32) {
-    testVolumeLoad<unsigned int>("testdata.UINT32.LittleEndian.ivf");
+    testIvfVolumeLoad<unsigned int>("testdata.UINT32.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT64) {
-    testVolumeLoad<unsigned long long>("testdata.UINT64.LittleEndian.ivf");
+    testIvfVolumeLoad<unsigned long long>("testdata.UINT64.LittleEndian.ivf");
 }
 
 TEST(VolumeTest, IvfReaderLoadTypeINT8) {
-    testVolumeLoad<char>("testdata.INT8.LittleEndian.ivf");
+    testIvfVolumeLoad<signed char>("testdata.INT8.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT16) {
-    testVolumeLoad<short>("testdata.INT16.LittleEndian.ivf");
+    testIvfVolumeLoad<short>("testdata.INT16.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT32) {
-    testVolumeLoad<int>("testdata.INT32.LittleEndian.ivf");
+    testIvfVolumeLoad<int>("testdata.INT32.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT64) {
-    testVolumeLoad<long long>("testdata.INT64.LittleEndian.ivf");
+    testIvfVolumeLoad<long long>("testdata.INT64.LittleEndian.ivf");
 }
 
 TEST(VolumeTest, IvfReaderLoadTypeUINT8BigEndian) {
-    testVolumeLoad<unsigned char>("testdata.UINT8.BigEndian.ivf");
+    testIvfVolumeLoad<unsigned char>("testdata.UINT8.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT16BigEndian) {
-    testVolumeLoad<unsigned short>("testdata.UINT16.BigEndian.ivf");
+    testIvfVolumeLoad<unsigned short>("testdata.UINT16.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT32BigEndian) {
-    testVolumeLoad<unsigned int>("testdata.UINT32.BigEndian.ivf");
+    testIvfVolumeLoad<unsigned int>("testdata.UINT32.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeUINT64BigEndian) {
-    testVolumeLoad<unsigned long long>("testdata.UINT64.BigEndian.ivf");
+    testIvfVolumeLoad<unsigned long long>("testdata.UINT64.BigEndian.ivf");
 }
 
 TEST(VolumeTest, IvfReaderLoadTypeINT8BigEndian) {
-    testVolumeLoad<char>("testdata.INT8.BigEndian.ivf");
+    testIvfVolumeLoad<signed char>("testdata.INT8.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT16BigEndian) {
-    testVolumeLoad<short>("testdata.INT16.BigEndian.ivf");
+    testIvfVolumeLoad<short>("testdata.INT16.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT32BigEndian) {
-    testVolumeLoad<int>("testdata.INT32.BigEndian.ivf");
+    testIvfVolumeLoad<int>("testdata.INT32.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT64BigEndian) {
-    testVolumeLoad<long long>("testdata.INT64.BigEndian.ivf");
+    testIvfVolumeLoad<long long>("testdata.INT64.BigEndian.ivf");
 }
 
 
 // Test cloning ////////////////////////////////////////////////////////////////////////
 
 TEST(VolumeTest, DatVolumeCloneTypeUINT8) {
-    testVolumeClone<unsigned char>("testdata.UINT8.LittleEndian.dat");
+    testDatVolumeClone<unsigned char>("testdata.UINT8.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT16) {
-    testVolumeClone<unsigned short>("testdata.UINT16.LittleEndian.dat");
+    testDatVolumeClone<unsigned short>("testdata.UINT16.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT32) {
-    testVolumeClone<unsigned int>("testdata.UINT32.LittleEndian.dat");
+    testDatVolumeClone<unsigned int>("testdata.UINT32.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT64) {
-    testVolumeClone<unsigned long long>("testdata.UINT64.LittleEndian.dat");
+    testDatVolumeClone<unsigned long long>("testdata.UINT64.LittleEndian.dat");
 }
 
 TEST(VolumeTest, DatVolumeCloneTypeINT8) {
-    testVolumeClone<char>("testdata.INT8.LittleEndian.dat");
+    testDatVolumeClone<signed char>("testdata.INT8.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT16) {
-    testVolumeClone<short>("testdata.INT16.LittleEndian.dat");
+    testDatVolumeClone<short>("testdata.INT16.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT32) {
-    testVolumeClone<int>("testdata.INT32.LittleEndian.dat");
+    testDatVolumeClone<int>("testdata.INT32.LittleEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT64) {
-    testVolumeClone<long long>("testdata.INT64.LittleEndian.dat");
+    testDatVolumeClone<long long>("testdata.INT64.LittleEndian.dat");
 }
 
 TEST(VolumeTest, DatVolumeCloneTypeUINT8BigEndian) {
-    testVolumeClone<unsigned char>("testdata.UINT8.BigEndian.dat");
+    testDatVolumeClone<unsigned char>("testdata.UINT8.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT16BigEndian) {
-    testVolumeClone<unsigned short>("testdata.UINT16.BigEndian.dat");
+    testDatVolumeClone<unsigned short>("testdata.UINT16.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT32BigEndian) {
-    testVolumeClone<unsigned int>("testdata.UINT32.BigEndian.dat");
+    testDatVolumeClone<unsigned int>("testdata.UINT32.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeUINT64BigEndian) {
-    testVolumeClone<unsigned long long>("testdata.UINT64.BigEndian.dat");
+    testDatVolumeClone<unsigned long long>("testdata.UINT64.BigEndian.dat");
 }
 
 TEST(VolumeTest, DatVolumeCloneTypeINT8BigEndian) {
-    testVolumeClone<char>("testdata.INT8.BigEndian.dat");
+    testDatVolumeClone<signed char>("testdata.INT8.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT16BigEndian) {
-    testVolumeClone<short>("testdata.INT16.BigEndian.dat");
+    testDatVolumeClone<short>("testdata.INT16.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT32BigEndian) {
-    testVolumeClone<int>("testdata.INT32.BigEndian.dat");
+    testDatVolumeClone<int>("testdata.INT32.BigEndian.dat");
 }
 TEST(VolumeTest, DatVolumeCloneTypeINT64BigEndian) {
-    testVolumeClone<long long>("testdata.INT64.BigEndian.dat");
+    testDatVolumeClone<long long>("testdata.INT64.BigEndian.dat");
 }
 
 
@@ -342,55 +392,55 @@ TEST(VolumeTest, DatVolumeCloneTypeINT64BigEndian) {
 
 
 TEST(VolumeTest, IvfVolumeCloneTypeUINT8) {
-    testVolumeClone<unsigned char>("testdata.UINT8.LittleEndian.ivf");
+    testIvfVolumeClone<unsigned char>("testdata.UINT8.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT16) {
-    testVolumeClone<unsigned short>("testdata.UINT16.LittleEndian.ivf");
+    testIvfVolumeClone<unsigned short>("testdata.UINT16.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT32) {
-    testVolumeClone<unsigned int>("testdata.UINT32.LittleEndian.ivf");
+    testIvfVolumeClone<unsigned int>("testdata.UINT32.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT64) {
-    testVolumeClone<unsigned long long>("testdata.UINT64.LittleEndian.ivf");
+    testIvfVolumeClone<unsigned long long>("testdata.UINT64.LittleEndian.ivf");
 }
 
 TEST(VolumeTest, IvfVolumeCloneTypeINT8) {
-    testVolumeClone<char>("testdata.INT8.LittleEndian.ivf");
+    testIvfVolumeClone<signed char>("testdata.INT8.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT16) {
-    testVolumeClone<short>("testdata.INT16.LittleEndian.ivf");
+    testIvfVolumeClone<short>("testdata.INT16.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT32) {
-    testVolumeClone<int>("testdata.INT32.LittleEndian.ivf");
+    testIvfVolumeClone<int>("testdata.INT32.LittleEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT64) {
-    testVolumeClone<long long>("testdata.INT64.LittleEndian.ivf");
+    testIvfVolumeClone<long long>("testdata.INT64.LittleEndian.ivf");
 }
 
 TEST(VolumeTest, IvfVolumeCloneTypeUINT8BigEndian) {
-    testVolumeClone<unsigned char>("testdata.UINT8.BigEndian.ivf");
+    testIvfVolumeClone<unsigned char>("testdata.UINT8.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT16BigEndian) {
-    testVolumeClone<unsigned short>("testdata.UINT16.BigEndian.ivf");
+    testIvfVolumeClone<unsigned short>("testdata.UINT16.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT32BigEndian) {
-    testVolumeClone<unsigned int>("testdata.UINT32.BigEndian.ivf");
+    testIvfVolumeClone<unsigned int>("testdata.UINT32.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeUINT64BigEndian) {
-    testVolumeClone<unsigned long long>("testdata.UINT64.BigEndian.ivf");
+    testIvfVolumeClone<unsigned long long>("testdata.UINT64.BigEndian.ivf");
 }
 
 TEST(VolumeTest, IvfVolumeCloneTypeINT8BigEndian) {
-    testVolumeClone<char>("testdata.INT8.BigEndian.ivf");
+    testIvfVolumeClone<signed char>("testdata.INT8.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT16BigEndian) {
-    testVolumeClone<short>("testdata.INT16.BigEndian.ivf");
+    testIvfVolumeClone<short>("testdata.INT16.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT32BigEndian) {
-    testVolumeClone<int>("testdata.INT32.BigEndian.ivf");
+    testIvfVolumeClone<int>("testdata.INT32.BigEndian.ivf");
 }
 TEST(VolumeTest, IvfVolumeCloneTypeINT64BigEndian) {
-    testVolumeClone<long long>("testdata.INT64.BigEndian.ivf");
+    testIvfVolumeClone<long long>("testdata.INT64.BigEndian.ivf");
 }
 
 }

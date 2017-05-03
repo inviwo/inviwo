@@ -29,7 +29,7 @@
 
 #include <inviwo/core/network/processornetwork.h>
 #include <modules/base/processors/volumesource.h>
-#include <modules/base/processors/cubeproxygeometry.h>
+#include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <modules/base/processors/volumeslice.h>
 
 #include <warn/push>
@@ -40,6 +40,8 @@
 namespace inviwo {
 
 class NetworkTest : public ::testing::Test {
+public:
+    NetworkTest() : network(InviwoApplication::getPtr()) {};
 protected:
     virtual void SetUp() {
        Processor* p1 = new VolumeSource();
@@ -54,8 +56,8 @@ protected:
        p3->setIdentifier("volumeSlice");
        network.addProcessor(p3);
 
-       network.addConnection(p1->getOutport("data"), p2->getInport("volume.inport"));
-       network.addConnection(p1->getOutport("data"), p3->getInport("volume.inport"));
+       network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
+       network.addConnection(p1->getOutport("data"), p3->getInport("inputVolume"));
     }
 
     // virtual void TearDown() {}
