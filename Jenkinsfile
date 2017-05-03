@@ -80,6 +80,7 @@ node {
                               -DIVW_MODULE_ANIMATIONQT=ON \
                               -DIVW_MODULE_POSTPROCESSING=ON \
                               -DIVW_MODULE_HDF5=ON \
+                              -DIVW_BUILD_INTEGRATION_TESTS=ON \
                               ../inviwo
 
                         make -j 6
