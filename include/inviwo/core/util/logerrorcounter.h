@@ -51,7 +51,7 @@ public:
     size_t getInfoCount() const;
     size_t getWarnCount() const;
     size_t getErrorCount() const;
-    static LogErrorCounter* getPtr();;
+    static LogErrorCounter* getPtr();
 
 private:
     std::map<LogLevel, size_t> messageCount_;
