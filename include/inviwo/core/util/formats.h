@@ -675,9 +675,6 @@ typedef DataFormat<glm::u64vec4> DataVec4UInt64;
 
 /*---------------Single Value Formats------------------*/
 
-// Bit Specializations
-template<> constexpr  size_t DataFloat16::size() { return DataFloat32::size(); }
-
 // Type Function Specializations
 template<> constexpr DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
 template<> constexpr DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
