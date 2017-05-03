@@ -693,9 +693,6 @@ template<> constexpr DataFormatId DataUInt64::id() { return DataFormatId::UInt64
 
 /*---------------Vec2 Formats--------------------*/
 
-// Bit Specializations
-template<> constexpr size_t DataVec2Float16::size() { return DataVec2Float32::size(); }
-
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
 template<> constexpr DataFormatId DataVec2Float32::id() { return DataFormatId::Vec2Float32; }
@@ -713,9 +710,6 @@ template<> constexpr DataFormatId DataVec2UInt64::id() { return DataFormatId::Ve
 
 
 /*---------------Vec3 Formats--------------------*/
-
-// Bit Specializations
-template<> constexpr size_t DataVec3Float16::size() { return DataVec3Float32::size(); }
 
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
@@ -735,9 +729,6 @@ template<> constexpr DataFormatId DataVec3UInt64::id() { return DataFormatId::Ve
 
 
 /*---------------Vec4 Formats--------------------*/
-
-// Bit Specializations
-template<> constexpr size_t DataVec4Float16::size() { return DataVec4Float32::size(); }
 
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
