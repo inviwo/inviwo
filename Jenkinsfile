@@ -93,7 +93,7 @@ node {
                 nicelog {
                     sh """
                         export DISPLAY=:0
-                        ../build/bin/inviwo-integrationtests
+                        ./build/bin/inviwo-integrationtests
                     """
                 }
             }
