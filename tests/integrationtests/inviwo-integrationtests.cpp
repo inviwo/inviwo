@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
@@ -45,8 +45,8 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <moduleregistration.h>
-
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -61,8 +61,6 @@ int main(int argc, char** argv) {
         // scope for ivw app
         LogCentral::init();
         util::OnScopeExit deleteLogcentral([]() { LogCentral::deleteInstance(); });
-        //inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
-
 
         auto logCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(logCounter);
@@ -70,33 +68,17 @@ int main(int argc, char** argv) {
         InviwoApplication inviwoApp(argc, argv, "unittest " + IVW_VERSION);
         inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
         inviwoApp.setProgressCallback([](std::string m) {
-            LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+            LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "",
+                                      "", 0, m);
         });
-
-        //CanvasGLFW::setAlwaysOnTopByDefault(false);
-
-        //if (!glfwInit()) {
-       //     LogErrorCustom("Inviwo Unit Tests Application", "GLFW could not be initialized.");
-       //     return 0;
-       // }
 
         // Initialize all modules
         inviwoApp.registerModules(&inviwo::registerAllModules);
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
-
-
-
-
         inviwoApp.getSettingsByType<SystemSettings>()->poolSize_.set(0);
 
-        cmdparser.processCallbacks(); // run any command line callbacks from modules.
-
-
-        // Continue initialization of default context
-        //CanvasGLFW* sharedCanvas = static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
-        //sharedCanvas->initialize();
-        //sharedCanvas->activate();
+        cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
         size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
         size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
@@ -119,9 +101,9 @@ int main(int argc, char** argv) {
         }
         if (errCount != errCountAfter) {
             LogWarnCustom("UnitTestsModule::runAllTest", "The  integratation test runs generated "
-                                                             << (errCountAfter - errCount) << " errors");
+                                                             << (errCountAfter - errCount)
+                                                             << " errors");
         }
-
     }
 
     glfwTerminate();
