@@ -41,34 +41,30 @@
 
 #include <algorithm>
 
+
 namespace py = pybind11;
 
+template <typename T, size_t N>
+using ith_T = T;
 
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 0, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 1, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 2, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 3, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 4, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 5, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 6, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 7, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 8, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 9, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 10, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 11, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 12, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 13, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 14, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 15, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T, T, T, T, T>()); }
-template <typename T, typename V, unsigned C, typename std::enable_if<C == 16, int>::type = 0> void addInit(py::class_<V> &pyv) { pyv.def(py::init<T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T>()); }
+template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
+void addInit(py::class_<V> &pyv) {
+    addInitImpl<V, T>(pyv, Indices{});
+}
+
+template <typename V, typename T, std::size_t... I>
+void addInitImpl(py::class_<V> &pyv, std::index_sequence<I...>) {
+    pyv.def(py::init<ith_T<T, I>...>());
+}
 
 namespace inviwo {
-   
-    template <typename T,typename GLM> void common(py::class_<GLM> &pyc){
+
+    template <typename T,typename GLM> void common(py::module &m,py::class_<GLM> &pyc , std::string name){
         pyc
             .def(py::init<T>())
             .def(py::init<>())
             .def("__repr__", [](GLM &v) { return glm::to_string(v); })
+
             .def(py::self + py::self)
             .def(py::self - py::self)
             .def(py::self += py::self)
@@ -87,29 +83,28 @@ namespace inviwo {
 
             .def("__getitem__", [](GLM &v, int idx) { return &v[idx]; } , py::return_value_policy::reference_internal)
             ;
+
+        py::bind_vector<std::vector<GLM>>(m, name + "Vector");
     }
 
-    template<typename T, typename V, typename P>
-    void floatOnlyVecs(P &p, std::false_type) {}
+    template<typename T, typename V>
+    void floatOnlyVecs(py::module &m,  std::false_type) {}
 
-    template<typename T, typename V, typename P>
-    void floatOnlyVecs(P &p, std::true_type) {
+    template<typename T, typename V>
+    void floatOnlyVecs(py::module &m, std::true_type) {
         //        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });
-        p.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
-        p.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
-        p.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
-        p.def("length", [](V &v) { return glm::length(v); });
-        p.def("length2", [](V &v) { return glm::length2(v); });
-        p.def("normalize", [](V &v) { return glm::normalize(v); });
+        m.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
+        m.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
+        m.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
+        m.def("length", [](V &v) { return glm::length(v); });
+        m.def("length2", [](V &v) { return glm::length2(v); });
+        m.def("normalize", [](V &v) { return glm::normalize(v); });
     }
 
-    template<typename T, typename V, typename P>
-    void floatOnlyVecs(P &p) {
-        floatOnlyVecs<T,V,P>(p,std::is_floating_point<T>());
+    template<typename T, typename V>
+    void floatOnlyVecs(py::module &m ) {
+        floatOnlyVecs<T,V>(m,std::is_floating_point<T>());
     }
-
-
-
 
 
     template <typename T,unsigned A>
@@ -118,17 +113,30 @@ namespace inviwo {
         std::stringstream classname;
         classname << prefix << name << A << postfix;
         py::class_<V> pyv(m, classname.str().c_str());
-        common<T>(pyv);
+        common<T>(m,pyv,classname.str());
         addInit<T, V, A>(pyv);
-        pyv
+        pyv 
             .def(py::self * py::self)
             .def(py::self / py::self)
             .def(py::self *= py::self)
             .def(py::self /= py::self)
 
-            .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; })
-            ;
+            .def("__str__",
+                [](V &v) {
+                    std::ostringstream oss;
+                    oss << "[";
+                    for (int i = 0; i < A; i++) {
+                        if (i != 0) {
+                            oss << " ";
+                        }
+                        oss << v[i];
+                    }
+                    oss << "]";
+                    return oss.str();
+        })
 
+            .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; });
+        floatOnlyVecs<T,V>(m);
     }
 
     
@@ -160,25 +168,43 @@ namespace inviwo {
         }
 
         py::class_<M> pym(m, classname.str().c_str());
-        common<T>(pym);
+        common<T>(m,pym,classname.str());
         addInit<T, M, COLS*ROWS>(pym);
         addInit<typename M::col_type, M, ROWS>(pym);
-        pym
-            .def(py::self * Vb())
+        pym.def(py::self * Vb())
             .def(py::self * Ma2())
             .def(py::self * Ma3())
             .def(py::self * Ma4())
 
             .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
-
             .def("__setitem__", [](M &m, int idx, Va &t) { return m[idx] = t; })
             .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
 
-//            .def("transpose", [](M &m) {return glm::transpose(m); })
-//            .def("inverse", [](M &m) {return glm::inverse(m); })
-//            .def("determinant", [](M &m) {return glm::determinant(m); })
-            ;
+            .def("__str__",
+                 [](M &m) {
+                     std::ostringstream oss;
+                     oss << "[";
+                     for (int col = 0; col < COLS; col++) {
+                         if (col != 0) {
+                             oss << ",";
+                         }
+                         oss << "[";
+                         for (int row = 0; row < ROWS; row++) {
+                             if (row != 0) {
+                                 oss << " ";
+                             }
+                             oss << m[col][row];
+                         }
+                         oss << "]";
+                     }
+                     oss << "]";
+                     return oss.str();
+                 })
 
+            //            .def("transpose", [](M &m) {return glm::transpose(m); })
+            //            .def("inverse", [](M &m) {return glm::inverse(m); })
+            //            .def("determinant", [](M &m) {return glm::determinant(m); })
+            ;
     }
 
     template <typename T, unsigned COLS>
@@ -214,4 +240,6 @@ namespace inviwo {
         glmtypes<unsigned int>(glmModule, "u");
         vec<size_t>(glmModule, "","size", "_t");
     }
+
+
 }

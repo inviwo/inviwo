@@ -39,13 +39,25 @@
 
 namespace inviwo {
 
+template <typename T>
+struct HasOwnerDeleter {
+    void operator()(T *p) {
+        if (p && p->getOwner() == nullptr) delete p;
+    }
+};
+
+template <typename T>
+using PropertyPtr = std::unique_ptr<T, HasOwnerDeleter<T>>;
+
+
+
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {
     prop.def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
         .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
 }
 
-template<typename PropertyType,typename T>
+template <typename PropertyType, typename T>
 struct OrdinalPropertyIterator {
     PropertyType *property_;
     T cur;
@@ -63,33 +75,22 @@ struct OrdinalPropertyIterator {
         property_->set(property_->getMinValue());
     }
 
-
     OrdinalPropertyIterator(PropertyType *prop, T begin, T end)
-        : property_(prop)
-        , begin(begin)
-        , end(end)
-        , cur(begin)
-        , inc(prop->getIncrement()) {
+        : property_(prop), begin(begin), end(end), cur(begin), inc(prop->getIncrement()) {
         property_->set(property_->getMinValue());
     }
 
     OrdinalPropertyIterator(PropertyType *prop, T begin, T end, T inc)
-        : property_(prop)
-        , begin(begin)
-        , end(end)
-        , cur(begin)
-        , inc(inc) {
+        : property_(prop), begin(begin), end(end), cur(begin), inc(inc) {
         property_->set(property_->getMinValue());
     }
 
-
-    OrdinalPropertyIterator* iter() { return this; }
+    OrdinalPropertyIterator *iter() { return this; }
 
     T next() {
         if (cur > end) {
             throw pybind11::stop_iteration();
-        }
-        else {
+        } else {
             property_->set(cur);
             cur += inc;
             return cur - inc;
@@ -97,43 +98,39 @@ struct OrdinalPropertyIterator {
     }
 };
 
-
-template<typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m , PC &pc,std::true_type) {
+template <typename T, typename P, typename M, typename PC>
+void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
     auto itclassname = Defaultvalues<T>::getName() + "PropertyIterator";
 
     using IT = OrdinalPropertyIterator<P, T>;
 
     pybind11::class_<IT>(m, itclassname.c_str())
-        .def(pybind11::init<P*>())
+        .def(pybind11::init<P *>())
         .def("__next__", &IT::next)
-        .def("__iter__", &IT::iter)
-        ;
+        .def("__iter__", &IT::iter);
 
-    pc.def("__iter__", [&](P* p) {return IT(p); });
-    pc.def("foreach", [&](P* p, T begin, T end) {return IT(p, begin, end); });
-    pc.def("foreach", [&](P* p, T begin, T end ,T inc) {return IT(p, begin, end, inc); });
+    pc.def("__iter__", [&](P *p) { return IT(p); });
+    pc.def("foreach", [&](P *p, T begin, T end) { return IT(p, begin, end); });
+    pc.def("foreach", [&](P *p, T begin, T end, T inc) { return IT(p, begin, end, inc); });
 }
 
-template<typename T, typename P, typename M, typename PC>
+template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc, std::false_type) {}
 
-
-template<typename T, typename P, typename M, typename PC>
+template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc) {
-    addOrdinalPropertyIterator<T, P>(m, pc, typename std::conditional<util::rank<T>::value == 0,std::true_type,std::false_type>::type());
+    addOrdinalPropertyIterator<T, P>(
+        m, pc, typename std::conditional<util::rank<T>::value == 0, std::true_type,
+                                         std::false_type>::type());
 }
 
 struct OrdinalPropertyHelper {
-    
+
     template <typename T>
     auto operator()(pybind11::module &m) {
         using P = OrdinalProperty<T>;
 
         auto classname = Defaultvalues<T>::getName() + "Property";
-      
-
-        
 
         pybind11::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(
             m, classname.c_str());
@@ -147,13 +144,13 @@ struct OrdinalPropertyHelper {
                      new (&instance)
                          P(identifier, displayName, value, minValue, maxValue, increment);
                  })
-            
+
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
         pyTemplateProperty<T, P>(pyOrdinal);
 
-        addOrdinalPropertyIterator<T, P>(m,pyOrdinal);
+        addOrdinalPropertyIterator<T, P>(m, pyOrdinal);
 
         return pyOrdinal;
     }

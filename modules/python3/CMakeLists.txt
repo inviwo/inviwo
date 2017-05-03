@@ -9,6 +9,10 @@ ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    #${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
@@ -21,8 +25,13 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    #${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.cpp
 )
@@ -39,6 +48,10 @@ set(SCRIPT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/camera.py
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/regression.py
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/utils.py
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/mandelbrot.py
+    #${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpymeshcreatetest.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpyvolumeprocessor.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
@@ -53,6 +66,10 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pybuffer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyimage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.h
@@ -62,6 +79,10 @@ set(INTERFACE_HEADER_FILES
 set(INTERFACE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyimage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pybuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.cpp

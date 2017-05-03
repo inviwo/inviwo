@@ -24,58 +24,65 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_PYBINDUTILS_H
-#define IVW_PYBINDUTILS_H
+#ifndef IVW_NUMPYMANDELBROT_H
+#define IVW_NUMPYMANDELBROT_H
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <modules/python3/pythonincluder.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/formats.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/python3/pythonscript.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 
-namespace pyutil {
+/** \docpage{org.inviwo.NumpyMandelbrot, Numpy Mandelbrot}
+ * ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
-IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
 
-template <typename T>
-pybind11::object toPyBindObject(const T &t) {
-    return pybind11::cast(t);
-}
+/**
+ * \class NumpyMandelbrot
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor { 
+public:
+    NumpyMandelbrot();
+    virtual ~NumpyMandelbrot() = default;
+     
+    virtual void process() override;
 
-template <typename T>
-T toPyBindObjectBorrow(PyObject *obj) {
-    return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+private:
+    ImageOutport outport_;
 
-template <typename T>
-T toPyBindObjectSteal(PyObject *obj) {
-    return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
-}
+    IntSize2Property size_;
+    FloatMinMaxProperty realBounds_;
+    FloatMinMaxProperty imaginaryBound_;
+    FloatProperty power_;
+    IntSizeTProperty iterations_;
 
-template <typename T>
-T toPyBindObject(PyObject *obj, bool steal = false) {
-    if (steal) {
-        return toPyBindObjectSteal<T>(obj);
-    } else {
-        return toPyBindObjectBorrow<T>(obj);
-    }
-}
-}  // namespace pyutil
+    PythonScriptDisk script_;
+};
 
-}  // namespace inviwo
+} // namespace
 
-#endif  // IVW_NUMPYUTILS_H
+#endif // IVW_NUMPYMANDELBROT_H
+

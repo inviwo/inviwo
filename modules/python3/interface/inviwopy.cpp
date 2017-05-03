@@ -35,10 +35,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyowner.h>
 
+#include <modules/python3/interface/pyimage.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyprocessors.h>
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/interface/pyproperties.h>
+#include <modules/python3/interface/pyvolume.h>
+#include <modules/python3/interface/pybuffer.h>
+#include <modules/python3/interface/pymesh.h>
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -48,6 +52,24 @@
 #include <inviwo/core/util/logcentral.h>
 
 namespace py = pybind11;
+
+namespace inviwo{
+
+    struct DataFormatHelper {
+        template <typename DataFormat>
+        auto operator()(pybind11::module &m) {
+            using T = typename DataFormat::type;
+            m.attr(("Data" + DataFormat::str()).c_str())= py::cast(static_cast<const DataFormatBase *>(DataFormat::get()), py::return_value_policy::reference);
+        }
+    };
+
+
+}
+
+
+PYBIND11_MAKE_OPAQUE(std::vector<int>);
+PYBIND11_MAKE_OPAQUE(std::vector<float>);
+PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 PYBIND11_PLUGIN(inviwopy) {
 
@@ -59,6 +81,10 @@ PYBIND11_PLUGIN(inviwopy) {
     py::module m("inviwopy", "Python interface for Inviwo");
 
     exposeGLMTypes(m);
+
+    auto propertiesModule = m.def_submodule("properties", "Exposing various Inviwo Properties");
+    auto dataModule = m.def_submodule("data", "Module containing class mapping to the Inviwo data structures");
+    auto formatsModule = dataModule.def_submodule("formats", "Module containing the various data formats");
 
     auto getModules = [](InviwoApplication *app) {
         std::vector<InviwoModule *> modules;
@@ -123,9 +149,28 @@ PYBIND11_PLUGIN(inviwopy) {
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
+
+    py::class_<DataFormatBase>(formatsModule,"DataFormat")
+        .def_property_readonly("size", &DataFormatBase::getSize)
+        .def_property_readonly("components", &DataFormatBase::getComponents)
+        .def_property_readonly("precision", &DataFormatBase::getPrecision)
+        //.def_property_readonly("numericType", &DataFormatBase::getNumericTypve)
+        //.def_property_readonly("id", &DataFormatBase::getId)
+        .def_property_readonly("max", &DataFormatBase::getMax)
+        .def_property_readonly("min", &DataFormatBase::getMin)
+        .def_property_readonly("lowest", &DataFormatBase::getLowest)
+        .def_property_readonly("__str__", &DataFormatBase::getString)
+        ;
+
+    util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, formatsModule);
+
     exposeNetwork(m);
     exposeProcessors(m);
-    exposeProperties(m);
+    exposeProperties(propertiesModule);
+    exposeImage(dataModule);
+    exposeVolume(dataModule);
+    exposeBuffer(dataModule);
+    exposeMesh(dataModule);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
@@ -162,6 +207,10 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("RegressionTests", ModulePath::RegressionTests)
         .value("GLSL", ModulePath::GLSL)
         .value("CL", ModulePath::CL);
+
+    //py::bind_vector<std::vector<int>>(m, "VectorInt");
+    //py::bind_vector<std::vector<float>>(m, "VectorFloat");
+    //py::bind_vector<std::vector<double>>(m, "VectorDouble");
 
     auto module = util::getInviwoApplication()->getModuleByType<Python3Module>();
     if (module) {

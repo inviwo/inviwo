@@ -30,19 +30,22 @@
 #include <modules/python3/interface/pynetwork.h>
 
 #include <modules/python3/interface/inviwopy.h>
+#include <modules/python3/interface/pyglmtypes.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
 
 
 
 namespace py = pybind11;
 
 namespace inviwo {
+
+
+
 
 void exposeNetwork(py::module &m) {
     py::class_<PortConnection>(m, "PortConnection")
@@ -171,5 +174,24 @@ void exposeNetwork(py::module &m) {
     py::class_<Outport, Port> pyOutport(m, "Outport");
     pyOutport.def("isConnectedTo", &Outport::isConnectedTo);
     pyOutport.def("getConnectedInports", &Outport::getConnectedInports, py::return_value_policy::reference);
+
+
+    exposeOutport<DataOutport<std::vector<vec2>>>(m, "Vec2");
+    exposeOutport<DataOutport<std::vector<vec3>>>(m, "Vec3");
+    exposeOutport<DataOutport<std::vector<vec4>>>(m, "Vec4");
+    exposeOutport<DataOutport<std::vector<dvec2>>>(m, "dVec2");
+    exposeOutport<DataOutport<std::vector<dvec3>>>(m, "dVec3");
+    exposeOutport<DataOutport<std::vector<dvec4>>>(m, "dVec4");
+    exposeOutport<DataOutport<std::vector<ivec2>>>(m, "iVec2");
+    exposeOutport<DataOutport<std::vector<ivec3>>>(m, "iVec3");
+    exposeOutport<DataOutport<std::vector<ivec4>>>(m, "iVec4");
+    exposeOutport<DataOutport<std::vector<size2_t>>>(m, "Size2t");
+    exposeOutport<DataOutport<std::vector<size3_t>>>(m, "Size3t");
+    exposeOutport<DataOutport<std::vector<size4_t>>>(m, "Size4t");
+
+   
+
+
+
 }
 }  // namespace

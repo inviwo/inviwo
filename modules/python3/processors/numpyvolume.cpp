@@ -27,55 +27,51 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYBINDUTILS_H
-#define IVW_PYBINDUTILS_H
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/python3/pythonincluder.h>
+#include <modules/python3/processors/numpyvolume.h>
+#include <modules/python3/python3module.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
-namespace pyutil {
-
-IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
-
-template <typename T>
-pybind11::object toPyBindObject(const T &t) {
-    return pybind11::cast(t);
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo NumPyVolume::processorInfo_{
+    "org.inviwo.NumPyVolume",  // Class identifier
+    "NumPy Volume",            // Display name
+    "NumPy",                   // Category
+    CodeState::Experimental,   // Code state
+    Tags::None,                // Tags
+};
+const ProcessorInfo NumPyVolume::getProcessorInfo() const {
+    return processorInfo_;
 }
 
-template <typename T>
-T toPyBindObjectBorrow(PyObject *obj) {
-    return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
+NumPyVolume::NumPyVolume()
+    : Processor()
+    , outport_("outport")
+    , size_("size", "size_", size3_t(64), size3_t(32), size3_t(512))
+    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) + "/numpyvolumeprocessor.py")
+
+{
+    
+    addPort(outport_);
+    addProperty(size_);
+
+    script_.onChange([&]() {invalidate(InvalidationLevel::InvalidOutput); });
+
+}
+    
+void NumPyVolume::process() {
+    auto vol = std::make_shared<Volume>(size_.get(), DataFloat32::get());
+
+    script_.run({
+        {"vol" , pybind11::cast(vol.get())}
+    }); 
+
+    vol->dataMap_.dataRange = dvec2(0,1);
+
+    outport_.setData(vol);
 }
 
-template <typename T>
-T toPyBindObjectSteal(PyObject *obj) {
-    return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
-}
+} // namespace
 
-template <typename T>
-T toPyBindObject(PyObject *obj, bool steal = false) {
-    if (steal) {
-        return toPyBindObjectSteal<T>(obj);
-    } else {
-        return toPyBindObjectBorrow<T>(obj);
-    }
-}
-}  // namespace pyutil
-
-}  // namespace inviwo
-
-#endif  // IVW_NUMPYUTILS_H

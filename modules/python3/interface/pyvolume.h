@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,55 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYBINDUTILS_H
-#define IVW_PYBINDUTILS_H
+#ifndef IVW_PYVOLUME_H
+#define IVW_PYVOLUME_H
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/python3/pythonincluder.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
-namespace pyutil {
-
-IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
-
-template <typename T>
-pybind11::object toPyBindObject(const T &t) {
-    return pybind11::cast(t);
+void exposeVolume(pybind11::module &m);
 }
 
-template <typename T>
-T toPyBindObjectBorrow(PyObject *obj) {
-    return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
-}
-
-template <typename T>
-T toPyBindObjectSteal(PyObject *obj) {
-    return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
-}
-
-template <typename T>
-T toPyBindObject(PyObject *obj, bool steal = false) {
-    if (steal) {
-        return toPyBindObjectSteal<T>(obj);
-    } else {
-        return toPyBindObjectBorrow<T>(obj);
-    }
-}
-}  // namespace pyutil
-
-}  // namespace inviwo
-
-#endif  // IVW_NUMPYUTILS_H
+#endif  // IVW_PYVOLUME_H

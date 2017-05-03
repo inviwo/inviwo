@@ -36,12 +36,16 @@
 #include <inviwo/core/metadata/processormetadata.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
+
 
 namespace py = pybind11;
 
 namespace inviwo {
+
+
 
 
 
@@ -122,6 +126,9 @@ void exposeProcessors(py::module &m) {
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
+        .def_property_readonly(
+            "image",
+            [](CanvasProcessor *cp) { return cp->getImage().get(); } , py::return_value_policy::reference )
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def_property("fullScreen", &CanvasProcessor::isFullScreen, &CanvasProcessor::setFullScreen)
         .def("snapshot", [](CanvasProcessor *canvas, std::string filepath) {

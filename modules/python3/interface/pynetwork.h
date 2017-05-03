@@ -31,7 +31,16 @@
 #define IVW_PYNETWORK_H
 #include <pybind11/pybind11.h>
 
+#include <inviwo/core/ports/outport.h>
+
 namespace inviwo {
+
+template <typename T>
+pybind11::class_<T, Outport> exposeOutport(pybind11::module &m, std::string name) {
+    return pybind11::class_<T, Outport>(m, (name + "Outport").c_str())
+        .def_property_readonly("data", [](T &t){ return t.getData().get();},
+                               pybind11::return_value_policy::reference);
+}
 
 void exposeNetwork(pybind11::module &m);
 }

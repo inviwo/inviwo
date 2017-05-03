@@ -29,8 +29,17 @@
 
 #include <modules/python3/pythonincluder.h>
 #include <modules/python3/python3module.h>
+
+#if defined(__unix__)
+#include <unistd.h>
+#endif
+
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
+
+#include <modules/python3/processors/numpymandelbrot.h>
+#include <modules/python3/processors/numpyvolume.h>
+#include <modules/python3/processors/pythonregtestprocessor.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -38,9 +47,6 @@
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
 
-#if defined(__unix__)
-#include <unistd.h>
-#endif
 
 namespace inviwo {
 
@@ -49,6 +55,13 @@ Python3Module::Python3Module(InviwoApplication* app)
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "Path to the file containing the script") {
+
+    registerProcessor<NumPyVolume>();
+    registerProcessor<NumpyMandelbrot>();
+    registerProcessor<PythonRegTestProcessor>();
+
+
+
     pythonInterpreter_->addObserver(&pythonLogger_);
     app->getCommandLineParser().add(
         &pythonScriptArg_,
@@ -92,10 +105,22 @@ Python3Module::Python3Module(InviwoApplication* app)
         PythonScript ps;
         ps.setSource("import inviwopy\n");
         ps.run();  // we need to import inviwopy to trigger the initialization code in inviwopy.cpp,
-                   // this is needed to be able to cast cpp/inviwo objects to python objects
+        //           // this is needed to be able to cast cpp/inviwo objects to python objects
 
-        // PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
     });
+
+    //registerPythonInitCallback([&](pybind11::module *m) {
+    //    app->dispatchFront([&]() {
+    //        
+    //        
+    //        PythonScript ps;
+    //        ps.setSource("import inviwopy\n");
+    //        ps.run();  
+
+    //    });
+    //
+    //});
 }
 
 Python3Module::~Python3Module() { pythonInterpreter_->removeObserver(&pythonLogger_); }

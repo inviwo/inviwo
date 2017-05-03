@@ -38,6 +38,8 @@ function (ivw_add_py_wrapper name)
         set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         target_link_libraries(${name} PUBLIC ${${mod}_target})
 
+        ivw_compile_optimize_inviwo_core_on_target(${name})
+
         ivw_folder(${name} pybind11modules)
     endif()
 endfunction()

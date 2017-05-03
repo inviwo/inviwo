@@ -79,7 +79,7 @@ void exposeProperties(py::module &m) {
         //&PropertyEditorWidget::setDockStatus) //TODO expose dock status
         .def_property("sticky", &PropertyEditorWidget::isSticky, &PropertyEditorWidget::setSticky);
 
-    py::class_<Property, NoDelete<Property>>(m, "Property")
+    py::class_<Property, PropertyPtr<Property>>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
@@ -94,12 +94,12 @@ void exposeProperties(py::module &m) {
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState);
 
-    py::class_<CompositeProperty, Property, PropertyOwner, NoDelete<CompositeProperty>>(
+    py::class_<CompositeProperty, Property, PropertyOwner, PropertyPtr<CompositeProperty>>(
         m, "CompositeProperty")
         .def("__getattr__", &getPropertyById<CompositeProperty>,
              py::return_value_policy::reference);
 
-    py::class_<BaseOptionProperty, Property, NoDelete<BaseOptionProperty>>(m, "BaseOptionProperty")
+    py::class_<BaseOptionProperty, Property, PropertyPtr<BaseOptionProperty>>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
         .def_property_readonly("size", &BaseOptionProperty::size)
 
@@ -128,10 +128,10 @@ void exposeProperties(py::module &m) {
     util::for_each_type<OptionPropetyTypes>{}(OptionPropertyHelper{}, m);
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 
-    py::class_<ButtonProperty, Property, NoDelete<ButtonProperty>>(m, "ButtonProperty")
+    py::class_<ButtonProperty, Property, PropertyPtr<ButtonProperty>>(m, "ButtonProperty")
         .def("press", &ButtonProperty::pressButton);
 
-    py::class_<CameraProperty, CompositeProperty, NoDelete<CameraProperty>>(m, "CameraProperty")
+    py::class_<CameraProperty, CompositeProperty, PropertyPtr<CameraProperty>>(m, "CameraProperty")
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom , py::return_value_policy::copy)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo , py::return_value_policy::copy)
         .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp , py::return_value_policy::copy)
@@ -160,7 +160,7 @@ void exposeProperties(py::module &m) {
         .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
         .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
 
-    py::class_<TransferFunctionProperty, Property, NoDelete<TransferFunctionProperty>>(
+    py::class_<TransferFunctionProperty, Property, PropertyPtr<TransferFunctionProperty>>(
         m, "TransferFunctionProperty")
         .def_property("mask", &TransferFunctionProperty::getMask,
                       &TransferFunctionProperty::setMask)
@@ -177,17 +177,17 @@ void exposeProperties(py::module &m) {
             tp.get().addPoint(pos, vec4(color, pos.y));
         });
 
-    py::class_<StringProperty, Property, NoDelete<StringProperty>> strProperty(m, "StringProperty");
+    py::class_<StringProperty, Property, PropertyPtr<StringProperty>> strProperty(m, "StringProperty");
     pyTemplateProperty<std::string, StringProperty>(strProperty);
 
-    py::class_<FileProperty, Property, NoDelete<FileProperty>> fileProperty(m, "FileProperty");
+    py::class_<FileProperty, Property, PropertyPtr<FileProperty>> fileProperty(m, "FileProperty");
     pyTemplateProperty<std::string, FileProperty>(fileProperty);
 
-    py::class_<DirectoryProperty, Property, NoDelete<DirectoryProperty>> dirProperty(
+    py::class_<DirectoryProperty, Property, PropertyPtr<DirectoryProperty>> dirProperty(
         m, "DirectoryProperty");
     pyTemplateProperty<std::string, DirectoryProperty>(dirProperty);
 
-    py::class_<BoolProperty, Property, NoDelete<BoolProperty>> boolProperty(m, "BoolProperty");
+    py::class_<BoolProperty, Property, PropertyPtr<BoolProperty>> boolProperty(m, "BoolProperty");
     pyTemplateProperty<bool, BoolProperty>(boolProperty);
 }
 }  // namespace

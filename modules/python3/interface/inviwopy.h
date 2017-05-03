@@ -39,74 +39,68 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 
 namespace pybind11 {
-    namespace detail {
-        using namespace inviwo;
+namespace detail {
+using namespace inviwo;
 
-        template <typename T>
-        using ListCasterBase = pybind11::detail::list_caster<std::vector<T *>, T *>;
+template <typename T>
+using ListCasterBase = pybind11::detail::list_caster<std::vector<T *>, T *>;
 
-        template <>
-        struct type_caster<std::vector<Processor *>> : ListCasterBase<Processor> {
-            static handle cast(const std::vector<Processor *> &src, return_value_policy, handle parent) {
-                return ListCasterBase<Processor>::cast(src, return_value_policy::reference, parent);
-            }
-            static handle cast(const std::vector<Processor *> *src, return_value_policy pol,
-                handle parent) {
-                return cast(*src, pol, parent);
-            }
-        };
+template <>
+struct type_caster<std::vector<Processor *>> : ListCasterBase<Processor> {
+    static handle cast(const std::vector<Processor *> &src, return_value_policy, handle parent) {
+        return ListCasterBase<Processor>::cast(src, return_value_policy::reference, parent);
+    }
+    static handle cast(const std::vector<Processor *> *src, return_value_policy pol,
+                       handle parent) {
+        return cast(*src, pol, parent);
+    }
+};
 
-        template <>
-        struct type_caster<std::vector<CanvasProcessor *>> : ListCasterBase<CanvasProcessor> {
-            static handle cast(const std::vector<CanvasProcessor *> &src, return_value_policy,
-                handle parent) {
-                return ListCasterBase<CanvasProcessor>::cast(src, return_value_policy::reference, parent);
-            }
-            static handle cast(const std::vector<CanvasProcessor *> *src, return_value_policy pol,
-                handle parent) {
-                return cast(*src, pol, parent);
-            }
-        };
+template <>
+struct type_caster<std::vector<CanvasProcessor *>> : ListCasterBase<CanvasProcessor> {
+    static handle cast(const std::vector<CanvasProcessor *> &src, return_value_policy,
+                       handle parent) {
+        return ListCasterBase<CanvasProcessor>::cast(src, return_value_policy::reference, parent);
+    }
+    static handle cast(const std::vector<CanvasProcessor *> *src, return_value_policy pol,
+                       handle parent) {
+        return cast(*src, pol, parent);
+    }
+};
+
+template <>
+struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
+    static handle cast(const std::vector<Layer *> &src, return_value_policy, handle parent) {
+        return ListCasterBase<Layer>::cast(src, return_value_policy::reference, parent);
+    }
+    static handle cast(const std::vector<Layer *> *src, return_value_policy pol, handle parent) {
+        return cast(*src, pol, parent);
+    }
+};
+}
+}
+
+namespace inviwo {
+
+
+
+
+template <typename T>
+pybind11::object propertyToPyObject(T *prop) {
+    if (auto cp = dynamic_cast<inviwo::CompositeProperty *>(prop)) {
+        return pybind11::cast(cp);
+    } else if (auto op = dynamic_cast<inviwo::BaseOptionProperty *>(prop)) {
+        return pybind11::cast(op);
+    } else {
+        return pybind11::cast(prop);
     }
 }
 
-
-namespace inviwo{
-
-    template <typename T>
-    void addProcessorDefs(T class_) {
-        class_.def(pybind11::init<>());
-    }
-
-    template <typename T>
-    struct HasOwnerDeleter {
-        void operator()(T *p) {
-            if (p && p->getOwner() == nullptr) delete p;
-        }
-    };
-
-    template <typename T>
-    using NoDelete = std::unique_ptr<T, HasOwnerDeleter<T>>;
-
-    template <typename T>
-    pybind11::object propertyToPyObject(T *prop) {
-        if (auto cp = dynamic_cast<inviwo::CompositeProperty *>(prop)) {
-            return pybind11::cast(cp);
-        }
-        else if (auto op = dynamic_cast<inviwo::BaseOptionProperty *>(prop)) {
-            return pybind11::cast(op);
-        }
-        else {
-            return pybind11::cast(prop);
-        }
-    }
-
-    template <typename T>
-    pybind11::object getPropertyById(T &po, std::string key) {
-        auto prop = po.getPropertyByIdentifier(key);
-        return propertyToPyObject(prop);
-    }
+template <typename T>
+pybind11::object getPropertyById(T &po, std::string key) {
+    auto prop = po.getPropertyByIdentifier(key);
+    return propertyToPyObject(prop);
+}
 }
 
-#endif // IVW_PYPROPERTIES_H
-
+#endif  // IVW_PYPROPERTIES_H
