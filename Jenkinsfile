@@ -89,6 +89,15 @@ node {
             }
         }
         try {
+            stage('Integration tests') {
+                nicelog {
+                    sh """
+                        export DISPLAY=:0
+                        ../build/bin/inviwo-integrationtests
+                    """
+                }
+            }
+
             stage('Regression') {
                 dir('regress') {
                     nicelog {
