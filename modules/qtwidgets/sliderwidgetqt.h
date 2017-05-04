@@ -178,7 +178,7 @@ protected:
     // Defines the transform
     virtual T sliderToRepr(int val) override {
         return this->minValue_ + (static_cast<T>(val) * (this->maxValue_ - this->minValue_) /
-                                  static_cast<T>(sliderMax_));
+                                  static_cast<T>(this->sliderMax_));
     }
     virtual int reprToSlider(T val) override {
         return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) *
