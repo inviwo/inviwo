@@ -30,7 +30,7 @@
 #ifndef IVW_NUMPYMESHCREATETEST_H
 #define IVW_NUMPYMESHCREATETEST_H
 
-#include <modules/numpy/numpymoduledefine.h>
+#include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -40,28 +40,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.NumPyMeshCreateTest, Num Py Mesh Create Test}
- * ![](org.inviwo.NumPyMeshCreateTest.png?classIdentifier=org.inviwo.NumPyMeshCreateTest)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-
-/**
- * \class NumPyMeshCreateTest
- * \brief <brief description> 
- * <Detailed description from a developer prespective>
- */
-class IVW_MODULE_NUMPY_API NumPyMeshCreateTest : public Processor { 
+class IVW_MODULE_PYTHON3_API NumPyMeshCreateTest : public Processor { 
 public:
     NumPyMeshCreateTest();
     virtual ~NumPyMeshCreateTest() = default;

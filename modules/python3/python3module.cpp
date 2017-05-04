@@ -39,6 +39,7 @@
 
 #include <modules/python3/processors/numpymandelbrot.h>
 #include <modules/python3/processors/numpyvolume.h>
+#include <modules/python3/processors/numpymeshcreatetest.h>
 #include <modules/python3/processors/pythonregtestprocessor.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -58,6 +59,7 @@ Python3Module::Python3Module(InviwoApplication* app)
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
+    registerProcessor<NumPyMeshCreateTest>();
     registerProcessor<PythonRegTestProcessor>();
 
 

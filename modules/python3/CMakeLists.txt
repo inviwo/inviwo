@@ -9,7 +9,7 @@ ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.h
@@ -25,7 +25,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.cpp
@@ -50,7 +50,7 @@ set(SCRIPT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ivw/utils.py
 
     ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/mandelbrot.py
-    #${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpymeshcreatetest.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpymeshcreatetest.py
     ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpyvolumeprocessor.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})

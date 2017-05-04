@@ -27,9 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/numpy/processors/numpymeshcreatetest.h>
-#include <modules/numpy/numpymodule.h>
-#include <modules/numpy/numpyobjectwrapper.h>
+#include <modules/python3/processors/numpymeshcreatetest.h>
+#include <modules/python3/python3module.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <pybind11/pybind11.h>
@@ -50,23 +49,25 @@ const ProcessorInfo NumPyMeshCreateTest::getProcessorInfo() const {
 
 NumPyMeshCreateTest::NumPyMeshCreateTest()
     : Processor()
-    , script_(InviwoApplication::getPtr()->getModuleByType<NumPyModule>()->getPath(ModulePath::Scripts) + "/numpymeshcreatetest.py")
-    , mesh_("mesh")
-{
-    
+    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
+                  ModulePath::Scripts) +
+              "/numpymeshcreatetest.py")
+    , mesh_("mesh") {
+
     script_.onChange([this](){
         invalidate(InvalidationLevel::InvalidOutput);
     });
 
     addPort(mesh_);
-
 }
     
 void NumPyMeshCreateTest::process() {
     script_.run( { } , [&](pybind11::dict dict){
         auto pyMesh  = dict["mesh"];
+
+        auto mesh = std::shared_ptr<BasicMesh>(pyMesh.cast<BasicMesh*>());
+        pyMesh.cast<pybind11::object>().release();
         
-        auto mesh = util::toMesh(pyMesh.ptr());
         mesh_.setData(mesh);
     });
 }

@@ -47,37 +47,67 @@
 #include <pybind11/common.h>
 #include <pybind11/numpy.h>
 
-
 namespace py = pybind11;
 
 namespace inviwo {
 
+struct BufferRAMHelper {
+    template <typename DataFormat>
+    auto operator()(pybind11::module &m) {
+        using T = typename DataFormat::type;
+        std::ostringstream className;
+        className << "Buffer" << DataFormat::str();
+        py::class_<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.str().c_str())
+            .def(py::init<size_t>())
+            .def(py::init<size_t, BufferUsage>());
 
-
-    struct BufferRAMHelper{
-        template <typename DataFormat>
-        auto operator()(pybind11::module &m) {
-            using T = typename DataFormat::type;
-            std::ostringstream className;
-            className << "Buffer" << DataFormat::str();
-            py::class_<Buffer<T>,BufferBase>(m, className.str().c_str())
-                .def(py::init<size_t>())
-                ;
-        }
-    };
-
-
+        className << "Index";
+        py::class_<Buffer<T, BufferTarget::Index>, BufferBase>(m, className.str().c_str())
+            .def(py::init<size_t>())
+            .def(py::init<size_t, BufferUsage>());
+    }
+};
 
 void exposeBuffer(py::module &m) {
 
+    py::enum_<BufferType>(m, "BufferType")
+        .value("PositionAttrib", BufferType::PositionAttrib)
+        .value("NormalAttrib", BufferType::NormalAttrib)
+        .value("ColorAttrib", BufferType::ColorAttrib)
+        .value("TexcoordAttrib", BufferType::TexcoordAttrib)
+        .value("CurvatureAttrib", BufferType::CurvatureAttrib)
+        .value("IndexAttrib", BufferType::IndexAttrib);
+
+    py::enum_<BufferUsage>(m, "BufferUsage")
+        .value("Static", BufferUsage::Static)
+        .value("Dynamic", BufferUsage::Dynamic);
+
+    py::enum_<BufferTarget>(m, "BufferTarget")
+        .value("Data", BufferTarget::Data)
+        .value("Index", BufferTarget::Index);
+
+    py::enum_<DrawType>(m, "DrawType")
+        .value("NotSpecified", DrawType::NotSpecified)
+        .value("Points", DrawType::Points)
+        .value("Lines", DrawType::Lines)
+        .value("Triangles", DrawType::Triangles);
+
+    py::enum_<ConnectivityType>(m, "ConnectivityType")
+        .value("None_", ConnectivityType::None)
+        .value("Strip", ConnectivityType::Strip)
+        .value("Loop", ConnectivityType::Loop)
+        .value("Fan", ConnectivityType::Fan)
+        .value("Adjacency", ConnectivityType::Adjacency)
+        .value("StripAdjacency", ConnectivityType::StripAdjacency);
+
     py::class_<BufferBase>(m, "Buffer")
-        .def_property_readonly("size", &BufferBase::getSize)
+        .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
         .def_property_readonly("data", [&](BufferBase &buffer) -> py::array {
             auto func = [&](auto pBuffer) -> py::array {
                 using ValueType = util::PrecsionValueType<decltype(pBuffer)>;
                 using ComponentType = typename util::value_type<ValueType>::type;
 
-                ComponentType *data = (ComponentType *) pBuffer->getData();
+                ComponentType *data = (ComponentType *)pBuffer->getData();
 
                 std::vector<size_t> shape = {pBuffer->getSize(),
                                              pBuffer->getDataFormat()->getComponents()};

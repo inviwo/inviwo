@@ -35,6 +35,8 @@
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
 
+#include <inviwo/core/datastructures/geometry/mesh.h>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/common.h>
 #include <pybind11/numpy.h>
@@ -43,47 +45,72 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-
 void exposeMesh(py::module &m) {
-    /*
-    py::class_<Image>(m, "Image")
-        .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); }, py::return_value_policy::reference)
-        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); }, py::return_value_policy::reference)
-        .def_property_readonly("colorLayers", getLayers, py::return_value_policy::reference);
+    py::class_<Mesh::MeshInfo>(m, "MeshInfo")
+        .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>())
+        .def_readwrite("dt", &Mesh::MeshInfo::dt)
+        .def_readwrite("ct", &Mesh::MeshInfo::ct);
 
-    py::class_<Layer>(m, "Layer")
-        .def_property_readonly("dimensions", &Layer::getDimensions)
-        .def_property_readonly("data", [&](Layer &layer) -> py::array {
+    py::class_<Mesh::BufferInfo>(m, "BufferInfo")
+        .def(py::init<>())
+        .def(py::init<BufferType>())
+        .def(py::init<BufferType, int>())
+        .def_readwrite("type", &Mesh::BufferInfo::type)
+        .def_readwrite("location", &Mesh::BufferInfo::location);
 
-            auto func = [&](auto pLayer) -> py::array {
-                using ValueType = util::PrecsionValueType<decltype(pLayer)>;
-                using ComponentType = typename util::value_type<ValueType>::type;
+    py::class_<Mesh>(m, "Mesh")
+        .def(py::init<>())
+        .def_property_readonly("dataInfo", &Mesh::getDataInfo)
+        .def("addBuffer", [](Mesh *m, Mesh::BufferInfo info,
+                             std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
+        .def("addBuffer", [](Mesh *m, BufferType type,
+                             std::shared_ptr<BufferBase> att) { m->addBuffer(type, att); })
 
-                ComponentType *data = (ComponentType *)pLayer->getDataTyped();
-                std::vector<size_t> shape = {pLayer->getDimensions().x, pLayer->getDimensions().y,
-                                             pLayer->getDataFormat()->getComponents()};
+        .def("setBuffer", [](Mesh *m, size_t idx, Mesh::BufferInfo info,
+                             std::shared_ptr<BufferBase> att) { m->setBuffer(idx, info, att); })
+        .def("addIndicies", [](Mesh *m, Mesh::MeshInfo info,
+                               std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
 
-                std::vector<size_t> strides = {
-                    sizeof(ComponentType) * pLayer->getDataFormat()->getComponents(),
-                    sizeof(ComponentType) * pLayer->getDataFormat()->getComponents() *
-                        pLayer->getDimensions().x,
-                    sizeof(ComponentType)};
+        .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
+        .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)
 
-                bool readOnly = false;
-                if (readOnly) {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data);
-                } else {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data,
-                                                      py::cast<>(1));
-                }
+        .def_property_readonly("buffers", &Mesh::getBuffers, py::return_value_policy::reference)
+        .def_property_readonly("indexBuffers", &Mesh::getIndexBuffers,
+                               py::return_value_policy::reference);
 
-            };
+    py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
+        .def(py::init<>())
+        .def("__init__",
+             [](BasicMesh::Vertex &instance, vec3 pos, vec3 normal, vec3 tex, vec4 color) {
+                 new (&instance) BasicMesh::Vertex{pos, normal, tex, color};
+             });
 
-            return layer.getRepresentation<LayerRAM>()->dispatch<py::array>(func);
-        });
+    py::class_<BasicMesh>(m, "BasicMesh")
+        .def(pybind11::init<>())
+        .def(py::init<>())
+        .def("addVertex", &BasicMesh::addVertex)
+        .def("addVertices", &BasicMesh::addVertices)
 
-    exposeOutport<ImageOutport>(m, "Image")
-        .def_property_readonly("dimensions", &ImageOutport::getDimensions); */
+        .def("setVertex", &BasicMesh::setVertex)
+        .def("setVertexPosition", &BasicMesh::setVertexPosition)
+        .def("setVertexNormal", &BasicMesh::setVertexNormal)
+        .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
+        .def("setVertexColor", &BasicMesh::setVertexColor)
+
+        //.def("addIndexBuffer", &BasicMesh::addIndexBuffer2, py::return_value_policy::reference)
+        .def("addIndexBuffer",
+             [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
+                 mesh->addIndexBuffer(dt, ct);
+                 return mesh->getIndexBuffers().back().second;
+             },
+             py::return_value_policy::reference)
+
+        .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
+        .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
+        .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
+        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
+
+    exposeOutport<MeshOutport>(m, "Mesh");
 }
 }  // namespace
