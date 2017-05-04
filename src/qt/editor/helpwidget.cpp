@@ -68,7 +68,6 @@ protected:
     QVariant loadResource(int type, const QUrl& name);
 
 private:
-    HelpWidget* helpwidget_;
     QHelpEngineCore* helpEngine_;
 };
 
@@ -214,7 +213,7 @@ void HelpWidget::resizeEvent(QResizeEvent * event) {
 }
 
 HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
-    : QTextBrowser(parent), helpwidget_(parent), helpEngine_(helpEngine) {
+    : QTextBrowser(parent), helpEngine_(helpEngine) {
     setReadOnly(true);
     setUndoRedoEnabled(false);
     setContextMenuPolicy(Qt::NoContextMenu);

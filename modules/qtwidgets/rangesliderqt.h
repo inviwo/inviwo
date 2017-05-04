@@ -31,6 +31,7 @@
 #define IVW_RANGESLIDERQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/util/glm.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSplitter>

@@ -117,7 +117,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
     gridLayout->setSpacing(10);
 
     const std::array<QString, 5> labels = {"Component", "Min", "Value", "Max", "Increment"};
-    for (int i = 0; i < labels.size(); ++i) {
+    for (size_t i = 0; i < labels.size(); ++i) {
         gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
     }
     const std::array<char,4> desc = {'x', 'y', 'z', 'w'};
@@ -127,7 +127,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
     for (size_t i = 0; i < components.x; i++) {
         for (size_t j = 0; j < components.y; j++) {
             std::stringstream ss;
-            ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
+            ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
             settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
             gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
 
@@ -190,7 +190,7 @@ void TemplatePropertySettingsWidgetQt<T>::reload() {
 
     QLocale locale = settings_[0]->additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {
-        for (int k = 0; k < vals.size(); ++k) {
+        for (size_t k = 0; k < vals.size(); ++k) {
             settings_[i]->additionalFields_[k]->setText(
                 QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
         }
@@ -295,7 +295,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
 
     const std::array<QString, 7> labels = {"Component", "Min Bound",     "Start",    "End",
                                            "Max Bound", "MinSeparation", "Increment"};
-    for (int i = 0; i < labels.size(); ++i) {
+    for (size_t i = 0; i < labels.size(); ++i) {
         gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
     }
     const std::array<char, 4> desc = { 'x', 'y', 'z', 'w' };
@@ -305,7 +305,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     for (size_t i = 0; i < components.x; i++) {
         for (size_t j = 0; j < components.y; j++) {
             std::stringstream ss;
-            ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
+            ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
             settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
             gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
             
@@ -339,9 +339,6 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
 template <typename T>
 void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
-
-    uvec2 components = MinMaxProperty<T>::getDim();
-    size_t count = 0;
 
     std::array<T, 6> vals{
         property_->getRangeMin(),
@@ -388,7 +385,7 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::reload() {
 
     QLocale locale = settings_[0]->additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {
-        for (int k = 0; k < vals.size(); ++k) {
+        for (size_t k = 0; k < vals.size(); ++k) {
             settings_[i]->additionalFields_[k]->setText(
                 QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
         }

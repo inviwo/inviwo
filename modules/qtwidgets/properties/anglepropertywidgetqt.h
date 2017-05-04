@@ -62,7 +62,7 @@ protected:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
     void showSettings();
     // Convenience function
-    OrdinalProperty<T>* getProperty();
+    virtual OrdinalProperty<T>* getProperty() override;
 
     TemplatePropertySettingsWidgetQt<T>* settingsWidget_;
     EditableLabelQt* displayName_;
