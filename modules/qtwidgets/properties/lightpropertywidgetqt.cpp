@@ -30,38 +30,38 @@
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QHBoxLayout>
+#include <QtCore/qmath.h>
+#include <QSpinBox>
+#include <QSignalBlocker>
+#include <warn/pop>
+
 namespace inviwo {
 
-LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property) 
+LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     : PropertyWidgetQt(property)
-    , property_(property) {
-    generateWidget();
-    updateFromProperty();
-}
+    , property_(property)
+    , lightWidget_{new LightPositionWidgetQt()}
+    , radiusSpinBox_{new CustomDoubleSpinBoxQt(this)}
+    , label_{new EditableLabelQt(this, property_)} {
 
-LightPropertyWidgetQt::~LightPropertyWidgetQt() {}
-
-void LightPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    label_ = new EditableLabelQt(this, property_);
-    
-    lightWidget_ = new LightPositionWidgetQt();
-    connect(lightWidget_,SIGNAL(positionChanged()), this, SLOT(onPositionLightWidgetChanged()));
+    connect(lightWidget_, &LightPositionWidgetQt::positionChanged, this,
+            &LightPropertyWidgetQt::onPositionLightWidgetChanged);
 
-    QLabel* radiusLabel = new QLabel(this);
-    radiusLabel->setText("Distance");
-    
-    QLabel* dirLabel = new QLabel(this);
-    dirLabel->setText("Direction");
-    
-    radiusSpinBox_ = new CustomDoubleSpinBoxQt(this);
     radiusSpinBox_->setSingleStep(0.1);
-    radiusSpinBox_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
-    connect(radiusSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(onRadiusSpinBoxChanged(double)));
-   
+    // don't emit the valueChanged() signal while typing
+    radiusSpinBox_->setKeyboardTracking(false);
+    connect(
+        radiusSpinBox_,
+        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
+        this, &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
+
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
         LogWarn("Minimum value is assumed to be negative. Widget may produce values out of range.")
@@ -69,29 +69,31 @@ void LightPropertyWidgetQt::generateWidget() {
     if (glm::any(glm::lessThan(property_->getMaxValue(), vec3(0.0f)))) {
         LogWarn("Maximum value is assumed to be positive. Widget may produce values out of range.")
     }
-  
 
     vec3 maxVal = glm::abs(property_->getMaxValue());
     radiusSpinBox_->setMinimum(-glm::length(maxVal));
     radiusSpinBox_->setMaximum(glm::length(maxVal));
-    
-    
+
     QWidget* groupBox = new QWidget(this);
     QGridLayout* layout = new QGridLayout();
     groupBox->setLayout(layout);
 
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(3);
-    layout->addWidget(dirLabel, 0, 0);
+    layout->addWidget(new QLabel("Direction", this), 0, 0);
     layout->addWidget(lightWidget_, 0, 1);
-    layout->addWidget(radiusLabel, 1, 0);
+    layout->addWidget(new QLabel("Distance", this), 1, 0);
     layout->addWidget(radiusSpinBox_, 1, 1);
-    
+
     hLayout->addWidget(label_);
     hLayout->addWidget(groupBox);
-    
+
     setLayout(hLayout);
+
+    updateFromProperty();
 }
+
+LightPropertyWidgetQt::~LightPropertyWidgetQt() = default;
 
 void LightPropertyWidgetQt::onPositionLightWidgetChanged() {
     property_->setInitiatingWidget(this);
@@ -104,10 +106,9 @@ void LightPropertyWidgetQt::onRadiusSpinBoxChanged(double radius) {
 }
 
 void LightPropertyWidgetQt::updateFromProperty() {
-    // Prevent widgets from signaling changes
-    // just after setting them
-    lightWidget_->blockSignals(true);
-    radiusSpinBox_->blockSignals(true);
+    // Prevent widgets from signaling changes just after setting them
+    QSignalBlocker lblocker(lightWidget_);
+    QSignalBlocker rblocker(radiusSpinBox_);
 
     float r = glm::length(property_->get());
     r *= property_->get().z < 0.0f ? -1.0f : 1.0f;
@@ -115,13 +116,9 @@ void LightPropertyWidgetQt::updateFromProperty() {
         radiusSpinBox_->setValue(r);
     }
 
-    if(lightWidget_->getPosition() != property_->get()) {
+    if (lightWidget_->getPosition() != property_->get()) {
         lightWidget_->setPosition(property_->get());
     }
-    
-
-    lightWidget_->blockSignals(false);
-    radiusSpinBox_->blockSignals(false);
 }
 
 } // namespace

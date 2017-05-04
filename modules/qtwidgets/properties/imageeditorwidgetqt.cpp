@@ -352,6 +352,11 @@ ImageLabelWidget::ImageLabelWidget()
     generateWidget();
 }
 
+ImageLabelWidget::~ImageLabelWidget() {
+    delete backGroundImage_;
+    delete view_;
+}
+
 void ImageLabelWidget::closeEvent(QCloseEvent* event) {
     if (mainParentWidget_)
         mainParentWidget_->saveDialog();

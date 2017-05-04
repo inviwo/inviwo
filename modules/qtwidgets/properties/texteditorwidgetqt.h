@@ -32,18 +32,14 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+ //Property includes
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+
 //QT includes
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
 #include <warn/pop>
-
-//Property includes
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/property.h>
-#include "propertywidgetqt.h"
-#include <modules/qtwidgets/editablelabelqt.h>
-
 
 class QFile;
 class QTextEdit;
@@ -52,22 +48,17 @@ class QToolButton;
 class QCheckBox;
 
 namespace inviwo {
+
+class Property;
+class EditableLabelQt;
 class SyntaxHighligther;
 class FilePropertyWidgetQt;
 class TextEditorWidgetQt;
-class HtmlEditorWidgetQt;
 class StringPropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API ModifiedWidget : public QWidget {
-
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
 public:
     ModifiedWidget();
-    bool saveDialog();
     void setParent(TextEditorWidgetQt*);
 
     QFile* file_;
@@ -81,11 +72,6 @@ public:
     std::string tmpPropertyValue_;
 
     SyntaxHighligther* getSyntaxHighligther();
-
-    void generateWidget();
-
-public slots:
-    void textHasChanged();
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -102,38 +88,32 @@ class IVW_MODULE_QTWIDGETS_API TextEditorWidgetQt : public PropertyWidgetQt {
 #include <warn/pop>
 
 public:
-
     TextEditorWidgetQt(Property* property);
     virtual ~TextEditorWidgetQt();
     void updateFromProperty();
     SyntaxHighligther* getSyntaxHighligther();
+
 public:
     bool saveDialog();
-
 
 private:
     QToolButton* btnEdit_;
     FilePropertyWidgetQt* fileWidget_;
     QFile* file_;
     ModifiedWidget* textEditorWidget_;
-    HtmlEditorWidgetQt* htmlEditorWidget_;
     StringPropertyWidgetQt* stringWidget_;
     std::string tmpPropertyValue_;
     QCheckBox* checkBox_;
     EditableLabelQt* label_;
-
-    void generateWidget();
 
 public slots:
     void loadFile();
     void loadString();
     void editFile();
     void editString();
-    void setPropertyValue();
     bool writeToFile();
     bool writeToString();
 };
-
 
 }//namespace
 

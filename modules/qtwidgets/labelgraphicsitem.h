@@ -81,12 +81,9 @@ public:
     void setAlignment(Qt::Alignment alignment);
 
 protected:
-    bool doCrop(const QString& str);
-    void updateCrop();
-
-    void keyPressEvent(QKeyEvent* keyEvent);
-    void focusInEvent(QFocusEvent* event);
-    void focusOutEvent(QFocusEvent* event);
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void focusInEvent(QFocusEvent* event) override;
+    virtual void focusOutEvent(QFocusEvent* event) override;
 
     void updatePosition();
 

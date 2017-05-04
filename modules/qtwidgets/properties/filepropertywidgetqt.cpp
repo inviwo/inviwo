@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <modules/qtwidgets/filepathlineeditqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,42 +46,41 @@
 #include <QUrl>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QHBoxLayout>
+#include <QToolButton>
 #include <warn/pop>
 
 namespace inviwo {
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
-    generateWidget();
-    updateFromProperty();
-}
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , lineEdit_{new FilePathLineEditQt(this)}
+    , openButton_{new QToolButton(this)}
+    , label_{new EditableLabelQt(this, property_)} {
 
-void FilePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     setAcceptDrops(true);
 
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
-
     QHBoxLayout* hWidgetLayout = new QHBoxLayout();
     hWidgetLayout->setContentsMargins(0, 0, 0, 0);
     QWidget* widget = new QWidget();
-    widget->setLayout(hWidgetLayout);
+    widget->setLayout(hWidgetLayout);  
 
-    lineEdit_ = new FilePathLineEditQt(this);
-
-    connect(lineEdit_, &QLineEdit::editingFinished, [&]() {
+    connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [&]() {
         // editing is done, sync property with contents
         property_->set(lineEdit_->getPath());
     });
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        ivwAssert(lineEdit_->getPath() == property_->get(), "FilePropertyWidgetQt: paths not equal after canceling edit");
+        ivwAssert(lineEdit_->getPath() == property_->get(),
+                  "FilePropertyWidgetQt: paths not equal after canceling edit");
     });
-#endif // IVW_DEBUG
+#endif  // IVW_DEBUG
 
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
@@ -91,26 +92,27 @@ void FilePropertyWidgetQt::generateWidget() {
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
         auto dir = filesystem::directoryExists(property_->get())
-                       ? property_->get()
-                       : filesystem::getFileDirectory(property_->get());
+            ? property_->get()
+            : filesystem::getFileDirectory(property_->get());
 
         QDesktopServices::openUrl(
             QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
     });
 
-    openButton_ = new QToolButton(this);
     openButton_->setIcon(QIcon(":/icons/open.png"));
     hWidgetLayout->addWidget(openButton_);
-    connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
+    connect(openButton_, &QToolButton::pressed, this, &FilePropertyWidgetQt::setPropertyValue);
 
     sp = widget->sizePolicy();
     sp.setHorizontalStretch(3);
     widget->setSizePolicy(sp);
     hLayout->addWidget(widget);
+
+    updateFromProperty();
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
-    std::string filename{ property_->get() };
+    const std::string filename{ property_->get() };
 
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
@@ -158,7 +160,7 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                     if (mimeData->urls().size() > 0) {
                         auto url = mimeData->urls().first();
                         auto file = url.toLocalFile().toStdString();
-                        
+
                         switch (property_->getFileMode()) {
                             case FileMode::AnyFile:
                             case FileMode::ExistingFile:
@@ -172,10 +174,10 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                                 }
                                 break;
                             }
-                        
+
                             case FileMode::Directory:
                             case FileMode::DirectoryOnly: {
-                                if(filesystem::directoryExists(file)) {
+                                if (filesystem::directoryExists(file)) {
                                     event->accept();
                                     return;
                                 }
@@ -187,10 +189,9 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
             }
             event->ignore();
             return;
-        }      
+        }
     }
 }
-
 
 void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
     if(event->mimeData()->hasUrls()) event->accept();

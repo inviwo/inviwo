@@ -29,44 +29,51 @@
 
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/lineeditqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <warn/pop>
+
 
 namespace inviwo {
 
-StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property) 
+StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property)
-    , property_(property) {
+    , property_(property)
+    , lineEdit_{new LineEditQt()}
+    , label_{new EditableLabelQt(this, property_)} {
 
-    generateWidget();
-    updateFromProperty();
-}
-
-void StringPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
-
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
-    lineEdit_ = new LineEditQt;
-    if(property_->getSemantics().getString() == "Password"){
+    if (property_->getSemantics().getString() == "Password") {
         lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
     }
 
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
     lineEdit_->setSizePolicy(sp);
-    
+
     hLayout->addWidget(lineEdit_);
-    
-    connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
+
+    connect(lineEdit_, &LineEditQt::editingFinished, this,
+            &StringPropertyWidgetQt::setPropertyValue);
     connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        LogInfo("StringPropertyWidgetQt: editing canceled");
         QSignalBlocker blocker(lineEdit_);
         updateFromProperty();
         lineEdit_->clearFocus();
     });
+
+    updateFromProperty();
 }
 
 void StringPropertyWidgetQt::setPropertyValue() {

@@ -52,10 +52,7 @@ class EditableLabelQt;
 class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                       public PropertyOwnerObserver,
                                                       public ProcessorObserver {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
+
 public:
     CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable=false);
     CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable=false);
@@ -63,8 +60,8 @@ public:
     virtual void setDisplayName(const std::string& displayName);
 
     void addProperty(Property* tmpProperty);
-    std::vector<Property*> getProperties();
-    std::vector<PropertyWidgetQt*> getPropertyWidgets();
+    const std::vector<Property*>& getProperties();
+    const std::vector<PropertyWidgetQt*>& getPropertyWidgets();
 
     void setPropertyOwner(PropertyOwner* propertyOwner);
     PropertyOwner* getPropertyOwner() const;
@@ -91,21 +88,15 @@ public:
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
 
-public slots:
     void toggleCollapsed();
 
-    void checkedStateChanged();
-    virtual void labelDidChange();
-    virtual void resetPropertyToDefaultState() override;
-    void updatePropertyWidgetSemantics(PropertyWidgetQt*);
-
 protected:
+    void updatePropertyWidgetSemantics(PropertyWidgetQt*);
     virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
 
     void generateWidget();
-    void updateWidgets();
 
     std::string displayName_;
     bool collapsed_;

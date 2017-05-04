@@ -37,26 +37,16 @@
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QtCore/qmath.h>
-#include <QSpinBox>
-#include <warn/pop>
+class CustomDoubleSpinBoxQt;
 
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
-
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-
 public:
     LightPropertyWidgetQt(FloatVec3Property* property);
     virtual ~LightPropertyWidgetQt();
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
 
 private:
     FloatVec3Property* property_;
@@ -64,9 +54,6 @@ private:
     CustomDoubleSpinBoxQt* radiusSpinBox_;
     EditableLabelQt* label_;
 
-    void generateWidget();
-
-public slots:
     void onPositionLightWidgetChanged();
     void onRadiusSpinBoxChanged(double radius);
 };

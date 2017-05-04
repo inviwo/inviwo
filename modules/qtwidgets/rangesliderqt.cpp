@@ -34,6 +34,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QToolTip>
+#include <QResizeEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -41,35 +42,34 @@ namespace inviwo {
 
 RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool showTooltip) 
     : QSplitter(orientation, parent)
+    , range_{0,10}
+    , value_{0,10}
     , minSeperation_(0)
     , formatTooltip_{[](int hanlde, int pos) {
         return toString(pos);
     }}{
 
     QFrame* left = new QFrame(this);
-    middle_ = new RangeSliderMiddle(this, orientation);
+    QFrame* middle =new QFrame(this);
     QFrame* right = new QFrame(this);
-    addWidget(left);
-    addWidget(middle_);
-    addWidget(right);
 
-    QObject::connect(middle_, SIGNAL(middleMoved(int)), this, SLOT(middleMoved(int)));
+    addWidget(left);
+    addWidget(middle);
+    addWidget(right);
 
     // enable QSplitter:hover stylesheet 
     // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
-    this->handle(1)->setAttribute(Qt::WA_Hover);
-    this->handle(2)->setAttribute(Qt::WA_Hover);
+    handle(1)->setAttribute(Qt::WA_Hover);
+    handle(2)->setAttribute(Qt::WA_Hover);
 
-    this->setObjectName("RangeSliderQt");
-    this->setProperty("Vertical", orientation == Qt::Vertical);
+    setObjectName("RangeSliderQt");
+    setProperty("Vertical", orientation == Qt::Vertical);
     left->setProperty("LeftPart", true);
+    left->installEventFilter(this);
     right->setProperty("LeftPart", false);
-
-    middle_->setObjectName("valueArea");
-    range_[0] = 0;
-    range_[1] = 10;
-    value_[0] = 0;
-    value_[1] = 10;
+    right->installEventFilter(this);
+    middle->setObjectName("valueArea");
+    middle->installEventFilter(this);
 
     if (orientation == Qt::Horizontal) {
         left->setMinimumWidth(0);
@@ -81,8 +81,8 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
         right->setMinimumHeight(0);
     }
     setMinSeparation(minSeperation_);
-    QSplitter::setChildrenCollapsible(false);    
-    connect(this, SIGNAL(splitterMoved(int, int)), this, SLOT(updateSplitterPosition(int, int)));
+    QSplitter::setChildrenCollapsible(false);
+    connect(this, &RangeSliderQt::splitterMoved, this, &RangeSliderQt::updateSplitterPosition);
     updateSlidersFromState();
 
     if (showTooltip) {
@@ -91,25 +91,15 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     }
 }
 
-int RangeSliderQt::minValue() {
-    return value_[0];
-}
+int RangeSliderQt::minValue() const { return value_.x; }
 
-int RangeSliderQt::maxValue() {
-    return value_[1];
-}
+int RangeSliderQt::maxValue() const { return value_.y; }
 
-int RangeSliderQt::minRange() {
-    return range_[0];
-}
+int RangeSliderQt::minRange() const { return range_.x; }
 
-int RangeSliderQt::maxRange() {
-    return range_[1];
-}
+int RangeSliderQt::maxRange() const { return range_.y; }
 
-int RangeSliderQt::minSeperation() {
-    return minSeperation_;
-}
+int RangeSliderQt::minSeperation() const { return minSeperation_; }
 
 void RangeSliderQt::setValue(int minVal, int maxVal) {
     setMinValue(minVal);
@@ -117,15 +107,15 @@ void RangeSliderQt::setValue(int minVal, int maxVal) {
 }
 
 void RangeSliderQt::setMinValue(int minVal) {
-    if (value_[0] != minVal) {
-        value_[0] = minVal;
+    if (value_.x != minVal) {
+        value_.x = minVal;
 
-        if (value_[0] > range_[1] - minSeperation_) {
-            value_[0] = range_[1] - minSeperation_;
+        if (value_.x > range_.y - minSeperation_) {
+            value_.x = range_.y - minSeperation_;
         }
         
-        if (value_[1] - value_[0] < minSeperation_) {
-            value_[1] = value_[0] + minSeperation_;
+        if (value_.y - value_.x < minSeperation_) {
+            value_.y = value_.x + minSeperation_;
         }
 
         updateSlidersFromState();
@@ -133,14 +123,14 @@ void RangeSliderQt::setMinValue(int minVal) {
 }
 
 void RangeSliderQt::setMaxValue(int maxVal) {
-    if (value_[1] != maxVal) {
-        value_[1] = maxVal;
-        if (value_[1] < range_[0] + minSeperation_) {
-            value_[1] = range_[0] + minSeperation_;
+    if (value_.y != maxVal) {
+        value_.y = maxVal;
+        if (value_.y < range_.x + minSeperation_) {
+            value_.y = range_.x + minSeperation_;
         }
 
-        if (value_[1] - value_[0] < minSeperation_) {
-            value_[0] = value_[1] - minSeperation_;
+        if (value_.y - value_.x < minSeperation_) {
+            value_.x = value_.y - minSeperation_;
         }
 
         updateSlidersFromState();
@@ -157,30 +147,28 @@ void RangeSliderQt::setMinSeparation(int sep) {
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
     
-    int size = range_[1] - range_[0];
+    int size = range_.y - range_.x;
     if (size <= 0) {
         return;
     }
 
-    if (QSplitter::orientation() == Qt::Horizontal) {
-        middle_->setMinimumWidth(range * minSeperation_/ size);
+    if (orientation() == Qt::Horizontal) {
+        widget(1)->setMinimumWidth(range * minSeperation_/ size);
     } else {
-        middle_->setMinimumHeight(range * minSeperation_ / size);
+        widget(1)->setMinimumHeight(range * minSeperation_ / size);
     }
 }
 
 void RangeSliderQt::setMinRange(int minR) {
-    range_[0] = minR;
-
-    if (minR > value_[0]) {
+    range_.x = minR;
+    if (minR > value_.x) {
         setMinValue(minR);
     }
 }
 
 void RangeSliderQt::setMaxRange(int maxR) {
-    range_[1] = maxR;
-
-    if (maxR < value_[1]) {
+    range_.y = maxR;
+    if (maxR < value_.y) {
         setMaxValue(maxR);
     }
 }
@@ -197,44 +185,41 @@ void RangeSliderQt::updateStateFromSliders() {
     int pos1 = sizes[0];
     int pos2 = sizes[0] + sizes[1];
 
-    value_[0] = range_[0] + (range_[1]-range_[0]) * pos1 / range;
-    value_[1] = range_[0] + (range_[1]-range_[0]) * pos2 / range;
+    value_.x = range_.x + (range_.y - range_.x) * pos1 / range;
+    value_.y = range_.x + (range_.y - range_.x) * pos2 / range;
 }
 
 void RangeSliderQt::updateSlidersFromState() {
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
 
-    int size = range_[1] - range_[0];
+    int size = range_.y - range_.x;
     if (size <= 0) {
         return;
     }
 
     sizes.clear();
-    sizes.append((range * (value_[0] - range_[0])) / size);
-    sizes.append((range * (value_[1] - value_[0])) / size);
-    sizes.append((range * (range_[1] - value_[1])) / size);
+    sizes.append((range * (value_.x - range_.x)) / size);
+    sizes.append((range * (value_.y - value_.x)) / size);
+    sizes.append((range * (range_.y - value_.y)) / size);
 
-    QSplitter::blockSignals(true);
-    QSplitter::setSizes(sizes);
-    QSplitter::blockSignals(false);
+    QSignalBlocker block(this);
+    setSizes(sizes);
 }
 
-//Index 1 = Min, Index 2 = Max
 void RangeSliderQt::updateSplitterPosition(int pos, int idx) {
     updateStateFromSliders();
 
     //Emit
-    emit valuesChanged(value_[0], value_[1]);
+    emit valuesChanged(value_.x, value_.y);
 }
 
-void RangeSliderQt::middleMoved(int delta) {
+void RangeSliderQt::moveMiddle(int delta) {
     QList<int> sizes = QSplitter::sizes();
     // ensure not to move middle part further than min/max values
     if (delta > 0) {
         delta = std::min(delta, sizes[2]);
-    }
-    else {
+    } else {
         delta = -std::min(-delta, sizes[0]);
     }
     if (delta == 0) {
@@ -243,12 +228,16 @@ void RangeSliderQt::middleMoved(int delta) {
     // adjust sizes and modify splitter positions
     sizes[0] += delta;
     sizes[2] -= delta;
-    QSplitter::blockSignals(true);
-    QSplitter::setSizes(sizes);
-    QSplitter::blockSignals(false);
 
+    {
+        QSignalBlocker block(this);
+        QSplitter::setSizes(sizes);
+    }
     // update internal state
-    this->updateSplitterPosition(0, 0);
+    updateSplitterPosition(0, 0);
+    parentWidget()->repaint();
+    repaint();
+
 }
 
 bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
@@ -256,55 +245,68 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
         QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
         if (obj == handle(1)) {
             QToolTip::showText(helpEvent->globalPos(),
-                               QString::fromStdString(formatTooltip_(0, value_[0])));
+                               QString::fromStdString(formatTooltip_(0, value_.x)));
+            return true;
         } else if (obj == handle(2)) {
             QToolTip::showText(helpEvent->globalPos(),
-                               QString::fromStdString(formatTooltip_(1, value_[1])));
+                               QString::fromStdString(formatTooltip_(1, value_.y)));
+            return true;
         }
-        return true;
-    } else {
-        return QObject::eventFilter(obj, event);
+        
+    } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        if (me->button() == Qt::LeftButton) {
+            lastPos_ = orientation() == Qt::Horizontal ? me->globalX() : me->globalY();
+            return true;
+        }
+    } else if (obj == widget(1) && event->type() == QEvent::MouseMove) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        if (me->buttons().testFlag(Qt::LeftButton)) {
+            const int newPos = orientation() == Qt::Horizontal ? me->globalX() : me->globalY();
+            const int delta = newPos - lastPos_;
+            lastPos_ = newPos;
+            if (delta != 0) {
+                moveMiddle(delta);
+            }
+            me->accept();
+            return true;
+        }
+    } else if (obj == widget(0) && event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        if (me->button() == Qt::LeftButton) {
+            QList<int> sizes = QSplitter::sizes();
+            QList<int> newSizes{me->pos().x(), sizes[1] + (sizes[0] - me->pos().x()), sizes[2]};
+            {
+                QSignalBlocker block(this);
+                QSplitter::setSizes(newSizes);
+            }
+            // update internal state
+            updateSplitterPosition(0, 0);
+            me->accept();
+            return true;
+        }
+    } else if (obj == widget(2) && event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        if (me->button() == Qt::LeftButton) {
+            QList<int> sizes = QSplitter::sizes();
+            QList<int> newSizes{sizes[0], sizes[1] + me->pos().x(), sizes[2] - me->pos().x()};
+            {
+                QSignalBlocker block(this);
+                QSplitter::setSizes(newSizes);
+            }
+            // update internal state
+            updateSplitterPosition(0, 0);
+            me->accept();
+            return true;
+        }
     }
+    return QObject::eventFilter(obj, event);
+    
 }
 
 void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formater) {
     formatTooltip_ = formater;
 }
 
-RangeSliderMiddle::RangeSliderMiddle(QWidget *parent, Qt::Orientation orientation)
-    : QFrame(parent)
-    , orientation_(orientation)
-    , lastMouseX_(0)
-    , drag_(false) {
-}
-
-void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        // map to global position since the widget will move
-        lastMouseX_ = orientation_ == Qt::Horizontal ? this->mapToGlobal(event->pos()).x()
-                                                     : this->mapToGlobal(event->pos()).y();
-        drag_ = true;
-    }
-}
-
-void RangeSliderMiddle::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        drag_ = false;
-    }
-}
-
-
-void RangeSliderMiddle::mouseMoveEvent(QMouseEvent *event) {
-    if (drag_) {
-        // map to global position since the widget is about to be moved
-        int newX = orientation_ == Qt::Horizontal ? this->mapToGlobal(event->pos()).x()
-                                                  : this->mapToGlobal(event->pos()).y();
-        int delta = newX - lastMouseX_;
-        lastMouseX_ = newX;
-        if (delta != 0) {
-            emit middleMoved(delta);
-        }
-    }
-}
 
 } // namespace inviwo

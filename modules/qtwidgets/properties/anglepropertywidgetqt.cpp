@@ -28,72 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLabel>
-#include <QPainter>
-#include <warn/pop>
 
 namespace inviwo {
-
-BaseAnglePropertyWidgetQt::BaseAnglePropertyWidgetQt(Property* prop)
-    : PropertyWidgetQt(prop)
-    , settingsAction_(nullptr)
-    , minAction_(nullptr)
-    , maxAction_(nullptr)
-    , settingsWidget_(nullptr)
-    , displayName_(nullptr)
-    , angleWidget_(nullptr) {
-    generateWidget();
-    generatesSettingsWidget();
-}
-
-void BaseAnglePropertyWidgetQt::generateWidget() {
-    QHBoxLayout* hLayout = new QHBoxLayout();
-    // Label showing the display name of the property
-    setSpacingAndMargins(hLayout);
-    displayName_ = new EditableLabelQt(this, property_);
-    hLayout->addWidget(displayName_);
-
-    // Angle widget
-    angleWidget_ = new AngleRadiusWidget(this);
-    // Do not allow the user to change the radius
-    angleWidget_->setMinRadius(1.);
-    connect(angleWidget_, SIGNAL(angleChanged()), this, SLOT(onAngleChanged()));
-    connect(angleWidget_, SIGNAL(angleMinMaxChanged()), this, SLOT(onAngleMinMaxChanged()));
-    hLayout->addWidget(angleWidget_, Qt::AlignCenter);
-
-    setLayout(hLayout);
-}
-
-void BaseAnglePropertyWidgetQt::generatesSettingsWidget() {
-    settingsAction_ = new QAction(tr("&Property settings..."), this);
-    settingsAction_->setToolTip(tr("&Open the property settings dialog to adjust min, max, and increment values"));
-    minAction_ = new QAction(tr("&Set as Min"), this);
-    minAction_->setToolTip(tr("&Use the current value as the min value for the property"));
-    maxAction_ = new QAction(tr("&Set as Max"), this);
-    maxAction_->setToolTip(tr("&Use the current value as the max value for the property"));
-
-    connect(settingsAction_,
-        SIGNAL(triggered()),
-        this,
-        SLOT(showSettings()));
-
-    connect(minAction_,
-        SIGNAL(triggered()),
-        this,
-        SLOT(setCurrentAsMin()));
-
-    connect(maxAction_,
-        SIGNAL(triggered()),
-        this,
-        SLOT(setCurrentAsMax()));
-
-    QMenu* menu = getContextMenu();
-    menu->addAction(settingsAction_);
-    menu->addAction(minAction_);
-    menu->addAction(maxAction_);
-}
-
 
 }  // namespace

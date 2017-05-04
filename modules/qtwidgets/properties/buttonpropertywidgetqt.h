@@ -30,37 +30,24 @@
 #ifndef IVW_BUTTONPROPERTYWIDGETQT_H
 #define IVW_BUTTONPROPERTYWIDGETQT_H
 
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/buttonproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QPushButton>
-#include <warn/pop>
+class QPushButton;
 
 namespace inviwo {
 
+class ButtonProperty;
 
-class ButtonPropertyWidgetQt : public PropertyWidgetQt {
-
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
+class IVW_MODULE_QTWIDGETS_API ButtonPropertyWidgetQt : public PropertyWidgetQt {
 public:
     ButtonPropertyWidgetQt(ButtonProperty* property);
-
     virtual void updateFromProperty() override;
     QPushButton* getButton();
+
 private:
     ButtonProperty* property_;
     QPushButton* button_;
-
-    void generateWidget();
-
-public slots:
-    void handleButton();
 
     virtual void onSetDisplayName(const std::string& displayName) override;
 

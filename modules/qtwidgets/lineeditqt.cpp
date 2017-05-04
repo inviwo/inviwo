@@ -29,6 +29,11 @@
 
 #include <modules/qtwidgets/lineeditqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QKeyEvent>
+#include <warn/pop>
+
 namespace inviwo {
 
 LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
@@ -37,11 +42,9 @@ LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
         this->clearFocus();
     });
     // do nothing when editing is finished (either return pressed or focus lost)
-    //connect(this, &QLineEdit::editingFinished, [this]() {
-    //});
 }
 
-void LineEditQt::keyPressEvent(QKeyEvent * e) {
+void LineEditQt::keyPressEvent(QKeyEvent *e) {
     // check whether pressed key is escape, if yes then trigger undo
     if (e->key() == Qt::Key_Escape) {
         emit editingCanceled();
@@ -53,4 +56,4 @@ void LineEditQt::keyPressEvent(QKeyEvent * e) {
     QLineEdit::keyPressEvent(e);
 }
 
-} // namespace inviwo
+}  // namespace inviwo

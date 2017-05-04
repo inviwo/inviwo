@@ -98,7 +98,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 #endif
     scrollArea_->setFrameShape(QFrame::NoFrame);
-    scrollArea_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
+    scrollArea_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
 
     listWidget_ = new PropertyListFrame(this);
     listLayout_ = new QVBoxLayout();
@@ -106,11 +106,11 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     listLayout_->setAlignment(Qt::AlignTop);
 #ifdef __APPLE__
     // Add some space for the scrollbar on mac
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 10, PropertyWidgetQt::SPACING);
+    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 10, PropertyWidgetQt::spacing);
 #else
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
+    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
 #endif
-    listLayout_->setSpacing(PropertyWidgetQt::SPACING);
+    listLayout_->setSpacing(PropertyWidgetQt::spacing);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     scrollArea_->setWidget(listWidget_);
@@ -135,14 +135,11 @@ void PropertyListWidget::removeProcessorProperties(Processor* processor) {
 
 void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor) {
     auto it = widgetMap_.find(processor);
-
     if (it != widgetMap_.end()) {
-
         it->second->hide();
         listLayout_->removeWidget(it->second);
 
-        std::vector<PropertyWidgetQt*> propertyWidgets = it->second->getPropertyWidgets();
-
+        const auto& propertyWidgets = it->second->getPropertyWidgets();
         for (auto& propertyWidget : propertyWidgets) {
             if (Property* prop = propertyWidget->getProperty()) {
                 prop->deregisterWidget(propertyWidget);

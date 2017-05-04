@@ -42,25 +42,17 @@ namespace inviwo {
 
 TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     TransferFunctionProperty* property)
-    : PropertyWidgetQt(property) {
-    generateWidget();
-}
+    : PropertyWidgetQt(property)
+    , label_{new EditableLabelQt(this, property_)}
+    , btnOpenTF_{new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this)} {
 
-TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
-    if (transferFunctionDialog_) transferFunctionDialog_->hide();
-}
-
-void TransferFunctionPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    btnOpenTF_ = new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this);
-    label_ = new EditableLabelQt(this, property_);
-
     hLayout->addWidget(label_);
 
-    connect(btnOpenTF_, &TFPushButton::clicked, [this](){
+    connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         auto tfwidget = getEditorWidget();
         tfwidget->setVisibility(!tfwidget->isVisible());
     });
@@ -76,7 +68,7 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
-        
+
         vLayout->addWidget(btnOpenTF_);
         hLayout->addWidget(widget);
     }
@@ -87,6 +79,10 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);
+}
+
+TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
+    if (transferFunctionDialog_) transferFunctionDialog_->hide();
 }
 
 void TransferFunctionPropertyWidgetQt::updateFromProperty() {
