@@ -33,11 +33,12 @@
 #include <warn/ignore/all>
 #include <limits>
 #include <QTimerEvent>
+#include <QSignalBlocker>
 #include <warn/pop>
 
 namespace inviwo {
 
-CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent /*= 0*/) : QDoubleSpinBox(parent) {
+CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent) : QDoubleSpinBox(parent) {
     // Enables setting number of decimals to display
     displayDecimals_ = decimals();
     // Save default sizeHint before changing decimal property
@@ -57,13 +58,12 @@ void CustomDoubleSpinBoxQt::setDecimals(int decimals) {
     displayDecimals_ = decimals;
     // Block so that no signals are sent
     // since the value does not change
-    blockSignals(true);
+    QSignalBlocker block{this};
     double val = value();
     QDoubleSpinBox::setDecimals(decimals);
     cachedSizeHint_ = QDoubleSpinBox::sizeHint();
     QDoubleSpinBox::setDecimals(std::numeric_limits<double>::max_exponent);
     setValue(val);
-    blockSignals(false);
 }
 
 void CustomDoubleSpinBoxQt::timerEvent(QTimerEvent* event) { event->accept(); }

@@ -32,19 +32,18 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSlider>
-#include <QHBoxLayout>
+#include <QWidget>
 #include <QLocale>
 #include <warn/pop>
 
-#include <math.h>
-#include <sstream>
+class QSlider;
 
 namespace inviwo {
+
+class CustomDoubleSpinBoxQt;
 
 class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
 #include <warn/push>
@@ -55,7 +54,7 @@ public:
     BaseSliderWidgetQt();
     virtual ~BaseSliderWidgetQt() = default;
 
-protected: 
+protected:
     virtual double transformValueToSpinner() = 0;
     virtual int transformValueToSlider() = 0;
 
@@ -78,36 +77,38 @@ protected:
     void applyMaxValue();
     void applyIncrement();
 
-private slots:
-    void updateFromSlider();
-    void updateFromSpinBox();
+    static const int sliderMax_ = 10000;
 
 signals:
     void valueChanged();
 
 private:
-    void generateWidget();
+    void updateFromSlider();
+    void updateFromSpinBox();
+
     /**
-    * \brief updates the value of the spin box from the slider value
-    */
+     * \brief updates the value of the spin box from the slider value
+     */
     void updateSpinBox();
     /**
-    * \brief updates the value of the slider from the spin box value
-    */
+     * \brief updates the value of the slider from the spin box value
+     */
     void updateSlider();
 
-    static const int sliderMax_ = 10000;
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+
+
     CustomDoubleSpinBoxQt* spinBox_;
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
-
+    //bool dragging_  = false;
 };
 
 template <typename T>
 class OrdinalBaseWidget {
 public:
-    virtual ~OrdinalBaseWidget() {}
+    virtual ~OrdinalBaseWidget() = default;
 
     virtual T getValue() = 0;
     virtual void setValue(T value) = 0;
@@ -121,12 +122,9 @@ public:
 template <typename T>
 class TemplateSliderWidget : public BaseSliderWidgetQt, public OrdinalBaseWidget<T> {
 public:
-    TemplateSliderWidget() : BaseSliderWidgetQt()
-        , value_(0)
-        , minValue_(0)
-        , maxValue_(0)
-        , increment_(0) {}
-    virtual ~TemplateSliderWidget() {}
+    TemplateSliderWidget()
+        : BaseSliderWidgetQt(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
+    virtual ~TemplateSliderWidget() = default;
 
     virtual T getValue() override;
     virtual void setValue(T value) override;
@@ -180,21 +178,18 @@ protected:
     // Defines the transform
     virtual T sliderToRepr(int val) override {
         return this->minValue_ + (static_cast<T>(val) * (this->maxValue_ - this->minValue_) /
-                                  static_cast<T>(sliderMax_));
+                                  static_cast<T>(this->sliderMax_));
     }
     virtual int reprToSlider(T val) override {
         return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) *
-                                sliderMax_);
+                                this->sliderMax_);
     }
     virtual T spinnerToRepr(double val) override { return static_cast<T>(val); }
     virtual double reprToSpinner(T val) override { return static_cast<double>(val); }
 
     // Custom min and max for the slider
     virtual int transformMinValueToSlider() override { return 0; }
-    virtual int transformMaxValueToSlider() override { return sliderMax_; };
-
-private:
-    static const int sliderMax_ = 10000;
+    virtual int transformMaxValueToSlider() override { return this->sliderMax_; };
 };
 
 // For integer types
@@ -213,47 +208,47 @@ protected:
     virtual int transformIncrementToSpinnerDecimals() override { return 0; }
 };
 
-typedef SliderWidgetQt<int> IntSliderWidgetQt;
-typedef SliderWidgetQt<float> FloatSliderWidgetQt;
-typedef SliderWidgetQt<double> DoubleSliderWidgetQt;
+using IntSliderWidgetQt = SliderWidgetQt<int>;
+using FloatSliderWidgetQt = SliderWidgetQt<float>;
+using DoubleSliderWidgetQt = SliderWidgetQt<double>;
 
 template <typename T>
-double inviwo::TemplateSliderWidget<T>::transformValueToSpinner() {
+double TemplateSliderWidget<T>::transformValueToSpinner() {
     return reprToSpinner(value_);
 }
 
 template <typename T>
-int inviwo::TemplateSliderWidget<T>::transformValueToSlider() {
+int TemplateSliderWidget<T>::transformValueToSlider() {
     return reprToSlider(value_);
 }
 
 template <typename T>
-double inviwo::TemplateSliderWidget<T>::transformMinValueToSpinner() {
+double TemplateSliderWidget<T>::transformMinValueToSpinner() {
     return reprToSpinner(minValue_);
 }
 
 template <typename T>
-int inviwo::TemplateSliderWidget<T>::transformMinValueToSlider() {
+int TemplateSliderWidget<T>::transformMinValueToSlider() {
     return reprToSlider(minValue_);
 }
 
 template <typename T>
-double inviwo::TemplateSliderWidget<T>::transformMaxValueToSpinner() {
+double TemplateSliderWidget<T>::transformMaxValueToSpinner() {
     return reprToSpinner(maxValue_);
 }
 
 template <typename T>
-int inviwo::TemplateSliderWidget<T>::transformMaxValueToSlider() {
+int TemplateSliderWidget<T>::transformMaxValueToSlider() {
     return reprToSlider(maxValue_);
 }
 
 template <typename T>
-double inviwo::TemplateSliderWidget<T>::transformIncrementToSpinner() {
+double TemplateSliderWidget<T>::transformIncrementToSpinner() {
     return reprToSpinner(increment_);
 }
 
 template <typename T>
-int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
+int TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
     const static QLocale locale;
     double inc = reprToSpinner(increment_);
     std::ostringstream buff;
@@ -261,24 +256,25 @@ int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
     buff << inc;
     const std::string str(buff.str());
     auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-    if (periodPosition == std::string::npos)
+    if (periodPosition == std::string::npos) {
         return 0;
-    else
+    } else {
         return static_cast<int>(str.length() - periodPosition) - 1;
+    }
 }
 
 template <typename T>
-int inviwo::TemplateSliderWidget<T>::transformIncrementToSlider() {
+int TemplateSliderWidget<T>::transformIncrementToSlider() {
     return reprToSlider(increment_);
 }
 
 template <typename T>
-void inviwo::TemplateSliderWidget<T>::newSpinnerValue(double val) {
+void TemplateSliderWidget<T>::newSpinnerValue(double val) {
     value_ = spinnerToRepr(val);
 }
 
 template <typename T>
-void inviwo::TemplateSliderWidget<T>::newSliderValue(int val) {
+void TemplateSliderWidget<T>::newSliderValue(int val) {
     value_ = sliderToRepr(val);
 }
 
@@ -289,7 +285,7 @@ T TemplateSliderWidget<T>::getValue() {
 
 template <typename T>
 void TemplateSliderWidget<T>::setValue(T value) {
-    if(value >= minValue_ && value <= maxValue_ && value != value_) {
+    if (value >= minValue_ && value <= maxValue_ && value != value_) {
         value_ = value;
         applyValue();
     }
@@ -303,7 +299,7 @@ void TemplateSliderWidget<T>::initValue(T value) {
 
 template <typename T>
 void TemplateSliderWidget<T>::setMinValue(T minValue) {
-    if(minValue_ != minValue) {
+    if (minValue_ != minValue) {
         minValue_ = minValue;
         applyMinValue();
     }
@@ -311,7 +307,7 @@ void TemplateSliderWidget<T>::setMinValue(T minValue) {
 
 template <typename T>
 void TemplateSliderWidget<T>::setMaxValue(T maxValue) {
-    if(maxValue_ != maxValue) {
+    if (maxValue_ != maxValue) {
         maxValue_ = maxValue;
         applyMaxValue();
     }
@@ -325,14 +321,11 @@ void TemplateSliderWidget<T>::setRange(T minValue, T maxValue) {
 
 template <typename T>
 void TemplateSliderWidget<T>::setIncrement(T increment) {
-    if(increment_ != increment) {
+    if (increment_ != increment) {
         increment_ = increment;
         applyIncrement();
     }
 }
-
-
-
 
 } // namespace
 

@@ -55,388 +55,387 @@
 
 namespace inviwo {
 
-struct SinglePropertySetting {
-    SinglePropertySetting(QWidget* widget, std::string label)
-        : label_(new QLabel(QString::fromStdString(label), widget)), widget_(widget) {}
+class IVW_MODULE_QTWIDGETS_API SinglePropertySetting {
+public:
+    SinglePropertySetting(QWidget* widget, std::string label);
+
+    QLineEdit* addField();
+    double getFieldAsDouble(int i);
 
     QLabel* label_;
     QWidget* widget_;
     std::vector<QLineEdit*> additionalFields_;
-
-    QLineEdit* addField() {
-        QLineEdit* ext = new QLineEdit(widget_);
-        ext->setValidator(new QDoubleValidator(widget_));
-        additionalFields_.push_back(ext);
-        return ext;
-    }
-
-    double getFieldAsDouble(int i) {
-        if (i >= 0 && static_cast<size_t>(i) < additionalFields_.size()) {
-            QLocale locale = additionalFields_[i]->locale();
-            return locale.toDouble(
-                additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));
-        }
-        return DataFloat64::minToDouble();
-    }
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertySettingsWidgetQt : public QDialog, public PropertyWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+template <typename T>
+class TemplatePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
-    PropertySettingsWidgetQt(Property* property, QWidget*);
-    virtual ~PropertySettingsWidgetQt();
+    using BT = typename util::value_type<T>::type;
+    TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
+    virtual ~TemplatePropertySettingsWidgetQt() = default;
 
-    virtual void updateFromProperty() { reload(); };
-    virtual void showWidget() {
-        property_->registerWidget(this);
-        updateFromProperty();
-        QDialog::setVisible(true);
-    }
-    virtual void hideWidget() {
-        property_->deregisterWidget(this);
-        QDialog::setVisible(false);
-    }
-
-    virtual UsageMode getUsageMode() const { return property_->getUsageMode(); };
-
-    virtual bool getVisible() const { return isVisible(); };
-public slots:
-    virtual void apply() = 0;
-    virtual void save() = 0;
-    virtual void reload() = 0;
-    virtual void cancel() = 0;
+    virtual void updateFromProperty() override;
+    void showWidget();
+    void hideWidget();
+    bool getVisible() const;
 
 protected:
-    virtual void generateWidget() = 0;
-
-    QGridLayout* gridLayout_;
-    QPushButton btnApply_;
-    QPushButton btnOk_;
-    QPushButton btnCancel_;
-    std::vector<SinglePropertySetting*> settings_;
-
-    void keyPressEvent(QKeyEvent* event);
-    virtual void initializeEditorWidgetsMetaData(){};
-};
-
-template <typename BT, typename T>
-class TemplatePropertySettingsWidgetQt : public PropertySettingsWidgetQt {
-public:
-    TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget)
-        : PropertySettingsWidgetQt(property, widget), property_(property) {
-        generateWidget();
-    }
-
-    virtual ~TemplatePropertySettingsWidgetQt() {}
-
-    virtual void generateWidget() {
-        connect(&btnApply_, SIGNAL(clicked()), this, SLOT(apply()));
-        connect(&btnOk_, SIGNAL(clicked()), this, SLOT(save()));
-        connect(&btnCancel_, SIGNAL(clicked()), this, SLOT(cancel()));
-
-        gridLayout_->setContentsMargins(10, 10, 10, 10);
-        gridLayout_->setSpacing(10);
-
-        gridLayout_->addWidget(new QLabel("Component", this), 0, 0);
-        gridLayout_->addWidget(new QLabel("Min", this), 0, 1);
-        gridLayout_->addWidget(new QLabel("Value", this), 0, 2);
-        gridLayout_->addWidget(new QLabel("Max", this), 0, 3);
-        gridLayout_->addWidget(new QLabel("Increment", this), 0, 4);
-
-        uvec2 components = OrdinalProperty<T>::getDim();
-
-        std::string desc[4];
-        desc[0] = "x";
-        desc[1] = "y";
-        desc[2] = "z";
-        desc[3] = "w";
-
-        int count = 0;
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                std::stringstream ss;
-                ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
-                settings_.push_back(new SinglePropertySetting(this, ss.str()));
-                QLineEdit* min = settings_[count]->addField();
-                QLineEdit* val = settings_[count]->addField();
-                QLineEdit* max = settings_[count]->addField();
-                QLineEdit* inc = settings_[count]->addField();
-                int t = 0;
-                gridLayout_->addWidget(settings_[count]->label_, count + 1, t++);
-                gridLayout_->addWidget(min, count + 1, t++);
-                gridLayout_->addWidget(val, count + 1, t++);
-                gridLayout_->addWidget(max, count + 1, t++);
-                gridLayout_->addWidget(inc, count + 1, t++);
-                count++;
-            }
-        }
-
-        gridLayout_->addWidget(&btnApply_, count + 1, 0, 1, 1);
-        gridLayout_->addWidget(&btnOk_, count + 1, 1, 1, 2);
-        gridLayout_->addWidget(&btnCancel_, count + 1, 3, 1, 2);
-        gridLayout_->setColumnStretch(2, 2);
-
-        setLayout(gridLayout_);
-
-        reload();
-        setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
-    }
-
-    virtual void save() {
-        hideWidget();
-        apply();
-    }
-
-    virtual void apply() {
-        NetworkLock lock(property_);
-
-        uvec2 components = OrdinalProperty<T>::getDim();
-        size_t count = 0;
-
-        T min = property_->getMinValue();
-        T val = property_->get();
-        T max = property_->getMaxValue();
-        T inc = property_->getIncrement();
-
-        T minOrg = property_->getMinValue();
-        T valOrg = property_->get();
-        T maxOrg = property_->getMaxValue();
-        T incOrg = property_->getIncrement();
-
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                int t = 0;
-                util::glmcomp(min, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(val, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(max, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(inc, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                count++;
-            }
-        }
-        property_->setInitiatingWidget(this);
-        if (min != minOrg) property_->setMinValue(min);
-        if (val != valOrg) property_->set(val);
-        if (max != maxOrg) property_->setMaxValue(max);
-        if (inc != incOrg) property_->setIncrement(inc);
-        property_->clearInitiatingWidget();
-    }
-
-    virtual void reload() {
-        uvec2 components = OrdinalProperty<T>::getDim();
-        size_t count = 0;
-
-        T min = property_->getMinValue();
-        T val = property_->get();
-        T max = property_->getMaxValue();
-        T inc = property_->getIncrement();
-
-        QLocale locale = settings_[0]->additionalFields_[0]->locale();
-
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                int t = 0;
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(min, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(val, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(max, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(inc, count)));
-                count++;
-            }
-        }
-    }
-    virtual void cancel() {
-        hideWidget();
-        reload();
-    }
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
+    void save();
+    void apply();
+    void reload();
+    void cancel();
+
+    QPushButton* btnApply_;
+    QPushButton* btnOk_;
+    QPushButton* btnCancel_;
+    std::vector<std::unique_ptr<SinglePropertySetting>> settings_;
     OrdinalProperty<T>* property_;
 };
 
-template <typename BT, typename T>
-class TemplateMinMaxPropertySettingsWidgetQt : public PropertySettingsWidgetQt {
-public:
-    TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget)
-        : PropertySettingsWidgetQt(property, widget), property_(property) {
-        generateWidget();
+template <typename T>
+TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
+    OrdinalProperty<T>* property, QWidget* widget)
+    : QDialog(widget)
+    , PropertyWidget(property)
+    , btnApply_(new QPushButton("Apply", this))
+    , btnOk_(new QPushButton("Ok", this))
+    , btnCancel_(new QPushButton("Cancel", this))
+    , property_(property) {
+
+    this->setModal(false);
+    // remove help button from title bar
+    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    // make it a tool window
+    flags |= Qt::Popup;
+    this->setWindowFlags(flags);
+
+    auto gridLayout = new QGridLayout();
+    gridLayout->setContentsMargins(10, 10, 10, 10);
+    gridLayout->setSpacing(10);
+
+    const std::array<QString, 5> labels = {"Component", "Min", "Value", "Max", "Increment"};
+    for (size_t i = 0; i < labels.size(); ++i) {
+        gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
     }
+    const std::array<char,4> desc = {'x', 'y', 'z', 'w'};
+    const uvec2 components = OrdinalProperty<T>::getDim();
 
-    virtual ~TemplateMinMaxPropertySettingsWidgetQt() {}
+    int count = 0;
+    for (size_t i = 0; i < components.x; i++) {
+        for (size_t j = 0; j < components.y; j++) {
+            std::stringstream ss;
+            ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
+            settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
+            gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
 
-    typedef glm::tvec2<T, glm::defaultp> V;
-
-    virtual void generateWidget() {
-        connect(&btnApply_, SIGNAL(clicked()), this, SLOT(apply()));
-        connect(&btnOk_, SIGNAL(clicked()), this, SLOT(save()));
-        connect(&btnCancel_, SIGNAL(clicked()), this, SLOT(cancel()));
-
-        gridLayout_->setContentsMargins(10, 10, 10, 10);
-        gridLayout_->setSpacing(10);
-
-        gridLayout_->addWidget(new QLabel("Component", this), 0, 0);
-        gridLayout_->addWidget(new QLabel("Min Bound", this), 0, 1);
-        gridLayout_->addWidget(new QLabel("Start", this), 0, 2);
-        gridLayout_->addWidget(new QLabel("End", this), 0, 3);
-        gridLayout_->addWidget(new QLabel("Max Bound", this), 0, 4);
-        gridLayout_->addWidget(new QLabel("MinSeparation", this), 0, 5);
-        gridLayout_->addWidget(new QLabel("Increment", this), 0, 6);
-
-        uvec2 components = MinMaxProperty<T>::getDim();
-
-        std::string desc[4];
-        desc[0] = "x";
-        desc[1] = "y";
-        desc[2] = "z";
-        desc[3] = "w";
-
-        int count = 0;
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                std::stringstream ss;
-                ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
-                settings_.push_back(new SinglePropertySetting(this, ss.str()));
-                QLineEdit* rangeMin = settings_[count]->addField();
-                QLineEdit* min = settings_[count]->addField();
-                QLineEdit* max = settings_[count]->addField();
-                QLineEdit* rangeMax = settings_[count]->addField();
-                QLineEdit* minSep = settings_[count]->addField();
-                QLineEdit* inc = settings_[count]->addField();
-                int t = 0;
-                gridLayout_->addWidget(settings_[count]->label_, count + 1, t++);
-                gridLayout_->addWidget(rangeMin, count + 1, t++);
-                gridLayout_->addWidget(min, count + 1, t++);
-                gridLayout_->addWidget(max, count + 1, t++);
-                gridLayout_->addWidget(rangeMax, count + 1, t++);
-                gridLayout_->addWidget(minSep, count + 1, t++);
-                gridLayout_->addWidget(inc, count + 1, t++);
-                count++;
+            for (int k = 0; k < 4; ++k) {
+                QLineEdit* edit = settings_[count]->addField();
+                gridLayout->addWidget(edit, count + 1, k + 1);
             }
+            count++;
         }
-
-        gridLayout_->addWidget(&btnApply_, count + 1, 0, 1, 1);
-        gridLayout_->addWidget(&btnOk_, count + 1, 1, 1, 2);
-        gridLayout_->addWidget(&btnCancel_, count + 1, 3, 1, 2);
-        gridLayout_->setColumnStretch(2, 2);
-
-        setLayout(gridLayout_);
-
-        reload();
-        setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
     }
 
-    virtual void save() {
-        hideWidget();
+    gridLayout->addWidget(btnApply_, count + 1, 0, 1, 1);
+    gridLayout->addWidget(btnOk_, count + 1, 1, 1, 2);
+    gridLayout->addWidget(btnCancel_, count + 1, 3, 1, 2);
+    gridLayout->setColumnStretch(2, 2);
+
+    setLayout(gridLayout);
+
+    connect(btnApply_, &QPushButton::clicked, this,
+            &TemplatePropertySettingsWidgetQt<T>::apply);
+    connect(btnOk_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::save);
+    connect(btnCancel_, &QPushButton::clicked, this,
+            &TemplatePropertySettingsWidgetQt<T>::cancel);
+
+    reload();
+    setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+}
+
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::apply() {
+    NetworkLock lock(property_);
+
+    std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
+                          property_->getIncrement()};
+
+    const std::array<T, 4> orgVals{vals};
+
+    for (size_t i = 0; i < settings_.size(); i++) {
+        for (int k = 0; k < 4; ++k) {
+            util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
+        }
+    }
+
+    static const std::array<void (OrdinalProperty<T>::*)(const T&), 4> setters{
+        &OrdinalProperty<T>::setMinValue, &OrdinalProperty<T>::set,
+        &OrdinalProperty<T>::setMaxValue, &OrdinalProperty<T>::setIncrement};
+
+    property_->setInitiatingWidget(this);
+    for (int k = 0; k < 4; ++k) {
+        if (vals[k] != orgVals[k]) (*property_.*setters[k])(vals[k]);
+    }
+    property_->clearInitiatingWidget();
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::reload() {
+    std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
+                          property_->getIncrement()};
+
+    QLocale locale = settings_[0]->additionalFields_[0]->locale();
+    for (size_t i = 0; i < settings_.size(); i++) {
+        for (size_t k = 0; k < vals.size(); ++k) {
+            settings_[i]->additionalFields_[k]->setText(
+                QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
+        }
+    }
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::cancel() {
+    hideWidget();
+    reload();
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::save() {
+    hideWidget();
+    apply();
+}
+
+template <typename T>
+bool TemplatePropertySettingsWidgetQt<T>::getVisible() const {
+    return isVisible();
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::hideWidget() {
+    property_->deregisterWidget(this);
+    QDialog::setVisible(false);
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::showWidget() {
+    property_->registerWidget(this);
+    updateFromProperty();
+    QDialog::setVisible(true);
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::updateFromProperty() {
+    reload();
+}
+
+template <typename T>
+void TemplatePropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
+        cancel();
+    } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
         apply();
     }
+    QDialog::keyPressEvent(event);
+}
 
-    virtual void apply() {
-        NetworkLock lock(property_);
+template <typename T>
+class TemplateMinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+public:
+    using BT = typename util::value_type<T>::type;
+    TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
+    virtual ~TemplateMinMaxPropertySettingsWidgetQt() = default;
 
-        uvec2 components = MinMaxProperty<T>::getDim();
-        size_t count = 0;
+    using V = glm::tvec2<T, glm::defaultp>;
 
-        V range = property_->get();
-        T min = range.x;
-        T rangeMin = property_->getRangeMin();
-        T rangeMax = property_->getRangeMax();
-        T max = range.y;
-        T minSep = property_->getMinSeparation();
-        T inc = property_->getIncrement();
+    virtual void updateFromProperty() override;
+    void showWidget();
+    void hideWidget();
+    bool getVisible() const;
 
-        T minOrg = range.x;
-        T rangeMinOrg = property_->getRangeMin();
-        T rangeMaxOrg = property_->getRangeMax();
-        T maxOrg = range.y;
-        T minSepOrg = property_->getMinSeparation();
-        T incOrg = property_->getIncrement();
-
-// Visual studio warns here even with the static casts, bug?  
-#include <warn/push>
-#include <warn/ignore/conversion>
-
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                int t = 0;
-                util::glmcomp(rangeMin, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(min, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(max, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(rangeMax, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(minSep, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                util::glmcomp(inc, count) =
-                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
-                count++;
-            }
-        }
-
-#include <warn/pop>
-
-        range.x = min;
-        range.y = max;
-        property_->setInitiatingWidget(this);
-        if (min != minOrg || max != maxOrg) property_->set(range);
-        if (rangeMin != rangeMinOrg) property_->setRangeMin(rangeMin);
-        if (rangeMax != rangeMaxOrg) property_->setRangeMax(rangeMax);
-        if (minSep != minSepOrg) property_->setMinSeparation(minSep);
-        if (inc != incOrg) property_->setIncrement(inc);
-        property_->clearInitiatingWidget();
-    }
-
-    virtual void reload() {
-        uvec2 components = MinMaxProperty<T>::getDim();
-        size_t count = 0;
-
-        V range = property_->get();
-        T min = range.x;
-        T rangeMin = property_->getRangeMin();
-        T rangeMax = property_->getRangeMax();
-        T max = range.y;
-        T minSep = property_->getMinSeparation();
-        T inc = property_->getIncrement();
-
-        QLocale locale = settings_[0]->additionalFields_[0]->locale();
-
-        for (size_t i = 0; i < components.x; i++) {
-            for (size_t j = 0; j < components.y; j++) {
-                int t = 0;
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(rangeMin, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(min, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(max, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(rangeMax, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(minSep, count)));
-                settings_[count]->additionalFields_[t++]->setText(
-                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(inc, count)));
-                count++;
-            }
-        }
-    }
-    virtual void cancel() {
-        hideWidget();
-        reload();
-    }
+protected:
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
+    void save();
+    void apply();
+    void reload();
+    void cancel();
+
+    QPushButton* btnApply_;
+    QPushButton* btnOk_;
+    QPushButton* btnCancel_;
+    std::vector<std::unique_ptr<SinglePropertySetting>> settings_;
     MinMaxProperty<T>* property_;
 };
+
+template <typename T>
+TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQt(
+    MinMaxProperty<T>* property, QWidget* widget)
+    : QDialog(widget)
+    , PropertyWidget(property)
+    , btnApply_(new QPushButton("Apply", this))
+    , btnOk_(new QPushButton("Ok", this))
+    , btnCancel_(new QPushButton("Cancel", this))
+    , property_(property) {
+
+    this->setModal(false);
+    // remove help button from title bar
+    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    // make it a tool window
+    flags |= Qt::Popup;
+    this->setWindowFlags(flags);
+
+    auto gridLayout = new QGridLayout();
+    gridLayout->setContentsMargins(10, 10, 10, 10);
+    gridLayout->setSpacing(10);
+
+    const std::array<QString, 7> labels = {"Component", "Min Bound",     "Start",    "End",
+                                           "Max Bound", "MinSeparation", "Increment"};
+    for (size_t i = 0; i < labels.size(); ++i) {
+        gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
+    }
+    const std::array<char, 4> desc = { 'x', 'y', 'z', 'w' };
+    const uvec2 components = OrdinalProperty<T>::getDim();
+
+    int count = 0;
+    for (size_t i = 0; i < components.x; i++) {
+        for (size_t j = 0; j < components.y; j++) {
+            std::stringstream ss;
+            ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
+            settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
+            gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
+            
+            for (int k = 0; k < 6; ++k) {
+                QLineEdit* edit = settings_[count]->addField();
+                gridLayout->addWidget(edit, count + 1, k + 1);
+            }
+            count++;
+        }
+    }
+
+    gridLayout->addWidget(btnApply_, count + 1, 0, 1, 1);
+    gridLayout->addWidget(btnOk_, count + 1, 1, 1, 2);
+    gridLayout->addWidget(btnCancel_, count + 1, 3, 1, 2);
+    gridLayout->setColumnStretch(2, 2);
+
+    setLayout(gridLayout);
+
+    connect(btnApply_, &QPushButton::clicked, this,
+            &TemplateMinMaxPropertySettingsWidgetQt<T>::apply);
+    connect(btnOk_, &QPushButton::clicked, this,
+            &TemplateMinMaxPropertySettingsWidgetQt<T>::save);
+    connect(btnCancel_, &QPushButton::clicked, this,
+            &TemplateMinMaxPropertySettingsWidgetQt<T>::cancel);
+
+    reload();
+    setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+}
+
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
+    NetworkLock lock(property_);
+
+    std::array<T, 6> vals{
+        property_->getRangeMin(),
+        property_->getStart(),
+        property_->getEnd(),
+        property_->getRangeMax(),
+        property_->getMinSeparation(),
+        property_->getIncrement()
+    };
+    const std::array<T, 6> orgVals{vals};
+
+    // Visual studio warns here even with the static casts, bug?  
+#include <warn/push>
+#include <warn/ignore/conversion>
+    for (size_t i = 0; i < settings_.size(); i++) {
+        for (int k = 0; k < 6; ++k) {
+            util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
+        }
+    }
+#include <warn/pop>
+
+    static const std::array<void (MinMaxProperty<T>::*)(const T&), 6> setters{
+        &MinMaxProperty<T>::setRangeMin,      &MinMaxProperty<T>::setStart,
+        &MinMaxProperty<T>::setEnd,           &MinMaxProperty<T>::setRangeMax,
+        &MinMaxProperty<T>::setMinSeparation, &MinMaxProperty<T>::setIncrement};
+
+    property_->setInitiatingWidget(this);
+    for (int k = 0; k < 6; ++k) {
+        if (vals[k] != orgVals[k]) (*property_.*setters[k])(vals[k]);
+    }
+    property_->clearInitiatingWidget();
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::reload() {
+    std::array<T, 6> vals{
+        property_->getRangeMin(),
+        property_->getStart(),
+        property_->getEnd(),
+        property_->getRangeMax(),
+        property_->getMinSeparation(),
+        property_->getIncrement()
+    };
+
+    QLocale locale = settings_[0]->additionalFields_[0]->locale();
+    for (size_t i = 0; i < settings_.size(); i++) {
+        for (size_t k = 0; k < vals.size(); ++k) {
+            settings_[i]->additionalFields_[k]->setText(
+                QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
+        }
+    }
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::save() {
+    hideWidget();
+    apply();
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::cancel() {
+    hideWidget();
+    reload();
+}
+
+template <typename T>
+bool TemplateMinMaxPropertySettingsWidgetQt<T>::getVisible() const {
+    return isVisible();
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::hideWidget() {
+    property_->deregisterWidget(this);
+    QDialog::setVisible(false);
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::showWidget() {
+    property_->registerWidget(this);
+    updateFromProperty();
+    QDialog::setVisible(true);
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::updateFromProperty() {
+    reload();
+}
+
+template <typename T>
+void TemplateMinMaxPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
+        cancel();
+    } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        apply();
+    }
+    QDialog::keyPressEvent(event);
+}
 
 }  // namespace
 

@@ -31,135 +31,135 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QHBoxLayout>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {
 
 EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText)
     : QWidget(parent)
+    , label_{new QLabel(this)}
+    , lineEdit_{nullptr}
     , text_(text)
     , property_(nullptr)
     , propertyWidget_(parent)
-    , contextMenu_(nullptr)
     , shortenText_(shortenText) {
-    generateWidget();
-}
-
-EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText)
-    : QWidget(parent)
-    , text_(property->getDisplayName())
-    , property_(property)
-    , propertyWidget_(parent)
-    , contextMenu_(nullptr)
-    , shortenText_(shortenText) {
-    property->addObserver(this);
-    generateWidget();
-}
-
-void EditableLabelQt::generateWidget() {
+   
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
-    label_ = new QLabel(this);
+    
+    updateLabel(text_);
 
-    updateText();
-
-    lineEdit_ = new QLineEdit(this);
-    hLayout->addWidget(lineEdit_);
-    lineEdit_->hide();
-    lineEdit_->setAlignment(Qt::AlignLeft);
-    lineEdit_->setContentsMargins(0, 0, 0, 0);
     hLayout->addWidget(label_);
     setLayout(hLayout);
 
-    QSizePolicy labelPol = this->sizePolicy();
+    QSizePolicy labelPol = sizePolicy();
     labelPol.setHorizontalStretch(1);
     labelPol.setVerticalPolicy(QSizePolicy::Fixed);
-    this->setSizePolicy(labelPol);
+    setSizePolicy(labelPol);
     label_->setSizePolicy(labelPol);
-    lineEdit_->setSizePolicy(labelPol);
-    setFocusProxy(lineEdit_);
-    label_->setFocusProxy(lineEdit_);
 
-    label_->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(label_, SIGNAL(customContextMenuRequested(const QPoint&)), this,
-            SLOT(showContextMenu(const QPoint&)));
+    setContextMenuPolicy(Qt::PreventContextMenu);
+}
 
-    connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText)
+    : EditableLabelQt(parent, property->getDisplayName(), shortenText) {
+    property_ = property;
+    property->addObserver(this);
+}
+
+std::string EditableLabelQt::getText() {
+    return text_;
+}
+
+QLineEdit* EditableLabelQt::getLineEdit() {
+    if (!lineEdit_) {
+        lineEdit_ = new QLineEdit(this);
+        lineEdit_->hide();
+        lineEdit_->setAlignment(Qt::AlignLeft);
+        lineEdit_->setContentsMargins(0, 0, 0, 0);
+        setFocusProxy(lineEdit_);
+        label_->setFocusProxy(lineEdit_);
+        lineEdit_->setSizePolicy(sizePolicy());
+        layout()->addWidget(lineEdit_);
+
+        connect(lineEdit_, &QLineEdit::editingFinished, this,[&](){
+            text_ = getLineEdit()->text().toStdString();
+            updateLabel(text_);
+
+            getLineEdit()->hide();
+            label_->show();
+
+            if (property_) property_->setDisplayName(text_);
+
+            emit textChanged();
+        
+        });
+    }
+    return lineEdit_;
 }
 
 void EditableLabelQt::edit() {
-    lineEdit_->setText(QString::fromStdString(text_));
+    getLineEdit()->setText(QString::fromStdString(text_));
     label_->hide();
-    lineEdit_->show();
+    getLineEdit()->show();
 }
 
 QSize EditableLabelQt::sizeHint() const { return QSize(18, 18); }
 QSize EditableLabelQt::minimumSizeHint() const { return sizeHint(); }
 
 void EditableLabelQt::resizeEvent(QResizeEvent* event) {
-    if (shortenText_) {
-        label_->setText(shortenText());
-    }
+    updateLabel(text_);
     QWidget::resizeEvent(event);
 }
 
 void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent* e) { edit(); }
 
-void EditableLabelQt::finishEditing() {
-    text_ = lineEdit_->text().toLocal8Bit().constData();
-    updateText();
-    
-    lineEdit_->hide();
-    label_->show();
-    
-    if (property_) property_->setDisplayName(text_);
-
-    emit textChanged();
-}
-
-void EditableLabelQt::setText(std::string txt) {
+void EditableLabelQt::setText(const std::string& txt) {
     text_ = txt;
-    updateText();
+    updateLabel(text_);
 }
 
-void EditableLabelQt::showContextMenu(const QPoint& pos) {
-    if (!contextMenu_) {
-        contextMenu_ = new QMenu(this);
-
-        if (propertyWidget_) {
-            contextMenu_->addActions(propertyWidget_->getContextMenu()->actions());
-        }
-
-        renameAction_ = new QAction(tr("&Rename"), this);
-        contextMenu_->addAction(renameAction_);
-        connect(renameAction_, SIGNAL(triggered()), this, SLOT(edit()));
-    }
-
-    contextMenu_->exec(label_->mapToGlobal(pos));
-}
-
-QString EditableLabelQt::shortenText() {
+QString EditableLabelQt::shortenText(const std::string& text) {
     QFontMetrics fm = label_->fontMetrics();
-    return fm.elidedText(QString::fromStdString(text_.c_str()), Qt::ElideRight, width());
+    return fm.elidedText(QString::fromStdString(text), Qt::ElideRight, width());
 }
 
-void EditableLabelQt::updateText() {
-    if (shortenText_) {
-        label_->setText(shortenText());
-    } else {
-        label_->setText(QString::fromStdString(text_.c_str()));
-    }
+void EditableLabelQt::updateLabel(const std::string& text) {
+    label_->setText(shortenText_ ? shortenText(text) : QString::fromStdString(text));
 }
 
 void EditableLabelQt::onSetDisplayName(const std::string& displayName) {
     text_ = displayName;
-    updateText();
+    updateLabel(text_);
 }
 
 void EditableLabelQt::setShortenText(bool shorten) {
     shortenText_ = shorten;
-    updateText();
+    updateLabel(text_);
 }
+
+bool EditableLabelQt::event(QEvent* event) {
+    if (event->type() == QEvent::MouseButtonRelease) {
+        auto mouseEvent = static_cast<QMouseEvent*>(event);
+        if (mouseEvent->button() == Qt::RightButton) {
+            if (auto menu = propertyWidget_->getContextMenu()) {
+                auto renameAction = menu->addAction(tr("&Rename"));
+                connect(renameAction, &QAction::triggered, this, &EditableLabelQt::edit);
+                menu->exec(mouseEvent->globalPos());
+                mouseEvent->accept();
+                return true;
+            }
+        }
+    }
+    return QWidget::event(event);
+}
+
 
 }  // namespace

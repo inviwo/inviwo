@@ -29,18 +29,19 @@
 
 #include <modules/qtwidgets/ordinaleditorwidget.h>
 
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <warn/pop>
+
 namespace inviwo {
 
-BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() {
-    generateWidget();
-}
+BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{ new IvwLineEdit(this) } {
 
-BaseOrdinalEditorWidget::~BaseOrdinalEditorWidget() {
-}
-
-void BaseOrdinalEditorWidget::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
-    editor_ = new IvwLineEdit(this);
+
     QSizePolicy sp = editor_->sizePolicy();
     sp.setHorizontalPolicy(QSizePolicy::Minimum);
     editor_->setSizePolicy(sp);
@@ -48,13 +49,15 @@ void BaseOrdinalEditorWidget::generateWidget() {
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     setLayout(hLayout);
-    connect(editor_, SIGNAL(editingFinished()), this, SLOT(updateFromEditor()));
+    connect(editor_, &IvwLineEdit::editingFinished, this,
+            &BaseOrdinalEditorWidget::updateFromEditor);
 }
-    
+
+BaseOrdinalEditorWidget::~BaseOrdinalEditorWidget() = default;
+
 void BaseOrdinalEditorWidget::updateEditor() {
-    editor_->blockSignals(true);
+    QSignalBlocker block{ editor_ };
     editor_->setText(transformValueToEditor());
-    editor_->blockSignals(false);
 }
 
 void BaseOrdinalEditorWidget::updateFromEditor() {
@@ -62,9 +65,7 @@ void BaseOrdinalEditorWidget::updateFromEditor() {
     emit valueChanged();
 }
 
-void BaseOrdinalEditorWidget::applyInit() {
-    updateEditor();
-}
+void BaseOrdinalEditorWidget::applyInit() { updateEditor(); }
 
 void BaseOrdinalEditorWidget::applyValue() {
     applyInit();

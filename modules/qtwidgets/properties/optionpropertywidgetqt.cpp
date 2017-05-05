@@ -33,38 +33,40 @@
 
 #include <typeinfo>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <QMenu>
+#include <warn/pop>
+
 namespace inviwo {
 
-OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property) 
+OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     : PropertyWidgetQt(property)
-    , property_(property) {
-    generateWidget();
-    updateFromProperty();
-}
+    , property_(property)
+    , comboBox_{new IvwComboBox(this)}
+    , label_{new EditableLabelQt(this, property_)} {
 
-void OptionPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
     setLayout(hLayout);
 
-    comboBox_ = new IvwComboBox(this);
-    updateFromProperty();
-
     comboBox_->setEnabled(!property_->getReadOnly());
     comboBox_->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(comboBox_,
-            SIGNAL(customContextMenuRequested(const QPoint&)),
-            this,
-            SLOT(showContextMenu(const QPoint&)));
-    
+    connect(comboBox_, &IvwComboBox::customContextMenuRequested, this, [this](const QPoint& pos) {
+        if (auto menu = getContextMenu()) {
+            menu->exec(comboBox_->mapToGlobal(pos));
+        }
+    });
+
     QSizePolicy slidersPol = comboBox_->sizePolicy();
     slidersPol.setHorizontalStretch(3);
     comboBox_->setSizePolicy(slidersPol);
-    
-    label_ = new EditableLabelQt(this, property_);
+
     hLayout->addWidget(label_);
-    
+
     {
         QWidget* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
@@ -74,15 +76,18 @@ void OptionPropertyWidgetQt::generateWidget() {
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
-        
+
         vLayout->addWidget(comboBox_);
         hLayout->addWidget(widget);
     }
-    
-    connect(comboBox_, SIGNAL(currentIndexChanged(int)),this, SLOT(optionChanged()));
+
+    connect(comboBox_, static_cast<void (QComboBox::*)(int)>(&IvwComboBox::currentIndexChanged),
+            this, &OptionPropertyWidgetQt::optionChanged);
+
+    updateFromProperty();
 }
 
-void OptionPropertyWidgetQt::optionChanged() {
+void OptionPropertyWidgetQt::optionChanged(int) {
     if (comboBox_->count()
         && comboBox_->currentIndex() >= 0
         && static_cast<size_t>(comboBox_->currentIndex()) != property_->getSelectedIndex()) {
@@ -93,7 +98,8 @@ void OptionPropertyWidgetQt::optionChanged() {
 }
 
 void OptionPropertyWidgetQt::updateFromProperty() {
-    comboBox_->blockSignals(true);
+    QSignalBlocker block{comboBox_};
+
     comboBox_->clear();
     std::vector<std::string> names = property_->getDisplayNames();
 
@@ -102,7 +108,6 @@ void OptionPropertyWidgetQt::updateFromProperty() {
         comboBox_->addItem(option);
     }
     comboBox_->setCurrentIndex(static_cast<int>(property_->getSelectedIndex()));
-    comboBox_->blockSignals(false);
 }
 
 } // namespace

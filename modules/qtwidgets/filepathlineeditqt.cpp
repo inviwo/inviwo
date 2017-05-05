@@ -36,6 +36,7 @@
 #include <QCursor>
 #include <QFocusEvent>
 #include <QMouseEvent>
+#include <QStyle>
 #include <warn/pop>
 
 namespace inviwo {

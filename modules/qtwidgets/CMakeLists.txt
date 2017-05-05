@@ -2,7 +2,7 @@
 # Inviwo Qt Widgets
 ivw_module(QtWidgets)
 
-#--------------------------------------------------------------------
+#-------------------------------------------------------------------- 
 # Add MOC files
 set(MOC_FILES
     angleradiuswidget.h
@@ -19,37 +19,14 @@ set(MOC_FILES
     ordinaleditorwidget.h
     processors/processordockwidgetqt.h
     processors/processorwidgetqt.h
-    properties/anglepropertywidgetqt.h
-    properties/boolcompositepropertywidgetqt.h
-    properties/buttonpropertywidgetqt.h
-    properties/collapsiblegroupboxwidgetqt.h
-    properties/colorpropertywidgetqt.h
-    properties/compositepropertywidgetqt.h
-    properties/eventpropertywidgetqt.h
-    properties/filepropertywidgetqt.h
-    properties/htmleditorwidgetqt.h
-    properties/htmllistwidgetqt.h
-    properties/imageeditorwidgetqt.h
-    properties/lightpropertywidgetqt.h
-    properties/multifilepropertywidgetqt.h
-    properties/optionpropertywidgetqt.h
-    properties/ordinalminmaxpropertywidgetqt.h
-    properties/ordinalminmaxtextpropertywidgetqt.h
-    properties/ordinalpropertywidgetqt.h
-    properties/propertyeditorwidgetqt.h
-    properties/propertysettingswidgetqt.h
     properties/propertywidgetqt.h
     properties/stringmultilinepropertywidgetqt.h
-    properties/stringpropertywidgetqt.h
-    properties/syntaxhighlighter.h
     properties/texteditorwidgetqt.h
     properties/transferfunctioneditor.h
     properties/transferfunctionpropertydialog.h
     propertylistwidget.h
-    propertyselectiontreewidget.h
     rangesliderqt.h
     sliderwidgetqt.h
-    spinboxrangesliderwidgetqt.h
 )
 
 #--------------------------------------------------------------------
@@ -60,7 +37,25 @@ set(HEADER_FILES
     inviwoqtutils.h
     keyboardutils.h
     labelgraphicsitem.h
+    properties/anglepropertywidgetqt.h
     properties/boolpropertywidgetqt.h
+    properties/boolcompositepropertywidgetqt.h
+    properties/buttonpropertywidgetqt.h
+    properties/collapsiblegroupboxwidgetqt.h
+    properties/colorpropertywidgetqt.h
+    properties/compositepropertywidgetqt.h
+    properties/eventpropertywidgetqt.h
+    properties/filepropertywidgetqt.h
+    properties/lightpropertywidgetqt.h
+    properties/multifilepropertywidgetqt.h
+    properties/optionpropertywidgetqt.h
+    properties/ordinalminmaxpropertywidgetqt.h
+    properties/ordinalminmaxtextpropertywidgetqt.h
+    properties/ordinalpropertywidgetqt.h
+    properties/propertyeditorwidgetqt.h
+    properties/propertysettingswidgetqt.h
+    properties/stringpropertywidgetqt.h
+    properties/syntaxhighlighter.h
     properties/transferfunctioncontrolpointconnection.h
     properties/transferfunctioneditorcontrolpoint.h
     properties/transferfunctioneditorview.h
@@ -103,9 +98,6 @@ set(SOURCE_FILES
     properties/eventpropertywidgetqt.cpp
     properties/filepropertywidgetqt.cpp
     properties/glslsyntaxhighlighter.cpp
-    properties/htmleditorwidgetqt.cpp
-    properties/htmllistwidgetqt.cpp
-    properties/imageeditorwidgetqt.cpp
     properties/lightpropertywidgetqt.cpp
     properties/multifilepropertywidgetqt.cpp
     properties/optionpropertywidgetqt.cpp
@@ -127,12 +119,10 @@ set(SOURCE_FILES
     properties/transferfunctionpropertydialog.cpp
     properties/transferfunctionpropertywidgetqt.cpp 
     propertylistwidget.cpp
-    propertyselectiontreewidget.cpp
     qtwidgetsmodule.cpp
     rangesliderqt.cpp
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp
-    spinboxrangesliderwidgetqt.cpp
 )
 
 ivw_group("Source Files" ${SOURCE_FILES})

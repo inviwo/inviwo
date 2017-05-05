@@ -35,95 +35,103 @@
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-
 #include <inviwo/core/properties/ordinalproperty.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSignalBlocker>
+#include <warn/pop>
 
 namespace inviwo {
 
-
-/** \class BaseAnglePropertyWidgetQt
+/** \class AnglePropertyWidgetQt
  * Widget for Float and Double properties to edit an angle in [0 2pi).
  * 
  * @see AngleWidget
  */
-class IVW_MODULE_QTWIDGETS_API BaseAnglePropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+template <typename T>
+class AnglePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    BaseAnglePropertyWidgetQt(Property* prop);
-    virtual ~BaseAnglePropertyWidgetQt() {};
+    AnglePropertyWidgetQt(OrdinalProperty<T>* property);
+    virtual ~AnglePropertyWidgetQt() = default;
 
-    virtual void updateFromProperty() = 0;
-
-public slots:
-    virtual void onAngleChanged() = 0;
-    virtual void onAngleMinMaxChanged() = 0;
-    /** 
-     * Set current value as minimum value.
-     */
-    virtual void setCurrentAsMin() = 0;
-    /** 
-     * Set current value as maximum value.
-     */
-    virtual void setCurrentAsMax() = 0;
-    virtual void showSettings() = 0;
-
+    virtual void updateFromProperty() override;
 protected:
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+    void showSettings();
+    // Convenience function
+    virtual OrdinalProperty<T>* getProperty() override;
 
-    void generateWidget();
-    void generatesSettingsWidget();
-    // Actions for the context menu
-    QAction* settingsAction_; 
-    QAction* minAction_;
-    QAction* maxAction_;
-
-    PropertySettingsWidgetQt* settingsWidget_;
+    TemplatePropertySettingsWidgetQt<T>* settingsWidget_;
     EditableLabelQt* displayName_;
-    AngleRadiusWidget* angleWidget_; 
+    AngleRadiusWidget* angleWidget_;
 };
 
-// Qt does not allow us to template class with Q_OBJECT so we inherit from it instead
+using FloatAnglePropertyWidgetQt = AnglePropertyWidgetQt<float>;
+using DoubleAnglePropertyWidgetQt = AnglePropertyWidgetQt<double>;
+
 template <typename T>
-class AnglePropertyWidgetQt : public BaseAnglePropertyWidgetQt {
-public:
-    AnglePropertyWidgetQt(OrdinalProperty<T>* property) : BaseAnglePropertyWidgetQt(property) {
-        // Set values
-        updateFromProperty();
-    }
+AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
+    : PropertyWidgetQt(property)
+    , settingsWidget_(nullptr)
+    , displayName_(new EditableLabelQt(this, property))
+    , angleWidget_(new AngleRadiusWidget(this)) {
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    // Label showing the display name of the property
+    setSpacingAndMargins(hLayout);
+    hLayout->addWidget(displayName_);
 
-    virtual ~AnglePropertyWidgetQt(){};
-
-    void updateFromProperty() {
-        angleWidget_->blockSignals(true);
-        angleWidget_->setMinMaxAngle(static_cast<double>(getProperty()->getMinValue()),
-                                     static_cast<double>(getProperty()->getMaxValue()));
-        angleWidget_->setAngle(static_cast<double>(getProperty()->get()));
-        angleWidget_->blockSignals(false);
-    }
-    void onAngleChanged() { getProperty()->set(static_cast<T>(angleWidget_->getAngle())); }
-    void onAngleMinMaxChanged() {
+    // Do not allow the user to change the radius
+    angleWidget_->setMinRadius(1.);
+    connect(angleWidget_, &AngleRadiusWidget::angleChanged, this,
+            [&]() { getProperty()->set(static_cast<T>(angleWidget_->getAngle())); });
+    connect(angleWidget_, &AngleRadiusWidget::angleMinMaxChanged, this, [&]() {
         getProperty()->setMinValue(static_cast<T>(angleWidget_->getMinAngle()));
         getProperty()->setMaxValue(static_cast<T>(angleWidget_->getMaxAngle()));
-    }
-    void setCurrentAsMin() { getProperty()->setMinValue(static_cast<T>(getProperty()->get())); }
-    void setCurrentAsMax() { getProperty()->setMaxValue(static_cast<T>(getProperty()->get())); }
+    });
+    hLayout->addWidget(angleWidget_, Qt::AlignCenter);
 
-    void showSettings() {
-        if (!this->settingsWidget_) {
-            this->settingsWidget_ = new TemplatePropertySettingsWidgetQt<T, T>(getProperty(), this);
-        }
-        this->settingsWidget_->reload();
-        this->settingsWidget_->show();
-    }
-    // Convenience function
-    OrdinalProperty<T>* getProperty() { return static_cast<OrdinalProperty<T>*>(property_); }
-};
+    setLayout(hLayout);
+    updateFromProperty();
+}
 
-typedef AnglePropertyWidgetQt<float> FloatAnglePropertyWidgetQt;
-typedef AnglePropertyWidgetQt<double> DoubleAnglePropertyWidgetQt;
+template <typename T>
+void AnglePropertyWidgetQt<T>::updateFromProperty() {
+    QSignalBlocker block{angleWidget_};
+    angleWidget_->setMinMaxAngle(static_cast<double>(getProperty()->getMinValue()),
+                                 static_cast<double>(getProperty()->getMaxValue()));
+    angleWidget_->setAngle(static_cast<double>(getProperty()->get()));
+}
+
+template <typename T>
+std::unique_ptr<QMenu> AnglePropertyWidgetQt<T>::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+    auto settingsAction = menu->addAction(tr("&Property settings..."));
+    settingsAction->setToolTip(
+        tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
+           "minSepration and increment values"));
+
+    connect(settingsAction, &QAction::triggered, this, &AnglePropertyWidgetQt::showSettings);
+    settingsAction->setEnabled(!property_->getReadOnly());
+    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
+    return menu;
+}
+
+template <typename T>
+OrdinalProperty<T>* AnglePropertyWidgetQt<T>::getProperty() {
+    return static_cast<OrdinalProperty<T>*>(property_);
+}
+
+template <typename T>
+void AnglePropertyWidgetQt<T>::showSettings() {
+    if (!settingsWidget_) {
+        settingsWidget_ = new TemplatePropertySettingsWidgetQt<T>(getProperty(), this);
+    }
+    settingsWidget_->showWidget();
+}
+
 }  // namespace
 
 

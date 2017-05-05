@@ -67,10 +67,16 @@ public:
     T getIncrement() const;
     T getMinSeparation() const;
 
+    T getStart() const;
+    T getEnd() const;
+    
     range_type getRange() const;
 
     virtual void set(const range_type& value) override;
     virtual void set(const Property* srcProperty) override;
+
+    void setStart(const T& value);
+    void setEnd(const T& value);
 
     void setRangeMin(const T& value);
     void setRangeMax(const T& value);
@@ -105,7 +111,6 @@ private:
     ValueWrapper<range_type> range_;
     ValueWrapper<T> increment_;
     ValueWrapper<T> minSeparation_;
-
 
     CallBackList onRangeChangeCallback_;
 };
@@ -148,6 +153,16 @@ MinMaxProperty<T>* MinMaxProperty<T>::clone() const {
 }
 
 template <typename T>
+T MinMaxProperty<T>::getStart() const {
+    return value_.value.x;
+}
+
+template <typename T>
+T MinMaxProperty<T>::getEnd() const {
+    return value_.value.y;
+}
+
+template <typename T>
 T MinMaxProperty<T>::getRangeMin() const {
     return range_.value.x;
 }
@@ -176,6 +191,20 @@ template <typename T>
 void MinMaxProperty<T>::set(const range_type& value) {
     TemplateProperty<range_type>::value_ = value;
     validateValues();
+}
+
+template <typename T>
+void MinMaxProperty<T>::setStart(const T& value) {
+    auto val = TemplateProperty<range_type>::value_.value;
+    val.x = value;
+    set(val);
+}
+
+template <typename T>
+void MinMaxProperty<T>::setEnd(const T& value) {
+    auto val = TemplateProperty<range_type>::value_.value;
+    val.y = value;
+    set(val);
 }
 
 template <typename T>

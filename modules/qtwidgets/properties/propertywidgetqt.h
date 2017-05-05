@@ -31,19 +31,14 @@
 #define IVW_PROPERTYWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
-#include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QComboBox>
 #include <warn/pop>
 
 class QMenu;
@@ -54,8 +49,7 @@ namespace inviwo {
 
 class PropertyListWidget;
 class Property;
-using BaseCallBack = std::function<void()>;
-
+class InviwoDockWidget;
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                                   public PropertyWidget,
@@ -65,18 +59,17 @@ class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
     Q_OBJECT
 #include <warn/pop>
 public:
-    PropertyWidgetQt();
-    PropertyWidgetQt(Property* property);
-    virtual ~PropertyWidgetQt();
+    using BaseCallBack = std::function<void()>;
 
-    virtual QMenu* getContextMenu();
+    PropertyWidgetQt(Property* property = nullptr);
+    virtual ~PropertyWidgetQt();
 
     // Should be called first thing after the property has been added to a layout.
     virtual void initState();
 
-    static int MINIMUM_WIDTH;
-    static int SPACING;
-    static int MARGIN;
+    static const int minimumWidth;
+    static const int spacing;
+    static const int margin;
     static void setSpacingAndMargins(QLayout* layout);
 
     virtual void onChildVisibilityChange(PropertyWidgetQt* child);
@@ -98,13 +91,7 @@ public:
     InviwoDockWidget* getBaseContainer() const;
     void setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget);
 
-public slots:
-    virtual void updateContextMenu();
-    virtual void resetPropertyToDefaultState();
-    virtual void showContextMenu(const QPoint& pos);
-    virtual void setDeveloperUsageMode(bool value);
-    virtual void setApplicationUsageMode(bool value);
-    virtual void changeSemantics(QAction* action);
+    virtual std::unique_ptr<QMenu> getContextMenu();
 
 signals:
     void updateSemantics(PropertyWidgetQt*);
@@ -113,41 +100,18 @@ protected:
     virtual void setVisible(bool visible) override;
     UsageMode getApplicationUsageMode();
 
-    // Context menu
-    void generateContextMenu();
-    void generatePresetMenuActions();
-    void updatePresetMenuActions();
-
-    void generateModuleMenuActions();
-    void updateModuleMenuActions();
-
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
-
-    void paintEvent(QPaintEvent* pe) override;
-
-    // Actions
-    QMenu* usageModeItem_;
-    QActionGroup* usageModeActionGroup_;
-    QAction* developerUsageModeAction_;
-    QAction* applicationUsageModeAction_;
-    QAction* copyAction_;
-    QAction* pasteAction_;
-    QAction* copyPathAction_;
-
-    QMenu* semanicsMenuItem_;
-    QActionGroup* semanticsActionGroup_;
+    virtual void paintEvent(QPaintEvent* pe) override;
 
 private:
+    void addModuleMenuActions(QMenu* menu, InviwoApplication* app);
+    void addPresetMenuActions(QMenu* menu, InviwoApplication* app);
+
     PropertyWidgetQt* parent_;
     InviwoDockWidget* baseContainer_;
 
     TemplateOptionProperty<UsageMode>* applicationUsageMode_;
     const BaseCallBack* appModeCallback_;
-    QMenu* contextMenu_;
-    std::unordered_map<std::string, std::unique_ptr<QMenu>> moduleSubMenus_;
-    QMenu* appPresetMenu_;
-    QMenu* workspacePresetMenu_;
-    QMenu* propertyPresetMenu_;
 
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;

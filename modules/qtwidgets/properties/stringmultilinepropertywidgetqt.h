@@ -37,7 +37,6 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QFontMetrics>
 #include <QPlainTextEdit>
 #include <warn/pop>
 
@@ -52,21 +51,13 @@ class MultilineTextEdit;
     CTRL + Return or CTRL + Enter is pressed.
 */
 class IVW_MODULE_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     StringMultilinePropertyWidgetQt(StringProperty *property);
 
     void updateFromProperty();
-
-public slots:
     void setPropertyValue();
 
 private:
-    void generateWidget();
-
     StringProperty *property_;
     MultilineTextEdit *textEdit_;
     EditableLabelQt *label_;
@@ -100,7 +91,6 @@ private:
     const int minLineCount_;
     const int maxLineCount_;
     int lineHeight_;
-
     bool showContextMenu_;
 };
 

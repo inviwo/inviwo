@@ -28,37 +28,48 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
+#include <modules/qtwidgets/customdoublespinboxqt.h>
 
 #include <limits>
+#include <cmath>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QStyle>
+#include <QSlider>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <QMouseEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
 BaseSliderWidgetQt::BaseSliderWidgetQt()
-    : QWidget(), spinBox_(nullptr), slider_(nullptr), spinnerValue_(0.0), sliderValue_(0) {
-    generateWidget();
-}
-
-void BaseSliderWidgetQt::generateWidget() {
+    : QWidget()
+    , spinBox_(new CustomDoubleSpinBoxQt())
+    , slider_(new QSlider())
+    , spinnerValue_(0.0)
+    , sliderValue_(0) {
+    
     QHBoxLayout* hLayout = new QHBoxLayout();
-    slider_ = new QSlider();
+
     slider_->setOrientation(Qt::Horizontal);
     slider_->setPageStep(1);
     slider_->setMaximum(sliderMax_);
-    spinBox_ = new CustomDoubleSpinBoxQt();
-    spinBox_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    slider_->installEventFilter(this);
+
+    spinBox_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
 
     hLayout->addWidget(slider_);
     hLayout->addWidget(spinBox_);
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     setLayout(hLayout);
-    connect(slider_, SIGNAL(valueChanged(int)), this, SLOT(updateFromSlider()));
-    connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBox()));
-
+    connect(slider_, &QSlider::valueChanged, this, &BaseSliderWidgetQt::updateFromSlider);
+    connect(
+        spinBox_,
+        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
+        this, &BaseSliderWidgetQt::updateFromSpinBox);
 
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
@@ -75,37 +86,33 @@ void BaseSliderWidgetQt::applyValue() {
     emit valueChanged();
 }
 void BaseSliderWidgetQt::applyMinValue() {
-    spinBox_->blockSignals(true);
+    QSignalBlocker spinBlock(spinBox_);
+    QSignalBlocker slideBlock(slider_);
+
     spinBox_->setMinimum(transformMinValueToSpinner());
-    spinBox_->blockSignals(false);
-    slider_->blockSignals(true);
     slider_->setMinimum(transformMinValueToSlider());
-    slider_->blockSignals(false);
     updateSlider();
 }
 void BaseSliderWidgetQt::applyMaxValue() {
-    spinBox_->blockSignals(true);
+    QSignalBlocker spinBlock(spinBox_);
+    QSignalBlocker slideBlock(slider_);
+
     spinBox_->setMaximum(transformMaxValueToSpinner());
-    spinBox_->blockSignals(false);
-    slider_->blockSignals(true);
     slider_->setMaximum(transformMaxValueToSlider());
-    slider_->blockSignals(false);
     updateSlider();
 }
 void BaseSliderWidgetQt::applyIncrement() {
-    spinBox_->blockSignals(true);
+    QSignalBlocker spinBlock(spinBox_);
+    QSignalBlocker slideBlock(slider_);
+
     spinBox_->setSingleStep(transformIncrementToSpinner());
     spinBox_->setDecimals(transformIncrementToSpinnerDecimals());
-    spinBox_->blockSignals(false);
-    slider_->blockSignals(true);
     slider_->setSingleStep(transformIncrementToSlider());
-    slider_->blockSignals(false);
 }
 
 void BaseSliderWidgetQt::updateFromSlider() {
     int newValue = slider_->value();
-    slider_->setStyleSheet(QString());
-    if(newValue != sliderValue_) {
+    if (newValue != sliderValue_) {
         sliderValue_ = newValue;
         newSliderValue(sliderValue_);
         updateSpinBox();
@@ -115,7 +122,7 @@ void BaseSliderWidgetQt::updateFromSlider() {
 
 void BaseSliderWidgetQt::updateFromSpinBox() {
     double newValue = spinBox_->value();
-    if(fabs(newValue - spinnerValue_) > std::numeric_limits<double>::epsilon()) {
+    if (fabs(newValue - spinnerValue_) > std::numeric_limits<double>::epsilon()) {
         spinnerValue_ = newValue;
         newSpinnerValue(spinnerValue_);
         updateSlider();
@@ -124,16 +131,16 @@ void BaseSliderWidgetQt::updateFromSpinBox() {
 }
 
 void BaseSliderWidgetQt::updateSpinBox() {
+    QSignalBlocker spinBlock(spinBox_);
+    
     spinnerValue_ = transformValueToSpinner();
-    spinBox_->blockSignals(true);
     spinBox_->setValue(spinnerValue_);
-    spinBox_->blockSignals(false);
 }
 
 void BaseSliderWidgetQt::updateSlider() {
+    QSignalBlocker slideBlock(slider_);
+    
     sliderValue_ = transformValueToSlider();
-    slider_->blockSignals(true);
-
     bool isOutOfBounds = (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
     if (isOutOfBounds != slider_->property("outOfBounds").toBool() ) {
         slider_->setProperty("outOfBounds", isOutOfBounds);
@@ -142,8 +149,22 @@ void BaseSliderWidgetQt::updateSlider() {
     }
 
     slider_->setValue(sliderValue_);
+}
 
-    slider_->blockSignals(false);
+bool BaseSliderWidgetQt::eventFilter(QObject *watched, QEvent *event) {
+    if (watched == slider_ && event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        if (me->button() == Qt::LeftButton && !slider_->isSliderDown()) {
+            auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
+                                                   (slider_->maximum() - slider_->minimum()) /
+                                                   slider_->width();
+            slider_->setValue(static_cast<int>(newPos));
+            me->accept();
+            return true;
+        }
+    }
+
+    return QObject::eventFilter(watched, event);
 }
 
 } // namespace

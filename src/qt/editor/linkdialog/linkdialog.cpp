@@ -44,6 +44,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStandardItemModel>
+#include <QLineEdit>
 #include <warn/pop>
 
 namespace inviwo {

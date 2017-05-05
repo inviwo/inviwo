@@ -40,6 +40,8 @@
 #include <QLineEdit>
 #include <warn/pop>
 
+class QKeyEvent;
+
 namespace inviwo {
 
 /**

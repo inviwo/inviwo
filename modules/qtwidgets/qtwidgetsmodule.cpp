@@ -52,7 +52,6 @@
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/imageeditorwidgetqt.h>
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
@@ -76,10 +75,10 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
     registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
 
-    registerPropertyWidget<ColorPropertyWidgetQt, IntVec3Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt, IntVec4Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt, FloatVec3Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt, FloatVec4Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<ivec3>, IntVec3Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<ivec4>, IntVec4Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<vec3>, FloatVec3Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<vec4>, FloatVec4Property>("Color");
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
@@ -116,10 +115,6 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
     registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Default");
     registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Text");
-
-    registerPropertyWidget<ImageEditorWidgetQt, FileProperty>("ImageEditor");
-    registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("Default");
-    registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("ImageEditor");
 
     registerPropertyWidget<IntSizeTMinMaxPropertyWidgetQt, IntSizeTMinMaxProperty>("Default");
     registerPropertyWidget<Int64MinMaxPropertyWidgetQt, Int64MinMaxProperty>("Default");
@@ -163,8 +158,6 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
 }
-
-std::string QtWidgetsModule::getPath() const { return ""; }
 
 } // namespace
 

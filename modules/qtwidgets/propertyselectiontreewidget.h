@@ -50,7 +50,7 @@ class IVW_MODULE_QTWIDGETS_API PropertySelectionTree : public QTreeWidget {
 
 public:
     PropertySelectionTree(QWidget* parent) : QTreeWidget(parent) {};
-    ~PropertySelectionTree() {};
+    ~PropertySelectionTree() = default;
 
 protected:
     void mousePressEvent(QMouseEvent* e);
@@ -67,10 +67,12 @@ class IVW_MODULE_QTWIDGETS_API PropertySelectionTreeWidget : public QWidget {
 public:
     PropertySelectionTreeWidget();
     ~PropertySelectionTreeWidget();
-    void addProcessorNetwork(ProcessorNetwork* processorNetwork, std::string workspaceFileName="CurrentWorkspace");
+    void addProcessorNetwork(ProcessorNetwork* processorNetwork,
+                             std::string workspaceFileName = "CurrentWorkspace");
 public slots:
     void clear();
     std::vector<Property*> getSelectedProperties(ProcessorNetwork* processorNetwork);
+
 private:
     PropertySelectionTree* propertySelectionTree_;
     QPoint dragStartPosition_;
@@ -84,19 +86,18 @@ class IVW_MODULE_QTWIDGETS_API PropertySelectionTreeDialog : public QDialog {
 #include <warn/pop>
 public:
     PropertySelectionTreeDialog(ProcessorNetwork* processorNetwork,
-                                std::vector<Property*>& selectedProperty,
-                                QWidget* parent);
-    ~PropertySelectionTreeDialog() {}
+                                std::vector<Property*>& selectedProperty, QWidget* parent);
+    ~PropertySelectionTreeDialog() = default;
 private slots:
     void clickedOkayButton();
     void clickedCancelButton();
+
 private:
     void initDialog();
     PropertySelectionTreeWidget* selectionTree_;
     std::vector<Property*>& selectedProperties_;
     ProcessorNetwork* processorNetwork_;
 };
-
 
 } // namespace
 

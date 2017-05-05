@@ -31,38 +31,25 @@
 #define IVW_STRINGPROPERTYWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/lineeditqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/stringproperty.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+class StringProperty;
+class LineEditQt;
+class EditableLabelQt;
 
+class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
     StringPropertyWidgetQt(StringProperty* property);
 
     void updateFromProperty();
-
-public slots:
     void setPropertyValue();
 
 private:
     StringProperty* property_;
-    LineEditQt *lineEdit_;
+    LineEditQt* lineEdit_;
     EditableLabelQt* label_;
-
-    void generateWidget();
 };
 
 }  // namespace

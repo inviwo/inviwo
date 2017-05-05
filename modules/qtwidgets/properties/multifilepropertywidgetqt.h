@@ -31,33 +31,25 @@
 #define IVW_MULTIFILEPROPERTYWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/filepathlineeditqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
-#include <warn/pop>
-
 class QDropEvent;
+class QDragEnterEvent;
+class QDragMoveEvent;
 
 namespace inviwo {
+
+class MultiFileProperty;
+class FilePathLineEditQt;
+class EditableLabelQt;
 
 /**
  * \class MultiFilePropertyWidgetQt
  * \brief Property widget for MultiFileProperty showing only the first file name.
  */
-class IVW_MODULE_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt, public FileRequestable {
-
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
+class IVW_MODULE_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt,
+                                                           public FileRequestable {
 public:
     MultiFilePropertyWidgetQt(MultiFileProperty* property);
     virtual ~MultiFilePropertyWidgetQt() = default;
@@ -65,20 +57,16 @@ public:
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
 
-public slots:
-    void setPropertyValue();
-
 protected:
-    virtual void dropEvent(QDropEvent *) override;
-    virtual void dragEnterEvent(QDragEnterEvent *) override;
-    virtual void dragMoveEvent(QDragMoveEvent *) override;
+    virtual void dropEvent(QDropEvent*) override;
+    virtual void dragEnterEvent(QDragEnterEvent*) override;
+    virtual void dragMoveEvent(QDragMoveEvent*) override;
 
 private:
-    void generateWidget();
+    void setPropertyValue();
 
     MultiFileProperty* property_;
     FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
     EditableLabelQt* label_;
 };
 

@@ -54,8 +54,6 @@ private:
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;
     mutable std::unique_ptr<TransferFunctionPropertyDialog> transferFunctionDialog_ = nullptr;
-
-    void generateWidget();
 };
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {

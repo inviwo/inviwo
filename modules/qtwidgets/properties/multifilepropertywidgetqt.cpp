@@ -27,12 +27,16 @@
  *
  *********************************************************************************/
 
+#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/filedialogstate.h>
-#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/filepathlineeditqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <inviwo/core/properties/propertyowner.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,23 +49,23 @@
 #include <QUrl>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QHBoxLayout>
+#include <QToolButton>
 #include <warn/pop>
 
 namespace inviwo {
 
 MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
-    generateWidget();
-    updateFromProperty();
-}
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , lineEdit_{new FilePathLineEditQt(this)}
+    , label_{new EditableLabelQt(this, property_)} {
 
-void MultiFilePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     setAcceptDrops(true);
 
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
     QHBoxLayout* hWidgetLayout = new QHBoxLayout();
@@ -69,9 +73,7 @@ void MultiFilePropertyWidgetQt::generateWidget() {
     QWidget* widget = new QWidget();
     widget->setLayout(hWidgetLayout);
 
-    lineEdit_ = new FilePathLineEditQt(this);
-
-    connect(lineEdit_, &QLineEdit::editingFinished, [&]() {
+    connect(lineEdit_, &FilePathLineEditQt::editingFinished, [&]() {
         // editing is done, sync property with contents
         property_->set(lineEdit_->getPath());
     });
@@ -92,24 +94,26 @@ void MultiFilePropertyWidgetQt::generateWidget() {
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");
-        auto dir = filesystem::directoryExists(fileName)
-                       ? fileName
-                       : filesystem::getFileDirectory(fileName);
+        auto dir = filesystem::directoryExists(fileName) ? fileName
+                                                         : filesystem::getFileDirectory(fileName);
 
         QDesktopServices::openUrl(
             QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
     });
 
-    openButton_ = new QToolButton(this);
-    openButton_->setIcon(QIcon(":/icons/open.png"));
-    hWidgetLayout->addWidget(openButton_);
-    connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
+    auto openButton = new QToolButton(this);
+    openButton->setIcon(QIcon(":/icons/open.png"));
+    hWidgetLayout->addWidget(openButton);
+    connect(openButton, &QToolButton::pressed, this, &MultiFilePropertyWidgetQt::setPropertyValue);
 
     sp = widget->sizePolicy();
     sp.setHorizontalStretch(3);
     widget->setSizePolicy(sp);
     hLayout->addWidget(widget);
+
+    updateFromProperty();
 }
+
 
 void MultiFilePropertyWidgetQt::setPropertyValue() {
     std::string fileName = (!property_->get().empty() ? property_->get().front() : "");
@@ -160,7 +164,7 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                     if (mimeData->urls().size() > 0) {
                         auto url = mimeData->urls().first();
                         auto file = url.toLocalFile().toStdString();
-                        
+
                         switch (property_->getFileMode()) {
                             case FileMode::AnyFile:
                             case FileMode::ExistingFile:
@@ -174,10 +178,10 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                                 }
                                 break;
                             }
-                        
+
                             case FileMode::Directory:
                             case FileMode::DirectoryOnly: {
-                                if(filesystem::directoryExists(file)) {
+                                if (filesystem::directoryExists(file)) {
                                     event->accept();
                                     return;
                                 }
@@ -189,26 +193,27 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
             }
             event->ignore();
             return;
-        }      
+        }
     }
 }
 
-
-void MultiFilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
-    if(event->mimeData()->hasUrls()) event->accept();
-    else event->ignore();
+void MultiFilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 
 bool MultiFilePropertyWidgetQt::requestFile() {
-   setPropertyValue();
-   return !property_->get().empty();
+    setPropertyValue();
+    return !property_->get().empty();
 }
 
 void MultiFilePropertyWidgetQt::updateFromProperty() {
     if (!property_->get().empty()) {
         lineEdit_->setPath(property_->get().front());
-    }
-    else {
+    } else {
         lineEdit_->setPath("");
     }
 }

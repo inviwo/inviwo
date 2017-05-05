@@ -33,10 +33,9 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-#include <warn/pop>
+class QKeyEvent;
+class QMouseEvent;
+class QFocusEvent;
 
 namespace inviwo {
 
@@ -48,10 +47,6 @@ class MouseEventMatcher;
 class KeyboardEventMatcher;
 
 class IVW_MODULE_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 
 public:
     EventPropertyWidgetQt(EventProperty* eventproperty);
@@ -64,12 +59,9 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event);
 
     virtual void focusOutEvent(QFocusEvent* event);
-
-public slots:
     void clickedSlot();
 
 private:
-    void generateWidget();
     void setButtonText();
 
     EventProperty* eventproperty_;

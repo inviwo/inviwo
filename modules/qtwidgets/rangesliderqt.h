@@ -31,14 +31,16 @@
 #define IVW_RANGESLIDERQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/util/glm.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSplitter>
-#include <QResizeEvent>
 #include <QFrame>
 #include <warn/pop>
 
 #include <functional>
+
+class QResizeEvent;
 
 namespace inviwo {
 
@@ -49,17 +51,17 @@ class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
-    RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr, bool showTooltip = false);
+    RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget *parent = nullptr,
+                  bool showTooltip = false);
     virtual ~RangeSliderQt() = default;
 
-public slots:
-    int minValue();
-    int maxValue();
-    int minRange();
-    int maxRange();
-    int minSeperation();
+public:
+    int minValue() const;
+    int maxValue() const;
+    int minRange() const;
+    int maxRange() const;
+    int minSeperation() const;
 
     void setValue(int, int);
     void setMinValue(int);
@@ -70,54 +72,28 @@ public slots:
     void setMinRange(int);
     void setMaxRange(int);
 
-    virtual bool eventFilter(QObject *obj, QEvent *event) override;
     void setTooltipFormat(std::function<std::string(int, int)> formater);
-
 
 signals:
     void valuesChanged(int min, int max);
-    void valuesSet(int min, int max);
 
 protected:
-    void resizeEvent(QResizeEvent* event) override;
+    virtual bool eventFilter(QObject *obj, QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void updateStateFromSliders();
     void updateSlidersFromState();
 
-protected slots:
     void updateSplitterPosition(int pos, int idx);
-    void middleMoved(int delta);
+    void moveMiddle(int delta);
 
 private:
-    int range_[2];
-    int value_[2];
-    RangeSliderMiddle* middle_;
+    ivec2 range_;
+    ivec2 value_;
     int minSeperation_;
     std::function<std::string(int, int)> formatTooltip_;
+    int lastPos_;
 };
-
-class IVW_MODULE_QTWIDGETS_API RangeSliderMiddle : public QFrame {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-public:
-    RangeSliderMiddle(QWidget* parent = nullptr, Qt::Orientation orientation = Qt::Horizontal);
-    virtual ~RangeSliderMiddle() = default;
-
-signals:
-    void middleMoved(int delta);
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-
-private:
-    Qt::Orientation orientation_;
-    int lastMouseX_;
-    bool drag_;
-};
-
 
 }//namespace
 

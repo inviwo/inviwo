@@ -238,7 +238,7 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
 
 QImage layerToQImage(const Layer &layer){
     auto data = layer.getAsCodedBuffer("png"); 
-    return QImage::fromData(data->data(), data->size(),"png");
+    return QImage::fromData(data->data(), static_cast<int>(data->size()),"png");
 }
 
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
