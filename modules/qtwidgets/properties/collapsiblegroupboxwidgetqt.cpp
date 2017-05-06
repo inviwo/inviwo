@@ -119,7 +119,14 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     QToolButton* resetButton = new QToolButton(this);
     resetButton->setIconSize(QSize(20, 20));
     resetButton->setObjectName("resetButton");
-    connect(resetButton, &QToolButton::clicked, this, [&]() { property_->resetToDefaultState(); });
+    connect(resetButton, &QToolButton::clicked, this, [&]() {
+        if (property_) {
+            property_->resetToDefaultState();
+        } else if (auto processor = dynamic_cast<Processor*>(propertyOwner_)) {
+            processor->resetAllPoperties();
+        }
+    });
+
     resetButton->setToolTip(tr("Reset the group of properties to its default state"));
 
     checkBox_ = new QCheckBox(this);
