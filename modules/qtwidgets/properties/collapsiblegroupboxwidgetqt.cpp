@@ -122,8 +122,8 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     connect(resetButton, &QToolButton::clicked, this, [&]() {
         if (property_) {
             property_->resetToDefaultState();
-        } else if (auto processor = dynamic_cast<Processor*>(propertyOwner_)) {
-            processor->resetAllPoperties();
+        } else if (propertyOwner_) {
+            propertyOwner_->resetAllPoperties();
         }
     });
 
