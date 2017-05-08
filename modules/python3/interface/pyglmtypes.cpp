@@ -47,19 +47,20 @@ namespace py = pybind11;
 template <typename T, size_t N>
 using ith_T = T;
 
-template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
-void addInit(py::class_<V> &pyv) {
-    addInitImpl<V, T>(pyv, Indices{});
-}
-
 template <typename V, typename T, std::size_t... I>
 void addInitImpl(py::class_<V> &pyv, std::index_sequence<I...>) {
     pyv.def(py::init<ith_T<T, I>...>());
 }
 
+template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
+void addInit(py::class_<V> &pyv) {
+    addInitImpl<V, T>(pyv, Indices{});
+}
+
 namespace inviwo {
 
-    template <typename T,typename GLM> void common(py::module &m,py::class_<GLM> &pyc , std::string name){
+    template <typename T,typename GLM>
+    void common(py::module &m,py::class_<GLM> &pyc , std::string name){
         pyc
             .def(py::init<T>())
             .def(py::init<>())
@@ -152,9 +153,6 @@ namespace inviwo {
     template <typename T, unsigned COLS, unsigned ROWS>
     void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
         using M = typename util::glmtype<T, COLS, ROWS>::type;
-        using M2 = typename util::glmtype<T, 2, ROWS>::type;
-        using M3 = typename util::glmtype<T, 3, ROWS>::type;
-        using M4 = typename util::glmtype<T, 4, ROWS>::type;
         using Ma2 = typename util::glmtype<T,  ROWS,2>::type;
         using Ma3 = typename util::glmtype<T,  ROWS,3>::type;
         using Ma4 = typename util::glmtype<T,  ROWS,4>::type;
@@ -238,7 +236,7 @@ namespace inviwo {
         glmtypes<double>(glmModule, "d");
         glmtypes<int>(glmModule, "i");
         glmtypes<unsigned int>(glmModule, "u");
-        vec<size_t>(glmModule, "","size", "_t");
+        //vec<size_t>(glmModule, "","size", "_t");
     }
 
 

@@ -59,7 +59,6 @@ namespace inviwo{
     struct DataFormatHelper {
         template <typename DataFormat>
         auto operator()(pybind11::module &m) {
-            using T = typename DataFormat::type;
             m.attr(("Data" + DataFormat::str()).c_str())= py::cast(static_cast<const DataFormatBase *>(DataFormat::get()), py::return_value_policy::reference);
         }
     };

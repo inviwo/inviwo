@@ -68,20 +68,20 @@ struct OrdinalPropertyIterator {
 
     OrdinalPropertyIterator(PropertyType *prop)
         : property_(prop)
-        , begin(prop->getMinValue())
-        , end(prop->getMaxValue())
         , cur(prop->getMinValue())
-        , inc(prop->getIncrement()) {
+        , inc(prop->getIncrement())
+        , begin(prop->getMinValue())
+        , end(prop->getMaxValue()) {
         property_->set(property_->getMinValue());
     }
 
     OrdinalPropertyIterator(PropertyType *prop, T begin, T end)
-        : property_(prop), begin(begin), end(end), cur(begin), inc(prop->getIncrement()) {
+        : property_(prop), cur(begin), inc(prop->getIncrement()), begin(begin), end(end) {
         property_->set(property_->getMinValue());
     }
 
     OrdinalPropertyIterator(PropertyType *prop, T begin, T end, T inc)
-        : property_(prop), begin(begin), end(end), cur(begin), inc(inc) {
+        : property_(prop), cur(begin), inc(inc), begin(begin), end(end) {
         property_->set(property_->getMinValue());
     }
 

@@ -32,6 +32,8 @@
 
 #if defined(__unix__)
 #include <unistd.h>
+#elif defined(__APPLE__)
+#include <libproc.h> // proc_pidpath
 #endif
 
 #include <modules/python3/pythoninterpreter.h>
@@ -93,14 +95,18 @@ Python3Module::Python3Module(InviwoApplication* app)
     auto folder = filesystem::getFileDirectory(execpath);
     pythonInterpreter_->addModulePath(folder);
 #elif defined(__APPLE__)
-// TODO add output path
-/*
-   To future mac user who will fix this.
-   On windows the path to the bin folder is already in sys.path and 'import inviwopy' will locate
-   inviwopy without modifying the sys.path. On Linux the path is not added and need to be added
-   manually and I belive something similar has to be done on mac as well
-*/
-// pyInviwo_->addModulePath(/path/to/binfolder) //where the .pyd files are
+    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
+    char executablePath[PATH_MAX];
+    auto pid = getpid();
+    if (proc_pidpath(pid, executablePath, sizeof(executablePath)) <= 0) {
+        // Error retrieving path
+        executablePath[0] = '\0';
+    }
+    std::string execpath(executablePath);
+    auto folder = filesystem::getFileDirectory(execpath);
+    pythonInterpreter_->addModulePath(folder);
+    pythonInterpreter_->addModulePath(folder + "/../../../");
+    
 #endif
 
     app->dispatchFront([&]() {
