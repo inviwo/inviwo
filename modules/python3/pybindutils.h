@@ -44,6 +44,10 @@
 
 namespace inviwo {
 
+    class BufferBase;
+    class Layer;
+    class Volume;
+
 namespace pyutil {
 
 IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr);

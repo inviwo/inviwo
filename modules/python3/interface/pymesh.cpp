@@ -102,7 +102,7 @@ void exposeMesh(py::module &m) {
         .def("addIndexBuffer",
              [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
                  mesh->addIndexBuffer(dt, ct);
-                 return mesh->getIndexBuffers().back().second;
+                 return mesh->getIndexBuffers().back().second.get();
              },
              py::return_value_policy::reference)
 
