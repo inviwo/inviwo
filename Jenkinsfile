@@ -96,7 +96,7 @@ node {
         stage('Unit tests') {
             dir('build/bin') {
                 nicelog {
-                    sh """
+                    sh '''
                         export DISPLAY=:0
                         rc=0
                         for unittest in inviwo-unittests-*
@@ -105,7 +105,7 @@ node {
                             ./${unittest} || rc=$?
                         done
                         exit ${rc}
-                    """
+                    '''
                 }
             }
         }
@@ -113,10 +113,10 @@ node {
         stage('Integration tests') {
             dir('build/bin') {
                 nicelog {
-                    sh """
+                    sh '''
                         export DISPLAY=:0
                         ./inviwo-integrationtests
-                    """
+                    '''
                 }
             }
         }
