@@ -47,6 +47,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formats.h>
 
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/logcentral.h>
@@ -149,7 +150,7 @@ PYBIND11_PLUGIN(inviwopy) {
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
-
+	
     py::class_<DataFormatBase>(formatsModule,"DataFormat")
         .def_property_readonly("size", &DataFormatBase::getSize)
         .def_property_readonly("components", &DataFormatBase::getComponents)

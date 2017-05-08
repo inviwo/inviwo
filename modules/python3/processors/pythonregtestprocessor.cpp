@@ -99,7 +99,7 @@ void PythonRegTestProcessor::process() {
                 img->getColorLayer(0)->getEditableRepresentation<LayerRAM>())
                 ->getDataTyped();
 
-    for (int i = 0; i < imgSize * imgSize; i++) {
+    for (size_t i = 0; i < imgSize * imgSize; i++) {
         data_[i] = DataVec4UInt8::type(255, 255, 0, 255);
     }
 
@@ -201,7 +201,7 @@ void PythonRegTestProcessor::process() {
                     auto vec = pBuffer->getDataContainer();
                     int expected = 1;
                     for (auto v : vec) {
-                        for (int i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
+                        for (size_t i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
                             this->expectEQ(expected++, (int)util::glmcomp(v, i), "Buffer creation");
                         }
                     }
@@ -229,7 +229,7 @@ void PythonRegTestProcessor::process() {
                     int expected = 1;
                     for (int j = 0; j < 4; j++) {
                         auto v = data[j];
-                        for (int i = 0; i < pLayer->getDataFormat()->getComponents(); i++) {
+                        for (size_t i = 0; i < pLayer->getDataFormat()->getComponents(); i++) {
                             this->expectEQ(expected++, (int)util::glmcomp(v, i), "Layer creation");
                         }
                     }
@@ -257,7 +257,7 @@ void PythonRegTestProcessor::process() {
                     int expected = 1;
                     for (int j = 0; j < 8; j++) {
                         auto v = data[j];
-                        for (int i = 0; i < pVolume->getDataFormat()->getComponents(); i++) {
+                        for (size_t i = 0; i < pVolume->getDataFormat()->getComponents(); i++) {
                             this->expectEQ(expected++, (int)util::glmcomp(v, i), "Volume creation");
                         }
                     }

@@ -36,6 +36,8 @@
 #include <modules/python3/interface/pyglmtypes.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/core/ports/meshport.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/common.h>

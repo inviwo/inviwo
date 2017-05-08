@@ -140,7 +140,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         if (log.empty()) {
             LogWarn("Failed to parse exception, printing as string:");
             auto s = pyutil::toPyBindObjectSteal<pybind11::str>(PyObject_Str(errvalue));
-            if (s.check()) {
+            if (pybind11::isinstance<pybind11::str>(s)) {
                 log = s;
             }
         }
