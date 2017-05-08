@@ -49,6 +49,7 @@ node {
             [$class: 'GitHubPushTrigger']
         ])
     ])
+    
     try {
         stage('Fetch') { 
             echo "Building inviwo Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
@@ -57,6 +58,7 @@ node {
                 sh 'git submodule update --init'
             }
         }
+
         stage('Build') {
             if (params['Clean Build']) {
                 echo "Clean build, removing build folder"
@@ -80,6 +82,9 @@ node {
                               -DIVW_MODULE_ANIMATIONQT=ON \
                               -DIVW_MODULE_POSTPROCESSING=ON \
                               -DIVW_MODULE_HDF5=ON \
+                              -DIVW_UNITTESTS=ON \
+                              -DIVW_UNITTESTS_RUN_ON_BUILD=OFF \
+                              -DIVW_INTEGRATION_TESTS=ON \
                               ../inviwo
 
                         make -j 6
@@ -87,8 +92,37 @@ node {
                 }
             }
         }
+
+        stage('Unit tests') {
+            dir('build/bin') {
+                nicelog {
+                    sh '''
+                        export DISPLAY=:0
+                        rc=0
+                        for unittest in inviwo-unittests-*
+                            do echo ==================================
+                            echo Running: ${unittest}
+                            ./${unittest} || rc=$?
+                        done
+                        exit ${rc}
+                    '''
+                }
+            }
+        }
+
+        stage('Integration tests') {
+            dir('build/bin') {
+                nicelog {
+                    sh '''
+                        export DISPLAY=:0
+                        ./inviwo-integrationtests
+                    '''
+                }
+            }
+        }
+
         try {
-            stage('Regression') {
+            stage('Regression tests') {
                 dir('regress') {
                     nicelog {
                         sh """

@@ -24,14 +24,18 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/logerrorcounter.h>
 
 namespace inviwo {
 
-LogErrorCounter::LogErrorCounter() {}
+    LogErrorCounter* LogErrorCounter::instance_ = nullptr;
+
+LogErrorCounter::LogErrorCounter() {
+    instance_ = this;
+}
 
 LogErrorCounter::~LogErrorCounter() {}
 
@@ -52,5 +56,7 @@ size_t LogErrorCounter::getInfoCount() const { return getCount(LogLevel::Info); 
 size_t LogErrorCounter::getWarnCount() const { return getCount(LogLevel::Warn); }
 
 size_t LogErrorCounter::getErrorCount() const { return getCount(LogLevel::Error); }
+
+LogErrorCounter* LogErrorCounter::getPtr() { return instance_; }
 
 }  // namespace

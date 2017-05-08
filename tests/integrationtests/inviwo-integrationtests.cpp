@@ -24,28 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/glfw/canvasglfw.h>
+
+#include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
-
-#include <modules/base/processors/imageexport.h>
-#include <modules/opengl/inviwoopengl.h>
-//#include <modules/glfw/canvasglfw.h>
-
+#include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <moduleregistration.h>
 
 #include <warn/push>
@@ -59,33 +59,26 @@ int main(int argc, char** argv) {
     int ret = -1;
     {
         // scope for ivw app
-        inviwo::LogCentral::init();
-        inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-        //inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
+        LogCentral::init();
+        util::OnScopeExit deleteLogcentral([]() { LogCentral::deleteInstance(); });
 
-        LogErrorCounter::init();
-        LogCentral::getPtr()->registerLogger(LogErrorCounter::getPtr());
+        auto logCounter = std::make_shared<LogErrorCounter>();
+        LogCentral::getPtr()->registerLogger(logCounter);
 
-        // Search for directory containing data folder to find application basepath.
-        // Working directory will be used if data folder is not found in parent directories.
-        std::string basePath = inviwo::filesystem::findBasePath();
-        InviwoApplication app("unittest " + IVW_VERSION, basePath);
-        app.setPostEnqueueFront([&]() { app.processFront(); });
-
-        //if (!glfwInit()) {
-       //     LogErrorCustom("Inviwo Unit Tests Application", "GLFW could not be initialized.");
-       //     return 0;
-       // }
+        InviwoApplication inviwoApp(argc, argv, "unittest " + IVW_VERSION);
+        inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
+        inviwoApp.setProgressCallback([](std::string m) {
+            LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "",
+                                      "", 0, m);
+        });
 
         // Initialize all modules
-        app.registerModules(&inviwo::registerAllModules);
-        app.getSettingsByType<SystemSettings>()->poolSize_.set(0);
+        inviwoApp.registerModules(&inviwo::registerAllModules);
+        auto& cmdparser = inviwoApp.getCommandLineParser();
 
+        inviwoApp.getSettingsByType<SystemSettings>()->poolSize_.set(0);
 
-        // Continue initialization of default context
-        //CanvasGLFW* sharedCanvas = static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
-        //sharedCanvas->initialize();
-        //sharedCanvas->activate();
+        cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
         size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
         size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
@@ -102,20 +95,17 @@ int main(int argc, char** argv) {
         size_t errCountAfter = LogErrorCounter::getPtr()->getErrorCount();
 
         if (warnCount != warnCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The tnittest runs generated "
+            LogWarnCustom("UnitTestsModule::runAllTest", "The integration test runs generated "
                                                              << (warnCountAfter - warnCount)
                                                              << " warnings");
         }
         if (errCount != errCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The tnittest runs generated "
-                                                             << (errCountAfter - errCount) << " errors");
+            LogWarnCustom("UnitTestsModule::runAllTest", "The  integration test runs generated "
+                                                             << (errCountAfter - errCount)
+                                                             << " errors");
         }
-
-        app.getProcessorNetwork()->clear();
-        //sharedCanvas->deinitialize();
-        app.closeInviwoApplication();
-        //glfwTerminate();
     }
 
+    glfwTerminate();
     return ret;
 }

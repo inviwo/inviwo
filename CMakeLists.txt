@@ -175,6 +175,14 @@ add_subdirectory(apps)
 # Add external projects
 ivw_add_external_projects()
 
+
+#--------------------------------------------------------------------
+# Add integration tests project
+option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
+if(IVW_INTEGRATION_TESTS)
+    add_subdirectory(tests/integrationtests)
+endif()
+
 #--------------------------------------------------------------------
 # Package creation
 include(cmake/packaging.cmake)
