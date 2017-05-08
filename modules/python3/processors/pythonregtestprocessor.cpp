@@ -120,14 +120,14 @@ void PythonRegTestProcessor::process() {
                 auto cB = pybind11::cast<float>(pyB);
                 auto cC = pybind11::cast<std::string>(pyC);
 
-                expectEQ(1, cA, "Return value int");
-                expectEQFloat(0.2f, cB, "Return value float");
-                expectEQ<std::string>("hello world", cC, "Return value string");
+                this->expectEQ(1, cA, "Return value int");
+                this->expectEQFloat(0.2f, cB, "Return value float");
+                this->expectEQ<std::string>("hello world", cC, "Return value string");
 
                 auto pyList = pybind11::cast<pybind11::list>(pyD);
-                expectEQ(1, pybind11::cast<int>(pyList[0]), "Return value list");
-                expectEQ(2, pybind11::cast<int>(pyList[1]), "Return value list");
-                expectEQ<std::string>("hello", pybind11::cast<std::string>(pyList[2]),
+                this->expectEQ(1, pybind11::cast<int>(pyList[0]), "Return value list");
+                this->expectEQ(2, pybind11::cast<int>(pyList[1]), "Return value list");
+                this->expectEQ<std::string>("hello", pybind11::cast<std::string>(pyList[2]),
                                       "Return value list");
 
                 status = true;
@@ -151,9 +151,9 @@ void PythonRegTestProcessor::process() {
             },
             [&](pybind11::dict dict) {
 
-                expectEQ(true, pybind11::cast<bool>(dict["A"]), "Pass value as int");
-                expectEQ(true, pybind11::cast<bool>(dict["B"]), "Pass value as float");
-                expectEQ(true, pybind11::cast<bool>(dict["C"]), "Pass value as string");
+                this->expectEQ(true, pybind11::cast<bool>(dict["A"]), "Pass value as int");
+                this->expectEQ(true, pybind11::cast<bool>(dict["B"]), "Pass value as float");
+                this->expectEQ(true, pybind11::cast<bool>(dict["C"]), "Pass value as string");
 
                 status = true;
             });
@@ -176,12 +176,12 @@ void PythonRegTestProcessor::process() {
             [&](pybind11::dict dict) {
                 status = true;
 
-                expectEQ(1, pybind11::cast<int>(dict["a"]), "Simple buffer test: read value");
-                expectEQ(3, pybind11::cast<int>(dict["b"]), "Simple buffer test: read value");
+                this->expectEQ(1, pybind11::cast<int>(dict["a"]), "Simple buffer test: read value");
+                this->expectEQ(3, pybind11::cast<int>(dict["b"]), "Simple buffer test: read value");
 
                 auto vec = intBuffer.getEditableRAMRepresentation()->getDataContainer();
                 for (size_t i = 0; i < bufferSize; i++) {
-                    expectEQ<int>(static_cast<int>(i * i), vec[i], "Simple buffer test: write value");
+                    this->expectEQ<int>(static_cast<int>(i * i), vec[i], "Simple buffer test: write value");
                 }
             });
 
@@ -202,7 +202,7 @@ void PythonRegTestProcessor::process() {
                     int expected = 1;
                     for (auto v : vec) {
                         for (int i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
-                            expectEQ(expected++, (int)util::glmcomp(v, i), "Buffer creation");
+                            this->expectEQ(expected++, (int)util::glmcomp(v, i), "Buffer creation");
                         }
                     }
 
@@ -224,13 +224,13 @@ void PythonRegTestProcessor::process() {
                 auto layer = pyutil::createLayer(arr);
                 layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([&](auto pLayer) {
                     auto dims = pLayer->getDimensions();
-                    expectEQ(size2_t(2, 2), dims, "Create Layer: Dimensions");
+                    this->expectEQ(size2_t(2, 2), dims, "Create Layer: Dimensions");
                     auto data = pLayer->getDataTyped();
                     int expected = 1;
                     for (int j = 0; j < 4; j++) {
                         auto v = data[j];
                         for (int i = 0; i < pLayer->getDataFormat()->getComponents(); i++) {
-                            expectEQ(expected++, (int)util::glmcomp(v, i), "Layer creation");
+                            this->expectEQ(expected++, (int)util::glmcomp(v, i), "Layer creation");
                         }
                     }
 
@@ -252,13 +252,13 @@ void PythonRegTestProcessor::process() {
                 auto volume = pyutil::createVolume(arr);
                 volume->getEditableRepresentation<VolumeRAM>()->dispatch<void>([&](auto pVolume) {
                     auto dims = pVolume->getDimensions();
-                    expectEQ(size3_t(2, 2, 2), dims, "Create Volume: Dimensions");
+                    this->expectEQ(size3_t(2, 2, 2), dims, "Create Volume: Dimensions");
                     auto data = pVolume->getDataTyped();
                     int expected = 1;
                     for (int j = 0; j < 8; j++) {
                         auto v = data[j];
                         for (int i = 0; i < pVolume->getDataFormat()->getComponents(); i++) {
-                            expectEQ(expected++, (int)util::glmcomp(v, i), "Volume creation");
+                            this->expectEQ(expected++, (int)util::glmcomp(v, i), "Volume creation");
                         }
                     }
                 });
