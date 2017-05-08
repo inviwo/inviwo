@@ -36,6 +36,8 @@ ivw_register_use_of_modules(${package_list})
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${package_list})
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo-integrationtests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
@@ -59,7 +61,7 @@ ivw_memleak_setup(inviwo-integrationtests)
 # Add application to pack
 if(IVW_PACKAGE_PROJECT)
 if(WIN32)
-   install(TARGETS inviwo-integrationtests
+    install(TARGETS inviwo-integrationtests
             RUNTIME DESTINATION bin
             COMPONENT integrationtest_app)
 else()

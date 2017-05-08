@@ -1,4 +1,4 @@
-ObjectFileName:	testdata.UINT16.LittleEndian.raw
-Resolution:	16 16 16
-Format:	UINT16
-ByteOrder:	LittleEndian
+RawFile: testdata.UINT16.LittleEndian.raw
+Resolution: 13 7 3
+Format: UINT16
+ByteOrder:  LittleEndian

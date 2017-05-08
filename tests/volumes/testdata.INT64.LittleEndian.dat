@@ -1,4 +1,4 @@
-ObjectFileName:	testdata.INT64.LittleEndian.raw
-Resolution:	16 16 16
-Format:	INT64
-ByteOrder:	LittleEndian
+RawFile: testdata.INT64.LittleEndian.raw
+Resolution: 13 7 3
+Format: INT64
+ByteOrder:  LittleEndian

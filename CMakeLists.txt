@@ -176,9 +176,10 @@ add_subdirectory(apps)
 ivw_add_external_projects()
 
 
-
-option(IVW_BUILD_INTEGRATION_TESTS "Build inviwo integration test" ON)
-if(IVW_BUILD_INTEGRATION_TESTS)
+#--------------------------------------------------------------------
+# Add integration tests project
+option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
+if(IVW_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests)
 endif()
 

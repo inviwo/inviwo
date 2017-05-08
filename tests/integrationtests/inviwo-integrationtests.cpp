@@ -95,12 +95,12 @@ int main(int argc, char** argv) {
         size_t errCountAfter = LogErrorCounter::getPtr()->getErrorCount();
 
         if (warnCount != warnCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The integratation test runs generated "
+            LogWarnCustom("UnitTestsModule::runAllTest", "The integration test runs generated "
                                                              << (warnCountAfter - warnCount)
                                                              << " warnings");
         }
         if (errCount != errCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The  integratation test runs generated "
+            LogWarnCustom("UnitTestsModule::runAllTest", "The  integration test runs generated "
                                                              << (errCountAfter - errCount)
                                                              << " errors");
         }

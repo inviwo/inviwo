@@ -1,4 +1,4 @@
-ObjectFileName:	testdata.INT64.BigEndian.raw
-Resolution:	16 16 16
-Format:	INT64
-ByteOrder:	BigEndian
+RawFile: testdata.INT64.BigEndian.raw
+Resolution: 13 7 3
+Format: INT64
+ByteOrder:  BigEndian
