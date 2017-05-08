@@ -34,6 +34,10 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+
 #include <modules/python3/python3module.h>
 
 #include <modules/python3/interface/pybuffer.h>
@@ -130,7 +134,7 @@ void PythonRegTestProcessor::process() {
         // Test 2 scriptPassValues_
         bool status = false;
         int a = 1;
-        float b = 0.2;
+        float b = 0.2f;
         std::string c = "hello world";
         std::vector<int> d({2, 3, 4});
         scriptPassValues_.run(
@@ -172,7 +176,7 @@ void PythonRegTestProcessor::process() {
 
                 auto vec = intBuffer.getEditableRAMRepresentation()->getDataContainer();
                 for (size_t i = 0; i < bufferSize; i++) {
-                    expectEQ<int>(i * i, vec[i], "Simple buffer test: write value");
+                    expectEQ<int>(static_cast<int>(i * i), vec[i], "Simple buffer test: write value");
                 }
             });
 
