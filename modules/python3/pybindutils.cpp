@@ -77,7 +77,7 @@ struct BufferFromArrayDistpatcher {
 
     template <typename T>
     std::shared_ptr<BufferBase> dispatch(pybind11::array &arr) {
-        using Type = T::type;
+        using Type = typename T::type;
         auto buf = std::make_shared<Buffer<Type>>(arr.shape(0));
         memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
         return buf;
@@ -90,7 +90,7 @@ struct LayerFromArrayDistpatcher {
 
     template <typename T>
     std::shared_ptr<Layer> dispatch(pybind11::array &arr) {
-        using Type = T::type;
+        using Type = typename T::type;
         size2_t dims(arr.shape(0), arr.shape(1));
 
         auto vol = std::make_shared<Layer>(dims, DataFormat<Type>::get());
@@ -109,7 +109,7 @@ struct VolumeFromArrayDistpatcher {
 
     template <typename T>
     std::shared_ptr<Volume> dispatch(pybind11::array &arr) {
-        using Type = T::type;
+        using Type = typename T::type;
         size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
 
         auto vol = std::make_shared<Volume>(dims, DataFormat<Type>::get());
