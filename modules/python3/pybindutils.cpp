@@ -32,7 +32,6 @@
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/formats.h>
 
-
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -45,8 +44,6 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-
-
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -97,7 +94,6 @@ struct BufferFromArrayDistpatcher {
     }
 };
 
-
 struct LayerFromArrayDistpatcher {
     using type = std::shared_ptr<Layer>;
 
@@ -105,17 +101,11 @@ struct LayerFromArrayDistpatcher {
     std::shared_ptr<Layer> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size2_t dims(arr.shape(0), arr.shape(1));
-
-        auto vol = std::make_shared<Layer>(dims, DataFormat<Type>::get());
-
-        memcpy(vol->getEditableRepresentation<LayerRAM>()->getData(), arr.data(0), arr.nbytes());
-        return vol;
+        auto layer = std::make_shared<Layer>(dims, DataFormat<Type>::get());
+        memcpy(layer->getEditableRepresentation<LayerRAM>()->getData(), arr.data(0), arr.nbytes());
+        return layer;
     }
-
-
 };
-
-
 
 struct VolumeFromArrayDistpatcher {
     using type = std::shared_ptr<Volume>;
@@ -124,14 +114,10 @@ struct VolumeFromArrayDistpatcher {
     std::shared_ptr<Volume> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
-
         auto vol = std::make_shared<Volume>(dims, DataFormat<Type>::get());
-        
         memcpy(vol->getEditableRepresentation<VolumeRAM>()->getData(), arr.data(0), arr.nbytes());
         return vol;
     }
-
-
 };
 
 std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
@@ -141,7 +127,6 @@ std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
     BufferFromArrayDistpatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
-
 
 std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
     auto ndim = arr.ndim();
@@ -153,7 +138,7 @@ std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
 
 std::shared_ptr<Volume> createVolume(pybind11::array &arr) {
     auto ndim = arr.ndim();
-    ivwAssert(ndim == 3||ndim == 4 , "Ndims must be either 3 or 4");
+    ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
     auto df = pyutil::getDataFomrat(ndim == 3 ? 1 : arr.shape(3), arr);
     VolumeFromArrayDistpatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
