@@ -65,27 +65,19 @@ template <typename T>
 class Transformer<T, typename std::enable_if<util::is_floating_point<T>::value>::type> {
 public:
     static T sliderToValue(MinMaxProperty<T>* p, int val) {
-        const T steps = limitSteps((p->getRangeMax() - p->getRangeMin()) / p->getIncrement());
-        return (static_cast<T>(val) / steps) * (p->getRangeMax() - p->getRangeMin()) +
+        return (static_cast<T>(val) / steps()) * (p->getRangeMax() - p->getRangeMin()) +
                p->getRangeMin();
     }
-
     static int valueToSlider(MinMaxProperty<T>* p, T val) {
-        const T steps = limitSteps((p->getRangeMax() - p->getRangeMin()) / p->getIncrement());
         return static_cast<int>((val - p->getRangeMin()) / (p->getRangeMax() - p->getRangeMin()) *
-                                steps);
+                                steps());
     }
-
     static int sepToSlider(MinMaxProperty<T>* p, T sep) {
-        const T steps = limitSteps((p->getRangeMax() - p->getRangeMin()) / p->getIncrement());
-        return static_cast<int>(sep / (p->getRangeMax() - p->getRangeMin()) * steps);
+        return static_cast<int>(sep / (p->getRangeMax() - p->getRangeMin()) * steps());
     }
-
     static T spinboxToValue(MinMaxProperty<T>* p, double val) { return static_cast<T>(val); }
-
     static double valueToSpinbox(MinMaxProperty<T>* p, T val) { return static_cast<double>(val); }
-
-    static T limitSteps(T steps) { return steps > T{2048} ? T{2048} : steps; }
+    static T steps() { return 10000; }
 };
 
 template <typename T>

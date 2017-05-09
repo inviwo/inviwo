@@ -97,12 +97,10 @@ private:
 
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
-
     CustomDoubleSpinBoxQt* spinBox_;
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
-    //bool dragging_  = false;
 };
 
 template <typename T>
