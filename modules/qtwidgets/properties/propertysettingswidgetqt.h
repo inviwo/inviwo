@@ -118,7 +118,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
 
     const std::array<QString, 5> labels = {"Component", "Min", "Value", "Max", "Increment"};
     for (size_t i = 0; i < labels.size(); ++i) {
-        gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
+        gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
     }
     const std::array<char,4> desc = {'x', 'y', 'z', 'w'};
     const uvec2 components = OrdinalProperty<T>::getDim();
@@ -296,7 +296,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     const std::array<QString, 7> labels = {"Component", "Min Bound",     "Start",    "End",
                                            "Max Bound", "MinSeparation", "Increment"};
     for (size_t i = 0; i < labels.size(); ++i) {
-        gridLayout->addWidget(new QLabel(labels[i], this), 0, i);
+        gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
     }
     const std::array<char, 4> desc = { 'x', 'y', 'z', 'w' };
     const uvec2 components = OrdinalProperty<T>::getDim();
