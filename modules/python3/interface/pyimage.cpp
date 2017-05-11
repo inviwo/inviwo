@@ -57,14 +57,16 @@ auto getLayers = [](Image *img) {
 void exposeImage(py::module &m) {
 
     py::class_<Image>(m, "Image")
-        .def(py::init<size2_t,const DataFormatBase *>())
+        .def(py::init<size2_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); }, py::return_value_policy::reference)
-        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); }, py::return_value_policy::reference)
+        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
+                               py::return_value_policy::reference)
+        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); },
+                               py::return_value_policy::reference)
         .def_property_readonly("colorLayers", getLayers, py::return_value_policy::reference);
 
     py::class_<Layer>(m, "Layer")
-        .def(py::init<size2_t,const DataFormatBase *>())
+        .def(py::init<size2_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property_readonly("data", [&](Layer &layer) -> py::array {
 
@@ -84,10 +86,10 @@ void exposeImage(py::module &m) {
 
                 bool readOnly = false;
                 if (readOnly) {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data);
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
                 } else {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data,
-                                                      py::cast<>(1));
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
+                                     py::cast<>(1));
                 }
 
             };

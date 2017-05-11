@@ -118,10 +118,10 @@ void exposeBuffer(py::module &m) {
 
                 bool readOnly = false;
                 if (readOnly) {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data);
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
                 } else {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data,
-                                                      py::cast<>(1));
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
+                                     py::cast<>(1));
                 }
 
             };

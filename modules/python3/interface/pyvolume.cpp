@@ -48,18 +48,19 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-
 void exposeVolume(py::module &m) {
     /*
     py::class_<Image>(m, "Image")
         .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); }, py::return_value_policy::reference)
-        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); }, py::return_value_policy::reference)
+        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
+    py::return_value_policy::reference)
+        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); },
+    py::return_value_policy::reference)
         .def_property_readonly("colorLayers", getLayers, py::return_value_policy::reference);
     */
 
     py::class_<Volume>(m, "Volume")
-        .def(py::init<size3_t,const DataFormatBase *>())
+        .def(py::init<size3_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Volume::getDimensions)
         .def_property_readonly("data", [&](Volume &layer) -> py::array {
 
@@ -68,21 +69,24 @@ void exposeVolume(py::module &m) {
                 using ComponentType = typename util::value_type<ValueType>::type;
 
                 ComponentType *data = (ComponentType *)pVolume->getDataTyped();
-                std::vector<size_t> shape = {pVolume->getDimensions().x, pVolume->getDimensions().y, pVolume->getDimensions().z,
+                std::vector<size_t> shape = {pVolume->getDimensions().x, pVolume->getDimensions().y,
+                                             pVolume->getDimensions().z,
                                              pVolume->getDataFormat()->getComponents()};
 
                 std::vector<size_t> strides = {
                     sizeof(ComponentType) * pVolume->getDataFormat()->getComponents(),
-                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() * pVolume->getDimensions().x,
-                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() * pVolume->getDimensions().x * pVolume->getDimensions().y,
+                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() *
+                        pVolume->getDimensions().x,
+                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() *
+                        pVolume->getDimensions().x * pVolume->getDimensions().y,
                     sizeof(ComponentType)};
 
                 bool readOnly = false;
                 if (readOnly) {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data);
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
                 } else {
-                    return py::array_t<ComponentType>(shape, strides, (ComponentType *)data,
-                                                      py::cast<>(1));
+                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
+                                     py::cast<>(1));
                 }
 
             };
