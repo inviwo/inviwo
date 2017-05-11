@@ -47,16 +47,17 @@ const ProcessorInfo NumpyMandelbrot::getProcessorInfo() const {
 
 NumpyMandelbrot::NumpyMandelbrot()
     : Processor()
-    , outport_("outport" , false)
-    , size_("size", "size_", size2_t(600, 440), size2_t(32), size2_t(2048)) 
-    , realBounds_("realBounds", "Real bounds" , -2.f , 1.f , -3.f , 3.f )
-    , imaginaryBound_("imaginaryBound", "Imaginary bounds", -1.1f, 1.1f, -3.f , 3.f)
-    , power_("power","power" , 2.f , 0.01f , 10.f , 0.01f)
-    , iterations_("iterations","Iterations" , 10.f , 1.f , 1000.f)
+    , outport_("outport", false)
+    , size_("size", "Size", size2_t(600, 440), size2_t(32), size2_t(2048))
+    , realBounds_("realBounds", "Real bounds", -2.f, 1.f, -3.f, 3.f)
+    , imaginaryBound_("imaginaryBound", "Imaginary bounds", -1.1f, 1.1f, -3.f, 3.f)
+    , power_("power", "power", 2.f, 0.01f, 10.f, 0.01f)
+    , iterations_("iterations", "Iterations", 10.f, 1.f, 1000.f)
 
-    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) + "/mandelbrot.py")
-{
-    
+    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
+                  ModulePath::Scripts) +
+              "/mandelbrot.py") {
+
     addPort(outport_);
     addProperty(size_);
     addProperty(realBounds_);
@@ -73,10 +74,7 @@ void NumpyMandelbrot::process() {
     auto img = std::make_shared<Image>( size_.get(), DataFloat32::get() );
     script_.run({
       {"img" , pybind11::cast(img->getColorLayer()) }
-    , {"real" , pybind11::cast(realBounds_.get())}
-    , {"im" , pybind11::cast(imaginaryBound_.get())}
-    , {"power" , pybind11::cast(power_.get())}
-    , {"N" , pybind11::cast(iterations_.get())}
+    , {"p" , pybind11::cast(static_cast<Processor*>( this)) } }
     });
 
     outport_.setData(img);

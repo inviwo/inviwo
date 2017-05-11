@@ -5,51 +5,19 @@ import math
 
 # input variables 
 # img - memory for the final image
-# real - real bounds of the image
-# im -  imaginary bound of the image
-# power - the power in the function Z_{n+1} = Z_n + C^{power}
-# N - number of iterations
+# p - the processor
 
-print(type(img))
-print(dir(img))
-
-#data = np.array(img, copy=False)
-
-data = img.data
-
-print(type(data))
-print(data.shape)
-
-realRange = real[1] - real[0]
-imRange = im[1] - im[0]
+rAxis = np.linspace(p.realBounds.value[0],p.realBounds.value[1],img.data.shape[0])
+iAxis = np.linspace(p.imaginaryBound.value[0],p.imaginaryBound.value[1],img.data.shape[1])
 
 
+po = p.power.value
+its = p.iterations.value
 
-dimx = data.shape[0];
-dimy = data.shape[1];
-
-size = data.shape 
-
-#x and y are in pixel coordinates 
-def toImaginary( x,y ):
-    r  = x / (size[0]-1)
-    i  = y / (size[1]-1)
-    r = real[0] + r * realRange;
-    i = im[0]   + i * imRange;
-    
-    return complex(r,i);
-
-def toScalar(Z,i):
-    x = math.log(1+i)
-    return x
-
-counter = 0
-if True: 
-    for y in range(0,size[1]):
-        for x in range(0,size[0]):
-            C = Z = toImaginary(x,y);
-            for i in range(0,N):
-                if(abs(Z)>2):
-                    data[x,y] = toScalar(Z,i);
-                    break;
-                Z = np.power(Z,power) + C;
+for (index,v) in np.ndenumerate(img.data):  
+    C = Z = complex( rAxis[index[0]] , iAxis[index[1]] ); 
+    for i in range(0,its):
+        if(abs(Z)>po):
+            img.data[index[0],index[1]] = math.log(1+i); 
+            break;
+        Z = np.power(Z,power) + C;

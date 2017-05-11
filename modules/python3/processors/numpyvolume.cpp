@@ -49,7 +49,7 @@ const ProcessorInfo NumPyVolume::getProcessorInfo() const {
 NumPyVolume::NumPyVolume()
     : Processor()
     , outport_("outport")
-    , size_("size", "size_", size3_t(64), size3_t(32), size3_t(512))
+    , size_("size", "Size", size3_t(64), size3_t(32), size3_t(512))
     , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) + "/numpyvolumeprocessor.py")
 
 {
