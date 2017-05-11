@@ -74,7 +74,7 @@ void NumpyMandelbrot::process() {
     auto img = std::make_shared<Image>( size_.get(), DataFloat32::get() );
     script_.run({
       {"img" , pybind11::cast(img->getColorLayer()) }
-    , {"p" , pybind11::cast(static_cast<Processor*>( this)) } }
+    , {"p" , pybind11::cast(static_cast<Processor*>( this)) }
     });
 
     outport_.setData(img);
