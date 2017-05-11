@@ -24,26 +24,32 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SINGLETON_H
 #define IVW_SINGLETON_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
 
 #include <sstream>
 #include <vector>
 
 namespace inviwo {
 
+class SingletonException : public Exception {
+public:
+    SingletonException(const std::string& message = "",
+                       ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+};
+
 template <class T>
 class Singleton {
 public:
-    
-    Singleton<T>() {};
+    Singleton<T>(){};
     Singleton<T>(Singleton<T> const&) = delete;
     void operator=(Singleton<T> const&) = delete;
 
@@ -53,20 +59,32 @@ public:
      *
      */
     static void init() {
-        ivwAssert(instance_==0, "Singleton already initialized.");
+        if (instance_ != nullptr) {
+            throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
+        }
         instance_ = util::defaultConstructType<T>();
-        ivwAssert(instance_!=0, "Was not able to initialize singleton");
+        if (instance_ == nullptr) {
+            throw SingletonException("Was not able to initialize singleton", IvwContextCustom("Singleton"));
+        }
     };
 
     static void init(T* instance) {
-        ivwAssert(instance_==0, "Singleton already initialized.");
-        ivwAssert(instance!=0, "Null pointer passed.");
+        if (instance_ != nullptr) {
+            throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
+        }
+        if (instance == nullptr) {
+            throw SingletonException("Null pointer passed", IvwContextCustom("Singleton"));
+        }
         instance_ = instance;
     };
 
     static T* getPtr() {
-        ivwAssert(instance_!=0, "Singleton not initialized. Ensure that init() "
-                  "is called in a thread-safe environment.");
+        if (instance_ == 0) {
+            throw SingletonException(
+                "Singleton not initialized. Ensure that init() is called in a thread-safe "
+                "environment. ",
+                IvwContextCustom("Singleton"));
+        }
         return instance_;
     };
 
@@ -75,20 +93,17 @@ public:
         instance_ = nullptr;
     };
 
-    virtual ~Singleton() {
-        Singleton<T>::resetInstance();
-    };
+    virtual ~Singleton() { Singleton<T>::resetInstance(); };
 
 private:
-    static void resetInstance() {
-        instance_ = nullptr;
-    };
+    static void resetInstance() { instance_ = nullptr; };
 
     static T* instance_;
 };
 
-template <class T> T* Singleton<T>::instance_ = nullptr;
+template <class T>
+T* Singleton<T>::instance_ = nullptr;
 
-} // end of namespace
+}  // end of namespace
 
-#endif // IVW_SINGLETON_H
+#endif  // IVW_SINGLETON_H
