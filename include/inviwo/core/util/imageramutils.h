@@ -36,6 +36,7 @@
 
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
