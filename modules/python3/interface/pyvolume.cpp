@@ -34,6 +34,7 @@
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
+#include <modules/python3/pybindutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/common.h>
@@ -62,36 +63,27 @@ void exposeVolume(py::module &m) {
     py::class_<Volume>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Volume::getDimensions)
-        .def_property_readonly("data", [&](Volume &layer) -> py::array {
+        .def_property_readonly("data", [&](Volume *volume) -> py::array {
 
-            auto func = [&](auto pVolume) -> py::array {
-                using ValueType = util::PrecsionValueType<decltype(pVolume)>;
-                using ComponentType = typename util::value_type<ValueType>::type;
+            auto df = volume->getDataFormat();
+            auto size = df->getSize();
+            auto dims = volume->getDimensions();
 
-                ComponentType *data = (ComponentType *)pVolume->getDataTyped();
-                std::vector<size_t> shape = {pVolume->getDimensions().x, pVolume->getDimensions().y,
-                                             pVolume->getDimensions().z,
-                                             pVolume->getDataFormat()->getComponents()};
+            std::vector<size_t> shape = {dims.x, dims.y, dims.z, df->getComponents()};
 
-                std::vector<size_t> strides = {
-                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents(),
-                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() *
-                        pVolume->getDimensions().x,
-                    sizeof(ComponentType) * pVolume->getDataFormat()->getComponents() *
-                        pVolume->getDimensions().x * pVolume->getDimensions().y,
-                    sizeof(ComponentType)};
+            std::vector<size_t> strides = {size * df->getComponents(),
+                                           size * df->getComponents() * dims.x,
+                                           size * df->getComponents() * dims.x * dims.y, size};
 
-                bool readOnly = false;
-                if (readOnly) {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
-                } else {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
-                                     py::cast<>(1));
-                }
+            auto data = volume->getRepresentation<VolumeRAM>()->getData();
 
-            };
+            bool readOnly = false;
+            if (readOnly) {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
+            } else {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+            }
 
-            return layer.getRepresentation<VolumeRAM>()->dispatch<py::array>(func);
         });
 
     exposeOutport<VolumeOutport>(m, "Volume");

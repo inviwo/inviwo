@@ -37,6 +37,7 @@
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
+#include <modules/python3/pybindutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/common.h>
@@ -68,33 +69,25 @@ void exposeImage(py::module &m) {
     py::class_<Layer>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Layer::getDimensions)
-        .def_property_readonly("data", [&](Layer &layer) -> py::array {
+        .def_property_readonly("data", [&](Layer *layer) -> py::array {
 
-            auto func = [&](auto pLayer) -> py::array {
-                using ValueType = util::PrecsionValueType<decltype(pLayer)>;
-                using ComponentType = typename util::value_type<ValueType>::type;
+            auto df = layer->getDataFormat();
+            auto size = df->getSize();
+            auto dims = layer->getDimensions();
 
-                ComponentType *data = (ComponentType *)pLayer->getDataTyped();
-                std::vector<size_t> shape = {pLayer->getDimensions().x, pLayer->getDimensions().y,
-                                             pLayer->getDataFormat()->getComponents()};
+            std::vector<size_t> shape = {dims.x, dims.y, df->getComponents()};
 
-                std::vector<size_t> strides = {
-                    sizeof(ComponentType) * pLayer->getDataFormat()->getComponents(),
-                    sizeof(ComponentType) * pLayer->getDataFormat()->getComponents() *
-                        pLayer->getDimensions().x,
-                    sizeof(ComponentType)};
+            std::vector<size_t> strides = {size * df->getComponents(),
+                                           size * df->getComponents() * dims.x, size};
 
-                bool readOnly = false;
-                if (readOnly) {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
-                } else {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
-                                     py::cast<>(1));
-                }
+            auto data = layer->getRepresentation<LayerRAM>()->getData();
 
-            };
-
-            return layer.getRepresentation<LayerRAM>()->dispatch<py::array>(func);
+            bool readOnly = false;
+            if (readOnly) {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
+            } else {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+            }
         });
 
     exposeOutport<ImageOutport>(m, "Image")

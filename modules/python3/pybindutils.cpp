@@ -51,6 +51,26 @@ namespace inviwo {
 
 namespace pyutil {
 
+pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
+    std::string format;
+    switch (df->getNumericType()) {
+        case inviwo::NumericType::Float:
+            format = "float";
+            break;
+        case inviwo::NumericType::SignedInteger:
+            format = "int";
+            break;
+        case inviwo::NumericType::UnsignedInteger:
+        default:
+            format = "uint";
+            break;
+    }
+
+    format += std::to_string(df->getPrecision());
+
+    return pybind11::dtype(format);
+}
+
 const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
     auto f = arr.request().format;
 

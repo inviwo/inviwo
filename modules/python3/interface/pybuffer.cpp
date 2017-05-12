@@ -42,6 +42,7 @@
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
+#include <modules/python3/pybindutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/common.h>
@@ -55,6 +56,7 @@ struct BufferRAMHelper {
     template <typename DataFormat>
     auto operator()(pybind11::module &m) {
         using T = typename DataFormat::type;
+
         std::ostringstream className;
         className << "Buffer" << DataFormat::str();
         py::class_<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.str().c_str())
@@ -102,31 +104,21 @@ void exposeBuffer(py::module &m) {
 
     py::class_<BufferBase>(m, "Buffer")
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
-        .def_property_readonly("data", [&](BufferBase &buffer) -> py::array {
-            auto func = [&](auto pBuffer) -> py::array {
-                using ValueType = util::PrecsionValueType<decltype(pBuffer)>;
-                using ComponentType = typename util::value_type<ValueType>::type;
+        .def_property_readonly("data", [&](BufferBase *buffer)->py::array {
 
-                ComponentType *data = (ComponentType *)pBuffer->getData();
+            auto df = buffer->getDataFormat();
+            auto componentSize = df->getSize();
 
-                std::vector<size_t> shape = {pBuffer->getSize(),
-                                             pBuffer->getDataFormat()->getComponents()};
+            std::vector<size_t> shape = {buffer->getSize(), df->getComponents()};
+            std::vector<size_t> strides = {componentSize * df->getComponents(), componentSize};
+            auto data = buffer->getRepresentation<BufferRAM>()->getData();
 
-                std::vector<size_t> strides = {
-                    sizeof(ComponentType) * pBuffer->getDataFormat()->getComponents(),
-                    sizeof(ComponentType)};
-
-                bool readOnly = false;
-                if (readOnly) {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data);
-                } else {
-                    return py::array(pybind11::dtype::of<ComponentType>(), shape, strides, data,
-                                     py::cast<>(1));
-                }
-
-            };
-
-            return buffer.getRepresentation<BufferRAM>()->dispatch<py::array>(func);
+            bool readOnly = false;
+            if (readOnly) {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
+            } else {
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+            }
         });
 
     util::for_each_type<DefaultDataFormats>{}(BufferRAMHelper{}, m);
