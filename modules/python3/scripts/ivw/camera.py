@@ -34,7 +34,7 @@ from inviwopy.glm import ivec2,vec3,mat3
 import math
 
 def rotation_matrix(axis, angle):
-    a = axis.normalize()
+    a = inviwopy.glm.normalize(axis)
     v = a * math.sin(0.5 * angle)
     w = math.cos(0.5 * angle)
 
