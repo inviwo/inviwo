@@ -36,28 +36,60 @@
 
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
-    namespace util {
+namespace util {
 
-        template <typename C>
-        void forEachPixel(const LayerRAM &v, C callback){
-            const auto &dims = v.getDimensions();
-            size2_t pos;
-            for (pos.y = 0; pos.y < dims.y; pos.y++) {
-                for (pos.x = 0; pos.x < dims.x; pos.x++) {
-                    callback(pos);
-                }
-            }
+template <typename C>
+void forEachPixel(const LayerRAM &layer, C callback) {
+    const auto &dims = layer.getDimensions();
+    size2_t pos;
+    for (pos.y = 0; pos.y < dims.y; pos.y++) {
+        for (pos.x = 0; pos.x < dims.x; pos.x++) {
+            callback(pos);
         }
+    }
+}
 
-        IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
+template <typename C>
+void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
+    const auto dims = layer.getDimensions();
 
-
+    if (jobs == 0) {
+        auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+        jobs = 4 * settings->poolSize_.get();
+        if (jobs == 0) { // if poolsize is zero
+            forEachPixel(layer, callback);
+            return;
+        }
     }
 
-} // namespace
+    std::vector<std::future<void>> futures;
+    for (size_t job = 0; job < jobs; ++job) {
+        size2_t start = size2_t(0, job * dims.y / jobs);
+        size2_t stop = size2_t(dims.x, std::min(dims.y, (job + 1) * dims.y / jobs));
 
-#endif // IVW_IMAGERAMUTILS_H
+        futures.push_back(dispatchPool([&callback, start, stop]() {
+            size2_t pos{0};
 
+                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
+                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
+                        callback(pos);
+                    }
+                }
+        }));
+    }
+
+    for (const auto &e : futures) {
+        e.wait();
+    }
+}
+
+IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
+}
+
+}  // namespace
+
+#endif  // IVW_IMAGERAMUTILS_H
