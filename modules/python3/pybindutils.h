@@ -60,12 +60,6 @@ template <typename T>
 pybind11::dtype toNumPyFormat() {
     return toNumPyFormat(DataFormat<T>::get());
 }
-
-template <typename T>
-pybind11::object toPyBindObject(const T &t) {
-    return pybind11::cast(t);
-}
-
 template <typename T>
 T toPyBindObjectBorrow(PyObject *obj) {
     return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
@@ -76,14 +70,6 @@ T toPyBindObjectSteal(PyObject *obj) {
     return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
 }
 
-template <typename T>
-T toPyBindObject(PyObject *obj, bool steal = false) {
-    if (steal) {
-        return toPyBindObjectSteal<T>(obj);
-    } else {
-        return toPyBindObjectBorrow<T>(obj);
-    }
-}
 }  // namespace pyutil
 
 }  // namespace inviwo
