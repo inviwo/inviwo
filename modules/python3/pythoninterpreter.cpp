@@ -184,6 +184,10 @@ void PythonInterpreter::importModule(const std::string& moduleName) {
     delete[] key;
 }
 
+void PythonInterpreter::runString(std::string code) {
+    PyRun_SimpleString(code.c_str());
+}
+
 void PythonInterpreter::initOutputRedirector(Python3Module* module) {
     std::string directorFileName = module->getPath() + "/scripts/outputredirector.py";
 

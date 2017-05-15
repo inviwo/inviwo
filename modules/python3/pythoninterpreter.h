@@ -48,6 +48,8 @@ public:
     void addModulePath(const std::string& path);
     void importModule(const std::string& moduleName);
 
+    void runString(std::string code);
+
 protected:
     void init(Python3Module* module);
     void initOutputRedirector(Python3Module* module);
