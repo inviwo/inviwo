@@ -30,12 +30,6 @@
 #include <pybind11/pybind11.h>
 #include <modules/python3/python3module.h>
 
-#if defined(__unix__)
-#include <unistd.h>
-#elif defined(__APPLE__)
-#include <libproc.h> // proc_pidpath
-#endif
-
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
@@ -49,7 +43,6 @@
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
 
-
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
@@ -61,8 +54,6 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
     registerProcessor<NumPyMeshCreateTest>();
-
-
 
     pythonInterpreter_->addObserver(&pythonLogger_);
     app->getCommandLineParser().add(
@@ -78,55 +69,14 @@ Python3Module::Python3Module(InviwoApplication* app)
         },
         100);
 
-#if defined(__unix__)
-    char executablePath[PATH_MAX];
-    auto size = ::readlink("/proc/self/exe", executablePath, sizeof(executablePath) - 1);
-    if (size != -1) {
-        // readlink does not append a null character to the path
-        executablePath[size] = '\0';
-    } else {
-        // Error retrieving path
-        executablePath[0] = '\0';
-    }
-
-    std::string execpath(executablePath);
-    auto folder = filesystem::getFileDirectory(execpath);
-    pythonInterpreter_->addModulePath(folder);
-#elif defined(__APPLE__)
-    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    char executablePath[PATH_MAX];
-    auto pid = getpid();
-    if (proc_pidpath(pid, executablePath, sizeof(executablePath)) <= 0) {
-        // Error retrieving path
-        executablePath[0] = '\0';
-    }
-    std::string execpath(executablePath);
-    auto folder = filesystem::getFileDirectory(execpath);
-    pythonInterpreter_->addModulePath(folder);
-    pythonInterpreter_->addModulePath(folder + "/../../../");
-    
-#endif
-
     app->dispatchFront([&]() {
         PythonScript ps;
         ps.setSource("import inviwopy\n");
         ps.run();  // we need to import inviwopy to trigger the initialization code in inviwopy.cpp,
-        //           // this is needed to be able to cast cpp/inviwo objects to python objects
+                   // this is needed to be able to cast cpp/inviwo objects to python objects
 
         PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
     });
-
-    //registerPythonInitCallback([&](pybind11::module *m) {
-    //    app->dispatchFront([&]() {
-    //        
-    //        
-    //        PythonScript ps;
-    //        ps.setSource("import inviwopy\n");
-    //        ps.run();  
-
-    //    });
-    //
-    //});
 }
 
 Python3Module::~Python3Module() { pythonInterpreter_->removeObserver(&pythonLogger_); }
