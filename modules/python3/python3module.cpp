@@ -42,7 +42,6 @@
 #include <modules/python3/processors/numpymandelbrot.h>
 #include <modules/python3/processors/numpyvolume.h>
 #include <modules/python3/processors/numpymeshcreatetest.h>
-#include <modules/python3/processors/pythonregtestprocessor.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -62,7 +61,6 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
     registerProcessor<NumPyMeshCreateTest>();
-    registerProcessor<PythonRegTestProcessor>();
 
 
 
@@ -115,7 +113,7 @@ Python3Module::Python3Module(InviwoApplication* app)
         ps.run();  // we need to import inviwopy to trigger the initialization code in inviwopy.cpp,
         //           // this is needed to be able to cast cpp/inviwo objects to python objects
 
-        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+        PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
     });
 
     //registerPythonInitCallback([&](pybind11::module *m) {

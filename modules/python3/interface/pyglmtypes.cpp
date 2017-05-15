@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/python3/interface/pyglmtypes.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -40,7 +39,6 @@
 #include <pybind11/operators.h>
 
 #include <algorithm>
-
 
 namespace py = pybind11;
 
@@ -59,185 +57,191 @@ void addInit(py::class_<V> &pyv) {
 
 namespace inviwo {
 
-    template <typename T,typename GLM>
-    void common(py::module &m,py::class_<GLM> &pyc , std::string name){
-        pyc
-            .def(py::init<T>())
-            .def(py::init<>())
-            .def("__repr__", [](GLM &v) { return glm::to_string(v); })
+template <typename T, typename GLM>
+void common(py::module &m, py::class_<GLM> &pyc, std::string name) {
+    pyc.def(py::init<T>())
+        .def(py::init<>())
+        .def("__repr__", [](GLM &v) { return glm::to_string(v); })
 
-            .def(py::self + py::self)
-            .def(py::self - py::self)
-            .def(py::self += py::self)
-            .def(py::self -= py::self)
-            .def(py::self == py::self)
-            .def(py::self != py::self)
+        .def(py::self + py::self)
+        .def(py::self - py::self)
+        .def(py::self += py::self)
+        .def(py::self -= py::self)
+        .def(py::self == py::self)
+        .def(py::self != py::self)
 
-            .def(py::self + T())
-            .def(py::self - T())
-            .def(py::self * T())
-            .def(py::self / T())
-            .def(py::self += T())
-            .def(py::self -= T())
-            .def(py::self *= T())
-            .def(py::self /= T())
+        .def(py::self + T())
+        .def(py::self - T())
+        .def(py::self * T())
+        .def(py::self / T())
+        .def(py::self += T())
+        .def(py::self -= T())
+        .def(py::self *= T())
+        .def(py::self /= T())
 
-            .def("__getitem__", [](GLM &v, int idx) { return &v[idx]; } , py::return_value_policy::reference_internal)
-            ;
+        .def("__getitem__", [](GLM &v, int idx) { return &v[idx]; },
+             py::return_value_policy::reference_internal);
 
-        py::bind_vector<std::vector<GLM>>(m, name + "Vector");
+    py::bind_vector<std::vector<GLM>>(m, name + "Vector");
+}
+
+template <typename T, typename V>
+void floatOnlyVecs(py::module &m, std::false_type) {}
+
+template <typename T, typename V>
+void floatOnlyVecs(py::module &m, std::true_type) {
+    m.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
+    m.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
+    m.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
+    m.def("length", [](V &v) { return glm::length(v); });
+    m.def("length2", [](V &v) { return glm::length2(v); });
+    m.def("normalize", [](V &v) { return glm::normalize(v); });
+}
+
+template <typename T, typename V>
+void floatOnlyVecs(py::module &m) {
+    floatOnlyVecs<T, V>(m, std::is_floating_point<T>());
+}
+
+template <typename T, unsigned A>
+void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
+    using V = Vector<A, T>;
+    std::stringstream classname;
+    classname << prefix << name << A << postfix;
+    py::class_<V> pyv(m, classname.str().c_str());
+    common<T>(m, pyv, classname.str());
+    addInit<T, V, A>(pyv);
+    pyv.def(py::self * py::self)
+        .def(py::self / py::self)
+        .def(py::self *= py::self)
+        .def(py::self /= py::self)
+
+        .def("__str__",
+             [](V &v) {
+                 std::ostringstream oss;
+                 oss << "[";
+                 for (int i = 0; i < A; i++) {
+                     if (i != 0) {
+                         oss << " ";
+                     }
+                     oss << v[i];
+                 }
+                 oss << "]";
+                 return oss.str();
+             })
+
+        .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; });
+    floatOnlyVecs<T, V>(m);
+
+    switch (A) {
+        case 4:
+            pyv.def_property("w", [](V &b) { return b[3]; }, [](V &b, T t) { b[3] = t; });
+            pyv.def_property("a", [](V &b) { return b[3]; }, [](V &b, T t) { b[3] = t; });
+            pyv.def_property("q", [](V &b) { return b[3]; }, [](V &b, T t) { b[3] = t; });
+        case 3:
+            pyv.def_property("z", [](V &b) { return b[2]; }, [](V &b, T t) { b[2] = t; });
+            pyv.def_property("b", [](V &b) { return b[2]; }, [](V &b, T t) { b[2] = t; });
+            pyv.def_property("p", [](V &b) { return b[2]; }, [](V &b, T t) { b[2] = t; });
+        case 2:
+            pyv.def_property("y", [](V &b) { return b[1]; }, [](V &b, T t) { b[1] = t; });
+            pyv.def_property("g", [](V &b) { return b[1]; }, [](V &b, T t) { b[1] = t; });
+            pyv.def_property("t", [](V &b) { return b[1]; }, [](V &b, T t) { b[1] = t; });
+            pyv.def_property("x", [](V &b) { return b[0]; }, [](V &b, T t) { b[0] = t; });
+            pyv.def_property("r", [](V &b) { return b[0]; }, [](V &b, T t) { b[0] = t; });
+            pyv.def_property("s", [](V &b) { return b[0]; }, [](V &b, T t) { b[0] = t; });
+        default:
+            break;
+    }
+}
+
+template <typename T>
+void vec(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
+    vecx<T, 2>(m, prefix, name, postfix);
+    vecx<T, 3>(m, prefix, name, postfix);
+    vecx<T, 4>(m, prefix, name, postfix);
+}
+
+template <typename T, unsigned COLS, unsigned ROWS>
+void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
+    using M = typename util::glmtype<T, COLS, ROWS>::type;
+    using Ma2 = typename util::glmtype<T, ROWS, 2>::type;
+    using Ma3 = typename util::glmtype<T, ROWS, 3>::type;
+    using Ma4 = typename util::glmtype<T, ROWS, 4>::type;
+    using Va = Vector<COLS, T>;
+    using Vb = Vector<ROWS, T>;
+
+    std::stringstream classname;
+    classname << prefix << name << COLS;
+    if (COLS != ROWS) {
+        classname << "x" << ROWS;
     }
 
-    template<typename T, typename V>
-    void floatOnlyVecs(py::module &m,  std::false_type) {}
+    py::class_<M> pym(m, classname.str().c_str());
+    common<T>(m, pym, classname.str());
+    addInit<T, M, COLS * ROWS>(pym);
+    addInit<typename M::col_type, M, ROWS>(pym);
+    pym.def(py::self * Vb())
+        .def(py::self * Ma2())
+        .def(py::self * Ma3())
+        .def(py::self * Ma4())
 
-    template<typename T, typename V>
-    void floatOnlyVecs(py::module &m, std::true_type) {
-        //        p.def("cross", [](V &v, V &v2) { return glm::cross(v, v2); });
-        m.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
-        m.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
-        m.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
-        m.def("length", [](V &v) { return glm::length(v); });
-        m.def("length2", [](V &v) { return glm::length2(v); });
-        m.def("normalize", [](V &v) { return glm::normalize(v); });
-    }
+        .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
+        .def("__setitem__", [](M &m, int idx, Va &t) { return m[idx] = t; })
+        .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
 
-    template<typename T, typename V>
-    void floatOnlyVecs(py::module &m ) {
-        floatOnlyVecs<T,V>(m,std::is_floating_point<T>());
-    }
-
-
-    template <typename T,unsigned A>
-    void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
-        using V = Vector<A, T>;
-        std::stringstream classname;
-        classname << prefix << name << A << postfix;
-        py::class_<V> pyv(m, classname.str().c_str());
-        common<T>(m,pyv,classname.str());
-        addInit<T, V, A>(pyv);
-        pyv 
-            .def(py::self * py::self)
-            .def(py::self / py::self)
-            .def(py::self *= py::self)
-            .def(py::self /= py::self)
-
-            .def("__str__",
-                [](V &v) {
-                    std::ostringstream oss;
-                    oss << "[";
-                    for (int i = 0; i < A; i++) {
-                        if (i != 0) {
-                            oss << " ";
-                        }
-                        oss << v[i];
-                    }
-                    oss << "]";
-                    return oss.str();
-        })
-
-            .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; });
-        floatOnlyVecs<T,V>(m);
-    }
-
-    
-
-    template <typename T>
-    void vec(py::module &m, std::string prefix , std::string name = "vec" , std::string postfix = "") {
-        vecx<T, 2>(m, prefix, name, postfix);
-        vecx<T, 3>(m, prefix, name, postfix);
-        vecx<T, 4>(m, prefix, name, postfix);
-    }
-
-
-    template <typename T, unsigned COLS, unsigned ROWS>
-    void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
-        using M = typename util::glmtype<T, COLS, ROWS>::type;
-        using Ma2 = typename util::glmtype<T,  ROWS,2>::type;
-        using Ma3 = typename util::glmtype<T,  ROWS,3>::type;
-        using Ma4 = typename util::glmtype<T,  ROWS,4>::type;
-        using Va = Vector<COLS, T>;
-        using Vb = Vector<ROWS, T>;
-
-        std::stringstream classname;
-        classname << prefix << name << COLS;
-        if (COLS != ROWS) {
-            classname << "x" << ROWS;
-        }
-
-        py::class_<M> pym(m, classname.str().c_str());
-        common<T>(m,pym,classname.str());
-        addInit<T, M, COLS*ROWS>(pym);
-        addInit<typename M::col_type, M, ROWS>(pym);
-        pym.def(py::self * Vb())
-            .def(py::self * Ma2())
-            .def(py::self * Ma3())
-            .def(py::self * Ma4())
-
-            .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
-            .def("__setitem__", [](M &m, int idx, Va &t) { return m[idx] = t; })
-            .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
-
-            .def("__str__",
-                 [](M &m) {
-                     std::ostringstream oss;
+        .def("__str__",
+             [](M &m) {
+                 std::ostringstream oss;
+                 oss << "[";
+                 for (int col = 0; col < COLS; col++) {
+                     if (col != 0) {
+                         oss << ",";
+                     }
                      oss << "[";
-                     for (int col = 0; col < COLS; col++) {
-                         if (col != 0) {
-                             oss << ",";
+                     for (int row = 0; row < ROWS; row++) {
+                         if (row != 0) {
+                             oss << " ";
                          }
-                         oss << "[";
-                         for (int row = 0; row < ROWS; row++) {
-                             if (row != 0) {
-                                 oss << " ";
-                             }
-                             oss << m[col][row];
-                         }
-                         oss << "]";
+                         oss << m[col][row];
                      }
                      oss << "]";
-                     return oss.str();
-                 })
+                 }
+                 oss << "]";
+                 return oss.str();
+             })
+        ;
+}
 
-            //            .def("transpose", [](M &m) {return glm::transpose(m); })
-            //            .def("inverse", [](M &m) {return glm::inverse(m); })
-            //            .def("determinant", [](M &m) {return glm::determinant(m); })
-            ;
-    }
+template <typename T, unsigned COLS>
+void matx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
+    matxx<T, COLS, 2>(m, prefix, name, postfix);
+    matxx<T, COLS, 3>(m, prefix, name, postfix);
+    matxx<T, COLS, 4>(m, prefix, name, postfix);
+}
 
-    template <typename T, unsigned COLS>
-    void matx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
-        matxx<T, COLS, 2>(m, prefix, name, postfix);
-        matxx<T, COLS, 3>(m, prefix, name, postfix);
-        matxx<T, COLS, 4>(m, prefix, name, postfix);
-    }
+template <typename T>
+void mat(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
+    matx<T, 2>(m, prefix, name, postfix);
+    matx<T, 3>(m, prefix, name, postfix);
+    matx<T, 4>(m, prefix, name, postfix);
+}
 
-    template <typename T>
-    void mat(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
-        matx<T, 2>(m, prefix, name, postfix);
-        matx<T, 3>(m, prefix, name, postfix);
-        matx<T, 4>(m, prefix, name, postfix);
-    }
+template <typename T>
+void glmtypes(py::module &m, std::string prefix, std::string postfix = "") {
+    vec<T>(m, prefix, "vec", postfix);
+    mat<T>(m, prefix, "mat", postfix);
+}
 
+template <typename B>
+struct A : public B {};
 
-    template <typename T>
-    void glmtypes(py::module &m, std::string prefix, std::string postfix = "" ) {
-        vec<T>(m, prefix, "vec", postfix);
-        mat<T>(m, prefix, "mat", postfix);
-    }
+void exposeGLMTypes(py::module &m) {
+    auto glmModule = m.def_submodule("glm", "Exposing glm vec and mat types");
 
-    template <typename B>
-    struct A : public B{};
-
-    void exposeGLMTypes(py::module &m) {
-        auto glmModule = m.def_submodule("glm", "Exposing glm vec and mat types");
-
-        glmtypes<float>(glmModule, ""); 
-        glmtypes<double>(glmModule, "d");
-        glmtypes<int>(glmModule, "i");
-        glmtypes<unsigned int>(glmModule, "u");
-        //vec<size_t>(glmModule, "","size", "_t");
-    }
-
-
+    glmtypes<float>(glmModule, "");
+    glmtypes<double>(glmModule, "d");
+    glmtypes<int>(glmModule, "i");
+    glmtypes<unsigned int>(glmModule, "u");
+    vec<size_t>(glmModule, "","size", "_t");
+}
 }

@@ -12,7 +12,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
@@ -28,7 +27,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonregtestprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
@@ -58,10 +56,17 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 
 #--------------------------------------------------------------------
 # Add Unittests
-#set(TEST_FILES
-#    ${CMAKE_CURRENT_SOURCE_DIR}/tests/python3-test.cpp
-#)
-#ivw_add_unittest(${TEST_FILES})
+set(TEST_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/python3-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/buffer_types.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/grabreturnvalue.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/layer_types.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/passvalues.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/simple_buffer_test.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/volume_types.py
+)
+ivw_add_unittest(${TEST_FILES})
 
 set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.h
