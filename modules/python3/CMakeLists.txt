@@ -14,7 +14,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythonincluder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.h

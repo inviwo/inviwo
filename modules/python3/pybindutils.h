@@ -33,7 +33,6 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/python3/pythonincluder.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 

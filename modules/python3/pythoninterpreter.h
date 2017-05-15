@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 
 namespace inviwo {
 class PyModule;

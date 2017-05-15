@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/pythoninterpreter.h>

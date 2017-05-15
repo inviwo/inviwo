@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <modules/python3/python3module.h>
 
 #if defined(__unix__)

@@ -28,7 +28,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3/pythoninterpreter.h>
