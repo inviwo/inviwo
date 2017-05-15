@@ -1,18 +1,24 @@
 # Inviwo Python script 
-import inviwo 
-import inviwo_utils
+import inviwopy
+from inviwopy.glm import vec3
+import ivw.utils as inviwo_utils
 import math 
 import time
 
+#works with the volumelighting_subclavia workspace
+
 start = time.clock()
+
+light = inviwopy.app.network.getProcessorByIdentifier("Point light source").lightPosition.position
 
 d = 70
 steps = 360
+rotations = 4
 for i in range(0, steps):
-    r = (2 * 3.14 * i) / (steps-1)
+    r = rotations*(2 * 3.14 * i) / (steps-1)
     x = -d*math.sin(r)
     z = d*math.cos(r)
-    inviwo.setPropertyValue("Point light source.lightPosition.position",(x,0,z))
+    light.value = vec3(x,0,z)
     inviwo_utils.update() # Needed for canvas to update
 
 end = time.clock()

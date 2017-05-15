@@ -7,9 +7,6 @@ factory = ivw.app.processorFactory;
 
 network.clear()
 
-#gridSize = 25
-#dist = 75
-
 p1 = factory.create('org.inviwo.NoiseProcessor',  ivec2(75 , -100))
 p2 = factory.create('org.inviwo.ImageLowPass' , ivec2(75 , -25))
 p3 = factory.create('org.inviwo.CanvasGL')

@@ -70,8 +70,12 @@ Python3Module::Python3Module(InviwoApplication* app)
         100);
 
     app->dispatchFront([&]() {
-        pythonInterpreter_->runString("import inviwopy"); // we need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed to be able to cast cpp/inviwo objects to python objects
-        PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+        pythonInterpreter_->runString("import inviwopy");  // we need to import inviwopy to trigger
+                                                           // the initialization code in
+                                                           // inviwopy.cpp, this is needed to be
+                                                           // able to cast cpp/inviwo objects to
+                                                           // python objects
+        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
     });
 }
 

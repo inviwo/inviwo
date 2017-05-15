@@ -143,6 +143,7 @@ void exposeNetwork(py::module &m) {
                                                                       // python)
              })
         .def("load", [](ProcessorNetwork *network, std::string filename) {
+            network->clear();
             network->getApplication()->getWorkspaceManager()->load(
                 filename, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
                                                                  // throwing (we just want to pass

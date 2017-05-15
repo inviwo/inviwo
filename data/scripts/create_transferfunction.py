@@ -1,20 +1,23 @@
 # Inviwo Python script 
-import inviwo 
+import inviwopy
+from inviwopy.glm import vec2,vec3
 
 def color(x):
    r = x
    g = 1-x
-   return (r,g,0)
+   return vec3(r,g,0)
 
-inviwo.clearTransferfunction("VolumeRaycaster.transferFunction")
-inviwo.addPointToTransferFunction("VolumeRaycaster.transferFunction",(0.0,0.0),(0,0,0)) 
+tf = inviwopy.app.network.VolumeRaycaster.transferFunction
+
+tf.clear()
+tf.addPoint(vec2(0.0,0.0),vec3(0,0,0)) 
 
 for i in range(1,256,9):
    x = i / 256.0
    a = 0
    if i%2==1:
       a = 0.1
-   inviwo.addPointToTransferFunction("VolumeRaycaster.transferFunction",(x,a),color(x)) 
+   tf.addPoint(vec2(x,a),color(x)) 
 
 
-inviwo.addPointToTransferFunction("VolumeRaycaster.transferFunction",(1.0,0.0),(0,0,0)) 
+tf.addPoint(vec2(1.0,0.0),vec3(0,0,0)) 

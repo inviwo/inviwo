@@ -76,17 +76,17 @@ PythonInterpreter::~PythonInterpreter() { Py_Finalize(); }
 
 void PythonInterpreter::addModulePath(const std::string& path) {
     if (!Py_IsInitialized()) {
-        LogWarn("addModulePath(): not initialized");
+        LogWarn("addModulePath(): Python is not initialized");
         return;
     }
 
     std::string pathConv = path;
     replaceInString(pathConv, "\\", "/");
-    std::string runString = "import sys\n";
-    runString.append(std::string("sys.path.append('") + pathConv + std::string("')"));
-    int ret = PyRun_SimpleString(runString.c_str());
-
-    if (ret != 0) LogWarn("Failed to add '" + pathConv + "' to Python module search path");
+    std::string code = "import sys\n";
+    code.append(std::string("sys.path.append('") + pathConv + std::string("')"));
+    if (!runString(code)) {
+        LogWarn("Failed to add '" + pathConv + "' to Python module search path");
+    }
 }
 
 #include <warn/push>
@@ -184,8 +184,9 @@ void PythonInterpreter::importModule(const std::string& moduleName) {
     delete[] key;
 }
 
-void PythonInterpreter::runString(std::string code) {
-    PyRun_SimpleString(code.c_str());
+bool PythonInterpreter::runString(std::string code) {
+    auto ret = PyRun_SimpleString(code.c_str());
+    return ret == 0;
 }
 
 void PythonInterpreter::initOutputRedirector(Python3Module* module) {

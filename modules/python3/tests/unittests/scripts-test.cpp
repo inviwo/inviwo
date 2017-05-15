@@ -49,6 +49,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <inviwo/core/properties/optionproperty.h>
+
 #include <modules/python3/python3module.h>
 
 #include <modules/python3/interface/pybuffer.h>
@@ -311,4 +313,37 @@ TEST(Python3Scripts, GLMTest) {
 
     EXPECT_TRUE(status);
 }
+
+TEST(Python3Scripts, OptionPropertyTest) {
+    PythonScriptDisk script(getPath() + "option_property.py");
+
+    bool status = false;
+    script.run([&](pybind11::dict dict){
+
+        auto prop = dict["p"].cast<Property*>();
+        ASSERT_TRUE(prop!=nullptr);
+        auto optionProperty = dynamic_cast<OptionPropertyInt*>(prop);
+        ASSERT_TRUE(optionProperty!=nullptr);
+
+        EXPECT_STREQ("test", optionProperty->getIdentifier().c_str());
+        EXPECT_STREQ("Test", optionProperty->getDisplayName().c_str());
+
+        EXPECT_EQ(2,optionProperty->size());
+
+        EXPECT_STREQ("a", optionProperty->getIdentifiers()[0].c_str());
+        EXPECT_STREQ("A", optionProperty->getDisplayNames()[0].c_str());
+        EXPECT_EQ(1, optionProperty->getValues()[0]);
+
+        EXPECT_STREQ("b", optionProperty->getIdentifiers()[1].c_str());
+        EXPECT_STREQ("B", optionProperty->getDisplayNames()[1].c_str());
+        EXPECT_EQ(2, optionProperty->getValues()[1]);
+
+        status = true;
+    });
+
+    EXPECT_TRUE(status);
+
+
+}
+
 }

@@ -7,43 +7,43 @@ def ensureDirectory(dir):
 
 def update():
     try:
-        import inviwoqt as qt
+        from inviwopy import qt
         qt.update();
     except: 
         pass
 
 def getCanvases():
     import inviwopy as i
-    for p in i.app.network.processors:
-        print([type(p),p])
+    return i.app.network.canvases
 
 def snapshotAllCanvasesWithWorkspace(basePath: str , workspaceName  , canvasFilenamePrefix="" , canvasFilenameSufix = "" , filetype="png"):
-    import inviwo as i
-    canvases = [];
-    for canvas in i.listCanvases():
-        canvases.append(canvas[0].trim())
-    return snapshotWithWorkspace(basePath , canvases, workspaceName, canvasFilenamePrefix, canvasFilenameSufix , filetype )
+    import inviwopy as i
+    ensureDirectory(basePath);
+    return snapshotWithWorkspace(basePath , i.app.network.canvases, workspaceName, canvasFilenamePrefix, canvasFilenameSufix , filetype )
 
 
 
 def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilenamePrefix="" , canvasFilenameSufix = "" , filetype="png"):
+    
+    import inviwopy
+    
+    from inviwopy import CanvasProcessor
+
     canvasList = []
     if type(canvases) is list:
         canvasList = canvases
-    elif type(canvases) is str:
+    elif type(canvases) is CanvasProcessor:
         canvasList = [canvases]
     else:
-        raise TypeError("snapshotWithWorkspace expect parameter 2 to be either string or a list of strings of canvas ids")
+        raise TypeError("snapshotWithWorkspace expect parameter 2 to be either a CanvasProcessor or a list of strings of canvas ids")
 
-    import inviwo
-    import inviwoqt
 
-    workspaceName = workspaceName.trim();
-    canvasFilenamePrefix = canvasFilenamePrefix.trim();
-    canvasFilenameSufix = canvasFilenameSufix.trim();
+    workspaceName = workspaceName.strip();
+    canvasFilenamePrefix = canvasFilenamePrefix.strip();
+    canvasFilenameSufix = canvasFilenameSufix.strip();
 
     if not workspaceName.endswith('.inv'):
-        workspaceName = workspaceName.ltrim() + '.inv'
+        workspaceName += '.inv'
 
 
     workspacePath = basePath + "/" + workspaceName;
@@ -52,6 +52,6 @@ def snapshotWithWorkspace(basePath: str, canvases , workspaceName  , canvasFilen
     ensureDirectory(basePath)
     ensureDirectory(workspaceDir)
 
-    inviwoqt.saveWorkspace(basePath + "/" + workspaceName  , False);
+    inviwopy.app.network.save(basePath + "/" + workspaceName);
     for c in canvasList:
-        inviwo.snapshot(basePath + "/" + canvasFilenamePrefix + c + canvasFilenameSufix + "." + filetype , c );
+        c.snapshot(basePath + "/" + canvasFilenamePrefix + c.identifier + canvasFilenameSufix + "." + filetype );
