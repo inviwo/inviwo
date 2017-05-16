@@ -175,6 +175,7 @@ void OverlayProperty::updateViewport() {
     // use pixel aligned positions for best results
     viewport_ = ivec4(pos.x, pos.y, size.x, size.y);
     CompositeProperty::propertyModified();
+    CompositeProperty::invalidate(InvalidationLevel::InvalidOutput, this);
 }
 
 void OverlayProperty::updateVisibilityState() {
