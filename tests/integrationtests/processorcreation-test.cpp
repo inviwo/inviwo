@@ -133,9 +133,9 @@ const std::vector<std::string> getListOfProcessors() {
 // disabled the 3 test above since they are only needed when the following test fails
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
- /*   create();
+    create();
     resetAllPoperties();
-    addProcessor();*/
+    addProcessor();
 }
 
 INSTANTIATE_TEST_CASE_P(RegisteredProcessors, ProcessorCreationTests,
