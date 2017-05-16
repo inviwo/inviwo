@@ -80,8 +80,8 @@ int main(int argc, char** argv) {
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
-        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+        size_t warnCount = logCounter->getWarnCount();
+        size_t errCount = logCounter->getErrorCount();
 
         ::testing::InitGoogleTest(&argc, argv);
         ret = RUN_ALL_TESTS();
@@ -91,8 +91,8 @@ int main(int argc, char** argv) {
                            "Some unit tests did not pass, see console output for details");
         }
 
-        size_t warnCountAfter = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCountAfter = LogErrorCounter::getPtr()->getErrorCount();
+        size_t warnCountAfter = logCounter->getWarnCount();
+        size_t errCountAfter = logCounter->getErrorCount();
 
         if (warnCount != warnCountAfter) {
             LogWarnCustom("UnitTestsModule::runAllTest", "The integration test runs generated "

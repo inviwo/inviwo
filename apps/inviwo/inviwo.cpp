@@ -40,6 +40,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/core/util/filelogger.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
 

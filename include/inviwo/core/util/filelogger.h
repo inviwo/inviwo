@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,36 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LOGERRORCOUNTER_H
-#define IVW_LOGERRORCOUNTER_H
+#ifndef IVW_FILELOGGER_H
+#define IVW_FILELOGGER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
+
 #include <inviwo/core/util/logcentral.h>
+
+#include <fstream>
 
 namespace inviwo {
 
-class IVW_CORE_API LogErrorCounter : public Logger {
+/**
+ * \class FileLogger
+ * \brief A logger class that logs to a file in html format.
+ */
+class IVW_CORE_API FileLogger : public Logger {
 public:
-    LogErrorCounter();
-    virtual ~LogErrorCounter();
+    FileLogger(std::string logPath);
+    virtual ~FileLogger();
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
                      const char* fileName, const char* functionName, int lineNumber,
                      std::string logMsg) override;
 
-    size_t getCount(const LogLevel& level) const;
-    size_t getInfoCount() const;
-    size_t getWarnCount() const;
-    size_t getErrorCount() const;
-
-    void reset();
-
 private:
-    std::map<LogLevel, size_t> messageCount_;
+    std::ofstream fileStream_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_LOGERRORCOUNTER_H
+#endif // IVW_FILELOGGER_H
+

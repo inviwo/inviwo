@@ -90,13 +90,9 @@ public:
 
     void parse(Mode mode = Mode::Normal);
 
-    void setArgc(int argc) {
-        argc_ = argc;
-    }
+    void setArgc(int argc);
 
-    void setArgv(char** argv) {
-        argv_ = argv;
-    }
+    void setArgv(char** argv);
     const std::string getOutputPath() const;
     const std::string getWorkspacePath() const;
     const std::string getLogToFileFileName() const;
@@ -104,9 +100,10 @@ public:
     bool getLoadWorkspaceFromArg() const;
     bool getShowSplashScreen() const;
     bool getLogToFile() const;
+    bool getLogToConsole() const;
 
-    int getARGC()const {return argc_;}
-    char** getARGV()const {return argv_;}
+    int getARGC()const;
+    char** getARGV()const;
 
     void processCallbacks();
     void add(TCLAP::Arg* arg);
@@ -120,6 +117,7 @@ private:
     TCLAP::ValueArg<std::string> workspace_;
     TCLAP::ValueArg<std::string> outputPath_;
     TCLAP::ValueArg<std::string> logfile_;
+    TCLAP::SwitchArg logConsole_;
     TCLAP::SwitchArg noSplashScreen_;
     TCLAP::SwitchArg quitAfterStartup_;
     WildCardArg wildcard_;

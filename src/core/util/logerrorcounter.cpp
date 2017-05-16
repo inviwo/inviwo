@@ -31,13 +31,8 @@
 
 namespace inviwo {
 
-    LogErrorCounter* LogErrorCounter::instance_ = nullptr;
-
-LogErrorCounter::LogErrorCounter() {
-    instance_ = this;
-}
-
-LogErrorCounter::~LogErrorCounter() {}
+LogErrorCounter::LogErrorCounter() = default;
+LogErrorCounter::~LogErrorCounter() = default;
 
 void LogErrorCounter::log(std::string logSource, LogLevel logLevel, LogAudience audience,
                           const char* fileName, const char* functionName, int lineNumber,
@@ -57,6 +52,10 @@ size_t LogErrorCounter::getWarnCount() const { return getCount(LogLevel::Warn); 
 
 size_t LogErrorCounter::getErrorCount() const { return getCount(LogLevel::Error); }
 
-LogErrorCounter* LogErrorCounter::getPtr() { return instance_; }
+void LogErrorCounter::reset() {
+    for (auto& item : messageCount_) {
+        item.second = 0;
+    }
+}
 
 }  // namespace
