@@ -56,23 +56,23 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
     const auto k = [&]() {
         switch (logLevel) {
             case LogLevel::Info:
-                return 15;
+                return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
             case LogLevel::Warn:
-                return 14;
+                return FOREGROUND_RED | FOREGROUND_GREEN  | FOREGROUND_INTENSITY;
             case LogLevel::Error:
-                return 12;
+                return FOREGROUND_RED | FOREGROUND_INTENSITY;
             default:
-                return 15;
+                return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
         }
     }();
+
+    CONSOLE_SCREEN_BUFFER_INFO oldState;
+    GetConsoleScreenBufferInfo(hConsole, &oldState);
+
     FlushConsoleInputBuffer(hConsole);
     SetConsoleTextAttribute(hConsole, k);
-
-    os << std::setw(5) << logLevel << " (" << std::setw(25) << logSource << ") " << logMsg
-        << std::endl;
-
-    #else
-
+    
+    #else 
     std::string red{ "\x1B[31m" };
     std::string yellow{ "\x1B[33m" };
     std::string reset{ "\x1B[0m" };
@@ -89,10 +89,16 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
                 return "";
         }
     }();
+    os << color;
+    #endif
 
-    os << color << std::setw(5) << logLevel << " (" << std::setw(25) << logSource << ") " << logMsg
-       << reset << std::endl;
+    os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
+       << logMsg << std::endl;
 
+    #ifdef WIN32
+    SetConsoleTextAttribute(hConsole, oldState.wAttributes);
+    #else
+    os << reset;
     #endif
 }
 
