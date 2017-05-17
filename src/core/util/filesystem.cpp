@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/tinydirinterface.h>
 
 // For directory exists
@@ -54,7 +55,7 @@
 #include <unistd.h>
 #endif
 
-
+#include <array>
 #include <algorithm>
 
 namespace inviwo {
@@ -62,53 +63,62 @@ namespace inviwo {
 namespace filesystem {
 
 std::string getWorkingDirectory() {
-    char workingDir[FILENAME_MAX];
+    std::array<char, FILENAME_MAX> workingDir;
 #ifdef WIN32
-
-    if (!GetCurrentDirectoryA(sizeof(workingDir), workingDir)) return "";
-
+    if (!GetCurrentDirectoryA(static_cast<DWORD>(workingDir.size()), workingDir.data()))
+        throw Exception("Error querying current directory");
 #else
-
-    if (!getcwd(workingDir, sizeof(workingDir))) return "";
-
+    if (!getcwd(workingDir, sizeof(workingDir)))
+        throw Exception("Error querying current directory");
 #endif
-    return cleanupPath(std::string(workingDir));
+    return cleanupPath(std::string(workingDir.data()));
 }
 
 std::string getExecutablePath() {
     // http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
-    auto pathSize = FILENAME_MAX;
-    std::unique_ptr<char> executablePath(new char[pathSize]);
+    std::string retVal;
 #ifdef WIN32
-    auto size = GetModuleFileNameA(nullptr, executablePath.get(), pathSize);
-    while (size == pathSize) {
-        // Buffer is too small, enlarge
-        pathSize *= 2;
-        executablePath = std::unique_ptr<char>(new char[pathSize]);
-        if (executablePath.get() == nullptr) break;
-        size = GetModuleFileNameA(nullptr, executablePath.get(), pathSize);
+    const DWORD maxBufSize = 1 << 20; // corresponds to 1MiB
+    auto pathSize = FILENAME_MAX;
+    std::vector<char> executablePath(FILENAME_MAX);
+
+    auto size = GetModuleFileNameA(nullptr, executablePath.data(), 
+                                   static_cast<DWORD>(executablePath.size()));
+    if (size == 0) throw Exception("Error retrieving executable path");
+    while (size == executablePath.size()) {
+        // buffer is too small, enlarge
+        auto newSize = executablePath.size() * 2;
+        if (newSize > maxBufSize) {
+            throw Exception("Insufficient buffer size");
+        }
+        executablePath.resize(newSize);
+        size = GetModuleFileNameA(nullptr, executablePath.data(), 
+                                  static_cast<DWORD>(executablePath.size()));
+        if (size == 0) throw Exception("Error retrieving executable path");
     }
+    retVal = std::string(executablePath.begin(), executablePath.end());
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    auto pathSize = PROC_PIDPATHINFO_MAXSIZE;
-    executablePath = std::unique_ptr<char>(new char[pathSize]);
+    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
     auto pid = getpid();
-    if (proc_pidpath(pid, executablePath.get(), pathSize) <= 0) {
+    if (proc_pidpath(pid, executablePath.get(), executablePath.size()) <= 0) {
         // Error retrieving path
-        return "";
-    };
+        throw Exception("Error retrieving executable path");
+    }
+    retVal = std::string(executablePath.begin(), executablePath.end());
 #else // Linux
-    auto size = ::readlink("/proc/self/exe", executablePath.get(), pathSize - 1);
+    std::array<char, FILENAME_MAX> executablePath;
+    auto size = ::readlink("/proc/self/exe", executablePath.get(), executablePath.size() - 1);
     if (size != -1) {
         // readlink does not append a NUL character to the path
         executablePath[size] = '\0';
-    }
-    else {
+    } else {
         // Error retrieving path
-        return "";
+        throw Exception("Error retrieving executable path");
     }
+    retVal = std::string(executablePath.begin(), executablePath.end());
 #endif
-    return std::string(executablePath.get());
+    return retVal;
 }
 
 bool fileExists(const std::string& filePath) {
