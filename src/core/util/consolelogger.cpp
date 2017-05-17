@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <sstream>
 
 #ifdef WIN32
 #define NOMINMAX
@@ -72,24 +76,49 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
     FlushConsoleInputBuffer(hConsole);
     SetConsoleTextAttribute(hConsole, k);
     
-    #else 
-    std::string red{ "\x1B[31m" };
-    std::string yellow{ "\x1B[33m" };
-    std::string reset{ "\x1B[0m" };
+    const size_t reserved = 33;
+    const auto width = oldState.dwSize.X;
+    const auto maxWidth = width - reserved-1;
 
-    const auto color = [&]() {
-        switch (logLevel) {
-            case LogLevel::Info:
-                return "";
-            case LogLevel::Warn:
-                return yellow;
-            case LogLevel::Error:
-                return red;
-            default:
-                return "";
+    auto lines = splitString(logMsg, '\n');
+    std::vector<std::string> res;
+    for (auto line : lines) {
+        if (line.size() < maxWidth) {
+            res.push_back(line);
+        } else {
+            size_t pos = 0;
+            while (pos < line.size()) {
+                res.push_back(trim(line.substr(pos, maxWidth)));
+                pos += maxWidth;
+            }
         }
-    }();
-    os << color;
+    }
+
+    std::stringstream ss;
+    auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
+    std::copy(res.begin(), res.end(), joiner);
+    logMsg = ss.str();
+
+    #else
+    const std::string none{""};
+    const std::string red{"\x1B[31m"};
+    const std::string yellow{"\x1B[33m"};
+    const std::string reset{"\x1B[0m"};
+
+    switch (logLevel) {
+        case LogLevel::Info:
+            os << none;
+            break;
+        case LogLevel::Warn:
+            os << yellow;
+            break;
+        case LogLevel::Error:
+            os << red;
+            break;
+        default:
+            os << none;
+            break;
+    }
     #endif
 
     os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "

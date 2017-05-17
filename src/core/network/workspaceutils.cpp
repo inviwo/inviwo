@@ -30,6 +30,7 @@
 #include <inviwo/core/network/workspaceutils.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/filesystem.h>
@@ -84,13 +85,25 @@ void updateWorkspaces(InviwoApplication* app) {
         }
     };
 
-    const auto path = filesystem::getPath(PathType::Workspaces);
-    for (const auto& file : filesystem::getDirectoryContents(path, filesystem::ListMode::Files)) {
-        if (filesystem::wildcardStringMatch("*.inv", file)) {
-            const auto workspace = path + "/" + file;
-            LogInfoCustom("utilqt::updateWorkspaces", "Updating workspace: " << workspace);
-            update(workspace);
+    std::function<void(const std::string&)> updatePath = [&](const std::string& path) {
+        for (const auto& file :
+             filesystem::getDirectoryContents(path, filesystem::ListMode::Files)) {
+            if (filesystem::wildcardStringMatch("*.inv", file)) {
+                const auto workspace = path + "/" + file;
+                LogInfoCustom("utilqt::updateWorkspaces", "Updating workspace: " << workspace);
+                update(workspace);
+            }
         }
+        for (const auto& dir :
+             filesystem::getDirectoryContents(path, filesystem::ListMode::Directories)) {
+            if (dir != "." && dir != "..") updatePath(path + "/" + dir);
+        }
+    };
+
+    updatePath(filesystem::getPath(PathType::Workspaces));
+
+    for(const auto& m : app->getModules()) {
+        updatePath(m->getPath(ModulePath::Workspaces));
     }
 }
 
