@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filelogger.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
