@@ -83,6 +83,9 @@ class FileObserver;
 
 class PropertyPresetManager;
 
+class FileLogger;
+class ConsoleLogger;
+
 
 /**
  * \class InviwoApplication
@@ -220,6 +223,7 @@ protected:
     std::string displayName_;
     std::string binaryPath_;
     std::shared_ptr<FileLogger> filelogger_;
+    std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;
     ThreadPool pool_;

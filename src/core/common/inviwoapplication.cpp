@@ -59,6 +59,8 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/filelogger.h>
 
 namespace inviwo {
 
@@ -105,6 +107,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
     , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
     , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
+
+    if (commandLineParser_.getLogToConsole()) {
+        consoleLogger_ = std::make_shared<ConsoleLogger>();
+        LogCentral::getPtr()->registerLogger(consoleLogger_);
+    }
 
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();

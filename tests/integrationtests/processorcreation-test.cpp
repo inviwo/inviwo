@@ -50,6 +50,8 @@ protected:
 
     virtual void SetUp() {
         isAdded_ = false;
+        logCounter_ = std::make_shared<LogErrorCounter>();
+        LogCentral::getPtr()->registerLogger(logCounter_);
     }
 
     virtual void TearDown() {
@@ -68,8 +70,7 @@ protected:
     }
 
     void create() {
-        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+        logCounter_->reset();
 
         auto s = InviwoApplication::getPtr()->getProcessorFactory()->create(GetParam());
         ASSERT_TRUE(s.get() != nullptr);
@@ -77,31 +78,30 @@ protected:
         p = dynamic_cast<Processor *>(s.get());
         ASSERT_TRUE(p != nullptr);
         s.release();
-        EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
-        EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
+        EXPECT_EQ(0, logCounter_->getWarnCount());
+        EXPECT_EQ(0, logCounter_->getErrorCount());
     }
 
     void resetAllPoperties() {
-        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+        logCounter_->reset();
 
         p->resetAllPoperties();
-        EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
-        EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
+        EXPECT_EQ(0, logCounter_->getWarnCount());
+        EXPECT_EQ(0, logCounter_->getErrorCount());
     }
 
     void addProcessor() {
-        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+        logCounter_->reset();
 
         InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(p);
-        EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
-        EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
+        EXPECT_EQ(0, logCounter_->getWarnCount());
+        EXPECT_EQ(0, logCounter_->getErrorCount());
         isAdded_ = true;
     }
 
     Processor *p;
     bool isAdded_;
+    std::shared_ptr<LogErrorCounter> logCounter_;
 };
 
 const std::vector<std::string> getListOfProcessors() {
@@ -113,24 +113,6 @@ const std::vector<std::string> getListOfProcessors() {
     }
     return theVec;
 }
-
-//
-// TEST_P(ProcessorCreationTests,ProcesorCreate){
-//    initialize();
-//}
-//
-// TEST_P(ProcessorCreationTests,ProcesorCreateAndReset){
-//    initialize();
-//    resetAllPoperties();
-//}
-//
-//
-// TEST_P(ProcessorCreationTests,ProcesorCreateAndAddToNetwork){
-//    initialize();
-//    addProcessor();
-//}
-
-// disabled the 3 test above since they are only needed when the following test fails
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
  /*   create();

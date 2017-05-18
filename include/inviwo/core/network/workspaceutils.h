@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LOGERRORCOUNTER_H
-#define IVW_LOGERRORCOUNTER_H
+#ifndef IVW_WORKSPACEUTILS_H
+#define IVW_WORKSPACEUTILS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
-class IVW_CORE_API LogErrorCounter : public Logger {
-public:
-    LogErrorCounter();
-    virtual ~LogErrorCounter();
+class InviwoApplication;
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
+namespace util {
 
-    size_t getCount(const LogLevel& level) const;
-    size_t getInfoCount() const;
-    size_t getWarnCount() const;
-    size_t getErrorCount() const;
+void IVW_CORE_API updateWorkspaces(InviwoApplication* app);
 
-    void reset();
 
-private:
-    std::map<LogLevel, size_t> messageCount_;
-};
+} // namespace
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_LOGERRORCOUNTER_H
+#endif // IVW_WORKSPACEUTILS_H
+

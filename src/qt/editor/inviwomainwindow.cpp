@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include <inviwo/qt/editor/inviwomainwindow.h>
+
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -39,7 +41,6 @@
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorpreview.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
@@ -50,6 +51,7 @@
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/network/workspaceutils.h>
 
 #include <inviwomodulespaths.h>
 
@@ -88,6 +90,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                      "file name")
     , saveProcessorPreviews_("", "save-previews", "Save processor previews to the supplied path",
                              false, "", "path")
+    , updateWorkspaces_("", "update-workspaces",
+                        "Go through and update all workspaces the the latest versions")
     , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
@@ -139,6 +143,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
                                     },
                                     1200);
+
+    app->getCommandLineParser().add(&updateWorkspaces_, [this](){
+            util::updateWorkspaces(app_);
+       }, 1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
