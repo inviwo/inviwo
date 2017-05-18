@@ -9,8 +9,10 @@ ivw_group("CMake Files"    ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set(arch "Win64")
+    set(dll "vld_x64.dll")
 else()
     set(arch "Win32")
+    set(dll "vld_x86.dll")
 endif()
 
 add_custom_target(vld
@@ -19,8 +21,8 @@ add_custom_target(vld
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld.ini
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll 
+        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/${dll}
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/${dll} 
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
         ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
@@ -32,7 +34,7 @@ add_custom_target(vld
 
     DEPENDS 
         ${IVW_EXTENSIONS_DIR}/vld/vld.ini
-        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
+        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/${dll}
         ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
         ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
 
@@ -49,3 +51,12 @@ add_library(vld-interface INTERFACE)
 target_link_libraries(vld-interface INTERFACE ${IVW_EXTENSIONS_DIR}/vld/lib/${arch}/vld.lib)
 target_compile_definitions(vld-interface INTERFACE IVW_ENABLE_MSVC_MEM_LEAK_TEST)
 add_dependencies(vld-interface vld)
+
+# package
+install(FILES 
+        ${IVW_EXTENSIONS_DIR}/vld/vld.ini
+        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/${dll}
+        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
+        ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
+        DESTINATION bin 
+        COMPONENT qt_app)

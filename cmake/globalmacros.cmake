@@ -731,17 +731,18 @@ endfunction()
 
 function(ivw_private_install_module_dirs)
     if(IVW_PACKAGE_PROJECT) 
-        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        foreach(folder ${CMAKE_CURRENT_SOURCE_DIR}/data)
-            if(EXISTS ${folder})
+        get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        foreach(folder data docs)
+            set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+            if(EXISTS ${dir})
                 if(APPLE)
-                    install(DIRECTORY ${folder}
-                             DESTINATION Inviwo.app/Contents/Resources/modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION Inviwo.app/Contents/Resources/modules/${module_name}
+                            COMPONENT ${_cpackName})
                 else()
-                    install(DIRECTORY ${folder}
-                             DESTINATION modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION modules/${module_name}
+                            COMPONENT ${_cpackName})
                 endif()
             endif()
         endforeach()
