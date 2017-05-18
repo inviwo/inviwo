@@ -68,10 +68,10 @@ std::string getWorkingDirectory() {
     if (!GetCurrentDirectoryA(static_cast<DWORD>(workingDir.size()), workingDir.data()))
         throw Exception("Error querying current directory");
 #else
-    if (!getcwd(workingDir, sizeof(workingDir)))
+    if (!getcwd(workingDir.data(), workingDir.size()))
         throw Exception("Error querying current directory");
 #endif
-    return cleanupPath(std::string(workingDir.data()));
+    return cleanupPath(std::string(workingDir.begin(), workingDir.end()));
 }
 
 std::string getExecutablePath() {
@@ -101,14 +101,14 @@ std::string getExecutablePath() {
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
     std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
     auto pid = getpid();
-    if (proc_pidpath(pid, executablePath.get(), executablePath.size()) <= 0) {
+    if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path
         throw Exception("Error retrieving executable path");
     }
     retVal = std::string(executablePath.begin(), executablePath.end());
 #else // Linux
     std::array<char, FILENAME_MAX> executablePath;
-    auto size = ::readlink("/proc/self/exe", executablePath.get(), executablePath.size() - 1);
+    auto size = ::readlink("/proc/self/exe", executablePath.data(), executablePath.size() - 1);
     if (size != -1) {
         // readlink does not append a NUL character to the path
         executablePath[size] = '\0';
