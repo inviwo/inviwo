@@ -183,6 +183,8 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 
     QObject::connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
 
+    updateStyle();
+
     if (app_) {
         app_->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
             this, &PythonEditorWidget::updateStyle);
@@ -190,7 +192,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
             this, &PythonEditorWidget::updateStyle);
         app_->registerFileObserver(this);
     }
-    unsavedChanges_ = false;
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
     {
@@ -220,6 +221,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         newPos += utilqt::offsetWidget();
         InviwoDockWidget::move(newPos);
     }
+    unsavedChanges_ = false;
 }
 
 PythonEditorWidget::~PythonEditorWidget() {
