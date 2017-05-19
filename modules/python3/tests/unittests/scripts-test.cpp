@@ -145,13 +145,13 @@ TEST(Python3Scripts, SimpleBufferTest) {
                [&](pybind11::dict dict) {
                    status = true;
 
-                   EXPECT_EQ(1, pybind11::cast<int>(dict["a"]), "Simple buffer test: read value");
-                   EXPECT_EQ(3, pybind11::cast<int>(dict["b"]), "Simple buffer test: read value");
+                   EXPECT_EQ(1, pybind11::cast<int>(dict["a"])) << "Simple buffer test: read value";
+                   EXPECT_EQ(3, pybind11::cast<int>(dict["b"])) << "Simple buffer test: read value";
 
                    auto vec = intBuffer.getEditableRAMRepresentation()->getDataContainer();
                    for (size_t i = 0; i < bufferSize; i++) {
-                       EXPECT_EQ(static_cast<int>(i * i), vec[i],
-                                 "Simple buffer test: write value");
+                       EXPECT_EQ(static_cast<int>(i * i), vec[i]) <<
+                                 "Simple buffer test: write value";
                    }
                });
 
