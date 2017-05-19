@@ -164,24 +164,35 @@ TEST(Python3Scripts, BufferTypesTest) {
     bool status = false;
     script.run([&](pybind11::dict dict) {
         auto listOfArrays = pybind11::cast<pybind11::list>(dict["arrs"]);
-        for (auto &arrObj : listOfArrays) {
-            auto arr = pybind11::cast<pybind11::array>(arrObj);
-            auto buffer = pyutil::createBuffer(arr);
+        size_t testnum = 0;
+        try
+        {
+            for (auto &arrObj : listOfArrays) {
+                auto arr = pybind11::cast<pybind11::array>(arrObj);
+                auto buffer = pyutil::createBuffer(arr);
 
-            EXPECT_EQ(3, buffer->getSize());
+                EXPECT_EQ(3, buffer->getSize());
 
-            buffer->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto pBuffer) {
-                auto vec = pBuffer->getDataContainer();
-                int expected = 1;
-                for (auto v : vec) {
-                    for (size_t i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
-                        EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
+                buffer->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto pBuffer) {
+                    auto vec = pBuffer->getDataContainer();
+                    int expected = 1;
+                    for (auto v : vec) {
+                        for (size_t i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
+                            EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
+                        }
                     }
-                }
 
-            });
+                });
+                testnum++;
+            }
+
+            status = true;
         }
-        status = true;
+        catch (...)
+        {
+            ASSERT_TRUE(false) << "Test number " << testnum << " failed";
+        }
+        
     });
     EXPECT_TRUE(status);
 }
