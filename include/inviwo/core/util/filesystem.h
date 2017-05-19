@@ -133,14 +133,14 @@ IVW_CORE_API bool wildcardStringMatchDigits(const std::string& pattern, const st
  * folders.
  *
  * @param path   directory where the search is started
- * @param childFolders   list of sub folders
+ * @param childFolders   list of subfolders
  * @return path of parent directory holding all childFolders, otherwise empty string
  */
 IVW_CORE_API std::string getParentFolderWithChildren(const std::string& path,
                                                      const std::vector<std::string>& childFolders);
 
 /**
- * Find Inviwo base path which contains sub folders "data" and "modules"
+ * Find Inviwo base path which contains subfolders "data/workspaces" and "modules"
  *
  * @return Inviwo base path
  * @throws exception in case base path could not be located
