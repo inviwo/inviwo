@@ -89,16 +89,16 @@ const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
     } else if (f == "q") {
         return DataFormatBase::get(NumericType::SignedInteger, components, 64);
     } else if (f == "B") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 8);
+        return DataFormatBase::get(NumericType::UnsignedInteger, components, 8);
     } else if (f == "H") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 16);
+        return DataFormatBase::get(NumericType::UnsignedInteger, components, 16);
     } else if (f == "L") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 32);
+        return DataFormatBase::get(NumericType::UnsignedInteger, components, 32);
     } else if (f == "Q") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 64);
+        return DataFormatBase::get(NumericType::UnsignedInteger, components, 64);
     } else {
         LogInfoCustom("pyutil::dispatch", "Unknown type: " << f);
-        throw Exception("pyutil::dispatch: Unknown type", IvwContextCustom("pyutil::dispatch"));
+        throw Exception("pyutil::dispatch: Unknown type", IvwContextCustom("pybindutil::getDataFomrat"));
     }
 }
 
