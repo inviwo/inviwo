@@ -72,34 +72,17 @@ pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
 }
 
 const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
-    auto f = arr.request().format;
-
-    if (f == "e") {
-        return DataFormatBase::get(NumericType::Float, components, 16);
-    } else if (f == "f") {
-        return DataFormatBase::get(NumericType::Float, components, 32);
-    } else if (f == "d") {
-        return DataFormatBase::get(NumericType::Float, components, 64);
-    } else if (f == "b") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 8);
-    } else if (f == "h") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 16);
-    } else if (f == "l") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 32);
-    } else if (f == "q") {
-        return DataFormatBase::get(NumericType::SignedInteger, components, 64);
-    } else if (f == "B") {
-        return DataFormatBase::get(NumericType::UnsignedInteger, components, 8);
-    } else if (f == "H") {
-        return DataFormatBase::get(NumericType::UnsignedInteger, components, 16);
-    } else if (f == "L") {
-        return DataFormatBase::get(NumericType::UnsignedInteger, components, 32);
-    } else if (f == "Q") {
-        return DataFormatBase::get(NumericType::UnsignedInteger, components, 64);
-    } else {
-        LogInfoCustom("pyutil::dispatch", "Unknown type: " << f);
-        throw Exception("pyutil::dispatch: Unknown type", IvwContextCustom("pybindutil::getDataFomrat"));
-    }
+    auto k = arr.dtype().kind();
+    auto numType = [&]() {
+        if (k == 'f')
+            return NumericType::Float;
+        else if (k == 'i')
+            return NumericType::SignedInteger;
+        else if (k == 'u')
+            return NumericType::UnsignedInteger;
+        return NumericType::NotSpecialized;
+    }();
+    return DataFormatBase::get(numType, components, arr.itemsize() * 8);
 }
 
 struct BufferFromArrayDistpatcher {
