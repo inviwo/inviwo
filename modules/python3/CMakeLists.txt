@@ -58,12 +58,9 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/python3-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/buffer_types.py
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/grabreturnvalue.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/layer_types.py
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/passvalues.py
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/simple_buffer_test.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/volume_types.py
 )
 ivw_add_unittest(${TEST_FILES})
 
