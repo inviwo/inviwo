@@ -122,7 +122,7 @@ LightVolumeGL::LightVolumeGL()
     , lightSource_("lightSource")
     , supportColoredLight_("supportColoredLight", "Support Light Color", false)
     , volumeSizeOption_("volumeSizeOption", "Light Volume Size")
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
+    , transferFunction_("transferFunction", "Transfer function", &inport_)
     , floatPrecision_("floatPrecision", "Float Precision", false)
     , propagationShader_("lighting/lightpropagation.vert", "lighting/lightpropagation.geom",
                          "lighting/lightpropagation.frag", true)

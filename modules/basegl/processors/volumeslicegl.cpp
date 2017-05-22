@@ -94,7 +94,7 @@ VolumeSliceGL::VolumeSliceGL()
                       PropertySemantics::Color)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)
-    , transferFunction_("transferFunction", "Transfer Function", TransferFunction(), &inport_)
+    , transferFunction_("transferFunction", "Transfer Function", &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
     , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f))
