@@ -37,6 +37,10 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
 #endif
 
 namespace inviwo {
@@ -76,30 +80,10 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
     FlushConsoleInputBuffer(hConsole);
     SetConsoleTextAttribute(hConsole, k);
     
-    const size_t reserved = 33;
     const auto width = oldState.dwSize.X;
-    const auto maxWidth = width - reserved-1;
-
-    auto lines = splitString(logMsg, '\n');
-    std::vector<std::string> res;
-    for (auto line : lines) {
-        if (line.size() < maxWidth) {
-            res.push_back(line);
-        } else {
-            size_t pos = 0;
-            while (pos < line.size()) {
-                res.push_back(trim(line.substr(pos, maxWidth)));
-                pos += maxWidth;
-            }
-        }
-    }
-
-    std::stringstream ss;
-    auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
-    std::copy(res.begin(), res.end(), joiner);
-    logMsg = ss.str();
 
     #else
+    
     const std::string none{""};
     const std::string red{"\x1B[31m"};
     const std::string yellow{"\x1B[33m"};
@@ -119,7 +103,33 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
             os << none;
             break;
     }
+    
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    const auto width = w.ws_col;
     #endif
+    
+    const size_t reserved = 33;
+    const auto maxWidth = width - reserved-1;
+    auto lines = splitString(logMsg, '\n');
+    std::vector<std::string> res;
+    for (auto line : lines) {
+        if (line.size() < maxWidth) {
+            res.push_back(line);
+        } else {
+            size_t pos = 0;
+            while (pos < line.size()) {
+                res.push_back(trim(line.substr(pos, maxWidth)));
+                pos += maxWidth;
+            }
+        }
+    }
+
+    std::stringstream ss;
+    auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
+    std::copy(res.begin(), res.end(), joiner);
+    logMsg = ss.str();
+    
 
     os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
        << logMsg << std::endl;
