@@ -97,6 +97,7 @@ using BasisTransformVolume = BasisTransform<Volume>;
 using WorldTransformMesh = WorldTransform<Mesh>;
 using WorldTransformVolume = WorldTransform<Volume>;
 
+
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ConvexHull2DProcessor>();
     registerProcessor<CubeProxyGeometry>();
@@ -164,6 +165,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataWriter(util::make_unique<StlWriter>());
     registerDataWriter(util::make_unique<BinarySTLWriter>());
     registerDataWriter(util::make_unique<WaveFrontWriter>());
+    
+    util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
 int BaseModule::getVersion() const {
