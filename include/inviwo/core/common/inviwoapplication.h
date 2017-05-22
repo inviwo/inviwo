@@ -86,6 +86,8 @@ class PropertyPresetManager;
 class FileLogger;
 class ConsoleLogger;
 
+class TimerThread;
+
 
 /**
  * \class InviwoApplication
@@ -201,6 +203,7 @@ public:
     virtual void playSound(Message soundID);
 
     InteractionStateManager& getInteractionStateManager();
+    TimerThread& getTimerThread();
 
 protected:
     virtual void printApplicationInfo();
@@ -268,7 +271,7 @@ protected:
     WorkspaceManager::ClearHandle presetsClearHandle_;
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
-
+    std::unique_ptr<TimerThread> timerThread_;
 };
 
 template <class T>

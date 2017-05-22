@@ -27,6 +27,8 @@
  * 
  *********************************************************************************/
 
+// based on ideas from http://thradams.com/timers.htm
+
 #ifndef IVW_TIMER_H
 #define IVW_TIMER_H
 
@@ -44,72 +46,107 @@
 #include <memory>
 #include <utility>
 #include <atomic>
+#include <algorithm>
 #include <warn/pop>
 
 namespace inviwo {
+
+class Timer;
+class Delay;
+
+class IVW_CORE_API TimerThread {
+public:
+    using Milliseconds = std::chrono::milliseconds;
+    using clock_t = std::chrono::high_resolution_clock;
+    
+    TimerThread();
+    ~TimerThread();
+
+private:
+    friend Timer;
+    friend Delay;
+    struct ControlBlock {
+        ControlBlock(std::function<void()> callback, Milliseconds interval)
+            : callback_(std::move(callback)), interval_{interval} {};
+        std::function<void()> callback_;
+        Milliseconds interval_;
+    };
+
+    struct TimerInfo {
+        TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock)
+            : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
+
+        TimerInfo(const TimerInfo&) = default;
+        TimerInfo& operator=(const TimerInfo&) = default;
+        TimerInfo(TimerInfo &&) = default;
+        TimerInfo &operator=(TimerInfo &&) = default;
+
+        clock_t::time_point timePoint_;
+        std::weak_ptr<ControlBlock> controlBlock_;
+    };
+
+    void add(std::weak_ptr<ControlBlock> controlBlock);
+    void TimerLoop();
+    
+
+    std::vector<TimerInfo> timers_;
+    std::mutex mutex_;
+    std::condition_variable condition_;
+    bool sort_;
+    bool stop_;
+    std::unique_ptr<std::thread> thread_;
+};
+
+namespace util {
+TimerThread &getDefaultTimerThread();
+}
 
 /** \class Timer
  *
  * A Timer class. Will evaluate it's callback in the front thread.
  */
-
 class IVW_CORE_API Timer {
 public:
     using Milliseconds = std::chrono::milliseconds;
 
-    Timer(size_t interval, std::function<void()> callback);
-    Timer(Milliseconds interval, std::function<void()> callback);
+    Timer(Milliseconds interval, std::function<void()> callback,
+          TimerThread &thread = util::getDefaultTimerThread());
     ~Timer();
 
-    void start();
-    void start(size_t interval);
     void start(Milliseconds interval);
-
-    void setInterval(size_t interval);
     void setInterval(Milliseconds interval);
+    void setCallback(std::function<void()> callback);
+    void start();
     Milliseconds getInterval() const;
-    
+    bool isRunning() const;
     void stop();
 
 private:
-    struct Callback {
-        Callback(std::function<void()>&& fun) : callback(std::move(fun)), enabled(false) {}
-        std::function<void()> callback;
-        
-        // Mutex needed to make sure we never evaluate the callback after stop has been called
-        std::recursive_mutex mutex; 
-        std::condition_variable_any cvar;
-        std::atomic<bool> enabled;
-        std::thread thread;
-    };
+    static TimerThread &getDefault();
 
-    void timer();
-
-    std::shared_ptr<Callback> callback_;
-    std::future<void> result_;
-    Milliseconds interval_;
+    std::function<void()> callback_;
+    std::shared_ptr<TimerThread::ControlBlock> controlblock_;
+    Milliseconds interval_{0};
+    TimerThread &thread_;
 };
 
 class IVW_CORE_API Delay {
 public:
-    using duration_t = std::chrono::milliseconds;
-    Delay(size_t interval, std::function<void()> callback);
-    Delay(duration_t interval, std::function<void()> callback);
+    using Milliseconds = std::chrono::milliseconds;
+    Delay(Milliseconds delay, std::function<void()> callback,
+          TimerThread &thread = util::getDefaultTimerThread());
     ~Delay();
 
     void start();
-    void stop();
+    void cancel();
 
 private:
-    void delay();
+    static TimerThread &getDefault();
 
-    std::shared_ptr<std::function<void()>> callback_;
-    const duration_t interval_;
-
-    bool enabled_;
-    std::thread thread_;
-    std::mutex mutex_;
-    std::condition_variable cvar_;
+    std::function<void()> callback_;
+    std::shared_ptr<TimerThread::ControlBlock> controlblock_;
+    Milliseconds interval_{0};
+    TimerThread &thread_;
 };
 
 }  // namespace inviwo
