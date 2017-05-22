@@ -56,7 +56,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , zSlide_("z", "Z Slide")
     , disableTF_("disableTF", "Disable transfer function", false,
                  InvalidationLevel::InvalidResources)
-    , tf_("transferfunction", "Transfer function", TransferFunction(), &volume_)
+    , tf_("transferfunction", "Transfer function", &volume_)
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)

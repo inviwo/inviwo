@@ -76,6 +76,11 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
+    TransferFunctionProperty(const std::string& identifier, const std::string& displayName,
+                             VolumeInport* volumeInport,
+                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                             PropertySemantics semantics = PropertySemantics::Default);
+
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
     TransferFunctionProperty& operator=(const TransferFunctionProperty& that);  
     virtual TransferFunctionProperty* clone() const override;
