@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma optimize("",off)
 
 #include "integralline.h"
 #include <inviwo/core/util/interpolation.h>
@@ -60,6 +61,14 @@ const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_
 std::vector<dvec3> &IntegralLine::getPositions() { return positions_; }
 
 const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
+    auto it = metaData_.find(name);
+    if (it == metaData_.end()) {
+        throw Exception("No meta data with name: " + name, IvwContext);
+    }
+    return it->second;
+}
+
+std::vector<dvec3>& IntegralLine::getMetaData(const std::string & name) {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IvwContext);
@@ -149,3 +158,5 @@ double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
 }
 
 }  // namespace
+
+#pragma optimize("",on)
