@@ -226,7 +226,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             auto factory = app->getPropertyWidgetFactory();
             auto semantics = factory->getSupportedSemanicsForProperty(property_);
             if (semantics.size() > 1) {
-                auto semanicsMenu = new QMenu(tr("&Semantics"), menu.get());
+                auto semanicsMenu = menu->addMenu(tr("&Semantics"));
                 auto semanticsGroup = new QActionGroup(semanicsMenu);
 
                 for (auto& semantic : semantics) {
