@@ -61,6 +61,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/filelogger.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
 
@@ -404,6 +405,14 @@ void InviwoApplication::waitForPool() {
     resizePool(0);  // This will wait until all tasks are done;
     processFront();
     resizePool(old_size);
+}
+
+
+TimerThread& InviwoApplication::getTimerThread() {
+    if(!timerThread_) {
+        timerThread_ = util::make_unique<TimerThread>();
+    }
+    return *timerThread_;
 }
 
 void InviwoApplication::closeInviwoApplication() {

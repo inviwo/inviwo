@@ -30,6 +30,7 @@
 #include "ordinalpropertyanimator.h"
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -47,96 +48,65 @@ const ProcessorInfo OrdinalPropertyAnimator::getProcessorInfo() const {
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     : Processor()
     , type_("property", "Property")
-    , delay_("delay", "Delay (ms)", 50, 1, 10000, 1)
-    , pbc_("pbc", "Periodic", true)
-    , active_("active", "Active", false)
-    , timer_(delay_, [this]() { timerEvent(); }) {
-    delay_.onChange(this, &OrdinalPropertyAnimator::updateTimerInterval);
+    , create_("add", "Add")
+    , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
+    , play_("play", "Play/Pause")
+    , timer_(std::chrono::milliseconds{delay_}, [this]() {
+        NetworkLock lock(this);
+        for (auto p : props_) {
+            p->update();
+        }
+    }) {
 
-    properties_.push_back(
-        util::make_unique<PrimProp<float>>("org.inviwo.FloatProperty", "org.inviwo.FloatProperty"));
-    properties_.push_back(util::make_unique<VecProp<vec2>>("org.inviwo.FloatVec2Property",
-                                                          "org.inviwo.FloatVec2Property"));
-    properties_.push_back(util::make_unique<VecProp<vec3>>("org.inviwo.FloatVec3Property",
-                                                          "org.inviwo.FloatVec3Property"));
-    properties_.push_back(util::make_unique<VecProp<vec4>>("org.inviwo.FloatVec4Property",
-                                                          "org.inviwo.FloatVec4Property"));
-    properties_.push_back(util::make_unique<PrimProp<double>>("org.inviwo.DoubleProperty",
-                                                             "org.inviwo.DoubleProperty"));
-    properties_.push_back(util::make_unique<VecProp<dvec2>>("org.inviwo.DoubleVec2Property",
-                                                           "org.inviwo.DoubleVec2Property"));
-    properties_.push_back(util::make_unique<VecProp<dvec3>>("org.inviwo.DoubleVec3Property",
-                                                           "org.inviwo.DoubleVec3Property"));
-    properties_.push_back(util::make_unique<VecProp<dvec4>>("org.inviwo.DoubleVec4Property",
-                                                           "org.inviwo.DoubleVec4Property"));
-    properties_.push_back(
-        util::make_unique<PrimProp<int>>("org.inviwo.IntProperty", "org.inviwo.IntProperty"));
-    properties_.push_back(util::make_unique<VecProp<ivec2>>("org.inviwo.IntVec2Property",
-                                                           "org.inviwo.IntVec2Property"));
-    properties_.push_back(util::make_unique<VecProp<ivec3>>("org.inviwo.IntVec3Property",
-                                                           "org.inviwo.IntVec3Property"));
-    properties_.push_back(util::make_unique<VecProp<ivec4>>("org.inviwo.IntVec4Property",
-                                                           "org.inviwo.IntVec4Property"));
-
-    addProperty(type_);
-    addProperty(active_);
-    addProperty(delay_);
-    addProperty(pbc_);
-
-    int count = 0;
-    for (auto& p : properties_) {
-        type_.addOption(p->classname_, p->displayName_, count);
-        Property* prop = p->getProp();
-        Property* delta = p->getDelta();
-
-        addProperty(prop, false);
-        addProperty(delta, false);
-        prop->setVisible(false);
-        delta->setVisible(false);
-        count++;
-    }
+    util::for_each_type<Types>{}(TypeFunctor{}, *this);
     type_.setSelectedIndex(0);
     type_.setCurrentStateAsDefault();
 
-    type_.onChange(this, &OrdinalPropertyAnimator::changeProperty);
-    active_.onChange(this, &OrdinalPropertyAnimator::changeActive);
+    addProperty(type_);
+    addProperty(create_);
+    addProperty(delay_);
+    addProperty(play_);
 
-    changeProperty();
+    create_.onChange([&]() {
+        auto p = factory_[type_.getSelectedIndex()]();
 
-    setAllPropertiesCurrentStateAsDefault();
+        // make the id unique
+        size_t count = 1;
+        const auto& base = p->getIdentifier();
+        auto id = base;
+        auto displayname = base;
+        while (getPropertyByIdentifier(id) != nullptr) {
+            id = base + toString(count);
+            displayname = base + " " + toString(count);
+            ++count;
+        }
+        p->setIdentifier(id);
+        p->setDisplayName(displayname);
+        
+        p->setSerializationMode(PropertySerializationMode::All);
+        props_.push_back(static_cast<BaseOrdinalAnimationProperty*>(p.get()));
+        addProperty(p.release(), true);
+    });
+
+    delay_.onChange([&]() { timer_.setInterval(std::chrono::milliseconds{delay_}); });
+
+    play_.onChange([&]() {
+        if (timer_.isRunning()) {
+            timer_.stop();
+        } else {
+            timer_.start();
+        }
+    });
 }
 
-void OrdinalPropertyAnimator::initializeResources() {
-    changeProperty();
-    updateTimerInterval();
-}
-
-void OrdinalPropertyAnimator::updateTimerInterval() {
-    timer_.stop();
-    if (active_.get()) timer_.start(delay_);
-}
-
-void OrdinalPropertyAnimator::timerEvent() {
-    int ind = type_.get();
-    properties_[ind]->update(pbc_.get());
-}
-
-void OrdinalPropertyAnimator::changeProperty() {
-    int ind = type_.get();
+void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
     
-    for (auto& p : properties_) {
-        Property* prop = p->getProp();
-        Property* delta = p->getDelta();
-        prop->setVisible(false);
-        delta->setVisible(false);
+    for (auto prop : *this) {
+        if (auto p = dynamic_cast<BaseOrdinalAnimationProperty*>(prop)) {
+            props_.push_back(p);
+        }
     }
-    
-    properties_[ind]->getProp()->setVisible(true);
-    properties_[ind]->getDelta()->setVisible(true);
-}
-
-void OrdinalPropertyAnimator::changeActive() {
-    updateTimerInterval();
 }
 
 } // namespace
