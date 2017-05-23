@@ -31,6 +31,13 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <thread>
+#include <algorithm>
+#include <utility>
+#include <warn/pop>
+
 namespace inviwo {
 
 TimerThread::TimerThread()
@@ -116,6 +123,12 @@ void TimerThread::TimerLoop() {
     }
 }
 
+TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Milliseconds interval)
+    : callback_(std::move(callback)), interval_{ interval } {}
+
+TimerThread::TimerInfo::TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock)
+    : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
+
 Timer::Timer(Milliseconds interval, std::function<void()> callback, TimerThread &thread)
     : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {};
 
@@ -178,5 +191,7 @@ TimerThread &getDefaultTimerThread() {
 }
 
 }  // namespace util
+
+
 
 }  // namespace inviwo

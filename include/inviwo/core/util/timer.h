@@ -33,27 +33,29 @@
 #define IVW_TIMER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
-#include <iostream>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <chrono>
 #include <condition_variable>
-#include <thread>
-#include <future>
 #include <mutex>
+#include <vector>
+#include <functional>
 #include <memory>
-#include <utility>
-#include <atomic>
-#include <algorithm>
 #include <warn/pop>
+
+class std::thread;
 
 namespace inviwo {
 
 class Timer;
 class Delay;
-
+/**
+ * A background thread to be shared by many timers and delays.
+ * Hold a queue of TimerInfo object with a time and a callback that will be called using
+ * dispatchFront when the time is reached.
+ * InviwoApplicaition owns a default TimerThread.
+ */
 class IVW_CORE_API TimerThread {
 public:
     using Milliseconds = std::chrono::milliseconds;
@@ -66,15 +68,13 @@ private:
     friend Timer;
     friend Delay;
     struct ControlBlock {
-        ControlBlock(std::function<void()> callback, Milliseconds interval)
-            : callback_(std::move(callback)), interval_{interval} {};
+        ControlBlock(std::function<void()> callback, Milliseconds interval);;
         std::function<void()> callback_;
         Milliseconds interval_;
     };
 
     struct TimerInfo {
-        TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock)
-            : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
+        TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock);
 
         TimerInfo(const TimerInfo&) = default;
         TimerInfo& operator=(const TimerInfo&) = default;
@@ -98,12 +98,14 @@ private:
 };
 
 namespace util {
-TimerThread &getDefaultTimerThread();
+/**
+ *	Utility function to get the default TimerThread from the app.
+ */
+IVW_CORE_API TimerThread &getDefaultTimerThread();
 }
 
-/** \class Timer
- *
- * A Timer class. Will evaluate it's callback in the front thread.
+/** 
+ * A Timer class. Will evaluate it's callback in the front thread, with the period of interval
  */
 class IVW_CORE_API Timer {
 public:
@@ -113,23 +115,25 @@ public:
           TimerThread &thread = util::getDefaultTimerThread());
     ~Timer();
 
+    void start();
     void start(Milliseconds interval);
+    void stop();
+    
     void setInterval(Milliseconds interval);
     void setCallback(std::function<void()> callback);
-    void start();
     Milliseconds getInterval() const;
     bool isRunning() const;
-    void stop();
 
 private:
-    static TimerThread &getDefault();
-
     std::function<void()> callback_;
     std::shared_ptr<TimerThread::ControlBlock> controlblock_;
     Milliseconds interval_{0};
     TimerThread &thread_;
 };
 
+/**
+ *	A one time delay. 
+ */
 class IVW_CORE_API Delay {
 public:
     using Milliseconds = std::chrono::milliseconds;
@@ -141,8 +145,6 @@ public:
     void cancel();
 
 private:
-    static TimerThread &getDefault();
-
     std::function<void()> callback_;
     std::shared_ptr<TimerThread::ControlBlock> controlblock_;
     Milliseconds interval_{0};
