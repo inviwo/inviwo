@@ -33,7 +33,6 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <thread>
 #include <algorithm>
 #include <utility>
 #include <warn/pop>

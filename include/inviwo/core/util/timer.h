@@ -42,6 +42,7 @@
 #include <vector>
 #include <functional>
 #include <memory>
+#include <thread>
 #include <warn/pop>
 
 class std::thread;
@@ -68,7 +69,7 @@ private:
     friend Timer;
     friend Delay;
     struct ControlBlock {
-        ControlBlock(std::function<void()> callback, Milliseconds interval);;
+        ControlBlock(std::function<void()> callback, Milliseconds interval);
         std::function<void()> callback_;
         Milliseconds interval_;
     };
