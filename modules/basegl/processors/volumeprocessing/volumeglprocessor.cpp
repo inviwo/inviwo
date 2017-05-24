@@ -47,7 +47,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, fragmentShader}},
-              Shader::Build::No)
+              buildShader ? Shader::Build::Yes : Shader::Build::No)
     , fbo_() {
     addPort(inport_);
     addPort(outport_);
@@ -58,33 +58,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
 
 VolumeGLProcessor::VolumeGLProcessor(const std::string& fragmentShader, bool buildShader)
     : VolumeGLProcessor( utilgl::findShaderResource(fragmentShader) ,buildShader){}
-
-//    : Processor()
-//    , inport_("inputVolume")
-//    , outport_("outputVolume")
-//    , dataFormat_(nullptr)
-//    , internalInvalid_(true)
-//    , fragmentShader_(fragmentShader)
-//    , shader_(
-//          std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>{
-//              {ShaderType::Vertex,
-//               std::make_shared<FileShaderResource>("volume_gpu.vert", "volume_gpu.vert")},
-//              {ShaderType::Geometry,
-//               std::make_shared<FileShaderResource>("volume_gpu.geom", "volume_gpu.geom")},
-//              {ShaderType::Fragment,
-//               std::make_shared<FileShaderResource>(fragmentShader, fragmentShader)}}
-//
-//          ,
-//          buildShader)
-//    //, shader_("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, buildShader)
-//    , fbo_() {
-//    addPort(inport_);
-//    addPort(outport_);
-//
-//    inport_.onChange(this, &VolumeGLProcessor::inportChanged);
-//    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-//}
-
+  
 VolumeGLProcessor::~VolumeGLProcessor() {}
 
 void VolumeGLProcessor::process() {
