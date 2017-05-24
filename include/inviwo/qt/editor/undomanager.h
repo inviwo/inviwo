@@ -33,36 +33,46 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/interaction/interactionstatemanager.h>
+#include <inviwo/core/network/workspacemanager.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QObject>
+#include <warn/pop>
 
 class QAction;
+class QEvent;
 
 namespace inviwo {
 
 class InviwoMainWindow;
 
+
 /**
  * \class UndoManager
  */
-class IVW_QTEDITOR_API UndoManager : public ProcessorNetworkObserver{
+class IVW_QTEDITOR_API UndoManager : public QObject, public ProcessorNetworkObserver {
 public:
     UndoManager(InviwoMainWindow* mainWindow);
     virtual ~UndoManager() = default;
-    
-    void pushState(bool force = false);
+
+    void pushState();
     void undoState();
     void redoState();
+    void clear();
 
     QAction* getUndoAction() const;
     QAction* getRedoAction() const;
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     using DiffType = std::vector<std::string>::iterator::difference_type;
-    
+
     void updateActions();
 
     // ProcessorNetworkObserver overrides;
-    virtual void onProcessorNetworkUnlocked() override;
     virtual void onProcessorNetworkChange() override;
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
     virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
@@ -72,8 +82,9 @@ private:
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
     InviwoMainWindow* mainWindow_;
+    WorkspaceManager* manager_;
+    std::string refPath_;
 
-    InteractionStateManager::InteractionEndHandle interactionEndCallback_;
     bool dirty_ = true;
     bool isRestoring = false;
     DiffType head_ = -1;
@@ -81,6 +92,9 @@ private:
 
     QAction* undoAction_;
     QAction* redoAction_;
+
+    WorkspaceManager::ClearHandle clearHandle_;
+    WorkspaceManager::DeserializationHandle loadHandle_;
 };
 
 } // namespace

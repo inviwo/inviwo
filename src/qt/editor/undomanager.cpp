@@ -32,6 +32,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/undomanager.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,46 +40,46 @@
 #include <QEvent>
 #include <QApplication>
 #include <QGuiApplication>
-
+#include <QMouseEvent>
+#include <QTouchEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
+UndoManager::UndoManager(InviwoMainWindow* mainWindow)
+    : mainWindow_(mainWindow)
+    , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
+    , refPath_{filesystem::findBasePath()} {
 
-UndoManager::UndoManager(InviwoMainWindow* mainWindow) : mainWindow_(mainWindow) {
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
-
-    interactionEndCallback_ =
-        mainWindow_->getInviwoApplication()->getInteractionStateManager().onInteractionEnd(
-            [&](int interactionCount) { if (dirty_) pushState(true); });
 
     undoAction_ = new QAction(QAction::tr("&Undo"), mainWindow_);
     undoAction_->setShortcut(QKeySequence::Undo);
-    undoAction_->connect(undoAction_, &QAction::triggered, [&]() {
-        undoState();
-    });
+    undoAction_->connect(undoAction_, &QAction::triggered, this, [&]() { undoState(); });
 
     redoAction_ = new QAction(QAction::tr("&Redo"), mainWindow_);
     redoAction_->setShortcut(QKeySequence::Redo);
-    redoAction_->connect(redoAction_, &QAction::triggered, [&]() {
-        redoState();
+    redoAction_->connect(redoAction_, &QAction::triggered, this, [&]() { redoState(); });
+
+    clearHandle_ = manager_->onClear([&]() { 
+        clear();
+        pushState();
+    });
+    loadHandle_ = manager_->onLoad([&](Deserializer& d) { 
+        if (isRestoring) return;
+        clear();
+        pushState();
     });
 
     updateActions();
-
     pushState();
 }
 
-void UndoManager::pushState(bool force) {
+void UndoManager::pushState() {
     if (isRestoring) return;
-    if (mainWindow_->getInviwoApplication()->getProcessorNetwork()->islocked()) return;
-    if (!force &&
-        mainWindow_->getInviwoApplication()->getInteractionStateManager().isInteracting()) {
-        return;
-    }
-    auto path = mainWindow_->getCurrentWorkspace();
+
     std::stringstream stream;
-    mainWindow_->getInviwoApplication()->getWorkspaceManager()->save(stream, path);
+    manager_->save(stream, refPath_);
     auto str = stream.str();
    
     if (head_ >= 0 && str == undoBuffer_[head_]) return; // No Change
@@ -97,8 +98,7 @@ void UndoManager::undoState() {
 
         std::stringstream stream;
         stream << undoBuffer_[head_];
-        auto path = mainWindow_->getCurrentWorkspace();
-        mainWindow_->getInviwoApplication()->getWorkspaceManager()->load(stream, path);
+        manager_->load(stream, refPath_);
 
         dirty_ = false;
         updateActions();
@@ -112,12 +112,16 @@ void UndoManager::redoState() {
         
         std::stringstream stream;
         stream << undoBuffer_[head_];     
-        auto path = mainWindow_->getCurrentWorkspace();
-        mainWindow_->getInviwoApplication()->getWorkspaceManager()->load(stream, path);
+        manager_->load(stream, refPath_);
 
         dirty_ = false;
         updateActions();
     }
+}
+
+void UndoManager::clear() {
+    head_ = -1;
+    undoBuffer_.clear();
 }
 
 QAction* UndoManager::getUndoAction() const {
@@ -128,41 +132,63 @@ QAction* UndoManager::getRedoAction() const {
     return redoAction_;
 }
 
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+bool UndoManager::eventFilter(QObject *obj, QEvent *event) {
+    auto res = QObject::eventFilter(obj, event);
+
+    // https://bugreports.qt.io/browse/QTBUG-39592 we get the same event multiple times.
+    if (!obj->inherits("QWindow")) return res;
+
+    switch (event->type()) {
+        case QEvent::MouseButtonRelease: {
+            if (dirty_) pushState(); 
+            break;
+        }
+        case QEvent::TouchEnd: {
+            auto te = static_cast<QTouchEvent *>(event);
+            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint &tp) {
+                return tp.state() == Qt::TouchPointReleased;
+            })) {
+                if (dirty_) pushState(); 
+                break;
+            }
+            break;
+        }
+        case QEvent::KeyRelease: {
+            if (dirty_) pushState(); 
+        }
+        default:
+            break;
+    }
+    return res;
+}
+#include <warn/pop>
+
 void UndoManager::updateActions() {
     undoAction_->setEnabled(head_>0);
     redoAction_->setEnabled(head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1);
 }
 
-void UndoManager::onProcessorNetworkUnlocked() {
-    if (dirty_) pushState(); 
-}
-
 void UndoManager::onProcessorNetworkChange() {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
     dirty_ = true;
-    pushState();
 }
 void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
     dirty_ = true;
-    pushState();
 }
 }  // namespace

@@ -40,7 +40,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -202,7 +201,6 @@ public:
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID);
 
-    InteractionStateManager& getInteractionStateManager();
     TimerThread& getTimerThread();
 
 protected:
@@ -231,8 +229,6 @@ protected:
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-
-    InteractionStateManager interactionState_;
 
     util::OnScopeExit clearAllSingeltons_;
 
