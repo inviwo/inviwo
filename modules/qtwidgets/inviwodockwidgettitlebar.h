@@ -63,26 +63,24 @@ public:
     InviwoDockWidgetTitleBar(QWidget *parent=nullptr);
     virtual ~InviwoDockWidgetTitleBar();
 
-    virtual void paintEvent(QPaintEvent *) override;
-    
+    virtual void paintEvent(QPaintEvent *) override;    
 
     void setLabel(const QString &str);
 
     void setSticky(bool toggle);
     bool isSticky() const;
 
+    void allowedAreasChanged(Qt::DockWidgetAreas areas);
+    void floating(bool floating);
+
 signals:
     void stickyFlagChanged(bool sticky);
-
-public slots:
-    void floating(bool floating);
-    void allowedAreasChanged(Qt::DockWidgetAreas areas);
 protected slots:
-    void stickyBtnToggled(bool toggle);
-    void floatBtnClicked();
-
     virtual void showEvent(QShowEvent *event) override;
+
 private:
+    void stickyBtnToggled(bool toggle);
+
     QDockWidget *parent_;
 
     QLabel* label_;
