@@ -35,7 +35,6 @@
 #endif
 
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/glfw/canvasglfw.h>
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
