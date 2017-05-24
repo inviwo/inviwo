@@ -140,7 +140,7 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::t
 T mirror(const T& val, const T& min, const T& max) {
     const auto minmask = glm::lessThan(val, min);
     const auto maxmask = glm::greaterThanEqual(val, max);
-    const auto mask = minmask + maxmask;
+    const auto mask = minmask || maxmask;
     return T{-1} * T{mask} + (T{1} - T{mask});
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
