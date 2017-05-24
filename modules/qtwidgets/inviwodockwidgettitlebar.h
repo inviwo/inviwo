@@ -76,6 +76,7 @@ signals:
 
 public slots:
     void floating(bool floating);
+    void allowedAreasChanged(Qt::DockWidgetAreas areas);
 protected slots:
     void stickyBtnToggled(bool toggle);
     void floatBtnClicked();
@@ -88,6 +89,8 @@ private:
     QToolButton *stickyBtn_;
     QToolButton *floatBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;
+
+    bool internalStickyFlagUpdate_;
 };
 
 } // namespace

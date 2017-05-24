@@ -51,6 +51,8 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
                      SLOT(updateWindowTitle(const QString &)));
     QObject::connect(dockWidgetTitleBar_, SIGNAL(stickyFlagChanged(bool)), this,
                      SIGNAL(stickyFlagChanged(bool)));
+    QObject::connect(this, SIGNAL(allowedAreasChanged(Qt::DockWidgetAreas)), titleBarWidget(),
+                     SLOT(allowedAreasChanged(Qt::DockWidgetAreas)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() = default;

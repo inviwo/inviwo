@@ -48,6 +48,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     : QWidget(parent)
     , parent_(dynamic_cast<QDockWidget *>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
+    , internalStickyFlagUpdate_(false)
 {
     label_ = new QLabel(parent->windowTitle());
     label_->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
@@ -104,6 +105,7 @@ void InviwoDockWidgetTitleBar::setLabel(const QString &str) {
 }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
+    internalStickyFlagUpdate_ = true;
     if (toggle) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);
@@ -112,6 +114,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
         // no docking, disable all areas
         parent_->setAllowedAreas(Qt::NoDockWidgetArea);
     }
+    internalStickyFlagUpdate_ = false;
     emit stickyFlagChanged(toggle);
 }
 
@@ -139,6 +142,19 @@ void InviwoDockWidgetTitleBar::setSticky(bool toggle) {
 
 bool InviwoDockWidgetTitleBar::isSticky() const {
     return stickyBtn_->isChecked();
+}
+
+void InviwoDockWidgetTitleBar::allowedAreasChanged(Qt::DockWidgetAreas areas) {
+    if (!internalStickyFlagUpdate_) {
+        // save currently set docking areas 
+        allowedDockAreas_ = areas;
+        if (!isSticky()) {
+            // dockwidget is non-sticky, reset allowed areas to none
+            internalStickyFlagUpdate_ = true;
+            parent_->setAllowedAreas(Qt::NoDockWidgetArea);
+            internalStickyFlagUpdate_ = false;
+        }
+    }
 }
 
 } // namespace
