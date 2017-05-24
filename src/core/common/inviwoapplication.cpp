@@ -328,8 +328,6 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
 
-const std::string& InviwoApplication::getBinaryPath() const { return binaryPath_; }
-
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
     moudleCallbackActions_.emplace_back(callbackAction);
 }
@@ -432,10 +430,6 @@ void InviwoApplication::stopFileObservation(std::string fileName) {
 }
 void InviwoApplication::playSound(Message soundID) {
     LogWarn("this application have not implemented the playSound function");
-}
-
-InteractionStateManager& InviwoApplication::getInteractionStateManager() {
-    return interactionState_;
 }
 
 }  // namespace

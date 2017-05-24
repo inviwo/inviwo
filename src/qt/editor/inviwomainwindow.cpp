@@ -92,7 +92,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              false, "", "path")
     , updateWorkspaces_("", "update-workspaces",
                         "Go through and update all workspaces the the latest versions")
-    , eventFilter_(app->getInteractionStateManager())
     , undoManager_(this) {
 
     app_->setMainWindow(this);
@@ -110,7 +109,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     auto screen = dw.screenGeometry(this);
     const float maxRatio = 0.8f;
 
-    QApplication::instance()->installEventFilter(&eventFilter_);
+    QApplication::instance()->installEventFilter(&undoManager_);
 
     QSize size(1920, 1080);
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));

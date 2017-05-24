@@ -414,7 +414,6 @@ void PythonEditorWidget::run() {
         clearOutput();
     }
 
-    app_->getInteractionStateManager().beginInteraction();
     Clock c;
     c.start();
     bool ok = script_.run();
@@ -425,7 +424,6 @@ void PythonEditorWidget::run() {
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
-    app_->getInteractionStateManager().endInteraction();
     PyInviwo::getPtr()->removeObserver(this);
 }
 
