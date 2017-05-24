@@ -46,11 +46,14 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
     dockWidgetTitleBar_ = new InviwoDockWidgetTitleBar(this);
     setTitleBarWidget(dockWidgetTitleBar_);
 
-    QObject::connect(this, SIGNAL(topLevelChanged(bool)), titleBarWidget(), SLOT(floating(bool)));
-    QObject::connect(this, SIGNAL(windowTitleChanged(const QString &)), this,
-                     SLOT(updateWindowTitle(const QString &)));
-    QObject::connect(dockWidgetTitleBar_, SIGNAL(stickyFlagChanged(bool)), this,
-                     SIGNAL(stickyFlagChanged(bool)));
+    QObject::connect(this, &QDockWidget::topLevelChanged, dockWidgetTitleBar_,
+                     &InviwoDockWidgetTitleBar::floating);
+    QObject::connect(this, &QDockWidget::windowTitleChanged,
+                     [&](const QString &str) { dockWidgetTitleBar_->setLabel(str); });
+    QObject::connect(dockWidgetTitleBar_, &InviwoDockWidgetTitleBar::stickyFlagChanged, this,
+                     &InviwoDockWidget::stickyFlagChanged);
+    QObject::connect(this, &QDockWidget::allowedAreasChanged, dockWidgetTitleBar_,
+                     &InviwoDockWidgetTitleBar::allowedAreasChanged);
 }
 
 InviwoDockWidget::~InviwoDockWidget() = default;
@@ -95,6 +98,4 @@ void InviwoDockWidget::setContents(QLayout *layout) {
     this->setWidget(centralWidget);
 }
 
-void InviwoDockWidget::updateWindowTitle(const QString &str) { dockWidgetTitleBar_->setLabel(str); }
-
-}  // namespace
+}  // namespace inviwo

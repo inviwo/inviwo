@@ -479,7 +479,7 @@ void PythonEditorWidget::updateTitleBar() {
         str = QString::fromStdString(scriptFileName_);
     }
 
-    updateWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
+    setWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
 }
 
 }  // namespace

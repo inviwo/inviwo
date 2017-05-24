@@ -24,10 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,12 +44,11 @@
 
 namespace inviwo {
 
-
 InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     : QWidget(parent)
     , parent_(dynamic_cast<QDockWidget *>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
-{
+    , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
     label_->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
 
@@ -84,9 +84,11 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
 
     this->setLayout(layout);
 
-    QObject::connect(stickyBtn_, SIGNAL(toggled(bool)), this, SLOT(stickyBtnToggled(bool)));
-    QObject::connect(floatBtn_, SIGNAL(clicked()), this, SLOT(floatBtnClicked()));
-    QObject::connect(closeBtn, SIGNAL(clicked()), parent_, SLOT(close()));
+    QObject::connect(stickyBtn_, &QToolButton::toggled, this,
+                     &InviwoDockWidgetTitleBar::stickyBtnToggled);
+    QObject::connect(floatBtn_, &QToolButton::clicked, this,
+                     [&]() { parent_->setFloating(!parent_->isFloating()); });
+    QObject::connect(closeBtn, &QToolButton::clicked, parent_, &QDockWidget::close);
 }
 
 InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() {}
@@ -95,28 +97,22 @@ void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     QStyleOption opt;
     opt.init(this);
     QPainter p(this);
-    //style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
+    // style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-void InviwoDockWidgetTitleBar::setLabel(const QString &str) {
-    label_->setText(str);
-}
+void InviwoDockWidgetTitleBar::setLabel(const QString &str) { label_->setText(str); }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
+    util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
     if (toggle) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);
-    }
-    else {
+    } else {
         // no docking, disable all areas
         parent_->setAllowedAreas(Qt::NoDockWidgetArea);
     }
     emit stickyFlagChanged(toggle);
-}
-
-void InviwoDockWidgetTitleBar::floatBtnClicked() {
-    parent_->setFloating(!parent_->isFloating());
 }
 
 void InviwoDockWidgetTitleBar::showEvent(QShowEvent *event) {
@@ -129,16 +125,22 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *event) {
     }
 }
 
-void InviwoDockWidgetTitleBar::floating(bool floating) {
-    floatBtn_->setChecked(floating);
+void InviwoDockWidgetTitleBar::floating(bool floating) { floatBtn_->setChecked(floating); }
+
+void InviwoDockWidgetTitleBar::setSticky(bool toggle) { stickyBtn_->setChecked(toggle); }
+
+bool InviwoDockWidgetTitleBar::isSticky() const { return stickyBtn_->isChecked(); }
+
+void InviwoDockWidgetTitleBar::allowedAreasChanged(Qt::DockWidgetAreas areas) {
+    if (!internalStickyFlagUpdate_) {
+        // save currently set docking areas
+        allowedDockAreas_ = areas;
+        if (!isSticky()) {
+            // dockwidget is non-sticky, reset allowed areas to none
+            util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
+            parent_->setAllowedAreas(Qt::NoDockWidgetArea);
+        }
+    }
 }
 
-void InviwoDockWidgetTitleBar::setSticky(bool toggle) {
-    stickyBtn_->setChecked(toggle);
-}
-
-bool InviwoDockWidgetTitleBar::isSticky() const {
-    return stickyBtn_->isChecked();
-}
-
-} // namespace
+}  // namespace inviwo
