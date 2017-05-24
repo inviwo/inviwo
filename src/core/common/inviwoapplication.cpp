@@ -67,7 +67,6 @@ namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , binaryPath_(filesystem::getExecutablePath())
     , progressCallback_()
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
