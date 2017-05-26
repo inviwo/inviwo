@@ -140,11 +140,11 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
 
     // The help engine needs a file backed db "inviwo.qhc", this file is created on demand. 
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc",true);
-	if (!filesystem::fileExists(helpfile)) {
-		std::ofstream f(helpfile);
-		f.close();
-	}
-	helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
+    if (!filesystem::fileExists(helpfile)) {
+        std::ofstream f(helpfile);
+        f.close();
+    }
+    helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
     // Any old data will be left in the since last time, we want to clear that so we can load the
     // new qch files.
     for (const auto& ns : helpEngine_->registeredDocumentations()) {
