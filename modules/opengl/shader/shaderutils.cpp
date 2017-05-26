@@ -167,7 +167,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue = 
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
         singleChannelGradientValue = 
             "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
@@ -175,7 +175,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue = 
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
         singleChannelGradientValue = 
             "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
@@ -183,7 +183,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
     else if (property.gradientComputationMode_.isSelectedIdentifier("backward")) {
         gradientValue = 
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos,  + defaultChannel + );";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
         singleChannelGradientValue = 
             "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
         allChannelsGradientValue = 
