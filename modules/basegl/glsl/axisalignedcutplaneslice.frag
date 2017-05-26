@@ -37,13 +37,15 @@ uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
 uniform sampler2D transferfunction;
 
+uniform int channel;
+
 in vec4 color_;
 in vec3 texCoord_;
 
 void main() {
     vec4 src = getNormalizedVoxel(volume, volumeParameters, texCoord_);
 #ifdef USE_TF
-    src = applyTF(transferfunction, src.r);
+    src = applyTF(transferfunction, src, channel);
 #endif
     FragData0 = src;
 }
