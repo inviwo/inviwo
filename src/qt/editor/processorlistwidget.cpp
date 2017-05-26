@@ -38,6 +38,7 @@
 #include <inviwo/core/util/document.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/qt/editor/processorpreview.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -356,6 +357,7 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString classNam
     mimeData->setData(mimeType, byteData);
     mimeData->setData("text/plain", className.toLatin1().data());
     setMimeData(mimeData);
+    setPixmap(QPixmap::fromImage(utilqt::generateProcessorPreview(className)));
     start(Qt::MoveAction);
 }
 
