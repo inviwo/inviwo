@@ -134,7 +134,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-QImage utilqt::generateProcessorPreview(const QString& classIdentifier) {
+QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
     try {
@@ -157,6 +157,13 @@ QImage utilqt::generateProcessorPreview(const QString& classIdentifier) {
         QPainter painter(&image);
         painter.setRenderHints(QPainter::Antialiasing);
         scene->render(&painter);
+
+        // make the image semitransparent
+        if (opacity < 1.0) {
+            painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+            painter.fillRect(image.rect(), QColor(0, 0, 0, static_cast<int>(opacity * 255)));
+        }
+        painter.end();
 
         return image;
     } catch (Exception&) {
