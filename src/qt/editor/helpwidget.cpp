@@ -140,6 +140,8 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
 
     // The help engine needs a file backed db "inviwo.qhc", this file is created on demand. 
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc",true);
+    // In QT version before 5.7 the Help Engine would crash if the file does not exists,
+    // hence, if the does not exist, we will create an empty file. 
     if (!filesystem::fileExists(helpfile)) {
         std::ofstream f(helpfile);
         f.close();
