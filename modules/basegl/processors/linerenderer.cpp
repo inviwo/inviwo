@@ -102,7 +102,7 @@ void LineRenderer::process() {
 
 void LineRenderer::drawMeshes() {
     auto drawMode = (useAdjacency_.get() ? MeshDrawerGL::DrawMode::LineStripAdjacency
-                                         : MeshDrawerGL::DrawMode::LineStrip);
+                                         : MeshDrawerGL::DrawMode::Lines);
 
     for (const auto& elem : inport_) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
