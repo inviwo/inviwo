@@ -357,7 +357,9 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString classNam
     mimeData->setData(mimeType, byteData);
     mimeData->setData("text/plain", className.toLatin1().data());
     setMimeData(mimeData);
-    setPixmap(QPixmap::fromImage(utilqt::generateProcessorPreview(className, 0.8)));
+    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(className, 0.8));
+    setPixmap(img);
+    setHotSpot(QPoint(img.width() / 2, img.height() / 2));
     start(Qt::MoveAction);
 }
 
