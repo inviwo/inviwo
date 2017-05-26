@@ -84,16 +84,8 @@ void emit(in vec4 pos, in vec2 texCoord, in vec4 color, in float ndcToWorldFacto
 
 // render the current line segment without joints
 void renderLineWithoutJoints() {
-#if ENABLE_ADJACENCY == 1
-#  define INDEX1 1
-#  define INDEX2 2
-#else
-#  define INDEX1 0
-#  define INDEX2 1
-#endif
-
-    vec4 pStart = gl_in[INDEX1].gl_Position / gl_in[INDEX1].gl_Position.w;
-    vec4 pEnd = gl_in[INDEX2].gl_Position / gl_in[INDEX2].gl_Position.w;
+    vec4 pStart = gl_in[0].gl_Position / gl_in[0].gl_Position.w;
+    vec4 pEnd = gl_in[1].gl_Position / gl_in[1].gl_Position.w;
 
     // line direction in screen space (2D)
     vec2 v = normalize(pEnd.xy - pStart.xy);
@@ -106,16 +98,16 @@ void renderLineWithoutJoints() {
     vec4 offset = vec4(normal * halfWidth, 0.0, 0.0);
     segmentLength_ = length(pEnd - pStart);
     // segment length in world space
-    float lineLength = length(worldPosition_[INDEX2] - worldPosition_[INDEX1]);
+    float lineLength = length(worldPosition_[1] - worldPosition_[0]);
     // scaling factor to convert line lengths in normalized device coords back to model space
     // this is used for reparametrization of the line
     float ndcToWorldFactor = lineLength / segmentLength_;
 
-    emit(pStart + offset, vec2(0.0, halfWidth), vertexColor_[INDEX1], ndcToWorldFactor);
-    emit(pStart - offset, vec2(0.0, -halfWidth), vertexColor_[INDEX1], ndcToWorldFactor);
+    emit(pStart + offset, vec2(0.0, halfWidth), vertexColor_[0], ndcToWorldFactor);
+    emit(pStart - offset, vec2(0.0, -halfWidth), vertexColor_[0], ndcToWorldFactor);
 
-    emit(pEnd + offset, vec2(segmentLength_, halfWidth), vertexColor_[INDEX2], ndcToWorldFactor);
-    emit(pEnd - offset, vec2(segmentLength_, -halfWidth), vertexColor_[INDEX2], ndcToWorldFactor);
+    emit(pEnd + offset, vec2(segmentLength_, halfWidth), vertexColor_[1], ndcToWorldFactor);
+    emit(pEnd - offset, vec2(segmentLength_, -halfWidth), vertexColor_[1], ndcToWorldFactor);
 
     EndPrimitive();
 }
