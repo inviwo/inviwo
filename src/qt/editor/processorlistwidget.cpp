@@ -50,6 +50,8 @@
 #include <QWidget>
 #include <QMimeData>
 #include <QHeaderView>
+#include <QByteArray>
+#include <QBuffer>
 #include <warn/pop>
 
 namespace inviwo {
@@ -247,6 +249,18 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
         tb(H("Code"), Processor::getCodeStateString(processor->getCodeState()));
         tb(H("Tags"), processor->getTags().getString());
 
+        // create preview image of the processor and embed it into the tooltip
+        auto img = utilqt::generatePreview(QString::fromStdString(processor->getClassIdentifier()));
+        if (!img.isNull()) {
+            QByteArray imgData;
+            QBuffer buffer(&imgData);
+            buffer.open(QIODevice::WriteOnly);
+            img.save(&buffer, "PNG");
+
+            auto div = b.append("div", "", {{"style", "text-align:center;"}});
+            div.append("img", "", 
+            {{"src", "data:image/png;base64," + std::string(imgData.toBase64().data())}});
+        }
         newItem->setToolTip(0, utilqt::toLocalQString(doc));
     }
 
