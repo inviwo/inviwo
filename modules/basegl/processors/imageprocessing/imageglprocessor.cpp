@@ -36,29 +36,34 @@
 
 namespace inviwo {
 
-ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
-    : Processor()
-    , inport_("inputImage")
-    , outport_("outputImage")
-    , dataFormat_(nullptr)
-    , swizzleMask_(swizzlemasks::rgba)
-    , internalInvalid_(false)
-    , fragmentShader_(fragmentShader)
-    , shader_(fragmentShader, false) {
-    addPort(inport_);
-    addPort(outport_);
+    ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
+        : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
-    inport_.onChange(this, &ImageGLProcessor::inportChanged);
-    inport_.setOutportDeterminesSize(true);
-    outport_.setHandleResizeEvents(false);
-    shader_.onReload([this](){invalidate(InvalidationLevel::InvalidResources);});
-}
+    ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
+        bool buildShader)
+        : Processor()
+        , inport_("inputImage")
+        , outport_("outputImage")
+        , dataFormat_(nullptr)
+        , swizzleMask_(swizzlemasks::rgba)
+        , internalInvalid_(false)
+        , shader_({ {ShaderType::Fragment, fragmentShader} },
+            buildShader ? Shader::Build::Yes : Shader::Build::No)
+    {
+        addPort(inport_);
+        addPort(outport_);
 
-ImageGLProcessor::~ImageGLProcessor() {}
+        inport_.onChange(this, &ImageGLProcessor::inportChanged);
+        inport_.setOutportDeterminesSize(true);
+        outport_.setHandleResizeEvents(false);
+        shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
 
-void ImageGLProcessor::initializeResources() {
-    shader_.build();
-    internalInvalid_ = true;
+    ImageGLProcessor::~ImageGLProcessor() {}
+
+    void ImageGLProcessor::initializeResources() {
+        shader_.build();
+        internalInvalid_ = true;
 }
 
 void ImageGLProcessor::process() {

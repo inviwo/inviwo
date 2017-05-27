@@ -54,7 +54,9 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor { 
 public:
-    ImageGLProcessor(std::string fragmentShader);
+
+    ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
+    ImageGLProcessor(const std::string &fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
 
     virtual void initializeResources() override;
