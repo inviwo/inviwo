@@ -120,6 +120,8 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         if (!PyErr_Occurred())
             return true;
 
+        LogError("Compile Error occured when compiling script " << filename_ << ", see below for info");
+
         PyObject* errtype, *errvalue, *traceback;
         PyErr_Fetch(&errtype, &errvalue, &traceback);
         std::string log = "";
@@ -155,6 +157,8 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     bool PythonScript::checkRuntimeError() {
         if (!PyErr_Occurred())
             return true;
+
+        LogError("Runtime Error occured when runing script " << filename_ << ", see below for info");
 
         std::string pyException = "";
         PyObject* pyError_type = nullptr;
