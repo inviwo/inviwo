@@ -43,6 +43,7 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <future>
 #include <warn/pop>
 
 class std::thread;
@@ -72,6 +73,7 @@ private:
         ControlBlock(std::function<void()> callback, Milliseconds interval);
         std::function<void()> callback_;
         Milliseconds interval_;
+        std::future<void> finished_;
     };
 
     struct TimerInfo {

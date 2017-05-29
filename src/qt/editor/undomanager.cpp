@@ -138,7 +138,7 @@ bool UndoManager::eventFilter(QObject *obj, QEvent *event) {
     auto res = QObject::eventFilter(obj, event);
 
     // https://bugreports.qt.io/browse/QTBUG-39592 we get the same event multiple times.
-    if (!obj->inherits("QWindow")) return res;
+    if (!obj->isWindowType()) return res;
 
     switch (event->type()) {
         case QEvent::MouseButtonRelease: {
