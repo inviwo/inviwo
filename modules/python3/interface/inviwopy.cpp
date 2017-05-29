@@ -54,18 +54,17 @@
 
 namespace py = pybind11;
 
-namespace inviwo{
+namespace inviwo {
 
-    struct DataFormatHelper {
-        template <typename DataFormat>
-        auto operator()(pybind11::module &m) {
-            m.attr(("Data" + DataFormat::str()).c_str())= py::cast(static_cast<const DataFormatBase *>(DataFormat::get()), py::return_value_policy::reference);
-        }
-    };
-
-
+struct DataFormatHelper {
+    template <typename DataFormat>
+    auto operator()(pybind11::module &m) {
+        m.attr(("Data" + DataFormat::str()).c_str()) =
+            py::cast(static_cast<const DataFormatBase *>(DataFormat::get()),
+                     py::return_value_policy::reference);
+    }
+};
 }
-
 
 PYBIND11_MAKE_OPAQUE(std::vector<int>);
 PYBIND11_MAKE_OPAQUE(std::vector<float>);
@@ -83,8 +82,10 @@ PYBIND11_PLUGIN(inviwopy) {
     exposeGLMTypes(m);
 
     auto propertiesModule = m.def_submodule("properties", "Exposing various Inviwo Properties");
-    auto dataModule = m.def_submodule("data", "Module containing class mapping to the Inviwo data structures");
-    auto formatsModule = dataModule.def_submodule("formats", "Module containing the various data formats");
+    auto dataModule =
+        m.def_submodule("data", "Module containing class mapping to the Inviwo data structures");
+    auto formatsModule =
+        dataModule.def_submodule("formats", "Module containing the various data formats");
 
     auto getModules = [](InviwoApplication *app) {
         std::vector<InviwoModule *> modules;
@@ -121,9 +122,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
         .def_property_readonly("version", &InviwoModule::getVersion)
-        .def("getPath", [](InviwoModule *m,
-                           ModulePath type) { return m->getPath(type); })  
-        ;
+        .def("getPath", [](InviwoModule *m, ModulePath type) { return m->getPath(type); });
 
     py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
         .def("getPath", &PropertyOwner::getPath)
@@ -149,8 +148,7 @@ PYBIND11_PLUGIN(inviwopy) {
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
 
-	
-    py::class_<DataFormatBase>(formatsModule,"DataFormat")
+    py::class_<DataFormatBase>(formatsModule, "DataFormat")
         .def_property_readonly("size", &DataFormatBase::getSize)
         .def_property_readonly("components", &DataFormatBase::getComponents)
         .def_property_readonly("precision", &DataFormatBase::getPrecision)
@@ -159,8 +157,7 @@ PYBIND11_PLUGIN(inviwopy) {
         .def_property_readonly("max", &DataFormatBase::getMax)
         .def_property_readonly("min", &DataFormatBase::getMin)
         .def_property_readonly("lowest", &DataFormatBase::getLowest)
-        .def_property_readonly("__str__", &DataFormatBase::getString)
-        ;
+        .def_property_readonly("__str__", &DataFormatBase::getString);
 
     util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, formatsModule);
 
@@ -173,11 +170,6 @@ PYBIND11_PLUGIN(inviwopy) {
     exposeMesh(dataModule);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
-
-    m.attr("app") = py::cast(util::getInviwoApplication(), py::return_value_policy::reference);
-    m.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
-    m.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
-    m.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
 
     py::enum_<inviwo::PathType>(m, "PathType")
         .value("Data", PathType::Data)
@@ -208,13 +200,23 @@ PYBIND11_PLUGIN(inviwopy) {
         .value("GLSL", ModulePath::GLSL)
         .value("CL", ModulePath::CL);
 
-    //py::bind_vector<std::vector<int>>(m, "VectorInt");
-    //py::bind_vector<std::vector<float>>(m, "VectorFloat");
-    //py::bind_vector<std::vector<double>>(m, "VectorDouble");
+    m.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
+    m.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
+    m.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
 
-    auto module = util::getInviwoApplication()->getModuleByType<Python3Module>();
-    if (module) {
-        module->invokePythonInitCallbacks(&m);
+    try {
+        if (auto app = util::getInviwoApplication()) {
+            m.attr("app") = py::cast(app, py::return_value_policy::reference);
+
+            auto module = app->getModuleByType<Python3Module>();
+            if (module) {
+                module->invokePythonInitCallbacks(&m);
+            }
+        }
+    } catch (SingletonException &se) {
+        LogErrorCustom("InivoPy:" , "Failed to get Inviwo application, inviwopy will not function as expected");
+    } catch (...) {
+        throw;
     }
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
