@@ -86,11 +86,8 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
             PyDict_SetItemString(copy, ea.first.c_str(), ea.second.ptr());
         }
 
-        InviwoApplication::getPtr()->getInteractionStateManager().beginInteraction();
-
         PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
 
-        InviwoApplication::getPtr()->getInteractionStateManager().endInteraction();
         bool success = checkRuntimeError();
         if (success) {
             callback(pyutil::toPyBindObjectBorrow<pybind11::dict>(copy));
