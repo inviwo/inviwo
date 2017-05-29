@@ -54,7 +54,7 @@ Processor::Processor()
 }
 
 Processor::~Processor() {
-    usedIdentifiers_.erase(identifier_);
+    usedIdentifiers_.erase(util::stripIdentifier(identifier_));
 }
 
 void Processor::addPort(Inport* port, const std::string& portGroup) {
@@ -172,8 +172,8 @@ std::string Processor::setIdentifier(const std::string& identifier) {
 
 
     util::validateIdentifier(identifier, "Processor", IvwContext, " ()=&");
-
-    usedIdentifiers_.erase(identifier_);  // remove old identifier
+    
+    usedIdentifiers_.erase(util::stripIdentifier(identifier_));  // remove old identifier
 
     std::string baseIdentifier = identifier;
     std::string newIdentifier = identifier;
@@ -187,11 +187,14 @@ std::string Processor::setIdentifier(const std::string& identifier) {
         newIdentifier = baseIdentifier + " " + toString(i);
     }
 
-    while (usedIdentifiers_.find(newIdentifier) != usedIdentifiers_.end()) {
+    std::string stripedIdentifier = util::stripIdentifier(newIdentifier);
+
+    while (usedIdentifiers_.find(stripedIdentifier) != usedIdentifiers_.end()) {
         newIdentifier = baseIdentifier + " " + toString(i++);
+        stripedIdentifier = util::stripIdentifier(newIdentifier);
     }
 
-    usedIdentifiers_.insert(newIdentifier);
+    usedIdentifiers_.insert(stripedIdentifier);
     identifier_ = newIdentifier;
 
     notifyObserversIdentifierChange(this);
@@ -441,7 +444,7 @@ const std::string Processor::getCodeStateString(CodeState state) {
 
 std::vector<std::string> Processor::getPath() const {
     std::vector<std::string> path;
-    path.push_back(identifier_);
+    path.push_back(util::stripIdentifier(identifier_));
     return path;
 }
 

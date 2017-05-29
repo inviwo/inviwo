@@ -539,6 +539,7 @@ set(TEST_FILES
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
     tests/unittests/document-test.cpp
+    tests/unittests/utilities-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/zip-test.cpp
 )
