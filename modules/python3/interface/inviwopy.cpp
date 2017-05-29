@@ -110,7 +110,6 @@ PYBIND11_PLUGIN(inviwopy) {
                                py::return_value_policy::reference)
         .def_property_readonly("basePath", &InviwoApplication::getBasePath)
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
-        .def_property_readonly("binaryPath", &InviwoApplication::getBinaryPath)
         .def_property_readonly("modules", getModules, py::return_value_policy::reference)
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
