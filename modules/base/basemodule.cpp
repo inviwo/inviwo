@@ -75,6 +75,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/datainport.h>
 #include <modules/base/processors/pixelvalue.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
 #include <modules/base/processors/volumegradientcpuprocessor.h>
@@ -88,6 +90,8 @@
 #include <modules/base/io/wavefrontwriter.h>
 #include <modules/base/processors/randommeshgenerator.h>
 #include <modules/base/processors/randomspheregenerator.h>
+#include <modules/base/processors/inputselector.h>
+
 
 namespace inviwo {
 
@@ -149,6 +153,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshExport>();
     registerProcessor<RandomMeshGenerator>();
     registerProcessor<RandomSphereGenerator>();
+    // input selectors
+    registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
+    registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
+    registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
