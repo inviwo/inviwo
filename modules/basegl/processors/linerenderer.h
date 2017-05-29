@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <vector>
 
@@ -71,6 +72,13 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API LineRenderer : public Processor { 
 public:
+    enum class LineDrawMode {
+        Auto,
+        LineSegments,
+        LineStrip,
+        LineLoop
+    };
+
     LineRenderer();
     virtual ~LineRenderer() = default;
      
@@ -92,6 +100,7 @@ private:
     FloatProperty lineWidth_;
     FloatProperty antialising_;
     FloatProperty miterLimit_;
+    TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
 
     CameraProperty camera_;
