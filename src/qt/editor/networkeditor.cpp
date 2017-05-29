@@ -94,6 +94,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     : QGraphicsScene()
     , oldConnectionTarget_(nullptr)
     , oldProcessorTarget_(nullptr)
+    , validConnectionTarget_(false)
     , connectionCurve_(nullptr)
     , linkCurve_(nullptr)
     , mainwindow_(mainwindow)
@@ -205,7 +206,11 @@ void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsI
 
 void NetworkEditor::removeConnectionGraphicsItem(const PortConnection& connection) {
     ConnectionGraphicsItem* connectionGraphicsItem = connectionGraphicsItems_[connection];
-    if (oldConnectionTarget_ == connectionGraphicsItem) oldConnectionTarget_ = nullptr;
+    if (oldProcessorTarget_ && (oldConnectionTarget_ == connectionGraphicsItem)) {
+        oldConnectionTarget_->resetBorderColors();
+        oldConnectionTarget_->clearMidPoint();
+        oldConnectionTarget_ = nullptr;
+    }
     connectionGraphicsItems_.erase(connection);
     delete connectionGraphicsItem;
 }
@@ -708,6 +713,7 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
             QString className;
             ProcessorDragObject::decode(e->mimeData(), className);
 
+            validConnectionTarget_ = false;
             try {
                 auto factory = mainwindow_->getInviwoApplication()->getProcessorFactory();
                 auto processor = factory->create(className.toLocal8Bit().constData());
@@ -723,17 +729,22 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
 
                 if (inputmatch && outputmatch) {
                     connectionItem->setBorderColor(Qt::green);
+                    connectionItem->setMidPoint(e->scenePos());
+                    validConnectionTarget_ = true;
                 } else {
                     connectionItem->setBorderColor(Qt::red);
+                    connectionItem->update();
                 }
-                connectionItem->setMidPoint(e->scenePos());
             } catch (Exception&) {
                 connectionItem->setBorderColor(Qt::red);
+                connectionItem->update();
             }
             oldConnectionTarget_ = connectionItem;
 
         } else if (connectionItem) {  // move event on active connection
-            oldConnectionTarget_->setMidPoint(e->scenePos());
+            if (validConnectionTarget_) {
+                oldConnectionTarget_->setMidPoint(e->scenePos());
+            }
 
         } else if (oldConnectionTarget_ && !connectionItem) {  //< Connection no longer targeted
             oldConnectionTarget_->resetBorderColors();
