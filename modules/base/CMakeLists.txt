@@ -40,6 +40,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
@@ -117,6 +118,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
