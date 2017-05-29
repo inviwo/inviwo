@@ -39,13 +39,17 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <inviwo/core/common/inviwo.h>
 #include <vector>
 #include <ostream>
-#include <exception>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 namespace colorbrewer {
 
-struct ColorBrewerException : public std::exception {
-    const char *what() const throw() { return "Requested colormap is not available."; }
+class IVW_CORE_API ColorBrewerException : public Exception {
+public:
+    ColorBrewerException(const std::string &message = "Requested colormap is not available.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerException() throw() {}
 };
 
 enum class Colormap {
@@ -1162,26 +1166,26 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
 /**
  * Returns the specified colormap. For reference see http://colorbrewer2.org/
  **/
-IVW_CORE_API const std::vector<vec4> &getColormap(Colormap colormap);
+IVW_CORE_API const std::vector<dvec4> &getColormap(Colormap colormap);
 
 /**
  * Returns the colormap specified by its family and number of colors containted in the colormap. For
  * reference see http://colorbrewer2.org/. If the colormap is not available for the given number of
  * colors, a ColorBrewerException is thrown.
  **/
-IVW_CORE_API const std::vector<vec4> &getColormap(const Family &family, glm::uint8 numberOfColors);
+IVW_CORE_API const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors);
 
 /**
  * Returns all colormaps of a family. For example, if family Blues is requested, 6 cololormaps will
  * be returned since the family contains 6 levels of detail (Blues_3 - Blues_9).
  **/
-IVW_CORE_API std::vector<std::vector<vec4>> getColormaps(const Family &family);
+IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
 
 /**
  * Returns all colormaps of a category. Returns a map with one entry per family storing all
  *colormaps for that family.
  **/
-IVW_CORE_API std::map<Family, std::vector<std::vector<vec4>>> getColormaps(
+IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
     const Category &category);
 
 /**
@@ -1189,7 +1193,7 @@ IVW_CORE_API std::map<Family, std::vector<std::vector<vec4>>> getColormaps(
  * for the given number of colors, it is omitted. If no colormaps is available for the whole
  * category and the given number of colors, a ColorBrewerException is thrown.
  **/
-IVW_CORE_API std::map<Family, std::vector<vec4>> getColormaps(const Category &category,
+IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
                                                                glm::uint8 numberOfColors);
 
 /**
