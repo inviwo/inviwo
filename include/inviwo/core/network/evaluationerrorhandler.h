@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATOR_H
-#define IVW_PROCESSORNETWORKEVALUATOR_H
+#ifndef IVW_EVALUATIONERRORHANDLER_H
+#define IVW_EVALUATIONERRORHANDLER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/network/processornetworkevaluationobserver.h>
-#include <inviwo/core/network/evaluationerrorhandler.h>
+#include <inviwo/core/util/exception.h>
+
+#include <functional>
 
 namespace inviwo {
 
 class Processor;
-class ProcessorNetwork;
 
-class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
-                                               public ProcessorNetworkEvaluationObservable {
-    friend class Processor;
+enum class EvaluationType { InitResource, Process, NotReady };
 
-public:
-    ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
-    virtual ~ProcessorNetworkEvaluator() = default;
-    void setExceptionHandler(EvaluationErrorHandler handler);
+using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, ExceptionContext)>;
 
-private:
-    virtual void onProcessorNetworkEvaluateRequest() override;
-    virtual void onProcessorNetworkUnlocked() override;
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
-
-    void requestEvaluate();
-    void evaluate();
-
-    ProcessorNetwork* processorNetwork_;
-    // the sorted list of processors obtained through topological sorting
-    std::vector<Processor*> processorsSorted_;
-    bool evaulationQueued_;
-    EvaluationErrorHandler exceptionHandler_;
+struct IVW_CORE_API StandardEvaluationErrorHandler {
+    void operator()(Processor*, EvaluationType, ExceptionContext);
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_PROCESSORNETWORKEVALUATOR_H
+#endif // IVW_EVALUATIONERRORHANDLER_H
+
