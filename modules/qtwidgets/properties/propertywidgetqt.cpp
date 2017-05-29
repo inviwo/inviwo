@@ -274,7 +274,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         const auto& moduleName = elem.first;
         const auto& actions = elem.second;
         if (actions.empty()) continue;
-        auto submenu = new QMenu(QString::fromStdString(moduleName), menu);
+        auto submenu = menu->addMenu(QString::fromStdString(moduleName));
         for (const auto& mAction : actions) {
             auto actionName = mAction->getActionName();
             auto action = submenu->addAction(QString::fromStdString(actionName));
