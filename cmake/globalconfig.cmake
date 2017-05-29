@@ -257,8 +257,6 @@ if(WIN32 AND MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
 
-
-
     # enable debug:fastlink for debug builds
     # https://blogs.msdn.microsoft.com/vcblog/2014/11/12/speeding-up-the-incremental-developer-build-scenario/
     # needs to be off for proper callstack from VLD https://vld.codeplex.com/discussions/654355 
@@ -269,7 +267,6 @@ if(WIN32 AND MSVC)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
-
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx
     set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). 
@@ -278,38 +275,6 @@ if(WIN32 AND MSVC)
     IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
     set_property(CACHE IVW_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_ITERATOR_DEBUG_LEVEL=${IVW_ITERATOR_DEBUG_LEVEL}")
-
-    # MSVC Variable checks and include redist in packs
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(CMAKE_MSVC_ARCH x64)
-    else()
-        set(CMAKE_MSVC_ARCH x86)
-    endif()
-    # default dll dependencies for Visual Studio versions 2005, 2008, 2010, and 2013
-    # In VS 2015, "msvcr140.dll" was replaced by several other dlls.
-    set(MSVC_DLLNAMES "msvcp" "msvcr")
-    if(MSVC14)
-        set(MSVC_ACRO "14")
-        set(MSVC_DLLNAMES "msvcp" "concrt" "vccorlib" "vcruntime")
-    endif()
-    set(MSVC_REDIST_DIR ${MSVC${MSVC_ACRO}_REDIST_DIR})
-
-    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-        if(DEFINED MSVC_ACRO)
-            foreach(dllname ${MSVC_DLLNAMES})
-                # debug build
-                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/${dllname}${MSVC_ACRO}0d.dll" 
-                        DESTINATION bin 
-                        COMPONENT core 
-                        CONFIGURATIONS Debug)
-                # release build
-                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/${dllname}${MSVC_ACRO}0.dll" 
-                        DESTINATION bin 
-                        COMPONENT core 
-                        CONFIGURATIONS Release)
-            endforeach()
-        endif()
-    endif()
 
     # Multicore builds
     option(IVW_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
@@ -339,12 +304,6 @@ if(OPENMP_FOUND)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-        if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-            if(WIN32 AND MSVC AND DEFINED MSVC_ACRO AND DEFINED MSVC_REDIST_DIR)
-                install(FILES "${MSVC_REDIST_DIR}/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugOpenMP/vcomp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-                install(FILES "${MSVC_REDIST_DIR}/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.OPENMP/vcomp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
-            endif()
-        endif()
     endif()
 endif()
 

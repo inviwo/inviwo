@@ -213,8 +213,6 @@ bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr
 
 void Processor::setNetwork(ProcessorNetwork* network) { network_ = network; }
 
-ProcessorNetwork* Processor::getNetwork() const { return network_; }
-
 Port* Processor::getPort(const std::string& identifier) const {
     for (auto port : inports_) if (port->getIdentifier() == identifier) return port;
     for (auto port : outports_) if (port->getIdentifier() == identifier) return port;

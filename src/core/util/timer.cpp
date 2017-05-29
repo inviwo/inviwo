@@ -30,6 +30,7 @@
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -110,11 +111,15 @@ void TimerThread::TimerLoop() {
                 } else {
                     timers_.pop_back();
                 }
-                dispatchFront([ctrlblk = timers_.back().controlBlock_]() {
-                    if (auto cb2 = ctrlblk.lock()) {
-                        cb2->callback_();
-                    }
-                });
+                if (!cb->finished_.valid() ||
+                    cb->finished_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                        std::future_status::ready) {
+                    cb->finished_ = dispatchFront([ctrlblk = timers_.back().controlBlock_]() {
+                        if (auto cb2 = ctrlblk.lock()) {
+                            cb2->callback_();
+                        }
+                    });
+                }
             } else {
                 timers_.pop_back();
             }

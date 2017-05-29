@@ -50,7 +50,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     , type_("property", "Property")
     , create_("add", "Add")
     , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
-    , play_("play", "Play/Pause")
+    , play_("play", "Play")
     , timer_(std::chrono::milliseconds{delay_}, [this]() {
         NetworkLock lock(this);
         for (auto p : props_) {
@@ -93,8 +93,10 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     play_.onChange([&]() {
         if (timer_.isRunning()) {
             timer_.stop();
+            play_.setDisplayName("Play");
         } else {
             timer_.start();
+            play_.setDisplayName("Stop");
         }
     });
 }

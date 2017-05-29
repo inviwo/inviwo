@@ -182,4 +182,7 @@ if(WIN32)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+
+    install(TARGETS inviwo-cli RUNTIME DESTINATION bin COMPONENT qt_app)
+
 endif()

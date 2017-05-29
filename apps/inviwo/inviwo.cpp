@@ -45,12 +45,8 @@
 #include <moduleregistration.h>
 
 int main(int argc, char** argv) {
-    std::string basePath = inviwo::filesystem::findBasePath();
-
     inviwo::LogCentral::init();
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-    auto filelogger = std::make_shared<inviwo::FileLogger>(basePath);
-    inviwo::LogCentral::getPtr()->registerLogger(filelogger);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);

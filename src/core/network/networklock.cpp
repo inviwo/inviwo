@@ -29,29 +29,11 @@
 
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
 NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
     if (network_) network_->lock();
-}
-
-NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
-    if (network_) network_->lock();
-}
-
-NetworkLock::NetworkLock(Processor* processor)
-    : NetworkLock(processor ? processor->getNetwork() : nullptr) {}
-
-NetworkLock::NetworkLock(Property* property)
-    : NetworkLock(property ? (property->getOwner() ? property->getOwner()->getProcessor() : nullptr)
-                           : nullptr) {}
-
-NetworkLock::~NetworkLock() {
-    if (network_) network_->unlock();
 }
 
 }  // namespace

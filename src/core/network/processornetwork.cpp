@@ -36,6 +36,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/processornetworkconverter.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <algorithm>
 

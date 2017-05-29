@@ -44,6 +44,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
