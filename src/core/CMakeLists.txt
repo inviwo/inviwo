@@ -134,6 +134,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/propertyeditorwidgetmetadata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/portconnection.h
@@ -394,6 +395,7 @@ set(SOURCE_FILES
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
     metadata/propertyeditorwidgetmetadata.cpp
+    network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
     network/portconnection.cpp

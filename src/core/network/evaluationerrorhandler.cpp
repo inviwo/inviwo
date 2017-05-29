@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATOR_H
-#define IVW_PROCESSORNETWORKEVALUATOR_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/network/processornetworkevaluationobserver.h>
 #include <inviwo/core/network/evaluationerrorhandler.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-class Processor;
-class ProcessorNetwork;
+void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
+                                                ExceptionContext context) {
+    const std::string id = processor->getIdentifier();
+    const std::string func = [&]() {
+        switch (type) {
+            case EvaluationType::InitResource:
+                return "InitializeResources";
+            case EvaluationType::Process:
+                return "Process";
+            case EvaluationType::NotReady:
+                return "DoIfNotReady";
+            default:
+                return "Unknown";
+        }
+    }();
 
-class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
-                                               public ProcessorNetworkEvaluationObservable {
-    friend class Processor;
+    try {
+        throw;
+    } catch (Exception& e) {
+        util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
+                  LogLevel::Error);
+    } catch (std::exception& e) {
+        util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
+                  LogLevel::Error);
+    } catch (...) {
+        util::log(context, id + " Error in " + func + ": " + "Unknown error", LogLevel::Error);
+    }
+}
 
-public:
-    ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
-    virtual ~ProcessorNetworkEvaluator() = default;
-    void setExceptionHandler(EvaluationErrorHandler handler);
+} // namespace
 
-private:
-    virtual void onProcessorNetworkEvaluateRequest() override;
-    virtual void onProcessorNetworkUnlocked() override;
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
-
-    void requestEvaluate();
-    void evaluate();
-
-    ProcessorNetwork* processorNetwork_;
-    // the sorted list of processors obtained through topological sorting
-    std::vector<Processor*> processorsSorted_;
-    bool evaulationQueued_;
-    EvaluationErrorHandler exceptionHandler_;
-};
-
-}  // namespace
-
-#endif  // IVW_PROCESSORNETWORKEVALUATOR_H
