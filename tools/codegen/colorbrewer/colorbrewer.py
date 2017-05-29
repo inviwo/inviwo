@@ -113,9 +113,13 @@ if __name__ == '__main__':
             getMaxNumberOfColorsForFamilyImpl += "\tif (";
             for z in maxElementsForFamily[a]:
                 getMaxNumberOfColorsForFamilyImpl += "family == Family::" + z + "|| "
-                if not r % 2:
+                if r % 2:
                     getMaxNumberOfColorsForFamilyImpl += "\n\t\t";
-            getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-6];
+                r=r+1;
+            if not r % 2:
+                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-6];
+            else:
+                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-3];
             getMaxNumberOfColorsForFamilyImpl += ") {\n\t\treturn " + str(a) + ";\n\t}\n";
 
     categories += "NumberOfColormapCategories, Undefined";

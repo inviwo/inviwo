@@ -90,7 +90,7 @@ enum class Colormap {
     FirstMap=Accent_3, LastMap=YlOrRd_8
 };
 
-enum class Category { Qualitative, Sequential, Diverging, NumberOfColormapCategories, Undefined };
+enum class Category { Qualitative, Diverging, Sequential, NumberOfColormapCategories, Undefined };
 
 enum class Family {
     Accent,

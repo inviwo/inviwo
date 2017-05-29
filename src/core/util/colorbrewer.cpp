@@ -2858,42 +2858,27 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
 glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
-        if (family == Family::Accent|| 
-        family == Family::Dark2|| 
-        family == Family::Pastel2|| 
-        family == Family::Set2|| 
+    if (family == Family::Accent|| family == Family::Dark2|| 
+        family == Family::Pastel2|| family == Family::Set2|| 
         family == Family::YlOrRd) {
         return 8;
     }
     if (family == Family::Blues|| 
-        family == Family::BuGn|| 
-        family == Family::BuPu|| 
-        family == Family::GnBu|| 
-        family == Family::Greens|| 
-        family == Family::Greys|| 
-        family == Family::OrRd|| 
-        family == Family::Oranges|| 
-        family == Family::Pastel1|| 
-        family == Family::PuBu|| 
-        family == Family::PuBuGn|| 
-        family == Family::PuRd|| 
-        family == Family::Purples|| 
-        family == Family::RdPu|| 
-        family == Family::Reds|| 
-        family == Family::Set1|| 
-        family == Family::YlGn|| 
-        family == Family::YlGnBu|| 
-        family == Family::YlOrBr) {
+        family == Family::BuGn|| family == Family::BuPu|| 
+        family == Family::GnBu|| family == Family::Greens|| 
+        family == Family::Greys|| family == Family::OrRd|| 
+        family == Family::Oranges|| family == Family::Pastel1|| 
+        family == Family::PuBu|| family == Family::PuBuGn|| 
+        family == Family::PuRd|| family == Family::Purples|| 
+        family == Family::RdPu|| family == Family::Reds|| 
+        family == Family::Set1|| family == Family::YlGn|| 
+        family == Family::YlGnBu|| family == Family::YlOrBr) {
         return 9;
     }
-    if (family == Family::BrBG|| 
-        family == Family::PRGn|| 
-        family == Family::PiYG|| 
-        family == Family::PuOr|| 
-        family == Family::RdBu|| 
-        family == Family::RdGy|| 
-        family == Family::RdYlBu|| 
-        family == Family::RdYlGn|| 
+    if (family == Family::BrBG|| family == Family::PRGn|| 
+        family == Family::PiYG|| family == Family::PuOr|| 
+        family == Family::RdBu|| family == Family::RdGy|| 
+        family == Family::RdYlBu|| family == Family::RdYlGn|| 
         family == Family::Spectral) {
         return 11;
     }
@@ -2918,6 +2903,17 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
             v.emplace_back(Family::Set2);
             v.emplace_back(Family::Set3);
             break;
+        case Category::Diverging:
+            v.emplace_back(Family::BrBG);
+            v.emplace_back(Family::PRGn);
+            v.emplace_back(Family::PiYG);
+            v.emplace_back(Family::PuOr);
+            v.emplace_back(Family::RdBu);
+            v.emplace_back(Family::RdGy);
+            v.emplace_back(Family::RdYlBu);
+            v.emplace_back(Family::RdYlGn);
+            v.emplace_back(Family::Spectral);
+            break;
         case Category::Sequential:
             v.emplace_back(Family::Blues);
             v.emplace_back(Family::BuGn);
@@ -2937,17 +2933,6 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
             v.emplace_back(Family::YlGnBu);
             v.emplace_back(Family::YlOrBr);
             v.emplace_back(Family::YlOrRd);
-            break;
-        case Category::Diverging:
-            v.emplace_back(Family::BrBG);
-            v.emplace_back(Family::PRGn);
-            v.emplace_back(Family::PiYG);
-            v.emplace_back(Family::PuOr);
-            v.emplace_back(Family::RdBu);
-            v.emplace_back(Family::RdGy);
-            v.emplace_back(Family::RdYlBu);
-            v.emplace_back(Family::RdYlGn);
-            v.emplace_back(Family::Spectral);
             break;
         default:
             break;

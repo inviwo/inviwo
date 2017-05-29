@@ -122,7 +122,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
 glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
-    ##GETMAXIMPL##
+##GETMAXIMPL##
     return 0;
 }
 
