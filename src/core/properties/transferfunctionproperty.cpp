@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 

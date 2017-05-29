@@ -37,6 +37,7 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>

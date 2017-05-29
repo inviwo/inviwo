@@ -52,6 +52,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <inviwomodulespaths.h>
 

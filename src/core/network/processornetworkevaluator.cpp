@@ -33,6 +33,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/clock.h>
 
 namespace inviwo {
