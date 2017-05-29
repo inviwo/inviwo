@@ -28,27 +28,25 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
 
 #include <inviwo/core/util/colorbrewer.h>
-#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 namespace colorbrewer {
-
-const std::vector<dvec4> &colormap(Colormap colormap) {
+const std::vector<vec4> &getColormap(Colormap colormap) {
     switch (colormap) {
         case Colormap::Accent_3: {
-            static const std::vector<dvec4> accent_3(
+            static const std::vector<vec4> accent_3(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0)});
             return accent_3;
         }
         case Colormap::Accent_4: {
-            static const std::vector<dvec4> accent_4(
+            static const std::vector<vec4> accent_4(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0),
@@ -56,7 +54,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return accent_4;
         }
         case Colormap::Accent_5: {
-            static const std::vector<dvec4> accent_5(
+            static const std::vector<vec4> accent_5(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0),
@@ -65,7 +63,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return accent_5;
         }
         case Colormap::Accent_6: {
-            static const std::vector<dvec4> accent_6(
+            static const std::vector<vec4> accent_6(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0),
@@ -75,7 +73,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return accent_6;
         }
         case Colormap::Accent_7: {
-            static const std::vector<dvec4> accent_7(
+            static const std::vector<vec4> accent_7(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0),
@@ -86,7 +84,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return accent_7;
         }
         case Colormap::Accent_8: {
-            static const std::vector<dvec4> accent_8(
+            static const std::vector<vec4> accent_8(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
                  dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0),
                  dvec4(0.9921568627450981, 0.7529411764705882, 0.5254901960784314, 1.0),
@@ -98,14 +96,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return accent_8;
         }
         case Colormap::Blues_3: {
-            static const std::vector<dvec4> blues_3(
+            static const std::vector<vec4> blues_3(
                 {dvec4(0.8705882352941177, 0.9215686274509803, 0.9686274509803922, 1.0),
                  dvec4(0.6196078431372549, 0.792156862745098, 0.8823529411764706, 1.0),
                  dvec4(0.19215686274509805, 0.5098039215686274, 0.7411764705882353, 1.0)});
             return blues_3;
         }
         case Colormap::Blues_4: {
-            static const std::vector<dvec4> blues_4(
+            static const std::vector<vec4> blues_4(
                 {dvec4(0.9372549019607843, 0.9529411764705882, 1.0, 1.0),
                  dvec4(0.7411764705882353, 0.8431372549019608, 0.9058823529411765, 1.0),
                  dvec4(0.4196078431372549, 0.6823529411764706, 0.8392156862745098, 1.0),
@@ -113,7 +111,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_4;
         }
         case Colormap::Blues_5: {
-            static const std::vector<dvec4> blues_5(
+            static const std::vector<vec4> blues_5(
                 {dvec4(0.9372549019607843, 0.9529411764705882, 1.0, 1.0),
                  dvec4(0.7411764705882353, 0.8431372549019608, 0.9058823529411765, 1.0),
                  dvec4(0.4196078431372549, 0.6823529411764706, 0.8392156862745098, 1.0),
@@ -122,7 +120,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_5;
         }
         case Colormap::Blues_6: {
-            static const std::vector<dvec4> blues_6(
+            static const std::vector<vec4> blues_6(
                 {dvec4(0.9372549019607843, 0.9529411764705882, 1.0, 1.0),
                  dvec4(0.7764705882352941, 0.8588235294117647, 0.9372549019607843, 1.0),
                  dvec4(0.6196078431372549, 0.792156862745098, 0.8823529411764706, 1.0),
@@ -132,7 +130,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_6;
         }
         case Colormap::Blues_7: {
-            static const std::vector<dvec4> blues_7(
+            static const std::vector<vec4> blues_7(
                 {dvec4(0.9372549019607843, 0.9529411764705882, 1.0, 1.0),
                  dvec4(0.7764705882352941, 0.8588235294117647, 0.9372549019607843, 1.0),
                  dvec4(0.6196078431372549, 0.792156862745098, 0.8823529411764706, 1.0),
@@ -143,7 +141,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_7;
         }
         case Colormap::Blues_8: {
-            static const std::vector<dvec4> blues_8(
+            static const std::vector<vec4> blues_8(
                 {dvec4(0.9686274509803922, 0.984313725490196, 1.0, 1.0),
                  dvec4(0.8705882352941177, 0.9215686274509803, 0.9686274509803922, 1.0),
                  dvec4(0.7764705882352941, 0.8588235294117647, 0.9372549019607843, 1.0),
@@ -155,7 +153,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_8;
         }
         case Colormap::Blues_9: {
-            static const std::vector<dvec4> blues_9(
+            static const std::vector<vec4> blues_9(
                 {dvec4(0.9686274509803922, 0.984313725490196, 1.0, 1.0),
                  dvec4(0.8705882352941177, 0.9215686274509803, 0.9686274509803922, 1.0),
                  dvec4(0.7764705882352941, 0.8588235294117647, 0.9372549019607843, 1.0),
@@ -168,14 +166,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return blues_9;
         }
         case Colormap::BrBG_3: {
-            static const std::vector<dvec4> brbg_3(
+            static const std::vector<vec4> brbg_3(
                 {dvec4(0.8470588235294118, 0.7019607843137254, 0.396078431372549, 1.0),
                  dvec4(0.9607843137254902, 0.9607843137254902, 0.9607843137254902, 1.0),
                  dvec4(0.35294117647058826, 0.7058823529411765, 0.6745098039215687, 1.0)});
             return brbg_3;
         }
         case Colormap::BrBG_4: {
-            static const std::vector<dvec4> brbg_4(
+            static const std::vector<vec4> brbg_4(
                 {dvec4(0.6509803921568628, 0.3803921568627451, 0.10196078431372549, 1.0),
                  dvec4(0.8745098039215686, 0.7607843137254902, 0.49019607843137253, 1.0),
                  dvec4(0.5019607843137255, 0.803921568627451, 0.7568627450980392, 1.0),
@@ -183,7 +181,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_4;
         }
         case Colormap::BrBG_5: {
-            static const std::vector<dvec4> brbg_5(
+            static const std::vector<vec4> brbg_5(
                 {dvec4(0.6509803921568628, 0.3803921568627451, 0.10196078431372549, 1.0),
                  dvec4(0.8745098039215686, 0.7607843137254902, 0.49019607843137253, 1.0),
                  dvec4(0.9607843137254902, 0.9607843137254902, 0.9607843137254902, 1.0),
@@ -192,7 +190,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_5;
         }
         case Colormap::BrBG_6: {
-            static const std::vector<dvec4> brbg_6(
+            static const std::vector<vec4> brbg_6(
                 {dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.8470588235294118, 0.7019607843137254, 0.396078431372549, 1.0),
                  dvec4(0.9647058823529412, 0.9098039215686274, 0.7647058823529411, 1.0),
@@ -202,7 +200,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_6;
         }
         case Colormap::BrBG_7: {
-            static const std::vector<dvec4> brbg_7(
+            static const std::vector<vec4> brbg_7(
                 {dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.8470588235294118, 0.7019607843137254, 0.396078431372549, 1.0),
                  dvec4(0.9647058823529412, 0.9098039215686274, 0.7647058823529411, 1.0),
@@ -213,7 +211,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_7;
         }
         case Colormap::BrBG_8: {
-            static const std::vector<dvec4> brbg_8(
+            static const std::vector<vec4> brbg_8(
                 {dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.7490196078431373, 0.5058823529411764, 0.17647058823529413, 1.0),
                  dvec4(0.8745098039215686, 0.7607843137254902, 0.49019607843137253, 1.0),
@@ -225,7 +223,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_8;
         }
         case Colormap::BrBG_9: {
-            static const std::vector<dvec4> brbg_9(
+            static const std::vector<vec4> brbg_9(
                 {dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.7490196078431373, 0.5058823529411764, 0.17647058823529413, 1.0),
                  dvec4(0.8745098039215686, 0.7607843137254902, 0.49019607843137253, 1.0),
@@ -238,7 +236,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_9;
         }
         case Colormap::BrBG_10: {
-            static const std::vector<dvec4> brbg_10(
+            static const std::vector<vec4> brbg_10(
                 {dvec4(0.32941176470588235, 0.18823529411764706, 0.0196078431372549, 1.0),
                  dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.7490196078431373, 0.5058823529411764, 0.17647058823529413, 1.0),
@@ -252,7 +250,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_10;
         }
         case Colormap::BrBG_11: {
-            static const std::vector<dvec4> brbg_11(
+            static const std::vector<vec4> brbg_11(
                 {dvec4(0.32941176470588235, 0.18823529411764706, 0.0196078431372549, 1.0),
                  dvec4(0.5490196078431373, 0.3176470588235294, 0.0392156862745098, 1.0),
                  dvec4(0.7490196078431373, 0.5058823529411764, 0.17647058823529413, 1.0),
@@ -267,14 +265,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return brbg_11;
         }
         case Colormap::BuGn_3: {
-            static const std::vector<dvec4> bugn_3(
+            static const std::vector<vec4> bugn_3(
                 {dvec4(0.8980392156862745, 0.9607843137254902, 0.9764705882352941, 1.0),
                  dvec4(0.6, 0.8470588235294118, 0.788235294117647, 1.0),
                  dvec4(0.17254901960784313, 0.6352941176470588, 0.37254901960784315, 1.0)});
             return bugn_3;
         }
         case Colormap::BuGn_4: {
-            static const std::vector<dvec4> bugn_4(
+            static const std::vector<vec4> bugn_4(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.6980392156862745, 0.8862745098039215, 0.8862745098039215, 1.0),
                  dvec4(0.4, 0.7607843137254902, 0.6431372549019608, 1.0),
@@ -282,7 +280,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_4;
         }
         case Colormap::BuGn_5: {
-            static const std::vector<dvec4> bugn_5(
+            static const std::vector<vec4> bugn_5(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.6980392156862745, 0.8862745098039215, 0.8862745098039215, 1.0),
                  dvec4(0.4, 0.7607843137254902, 0.6431372549019608, 1.0),
@@ -291,7 +289,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_5;
         }
         case Colormap::BuGn_6: {
-            static const std::vector<dvec4> bugn_6(
+            static const std::vector<vec4> bugn_6(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.8, 0.9254901960784314, 0.9019607843137255, 1.0),
                  dvec4(0.6, 0.8470588235294118, 0.788235294117647, 1.0),
@@ -301,7 +299,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_6;
         }
         case Colormap::BuGn_7: {
-            static const std::vector<dvec4> bugn_7(
+            static const std::vector<vec4> bugn_7(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.8, 0.9254901960784314, 0.9019607843137255, 1.0),
                  dvec4(0.6, 0.8470588235294118, 0.788235294117647, 1.0),
@@ -312,7 +310,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_7;
         }
         case Colormap::BuGn_8: {
-            static const std::vector<dvec4> bugn_8(
+            static const std::vector<vec4> bugn_8(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9921568627450981, 1.0),
                  dvec4(0.8980392156862745, 0.9607843137254902, 0.9764705882352941, 1.0),
                  dvec4(0.8, 0.9254901960784314, 0.9019607843137255, 1.0),
@@ -324,7 +322,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_8;
         }
         case Colormap::BuGn_9: {
-            static const std::vector<dvec4> bugn_9(
+            static const std::vector<vec4> bugn_9(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9921568627450981, 1.0),
                  dvec4(0.8980392156862745, 0.9607843137254902, 0.9764705882352941, 1.0),
                  dvec4(0.8, 0.9254901960784314, 0.9019607843137255, 1.0),
@@ -337,14 +335,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bugn_9;
         }
         case Colormap::BuPu_3: {
-            static const std::vector<dvec4> bupu_3(
+            static const std::vector<vec4> bupu_3(
                 {dvec4(0.8784313725490196, 0.9254901960784314, 0.9568627450980393, 1.0),
                  dvec4(0.6196078431372549, 0.7372549019607844, 0.8549019607843137, 1.0),
                  dvec4(0.5333333333333333, 0.33725490196078434, 0.6549019607843137, 1.0)});
             return bupu_3;
         }
         case Colormap::BuPu_4: {
-            static const std::vector<dvec4> bupu_4(
+            static const std::vector<vec4> bupu_4(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.5490196078431373, 0.5882352941176471, 0.7764705882352941, 1.0),
@@ -352,7 +350,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_4;
         }
         case Colormap::BuPu_5: {
-            static const std::vector<dvec4> bupu_5(
+            static const std::vector<vec4> bupu_5(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.5490196078431373, 0.5882352941176471, 0.7764705882352941, 1.0),
@@ -361,7 +359,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_5;
         }
         case Colormap::BuPu_6: {
-            static const std::vector<dvec4> bupu_6(
+            static const std::vector<vec4> bupu_6(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.7490196078431373, 0.8274509803921568, 0.9019607843137255, 1.0),
                  dvec4(0.6196078431372549, 0.7372549019607844, 0.8549019607843137, 1.0),
@@ -371,7 +369,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_6;
         }
         case Colormap::BuPu_7: {
-            static const std::vector<dvec4> bupu_7(
+            static const std::vector<vec4> bupu_7(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.984313725490196, 1.0),
                  dvec4(0.7490196078431373, 0.8274509803921568, 0.9019607843137255, 1.0),
                  dvec4(0.6196078431372549, 0.7372549019607844, 0.8549019607843137, 1.0),
@@ -382,7 +380,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_7;
         }
         case Colormap::BuPu_8: {
-            static const std::vector<dvec4> bupu_8(
+            static const std::vector<vec4> bupu_8(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9921568627450981, 1.0),
                  dvec4(0.8784313725490196, 0.9254901960784314, 0.9568627450980393, 1.0),
                  dvec4(0.7490196078431373, 0.8274509803921568, 0.9019607843137255, 1.0),
@@ -394,7 +392,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_8;
         }
         case Colormap::BuPu_9: {
-            static const std::vector<dvec4> bupu_9(
+            static const std::vector<vec4> bupu_9(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9921568627450981, 1.0),
                  dvec4(0.8784313725490196, 0.9254901960784314, 0.9568627450980393, 1.0),
                  dvec4(0.7490196078431373, 0.8274509803921568, 0.9019607843137255, 1.0),
@@ -407,14 +405,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return bupu_9;
         }
         case Colormap::Dark2_3: {
-            static const std::vector<dvec4> dark2_3(
+            static const std::vector<vec4> dark2_3(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0)});
             return dark2_3;
         }
         case Colormap::Dark2_4: {
-            static const std::vector<dvec4> dark2_4(
+            static const std::vector<vec4> dark2_4(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0),
@@ -422,7 +420,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return dark2_4;
         }
         case Colormap::Dark2_5: {
-            static const std::vector<dvec4> dark2_5(
+            static const std::vector<vec4> dark2_5(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0),
@@ -431,7 +429,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return dark2_5;
         }
         case Colormap::Dark2_6: {
-            static const std::vector<dvec4> dark2_6(
+            static const std::vector<vec4> dark2_6(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0),
@@ -441,7 +439,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return dark2_6;
         }
         case Colormap::Dark2_7: {
-            static const std::vector<dvec4> dark2_7(
+            static const std::vector<vec4> dark2_7(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0),
@@ -452,7 +450,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return dark2_7;
         }
         case Colormap::Dark2_8: {
-            static const std::vector<dvec4> dark2_8(
+            static const std::vector<vec4> dark2_8(
                 {dvec4(0.10588235294117647, 0.6196078431372549, 0.4666666666666667, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.00784313725490196, 1.0),
                  dvec4(0.4588235294117647, 0.4392156862745098, 0.7019607843137254, 1.0),
@@ -464,14 +462,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return dark2_8;
         }
         case Colormap::GnBu_3: {
-            static const std::vector<dvec4> gnbu_3(
+            static const std::vector<vec4> gnbu_3(
                 {dvec4(0.8784313725490196, 0.9529411764705882, 0.8588235294117647, 1.0),
                  dvec4(0.6588235294117647, 0.8666666666666667, 0.7098039215686275, 1.0),
                  dvec4(0.2627450980392157, 0.6352941176470588, 0.792156862745098, 1.0)});
             return gnbu_3;
         }
         case Colormap::GnBu_4: {
-            static const std::vector<dvec4> gnbu_4(
+            static const std::vector<vec4> gnbu_4(
                 {dvec4(0.9411764705882353, 0.9764705882352941, 0.9098039215686274, 1.0),
                  dvec4(0.7294117647058823, 0.8941176470588236, 0.7372549019607844, 1.0),
                  dvec4(0.4823529411764706, 0.8, 0.7686274509803922, 1.0),
@@ -479,7 +477,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_4;
         }
         case Colormap::GnBu_5: {
-            static const std::vector<dvec4> gnbu_5(
+            static const std::vector<vec4> gnbu_5(
                 {dvec4(0.9411764705882353, 0.9764705882352941, 0.9098039215686274, 1.0),
                  dvec4(0.7294117647058823, 0.8941176470588236, 0.7372549019607844, 1.0),
                  dvec4(0.4823529411764706, 0.8, 0.7686274509803922, 1.0),
@@ -488,7 +486,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_5;
         }
         case Colormap::GnBu_6: {
-            static const std::vector<dvec4> gnbu_6(
+            static const std::vector<vec4> gnbu_6(
                 {dvec4(0.9411764705882353, 0.9764705882352941, 0.9098039215686274, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
                  dvec4(0.6588235294117647, 0.8666666666666667, 0.7098039215686275, 1.0),
@@ -498,7 +496,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_6;
         }
         case Colormap::GnBu_7: {
-            static const std::vector<dvec4> gnbu_7(
+            static const std::vector<vec4> gnbu_7(
                 {dvec4(0.9411764705882353, 0.9764705882352941, 0.9098039215686274, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
                  dvec4(0.6588235294117647, 0.8666666666666667, 0.7098039215686275, 1.0),
@@ -509,7 +507,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_7;
         }
         case Colormap::GnBu_8: {
-            static const std::vector<dvec4> gnbu_8(
+            static const std::vector<vec4> gnbu_8(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9411764705882353, 1.0),
                  dvec4(0.8784313725490196, 0.9529411764705882, 0.8588235294117647, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -521,7 +519,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_8;
         }
         case Colormap::GnBu_9: {
-            static const std::vector<dvec4> gnbu_9(
+            static const std::vector<vec4> gnbu_9(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9411764705882353, 1.0),
                  dvec4(0.8784313725490196, 0.9529411764705882, 0.8588235294117647, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -534,14 +532,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return gnbu_9;
         }
         case Colormap::Greens_3: {
-            static const std::vector<dvec4> greens_3(
+            static const std::vector<vec4> greens_3(
                 {dvec4(0.8980392156862745, 0.9607843137254902, 0.8784313725490196, 1.0),
                  dvec4(0.6313725490196078, 0.8509803921568627, 0.6078431372549019, 1.0),
                  dvec4(0.19215686274509805, 0.6392156862745098, 0.32941176470588235, 1.0)});
             return greens_3;
         }
         case Colormap::Greens_4: {
-            static const std::vector<dvec4> greens_4(
+            static const std::vector<vec4> greens_4(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.9137254901960784, 1.0),
                  dvec4(0.7294117647058823, 0.8941176470588236, 0.7019607843137254, 1.0),
                  dvec4(0.4549019607843137, 0.7686274509803922, 0.4627450980392157, 1.0),
@@ -549,7 +547,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_4;
         }
         case Colormap::Greens_5: {
-            static const std::vector<dvec4> greens_5(
+            static const std::vector<vec4> greens_5(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.9137254901960784, 1.0),
                  dvec4(0.7294117647058823, 0.8941176470588236, 0.7019607843137254, 1.0),
                  dvec4(0.4549019607843137, 0.7686274509803922, 0.4627450980392157, 1.0),
@@ -558,7 +556,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_5;
         }
         case Colormap::Greens_6: {
-            static const std::vector<dvec4> greens_6(
+            static const std::vector<vec4> greens_6(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.9137254901960784, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7529411764705882, 1.0),
                  dvec4(0.6313725490196078, 0.8509803921568627, 0.6078431372549019, 1.0),
@@ -568,7 +566,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_6;
         }
         case Colormap::Greens_7: {
-            static const std::vector<dvec4> greens_7(
+            static const std::vector<vec4> greens_7(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.9137254901960784, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7529411764705882, 1.0),
                  dvec4(0.6313725490196078, 0.8509803921568627, 0.6078431372549019, 1.0),
@@ -579,7 +577,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_7;
         }
         case Colormap::Greens_8: {
-            static const std::vector<dvec4> greens_8(
+            static const std::vector<vec4> greens_8(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9607843137254902, 1.0),
                  dvec4(0.8980392156862745, 0.9607843137254902, 0.8784313725490196, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7529411764705882, 1.0),
@@ -591,7 +589,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_8;
         }
         case Colormap::Greens_9: {
-            static const std::vector<dvec4> greens_9(
+            static const std::vector<vec4> greens_9(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.9607843137254902, 1.0),
                  dvec4(0.8980392156862745, 0.9607843137254902, 0.8784313725490196, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7529411764705882, 1.0),
@@ -604,14 +602,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greens_9;
         }
         case Colormap::Greys_3: {
-            static const std::vector<dvec4> greys_3(
+            static const std::vector<vec4> greys_3(
                 {dvec4(0.9411764705882353, 0.9411764705882353, 0.9411764705882353, 1.0),
                  dvec4(0.7411764705882353, 0.7411764705882353, 0.7411764705882353, 1.0),
                  dvec4(0.38823529411764707, 0.38823529411764707, 0.38823529411764707, 1.0)});
             return greys_3;
         }
         case Colormap::Greys_4: {
-            static const std::vector<dvec4> greys_4(
+            static const std::vector<vec4> greys_4(
                 {dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.8, 0.8, 0.8, 1.0),
                  dvec4(0.5882352941176471, 0.5882352941176471, 0.5882352941176471, 1.0),
@@ -619,7 +617,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_4;
         }
         case Colormap::Greys_5: {
-            static const std::vector<dvec4> greys_5(
+            static const std::vector<vec4> greys_5(
                 {dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.8, 0.8, 0.8, 1.0),
                  dvec4(0.5882352941176471, 0.5882352941176471, 0.5882352941176471, 1.0),
@@ -628,7 +626,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_5;
         }
         case Colormap::Greys_6: {
-            static const std::vector<dvec4> greys_6(
+            static const std::vector<vec4> greys_6(
                 {dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.8509803921568627, 0.8509803921568627, 0.8509803921568627, 1.0),
                  dvec4(0.7411764705882353, 0.7411764705882353, 0.7411764705882353, 1.0),
@@ -638,7 +636,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_6;
         }
         case Colormap::Greys_7: {
-            static const std::vector<dvec4> greys_7(
+            static const std::vector<vec4> greys_7(
                 {dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.8509803921568627, 0.8509803921568627, 0.8509803921568627, 1.0),
                  dvec4(0.7411764705882353, 0.7411764705882353, 0.7411764705882353, 1.0),
@@ -649,7 +647,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_7;
         }
         case Colormap::Greys_8: {
-            static const std::vector<dvec4> greys_8(
+            static const std::vector<vec4> greys_8(
                 {dvec4(1.0, 1.0, 1.0, 1.0),
                  dvec4(0.9411764705882353, 0.9411764705882353, 0.9411764705882353, 1.0),
                  dvec4(0.8509803921568627, 0.8509803921568627, 0.8509803921568627, 1.0),
@@ -661,7 +659,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_8;
         }
         case Colormap::Greys_9: {
-            static const std::vector<dvec4> greys_9(
+            static const std::vector<vec4> greys_9(
                 {dvec4(1.0, 1.0, 1.0, 1.0),
                  dvec4(0.9411764705882353, 0.9411764705882353, 0.9411764705882353, 1.0),
                  dvec4(0.8509803921568627, 0.8509803921568627, 0.8509803921568627, 1.0),
@@ -674,14 +672,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return greys_9;
         }
         case Colormap::OrRd_3: {
-            static const std::vector<dvec4> orrd_3(
+            static const std::vector<vec4> orrd_3(
                 {dvec4(0.996078431372549, 0.9098039215686274, 0.7843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.7333333333333333, 0.5176470588235295, 1.0),
                  dvec4(0.8901960784313725, 0.2901960784313726, 0.2, 1.0)});
             return orrd_3;
         }
         case Colormap::OrRd_4: {
-            static const std::vector<dvec4> orrd_4(
+            static const std::vector<vec4> orrd_4(
                 {dvec4(0.996078431372549, 0.9411764705882353, 0.8509803921568627, 1.0),
                  dvec4(0.9921568627450981, 0.8, 0.5411764705882353, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
@@ -689,7 +687,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_4;
         }
         case Colormap::OrRd_5: {
-            static const std::vector<dvec4> orrd_5(
+            static const std::vector<vec4> orrd_5(
                 {dvec4(0.996078431372549, 0.9411764705882353, 0.8509803921568627, 1.0),
                  dvec4(0.9921568627450981, 0.8, 0.5411764705882353, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
@@ -698,7 +696,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_5;
         }
         case Colormap::OrRd_6: {
-            static const std::vector<dvec4> orrd_6(
+            static const std::vector<vec4> orrd_6(
                 {dvec4(0.996078431372549, 0.9411764705882353, 0.8509803921568627, 1.0),
                  dvec4(0.9921568627450981, 0.8313725490196079, 0.6196078431372549, 1.0),
                  dvec4(0.9921568627450981, 0.7333333333333333, 0.5176470588235295, 1.0),
@@ -708,7 +706,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_6;
         }
         case Colormap::OrRd_7: {
-            static const std::vector<dvec4> orrd_7(
+            static const std::vector<vec4> orrd_7(
                 {dvec4(0.996078431372549, 0.9411764705882353, 0.8509803921568627, 1.0),
                  dvec4(0.9921568627450981, 0.8313725490196079, 0.6196078431372549, 1.0),
                  dvec4(0.9921568627450981, 0.7333333333333333, 0.5176470588235295, 1.0),
@@ -719,7 +717,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_7;
         }
         case Colormap::OrRd_8: {
-            static const std::vector<dvec4> orrd_8(
+            static const std::vector<vec4> orrd_8(
                 {dvec4(1.0, 0.9686274509803922, 0.9254901960784314, 1.0),
                  dvec4(0.996078431372549, 0.9098039215686274, 0.7843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8313725490196079, 0.6196078431372549, 1.0),
@@ -731,7 +729,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_8;
         }
         case Colormap::OrRd_9: {
-            static const std::vector<dvec4> orrd_9(
+            static const std::vector<vec4> orrd_9(
                 {dvec4(1.0, 0.9686274509803922, 0.9254901960784314, 1.0),
                  dvec4(0.996078431372549, 0.9098039215686274, 0.7843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8313725490196079, 0.6196078431372549, 1.0),
@@ -744,14 +742,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return orrd_9;
         }
         case Colormap::Oranges_3: {
-            static const std::vector<dvec4> oranges_3(
+            static const std::vector<vec4> oranges_3(
                 {dvec4(0.996078431372549, 0.9019607843137255, 0.807843137254902, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.4196078431372549, 1.0),
                  dvec4(0.9019607843137255, 0.3333333333333333, 0.050980392156862744, 1.0)});
             return oranges_3;
         }
         case Colormap::Oranges_4: {
-            static const std::vector<dvec4> oranges_4(
+            static const std::vector<vec4> oranges_4(
                 {dvec4(0.996078431372549, 0.9294117647058824, 0.8705882352941177, 1.0),
                  dvec4(0.9921568627450981, 0.7450980392156863, 0.5215686274509804, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -759,7 +757,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_4;
         }
         case Colormap::Oranges_5: {
-            static const std::vector<dvec4> oranges_5(
+            static const std::vector<vec4> oranges_5(
                 {dvec4(0.996078431372549, 0.9294117647058824, 0.8705882352941177, 1.0),
                  dvec4(0.9921568627450981, 0.7450980392156863, 0.5215686274509804, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -768,7 +766,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_5;
         }
         case Colormap::Oranges_6: {
-            static const std::vector<dvec4> oranges_6(
+            static const std::vector<vec4> oranges_6(
                 {dvec4(0.996078431372549, 0.9294117647058824, 0.8705882352941177, 1.0),
                  dvec4(0.9921568627450981, 0.8156862745098039, 0.6352941176470588, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.4196078431372549, 1.0),
@@ -778,7 +776,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_6;
         }
         case Colormap::Oranges_7: {
-            static const std::vector<dvec4> oranges_7(
+            static const std::vector<vec4> oranges_7(
                 {dvec4(0.996078431372549, 0.9294117647058824, 0.8705882352941177, 1.0),
                  dvec4(0.9921568627450981, 0.8156862745098039, 0.6352941176470588, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.4196078431372549, 1.0),
@@ -789,7 +787,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_7;
         }
         case Colormap::Oranges_8: {
-            static const std::vector<dvec4> oranges_8(
+            static const std::vector<vec4> oranges_8(
                 {dvec4(1.0, 0.9607843137254902, 0.9215686274509803, 1.0),
                  dvec4(0.996078431372549, 0.9019607843137255, 0.807843137254902, 1.0),
                  dvec4(0.9921568627450981, 0.8156862745098039, 0.6352941176470588, 1.0),
@@ -801,7 +799,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_8;
         }
         case Colormap::Oranges_9: {
-            static const std::vector<dvec4> oranges_9(
+            static const std::vector<vec4> oranges_9(
                 {dvec4(1.0, 0.9607843137254902, 0.9215686274509803, 1.0),
                  dvec4(0.996078431372549, 0.9019607843137255, 0.807843137254902, 1.0),
                  dvec4(0.9921568627450981, 0.8156862745098039, 0.6352941176470588, 1.0),
@@ -814,14 +812,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return oranges_9;
         }
         case Colormap::PRGn_3: {
-            static const std::vector<dvec4> prgn_3(
+            static const std::vector<vec4> prgn_3(
                 {dvec4(0.6862745098039216, 0.5529411764705883, 0.7647058823529411, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.4980392156862745, 0.7490196078431373, 0.4823529411764706, 1.0)});
             return prgn_3;
         }
         case Colormap::PRGn_4: {
-            static const std::vector<dvec4> prgn_4(
+            static const std::vector<vec4> prgn_4(
                 {dvec4(0.4823529411764706, 0.19607843137254902, 0.5803921568627451, 1.0),
                  dvec4(0.7607843137254902, 0.6470588235294118, 0.8117647058823529, 1.0),
                  dvec4(0.6509803921568628, 0.8588235294117647, 0.6274509803921569, 1.0),
@@ -829,7 +827,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_4;
         }
         case Colormap::PRGn_5: {
-            static const std::vector<dvec4> prgn_5(
+            static const std::vector<vec4> prgn_5(
                 {dvec4(0.4823529411764706, 0.19607843137254902, 0.5803921568627451, 1.0),
                  dvec4(0.7607843137254902, 0.6470588235294118, 0.8117647058823529, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
@@ -838,7 +836,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_5;
         }
         case Colormap::PRGn_6: {
-            static const std::vector<dvec4> prgn_6(
+            static const std::vector<vec4> prgn_6(
                 {dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6862745098039216, 0.5529411764705883, 0.7647058823529411, 1.0),
                  dvec4(0.9058823529411765, 0.8313725490196079, 0.9098039215686274, 1.0),
@@ -848,7 +846,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_6;
         }
         case Colormap::PRGn_7: {
-            static const std::vector<dvec4> prgn_7(
+            static const std::vector<vec4> prgn_7(
                 {dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6862745098039216, 0.5529411764705883, 0.7647058823529411, 1.0),
                  dvec4(0.9058823529411765, 0.8313725490196079, 0.9098039215686274, 1.0),
@@ -859,7 +857,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_7;
         }
         case Colormap::PRGn_8: {
-            static const std::vector<dvec4> prgn_8(
+            static const std::vector<vec4> prgn_8(
                 {dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6, 0.4392156862745098, 0.6705882352941176, 1.0),
                  dvec4(0.7607843137254902, 0.6470588235294118, 0.8117647058823529, 1.0),
@@ -871,7 +869,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_8;
         }
         case Colormap::PRGn_9: {
-            static const std::vector<dvec4> prgn_9(
+            static const std::vector<vec4> prgn_9(
                 {dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6, 0.4392156862745098, 0.6705882352941176, 1.0),
                  dvec4(0.7607843137254902, 0.6470588235294118, 0.8117647058823529, 1.0),
@@ -884,7 +882,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_9;
         }
         case Colormap::PRGn_10: {
-            static const std::vector<dvec4> prgn_10(
+            static const std::vector<vec4> prgn_10(
                 {dvec4(0.25098039215686274, 0.0, 0.29411764705882354, 1.0),
                  dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6, 0.4392156862745098, 0.6705882352941176, 1.0),
@@ -898,7 +896,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_10;
         }
         case Colormap::PRGn_11: {
-            static const std::vector<dvec4> prgn_11(
+            static const std::vector<vec4> prgn_11(
                 {dvec4(0.25098039215686274, 0.0, 0.29411764705882354, 1.0),
                  dvec4(0.4627450980392157, 0.16470588235294117, 0.5137254901960784, 1.0),
                  dvec4(0.6, 0.4392156862745098, 0.6705882352941176, 1.0),
@@ -913,14 +911,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return prgn_11;
         }
         case Colormap::Paired_3: {
-            static const std::vector<dvec4> paired_3(
+            static const std::vector<vec4> paired_3(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0)});
             return paired_3;
         }
         case Colormap::Paired_4: {
-            static const std::vector<dvec4> paired_4(
+            static const std::vector<vec4> paired_4(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -928,7 +926,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_4;
         }
         case Colormap::Paired_5: {
-            static const std::vector<dvec4> paired_5(
+            static const std::vector<vec4> paired_5(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -937,7 +935,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_5;
         }
         case Colormap::Paired_6: {
-            static const std::vector<dvec4> paired_6(
+            static const std::vector<vec4> paired_6(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -947,7 +945,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_6;
         }
         case Colormap::Paired_7: {
-            static const std::vector<dvec4> paired_7(
+            static const std::vector<vec4> paired_7(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -958,7 +956,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_7;
         }
         case Colormap::Paired_8: {
-            static const std::vector<dvec4> paired_8(
+            static const std::vector<vec4> paired_8(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -970,7 +968,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_8;
         }
         case Colormap::Paired_9: {
-            static const std::vector<dvec4> paired_9(
+            static const std::vector<vec4> paired_9(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -983,7 +981,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_9;
         }
         case Colormap::Paired_10: {
-            static const std::vector<dvec4> paired_10(
+            static const std::vector<vec4> paired_10(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -997,7 +995,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_10;
         }
         case Colormap::Paired_11: {
-            static const std::vector<dvec4> paired_11(
+            static const std::vector<vec4> paired_11(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -1012,7 +1010,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_11;
         }
         case Colormap::Paired_12: {
-            static const std::vector<dvec4> paired_12(
+            static const std::vector<vec4> paired_12(
                 {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
                  dvec4(0.12156862745098039, 0.47058823529411764, 0.7058823529411765, 1.0),
                  dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0),
@@ -1028,14 +1026,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return paired_12;
         }
         case Colormap::Pastel1_3: {
-            static const std::vector<dvec4> pastel1_3(
+            static const std::vector<vec4> pastel1_3(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0)});
             return pastel1_3;
         }
         case Colormap::Pastel1_4: {
-            static const std::vector<dvec4> pastel1_4(
+            static const std::vector<vec4> pastel1_4(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1043,7 +1041,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_4;
         }
         case Colormap::Pastel1_5: {
-            static const std::vector<dvec4> pastel1_5(
+            static const std::vector<vec4> pastel1_5(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1052,7 +1050,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_5;
         }
         case Colormap::Pastel1_6: {
-            static const std::vector<dvec4> pastel1_6(
+            static const std::vector<vec4> pastel1_6(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1062,7 +1060,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_6;
         }
         case Colormap::Pastel1_7: {
-            static const std::vector<dvec4> pastel1_7(
+            static const std::vector<vec4> pastel1_7(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1073,7 +1071,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_7;
         }
         case Colormap::Pastel1_8: {
-            static const std::vector<dvec4> pastel1_8(
+            static const std::vector<vec4> pastel1_8(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1085,7 +1083,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_8;
         }
         case Colormap::Pastel1_9: {
-            static const std::vector<dvec4> pastel1_9(
+            static const std::vector<vec4> pastel1_9(
                 {dvec4(0.984313725490196, 0.7058823529411765, 0.6823529411764706, 1.0),
                  dvec4(0.7019607843137254, 0.803921568627451, 0.8901960784313725, 1.0),
                  dvec4(0.8, 0.9215686274509803, 0.7725490196078432, 1.0),
@@ -1098,14 +1096,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel1_9;
         }
         case Colormap::Pastel2_3: {
-            static const std::vector<dvec4> pastel2_3(
+            static const std::vector<vec4> pastel2_3(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0)});
             return pastel2_3;
         }
         case Colormap::Pastel2_4: {
-            static const std::vector<dvec4> pastel2_4(
+            static const std::vector<vec4> pastel2_4(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0),
@@ -1113,7 +1111,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel2_4;
         }
         case Colormap::Pastel2_5: {
-            static const std::vector<dvec4> pastel2_5(
+            static const std::vector<vec4> pastel2_5(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0),
@@ -1122,7 +1120,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel2_5;
         }
         case Colormap::Pastel2_6: {
-            static const std::vector<dvec4> pastel2_6(
+            static const std::vector<vec4> pastel2_6(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0),
@@ -1132,7 +1130,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel2_6;
         }
         case Colormap::Pastel2_7: {
-            static const std::vector<dvec4> pastel2_7(
+            static const std::vector<vec4> pastel2_7(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0),
@@ -1143,7 +1141,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel2_7;
         }
         case Colormap::Pastel2_8: {
-            static const std::vector<dvec4> pastel2_8(
+            static const std::vector<vec4> pastel2_8(
                 {dvec4(0.7019607843137254, 0.8862745098039215, 0.803921568627451, 1.0),
                  dvec4(0.9921568627450981, 0.803921568627451, 0.6745098039215687, 1.0),
                  dvec4(0.796078431372549, 0.8352941176470589, 0.9098039215686274, 1.0),
@@ -1155,14 +1153,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pastel2_8;
         }
         case Colormap::PiYG_3: {
-            static const std::vector<dvec4> piyg_3(
+            static const std::vector<vec4> piyg_3(
                 {dvec4(0.9137254901960784, 0.6392156862745098, 0.788235294117647, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.6313725490196078, 0.8431372549019608, 0.41568627450980394, 1.0)});
             return piyg_3;
         }
         case Colormap::PiYG_4: {
-            static const std::vector<dvec4> piyg_4(
+            static const std::vector<vec4> piyg_4(
                 {dvec4(0.8156862745098039, 0.10980392156862745, 0.5450980392156862, 1.0),
                  dvec4(0.9450980392156862, 0.7137254901960784, 0.8549019607843137, 1.0),
                  dvec4(0.7215686274509804, 0.8823529411764706, 0.5254901960784314, 1.0),
@@ -1170,7 +1168,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_4;
         }
         case Colormap::PiYG_5: {
-            static const std::vector<dvec4> piyg_5(
+            static const std::vector<vec4> piyg_5(
                 {dvec4(0.8156862745098039, 0.10980392156862745, 0.5450980392156862, 1.0),
                  dvec4(0.9450980392156862, 0.7137254901960784, 0.8549019607843137, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
@@ -1179,7 +1177,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_5;
         }
         case Colormap::PiYG_6: {
-            static const std::vector<dvec4> piyg_6(
+            static const std::vector<vec4> piyg_6(
                 {dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.9137254901960784, 0.6392156862745098, 0.788235294117647, 1.0),
                  dvec4(0.9921568627450981, 0.8784313725490196, 0.9372549019607843, 1.0),
@@ -1189,7 +1187,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_6;
         }
         case Colormap::PiYG_7: {
-            static const std::vector<dvec4> piyg_7(
+            static const std::vector<vec4> piyg_7(
                 {dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.9137254901960784, 0.6392156862745098, 0.788235294117647, 1.0),
                  dvec4(0.9921568627450981, 0.8784313725490196, 0.9372549019607843, 1.0),
@@ -1200,7 +1198,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_7;
         }
         case Colormap::PiYG_8: {
-            static const std::vector<dvec4> piyg_8(
+            static const std::vector<vec4> piyg_8(
                 {dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.8705882352941177, 0.4666666666666667, 0.6823529411764706, 1.0),
                  dvec4(0.9450980392156862, 0.7137254901960784, 0.8549019607843137, 1.0),
@@ -1212,7 +1210,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_8;
         }
         case Colormap::PiYG_9: {
-            static const std::vector<dvec4> piyg_9(
+            static const std::vector<vec4> piyg_9(
                 {dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.8705882352941177, 0.4666666666666667, 0.6823529411764706, 1.0),
                  dvec4(0.9450980392156862, 0.7137254901960784, 0.8549019607843137, 1.0),
@@ -1225,7 +1223,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_9;
         }
         case Colormap::PiYG_10: {
-            static const std::vector<dvec4> piyg_10(
+            static const std::vector<vec4> piyg_10(
                 {dvec4(0.5568627450980392, 0.00392156862745098, 0.3215686274509804, 1.0),
                  dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.8705882352941177, 0.4666666666666667, 0.6823529411764706, 1.0),
@@ -1239,7 +1237,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_10;
         }
         case Colormap::PiYG_11: {
-            static const std::vector<dvec4> piyg_11(
+            static const std::vector<vec4> piyg_11(
                 {dvec4(0.5568627450980392, 0.00392156862745098, 0.3215686274509804, 1.0),
                  dvec4(0.7725490196078432, 0.10588235294117647, 0.49019607843137253, 1.0),
                  dvec4(0.8705882352941177, 0.4666666666666667, 0.6823529411764706, 1.0),
@@ -1254,14 +1252,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return piyg_11;
         }
         case Colormap::PuBu_3: {
-            static const std::vector<dvec4> pubu_3(
+            static const std::vector<vec4> pubu_3(
                 {dvec4(0.9254901960784314, 0.9058823529411765, 0.9490196078431372, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
                  dvec4(0.16862745098039217, 0.5490196078431373, 0.7450980392156863, 1.0)});
             return pubu_3;
         }
         case Colormap::PuBu_4: {
-            static const std::vector<dvec4> pubu_4(
+            static const std::vector<vec4> pubu_4(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.7411764705882353, 0.788235294117647, 0.8823529411764706, 1.0),
                  dvec4(0.4549019607843137, 0.6627450980392157, 0.8117647058823529, 1.0),
@@ -1269,7 +1267,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_4;
         }
         case Colormap::PuBu_5: {
-            static const std::vector<dvec4> pubu_5(
+            static const std::vector<vec4> pubu_5(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.7411764705882353, 0.788235294117647, 0.8823529411764706, 1.0),
                  dvec4(0.4549019607843137, 0.6627450980392157, 0.8117647058823529, 1.0),
@@ -1278,7 +1276,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_5;
         }
         case Colormap::PuBu_6: {
-            static const std::vector<dvec4> pubu_6(
+            static const std::vector<vec4> pubu_6(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
@@ -1288,7 +1286,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_6;
         }
         case Colormap::PuBu_7: {
-            static const std::vector<dvec4> pubu_7(
+            static const std::vector<vec4> pubu_7(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
@@ -1299,7 +1297,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_7;
         }
         case Colormap::PuBu_8: {
-            static const std::vector<dvec4> pubu_8(
+            static const std::vector<vec4> pubu_8(
                 {dvec4(1.0, 0.9686274509803922, 0.984313725490196, 1.0),
                  dvec4(0.9254901960784314, 0.9058823529411765, 0.9490196078431372, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
@@ -1311,7 +1309,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_8;
         }
         case Colormap::PuBu_9: {
-            static const std::vector<dvec4> pubu_9(
+            static const std::vector<vec4> pubu_9(
                 {dvec4(1.0, 0.9686274509803922, 0.984313725490196, 1.0),
                  dvec4(0.9254901960784314, 0.9058823529411765, 0.9490196078431372, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
@@ -1324,14 +1322,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubu_9;
         }
         case Colormap::PuBuGn_3: {
-            static const std::vector<dvec4> pubugn_3(
+            static const std::vector<vec4> pubugn_3(
                 {dvec4(0.9254901960784314, 0.8862745098039215, 0.9411764705882353, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
                  dvec4(0.10980392156862745, 0.5647058823529412, 0.6, 1.0)});
             return pubugn_3;
         }
         case Colormap::PuBuGn_4: {
-            static const std::vector<dvec4> pubugn_4(
+            static const std::vector<vec4> pubugn_4(
                 {dvec4(0.9647058823529412, 0.9372549019607843, 0.9686274509803922, 1.0),
                  dvec4(0.7411764705882353, 0.788235294117647, 0.8823529411764706, 1.0),
                  dvec4(0.403921568627451, 0.6627450980392157, 0.8117647058823529, 1.0),
@@ -1339,7 +1337,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_4;
         }
         case Colormap::PuBuGn_5: {
-            static const std::vector<dvec4> pubugn_5(
+            static const std::vector<vec4> pubugn_5(
                 {dvec4(0.9647058823529412, 0.9372549019607843, 0.9686274509803922, 1.0),
                  dvec4(0.7411764705882353, 0.788235294117647, 0.8823529411764706, 1.0),
                  dvec4(0.403921568627451, 0.6627450980392157, 0.8117647058823529, 1.0),
@@ -1348,7 +1346,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_5;
         }
         case Colormap::PuBuGn_6: {
-            static const std::vector<dvec4> pubugn_6(
+            static const std::vector<vec4> pubugn_6(
                 {dvec4(0.9647058823529412, 0.9372549019607843, 0.9686274509803922, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
@@ -1358,7 +1356,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_6;
         }
         case Colormap::PuBuGn_7: {
-            static const std::vector<dvec4> pubugn_7(
+            static const std::vector<vec4> pubugn_7(
                 {dvec4(0.9647058823529412, 0.9372549019607843, 0.9686274509803922, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
                  dvec4(0.6509803921568628, 0.7411764705882353, 0.8588235294117647, 1.0),
@@ -1369,7 +1367,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_7;
         }
         case Colormap::PuBuGn_8: {
-            static const std::vector<dvec4> pubugn_8(
+            static const std::vector<vec4> pubugn_8(
                 {dvec4(1.0, 0.9686274509803922, 0.984313725490196, 1.0),
                  dvec4(0.9254901960784314, 0.8862745098039215, 0.9411764705882353, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
@@ -1381,7 +1379,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_8;
         }
         case Colormap::PuBuGn_9: {
-            static const std::vector<dvec4> pubugn_9(
+            static const std::vector<vec4> pubugn_9(
                 {dvec4(1.0, 0.9686274509803922, 0.984313725490196, 1.0),
                  dvec4(0.9254901960784314, 0.8862745098039215, 0.9411764705882353, 1.0),
                  dvec4(0.8156862745098039, 0.8196078431372549, 0.9019607843137255, 1.0),
@@ -1394,14 +1392,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return pubugn_9;
         }
         case Colormap::PuOr_3: {
-            static const std::vector<dvec4> puor_3(
+            static const std::vector<vec4> puor_3(
                 {dvec4(0.9450980392156862, 0.6392156862745098, 0.25098039215686274, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.6, 0.5568627450980392, 0.7647058823529411, 1.0)});
             return puor_3;
         }
         case Colormap::PuOr_4: {
-            static const std::vector<dvec4> puor_4(
+            static const std::vector<vec4> puor_4(
                 {dvec4(0.9019607843137255, 0.3803921568627451, 0.00392156862745098, 1.0),
                  dvec4(0.9921568627450981, 0.7215686274509804, 0.38823529411764707, 1.0),
                  dvec4(0.6980392156862745, 0.6705882352941176, 0.8235294117647058, 1.0),
@@ -1409,7 +1407,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_4;
         }
         case Colormap::PuOr_5: {
-            static const std::vector<dvec4> puor_5(
+            static const std::vector<vec4> puor_5(
                 {dvec4(0.9019607843137255, 0.3803921568627451, 0.00392156862745098, 1.0),
                  dvec4(0.9921568627450981, 0.7215686274509804, 0.38823529411764707, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
@@ -1418,7 +1416,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_5;
         }
         case Colormap::PuOr_6: {
-            static const std::vector<dvec4> puor_6(
+            static const std::vector<vec4> puor_6(
                 {dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.9450980392156862, 0.6392156862745098, 0.25098039215686274, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.7137254901960784, 1.0),
@@ -1428,7 +1426,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_6;
         }
         case Colormap::PuOr_7: {
-            static const std::vector<dvec4> puor_7(
+            static const std::vector<vec4> puor_7(
                 {dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.9450980392156862, 0.6392156862745098, 0.25098039215686274, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.7137254901960784, 1.0),
@@ -1439,7 +1437,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_7;
         }
         case Colormap::PuOr_8: {
-            static const std::vector<dvec4> puor_8(
+            static const std::vector<vec4> puor_8(
                 {dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.8784313725490196, 0.5098039215686274, 0.0784313725490196, 1.0),
                  dvec4(0.9921568627450981, 0.7215686274509804, 0.38823529411764707, 1.0),
@@ -1451,7 +1449,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_8;
         }
         case Colormap::PuOr_9: {
-            static const std::vector<dvec4> puor_9(
+            static const std::vector<vec4> puor_9(
                 {dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.8784313725490196, 0.5098039215686274, 0.0784313725490196, 1.0),
                  dvec4(0.9921568627450981, 0.7215686274509804, 0.38823529411764707, 1.0),
@@ -1464,7 +1462,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_9;
         }
         case Colormap::PuOr_10: {
-            static const std::vector<dvec4> puor_10(
+            static const std::vector<vec4> puor_10(
                 {dvec4(0.4980392156862745, 0.23137254901960785, 0.03137254901960784, 1.0),
                  dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.8784313725490196, 0.5098039215686274, 0.0784313725490196, 1.0),
@@ -1478,7 +1476,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_10;
         }
         case Colormap::PuOr_11: {
-            static const std::vector<dvec4> puor_11(
+            static const std::vector<vec4> puor_11(
                 {dvec4(0.4980392156862745, 0.23137254901960785, 0.03137254901960784, 1.0),
                  dvec4(0.7019607843137254, 0.34509803921568627, 0.023529411764705882, 1.0),
                  dvec4(0.8784313725490196, 0.5098039215686274, 0.0784313725490196, 1.0),
@@ -1493,14 +1491,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return puor_11;
         }
         case Colormap::PuRd_3: {
-            static const std::vector<dvec4> purd_3(
+            static const std::vector<vec4> purd_3(
                 {dvec4(0.9058823529411765, 0.8823529411764706, 0.9372549019607843, 1.0),
                  dvec4(0.788235294117647, 0.5803921568627451, 0.7803921568627451, 1.0),
                  dvec4(0.8666666666666667, 0.10980392156862745, 0.4666666666666667, 1.0)});
             return purd_3;
         }
         case Colormap::PuRd_4: {
-            static const std::vector<dvec4> purd_4(
+            static const std::vector<vec4> purd_4(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8431372549019608, 0.7098039215686275, 0.8470588235294118, 1.0),
                  dvec4(0.8745098039215686, 0.396078431372549, 0.6901960784313725, 1.0),
@@ -1508,7 +1506,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_4;
         }
         case Colormap::PuRd_5: {
-            static const std::vector<dvec4> purd_5(
+            static const std::vector<vec4> purd_5(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8431372549019608, 0.7098039215686275, 0.8470588235294118, 1.0),
                  dvec4(0.8745098039215686, 0.396078431372549, 0.6901960784313725, 1.0),
@@ -1517,7 +1515,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_5;
         }
         case Colormap::PuRd_6: {
-            static const std::vector<dvec4> purd_6(
+            static const std::vector<vec4> purd_6(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8313725490196079, 0.7254901960784313, 0.8549019607843137, 1.0),
                  dvec4(0.788235294117647, 0.5803921568627451, 0.7803921568627451, 1.0),
@@ -1527,7 +1525,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_6;
         }
         case Colormap::PuRd_7: {
-            static const std::vector<dvec4> purd_7(
+            static const std::vector<vec4> purd_7(
                 {dvec4(0.9450980392156862, 0.9333333333333333, 0.9647058823529412, 1.0),
                  dvec4(0.8313725490196079, 0.7254901960784313, 0.8549019607843137, 1.0),
                  dvec4(0.788235294117647, 0.5803921568627451, 0.7803921568627451, 1.0),
@@ -1538,7 +1536,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_7;
         }
         case Colormap::PuRd_8: {
-            static const std::vector<dvec4> purd_8(
+            static const std::vector<vec4> purd_8(
                 {dvec4(0.9686274509803922, 0.9568627450980393, 0.9764705882352941, 1.0),
                  dvec4(0.9058823529411765, 0.8823529411764706, 0.9372549019607843, 1.0),
                  dvec4(0.8313725490196079, 0.7254901960784313, 0.8549019607843137, 1.0),
@@ -1550,7 +1548,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_8;
         }
         case Colormap::PuRd_9: {
-            static const std::vector<dvec4> purd_9(
+            static const std::vector<vec4> purd_9(
                 {dvec4(0.9686274509803922, 0.9568627450980393, 0.9764705882352941, 1.0),
                  dvec4(0.9058823529411765, 0.8823529411764706, 0.9372549019607843, 1.0),
                  dvec4(0.8313725490196079, 0.7254901960784313, 0.8549019607843137, 1.0),
@@ -1563,14 +1561,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purd_9;
         }
         case Colormap::Purples_3: {
-            static const std::vector<dvec4> purples_3(
+            static const std::vector<vec4> purples_3(
                 {dvec4(0.9372549019607843, 0.9294117647058824, 0.9607843137254902, 1.0),
                  dvec4(0.7372549019607844, 0.7411764705882353, 0.8627450980392157, 1.0),
                  dvec4(0.4588235294117647, 0.4196078431372549, 0.6941176470588235, 1.0)});
             return purples_3;
         }
         case Colormap::Purples_4: {
-            static const std::vector<dvec4> purples_4(
+            static const std::vector<vec4> purples_4(
                 {dvec4(0.9490196078431372, 0.9411764705882353, 0.9686274509803922, 1.0),
                  dvec4(0.796078431372549, 0.788235294117647, 0.8862745098039215, 1.0),
                  dvec4(0.6196078431372549, 0.6039215686274509, 0.7843137254901961, 1.0),
@@ -1578,7 +1576,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_4;
         }
         case Colormap::Purples_5: {
-            static const std::vector<dvec4> purples_5(
+            static const std::vector<vec4> purples_5(
                 {dvec4(0.9490196078431372, 0.9411764705882353, 0.9686274509803922, 1.0),
                  dvec4(0.796078431372549, 0.788235294117647, 0.8862745098039215, 1.0),
                  dvec4(0.6196078431372549, 0.6039215686274509, 0.7843137254901961, 1.0),
@@ -1587,7 +1585,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_5;
         }
         case Colormap::Purples_6: {
-            static const std::vector<dvec4> purples_6(
+            static const std::vector<vec4> purples_6(
                 {dvec4(0.9490196078431372, 0.9411764705882353, 0.9686274509803922, 1.0),
                  dvec4(0.8549019607843137, 0.8549019607843137, 0.9215686274509803, 1.0),
                  dvec4(0.7372549019607844, 0.7411764705882353, 0.8627450980392157, 1.0),
@@ -1597,7 +1595,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_6;
         }
         case Colormap::Purples_7: {
-            static const std::vector<dvec4> purples_7(
+            static const std::vector<vec4> purples_7(
                 {dvec4(0.9490196078431372, 0.9411764705882353, 0.9686274509803922, 1.0),
                  dvec4(0.8549019607843137, 0.8549019607843137, 0.9215686274509803, 1.0),
                  dvec4(0.7372549019607844, 0.7411764705882353, 0.8627450980392157, 1.0),
@@ -1608,7 +1606,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_7;
         }
         case Colormap::Purples_8: {
-            static const std::vector<dvec4> purples_8(
+            static const std::vector<vec4> purples_8(
                 {dvec4(0.9882352941176471, 0.984313725490196, 0.9921568627450981, 1.0),
                  dvec4(0.9372549019607843, 0.9294117647058824, 0.9607843137254902, 1.0),
                  dvec4(0.8549019607843137, 0.8549019607843137, 0.9215686274509803, 1.0),
@@ -1620,7 +1618,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_8;
         }
         case Colormap::Purples_9: {
-            static const std::vector<dvec4> purples_9(
+            static const std::vector<vec4> purples_9(
                 {dvec4(0.9882352941176471, 0.984313725490196, 0.9921568627450981, 1.0),
                  dvec4(0.9372549019607843, 0.9294117647058824, 0.9607843137254902, 1.0),
                  dvec4(0.8549019607843137, 0.8549019607843137, 0.9215686274509803, 1.0),
@@ -1633,14 +1631,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return purples_9;
         }
         case Colormap::RdBu_3: {
-            static const std::vector<dvec4> rdbu_3(
+            static const std::vector<vec4> rdbu_3(
                 {dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
                  dvec4(0.403921568627451, 0.6627450980392157, 0.8117647058823529, 1.0)});
             return rdbu_3;
         }
         case Colormap::RdBu_4: {
-            static const std::vector<dvec4> rdbu_4(
+            static const std::vector<vec4> rdbu_4(
                 {dvec4(0.792156862745098, 0.0, 0.12549019607843137, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
                  dvec4(0.5725490196078431, 0.7725490196078432, 0.8705882352941177, 1.0),
@@ -1648,7 +1646,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_4;
         }
         case Colormap::RdBu_5: {
-            static const std::vector<dvec4> rdbu_5(
+            static const std::vector<vec4> rdbu_5(
                 {dvec4(0.792156862745098, 0.0, 0.12549019607843137, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
                  dvec4(0.9686274509803922, 0.9686274509803922, 0.9686274509803922, 1.0),
@@ -1657,7 +1655,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_5;
         }
         case Colormap::RdBu_6: {
-            static const std::vector<dvec4> rdbu_6(
+            static const std::vector<vec4> rdbu_6(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8588235294117647, 0.7803921568627451, 1.0),
@@ -1667,7 +1665,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_6;
         }
         case Colormap::RdBu_7: {
-            static const std::vector<dvec4> rdbu_7(
+            static const std::vector<vec4> rdbu_7(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8588235294117647, 0.7803921568627451, 1.0),
@@ -1678,7 +1676,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_7;
         }
         case Colormap::RdBu_8: {
-            static const std::vector<dvec4> rdbu_8(
+            static const std::vector<vec4> rdbu_8(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
@@ -1690,7 +1688,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_8;
         }
         case Colormap::RdBu_9: {
-            static const std::vector<dvec4> rdbu_9(
+            static const std::vector<vec4> rdbu_9(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
@@ -1703,7 +1701,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_9;
         }
         case Colormap::RdBu_10: {
-            static const std::vector<dvec4> rdbu_10(
+            static const std::vector<vec4> rdbu_10(
                 {dvec4(0.403921568627451, 0.0, 0.12156862745098039, 1.0),
                  dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
@@ -1717,7 +1715,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_10;
         }
         case Colormap::RdBu_11: {
-            static const std::vector<dvec4> rdbu_11(
+            static const std::vector<vec4> rdbu_11(
                 {dvec4(0.403921568627451, 0.0, 0.12156862745098039, 1.0),
                  dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
@@ -1732,14 +1730,13 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdbu_11;
         }
         case Colormap::RdGy_3: {
-            static const std::vector<dvec4> rdgy_3(
+            static const std::vector<vec4> rdgy_3(
                 {dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
-                 dvec4(1.0, 1.0, 1.0, 1.0),
-                 dvec4(0.6, 0.6, 0.6, 1.0)});
+                 dvec4(1.0, 1.0, 1.0, 1.0), dvec4(0.6, 0.6, 0.6, 1.0)});
             return rdgy_3;
         }
         case Colormap::RdGy_4: {
-            static const std::vector<dvec4> rdgy_4(
+            static const std::vector<vec4> rdgy_4(
                 {dvec4(0.792156862745098, 0.0, 0.12549019607843137, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
                  dvec4(0.7294117647058823, 0.7294117647058823, 0.7294117647058823, 1.0),
@@ -1747,7 +1744,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_4;
         }
         case Colormap::RdGy_5: {
-            static const std::vector<dvec4> rdgy_5(
+            static const std::vector<vec4> rdgy_5(
                 {dvec4(0.792156862745098, 0.0, 0.12549019607843137, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
                  dvec4(1.0, 1.0, 1.0, 1.0),
@@ -1756,7 +1753,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_5;
         }
         case Colormap::RdGy_6: {
-            static const std::vector<dvec4> rdgy_6(
+            static const std::vector<vec4> rdgy_6(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8588235294117647, 0.7803921568627451, 1.0),
@@ -1766,7 +1763,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_6;
         }
         case Colormap::RdGy_7: {
-            static const std::vector<dvec4> rdgy_7(
+            static const std::vector<vec4> rdgy_7(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
                  dvec4(0.9921568627450981, 0.8588235294117647, 0.7803921568627451, 1.0),
@@ -1777,7 +1774,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_7;
         }
         case Colormap::RdGy_8: {
-            static const std::vector<dvec4> rdgy_8(
+            static const std::vector<vec4> rdgy_8(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
@@ -1789,7 +1786,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_8;
         }
         case Colormap::RdGy_9: {
-            static const std::vector<dvec4> rdgy_9(
+            static const std::vector<vec4> rdgy_9(
                 {dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
                  dvec4(0.9568627450980393, 0.6470588235294118, 0.5098039215686274, 1.0),
@@ -1802,7 +1799,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_9;
         }
         case Colormap::RdGy_10: {
-            static const std::vector<dvec4> rdgy_10(
+            static const std::vector<vec4> rdgy_10(
                 {dvec4(0.403921568627451, 0.0, 0.12156862745098039, 1.0),
                  dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
@@ -1816,7 +1813,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_10;
         }
         case Colormap::RdGy_11: {
-            static const std::vector<dvec4> rdgy_11(
+            static const std::vector<vec4> rdgy_11(
                 {dvec4(0.403921568627451, 0.0, 0.12156862745098039, 1.0),
                  dvec4(0.6980392156862745, 0.09411764705882353, 0.16862745098039217, 1.0),
                  dvec4(0.8392156862745098, 0.3764705882352941, 0.30196078431372547, 1.0),
@@ -1831,14 +1828,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdgy_11;
         }
         case Colormap::RdPu_3: {
-            static const std::vector<dvec4> rdpu_3(
+            static const std::vector<vec4> rdpu_3(
                 {dvec4(0.9921568627450981, 0.8784313725490196, 0.8666666666666667, 1.0),
                  dvec4(0.9803921568627451, 0.6235294117647059, 0.7098039215686275, 1.0),
                  dvec4(0.7725490196078432, 0.10588235294117647, 0.5411764705882353, 1.0)});
             return rdpu_3;
         }
         case Colormap::RdPu_4: {
-            static const std::vector<dvec4> rdpu_4(
+            static const std::vector<vec4> rdpu_4(
                 {dvec4(0.996078431372549, 0.9215686274509803, 0.8862745098039215, 1.0),
                  dvec4(0.984313725490196, 0.7058823529411765, 0.7254901960784313, 1.0),
                  dvec4(0.9686274509803922, 0.40784313725490196, 0.6313725490196078, 1.0),
@@ -1846,7 +1843,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_4;
         }
         case Colormap::RdPu_5: {
-            static const std::vector<dvec4> rdpu_5(
+            static const std::vector<vec4> rdpu_5(
                 {dvec4(0.996078431372549, 0.9215686274509803, 0.8862745098039215, 1.0),
                  dvec4(0.984313725490196, 0.7058823529411765, 0.7254901960784313, 1.0),
                  dvec4(0.9686274509803922, 0.40784313725490196, 0.6313725490196078, 1.0),
@@ -1855,7 +1852,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_5;
         }
         case Colormap::RdPu_6: {
-            static const std::vector<dvec4> rdpu_6(
+            static const std::vector<vec4> rdpu_6(
                 {dvec4(0.996078431372549, 0.9215686274509803, 0.8862745098039215, 1.0),
                  dvec4(0.9882352941176471, 0.7725490196078432, 0.7529411764705882, 1.0),
                  dvec4(0.9803921568627451, 0.6235294117647059, 0.7098039215686275, 1.0),
@@ -1865,7 +1862,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_6;
         }
         case Colormap::RdPu_7: {
-            static const std::vector<dvec4> rdpu_7(
+            static const std::vector<vec4> rdpu_7(
                 {dvec4(0.996078431372549, 0.9215686274509803, 0.8862745098039215, 1.0),
                  dvec4(0.9882352941176471, 0.7725490196078432, 0.7529411764705882, 1.0),
                  dvec4(0.9803921568627451, 0.6235294117647059, 0.7098039215686275, 1.0),
@@ -1876,7 +1873,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_7;
         }
         case Colormap::RdPu_8: {
-            static const std::vector<dvec4> rdpu_8(
+            static const std::vector<vec4> rdpu_8(
                 {dvec4(1.0, 0.9686274509803922, 0.9529411764705882, 1.0),
                  dvec4(0.9921568627450981, 0.8784313725490196, 0.8666666666666667, 1.0),
                  dvec4(0.9882352941176471, 0.7725490196078432, 0.7529411764705882, 1.0),
@@ -1888,7 +1885,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_8;
         }
         case Colormap::RdPu_9: {
-            static const std::vector<dvec4> rdpu_9(
+            static const std::vector<vec4> rdpu_9(
                 {dvec4(1.0, 0.9686274509803922, 0.9529411764705882, 1.0),
                  dvec4(0.9921568627450981, 0.8784313725490196, 0.8666666666666667, 1.0),
                  dvec4(0.9882352941176471, 0.7725490196078432, 0.7529411764705882, 1.0),
@@ -1901,14 +1898,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdpu_9;
         }
         case Colormap::RdYlBu_3: {
-            static const std::vector<dvec4> rdylbu_3(
+            static const std::vector<vec4> rdylbu_3(
                 {dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
                  dvec4(0.5686274509803921, 0.7490196078431373, 0.8588235294117647, 1.0)});
             return rdylbu_3;
         }
         case Colormap::RdYlBu_4: {
-            static const std::vector<dvec4> rdylbu_4(
+            static const std::vector<vec4> rdylbu_4(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(0.6705882352941176, 0.8509803921568627, 0.9137254901960784, 1.0),
@@ -1916,7 +1913,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_4;
         }
         case Colormap::RdYlBu_5: {
-            static const std::vector<dvec4> rdylbu_5(
+            static const std::vector<vec4> rdylbu_5(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
@@ -1925,7 +1922,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_5;
         }
         case Colormap::RdYlBu_6: {
-            static const std::vector<dvec4> rdylbu_6(
+            static const std::vector<vec4> rdylbu_6(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5647058823529412, 1.0),
@@ -1935,7 +1932,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_6;
         }
         case Colormap::RdYlBu_7: {
-            static const std::vector<dvec4> rdylbu_7(
+            static const std::vector<vec4> rdylbu_7(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5647058823529412, 1.0),
@@ -1946,7 +1943,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_7;
         }
         case Colormap::RdYlBu_8: {
-            static const std::vector<dvec4> rdylbu_8(
+            static const std::vector<vec4> rdylbu_8(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -1958,7 +1955,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_8;
         }
         case Colormap::RdYlBu_9: {
-            static const std::vector<dvec4> rdylbu_9(
+            static const std::vector<vec4> rdylbu_9(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -1971,7 +1968,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_9;
         }
         case Colormap::RdYlBu_10: {
-            static const std::vector<dvec4> rdylbu_10(
+            static const std::vector<vec4> rdylbu_10(
                 {dvec4(0.6470588235294118, 0.0, 0.14901960784313725, 1.0),
                  dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -1985,7 +1982,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_10;
         }
         case Colormap::RdYlBu_11: {
-            static const std::vector<dvec4> rdylbu_11(
+            static const std::vector<vec4> rdylbu_11(
                 {dvec4(0.6470588235294118, 0.0, 0.14901960784313725, 1.0),
                  dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -2000,14 +1997,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylbu_11;
         }
         case Colormap::RdYlGn_3: {
-            static const std::vector<dvec4> rdylgn_3(
+            static const std::vector<vec4> rdylgn_3(
                 {dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
                  dvec4(0.5686274509803921, 0.8117647058823529, 0.3764705882352941, 1.0)});
             return rdylgn_3;
         }
         case Colormap::RdYlGn_4: {
-            static const std::vector<dvec4> rdylgn_4(
+            static const std::vector<vec4> rdylgn_4(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(0.6509803921568628, 0.8509803921568627, 0.41568627450980394, 1.0),
@@ -2015,7 +2012,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_4;
         }
         case Colormap::RdYlGn_5: {
-            static const std::vector<dvec4> rdylgn_5(
+            static const std::vector<vec4> rdylgn_5(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
@@ -2024,7 +2021,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_5;
         }
         case Colormap::RdYlGn_6: {
-            static const std::vector<dvec4> rdylgn_6(
+            static const std::vector<vec4> rdylgn_6(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5450980392156862, 1.0),
@@ -2034,7 +2031,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_6;
         }
         case Colormap::RdYlGn_7: {
-            static const std::vector<dvec4> rdylgn_7(
+            static const std::vector<vec4> rdylgn_7(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5450980392156862, 1.0),
@@ -2045,7 +2042,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_7;
         }
         case Colormap::RdYlGn_8: {
-            static const std::vector<dvec4> rdylgn_8(
+            static const std::vector<vec4> rdylgn_8(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -2057,7 +2054,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_8;
         }
         case Colormap::RdYlGn_9: {
-            static const std::vector<dvec4> rdylgn_9(
+            static const std::vector<vec4> rdylgn_9(
                 {dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -2070,7 +2067,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_9;
         }
         case Colormap::RdYlGn_10: {
-            static const std::vector<dvec4> rdylgn_10(
+            static const std::vector<vec4> rdylgn_10(
                 {dvec4(0.6470588235294118, 0.0, 0.14901960784313725, 1.0),
                  dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -2084,7 +2081,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_10;
         }
         case Colormap::RdYlGn_11: {
-            static const std::vector<dvec4> rdylgn_11(
+            static const std::vector<vec4> rdylgn_11(
                 {dvec4(0.6470588235294118, 0.0, 0.14901960784313725, 1.0),
                  dvec4(0.8431372549019608, 0.18823529411764706, 0.15294117647058825, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -2099,14 +2096,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return rdylgn_11;
         }
         case Colormap::Reds_3: {
-            static const std::vector<dvec4> reds_3(
+            static const std::vector<vec4> reds_3(
                 {dvec4(0.996078431372549, 0.8784313725490196, 0.8235294117647058, 1.0),
                  dvec4(0.9882352941176471, 0.5725490196078431, 0.4470588235294118, 1.0),
                  dvec4(0.8705882352941177, 0.17647058823529413, 0.14901960784313725, 1.0)});
             return reds_3;
         }
         case Colormap::Reds_4: {
-            static const std::vector<dvec4> reds_4(
+            static const std::vector<vec4> reds_4(
                 {dvec4(0.996078431372549, 0.8980392156862745, 0.8509803921568627, 1.0),
                  dvec4(0.9882352941176471, 0.6823529411764706, 0.5686274509803921, 1.0),
                  dvec4(0.984313725490196, 0.41568627450980394, 0.2901960784313726, 1.0),
@@ -2114,7 +2111,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_4;
         }
         case Colormap::Reds_5: {
-            static const std::vector<dvec4> reds_5(
+            static const std::vector<vec4> reds_5(
                 {dvec4(0.996078431372549, 0.8980392156862745, 0.8509803921568627, 1.0),
                  dvec4(0.9882352941176471, 0.6823529411764706, 0.5686274509803921, 1.0),
                  dvec4(0.984313725490196, 0.41568627450980394, 0.2901960784313726, 1.0),
@@ -2123,7 +2120,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_5;
         }
         case Colormap::Reds_6: {
-            static const std::vector<dvec4> reds_6(
+            static const std::vector<vec4> reds_6(
                 {dvec4(0.996078431372549, 0.8980392156862745, 0.8509803921568627, 1.0),
                  dvec4(0.9882352941176471, 0.7333333333333333, 0.6313725490196078, 1.0),
                  dvec4(0.9882352941176471, 0.5725490196078431, 0.4470588235294118, 1.0),
@@ -2133,7 +2130,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_6;
         }
         case Colormap::Reds_7: {
-            static const std::vector<dvec4> reds_7(
+            static const std::vector<vec4> reds_7(
                 {dvec4(0.996078431372549, 0.8980392156862745, 0.8509803921568627, 1.0),
                  dvec4(0.9882352941176471, 0.7333333333333333, 0.6313725490196078, 1.0),
                  dvec4(0.9882352941176471, 0.5725490196078431, 0.4470588235294118, 1.0),
@@ -2144,7 +2141,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_7;
         }
         case Colormap::Reds_8: {
-            static const std::vector<dvec4> reds_8(
+            static const std::vector<vec4> reds_8(
                 {dvec4(1.0, 0.9607843137254902, 0.9411764705882353, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.8235294117647058, 1.0),
                  dvec4(0.9882352941176471, 0.7333333333333333, 0.6313725490196078, 1.0),
@@ -2156,7 +2153,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_8;
         }
         case Colormap::Reds_9: {
-            static const std::vector<dvec4> reds_9(
+            static const std::vector<vec4> reds_9(
                 {dvec4(1.0, 0.9607843137254902, 0.9411764705882353, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.8235294117647058, 1.0),
                  dvec4(0.9882352941176471, 0.7333333333333333, 0.6313725490196078, 1.0),
@@ -2169,14 +2166,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return reds_9;
         }
         case Colormap::Set1_3: {
-            static const std::vector<dvec4> set1_3(
+            static const std::vector<vec4> set1_3(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0)});
             return set1_3;
         }
         case Colormap::Set1_4: {
-            static const std::vector<dvec4> set1_4(
+            static const std::vector<vec4> set1_4(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
@@ -2184,7 +2181,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set1_4;
         }
         case Colormap::Set1_5: {
-            static const std::vector<dvec4> set1_5(
+            static const std::vector<vec4> set1_5(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
@@ -2193,60 +2190,56 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set1_5;
         }
         case Colormap::Set1_6: {
-            static const std::vector<dvec4> set1_6(
+            static const std::vector<vec4> set1_6(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0)});
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0)});
             return set1_6;
         }
         case Colormap::Set1_7: {
-            static const std::vector<dvec4> set1_7(
+            static const std::vector<vec4> set1_7(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0)});
             return set1_7;
         }
         case Colormap::Set1_8: {
-            static const std::vector<dvec4> set1_8(
+            static const std::vector<vec4> set1_8(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0),
                  dvec4(0.9686274509803922, 0.5058823529411764, 0.7490196078431373, 1.0)});
             return set1_8;
         }
         case Colormap::Set1_9: {
-            static const std::vector<dvec4> set1_9(
+            static const std::vector<vec4> set1_9(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0),
                  dvec4(0.9686274509803922, 0.5058823529411764, 0.7490196078431373, 1.0),
                  dvec4(0.6, 0.6, 0.6, 1.0)});
             return set1_9;
         }
         case Colormap::Set2_3: {
-            static const std::vector<dvec4> set2_3(
+            static const std::vector<vec4> set2_3(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0)});
             return set2_3;
         }
         case Colormap::Set2_4: {
-            static const std::vector<dvec4> set2_4(
+            static const std::vector<vec4> set2_4(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0),
@@ -2254,7 +2247,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set2_4;
         }
         case Colormap::Set2_5: {
-            static const std::vector<dvec4> set2_5(
+            static const std::vector<vec4> set2_5(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0),
@@ -2263,7 +2256,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set2_5;
         }
         case Colormap::Set2_6: {
-            static const std::vector<dvec4> set2_6(
+            static const std::vector<vec4> set2_6(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0),
@@ -2273,7 +2266,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set2_6;
         }
         case Colormap::Set2_7: {
-            static const std::vector<dvec4> set2_7(
+            static const std::vector<vec4> set2_7(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0),
@@ -2284,7 +2277,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set2_7;
         }
         case Colormap::Set2_8: {
-            static const std::vector<dvec4> set2_8(
+            static const std::vector<vec4> set2_8(
                 {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0),
                  dvec4(0.5529411764705883, 0.6274509803921569, 0.796078431372549, 1.0),
@@ -2296,14 +2289,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set2_8;
         }
         case Colormap::Set3_3: {
-            static const std::vector<dvec4> set3_3(
+            static const std::vector<vec4> set3_3(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0)});
             return set3_3;
         }
         case Colormap::Set3_4: {
-            static const std::vector<dvec4> set3_4(
+            static const std::vector<vec4> set3_4(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2311,7 +2304,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_4;
         }
         case Colormap::Set3_5: {
-            static const std::vector<dvec4> set3_5(
+            static const std::vector<vec4> set3_5(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2320,7 +2313,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_5;
         }
         case Colormap::Set3_6: {
-            static const std::vector<dvec4> set3_6(
+            static const std::vector<vec4> set3_6(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2330,7 +2323,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_6;
         }
         case Colormap::Set3_7: {
-            static const std::vector<dvec4> set3_7(
+            static const std::vector<vec4> set3_7(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2341,7 +2334,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_7;
         }
         case Colormap::Set3_8: {
-            static const std::vector<dvec4> set3_8(
+            static const std::vector<vec4> set3_8(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2353,7 +2346,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_8;
         }
         case Colormap::Set3_9: {
-            static const std::vector<dvec4> set3_9(
+            static const std::vector<vec4> set3_9(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2366,7 +2359,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_9;
         }
         case Colormap::Set3_10: {
-            static const std::vector<dvec4> set3_10(
+            static const std::vector<vec4> set3_10(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2380,7 +2373,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_10;
         }
         case Colormap::Set3_11: {
-            static const std::vector<dvec4> set3_11(
+            static const std::vector<vec4> set3_11(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2395,7 +2388,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_11;
         }
         case Colormap::Set3_12: {
-            static const std::vector<dvec4> set3_12(
+            static const std::vector<vec4> set3_12(
                 {dvec4(0.5529411764705883, 0.8274509803921568, 0.7803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7019607843137254, 1.0),
                  dvec4(0.7450980392156863, 0.7294117647058823, 0.8549019607843137, 1.0),
@@ -2411,14 +2404,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return set3_12;
         }
         case Colormap::Spectral_3: {
-            static const std::vector<dvec4> spectral_3(
+            static const std::vector<vec4> spectral_3(
                 {dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
                  dvec4(0.6, 0.8352941176470589, 0.5803921568627451, 1.0)});
             return spectral_3;
         }
         case Colormap::Spectral_4: {
-            static const std::vector<dvec4> spectral_4(
+            static const std::vector<vec4> spectral_4(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(0.6705882352941176, 0.8666666666666667, 0.6431372549019608, 1.0),
@@ -2426,7 +2419,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_4;
         }
         case Colormap::Spectral_5: {
-            static const std::vector<dvec4> spectral_5(
+            static const std::vector<vec4> spectral_5(
                 {dvec4(0.8431372549019608, 0.09803921568627451, 0.10980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
                  dvec4(1.0, 1.0, 0.7490196078431373, 1.0),
@@ -2435,7 +2428,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_5;
         }
         case Colormap::Spectral_6: {
-            static const std::vector<dvec4> spectral_6(
+            static const std::vector<vec4> spectral_6(
                 {dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5450980392156862, 1.0),
@@ -2445,7 +2438,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_6;
         }
         case Colormap::Spectral_7: {
-            static const std::vector<dvec4> spectral_7(
+            static const std::vector<vec4> spectral_7(
                 {dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9882352941176471, 0.5529411764705883, 0.34901960784313724, 1.0),
                  dvec4(0.996078431372549, 0.8784313725490196, 0.5450980392156862, 1.0),
@@ -2456,7 +2449,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_7;
         }
         case Colormap::Spectral_8: {
-            static const std::vector<dvec4> spectral_8(
+            static const std::vector<vec4> spectral_8(
                 {dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -2468,7 +2461,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_8;
         }
         case Colormap::Spectral_9: {
-            static const std::vector<dvec4> spectral_9(
+            static const std::vector<vec4> spectral_9(
                 {dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
                  dvec4(0.9921568627450981, 0.6823529411764706, 0.3803921568627451, 1.0),
@@ -2481,7 +2474,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_9;
         }
         case Colormap::Spectral_10: {
-            static const std::vector<dvec4> spectral_10(
+            static const std::vector<vec4> spectral_10(
                 {dvec4(0.6196078431372549, 0.00392156862745098, 0.25882352941176473, 1.0),
                  dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -2495,7 +2488,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_10;
         }
         case Colormap::Spectral_11: {
-            static const std::vector<dvec4> spectral_11(
+            static const std::vector<vec4> spectral_11(
                 {dvec4(0.6196078431372549, 0.00392156862745098, 0.25882352941176473, 1.0),
                  dvec4(0.8352941176470589, 0.24313725490196078, 0.30980392156862746, 1.0),
                  dvec4(0.9568627450980393, 0.42745098039215684, 0.2627450980392157, 1.0),
@@ -2510,31 +2503,29 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return spectral_11;
         }
         case Colormap::YlGn_3: {
-            static const std::vector<dvec4> ylgn_3(
+            static const std::vector<vec4> ylgn_3(
                 {dvec4(0.9686274509803922, 0.9882352941176471, 0.7254901960784313, 1.0),
                  dvec4(0.6784313725490196, 0.8666666666666667, 0.5568627450980392, 1.0),
                  dvec4(0.19215686274509805, 0.6392156862745098, 0.32941176470588235, 1.0)});
             return ylgn_3;
         }
         case Colormap::YlGn_4: {
-            static const std::vector<dvec4> ylgn_4(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
+            static const std::vector<vec4> ylgn_4(
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
                  dvec4(0.47058823529411764, 0.7764705882352941, 0.4745098039215686, 1.0),
                  dvec4(0.13725490196078433, 0.5176470588235295, 0.2627450980392157, 1.0)});
             return ylgn_4;
         }
         case Colormap::YlGn_5: {
-            static const std::vector<dvec4> ylgn_5(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
+            static const std::vector<vec4> ylgn_5(
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
                  dvec4(0.47058823529411764, 0.7764705882352941, 0.4745098039215686, 1.0),
                  dvec4(0.19215686274509805, 0.6392156862745098, 0.32941176470588235, 1.0),
                  dvec4(0.0, 0.40784313725490196, 0.21568627450980393, 1.0)});
             return ylgn_5;
         }
         case Colormap::YlGn_6: {
-            static const std::vector<dvec4> ylgn_6(
+            static const std::vector<vec4> ylgn_6(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.8509803921568627, 0.9411764705882353, 0.6392156862745098, 1.0),
                  dvec4(0.6784313725490196, 0.8666666666666667, 0.5568627450980392, 1.0),
@@ -2544,7 +2535,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgn_6;
         }
         case Colormap::YlGn_7: {
-            static const std::vector<dvec4> ylgn_7(
+            static const std::vector<vec4> ylgn_7(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.8509803921568627, 0.9411764705882353, 0.6392156862745098, 1.0),
                  dvec4(0.6784313725490196, 0.8666666666666667, 0.5568627450980392, 1.0),
@@ -2555,7 +2546,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgn_7;
         }
         case Colormap::YlGn_8: {
-            static const std::vector<dvec4> ylgn_8(
+            static const std::vector<vec4> ylgn_8(
                 {dvec4(1.0, 1.0, 0.8980392156862745, 1.0),
                  dvec4(0.9686274509803922, 0.9882352941176471, 0.7254901960784313, 1.0),
                  dvec4(0.8509803921568627, 0.9411764705882353, 0.6392156862745098, 1.0),
@@ -2567,7 +2558,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgn_8;
         }
         case Colormap::YlGn_9: {
-            static const std::vector<dvec4> ylgn_9(
+            static const std::vector<vec4> ylgn_9(
                 {dvec4(1.0, 1.0, 0.8980392156862745, 1.0),
                  dvec4(0.9686274509803922, 0.9882352941176471, 0.7254901960784313, 1.0),
                  dvec4(0.8509803921568627, 0.9411764705882353, 0.6392156862745098, 1.0),
@@ -2580,14 +2571,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgn_9;
         }
         case Colormap::YlGnBu_3: {
-            static const std::vector<dvec4> ylgnbu_3(
+            static const std::vector<vec4> ylgnbu_3(
                 {dvec4(0.9294117647058824, 0.9725490196078431, 0.6941176470588235, 1.0),
                  dvec4(0.4980392156862745, 0.803921568627451, 0.7333333333333333, 1.0),
                  dvec4(0.17254901960784313, 0.4980392156862745, 0.7215686274509804, 1.0)});
             return ylgnbu_3;
         }
         case Colormap::YlGnBu_4: {
-            static const std::vector<dvec4> ylgnbu_4(
+            static const std::vector<vec4> ylgnbu_4(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.6313725490196078, 0.8549019607843137, 0.7058823529411765, 1.0),
                  dvec4(0.2549019607843137, 0.7137254901960784, 0.7686274509803922, 1.0),
@@ -2595,7 +2586,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_4;
         }
         case Colormap::YlGnBu_5: {
-            static const std::vector<dvec4> ylgnbu_5(
+            static const std::vector<vec4> ylgnbu_5(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.6313725490196078, 0.8549019607843137, 0.7058823529411765, 1.0),
                  dvec4(0.2549019607843137, 0.7137254901960784, 0.7686274509803922, 1.0),
@@ -2604,7 +2595,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_5;
         }
         case Colormap::YlGnBu_6: {
-            static const std::vector<dvec4> ylgnbu_6(
+            static const std::vector<vec4> ylgnbu_6(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7058823529411765, 1.0),
                  dvec4(0.4980392156862745, 0.803921568627451, 0.7333333333333333, 1.0),
@@ -2614,7 +2605,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_6;
         }
         case Colormap::YlGnBu_7: {
-            static const std::vector<dvec4> ylgnbu_7(
+            static const std::vector<vec4> ylgnbu_7(
                 {dvec4(1.0, 1.0, 0.8, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7058823529411765, 1.0),
                  dvec4(0.4980392156862745, 0.803921568627451, 0.7333333333333333, 1.0),
@@ -2625,7 +2616,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_7;
         }
         case Colormap::YlGnBu_8: {
-            static const std::vector<dvec4> ylgnbu_8(
+            static const std::vector<vec4> ylgnbu_8(
                 {dvec4(1.0, 1.0, 0.8509803921568627, 1.0),
                  dvec4(0.9294117647058824, 0.9725490196078431, 0.6941176470588235, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7058823529411765, 1.0),
@@ -2637,7 +2628,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_8;
         }
         case Colormap::YlGnBu_9: {
-            static const std::vector<dvec4> ylgnbu_9(
+            static const std::vector<vec4> ylgnbu_9(
                 {dvec4(1.0, 1.0, 0.8509803921568627, 1.0),
                  dvec4(0.9294117647058824, 0.9725490196078431, 0.6941176470588235, 1.0),
                  dvec4(0.7803921568627451, 0.9137254901960784, 0.7058823529411765, 1.0),
@@ -2650,14 +2641,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylgnbu_9;
         }
         case Colormap::YlOrBr_3: {
-            static const std::vector<dvec4> ylorbr_3(
+            static const std::vector<vec4> ylorbr_3(
                 {dvec4(1.0, 0.9686274509803922, 0.7372549019607844, 1.0),
                  dvec4(0.996078431372549, 0.7686274509803922, 0.30980392156862746, 1.0),
                  dvec4(0.8509803921568627, 0.37254901960784315, 0.054901960784313725, 1.0)});
             return ylorbr_3;
         }
         case Colormap::YlOrBr_4: {
-            static const std::vector<dvec4> ylorbr_4(
+            static const std::vector<vec4> ylorbr_4(
                 {dvec4(1.0, 1.0, 0.8313725490196079, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.5568627450980392, 1.0),
                  dvec4(0.996078431372549, 0.6, 0.1607843137254902, 1.0),
@@ -2665,7 +2656,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_4;
         }
         case Colormap::YlOrBr_5: {
-            static const std::vector<dvec4> ylorbr_5(
+            static const std::vector<vec4> ylorbr_5(
                 {dvec4(1.0, 1.0, 0.8313725490196079, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.5568627450980392, 1.0),
                  dvec4(0.996078431372549, 0.6, 0.1607843137254902, 1.0),
@@ -2674,7 +2665,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_5;
         }
         case Colormap::YlOrBr_6: {
-            static const std::vector<dvec4> ylorbr_6(
+            static const std::vector<vec4> ylorbr_6(
                 {dvec4(1.0, 1.0, 0.8313725490196079, 1.0),
                  dvec4(0.996078431372549, 0.8901960784313725, 0.5686274509803921, 1.0),
                  dvec4(0.996078431372549, 0.7686274509803922, 0.30980392156862746, 1.0),
@@ -2684,7 +2675,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_6;
         }
         case Colormap::YlOrBr_7: {
-            static const std::vector<dvec4> ylorbr_7(
+            static const std::vector<vec4> ylorbr_7(
                 {dvec4(1.0, 1.0, 0.8313725490196079, 1.0),
                  dvec4(0.996078431372549, 0.8901960784313725, 0.5686274509803921, 1.0),
                  dvec4(0.996078431372549, 0.7686274509803922, 0.30980392156862746, 1.0),
@@ -2695,7 +2686,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_7;
         }
         case Colormap::YlOrBr_8: {
-            static const std::vector<dvec4> ylorbr_8(
+            static const std::vector<vec4> ylorbr_8(
                 {dvec4(1.0, 1.0, 0.8980392156862745, 1.0),
                  dvec4(1.0, 0.9686274509803922, 0.7372549019607844, 1.0),
                  dvec4(0.996078431372549, 0.8901960784313725, 0.5686274509803921, 1.0),
@@ -2707,7 +2698,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_8;
         }
         case Colormap::YlOrBr_9: {
-            static const std::vector<dvec4> ylorbr_9(
+            static const std::vector<vec4> ylorbr_9(
                 {dvec4(1.0, 1.0, 0.8980392156862745, 1.0),
                  dvec4(1.0, 0.9686274509803922, 0.7372549019607844, 1.0),
                  dvec4(0.996078431372549, 0.8901960784313725, 0.5686274509803921, 1.0),
@@ -2720,14 +2711,14 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorbr_9;
         }
         case Colormap::YlOrRd_3: {
-            static const std::vector<dvec4> ylorrd_3(
+            static const std::vector<vec4> ylorrd_3(
                 {dvec4(1.0, 0.9294117647058824, 0.6274509803921569, 1.0),
                  dvec4(0.996078431372549, 0.6980392156862745, 0.2980392156862745, 1.0),
                  dvec4(0.9411764705882353, 0.23137254901960785, 0.12549019607843137, 1.0)});
             return ylorrd_3;
         }
         case Colormap::YlOrRd_4: {
-            static const std::vector<dvec4> ylorrd_4(
+            static const std::vector<vec4> ylorrd_4(
                 {dvec4(1.0, 1.0, 0.6980392156862745, 1.0),
                  dvec4(0.996078431372549, 0.8, 0.3607843137254902, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -2735,7 +2726,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorrd_4;
         }
         case Colormap::YlOrRd_5: {
-            static const std::vector<dvec4> ylorrd_5(
+            static const std::vector<vec4> ylorrd_5(
                 {dvec4(1.0, 1.0, 0.6980392156862745, 1.0),
                  dvec4(0.996078431372549, 0.8, 0.3607843137254902, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -2744,7 +2735,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorrd_5;
         }
         case Colormap::YlOrRd_6: {
-            static const std::vector<dvec4> ylorrd_6(
+            static const std::vector<vec4> ylorrd_6(
                 {dvec4(1.0, 1.0, 0.6980392156862745, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.4627450980392157, 1.0),
                  dvec4(0.996078431372549, 0.6980392156862745, 0.2980392156862745, 1.0),
@@ -2754,7 +2745,7 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorrd_6;
         }
         case Colormap::YlOrRd_7: {
-            static const std::vector<dvec4> ylorrd_7(
+            static const std::vector<vec4> ylorrd_7(
                 {dvec4(1.0, 1.0, 0.6980392156862745, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.4627450980392157, 1.0),
                  dvec4(0.996078431372549, 0.6980392156862745, 0.2980392156862745, 1.0),
@@ -2765,9 +2756,8 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorrd_7;
         }
         case Colormap::YlOrRd_8: {
-            static const std::vector<dvec4> ylorrd_8(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(1.0, 0.9294117647058824, 0.6274509803921569, 1.0),
+            static const std::vector<vec4> ylorrd_8(
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(1.0, 0.9294117647058824, 0.6274509803921569, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.4627450980392157, 1.0),
                  dvec4(0.996078431372549, 0.6980392156862745, 0.2980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -2777,9 +2767,167 @@ const std::vector<dvec4> &colormap(Colormap colormap) {
             return ylorrd_8;
         }
     }
-    throw Exception("invalid colorbrewer colormap");
+    static const std::vector<vec4> ret({ dvec4(1.0, 1.0, 1.0, 1.0) });
+    return ret;
 }
 
-} // namespace
+const std::vector<vec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
+    if (getMinNumberOfColorsForFamily(family) > numberOfColors ||
+        getMaxNumberOfColorsForFamily(family) < numberOfColors) {
+        throw ColorBrewerException();
+    }
 
-} // namespace
+    // Calculate offset into the std::vector<vec4> enum class
+    auto familyIndex = static_cast<int>(family);
+    int accumulated = 0;
+    for (int i = 0; i < familyIndex; i++) {
+        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        accumulated += (b - a) + 1;
+    }
+
+    accumulated += numberOfColors - getMinNumberOfColorsForFamily(family);
+
+    auto c = static_cast<Colormap>(accumulated);
+
+    return getColormap(c);
+}
+
+std::vector<std::vector<vec4>> getColormaps(const Family &family) {
+    // Calculate offset into the std::vector<vec4> enum class
+    auto familyIndex = static_cast<int>(family);
+    int accumulated = 0;
+    for (int i = 0; i < familyIndex; i++) {
+        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        accumulated += (b - a) + 1;
+    }
+
+    auto numColormapsInThisFamily =
+        getMaxNumberOfColorsForFamily(static_cast<Family>(familyIndex)) -
+        getMinNumberOfColorsForFamily(static_cast<Family>(familyIndex));
+
+    std::vector<Colormap> v;
+    for (int i = 0; i < numColormapsInThisFamily; i++)
+        v.emplace_back(static_cast<Colormap>(accumulated + i));
+
+    std::vector<std::vector<vec4>> ret;
+    for (const auto& c : v)
+        ret.emplace_back(getColormap(c));
+
+    return ret;
+}
+
+std::map<Family, std::vector<std::vector<vec4>>> getColormaps(const Category &category) {
+    std::map<Family, std::vector<std::vector<vec4>>> v;
+
+    for (const auto& family : getFamiliesForCategory(category))
+        v.emplace(family, getColormaps(family));
+
+    return v;
+}
+
+std::map<Family, std::vector<vec4>> getColormaps(const Category &category,
+                                                   glm::uint8 numberOfColors) {
+    std::map<Family, std::vector<vec4>> v;
+
+    for (const auto &family : getFamiliesForCategory(category)) {
+        try {
+            v.emplace(family, getColormap(family, numberOfColors));
+        }
+        catch (ColorBrewerException& e) {
+        }
+    }
+
+    if (v.empty())
+        throw ColorBrewerException();
+
+    return v;
+}
+
+glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
+
+glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
+    if (family == Family::Accent || family == Family::Dark2 ||
+        family == Family::Pastel2 || family == Family::Set2 ||
+        family == Family::YlOrRd) {
+        return 8;
+    }
+    if (family == Family::Blues || family == Family::BuGn ||
+        family == Family::BuPu || family == Family::GnBu ||
+        family == Family::Greens || family == Family::Greys ||
+        family == Family::OrRd || family == Family::Oranges ||
+        family == Family::Pastel1 || family == Family::PuBu ||
+        family == Family::PuBuGn || family == Family::PuRd ||
+        family == Family::Purples || family == Family::RdPu ||
+        family == Family::Reds || family == Family::Set1 ||
+        family == Family::YlGn || family == Family::YlGnBu ||
+        family == Family::YlOrBr) {
+        return 9;
+    }
+    if (family == Family::BrBG || family == Family::PRGn ||
+        family == Family::PiYG || family == Family::PuOr ||
+        family == Family::RdBu || family == Family::RdGy ||
+        family == Family::RdYlBu || family == Family::RdYlGn ||
+        family == Family::Spectral) {
+        return 11;
+    }
+    if (family == Family::Paired || family == Family::Set3) {
+        return 12;
+    }
+    return 0;
+}
+
+std::vector<Family> getFamiliesForCategory(const Category &category) {
+    std::vector<Family> v;
+    switch (category) {
+        case Category::Diverging:
+            v.emplace_back(Family::BrBG);
+            v.emplace_back(Family::PiYG);
+            v.emplace_back(Family::PRGn);
+            v.emplace_back(Family::PuOr);
+            v.emplace_back(Family::RdBu);
+            v.emplace_back(Family::RdGy);
+            v.emplace_back(Family::RdYlBu);
+            v.emplace_back(Family::RdYlGn);
+            v.emplace_back(Family::Spectral);
+            break;
+        case Category::Qualitative:
+            v.emplace_back(Family::Accent);
+            v.emplace_back(Family::Dark2);
+            v.emplace_back(Family::Paired);
+            v.emplace_back(Family::Pastel1);
+            v.emplace_back(Family::Pastel2);
+            v.emplace_back(Family::Set1);
+            v.emplace_back(Family::Set2);
+            v.emplace_back(Family::Set3);
+            break;
+        case Category::Sequential:
+            v.emplace_back(Family::BuGn);
+            v.emplace_back(Family::BuPu);
+            v.emplace_back(Family::GnBu);
+            v.emplace_back(Family::OrRd);
+            v.emplace_back(Family::PuBu);
+            v.emplace_back(Family::PuBuGn);
+            v.emplace_back(Family::PuRd);
+            v.emplace_back(Family::RdPu);
+            v.emplace_back(Family::YlGn);
+            v.emplace_back(Family::YlGnBu);
+            v.emplace_back(Family::YlOrBr);
+            v.emplace_back(Family::YlOrRd);
+            v.emplace_back(Family::Blues);
+            v.emplace_back(Family::Greens);
+            v.emplace_back(Family::Greys);
+            v.emplace_back(Family::Oranges);
+            v.emplace_back(Family::Purples);
+            v.emplace_back(Family::Reds);
+            break;
+        default:
+            break;
+    }
+
+    return v;
+}
+
+}  // namespace
+}  // namespace
