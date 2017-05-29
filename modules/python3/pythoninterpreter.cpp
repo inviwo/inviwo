@@ -138,33 +138,16 @@ void PythonInterpreter::init(Python3Module* module) {
     addModulePath(module->getPath() + "/scripts");
     initOutputRedirector(module);
 
-#if defined(__unix__)
-    char executablePath[PATH_MAX];
-    auto size = ::readlink("/proc/self/exe", executablePath, sizeof(executablePath) - 1);
-    if (size != -1) {
-        // readlink does not append a null character to the path
-        executablePath[size] = '\0';
-    } else {
-        // Error retrieving path
-        executablePath[0] = '\0';
-    }
 
-    std::string execpath(executablePath);
+    
+#if defined(__unix__) || defined(__APPLE__)
+    auto execpath = filesystem::getExecutablePath();
     auto folder = filesystem::getFileDirectory(execpath);
     addModulePath(folder);
-#elif defined(__APPLE__)
-    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    char executablePath[PATH_MAX];
-    auto pid = getpid();
-    if (proc_pidpath(pid, executablePath, sizeof(executablePath)) <= 0) {
-        // Error retrieving path
-        executablePath[0] = '\0';
-    }
-    std::string execpath(executablePath);
-    auto folder = filesystem::getFileDirectory(execpath);
-    addModulePath(folder);
+#endif
+#if defined(__APPLE__)
+    // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
     addModulePath(folder + "/../../../");
-
 #endif
 }
 
