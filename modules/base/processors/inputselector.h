@@ -125,7 +125,7 @@ private:
 template <typename T>
 struct DataNamer {
     static std::string getName() {
-        using DataType = T::type;
+        using DataType = typename T::type;
         return port_traits<DataType>::class_identifier();
     }
 };
@@ -148,7 +148,7 @@ struct DataNamer<Mesh> {
 template <typename Inport, typename Outport>
 struct ProcessorTraits<InputSelector<Inport, Outport>> {
     static ProcessorInfo getProcessorInfo() {
-        using DataType = Inport::type;
+        using DataType = typename Inport::type;
         return {
             port_traits<DataType>::class_identifier() + ".InputSelector",  // Class identifier
             DataNamer<DataType>::getName() + " Input Selector",            // Display name
