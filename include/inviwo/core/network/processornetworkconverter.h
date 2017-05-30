@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
+#include <set>
+
 namespace inviwo {
 
 /**
@@ -62,7 +64,11 @@ class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
         void updateProcessorIdentifiers(TxElement* node);
         void updateTransferfunctions(TxElement* node);
 
+        void updateProcessorIdentifiersStriped(TxElement *node);
+
         void traverseNodes(TxElement* node, updateType update);
+
+        std::set<std::string> usedIdentifier_;
     };
 
 } // namespace

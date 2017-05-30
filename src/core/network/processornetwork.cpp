@@ -350,7 +350,7 @@ int ProcessorNetwork::getVersion() const {
     return processorNetworkVersion_;
 }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 14;
+const int ProcessorNetwork::processorNetworkVersion_ = 15;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
