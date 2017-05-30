@@ -113,7 +113,7 @@ Trackball::Trackball(TrackballObject* object)
                         [](Event* e) { return e->hash() == TouchEvent::chash(); }))
     
     , evaluated_(true)
-    , timer_(30, [this]() { animate(); }) 
+    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); })
     , followObjectDuringRotation_(true)
 {
     
@@ -195,7 +195,7 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanRight_(rhs.stepPanRight_)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
-    , timer_(30, [this]() { animate(); }) 
+    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); })
     , followObjectDuringRotation_(rhs.followObjectDuringRotation_)
 {
 

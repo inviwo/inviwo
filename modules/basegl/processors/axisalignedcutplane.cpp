@@ -54,9 +54,10 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , xSlide_("x", "X Slide")
     , ySlide_("y", "Y Slide")
     , zSlide_("z", "Z Slide")
+    , channel_("channel", "Channel", {{"channel0", "Channel 1", 0}})
     , disableTF_("disableTF", "Disable transfer function", false,
                  InvalidationLevel::InvalidResources)
-    , tf_("transferfunction", "Transfer function", TransferFunction(), &volume_)
+    , tf_("transferfunction", "Transfer function", &volume_)
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
@@ -66,7 +67,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , trackball_(&camera_)
     , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
     , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag") {
-    
+
     addPort(volume_);
     addPort(imageInport_);
     addPort(outport_);
@@ -92,6 +93,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     tf_.setCurrentStateAsDefault();
 
+    sliceShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
+    boundingBoxShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
+
     xSlide_.onChange([&]() {
         if (volume_.hasData()) xSlide_.createDrawer(volume_.getData());
     });
@@ -113,6 +117,27 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         }
         boundingBoxMesh_->setModelMatrix(vol->getModelMatrix());
         boundingBoxMesh_->setWorldMatrix(vol->getWorldMatrix());
+
+
+        // Update channel option property
+        if (channel_.size() != vol->getDataFormat()->getComponents()) {
+            auto curC = channel_.getSelectedIndex();
+
+            for (auto i = channel_.size(); i < vol->getDataFormat()->getComponents(); i++) {
+                channel_.addOption("channel" + std::to_string(i),
+                    "Channel " + std::to_string(i + 1), i);
+            }
+
+            while (channel_.size() > vol->getDataFormat()->getComponents()) {
+                channel_.removeOption(channel_.size() - 1);
+            }
+            
+            channel_.setSelectedIndex(0);
+            channel_.setCurrentStateAsDefault();
+
+            channel_.setSelectedIndex(std::min(curC , channel_.size()-1) );
+                        
+        }
     });
 
     boundingBoxColor_.setSemantics(PropertySemantics::Color);

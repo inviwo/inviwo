@@ -96,6 +96,7 @@ protected:
     SliceProperty<Axis::Y> ySlide_;
     SliceProperty<Axis::Z> zSlide_;
 
+    OptionPropertyInt channel_;
     BoolProperty disableTF_;
     TransferFunctionProperty tf_;
 

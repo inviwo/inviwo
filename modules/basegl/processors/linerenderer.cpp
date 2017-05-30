@@ -33,6 +33,10 @@
 
 namespace inviwo {
 
+namespace util {
+MeshDrawerGL::DrawMode getDrawMode(LineRenderer::LineDrawMode drawMode, bool useAdjacency);
+}
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LineRenderer::processorInfo_{
     "org.inviwo.LineRenderer",  // Class identifier
@@ -51,6 +55,12 @@ LineRenderer::LineRenderer()
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
     , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
     , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
+    , drawMode_("drawMode", "Draw Mode",
+                {{"auto", "Automatic", LineDrawMode::Auto},
+                 {"lineSegments", "Line Segments", LineDrawMode::LineSegments},
+                 {"lineStrip", "Line Strip", LineDrawMode::LineStrip},
+                 {"lineLoop", "Line Loop", LineDrawMode::LineLoop}},
+                0, InvalidationLevel::InvalidResources)
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
     , camera_("camera", "Camera")
     , trackball_(&camera_)
@@ -65,18 +75,25 @@ LineRenderer::LineRenderer()
     addProperty(lineWidth_);
     addProperty(antialising_);
     addProperty(miterLimit_);
+    addProperty(drawMode_);
     addProperty(useAdjacency_);
 
     addProperty(camera_);
     addProperty(trackball_);
 
+    drawMode_.onChange([this]() {
+        bool noAdjacencySupport = (drawMode_.get() == LineDrawMode::LineLoop);
+        useAdjacency_.setReadOnly(noAdjacencySupport);
+    });
     useAdjacency_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void LineRenderer::initializeResources() {
-    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY",
-                                                       useAdjacency_.get() ? "1" : "0");
+    bool adjacencySupport = (drawMode_.get() != LineDrawMode::LineLoop);
+
+    shader_.getGeometryShaderObject()->addShaderDefine(
+        "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
 
     shader_.build();
 }
@@ -101,15 +118,45 @@ void LineRenderer::process() {
 }
 
 void LineRenderer::drawMeshes() {
-    auto drawMode = (useAdjacency_.get() ? MeshDrawerGL::DrawMode::LineStripAdjacency
-                                         : MeshDrawerGL::DrawMode::LineStrip);
+    bool autoDrawMode = (drawMode_.get() == LineDrawMode::Auto);
+    auto drawmode = util::getDrawMode(drawMode_.get(), useAdjacency_.get());
 
     for (const auto& elem : inport_) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
         utilgl::setShaderUniforms(shader_, *elem, "geometry");
-        drawer.draw(drawMode);
+        if (autoDrawMode) {
+            drawer.draw();
+        } else {
+            drawer.draw(drawmode);
+        }
     }
 }
 
-}  // namespace
+namespace util {
+
+MeshDrawerGL::DrawMode getDrawMode(LineRenderer::LineDrawMode drawMode, bool useAdjacency) {
+    switch (drawMode) {
+        case LineRenderer::LineDrawMode::LineSegments:
+            if (useAdjacency) {
+                return MeshDrawerGL::DrawMode::LinesAdjacency;
+            } else {
+                return MeshDrawerGL::DrawMode::Lines;
+            }
+        case LineRenderer::LineDrawMode::LineStrip:
+            if (useAdjacency) {
+                return MeshDrawerGL::DrawMode::LineStripAdjacency;
+            } else {
+                return MeshDrawerGL::DrawMode::LineStrip;
+            }
+        case LineRenderer::LineDrawMode::LineLoop:
+            return MeshDrawerGL::DrawMode::LineLoop;
+        case LineRenderer::LineDrawMode::Auto:
+        default:
+            return MeshDrawerGL::DrawMode::NotSpecified;
+    }
+}
+
+} // namespace util
+
+}  // namespace inviwo

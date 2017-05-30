@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,57 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTERACTIONSTATEMANAGER_H
-#define IVW_INTERACTIONSTATEMANAGER_H
+#ifndef IVW_EVALUATIONERRORHANDLER_H
+#define IVW_EVALUATIONERRORHANDLER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/exception.h>
+
+#include <functional>
 
 namespace inviwo {
 
-/**
- * \class InteractionStateManager
- */
-class IVW_CORE_API InteractionStateManager {
-    using InteractionBeginDispatcher = Dispatcher<void(int)>;
-    using InteractionEndDispatcher = Dispatcher<void(int)>;
+class Processor;
 
-public:
-    using InteractionBeginHandle = typename InteractionBeginDispatcher::Handle;
-    using InteractionEndHandle = typename InteractionEndDispatcher::Handle;
+enum class EvaluationType { InitResource, Process, NotReady };
 
-    InteractionStateManager() = default;
-    ~InteractionStateManager() = default;
+using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, ExceptionContext)>;
 
-    void beginInteraction();
-    void endInteraction();
-
-    bool isInteracting() const;
-
-    template <typename T>
-    InteractionBeginHandle onInteractionBegin(T&& callback);
-    template <typename T>
-    InteractionEndHandle onInteractionEnd(T&& callback);
-
-private:
-    InteractionBeginDispatcher onInteractionBegin_;
-    InteractionEndDispatcher onInteractionEnd_;
-
-    int interactionCount_ = 0;
+struct IVW_CORE_API StandardEvaluationErrorHandler {
+    void operator()(Processor*, EvaluationType, ExceptionContext);
 };
-
-template <typename T>
-std::shared_ptr<std::function<void(int)>> InteractionStateManager::onInteractionBegin(
-    T&& callback) {
-    return onInteractionBegin_.add(std::forward<T>(callback));
-}
-template <typename T>
-std::shared_ptr<std::function<void(int)>> InteractionStateManager::onInteractionEnd(T&& callback) {
-    return onInteractionEnd_.add(std::forward<T>(callback));
-}
 
 } // namespace
 
-#endif // IVW_INTERACTIONSTATEMANAGER_H
+#endif // IVW_EVALUATIONERRORHANDLER_H
 

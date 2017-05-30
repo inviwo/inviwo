@@ -89,7 +89,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
@@ -135,6 +134,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/propertyeditorwidgetmetadata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/portconnection.h
@@ -357,7 +357,6 @@ set(SOURCE_FILES
     interaction/events/touchevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
-    interaction/interactionstatemanager.cpp
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
     interaction/pickingmanager.cpp
@@ -396,6 +395,7 @@ set(SOURCE_FILES
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
     metadata/propertyeditorwidgetmetadata.cpp
+    network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
     network/portconnection.cpp

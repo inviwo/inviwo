@@ -300,8 +300,8 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
 
-            connect(newWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                    SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
+            connect(newWidget, &PropertyWidgetQt::updateSemantics, this,
+                &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
             newWidget->setNestedDepth(this->getNestedDepth());
             newWidget->setParentPropertyWidget(this, getBaseContainer());
@@ -341,8 +341,8 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
 
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
         prop->registerWidget(propertyWidget);
-        connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
+        connect(propertyWidget, &PropertyWidgetQt::updateSemantics, this,
+                &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
         propertyWidget->setParentPropertyWidget(this, getBaseContainer());
         propertyWidget->initState();

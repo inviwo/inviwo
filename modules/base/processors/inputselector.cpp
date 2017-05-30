@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLOBALEVENTFILTER_H
-#define IVW_GLOBALEVENTFILTER_H
-
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/interactionstatemanager.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-
-#include <warn/pop>
-
-class QEvent;
+#include <modules/base/processors/inputselector.h>
 
 namespace inviwo {
 
-/**
- * \class GlobalEventFilter
- */
-class IVW_QTEDITOR_API GlobalEventFilter : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    GlobalEventFilter(InteractionStateManager& manager);
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-    
-private:
-    InteractionStateManager& manager_;
-};
-
 } // namespace
-
-#endif // IVW_GLOBALEVENTFILTER_H
 

@@ -215,6 +215,7 @@ private:
     // Drag n drop state
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
+    bool validConnectionTarget_;
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};

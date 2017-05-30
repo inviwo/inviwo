@@ -33,6 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationtime.h>

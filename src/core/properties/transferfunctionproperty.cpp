@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -49,6 +50,16 @@ TransferFunctionProperty::TransferFunctionProperty(
     this->value_.name = "TransferFunction";
     this->value_.value.addObserver(this);
 }
+
+TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier,
+                                                   const std::string& displayName,
+                                                   VolumeInport* volumeInport,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
+    : TransferFunctionProperty(identifier, displayName,
+                               TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                 {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                               volumeInport, invalidationLevel, semantics) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : TemplateProperty<TransferFunction>(rhs)

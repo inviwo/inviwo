@@ -28,6 +28,13 @@
  #################################################################################
  
 if(IVW_PACKAGE_PROJECT)
+    # Don't use components, will not work with Drag & Drop, and we need controll all the 
+    # component namnes which we can't for some of the externals like HDF5
+    set(CPACK_MONOLITHIC_INSTALL TRUE)
+    set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+    if(OPENMP_ON)
+        set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
+    endif()
     include (InstallRequiredSystemLibraries)
 
     set(CPACK_PACKAGE_NAME                "Inviwo")
@@ -57,84 +64,7 @@ if(IVW_PACKAGE_PROJECT)
         set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo/${IVW_VERSION}")
     endif()
 
-    set(IVW_PACKAGES "core")
-    set(IVW_EXECUTABLES "")
-
-    set(CPACK_COMPONENT_CORE_DISPLAY_NAME      "Core")
-    set(CPACK_COMPONENT_CORE_REQUIRED          TRUE)
-    set(CPACK_COMPONENT_CORE_GROUP             "Base")
-    set(CPACK_COMPONENT_GROUP_BASE_DESCRIPTION "Inviwo core and common shared modules")
-
-    set(CPACK_COMPONENT_MODULES_DISPLAY_NAME "Shared Modules")
-    set(CPACK_COMPONENT_MODULES_DEPENDS      core)
-    set(CPACK_COMPONENT_MODULES_GROUP        "Base")
-    list(APPEND IVW_PACKAGES                 "modules")
-
-    if(IVW_QT_APPLICATION)
-        # Inviwo network editor application depends on QtEditor and QtApplicationBase 
-        set(CPACK_COMPONENT_QT_APPLICATIONBASE_DISPLAY_NAME "Qt Application Base")
-        set(CPACK_COMPONENT_QT_APPLICATIONBASE_DEPENDS      ${IVW_PACKAGES})
-        set(CPACK_COMPONENT_QT_APPLICATIONBASE_GROUP        "Qt")
-        list(APPEND IVW_PACKAGES                   "qt_applicationbase")
-
-        set(CPACK_COMPONENT_QT_EDITOR_DISPLAY_NAME "Qt Editor")
-        set(CPACK_COMPONENT_QT_EDITOR_DEPENDS      ${IVW_PACKAGES})
-        set(CPACK_COMPONENT_QT_EDITOR_GROUP        "Qt")
-        list(APPEND IVW_PACKAGES                   "qt_editor")
-
-        set(CPACK_COMPONENT_QT_MODULES_DISPLAY_NAME "Qt Modules")
-        set(CPACK_COMPONENT_QT_MODULES_DEPENDS      ${IVW_PACKAGES})
-        set(CPACK_COMPONENT_QT_MODULES_GROUP        "Qt")
-        list(APPEND IVW_PACKAGES                    "qt_modules")
- 
-        list(APPEND IVW_EXECUTABLES             "inviwo;Inviwo")
-        set(CPACK_COMPONENT_QT_APP_DISPLAY_NAME "Qt Application")
-        set(CPACK_COMPONENT_QT_APP_DEPENDS      ${IVW_PACKAGES})
-        list(APPEND IVW_PACKAGES                "qt_app")
-        set(CPACK_COMPONENT_QT_APP_GROUP        "Qt")
-    endif()
-
-    if(IVW_MODULE_GLFW)
-        list(APPEND IVW_PACKAGES                      "glfw_modules")
-        set(CPACK_COMPONENT_GLFW_MODULES_DISPLAY_NAME "GLFW Modules")
-        set(CPACK_COMPONENT_GLFW_MODULES_DISABLED     TRUE)
-        set(CPACK_COMPONENT_GLFW_MODULES_DEPENDS      "core;modules")
-        set(CPACK_COMPONENT_GLFW_MODULES_GROUP        "Xtra")
-        set(CPACK_COMPONENT_GROUP_XTRA_DESCRIPTION    "Minimal applications based on GLFW or GLUT")
-    endif()
-
-    if(IVW_TINY_GLFW_APPLICATION)
-        list(APPEND IVW_PACKAGES "glfw_app")
-        #list(APPEND IVW_EXECUTABLES "glfwminimum;GLFWMinimum")
-        set(CPACK_COMPONENT_GLFW_APP_DISPLAY_NAME "GLFW Minimal Application")
-        set(CPACK_COMPONENT_GLFW_APP_DISABLED     TRUE)
-        set(CPACK_COMPONENT_GLFW_APP_DEPENDS      "core;modules;glfw_modules")
-        set(CPACK_COMPONENT_GLFW_APP_GROUP        "Xtra")
-    endif()
-
-    list(APPEND IVW_PACKAGES "workspaces")
-    set(CPACK_COMPONENT_WORKSPACES_DISPLAY_NAME    "Workspaces")
-    set(CPACK_COMPONENT_WORKSPACES_DEPENDS         "volumes;images")
-    set(CPACK_COMPONENT_WORKSPACES_GROUP           "Examples")
-    set(CPACK_COMPONENT_GROUP_EXAMPLES_DESCRIPTION "Scenes, data and scripts")
-
-    list(APPEND IVW_PACKAGES "volumes")
-    set(CPACK_COMPONENT_VOLUMES_DISPLAY_NAME "Volumes")
-    set(CPACK_COMPONENT_VOLUMES_GROUP        "Examples")
-
-    list(APPEND IVW_PACKAGES "images")
-    set(CPACK_COMPONENT_IMAGES_DISPLAY_NAME "Images")
-    set(CPACK_COMPONENT_IMAGES_GROUP        "Examples")
-
-    list(APPEND IVW_PACKAGES "scripts")
-    set(CPACK_COMPONENT_SCRIPTS_DISPLAY_NAME "Scripts")
-    set(CPACK_COMPONENT_SCRIPTS_GROUP        "Examples")
-
-    set(CPACK_COMPONENTS_ALL ${IVW_PACKAGES})
-
-    #List of pairs of executables and labels. Used by the NSIS generator to create Start Menu shortcuts. 
-    set(CPACK_PACKAGE_EXECUTABLES ${IVW_EXECUTABLES}) 
-
+    set(CPACK_PACKAGE_EXECUTABLES "inviwo;Inviwo") 
     option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
     
     if(WIN32)
@@ -147,7 +77,7 @@ if(IVW_PACKAGE_PROJECT)
             # The icon to start the application.
             set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.ico")
             # Add a link to the application website in the startup menu.
-            set(CPACK_NSIS_MENU_LINKS "http://www.inviwo.org" "Inviwo Homepage")    
+            set(CPACK_NSIS_MENU_LINKS "http://www.inviwo.org" "Inviwo Homepage")
             # Set the icon for the application in the Add/Remove programs section.
             set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\inviwo.exe)
             # The mail address for the maintainer of the application in the Add/Remove programs section
@@ -160,16 +90,12 @@ if(IVW_PACKAGE_PROJECT)
         else()
             set(CPACK_GENERATOR "ZIP")
         endif()
-        set(CPACK_NSIS_INSTALLED_ICON_NAME "bin/inviwo.exe")
 
     elseif(APPLE)
         if(IVW_PACKAGE_INSTALLER)
             configure_file(${IVW_CMAKE_TEMPLATES}/info_plist_template.txt
                ${CMAKE_BINARY_DIR}/Info.plist
                @ONLY)
-            
-            unset(CPACK_COMPONENTS_ALL)
-            set(CPACK_MONOLITHIC_INSTALL ON) #Can't get components to work with DragNDrop
             #http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
             set(CPACK_GENERATOR           "TGZ;DragNDrop")
             set(CPACK_BUNDLE_NAME         "Inviwo")

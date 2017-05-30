@@ -8,7 +8,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/globaleventfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanagerwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
@@ -50,7 +49,6 @@ set(SOURCE_FILES
     connectiongraphicsitem.cpp
     consolewidget.cpp
     editorgrapicsitem.cpp
-    globaleventfilter.cpp
     helpwidget.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp

@@ -37,14 +37,17 @@
 
 namespace inviwo {
 
-VolumeGLProcessor::VolumeGLProcessor(const std::string &fragmentShader, bool buildShader)
+VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
+                                     bool buildShader)
     : Processor()
     , inport_("inputVolume")
     , outport_("outputVolume")
     , dataFormat_(nullptr)
     , internalInvalid_(true)
-    , fragmentShader_(fragmentShader)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, buildShader)
+    , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
+               {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
+               {ShaderType::Fragment, fragmentShader}},
+              buildShader ? Shader::Build::Yes : Shader::Build::No)
     , fbo_() {
     addPort(inport_);
     addPort(outport_);
@@ -53,6 +56,9 @@ VolumeGLProcessor::VolumeGLProcessor(const std::string &fragmentShader, bool bui
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
+VolumeGLProcessor::VolumeGLProcessor(const std::string& fragmentShader, bool buildShader)
+    : VolumeGLProcessor( utilgl::findShaderResource(fragmentShader) ,buildShader){}
+  
 VolumeGLProcessor::~VolumeGLProcessor() {}
 
 void VolumeGLProcessor::process() {

@@ -63,7 +63,7 @@ LightingRaycaster::LightingRaycaster()
     , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
                         InvalidationLevel::InvalidResources)
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
+    , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")

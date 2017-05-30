@@ -63,14 +63,14 @@ MultichannelRaycaster::MultichannelRaycaster()
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator") {
-    transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction1", "Channel 1", TransferFunction(), &volumePort_), false);
-    transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction2", "Channel 2", TransferFunction(), &volumePort_), false);
-    transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction3", "Channel 3", TransferFunction(), &volumePort_), false);
-    transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction4", "Channel 4", TransferFunction(), &volumePort_), false);
+    transferFunctions_.addProperty(
+        new TransferFunctionProperty("transferFunction1", "Channel 1", &volumePort_), false);
+    transferFunctions_.addProperty(
+        new TransferFunctionProperty("transferFunction2", "Channel 2", &volumePort_), false);
+    transferFunctions_.addProperty(
+        new TransferFunctionProperty("transferFunction3", "Channel 3", &volumePort_), false);
+    transferFunctions_.addProperty(
+        new TransferFunctionProperty("transferFunction4", "Channel 4", &volumePort_), false);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 

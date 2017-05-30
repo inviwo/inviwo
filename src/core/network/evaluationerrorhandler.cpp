@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,39 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/interactionstatemanager.h>
+#include <inviwo/core/network/evaluationerrorhandler.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-void InteractionStateManager::beginInteraction() {
-    ++interactionCount_;
-    onInteractionBegin_.invoke(interactionCount_);
+void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
+                                                ExceptionContext context) {
+    const std::string id = processor->getIdentifier();
+    const std::string func = [&]() {
+        switch (type) {
+            case EvaluationType::InitResource:
+                return "InitializeResources";
+            case EvaluationType::Process:
+                return "Process";
+            case EvaluationType::NotReady:
+                return "DoIfNotReady";
+            default:
+                return "Unknown";
+        }
+    }();
+
+    try {
+        throw;
+    } catch (Exception& e) {
+        util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
+                  LogLevel::Error);
+    } catch (std::exception& e) {
+        util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
+                  LogLevel::Error);
+    } catch (...) {
+        util::log(context, id + " Error in " + func + ": " + "Unknown error", LogLevel::Error);
+    }
 }
 
-void InteractionStateManager::endInteraction() {
-    --interactionCount_;
-    onInteractionEnd_.invoke(interactionCount_);
-}
+} // namespace
 
-bool InteractionStateManager::isInteracting() const { return interactionCount_ > 0; }
-
-}  // namespace

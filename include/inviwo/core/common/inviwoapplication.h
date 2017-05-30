@@ -40,7 +40,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -86,6 +85,8 @@ class PropertyPresetManager;
 class FileLogger;
 class ConsoleLogger;
 
+class TimerThread;
+
 
 /**
  * \class InviwoApplication
@@ -117,8 +118,6 @@ public:
     std::string getBasePath() const;
 
     const std::string& getDisplayName() const;
-
-    const std::string& getBinaryPath() const;
 
     /**
      * Get basePath + pathType + suffix.
@@ -200,7 +199,7 @@ public:
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID);
 
-    InteractionStateManager& getInteractionStateManager();
+    TimerThread& getTimerThread();
 
 protected:
     virtual void printApplicationInfo();
@@ -221,15 +220,12 @@ protected:
     };
 
     std::string displayName_;
-    std::string binaryPath_;
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-
-    InteractionStateManager interactionState_;
 
     util::OnScopeExit clearAllSingeltons_;
 
@@ -268,7 +264,7 @@ protected:
     WorkspaceManager::ClearHandle presetsClearHandle_;
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
-
+    std::unique_ptr<TimerThread> timerThread_;
 };
 
 template <class T>
