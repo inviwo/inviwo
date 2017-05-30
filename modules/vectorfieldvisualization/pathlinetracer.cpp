@@ -81,7 +81,7 @@ inviwo::IntegralLine PathLineTracer::traceFrom(const dvec4 &p) {
 }
 
 void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, bool fwd) {
-    auto positions = line.getPositions();
+    auto& positions = line.getPositions();
 
     for (int i = 0; i <= steps; i++) {
         if (!sampler_->withinBounds(curPos)) {
