@@ -218,7 +218,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.PathLines" identifier="Path Lines">
+            <Processor type="org.inviwo.PathLines" identifier="Path Line Tracer">
                 <PortGroups>
                     <PortGroup content="default" key="colors" />
                     <PortGroup content="default" key="lines" />
