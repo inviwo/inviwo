@@ -38,7 +38,6 @@ ivw_add_dependency_directories(${package_list})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-ivw_private_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo-integrationtests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
