@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
 
@@ -86,8 +86,9 @@ std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
         v.emplace_back(static_cast<Colormap>(accumulated + i));
 
     std::vector<std::vector<dvec4>> ret;
-    for (const auto& c : v)
+    for (const auto &c : v) {
         ret.emplace_back(getColormap(c));
+    }
 
     return ret;
 }
@@ -95,7 +96,7 @@ std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
 std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &category) {
     std::map<Family, std::vector<std::vector<dvec4>>> v;
 
-    for (const auto& family : getFamiliesForCategory(category))
+    for (const auto &family : getFamiliesForCategory(category))
         v.emplace(family, getColormaps(family));
 
     return v;
@@ -109,12 +110,13 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
         try {
             v.emplace(family, getColormap(family, numberOfColors));
         }
-        catch (ColorBrewerException& e) {
+        catch (ColorBrewerException&) {
         }
     }
 
-    if (v.empty())
+    if (v.empty()) {
         throw ColorBrewerException();
+    }
 
     return v;
 }
@@ -135,6 +137,6 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
     return v;
 }
 
-} // namespace
+}  // namespace colorbrewer
 
-} // namespace
+}  // namespace inviwo

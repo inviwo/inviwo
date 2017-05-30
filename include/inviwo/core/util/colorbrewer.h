@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
- 
+
 #ifndef IWW_COLORBREWER_H
 #define IWW_COLORBREWER_H
 
@@ -40,13 +40,13 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <vector>
 #include <ostream>
 
-namespace inviwo{
+namespace inviwo {
 namespace colorbrewer {
 
 class IVW_CORE_API ColorBrewerException : public Exception {
 public:
     ColorBrewerException(const std::string &message = "Requested colormap is not available.",
-        ExceptionContext context = ExceptionContext())
+                         ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~ColorBrewerException() throw() {}
 };
@@ -90,7 +90,7 @@ enum class Colormap {
     FirstMap=Accent_3, LastMap=YlOrRd_8
 };
 
-enum class Category { Qualitative, Diverging, Sequential, NumberOfColormapCategories, Undefined };
+enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
 
 enum class Family {
     Accent,
@@ -133,8 +133,9 @@ enum class Family {
 };
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os, Colormap colormap){
-    switch(colormap){
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Colormap colormap) {
+    switch (colormap) {
     case Colormap::Accent_3: os << "Accent_3"; break;
     case Colormap::Accent_4: os << "Accent_4"; break;
     case Colormap::Accent_5: os << "Accent_5"; break;
@@ -453,10 +454,10 @@ IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
  **/
 IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
 
-} // namespace colorbrewer
-} // namespace inviwo
+}  // namespace colorbrewer
+}  // namespace inviwo
 
-#endif // COLORBREWER_H
+#endif  // COLORBREWER_H
 
 
 

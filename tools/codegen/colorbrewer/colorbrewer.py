@@ -94,7 +94,7 @@ if __name__ == '__main__':
         catset = set(cat);
         catlist = list(catset);
 
-        for c in catlist:
+        for c in sorted(catlist):
             categories += c + ", ";
             getFamiliesForCategoryImpl += "\t\tcase Category::";
             if c == "div":
@@ -103,7 +103,7 @@ if __name__ == '__main__':
                 getFamiliesForCategoryImpl += "Qualitative:\n"
             if c == "seq":
                 getFamiliesForCategoryImpl += "Sequential:\n"
-            for f in familiesInCategory[c]:
+            for f in sorted(familiesInCategory[c]):
                 getFamiliesForCategoryImpl += "\t\t\tv.emplace_back(Family::" + f + ");\n";
             getFamiliesForCategoryImpl += "\t\t\tbreak;\n";
         getFamiliesForCategoryImpl += "\t\tdefault:\n\t\t\tbreak;";
@@ -112,18 +112,17 @@ if __name__ == '__main__':
         for a in maxElementsForFamily:
             getMaxNumberOfColorsForFamilyImpl += "\tif (";
             for z in maxElementsForFamily[a]:
-                getMaxNumberOfColorsForFamilyImpl += "family == Family::" + z + "|| "
+                getMaxNumberOfColorsForFamilyImpl += "family == Family::" + z + " || "
                 if r % 2:
                     getMaxNumberOfColorsForFamilyImpl += "\n\t\t";
                 r=r+1;
             if not r % 2:
-                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-6];
+                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-7];
             else:
-                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-3];
+                getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-4];
             getMaxNumberOfColorsForFamilyImpl += ") {\n\t\treturn " + str(a) + ";\n\t}\n";
 
-    categories += "NumberOfColormapCategories, Undefined";
-    categories += " };\n";
+    categories += "NumberOfColormapCategories, Undefined };\n";
 
     categories = categories.replace("seq", "Sequential");
     categories = categories.replace("div", "Diverging");

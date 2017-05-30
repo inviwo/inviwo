@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
 
@@ -2822,8 +2822,9 @@ std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
         v.emplace_back(static_cast<Colormap>(accumulated + i));
 
     std::vector<std::vector<dvec4>> ret;
-    for (const auto& c : v)
+    for (const auto &c : v) {
         ret.emplace_back(getColormap(c));
+    }
 
     return ret;
 }
@@ -2831,7 +2832,7 @@ std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
 std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &category) {
     std::map<Family, std::vector<std::vector<dvec4>>> v;
 
-    for (const auto& family : getFamiliesForCategory(category))
+    for (const auto &family : getFamiliesForCategory(category))
         v.emplace(family, getColormaps(family));
 
     return v;
@@ -2845,12 +2846,13 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
         try {
             v.emplace(family, getColormap(family, numberOfColors));
         }
-        catch (ColorBrewerException& e) {
+        catch (ColorBrewerException&) {
         }
     }
 
-    if (v.empty())
+    if (v.empty()) {
         throw ColorBrewerException();
+    }
 
     return v;
 }
@@ -2858,31 +2860,31 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
 glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
-    if (family == Family::Accent|| family == Family::Dark2|| 
-        family == Family::Pastel2|| family == Family::Set2|| 
+    if (family == Family::Accent || family == Family::Dark2 || 
+        family == Family::Pastel2 || family == Family::Set2 || 
         family == Family::YlOrRd) {
         return 8;
     }
-    if (family == Family::Blues|| 
-        family == Family::BuGn|| family == Family::BuPu|| 
-        family == Family::GnBu|| family == Family::Greens|| 
-        family == Family::Greys|| family == Family::OrRd|| 
-        family == Family::Oranges|| family == Family::Pastel1|| 
-        family == Family::PuBu|| family == Family::PuBuGn|| 
-        family == Family::PuRd|| family == Family::Purples|| 
-        family == Family::RdPu|| family == Family::Reds|| 
-        family == Family::Set1|| family == Family::YlGn|| 
-        family == Family::YlGnBu|| family == Family::YlOrBr) {
+    if (family == Family::Blues || 
+        family == Family::BuGn || family == Family::BuPu || 
+        family == Family::GnBu || family == Family::Greens || 
+        family == Family::Greys || family == Family::OrRd || 
+        family == Family::Oranges || family == Family::Pastel1 || 
+        family == Family::PuBu || family == Family::PuBuGn || 
+        family == Family::PuRd || family == Family::Purples || 
+        family == Family::RdPu || family == Family::Reds || 
+        family == Family::Set1 || family == Family::YlGn || 
+        family == Family::YlGnBu || family == Family::YlOrBr) {
         return 9;
     }
-    if (family == Family::BrBG|| family == Family::PRGn|| 
-        family == Family::PiYG|| family == Family::PuOr|| 
-        family == Family::RdBu|| family == Family::RdGy|| 
-        family == Family::RdYlBu|| family == Family::RdYlGn|| 
+    if (family == Family::BrBG || family == Family::PRGn || 
+        family == Family::PiYG || family == Family::PuOr || 
+        family == Family::RdBu || family == Family::RdGy || 
+        family == Family::RdYlBu || family == Family::RdYlGn || 
         family == Family::Spectral) {
         return 11;
     }
-    if (family == Family::Paired|| 
+    if (family == Family::Paired || 
         family == Family::Set3) {
         return 12;
     }
@@ -2893,16 +2895,6 @@ glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
 std::vector<Family> getFamiliesForCategory(const Category &category) {
     std::vector<Family> v;
     switch (category) {
-        case Category::Qualitative:
-            v.emplace_back(Family::Accent);
-            v.emplace_back(Family::Dark2);
-            v.emplace_back(Family::Paired);
-            v.emplace_back(Family::Pastel1);
-            v.emplace_back(Family::Pastel2);
-            v.emplace_back(Family::Set1);
-            v.emplace_back(Family::Set2);
-            v.emplace_back(Family::Set3);
-            break;
         case Category::Diverging:
             v.emplace_back(Family::BrBG);
             v.emplace_back(Family::PRGn);
@@ -2913,6 +2905,16 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
             v.emplace_back(Family::RdYlBu);
             v.emplace_back(Family::RdYlGn);
             v.emplace_back(Family::Spectral);
+            break;
+        case Category::Qualitative:
+            v.emplace_back(Family::Accent);
+            v.emplace_back(Family::Dark2);
+            v.emplace_back(Family::Paired);
+            v.emplace_back(Family::Pastel1);
+            v.emplace_back(Family::Pastel2);
+            v.emplace_back(Family::Set1);
+            v.emplace_back(Family::Set2);
+            v.emplace_back(Family::Set3);
             break;
         case Category::Sequential:
             v.emplace_back(Family::Blues);
@@ -2941,7 +2943,7 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
     return v;
 }
 
-} // namespace
+}  // namespace colorbrewer
 
-} // namespace
+}  // namespace inviwo
 
