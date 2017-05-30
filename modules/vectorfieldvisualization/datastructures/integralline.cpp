@@ -71,7 +71,8 @@ const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) con
 std::vector<dvec3>& IntegralLine::getMetaData(const std::string & name) {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
+        metaData_.emplace(name, std::vector<dvec3>());
+        return metaData_.find(name)->second;
     }
     return it->second;
 }
