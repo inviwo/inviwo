@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma optimize("",off)
 
 #include "integralline.h"
 #include <inviwo/core/util/interpolation.h>
@@ -159,5 +158,3 @@ double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
 }
 
 }  // namespace
-
-#pragma optimize("",on)
