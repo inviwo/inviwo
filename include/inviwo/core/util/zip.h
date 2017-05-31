@@ -47,7 +47,7 @@ auto beginImpl(T& t, std::index_sequence<I...>) {
     return std::make_tuple(std::begin(std::get<I>(t))...);
 }
 template <typename... T>
-auto begin(std::tuple<T...>& t) -> std::tuple<decltype(std::begin(std::declval<T>()))...> {
+auto begin(std::tuple<T...>& t) {
     return beginImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -56,7 +56,7 @@ auto endImpl(T& t, std::index_sequence<I...>) {
     return std::make_tuple(std::end(std::get<I>(t))...);
 }
 template <typename... T>
-auto end(std::tuple<T...>& t) -> std::tuple<decltype(std::end(std::declval<T>()))...> {
+auto end(std::tuple<T...>& t) {
     return endImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -86,10 +86,14 @@ struct zipper {
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
 
     struct iterator {
-        using Iterators = std::tuple<decltype(std::begin(std::declval<Iterable>()))...>;
-        using Refs = std::tuple<decltype(*(std::begin(std::declval<Iterable>())))...>;
-        using Pointers = std::tuple<decltype((std::begin(std::declval<Iterable>()).operator->()))...>;
-
+        using Iterators = std::tuple<decltype(
+            std::begin(std::declval<typename std::add_lvalue_reference<Iterable>::type>()))...>;
+        using Refs = std::tuple<decltype(
+            *(std::begin(std::declval<typename std::add_lvalue_reference<Iterable>::type>())))...>;
+        using Pointers = std::tuple<decltype(
+            (std::begin(std::declval<typename std::add_lvalue_reference<Iterable>::type>())
+                 .
+                 operator->()))...>;
         iterator(Iterators iterators) : iterators_(iterators) {}
 
         iterator& operator++() {

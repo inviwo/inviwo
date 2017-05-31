@@ -130,4 +130,13 @@ TEST(ZipIterTest, DifferenLenght2) {
     }
 }
 
+TEST(ZipIterTest, Temporaries) {
+    int count = 0;
+    for (auto&& i : util::zip(util::make_range(0, 20, 1), util::make_range(10, 20, 1))) {
+        EXPECT_EQ(count, std::get<0>(i));
+        EXPECT_EQ(count + 10, std::get<1>(i));
+        ++count;
+    }
+}
+
 }  // namespace
