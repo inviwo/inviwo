@@ -540,6 +540,7 @@ set(TEST_FILES
     tests/unittests/conversion-test.cpp
     tests/unittests/document-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/zip-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

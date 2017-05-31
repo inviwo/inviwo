@@ -30,98 +30,54 @@
 #ifndef IVW_ZIP_H
 #define IVW_ZIP_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <tuple>
 #include <iterator>
+#include <utility>
+#include <inviwo/core/util/stdextensions.h>
+
 
 namespace inviwo {
 
 namespace util {
 
-namespace detail {
+namespace detailzip {
 
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N == 0, R>::type beginimpl(T& t, V... v) {
-    return std::tuple<V...>(v...);
-}
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N != 0, R>::type beginimpl(T& t, V... v) {
-    return beginimpl<N - 1, R>(t, std::begin(std::get<N-1>(t)), v...);
+template <typename T, std::size_t... I>
+auto beginImpl(T& t, std::index_sequence<I...>) {
+    return std::make_tuple(std::begin(std::get<I>(t))...);
 }
 template <typename... T>
-auto getBegin(std::tuple<T...>& t) -> std::tuple<decltype(std::begin(std::declval<T>()))...> {
-    return beginimpl<std::tuple_size<std::tuple<T...>>::value,
-                     std::tuple<decltype(std::begin(std::declval<T>()))...>>(t);
+auto begin(std::tuple<T...>& t) -> std::tuple<decltype(std::begin(std::declval<T>()))...> {
+    return beginImpl(t, std::index_sequence_for<T...>{});
 }
 
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N == 0, R>::type endimpl(T& t, V... v) {
-    return std::tuple<V...>(v...);
-}
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N != 0, R>::type endimpl(T& t, V... v) {
-    return endimpl<N - 1, R>(t, std::end(std::get<N-1>(t)), v...);
+template <typename T, std::size_t... I>
+auto endImpl(T& t, std::index_sequence<I...>) {
+    return std::make_tuple(std::end(std::get<I>(t))...);
 }
 template <typename... T>
-auto getEnd(std::tuple<T...>& t) -> std::tuple<decltype(std::end(std::declval<T>()))...> {
-    return endimpl<std::tuple_size<std::tuple<T...>>::value,
-                     std::tuple<decltype(std::end(std::declval<T>()))...>>(t);
+auto end(std::tuple<T...>& t) -> std::tuple<decltype(std::end(std::declval<T>()))...> {
+    return endImpl(t, std::index_sequence_for<T...>{});
 }
 
-template <size_t N, typename T>
-typename std::enable_if<N == 0, void>::type incrementimpl(T& t) {
-    std::get<N>(t)++;
-}
-template <size_t N, typename T>
-typename std::enable_if<N != 0, void>::type incrementimpl(T& t) {
-    std::get<N>(t)++;
-    incrementimpl<N - 1>(t);
+template <typename T, std::size_t... I>
+auto refImpl(T& t, std::index_sequence<I...>) -> std::tuple<decltype(*(std::get<I>(t)))...> {
+    return{ *(std::get<I>(t))... };
 }
 template <typename... T>
-void increment(std::tuple<T...>& t) {
-    incrementimpl<std::tuple_size<std::tuple<T...>>::value - 1>(t);
+auto ref(std::tuple<T...>& t) -> std::tuple<decltype(*(std::declval<T>()))...> {
+    return refImpl(t, std::index_sequence_for<T...>{});
 }
 
-template <size_t N, typename T, typename V>
-typename std::enable_if<N == 0, bool>::type equalimpl(T& t, V& v) {
-    return std::get<N>(v) == std::get<N>(t);
-}
-template <size_t N, typename T, typename V>
-typename std::enable_if<N != 0, bool>::type equalimpl(T& t, V& v) {
-    return std::get<N>(v) == std::get<N>(t) && equalimpl<N - 1>(t, v);
-}
-template <typename T, typename V>
-bool equal(T& t, V& v) {
-    return equalimpl<std::tuple_size<T>::value - 1>(t, v);
-}
-
-template <size_t N, typename T, typename V>
-typename std::enable_if<N == 0, bool>::type notequalimpl(T& t, V& v) {
-    return std::get<N>(v) != std::get<N>(t);
-}
-template <size_t N, typename T, typename V>
-typename std::enable_if<N != 0, bool>::type notequalimpl(T& t, V& v) {
-    return std::get<N>(v) != std::get<N>(t) && notequalimpl<N - 1>(t, v);
-}
-template <typename T, typename V>
-bool notequal(T& t, V& v) {
-    return notequalimpl<std::tuple_size<T>::value - 1>(t, v);
-}
-
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N == 0, R>::type refimpl(T& t, V&&... v) {
-    return std::tuple<V...>(std::forward<V>(v)...);
-}
-template <size_t N, typename R, typename T, typename... V>
-typename std::enable_if<N != 0, R>::type refimpl(T& t, V&&... v) {
-    return refimpl<N - 1, R>(t, *(std::get<N-1>(t)), std::forward<V>(v)...);
+template <typename T, std::size_t... I>
+auto pointerImpl(T& t, std::index_sequence<I...>)
+-> std::tuple<decltype((std::get<I>(t)).operator->())...> {
+    return{ (std::get<I>(t)).operator->()... };
 }
 template <typename... T>
-auto getRef(std::tuple<T...>& t) -> std::tuple<decltype(*(std::declval<T>()))...> {
-    return refimpl<std::tuple_size<std::tuple<T...>>::value,
-                   std::tuple<decltype(*(std::declval<T>()))...>>(t);
+auto pointer(std::tuple<T...>& t) -> std::tuple<decltype((std::declval<T>()).operator->())...> {
+    return pointerImpl(t, std::index_sequence_for<T...>{});
 }
-
 }
 
 template <typename... Iterable>
@@ -132,49 +88,64 @@ struct zipper {
     struct iterator {
         using Iterators = std::tuple<decltype(std::begin(std::declval<Iterable>()))...>;
         using Refs = std::tuple<decltype(*(std::begin(std::declval<Iterable>())))...>;
-    
-        iterator(std::tuple<decltype(std::begin(std::declval<Iterable>()))...> iterators)
-            : iterators_(iterators) {}
+        using Pointers = std::tuple<decltype((std::begin(std::declval<Iterable>()).operator->()))...>;
+
+        iterator(Iterators iterators) : iterators_(iterators) {}
 
         iterator& operator++() {
-            detail::increment(iterators_);
+            for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);
             return *this;
         }
 
         iterator operator++(int) {
             iterator i = *this;
-            detail::increment(iterators_);
+            for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);
             return i;
         }
 
         Refs operator*() {
-            return detail::getRef(iterators_);
+            return detailzip::ref(iterators_);
         }
-       
+
+        Pointers operator->() {
+            return detailzip::pointer(iterators_);
+        }
+
         template<size_t N>
         typename std::tuple_element<N, Iterators>::type & get() {
             return std::get<N>(iterators_);
         }
-        
-        bool operator==(const iterator& rhs) const {
-            return detail::equal(iterators_, rhs.iterators_);
-        }
+
+        bool operator==(const iterator& rhs) const { return iterators_ == rhs.iterators_; }
 
         bool operator!=(const iterator& rhs) const {
-            return detail::notequal(iterators_, rhs.iterators_);
+            bool equal = false;
+            util::for_each_in_tuple([&](auto& i1, auto& i2) { equal |= i1 == i2; }, iterators_,
+                                    rhs.iterators_);
+            return !equal;
         }
 
     private:
         Iterators iterators_;
     };
 
-    iterator begin() { return iterator(detail::getBegin(iterables_)); }
-    iterator end() { return iterator(detail::getEnd(iterables_)); }
+    iterator begin() { return iterator(detailzip::begin(iterables_)); }
+    iterator end() { return iterator(detailzip::end(iterables_)); }
 
 private:
     std::tuple<Iterable...> iterables_;
 };
 
+
+/**
+ * Iterate over containers in sync.
+ * Example use case:
+ * std::vector<int> a(10);
+ * std::vector<int> b(10);
+ * for (auto&& i : util::zip(a, b)) {
+ *      std::cout << std::get<0>(i) << " " << std::get<1>(i) << std::endl;
+ * }
+ */
 template <typename... T>
 auto zip(T&&... args) -> zipper<T...> {
     return zipper<T...>(std::forward<T>(args)...);
@@ -182,48 +153,45 @@ auto zip(T&&... args) -> zipper<T...> {
 
 template <typename T>
 struct range_generator {
-    range_generator(T begin, T end, T inc) : begin_(begin), end_(end), inc_(inc) {}
-    
-    struct iterator {
-        
-        iterator(T& val, T& inc) : val_(val), inc_(inc) {}
+    range_generator(const T& begin, const T& end, const T& inc)
+        : begin_(begin), end_(end), inc_(inc) {}
 
+    struct iterator {
+        iterator(T& val, T& inc) : val_(val), inc_(inc) {}
         iterator& operator++() {
-            val_+=inc_;
+            val_ += inc_;
             return *this;
         }
-
         iterator operator++(int) {
             iterator i = *this;
-            val_+=inc_;
+            val_ += inc_;
             return i;
         }
 
-        T& operator*() {
-            return val_;
-        }
-       
-        bool operator==(const iterator& rhs) const {
-            return val_ == rhs.val_;
-        }
+        T& operator*() { return val_; }
+        T* operator->() { return &val_; }
 
-        bool operator!=(const iterator& rhs) const {
-            return val_ != rhs.val_;
-        }
-        
-        private:
+        bool operator==(const iterator& rhs) const { return val_ == rhs.val_; }
+        bool operator!=(const iterator& rhs) const { return val_ != rhs.val_; }
+
+    private:
         T val_;
         T inc_;
     };
-    
+
     iterator begin() { return iterator(begin_, inc_); }
     iterator end() { return iterator(end_, inc_); }
-    
+
 private:
     T begin_;
     T end_;
     T inc_;
 };
+
+template <typename T>
+auto make_range(const T& begin, const T& end, const T& inc) -> range_generator<T> {
+    return range_generator<T>(begin, end, inc);
+}
 
 
 }  // namespace util
