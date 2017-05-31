@@ -411,7 +411,7 @@ macro(ivw_add_minimal_applications)
             string(TOUPPER ${dir} u_dir)
             option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
             if(NOT ${u_dir} STREQUAL "QT")
-                ivw_private_build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
+                ivw_add_build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
             endif()
             if(IVW_TINY_${u_dir}_APPLICATION)
                 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
@@ -422,7 +422,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Set module build option to true if the owner is built
-function(ivw_private_build_module_dependency the_module the_owner)
+function(ivw_add_build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
