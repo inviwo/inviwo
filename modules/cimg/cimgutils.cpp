@@ -490,6 +490,36 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
     return source->getDataFormat()->dispatch(disp, source, target);
 }
 
+std::string getLibPNGVesrion() {
+#ifdef cimg_use_png
+    std::ostringstream oss;
+    oss << PNG_LIBPNG_VER_MAJOR << "." << PNG_LIBPNG_VER_MINOR << "." << PNG_LIBPNG_VER_RELEASE;
+    return oss.str();
+#else
+    return "LibPNG not available";
+#endif
+}
+
+std::string getLibJPGVesrion() {
+#ifdef cimg_use_jpeg
+    std::ostringstream oss;
+    oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
+    return oss.str();
+#else
+    return "LibJPG not available";
+#endif
+}
+
+std::string getOpenEXRVesrion() {
+#ifdef cimg_use_openexr
+    std::ostringstream oss;
+    oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
+    return oss.str();
+#else
+    return "OpenEXR not available";
+#endif
+}
+
 }  // namespace
 
 }  // namespace
