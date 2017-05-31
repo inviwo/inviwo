@@ -62,7 +62,7 @@ auto end(std::tuple<T...>& t) {
 
 template <typename T, std::size_t... I>
 auto refImpl(T& t, std::index_sequence<I...>) -> std::tuple<decltype(*(std::get<I>(t)))...> {
-    return{ *(std::get<I>(t))... };
+    return std::tuple<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
 }
 template <typename... T>
 auto ref(std::tuple<T...>& t) -> std::tuple<decltype(*(std::declval<T>()))...> {
@@ -71,14 +71,14 @@ auto ref(std::tuple<T...>& t) -> std::tuple<decltype(*(std::declval<T>()))...> {
 
 template <typename T, std::size_t... I>
 auto pointerImpl(T& t, std::index_sequence<I...>)
--> std::tuple<decltype((std::get<I>(t)).operator->())...> {
-    return{ (std::get<I>(t)).operator->()... };
+    -> std::tuple<decltype((std::get<I>(t)).operator->())...> {
+    return std::tuple<decltype((std::get<I>(t)).operator->())...>{(std::get<I>(t)).operator->()...};
 }
 template <typename... T>
 auto pointer(std::tuple<T...>& t) -> std::tuple<decltype((std::declval<T>()).operator->())...> {
     return pointerImpl(t, std::index_sequence_for<T...>{});
 }
-}
+}  // namespace detailzip
 
 template <typename... Iterable>
 struct zipper {
