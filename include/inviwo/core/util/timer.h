@@ -46,8 +46,6 @@
 #include <future>
 #include <warn/pop>
 
-class std::thread;
-
 namespace inviwo {
 
 class Timer;
