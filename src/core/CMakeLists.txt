@@ -296,6 +296,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/zip.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -539,6 +540,7 @@ set(TEST_FILES
     tests/unittests/conversion-test.cpp
     tests/unittests/document-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/zip-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

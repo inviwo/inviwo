@@ -338,7 +338,6 @@ function(make_doxygen_target modules_var)
     set(dependency_list "")
 
     set(GENERATE_IMG "YES")
-    ivw_private_format_doxy_arg(SHADER_INC_PATH ${IVW_SHADER_INCLUDE_PATHS})
     
     if(PYTHONINTERP_FOUND)
         #set(PREFIX_PYTHON "")
