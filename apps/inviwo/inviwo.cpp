@@ -43,10 +43,13 @@
 #include <inviwo/core/util/filelogger.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
+#include <inviwo/core/util/logerrorcounter.h>
 
 int main(int argc, char** argv) {
     inviwo::LogCentral::init();
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
+    auto logCounter = std::make_shared<inviwo::LogErrorCounter>();    
+    inviwo::LogCentral::getPtr()->registerLogger(logCounter);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
@@ -93,6 +96,15 @@ int main(int argc, char** argv) {
     inviwo::util::OnScopeExit clearNetwork([&](){
         inviwoApp.getProcessorNetwork()->clear();
     });
+
+    if (auto numErrors = logCounter->getWarnCount()) {
+        LogWarnCustom("inviwo.cpp", numErrors << " warnings generated during startup");
+    }
+
+    if (auto numErrors = logCounter->getErrorCount()) {
+        LogErrorCustom("inviwo.cpp", numErrors << " errors generated during startup");
+    }
+    
 
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
