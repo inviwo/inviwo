@@ -77,7 +77,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.35"
      inkscape:cx="874.43703"
-     inkscape:cy="494.63622"
+     inkscape:cy="496.0648"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -138,70 +138,64 @@
        x="-109.09647"
        y="862.88452" />
     <g
-       id="g4174"
-       transform="translate(4.642857,-703.35714)"
-       inkscape:export-xdpi="25.400002"
-       inkscape:export-ydpi="25.400002">
-      <g
-         transform="matrix(0.53096483,0,0,0.53096483,-662.54659,1043.5477)"
-         id="g4161">
-        <g
-           style="display:inline"
-           transform="matrix(0.93164617,0,0,0.93164612,1270.7466,-960.68249)"
-           id="g7074">
-          <path
-             inkscape:export-ydpi="39.604267"
-             inkscape:export-xdpi="39.604267"
-             sodipodi:nodetypes="ccccc"
-             inkscape:connector-curvature="0"
-             id="path4183"
-             d="m 203.92857,687.36222 v 90 H 270 v -55 z"
-             style="fill:#6a9bd7;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-          <path
-             inkscape:export-ydpi="39.604267"
-             inkscape:export-xdpi="39.604267"
-             style="fill:#e89c9c;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-             d="m 396.07143,687.36222 v 90 H 330 v -55 z"
-             id="path4185"
-             inkscape:connector-curvature="0"
-             sodipodi:nodetypes="ccccc" />
-          <path
-             inkscape:export-ydpi="39.604267"
-             inkscape:export-xdpi="39.604267"
-             inkscape:connector-curvature="0"
-             id="path4206-7"
-             d="M 200.00001,625.43366 H 400 l -99.99999,55.00001 z"
-             style="fill:#a7de96;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-          <path
-             inkscape:connector-curvature="0"
-             d="M 290,-53 5,112 300,282 595,112 310,-53 v 240 h 75 l 45,-25 H 340 V -4.8476562 L 543.99023,109.39453 300,247 56.009766,109.39453 260,-4.8476562 V 162 h -90 l 45,25 h 75 z m 15,679.99999 V 292.00001 l 295,-170 v 315 L 410,349.25255 v -73.26269 l 25,-13.98985 v 74.10714 l 140,60.89286 V 166.28572 l -240,135 V 579.85709 L 542.32143,458.60715 395.35714,388.9643 H 345 v -25 h 51.25 l 197.14286,92.14285 z m -10,0 V 292.00001 l -295,-170 v 315 l 190,-87.74746 v -73.26269 l -25,-13.98985 v 74.10714 L 25,397.00001 V 166.28572 l 240,135 V 579.85709 L 57.678572,458.60715 204.64286,388.9643 H 255 v -25 H 203.75 L 6.6071428,456.10715 Z"
-             style="fill:#404040;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:1.07336867px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             transform="translate(0,425.36221)"
-             id="path4197" />
-        </g>
-        <text
-           id="text9870"
-           y="-262.49539"
-           x="1839.4248"
-           style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#404040;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:250.00001526px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';fill:#404040;fill-opacity:1"
-             y="-262.49539"
-             x="1839.4248"
-             id="tspan9872"
-             sodipodi:role="line">Inviwo</tspan></text>
-        <text
-           id="text9870-7"
-           y="-162.19951"
-           x="1846.5586"
-           style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#404040;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:120.00000763px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#404040;fill-opacity:1"
-             y="-162.19951"
-             x="1846.5586"
-             id="tspan9872-0"
-             sodipodi:role="line">Interactive Visualization Workshop</tspan></text>
-      </g>
+       style="display:inline"
+       transform="matrix(0.49467135,0,0,0.49467132,26.193022,-160.52305)"
+       id="g7074">
+      <path
+         inkscape:export-ydpi="39.604267"
+         inkscape:export-xdpi="39.604267"
+         sodipodi:nodetypes="ccccc"
+         inkscape:connector-curvature="0"
+         id="path4183"
+         d="m 203.92857,687.36222 v 90 H 270 v -55 z"
+         style="fill:#6a9bd7;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:export-ydpi="39.604267"
+         inkscape:export-xdpi="39.604267"
+         style="fill:#e89c9c;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 396.07143,687.36222 v 90 H 330 v -55 z"
+         id="path4185"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         inkscape:export-ydpi="39.604267"
+         inkscape:export-xdpi="39.604267"
+         inkscape:connector-curvature="0"
+         id="path4206-7"
+         d="M 200.00001,625.43366 H 400 l -99.99999,55.00001 z"
+         style="fill:#a7de96;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4.02513266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         d="M 290,-53 5,112 300,282 595,112 310,-53 v 240 h 75 l 45,-25 H 340 V -4.8476562 L 543.99023,109.39453 300,247 56.009766,109.39453 260,-4.8476562 V 162 h -90 l 45,25 h 75 z m 15,679.99999 V 292.00001 l 295,-170 v 315 L 410,349.25255 v -73.26269 l 25,-13.98985 v 74.10714 l 140,60.89286 V 166.28572 l -240,135 V 579.85709 L 542.32143,458.60715 395.35714,388.9643 H 345 v -25 h 51.25 l 197.14286,92.14285 z m -10,0 V 292.00001 l -295,-170 v 315 l 190,-87.74746 v -73.26269 l -25,-13.98985 v 74.10714 L 25,397.00001 V 166.28572 l 240,135 V 579.85709 L 57.678572,458.60715 204.64286,388.9643 H 255 v -25 H 203.75 L 6.6071428,456.10715 Z"
+         style="fill:#404040;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:1.07336867px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="translate(0,425.36221)"
+         id="path4197" />
+    </g>
+    <g
+       id="g4673"
+       transform="translate(33.75,9.375)">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:6.37157774px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#404040;fill-opacity:1;stroke:none;stroke-width:0.53096485px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="318.76614"
+         y="187.68974"
+         id="text9870"><tspan
+           sodipodi:role="line"
+           id="tspan9872"
+           x="318.76614"
+           y="187.68974"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:132.74121094px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';fill:#404040;fill-opacity:1;stroke-width:0.53096485px">Inviwo</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:6.37157774px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#404040;fill-opacity:1;stroke:none;stroke-width:0.53096485px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="322.55392"
+         y="257.81833"
+         id="text9870-7"><tspan
+           sodipodi:role="line"
+           id="tspan9872-0"
+           x="322.55392"
+           y="257.81833"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:63.71578217px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#404040;fill-opacity:1;stroke-width:0.53096485px">Interactive Visualization Workshop</tspan></text>
     </g>
     <image
        y="-120.57929"
@@ -246,8 +240,8 @@
        id="rect4368"
        width="70.000008"
        height="85.714287"
-       x="683.33173"
-       y="-177.0079" />
+       x="687.08173"
+       y="-173.2579" />
     <image
        y="866.95447"
        x="1830.0701"
@@ -264,7 +258,7 @@
        inkscape:connector-curvature="0" />
     <g
        id="g4624"
-       transform="matrix(1.0861405,0,0,1.0861405,-94.38253,-84.366689)"
+       transform="matrix(1.0861405,0,0,1.0861405,-94.38253,-80.616689)"
        style="stroke-width:0.92069119">
       <image
          style="stroke-width:1.13210356"
