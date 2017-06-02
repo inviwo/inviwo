@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NUMPYVOLUME_H
@@ -39,36 +39,38 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.NumPyVolume, Num Py Volume}
- * ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
+/** \docpage{org.inviwo.NumPyVolume, NumPy Volume}
+* ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)
+*
+* En example processor illustrating how Python can be used to create volumes.
+* Processor creates an "empty" volume and passes it along to a python script. The script calculates
+* for a signed distance value for each voxel which can be visualized with any iso surface
+* visualization method.
+* See the Example workspace in File/Python3/volume.inv
+*
+* ### Outports
+*   * __outport__ The final signed distance volume
+*
+* ### Properties
+*   * __Size__ Size of the created volume.
+*
+*/
 
 /**
  * \class NumPyVolume
- * \brief <brief description> 
+ * \brief <brief description>
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_PYTHON3_API NumPyVolume : public Processor { 
+class IVW_MODULE_PYTHON3_API NumPyVolume : public Processor {
 public:
     NumPyVolume();
     virtual ~NumPyVolume() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     VolumeOutport outport_;
 
@@ -76,7 +78,6 @@ private:
     PythonScriptDisk script_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_NUMPYVOLUME_H
-
+#endif  // IVW_NUMPYVOLUME_H

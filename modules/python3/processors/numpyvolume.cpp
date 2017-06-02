@@ -64,8 +64,10 @@ NumPyVolume::NumPyVolume()
 void NumPyVolume::process() {
     auto vol = std::make_shared<Volume>(size_.get(), DataFloat32::get());
 
+    auto volObj = pybind11::cast(vol.get());
+
     script_.run({
-        {"vol" , pybind11::cast(vol.get())}
+        {"vol" , volObj}
     }); 
 
     vol->dataMap_.dataRange = dvec2(0,1);

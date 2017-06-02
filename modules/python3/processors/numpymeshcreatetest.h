@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NUMPYMESHCREATETEST_H
@@ -40,24 +40,35 @@
 
 namespace inviwo {
 
-class IVW_MODULE_PYTHON3_API NumPyMeshCreateTest : public Processor { 
+/** \docpage{org.inviwo.NumPyMeshCreateTest, NumPy Mesh Create Test}
+* ![](org.inviwo.NumPyMeshCreateTest.png?classIdentifier=org.inviwo.NumPyMeshCreateTest)
+*
+* En example processor illustrating how Python can be used to create a mesh.
+* The processors process function executes a python scripts which creates a BasicMesh consisting of
+* three squares of different colors. This basic mesh is then "stolen" from python and ownership is
+* passed to the port.
+*
+*
+* ### Outports
+*   * __mesh__ The final created mesh.
+*/
+
+class IVW_MODULE_PYTHON3_API NumPyMeshCreateTest : public Processor {
 public:
     NumPyMeshCreateTest();
     virtual ~NumPyMeshCreateTest() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
-    
     PythonScriptDisk script_;
 
     MeshOutport mesh_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_NUMPYMESHCREATETEST_H
-
+#endif  // IVW_NUMPYMESHCREATETEST_H

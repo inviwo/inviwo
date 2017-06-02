@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NUMPYMANDELBROT_H
@@ -40,36 +40,47 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.NumpyMandelbrot, Numpy Mandelbrot}
- * ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+//(\f$ Z_{n+1} = Z_{n}^p + C \f$)
 
+/** \docpage{org.inviwo.NumpyMandelbrot, NumPy Mandelbrot}
+* ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
+*
+* En example processor illustrating how Python can be used to create images.
+* Processor creates an "empty" image and passes it along to a python script. This python calculates
+* for each pixel if that pixel is part of the Mandelbrot set.
+* (https://en.wikipedia.org/wiki/Mandelbrot_set) and updates the pixel in the image accordingly.
+* See the Example workspace in File/Python3/mandelbrot.inv
+*
+*
+* ### Outports
+*   * __outport__ The final image, suitable for color mapping using the ImageMapping Processor
+*
+* ### Properties
+*   * __Size__ The size of the output image
+*   * __Real bounds__ Range of the real values used in the initial complex number mapped to the
+* x-axis
+*   * __Imaginary bounds__ Range of the imaginary values used in the initial complex number mapped
+* to the y-axis
+*   * __power__ To what power to raise Z in each iteration.
+*   * __Iterations__ Maximum iterations to use for testing membership.
+*
+*/
 
 /**
  * \class NumpyMandelbrot
- * \brief <brief description> 
+ * \brief <brief description>
  * <Detailed description from a developer prespective>
  */
-class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor { 
+class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor {
 public:
     NumpyMandelbrot();
     virtual ~NumpyMandelbrot() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     ImageOutport outport_;
 
@@ -82,7 +93,6 @@ private:
     PythonScriptDisk script_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_NUMPYMANDELBROT_H
-
+#endif  // IVW_NUMPYMANDELBROT_H
