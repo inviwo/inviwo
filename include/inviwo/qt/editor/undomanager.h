@@ -65,7 +65,7 @@ public:
     QAction* getRedoAction() const;
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     using DiffType = std::vector<std::string>::iterator::difference_type;

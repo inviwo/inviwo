@@ -189,12 +189,6 @@ std::shared_ptr<BasicMesh> BasicMesh::ellipse(const vec3& center, const vec3& ma
                                               const float& radius, const size_t& nsegments) {
     auto mesh = std::make_shared<BasicMesh>();
 
-    vec3 normal = glm::normalize(glm::cross(minorAxis, majorAxis));
-    vec3 orth = orthvec(normal);
-
-    vec3 tc = vec3(0.5f, 0.5f, 0.0f);
-    vec3 tn = vec3(0.0f, 0.0f, 1.0f);
-    vec3 to = vec3(0.5f, 0.0f, 0.0f);
     vec3 p, p1;
     vec3 t;
     double angle = M_PI * 2.0f / nsegments;
