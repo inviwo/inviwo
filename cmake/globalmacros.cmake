@@ -736,9 +736,9 @@ endmacro()
 # and befor ive_create_module
 macro(ivw_add_link_flags)
     # Set link flags
-    get_property(flags TARGET ${project_name} PROPERTY LINK_FLAGS)
+    get_property(flags TARGET ${_projectName} PROPERTY LINK_FLAGS)
     list(APPEND flags "${ARGN}")
-    set_property(TARGET ${project_name} PROPERTY LINK_FLAGS ${flags})
+    set_property(TARGET ${_projectName} PROPERTY LINK_FLAGS ${flags})
 
     # Append includes to project list
     list(APPEND _allLinkFlags "\"${ARGN}\"")
