@@ -216,7 +216,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/memleak.cmake)
 
 #--------------------------------------------------------------------
 # Use pybind11 for python bindings
-include(${IVW_ROOT_DIR}/modules/python3/pybind11.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 
 #--------------------------------------------------------------------
 # Build shared libs or static libs
