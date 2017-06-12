@@ -212,8 +212,8 @@ PYBIND11_PLUGIN(inviwopy) {
                 module->invokePythonInitCallbacks(&m);
             }
         }
-    } catch (SingletonException &se) {
-        LogErrorCustom("InivoPy:" , "Failed to get Inviwo application, inviwopy will not function as expected");
+    } catch (SingletonException &) {
+        LogErrorCustom("Inivopy:" , "Failed to get Inviwo application, inviwopy will not function as expected");
     } catch (...) {
         throw;
     }
