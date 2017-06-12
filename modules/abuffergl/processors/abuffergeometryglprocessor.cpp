@@ -154,7 +154,8 @@ void ABufferGeometryGLProcessor::process() {
 
         LGL_ERROR;
         ABUFFER_PROFILE("Reset-abuffer");
-        abuffer_.aBuffer_resetLinkList(tempImageGL);
+        abuffer_.abuffer_addShaderDefinesAndBuild(&abuffer_.resetABufferShader_);
+        abuffer_.aBuffer_resetLinkList(tempImageGL, true);
 
         updateRequried_ = false;
     }

@@ -23,6 +23,19 @@ void sync(ivec2 coords) {
     };
 }
 
+ //Reset ABuffer
+ void resetABuffer(ivec2 coords) {
+	//reset stuffs with any first acquired thread
+	//ivec2 coords = ivec2(gl_FragCoord.x, gl_FragCoord.y);
+	if ( semaphoreAcquire(coords) ) {		
+		setPixelCurrentPage(coords, 0);
+		setPixelFragCounter(coords, 0);
+		memoryBarrier();
+		semaphoreRelease(coords);
+	}
+ }
+
+
 void performFragmentCountOnly(vec2 pixelPos, out float returnVal) {
 
     ivec2 coords=ivec2(pixelPos);

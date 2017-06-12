@@ -62,13 +62,13 @@ void main() {
 	//test fragment count
 	
 	//FragData0 = vec4(gl_FragCoord.x/float(SCREEN_WIDTH), gl_FragCoord.y/float(SCREEN_HEIGHT), 1.0, 1.0);	
-	float abNumFrag=(float)getPixelFragCounter(ivec2(gl_FragCoord.x, gl_FragCoord.y));		
-	abNumFrag = clamp(abNumFrag, 0.0, 768.0);
+	float abNumFrag_=(float)getPixelFragCounter(ivec2(gl_FragCoord.x, gl_FragCoord.y));		
+	abNumFrag_ = clamp(abNumFrag_, 0.0, 768.0);
 	//packing
 	float r=0.0,g = 0.0, b=0.0, a=0.0;
-	if (abNumFrag>=512.0) { r = 256.0; g = 256.0; b = abNumFrag-512.0; }
-	else if (abNumFrag>=256.0) { r = 256.0; g = abNumFrag-256.0; b=0.0;}
-	else { r = abNumFrag; g=0.0; b=0.0; }
+	if (abNumFrag_>=512.0) { r = 256.0; g = 256.0; b = abNumFrag_-512.0; }
+	else if (abNumFrag_>=256.0) { r = 256.0; g = abNumFrag_-256.0; b=0.0;}
+	else { r = abNumFrag_; g=0.0; b=0.0; }
 	FragData0 = vec4(r/256.0, g/256.0, b/256.0, 1.0); 
 	return;
 #endif
@@ -89,6 +89,7 @@ void main() {
 
 	float abNumFrag=(float)getPixelFragCounter(ivec2(gl_FragCoord.x, gl_FragCoord.y));
 
+	gl_FragDepth = 1;
 
 	if (abNumFrag == 0) return;
 
@@ -101,7 +102,8 @@ void main() {
 	fillArrayAndSortABuffer(ivec2(gl_FragCoord.x, gl_FragCoord.y), true);
 	
 	//reset & sync
-	resetABuffer();
+    //resetABuffer(ivec2(gl_FragCoord.x, gl_FragCoord.y));
+
 	
 	//result
 	u8vec4 val = ABUFFER_RGBA_ELEMENT(0, 0);

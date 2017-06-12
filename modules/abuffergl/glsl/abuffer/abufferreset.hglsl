@@ -33,21 +33,8 @@
 //ABuffer
 #include "abuffer.hglsl"
 
- //Reset ABuffer
- void resetABuffer() {
- 	#if USE_ABUFFER==1	
-		//reset stuffs with any first acquired thread
-		ivec2 coords = ivec2(gl_FragCoord.x, gl_FragCoord.y);
-		if ( semaphoreAcquire(coords) ) {		
-			setPixelCurrentPage(coords, 0);
-			setPixelFragCounter(coords, 0);
-			memoryBarrier();
-			semaphoreRelease(coords);
-		}
-	
-	#endif
- }
-
 void main() {
-	resetABuffer();
+	#if USE_ABUFFER==1
+	resetABuffer(ivec2(gl_FragCoord.x, gl_FragCoord.y));
+	#endif
 }

@@ -347,7 +347,7 @@ void Inviwo_ABufferGL4::aBuffer_bindTextures() {
     glBindImageTextureEXT(tex2->getUnitNumber(), layer->getTexture()->getID(), 0, false, 0,
                           GL_READ_WRITE, GL_R32UI);
     LGL_ERROR;
-
+    
     /// Semaphore///
     imageGL = semaphoreImgTexture_->getEditableRepresentation<ImageGL>();
     layer = imageGL->getColorLayerGL(0);
@@ -450,14 +450,14 @@ void Inviwo_ABufferGL4::aBuffer_unbind() {
     layer->unbindTexture();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage) {
+void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage, ImageType layerType) {
     //TextureUnit* tex1 = texUnits_[0]; //unused
     //TextureUnit* tex2 = texUnits_[1]; //unused
     //TextureUnit* tex3 = texUnits_[2]; //unused
 
     TextureUnitContainer units;
 
-    imageGL->activateBuffer();
+    imageGL->activateBuffer(layerType);
     // utilgl::activateTarget(outport_);
 
     aBuffer_bindTextures();
@@ -476,7 +476,7 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     if (inputimage) {
         resolveABufferShader_.setUniform("isInputImageGiven", true);
         utilgl::bindAndSetUniforms(resolveABufferShader_, units,
-            *inputimage, "inputimage", ImageType::ColorDepth);
+            *inputimage, "inputimage", layerType);
     }
     else resolveABufferShader_.setUniform("isInputImageGiven", false);
 
@@ -490,28 +490,23 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     utilgl::deactivateCurrentTarget();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL) {
+void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL, bool forceReset, ImageType layerType) {
     // TODO: Remove explicit reset. Alternatively perform reset after every reslove, this can avoid
     // some overheads.
-    /*imageGL->activateBuffer();
-    utilgl::clearCurrentTarget();
-    //utilgl::activateTarget(outport_);
-    aBuffer_bindTextures(tex1, tex2, tex3);
-    //aBuffer_bindBuffers();
-    resetABufferShader_->activate();
-    setGlobalShaderParameters(resetABufferShader_);
+    if (forceReset) {
+        TextureUnitContainer units;
 
-    abuffer_addUniforms(resetABufferShader_);
-    //aBuffer_addUniforms(resetABufferShader_, tex1, tex2, tex3);
+        imageGL->activateBuffer(layerType);
+        // utilgl::activateTarget(outport_);
 
-    LGL_ERROR;
-
-    utilgl::singleDrawImagePlaneRect();
-
-    resetABufferShader_->deactivate();
-
-    glDisable(GL_BLEND);
-    utilgl::deactivateCurrentTarget();*/
+        aBuffer_bindTextures();
+        resetABufferShader_.activate();
+        abuffer_addUniforms(&resetABufferShader_);
+        LGL_ERROR;
+        utilgl::singleDrawImagePlaneRect();
+        resetABufferShader_.deactivate();
+        utilgl::deactivateCurrentTarget();
+    }
 
     if (globalAtomicCounterBuffer_ && globalAtomicsBufferId_) {
         // bind the buffer and define its initial storage capacity
@@ -546,7 +541,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
             fcImage->getColorLayer()->getRepresentation<LayerRAM>();
         const glm::uint32* fcImageData = (const glm::uint32*)layerRam_FragCount->getData();
         ivec2 dim = fcImage->getDimensions();
-        ivec2 sPos = ivec2(pos.x, dim.y - pos.y);
+        ivec2 sPos = ivec2(pos.x, pos.y);
         size_t ind = LayerRAM::posToIndex(sPos, fcImage->getDimensions());
         glm::uint32 fragCountVal = fcImageData[ind];
         ss << "Frag Count Value : " << fragCountVal << std::endl;
@@ -658,8 +653,6 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
         }
         LogWarn(ss.str());
     }
-
-    abuffer_textureInfo();
 }
 
 #define DUMP_TO_FILE 1
