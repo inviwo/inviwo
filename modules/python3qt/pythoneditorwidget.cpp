@@ -77,10 +77,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , app_(app)
     , appendLog_(nullptr)
 {
-
     setObjectName("PythonEditor");
-    setVisible(false);
-    setSticky(false);
     setWindowIcon(QIcon(":/icons/python.png"));
 
     QMainWindow* mainWindow = new QMainWindow();
@@ -186,9 +183,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 
     QObject::connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
 
-    this->updateStyle();
-
-    this->resize(500, 700);
+    updateStyle();
 
     if (app_) {
         app_->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
@@ -197,10 +192,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
             this, &PythonEditorWidget::updateStyle);
         app_->registerFileObserver(this);
     }
-    unsavedChanges_ = false;
-
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    setFloating(true);
 
     {
         // Restore state
@@ -211,6 +203,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         auto append = settings_.value("appendLog", appendLog_->isCheckable()).toBool();
         appendLog_->setChecked(append);
         
+        setVisible(settings_.value("visible", false).toBool());
+        setFloating(settings_.value("floating", true).toBool());
+        resize(settings_.value("size", QSize(500, 700)).toSize());
         restoreGeometry(settings_.value("geometry", saveGeometry()).toByteArray());
         setSticky(settings_.value("isSticky", InviwoDockWidget::isSticky()).toBool());
         settings_.endGroup();
@@ -226,6 +221,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         newPos += utilqt::offsetWidget();
         InviwoDockWidget::move(newPos);
     }
+    unsavedChanges_ = false;
 }
 
 PythonEditorWidget::~PythonEditorWidget() {
@@ -245,8 +241,11 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     settings_.beginGroup("PythonEditor");
     settings_.setValue("appendLog", appendLog_->isChecked());
     settings_.setValue("lastScript", scriptFileName_.c_str());
+    settings_.setValue("visible", isVisible());
+    settings_.setValue("floating", isFloating());
     settings_.setValue("geometry", saveGeometry());
-    settings_.setValue("isSticky",isSticky());
+    settings_.setValue("isSticky", isSticky());
+    settings_.setValue("size", size());
     settings_.endGroup();
 
 
@@ -414,7 +413,6 @@ void PythonEditorWidget::run() {
         clearOutput();
     }
 
-    app_->getInteractionStateManager().beginInteraction();
     Clock c;
     c.start();
     bool ok = script_.run();
@@ -425,7 +423,6 @@ void PythonEditorWidget::run() {
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
-    app_->getInteractionStateManager().endInteraction();
     PyInviwo::getPtr()->removeObserver(this);
 }
 
@@ -480,7 +477,7 @@ void PythonEditorWidget::updateTitleBar() {
         str = QString::fromStdString(scriptFileName_);
     }
 
-    updateWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
+    setWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
 }
 
 }  // namespace

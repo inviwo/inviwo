@@ -158,9 +158,11 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
 
             throw FileException(errMsg);
         }
+        // skip current directory ('.') and parent directory ('..')
+        bool skip = ((strcmp(file.name, ".") == 0) || (strcmp(file.name, "..") == 0));
 
         // check whether entry matches current ListMode setting
-        foundEntry = ((mode_ == ListMode::FilesAndDirectories)
+        foundEntry = !skip && ((mode_ == ListMode::FilesAndDirectories)
             || ((file.is_dir == 0) != (mode_ == ListMode::DirectoriesOnly)));
         if (foundEntry) {
             str = (includeBasePath ? file.path : file.name);

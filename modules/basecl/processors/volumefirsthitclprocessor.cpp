@@ -56,7 +56,7 @@ VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     , exitPort_("exit-points")
     , outport_("outport", DataVec4Float32::get())
     , samplingRate_("samplingRate", "Sampling rate", 1.0f, 1.0f, 15.0f)
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction())
+    , transferFunction_("transferFunction", "Transfer function")
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , kernel_(nullptr) {

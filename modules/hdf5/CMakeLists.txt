@@ -43,7 +43,18 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 set(HDF5_EXTERNALLY_CONFIGURED  1)
 set(HDF5_EXPORTED_TARGETS       "inviwo-hdf5-targets")
 set(HDF5_EXTERNAL_LIB_PREFIX    "ivw-")
+
 set(HDF5_INSTALL_NO_DEVELOPMENT ON)
+if(WIN32)
+    set(HDF5_INSTALL_BIN_DIR bin)
+    set(HDF5_INSTALL_LIB_DIR lib)
+else(APPLE)
+    set(HDF5_INSTALL_BIN_DIR bin)
+    set(HDF5_INSTALL_LIB_DIR Inviwo.app/Contents/MacOS)
+else()
+    set(HDF5_INSTALL_BIN_DIR bin)
+    set(HDF5_INSTALL_LIB_DIR lib)
+endif()
 
 set(HDF5_ENABLE_Z_LIB_SUPPORT   ON)
 find_package(ZLIB)
@@ -62,11 +73,11 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 add_subdirectory(ext/hdf5)
 
 set(h5-static hdf5-static hdf5_hl-static hdf5_cpp-static hdf5_hl_cpp-static)
-set(h5-shared hdf5-shared hdf5_hl-shared hdf5_cpp-shared hdf5_hl_cpp-shared)
 set(h5-cmake H5detect H5make_libsettings)
 
 set(h5-targets ${h5-static} ${h5-cmake})
 if(BUILD_SHARED_LIBS)
+    set(h5-shared hdf5-shared hdf5_hl-shared hdf5_cpp-shared hdf5_hl_cpp-shared)
     set(h5-targets ${h5-targets} ${h5-shared})
 endif()
 
@@ -89,4 +100,14 @@ endif()
 
 # not sure why this dir is nto picked up automatically
 # Needed to pick up some generated headers.
-target_include_directories(inviwo-module-hdf5 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/ext/hdf5)
+set(hdf_inc_dirs "")
+foreach(target ${h5-targets})
+    get_target_property(inc_dirs ${target} INCLUDE_DIRECTORIES)
+    if(inc_dirs)
+        list(APPEND hdf_inc_dirs ${inc_dirs})
+    endif()
+endforeach()
+remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
+target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
+
+ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)

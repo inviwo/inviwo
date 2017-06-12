@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/tinydirinterface.h>
 
 // For directory exists
@@ -37,7 +38,7 @@
 // For working directory
 #include <stdio.h>  // FILENAME_MAX
 
-#include <cctype> // isdigit()
+#include <cctype>  // isdigit()
 
 #ifdef WIN32
 #define NOMINMAX
@@ -48,11 +49,13 @@
 #include <Shlobj.h>
 #elif defined(__APPLE__)
 #include <CoreServices/CoreServices.h>
+#include <libproc.h>  // proc_pidpath
+#include <unistd.h>
 #else
 #include <unistd.h>
 #endif
 
-
+#include <array>
 #include <algorithm>
 
 namespace inviwo {
@@ -60,17 +63,62 @@ namespace inviwo {
 namespace filesystem {
 
 std::string getWorkingDirectory() {
-    char workingDir[FILENAME_MAX];
+    std::array<char, FILENAME_MAX> workingDir;
 #ifdef WIN32
-
-    if (!GetCurrentDirectoryA(sizeof(workingDir), workingDir)) return "";
-
+    if (!GetCurrentDirectoryA(static_cast<DWORD>(workingDir.size()), workingDir.data()))
+        throw Exception("Error querying current directory");
 #else
-
-    if (!getcwd(workingDir, sizeof(workingDir))) return "";
-
+    if (!getcwd(workingDir.data(), workingDir.size()))
+        throw Exception("Error querying current directory");
 #endif
-    return cleanupPath(std::string(workingDir));
+    return cleanupPath(std::string(workingDir.data()));
+}
+
+std::string getExecutablePath() {
+    // http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
+    std::string retVal;
+#ifdef WIN32
+    const DWORD maxBufSize = 1 << 20;  // corresponds to 1MiB
+    auto pathSize = FILENAME_MAX;
+    std::vector<char> executablePath(FILENAME_MAX);
+
+    auto size = GetModuleFileNameA(nullptr, executablePath.data(),
+                                   static_cast<DWORD>(executablePath.size()));
+    if (size == 0) throw Exception("Error retrieving executable path");
+    while (size == executablePath.size()) {
+        // buffer is too small, enlarge
+        auto newSize = executablePath.size() * 2;
+        if (newSize > maxBufSize) {
+            throw Exception("Insufficient buffer size");
+        }
+        executablePath.resize(newSize);
+        size = GetModuleFileNameA(nullptr, executablePath.data(),
+                                  static_cast<DWORD>(executablePath.size()));
+        if (size == 0) throw Exception("Error retrieving executable path");
+    }
+    retVal = std::string(executablePath.data());
+#elif __APPLE__
+    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
+    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
+    auto pid = getpid();
+    if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
+        // Error retrieving path
+        throw Exception("Error retrieving executable path");
+    }
+    retVal = std::string(executablePath.data());
+#else  // Linux
+    std::array<char, FILENAME_MAX> executablePath;
+    auto size = ::readlink("/proc/self/exe", executablePath.data(), executablePath.size() - 1);
+    if (size != -1) {
+        // readlink does not append a NUL character to the path
+        executablePath[size] = '\0';
+    } else {
+        // Error retrieving path
+        throw Exception("Error retrieving executable path");
+    }
+    retVal = std::string(executablePath.data());
+#endif
+    return retVal;
 }
 
 bool fileExists(const std::string& filePath) {
@@ -81,7 +129,7 @@ bool fileExists(const std::string& filePath) {
 
 bool directoryExists(const std::string& path) {
     struct stat buffer;
-    // If path contains the location of a directory, it cannot contain a trailing backslash. 
+    // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
     // We therefore check if path ends with a backslash
@@ -97,10 +145,10 @@ bool directoryExists(const std::string& path) {
 
 std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode) {
     if (path.empty()) {
-        return{};
+        return {};
     }
     TinyDirInterface tinydir;
-    switch(mode){
+    switch (mode) {
         case ListMode::Files:
             tinydir.setListMode(TinyDirInterface::ListMode::FilesOnly);
             break;
@@ -112,11 +160,11 @@ std::vector<std::string> getDirectoryContents(const std::string& path, ListMode 
             break;
     }
     tinydir.open(path);
-    
+
     return tinydir.getContents();
 }
 
-bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
+bool wildcardStringMatch(const std::string& pattern, const std::string& str) {
     const char* patternPtr = pattern.c_str();
     const char* strPtr = str.c_str();
 
@@ -126,24 +174,21 @@ bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
     while (*strPtr != '\0') {
         if (*patternPtr == '*') {
             // wildcard detected
-            ++patternPtr; // remove wildcard from pattern
+            ++patternPtr;  // remove wildcard from pattern
             if (*patternPtr == '\0') {
                 // wildcard at the end of the pattern matches remaining string
                 return true;
             }
-            patternPtrSave = patternPtr; // save position after wildcard for roll-back
+            patternPtrSave = patternPtr;  // save position after wildcard for roll-back
             strPtrSave = strPtr + 1;
-        }
-        else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
+        } else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
             // single character match or single character wildcard
             ++patternPtr;
             ++strPtr;
-        }
-        else if (!strPtrSave) {
+        } else if (!strPtrSave) {
             // early exit if the next string character is at the end
             return false;
-        }
-        else {
+        } else {
             // roll-back in case read for next character after wildcard was not successful
             patternPtr = patternPtrSave;
             // gobble up current character and consider it being part of the wildcard
@@ -158,8 +203,8 @@ bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
     return (*patternPtr == '\0');
 }
 
-bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
-    int &index, bool matchLess, bool matchMore) {
+bool wildcardStringMatchDigits(const std::string& pattern, const std::string& str, int& index,
+                               bool matchLess, bool matchMore) {
 
     const char* patternPtr = pattern.c_str();
     const char* strPtr = str.c_str();
@@ -192,30 +237,26 @@ bool wildcardStringMatchDigits(const std::string &pattern, const std::string &st
             }
             if (*patternPtr != '#' && isdigit(*strPtr)) {
                 // run out of '#' but there are still digits left
-                strPtrSave = nullptr; // reset wildcard mode for regular pattern matching
+                strPtrSave = nullptr;  // reset wildcard mode for regular pattern matching
             }
-        }
-        else if (*patternPtr == '*') {
+        } else if (*patternPtr == '*') {
             // wildcard detected
-            ++patternPtr; // remove wildcard from pattern
+            ++patternPtr;  // remove wildcard from pattern
             if (*patternPtr == '\0') {
                 // wildcard at the end of the pattern matches remaining string
                 index = result;
                 return true;
             }
-            patternPtrSave = patternPtr; // save position after wildcard for roll-back
+            patternPtrSave = patternPtr;  // save position after wildcard for roll-back
             strPtrSave = strPtr + 1;
-        }
-        else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
+        } else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
             // single character match or single character wildcard
             ++patternPtr;
             ++strPtr;
-        }
-        else if (!strPtrSave) {
+        } else if (!strPtrSave) {
             // early exit if the next string character is at the end
             return false;
-        }
-        else {
+        } else {
             // roll-back in case read for next character after wildcard was not successful
             patternPtr = patternPtrSave;
             // gobble up current character and consider it being part of the wildcard
@@ -235,34 +276,35 @@ bool wildcardStringMatchDigits(const std::string &pattern, const std::string &st
     return false;
 }
 
-std::string getParentFolderPath(const std::string& basePath, const std::string& parentFolder) {
-    size_t pos = basePath.length();
-    std::string fileDirectory = cleanupPath(basePath);
+std::string getParentFolderWithChildren(const std::string& path,
+                                        const std::vector<std::string>& childFolders) {
+    std::string currentDir = cleanupPath(path);
+    size_t pos = currentDir.length();
 
     do {
-        fileDirectory = fileDirectory.substr(0, pos);
-        std::string moduleDirectory = fileDirectory + "/" + parentFolder;
-        bool exists = directoryExists(moduleDirectory);
-
-        if (exists) return fileDirectory;
-    } while ((pos = fileDirectory.rfind('/')) != std::string::npos);
-
-    return basePath;
+        currentDir = currentDir.substr(0, pos);
+        bool matchChildFolders = true;
+        // check current folder whether it contains all requested child folders
+        for (auto it = childFolders.begin(); it != childFolders.end() && matchChildFolders; ++it) {
+            matchChildFolders = directoryExists(currentDir + "/" + *it);
+        }
+        if (matchChildFolders) return currentDir;
+    } while ((pos = currentDir.rfind('/')) != std::string::npos);
+    // no matching parent folder found
+    return std::string();
 }
 
 std::string findBasePath() {
-    // Search for directory containing data folder to find application basepath.
-    // Working directory will be used if data folder is not found in parent directories.
-    
-    #if defined(__APPLE__) 
+#if defined(__APPLE__)
     // We might be in a bundle
     // the executable will be in
     //    Inviwo.app/Contents/MacOS/Inviwo
     // and the our base should be
     //    Inviwo.app/Contents/Resources
-    
-    CFURLRef appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
-    if(appUrlRef) {
+
+    CFURLRef appUrlRef =
+        CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
+    if (appUrlRef) {
         CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
         const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
         std::string macPath(filePath);
@@ -277,22 +319,25 @@ std::string findBasePath() {
             return joinString(path, "/");
         }
     }
-    #endif
-    
-    static const std::string lookForWorkspaces = "/data/workspaces";
-    std::string basePath =
-        inviwo::filesystem::getParentFolderPath(inviwo::filesystem::getWorkingDirectory(), lookForWorkspaces);
+#endif
+    // locate Inviwo base path matching the subfolders data/workspaces and modules
+    std::string basePath = inviwo::filesystem::getParentFolderWithChildren(
+        inviwo::filesystem::getExecutablePath(), {"data/workspaces", "modules"});
 
-    // If we did not find "data" in basepath, and if it doesn't contain modules, check CMake source path.
-    static const std::string lookForModules = "/modules";
-    if ((!directoryExists(basePath + lookForWorkspaces) || !directoryExists(basePath + lookForModules))
-        && (directoryExists(IVW_TRUNK + lookForWorkspaces) && directoryExists(IVW_TRUNK + lookForModules))){
+    if (basePath.empty()) {
+        // could not locate base path relative to executable, try CMake source path
+        if (directoryExists(IVW_TRUNK + "/data/workspaces") &&
+            directoryExists(IVW_TRUNK + "/modules")) {
             basePath = IVW_TRUNK;
+        } else {
+            throw Exception("Could not locate Inviwo base path");
+        }
     }
     return basePath;
 }
 
-IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, const bool createFolder) {
+IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
+                                 const bool createFolder) {
     std::string result = findBasePath();
 
     switch (pathType) {
@@ -418,11 +463,11 @@ std::string getInviwoUserSettingsPath() {
     int MAX_PATH = 512;
     char path[PATH_MAX];
 
-    #include <warn/push>
-    #include <warn/ignore/deprecated-declarations>
+#include <warn/push>
+#include <warn/ignore/deprecated-declarations>
     FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
     FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
-    #include <warn/pop>
+#include <warn/pop>
     ss << path << "/org.inviwo.network-editor";
 
 #else
@@ -478,16 +523,16 @@ std::string replaceFileExtension(const std::string& url, const std::string& newF
 std::string getRelativePath(const std::string& basePath, const std::string& absolutePath) {
     const std::string absPath(getFileDirectory(cleanupPath(absolutePath)));
     const std::string fileName(getFileNameWithExtension(cleanupPath(absolutePath)));
-    
+
     // path as string tokens
     auto basePathTokens = splitString(basePath, '/');
     auto absolutePathTokens = splitString(absPath, '/');
 
     size_t sizediff = 0;
-    if (basePathTokens.size() < absolutePathTokens.size()){
+    if (basePathTokens.size() < absolutePathTokens.size()) {
         sizediff = absolutePathTokens.size() - basePathTokens.size();
     }
-    auto start = std::mismatch(absolutePathTokens.begin(), absolutePathTokens.end()- sizediff,
+    auto start = std::mismatch(absolutePathTokens.begin(), absolutePathTokens.end() - sizediff,
                                basePathTokens.begin(), basePathTokens.end());
 
     // add one ".." for each unique folder in basePathTokens
@@ -505,10 +550,10 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
 
 std::string getCanonicalPath(const std::string& url) {
 #ifdef WIN32
-    const DWORD buffSize = 4096; // MAX_PATH
+    const DWORD buffSize = 4096;  // MAX_PATH
     std::wstring urlWStr;
     urlWStr.assign(url.begin(), url.end());
-    std::string result{ url };
+    std::string result{url};
 
     WCHAR buffer[buffSize + 1];
 
@@ -516,26 +561,23 @@ std::string getCanonicalPath(const std::string& url) {
     if (retVal == 0) {
         // something went wrong, call GetLastError() to get the error code
         return result;
-    }
-    else if (retVal > buffSize) {
+    } else if (retVal > buffSize) {
         // canonical path would be longer than buffer
         return result;
-    }
-    else {
-        std::wstring resultWStr{ buffer };
+    } else {
+        std::wstring resultWStr{buffer};
         result.assign(resultWStr.begin(), resultWStr.end());
     }
 
     return result;
-#else 
+#else
     char buffer[PATH_MAX + 1];
-    char *retVal = realpath(url.c_str(), buffer);
+    char* retVal = realpath(url.c_str(), buffer);
     if (retVal == nullptr) {
         // something went wrong, check errno for error
         return url;
-    }
-    else {
-        return std::string{ retVal };
+    } else {
+        return std::string{retVal};
     }
 #endif
 }
@@ -589,7 +631,7 @@ bool sameDrive(const std::string& refPath, const std::string& queryPath) {
 #endif
 }
 
-std::string cleanupPath(const std::string &path) {
+std::string cleanupPath(const std::string& path) {
     if (path.empty()) {
         return path;
     }

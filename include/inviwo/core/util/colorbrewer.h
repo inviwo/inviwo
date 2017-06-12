@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
- 
+
 #ifndef IWW_COLORBREWER_H
 #define IWW_COLORBREWER_H
 
@@ -40,10 +40,18 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <vector>
 #include <ostream>
 
-namespace inviwo{
+namespace inviwo {
 namespace colorbrewer {
 
-enum class Colormap{
+class IVW_CORE_API ColorBrewerException : public Exception {
+public:
+    ColorBrewerException(const std::string &message = "Requested colormap is not available.",
+                         ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerException() throw() {}
+};
+
+enum class Colormap {
     Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
     Blues_3, Blues_4, Blues_5, Blues_6, Blues_7, Blues_8, Blues_9, 
     BrBG_3, BrBG_4, BrBG_5, BrBG_6, BrBG_7, BrBG_8, BrBG_9, BrBG_10, BrBG_11, 
@@ -82,13 +90,52 @@ enum class Colormap{
     FirstMap=Accent_3, LastMap=YlOrRd_8
 };
 
+enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
 
-
-IVW_CORE_API const std::vector<dvec4> &colormap(Colormap colormap);
+enum class Family {
+    Accent,
+    Blues,
+    BrBG,
+    BuGn,
+    BuPu,
+    Dark2,
+    GnBu,
+    Greens,
+    Greys,
+    OrRd,
+    Oranges,
+    PRGn,
+    Paired,
+    Pastel1,
+    Pastel2,
+    PiYG,
+    PuBu,
+    PuBuGn,
+    PuOr,
+    PuRd,
+    Purples,
+    RdBu,
+    RdGy,
+    RdPu,
+    RdYlBu,
+    RdYlGn,
+    Reds,
+    Set1,
+    Set2,
+    Set3,
+    Spectral,
+    YlGn,
+    YlGnBu,
+    YlOrBr,
+    YlOrRd,
+    NumberOfColormapFamilies,
+    Undefined
+};
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os, Colormap colormap){
-    switch(colormap){
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Colormap colormap) {
+    switch (colormap) {
     case Colormap::Accent_3: os << "Accent_3"; break;
     case Colormap::Accent_4: os << "Accent_4"; break;
     case Colormap::Accent_5: os << "Accent_5"; break;
@@ -359,11 +406,58 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
     return os;
 }
 
-} // namespace
+/**
+ * Returns the specified colormap. For reference see http://colorbrewer2.org/
+ **/
+IVW_CORE_API const std::vector<dvec4> &getColormap(Colormap colormap);
 
+/**
+ * Returns the colormap specified by its family and number of colors containted in the colormap. For
+ * reference see http://colorbrewer2.org/. If the colormap is not available for the given number of
+ * colors, a ColorBrewerException is thrown.
+ **/
+IVW_CORE_API const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors);
 
-}
-#endif // COLORBREWER_H
+/**
+ * Returns all colormaps of a family. For example, if family Blues is requested, 6 cololormaps will
+ * be returned since the family contains 6 levels of detail (Blues_3 - Blues_9).
+ **/
+IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
+
+/**
+ * Returns all colormaps of a category. Returns a map with one entry per family storing all
+ *colormaps for that family.
+ **/
+IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
+    const Category &category);
+
+/**
+ * Returns all colormaps of a category with given number of colors. If a colormap is not available
+ * for the given number of colors, it is omitted. If no colormaps is available for the whole
+ * category and the given number of colors, a ColorBrewerException is thrown.
+ **/
+IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
+                                                               glm::uint8 numberOfColors);
+
+/**
+ * Returns the minimum number of colors for which the requested family is available.
+ **/
+IVW_CORE_API glm::uint8 getMinNumberOfColorsForFamily(const Family &family);
+
+/**
+ * Returns the maximum number of colors for which the requested family is available.
+ **/
+IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
+
+/**
+ * Returns all families contained in the specified category.
+ **/
+IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
+
+}  // namespace colorbrewer
+}  // namespace inviwo
+
+#endif  // COLORBREWER_H
 
 
 

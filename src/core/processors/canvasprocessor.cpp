@@ -42,6 +42,7 @@
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 

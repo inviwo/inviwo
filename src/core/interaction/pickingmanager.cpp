@@ -71,7 +71,23 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
         auto it2 = util::find_if(
             pickingActions_, [p](const std::unique_ptr<PickingAction>& o) { return p == o.get(); });
 
-        if (it2 != pickingActions_.end()) {
+        if (!pickingActions_.empty() && it2 == pickingActions_.end() - 1) {
+            // unregistering the last picking action, don't put it into unused and perform clean-up
+            lastIndex_ -= (*it2)->getCapacity();
+            pickingActions_.pop_back();
+
+            // clean-up unused queue
+            while (!pickingActions_.empty()) {
+                auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(), pickingActions_.back().get());
+                if (it == unusedObjects_.end()) {
+                    break;
+                }
+                unusedObjects_.erase(it);
+                lastIndex_ -= pickingActions_.back()->getCapacity();
+                pickingActions_.pop_back();
+            }
+            return true;
+        } else if (it2 != pickingActions_.end()) {
             (*it2)->setAction(nullptr);
             (*it2)->setProcessor(nullptr);
 

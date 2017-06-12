@@ -53,7 +53,7 @@ const ProcessorInfo VolumeMapping::getProcessorInfo() const {
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")
-    , tfProperty_("transferFunction", "Transfer function", TransferFunction(), &inport_) {
+    , tfProperty_("transferFunction", "Transfer function", &inport_) {
     addProperty(tfProperty_);
 }
 

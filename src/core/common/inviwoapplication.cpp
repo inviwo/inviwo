@@ -37,6 +37,7 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
@@ -59,12 +60,14 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/filelogger.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , binaryPath_(argv ? filesystem::getFileDirectory(argv[0]) : "")
     , progressCallback_()
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
@@ -105,6 +108,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
     , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
     , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
+
+    if (commandLineParser_.getLogToConsole()) {
+        consoleLogger_ = std::make_shared<ConsoleLogger>();
+        LogCentral::getPtr()->registerLogger(consoleLogger_);
+    }
 
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
@@ -320,8 +328,6 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
 
-const std::string& InviwoApplication::getBinaryPath() const { return binaryPath_; }
-
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
     moudleCallbackActions_.emplace_back(callbackAction);
 }
@@ -399,6 +405,14 @@ void InviwoApplication::waitForPool() {
     resizePool(old_size);
 }
 
+
+TimerThread& InviwoApplication::getTimerThread() {
+    if(!timerThread_) {
+        timerThread_ = util::make_unique<TimerThread>();
+    }
+    return *timerThread_;
+}
+
 void InviwoApplication::closeInviwoApplication() {
     LogWarn("this application have not implemented the closeInviwoApplication function");
 }
@@ -416,10 +430,6 @@ void InviwoApplication::stopFileObservation(std::string fileName) {
 }
 void InviwoApplication::playSound(Message soundID) {
     LogWarn("this application have not implemented the playSound function");
-}
-
-InteractionStateManager& InviwoApplication::getInteractionStateManager() {
-    return interactionState_;
 }
 
 }  // namespace

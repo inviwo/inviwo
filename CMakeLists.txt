@@ -151,6 +151,9 @@ if(OPENCL_FOUND)
         )
 endif()
 
+option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
+ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
+ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 
 #--------------------------------------------------------------------
 # Add modules
@@ -178,7 +181,6 @@ ivw_add_external_projects()
 
 #--------------------------------------------------------------------
 # Add integration tests project
-option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
 if(IVW_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests)
 endif()

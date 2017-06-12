@@ -34,10 +34,8 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <typeinfo>
+
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -195,29 +193,6 @@ public:
 
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line);
-};
-
-class IVW_CORE_API ConsoleLogger : public Logger {
-public:
-    ConsoleLogger();
-    virtual ~ConsoleLogger();
-
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
-};
-
-class IVW_CORE_API FileLogger : public Logger {
-public:
-    FileLogger(std::string logPath);
-    virtual ~FileLogger();
-
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
-
-private:
-    std::ofstream* fileStream_;
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral> {

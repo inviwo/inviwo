@@ -32,6 +32,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/filesystem.h>
 #ifdef IVW_SIGAR
 #include <sigar/include/sigar.h>
 #endif
@@ -283,7 +284,7 @@ struct IniSeparator : std::ctype<char> {
 };
 
 void SystemCapabilities::readBuildInfoFromIni() {
-    auto dir = InviwoApplication::getPtr()->getBinaryPath() + "/inviwo_buildinfo.ini";
+    auto dir = filesystem::getExecutablePath() + "/inviwo_buildinfo.ini";
     std::ifstream in(dir.c_str(), std::ios::in);
     if (!in.is_open()) {
         return;

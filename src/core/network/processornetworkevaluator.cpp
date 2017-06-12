@@ -33,6 +33,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/clock.h>
 
 namespace inviwo {
@@ -41,12 +42,12 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     : processorNetwork_(processorNetwork)
     , processorsSorted_(util::topologicalSort(processorNetwork_))
     , evaulationQueued_(false)
-    , exceptionHandler_(StandardExceptionHandler()) {
+    , exceptionHandler_(StandardEvaluationErrorHandler()) {
     
     processorNetwork_->addObserver(this);
 }
 
-void ProcessorNetworkEvaluator::setExceptionHandler(ExceptionHandler handler) {
+void ProcessorNetworkEvaluator::setExceptionHandler(EvaluationErrorHandler handler) {
     exceptionHandler_ = handler;
 }
 
@@ -113,7 +114,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {
-                    exceptionHandler_(IvwContext);
+                    exceptionHandler_(processor, EvaluationType::InitResource, IvwContext);
                     processor->setValid();
                     continue;
                 }
@@ -125,7 +126,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     // do the actual processing
                     processor->process();
                 } catch (...) {
-                    exceptionHandler_(IvwContext);
+                    exceptionHandler_(processor, EvaluationType::Process, IvwContext);
                 }
 
                 // Set processor as valid only if we still are ready. 
@@ -139,7 +140,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 try {
                     processor->doIfNotReady();
                 } catch (...) {
-                    exceptionHandler_(IvwContext);
+                    exceptionHandler_(processor, EvaluationType::NotReady, IvwContext);
                 }
             }
         }

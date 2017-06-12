@@ -50,6 +50,12 @@ namespace filesystem {
 IVW_CORE_API std::string getWorkingDirectory();
 
 /**
+ * Get full/path/to/executable running the application.
+ * @return Full path to the executable if successfull, empty string otherwise.
+ */
+IVW_CORE_API std::string getExecutablePath();
+
+/**
  * \brief Check if a file exists.
  * @see directoryExists for directories
  * @param std::string fileName The path to the file
@@ -66,7 +72,6 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
-
 enum class ListMode {
     Files,
     Directories,
@@ -78,64 +83,67 @@ enum class ListMode {
  * @param path Files are listed for this directory
  * @return List of files residing in the given path
  */
-IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode = ListMode::Files);
+IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path,
+                                                           ListMode mode = ListMode::Files);
 
-
-/** 
+/**
  * Checks whether a given string matches a pattern. The pattern
  * might contain '*' matching any string including the empty string
  * and '?' matching a single character.
- * 
+ *
  * @param std::string pattern  The pattern used for matching, might contain '*' and '?'
  * @param std::string str      String which needs to be checked
  * @return True if the given string matches the pattern, false otherwise.
  */
-IVW_CORE_API bool wildcardStringMatch(const std::string &pattern, const std::string &str);
+IVW_CORE_API bool wildcardStringMatch(const std::string& pattern, const std::string& str);
 
 /**
-* Checks whether a given string matches a pattern including digits. 
-* The pattern might contain a single sequence of '#' for indicating a number
-* besides '*' matching any string including the empty string and '?' matching a 
-* single character.
-*
-* The digit sequence indicated by '#' is extracted and returned. Depending on the 
-* flags, the number have to exactly match sequence or might be shorter (matchLess)
-* or longer (matchMore). For example, the sequence '###' matches only a three-digit
-* number. Enabling 'matchLess' also matches one-digit and two-digit numbers whereas
-* 'matchMore' allows for numbers with more digits.
-*
-* Examples:
-*  * '###*.jpg' will match all jpeg files starting with a 3-digit sequence. Setting 
-*       'matchMore = true' matches the same files, but might extract longer numbers.
-*  * 'myfile#.png' matches all files containing exactly one digit with 'matchMore = false'.
-*
-* @param std::string pattern  The pattern used for matching, might contain a single 
-*             sequence of '#' besides '*', and '?'
-* @param std::string str      String which needs to be checked
-* @param int index  if the match is successful, this index contains the extracted 
-*             digit sequence indicated by '#'
-* @param bool matchLess   allows to match digit sequences shorter than defined by the number of '#' (default false)
-* @param bool matchMore   allows to match longer digit sequences (default true)
-* @return True if the given string matches the pattern, false otherwise.
-*/
-IVW_CORE_API bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
-                                            int &index, bool matchLess=false, bool matchMore=true);
-
-/**
- * Searches all parent folders of path and looks for parentFolder.
+ * Checks whether a given string matches a pattern including digits.
+ * The pattern might contain a single sequence of '#' for indicating a number
+ * besides '*' matching any string including the empty string and '?' matching a
+ * single character.
  *
- * @param path Folders to search, for example C:/a/b/c
- * @param parentFolder Folder to find.
- * @return The directory where the folder was found if found, otherwise path.
+ * The digit sequence indicated by '#' is extracted and returned. Depending on the
+ * flags, the number have to exactly match sequence or might be shorter (matchLess)
+ * or longer (matchMore). For example, the sequence '###' matches only a three-digit
+ * number. Enabling 'matchLess' also matches one-digit and two-digit numbers whereas
+ * 'matchMore' allows for numbers with more digits.
+ *
+ * Examples:
+ *  * '###*.jpg' will match all jpeg files starting with a 3-digit sequence. Setting
+ *       'matchMore = true' matches the same files, but might extract longer numbers.
+ *  * 'myfile#.png' matches all files containing exactly one digit with 'matchMore = false'.
+ *
+ * @param std::string pattern  The pattern used for matching, might contain a single
+ *             sequence of '#' besides '*', and '?'
+ * @param std::string str      String which needs to be checked
+ * @param int index  if the match is successful, this index contains the extracted
+ *             digit sequence indicated by '#'
+ * @param bool matchLess   allows to match digit sequences shorter than defined by the number of '#'
+ * (default false)
+ * @param bool matchMore   allows to match longer digit sequences (default true)
+ * @return True if the given string matches the pattern, false otherwise.
  */
-IVW_CORE_API std::string getParentFolderPath(const std::string& path,
-                                             const std::string& parentFolder);
+IVW_CORE_API bool wildcardStringMatchDigits(const std::string& pattern, const std::string& str,
+                                            int& index, bool matchLess = false,
+                                            bool matchMore = true);
 
 /**
- * Finds base path which contains subfolders such as "data" and "modules" where external files are
- *stored
+ * Traverses all parent folders of path and returns the first directory matching the list of child
+ * folders.
  *
- * @return The directory considered to be the basePath.
+ * @param path   directory where the search is started
+ * @param childFolders   list of subfolders
+ * @return path of parent directory holding all childFolders, otherwise empty string
+ */
+IVW_CORE_API std::string getParentFolderWithChildren(const std::string& path,
+                                                     const std::vector<std::string>& childFolders);
+
+/**
+ * Find Inviwo base path which contains subfolders "data/workspaces" and "modules"
+ *
+ * @return Inviwo base path
+ * @throws exception in case base path could not be located
  */
 IVW_CORE_API std::string findBasePath();
 
@@ -172,7 +180,6 @@ IVW_CORE_API std::string getFileDirectory(const std::string& url);
 IVW_CORE_API std::string getFileNameWithExtension(const std::string& url);
 IVW_CORE_API std::string getFileNameWithoutExtension(const std::string& url);
 IVW_CORE_API std::string getFileExtension(const std::string& url);
-
 
 /**
  * Replace the last file extension to newFileExtension, if no extension exists append
@@ -212,16 +219,15 @@ IVW_CORE_API bool isAbsolutePath(const std::string& path);
 IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& queryPath);
 
 /**
-* \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
-*
-* @param const std::string& path given path to be cleaned up
-* @return non-quoted path containing no backslashes as directory separators
-*/
+ * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
+ *
+ * @param const std::string& path given path to be cleaned up
+ * @return non-quoted path containing no backslashes as directory separators
+ */
 IVW_CORE_API std::string cleanupPath(const std::string& path);
 
+}  // namespace filesystem
 
-}  // namespace
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FILE_SYSTEM_H

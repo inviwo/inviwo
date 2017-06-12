@@ -401,28 +401,8 @@ function(ivw_register_modules retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# Add all minimal applications in folder
-macro(ivw_add_minimal_applications)
-    file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
-    list(REMOVE_ITEM sub-dir .svn)
-    set(sorted_dirs ${sub-dir})
-    foreach(dir ${sub-dir})
-        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            string(TOUPPER ${dir} u_dir)
-            option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
-            if(NOT ${u_dir} STREQUAL "QT")
-                ivw_private_build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
-            endif()
-            if(IVW_TINY_${u_dir}_APPLICATION)
-                add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            endif()
-        endif()
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
 # Set module build option to true if the owner is built
-function(ivw_private_build_module_dependency the_module the_owner)
+function(ivw_add_build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
@@ -561,23 +541,8 @@ macro(ivw_define_standard_definitions project_name target_name)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add definition
-macro(ivw_add_definition def)
-    add_definitions(-D${def})
-    list(APPEND _allDefinitions -D${def})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add definition to list only 
-macro(ivw_add_definition_to_list def)
-    list(APPEND _allDefinitions -D${def})
-endmacro()
-
-#--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
-    set(IVW_SHADER_INCLUDE_PATHS "${IVW_SHADER_INCLUDE_PATHS};${folder}" PARENT_SCOPE)
-    
     if(IVW_PACKAGE_PROJECT)
         get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         if(APPLE)
@@ -629,11 +594,12 @@ macro(ivw_create_module)
 
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core_on_target(${${mod}_target})
-           
+
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} ${${mod}_target})
 
     # Add stuff to the installer
+    ivw_private_install_package(${${mod}_target})
     ivw_private_install_module_dirs()
 
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
@@ -641,17 +607,15 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
-macro(ivw_make_package package_name project_name)
-    ivw_private_install_package(${project_name})
-
-    # retrieve output name of target, use project name if not set
-    get_target_property(ivw_output_name ${project_name} OUTPUT_NAME)
+macro(ivw_make_package package_name target)
+        # retrieve output name of target, use project name if not set
+    get_target_property(ivw_output_name ${target} OUTPUT_NAME)
     if(NOT ivw_output_name)
-        set(ivw_output_name ${project_name})
+        set(ivw_output_name ${target})
     endif()
 
     # retrieve target definitions
-    get_target_property(ivw_target_defs ${project_name} INTERFACE_COMPILE_DEFINITIONS)
+    get_target_property(ivw_target_defs ${target} INTERFACE_COMPILE_DEFINITIONS)
     if(ivw_target_defs)
         ivw_prepend(ivw_target_defs "-D" ${ivw_target_defs})
         list(APPEND _allDefinitions ${ivw_target_defs})
@@ -664,7 +628,7 @@ macro(ivw_make_package package_name project_name)
        set(PROJECT_LIBRARIES ${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
     
-    get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)
+    get_target_property(ivw_allLibs ${target} INTERFACE_LINK_LIBRARIES)
     if(NOT ivw_allLibs)
         set(ivw_allLibs "")
     endif()
@@ -674,11 +638,11 @@ macro(ivw_make_package package_name project_name)
 
     # Set up inlude directories 
     # Should only INTERFACE_INCLUDE_DIRECTORIES but we can't since we use include_directories...
-    get_target_property(ivw_allIncDirs ${project_name} INCLUDE_DIRECTORIES)
+    get_target_property(ivw_allIncDirs ${target} INCLUDE_DIRECTORIES)
     if(NOT ivw_allIncDirs)
         set(ivw_allIncDirs "")
     endif()
-    get_target_property(ivw_allInterfaceIncDirs ${project_name} INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(ivw_allInterfaceIncDirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
     if(ivw_allInterfaceIncDirs)
         list(APPEND ivw_allIncDirs ${ivw_allInterfaceIncDirs})
     endif()
@@ -694,7 +658,7 @@ macro(ivw_make_package package_name project_name)
     set(_allLibsDir ${uniqueLibsDir})
     set(_allDefinitions ${uniqueDefs})
     set(_allLinkFlags ${uniqueLinkFlags})
-    set(_project_name ${project_name})
+    set(_project_name ${target})
   
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
                    ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY)
@@ -731,17 +695,18 @@ endfunction()
 
 function(ivw_private_install_module_dirs)
     if(IVW_PACKAGE_PROJECT) 
-        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        foreach(folder ${CMAKE_CURRENT_SOURCE_DIR}/data)
-            if(EXISTS ${folder})
+        get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        foreach(folder data docs)
+            set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+            if(EXISTS ${dir})
                 if(APPLE)
-                    install(DIRECTORY ${folder}
-                             DESTINATION Inviwo.app/Contents/Resources/modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION Inviwo.app/Contents/Resources/modules/${module_name}
+                            COMPONENT ${_cpackName})
                 else()
-                    install(DIRECTORY ${folder}
-                             DESTINATION modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION modules/${module_name}
+                            COMPONENT ${_cpackName})
                 endif()
             endif()
         endforeach()
@@ -755,7 +720,9 @@ macro(ivw_include_directories)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add includes
+# Add includes, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_link_directories)
     # Set includes
     link_directories("${ARGN}")
@@ -764,16 +731,41 @@ macro(ivw_link_directories)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add includes
+# Add includes, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_add_link_flags)
     # Set link flags
-    set_target_properties(${project_name} PROPERTIES LINK_FLAGS "${ARGN}")
+    get_property(flags TARGET ${_projectName} PROPERTY LINK_FLAGS)
+    list(APPEND flags "${ARGN}")
+    set_property(TARGET ${_projectName} PROPERTY LINK_FLAGS ${flags})
+
     # Append includes to project list
     list(APPEND _allLinkFlags "\"${ARGN}\"")
 endmacro()
 
 #--------------------------------------------------------------------
+# Add definition, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
+macro(ivw_add_definition def)
+    add_definitions(-D${def})
+    list(APPEND _allDefinitions -D${def})
+endmacro()
+
+#--------------------------------------------------------------------
+# Add definition to list only , should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
+macro(ivw_add_definition_to_list def)
+    list(APPEND _allDefinitions -D${def})
+endmacro()
+
+#--------------------------------------------------------------------
 # adds link_directories for the supplies dependencies
+# should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
         # Locate libraries

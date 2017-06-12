@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,49 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/interactionstatemanager.h>
+#ifndef IVW_TEMPFILEHANDLE_H
+#define IVW_TEMPFILEHANDLE_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <cstdio>
+#include <string>
 
 namespace inviwo {
 
-void InteractionStateManager::beginInteraction() {
-    ++interactionCount_;
-    onInteractionBegin_.invoke(interactionCount_);
-}
+namespace util {
 
-void InteractionStateManager::endInteraction() {
-    --interactionCount_;
-    onInteractionEnd_.invoke(interactionCount_);
-}
+/**
+ * \class TempFileHandle
+ * \brief RAII interface for providing a file handle and file name to a temporary file
+ */
+class IVW_CORE_API TempFileHandle {
+public:
+    explicit TempFileHandle(const std::string& prefix = "", const std::string& suffix = "");
 
-bool InteractionStateManager::isInteracting() const { return interactionCount_ > 0; }
+    TempFileHandle(const TempFileHandle&) = delete;
+    TempFileHandle& operator=(const TempFileHandle&) = delete;
 
-}  // namespace
+    TempFileHandle(TempFileHandle&& rhs);
+    TempFileHandle& operator=(TempFileHandle&& rhs);
+
+    ~TempFileHandle();
+
+    const std::string& getFileName() const;
+
+    FILE* getHandle();
+    operator FILE*();
+
+private:
+    void cleanup();
+
+    FILE* handle_;
+    std::string filename_;
+};
+
+}  // namespace util
+
+}  // namespace inviwo
+
+#endif  // IVW_TEMPFILEHANDLE_H

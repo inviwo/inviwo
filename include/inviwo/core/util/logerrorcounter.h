@@ -47,15 +47,14 @@ public:
                      std::string logMsg) override;
 
     size_t getCount(const LogLevel& level) const;
-
     size_t getInfoCount() const;
     size_t getWarnCount() const;
     size_t getErrorCount() const;
-    static LogErrorCounter* getPtr();
+
+    void reset();
 
 private:
     std::map<LogLevel, size_t> messageCount_;
-    static LogErrorCounter* instance_;
 };
 
 }  // namespace

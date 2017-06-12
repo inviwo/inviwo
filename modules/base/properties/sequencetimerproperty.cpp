@@ -41,12 +41,14 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false, InvalidationLevel::Valid)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)
-    , playPause_("playPause", "Play / Pause",
-                 [this](Event* e) { play_.set(!play_.get()); }, IvwKey::P, KeyState::Press)
-    , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+    , playPause_("playPause", "Play / Pause", [this](Event* e) { play_.set(!play_.get()); },
+                 IvwKey::P, KeyState::Press)
+    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
+             [this]() { onTimerEvent(); }) {
     play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 
-    framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
+    framesPerSecond_.onChange(
+        [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);
@@ -60,8 +62,10 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     , play_(rhs.play_)
     , framesPerSecond_(rhs.framesPerSecond_)
     , playPause_(rhs.playPause_)
-    , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
-    framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
+    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
+             [this]() { onTimerEvent(); }) {
+    framesPerSecond_.onChange(
+        [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);
@@ -100,7 +104,7 @@ void inviwo::SequenceTimerProperty::onTimerEvent() {
 void inviwo::SequenceTimerProperty::onPlaySequenceToggled() {
     if (index_.getMaxValue() > 1) {
         if (play_.get()) {
-            timer_.start(1000 / framesPerSecond_.get());
+            timer_.start(std::chrono::milliseconds{1000 / framesPerSecond_.get()});
             index_.setReadOnly(true);
         } else {
             timer_.stop();

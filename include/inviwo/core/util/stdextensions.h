@@ -44,6 +44,7 @@
 #include <type_traits>
 #include <future>
 #include <utility>
+#include <tuple>
 #include <warn/pop>
 
 namespace inviwo {
@@ -132,19 +133,32 @@ auto for_each_argument(F&& f, Args&&... args) {
 
 namespace detail {
 
-template <typename F, typename T, size_t... Is>
-auto for_each_in_tuple_impl(F&& f, T&& t, std::index_sequence<Is...>) {
+template <typename F, typename TupleType, size_t... Is>
+auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType&& t) {
     return (void)std::initializer_list<int>{0, (f(std::get<Is>(t)), 0)...}, std::forward<F>(f);
 }
-
-}  // namespace
-
-template <typename F, typename... Ts>
-void for_each_in_tuple(F&& f, std::tuple<Ts...>&& t) {
-    detail::for_each_in_tuple_impl(std::forward<F>(f), std::forward<std::tuple<Ts...>>(t),
-                                   std::index_sequence_for<Ts...>{});
+template <typename F, typename TupleType1, typename TupleType2, size_t... Is>
+auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, TupleType2&& t2) {
+    return (void)std::initializer_list<int>{0, (f(std::get<Is>(t1), std::get<Is>(t2)), 0)...},
+        std::forward<F>(f);
 }
 
+}  // namespace detail
+
+template <typename F, typename TupleType>
+void for_each_in_tuple(F&& f, TupleType&& t) {
+    detail::for_each_in_tuple_impl(std::forward<F>(f),
+                                   std::make_index_sequence<std::tuple_size<typename std::remove_reference<TupleType>::type>::value>{},
+                                   std::forward<TupleType>(t));
+}
+template <typename F, typename TupleType1, typename TupleType2>
+void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
+    detail::for_each_in_tuple_impl(std::forward<F>(f),
+                                   std::make_index_sequence<std::min(std::tuple_size<typename std::remove_reference<TupleType1>::type>::value,
+                                                                     std::tuple_size<typename std::remove_reference<TupleType2>::type>::value)>{},
+                                   std::forward<TupleType1>(t1),
+                                   std::forward<TupleType2>(t2));
+}
 template <class... Types>
 struct for_each_type;
 

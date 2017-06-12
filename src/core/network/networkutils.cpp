@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/links/linkconditions.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <iterator>
 

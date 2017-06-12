@@ -53,13 +53,11 @@ void AnimationController::setState(AnimationState newState) {
     state_ = newState;
     switch (newState) {
         case AnimationState::Playing: {
-            app_->getInteractionStateManager().beginInteraction();
             timer_.start();
             break;
         }
         case AnimationState::Paused: {
             timer_.stop();
-            app_->getInteractionStateManager().endInteraction();
             break;
         }
 

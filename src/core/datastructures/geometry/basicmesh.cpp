@@ -184,6 +184,63 @@ vec3 BasicMesh::tospherical(const vec2& v) {
     return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
 }
 
+std::shared_ptr<BasicMesh> BasicMesh::ellipse(const vec3& center, const vec3& majorAxis,
+                                              const vec3& minorAxis, const vec4& color,
+                                              const float& radius, const size_t& nsegments) {
+    auto mesh = std::make_shared<BasicMesh>();
+
+    vec3 p, p1;
+    vec3 t;
+    double angle = M_PI * 2.0f / nsegments;
+    float a = glm::length(majorAxis);
+    float b = glm::length(minorAxis);
+    float eradius, eradius1;
+    float x, y;
+    vec3 rot, rot1;
+
+    auto segments = static_cast<std::uint32_t>(nsegments);
+    for (std::uint32_t i = 0; i < segments; ++i) {
+        x = glm::cos(i * angle) * a;
+        y = glm::sin(i * angle) * b;
+        eradius = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
+        rot = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+
+        x = glm::cos(((i + 1) % segments) * angle) * a;
+        y = glm::sin(((i + 1) % segments) * angle) * b;
+
+        eradius1 = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
+        rot1 = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+
+        p = center + eradius * glm::normalize(rot);
+        p1 = center + eradius1 * glm::normalize(rot1);
+
+        vec3 dir = glm::normalize(p1 - p);
+        vec3 odir = orthvec(dir);
+
+        float k;
+        vec3 o;
+        auto tube = util::make_unique<BasicMesh>();
+        IndexBufferRAM* inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        for (std::uint32_t j = 0; j < segments; ++j) {
+            k = static_cast<float>(j);
+            o = glm::rotate(odir, static_cast<float>(j * angle), dir);
+            tube->addVertex(p + radius * o, o, vec3(k / segments, 0.0f, 0.0f), color);
+            tube->addVertex(p1 + radius * o, o, vec3(k / segments, 1.0f, 0.0f), color);
+
+            inds->add(j * 2 + 1);
+            inds->add(j * 2 + 0);
+            inds->add(((j + 1) * 2) % (2 * segments) + 0);
+
+            inds->add(j * 2 + 1);
+            inds->add(((j + 1) * 2) % (2 * segments) + 0);
+            inds->add(((j + 1) * 2) % (2 * segments) + 1);
+        }
+
+        mesh->append(tube.get());
+    }
+    return mesh;
+}
+
 std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& normal,
                                            const vec4& color, const float& radius,
                                            const size_t& segments) {

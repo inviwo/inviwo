@@ -43,8 +43,6 @@ namespace inviwo {
  * DESCRIBE_THE_CLASS
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
-    friend class StreamLineTracer;
-    friend class PathLineTracer;
 public:
     enum class TerminationReason {
         OutOfBounds, 
@@ -65,9 +63,13 @@ public:
 
     const std::vector<dvec3> &getPositions() const;
     std::vector<dvec3> &getPositions();
+
     const std::vector<dvec3> &getMetaData(const std::string &name) const;
+    std::vector<dvec3> &getMetaData(const std::string &name);
+
     std::vector<dvec3> &createMetaData(const std::string &name);
     bool hasMetaData(const std::string &name) const;
+
     std::vector<std::string> getMetaDataKeys() const;
 
 
