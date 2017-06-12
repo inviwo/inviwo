@@ -60,8 +60,6 @@ int main(int argc, char** argv) {
     {
         // scope for ivw app
         LogCentral::init();
-        auto consoleLogger = std::make_shared<ConsoleLogger>();
-        LogCentral::getPtr()->registerLogger(consoleLogger);
         util::OnScopeExit deleteLogcentral([]() { LogCentral::deleteInstance(); });
 
         auto logCounter = std::make_shared<LogErrorCounter>();
