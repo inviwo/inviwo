@@ -49,7 +49,7 @@ namespace inviwo {
     class IVW_MODULE_PYTHON3_API PythonScript {
 
     public:
-        using VariableMap = std::unordered_map<std::string, pybind11::handle>;
+        using VariableMap = std::unordered_map<std::string, pybind11::object>;
 
         PythonScript();
 
