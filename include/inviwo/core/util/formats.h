@@ -202,8 +202,11 @@ public:
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
 protected:
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     static std::array<std::unique_ptr<DataFormatBase>,
                       static_cast<size_t>(DataFormatId::NumberOfFormats)> instance_;
+#include <warn/pop>
 
     DataFormatId formatId_;
     size_t components_;
