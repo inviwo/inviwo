@@ -238,6 +238,11 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
             elem->printInfo();
         }
     }
+
+    // evaluate post registration callbacks
+    for (auto& f : postModuleRegistrationCallbacks_) {
+        f();
+    }
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
