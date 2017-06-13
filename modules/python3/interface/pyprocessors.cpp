@@ -40,14 +40,9 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 
-
 namespace py = pybind11;
 
 namespace inviwo {
-
-
-
-
 
 void exposeProcessors(py::module &m) {
 
@@ -58,6 +53,9 @@ void exposeProcessors(py::module &m) {
              [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); })
         .def("create", [](ProcessorFactory *pf, std::string key, ivec2 pos) {
             auto p = pf->create(key);
+            if (!p)
+                throw Exception("failed to create processor of type '" + key + "'",
+                                IvwContextCustom("inviwopy"));
             p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setPosition(pos);
             return p.release();
@@ -71,7 +69,7 @@ void exposeProcessors(py::module &m) {
         .def("show", &ProcessorWidget::show)
         .def("hide", &ProcessorWidget::hide);
 
-    py::class_<Processor, PropertyOwner,ProcessorPtr<Processor>>(m,"Processor")
+    py::class_<Processor, PropertyOwner, ProcessorPtr<Processor>>(m, "Processor")
         .def("__getattr__", &getPropertyById<Processor>, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property_readonly("displayName", &Processor::getDisplayName)
@@ -121,14 +119,14 @@ void exposeProcessors(py::module &m) {
                               ->setVisible(selected);
                       });
 
-    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>> canvasPorcessor(m, "CanvasProcessor");
+    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>> canvasPorcessor(
+        m, "CanvasProcessor");
     canvasPorcessor
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
-        .def_property_readonly(
-            "image",
-            [](CanvasProcessor *cp) { return cp->getImage().get(); } , py::return_value_policy::reference )
+        .def_property_readonly("image", [](CanvasProcessor *cp) { return cp->getImage().get(); },
+                               py::return_value_policy::reference)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def_property("fullScreen", &CanvasProcessor::isFullScreen, &CanvasProcessor::setFullScreen)
         .def("snapshot", [](CanvasProcessor *canvas, std::string filepath) {
@@ -148,4 +146,4 @@ void exposeProcessors(py::module &m) {
             writer->writeData(layer, filepath);
         });
 }
-}  // namespace
+}  // namespace inviwo
