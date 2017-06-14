@@ -258,25 +258,25 @@ template <typename T, glm::precision P>
 struct glmtype<T, 2, 2, P> { typedef glm::tmat2x2<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 3, P> { typedef glm::tmat3x2<T, P> type; };
+struct glmtype<T, 2, 3, P> { typedef glm::tmat2x3<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 4, P> { typedef glm::tmat4x2<T, P> type; };
+struct glmtype<T, 2, 4, P> { typedef glm::tmat2x4<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 2, P> { typedef glm::tmat2x3<T, P> type; };
+struct glmtype<T, 3, 2, P> { typedef glm::tmat3x2<T, P> type; };
 
 template <typename T, glm::precision P>
 struct glmtype<T, 3, 3, P> { typedef glm::tmat3x3<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 4, P> { typedef glm::tmat4x3<T, P> type; };
+struct glmtype<T, 3, 4, P> { typedef glm::tmat3x4<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 2, P> { typedef glm::tmat2x4<T, P> type; };
+struct glmtype<T, 4, 2, P> { typedef glm::tmat4x2<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 3, P> { typedef glm::tmat3x4<T, P> type; };
+struct glmtype<T, 4, 3, P> { typedef glm::tmat4x3<T, P> type; };
 
 template <typename T, glm::precision P>
 struct glmtype<T, 4, 4, P> { typedef glm::tmat4x4<T, P> type; };
