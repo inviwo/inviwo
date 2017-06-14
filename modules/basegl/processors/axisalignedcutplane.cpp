@@ -125,7 +125,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
             for (auto i = channel_.size(); i < vol->getDataFormat()->getComponents(); i++) {
                 channel_.addOption("channel" + std::to_string(i),
-                    "Channel " + std::to_string(i + 1), i);
+                    "Channel " + std::to_string(i + 1), static_cast<int>(i));
             }
 
             while (channel_.size() > vol->getDataFormat()->getComponents()) {
