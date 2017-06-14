@@ -35,7 +35,7 @@
 #include <modules/python3/pythonlogger.h>
 #include <string>
 
-namespace pybind11{
+namespace pybind11 {
 class module;
 }
 
@@ -51,17 +51,19 @@ public:
 
     using PythonInitCallback = std::function<void(pybind11::module* module)>;
 
-    void registerPythonInitCallback(PythonInitCallback callback);
-    void invokePythonInitCallbacks(pybind11::module* objects);
+    PythonInterpreter* getPythonInterpreter();
 
-    PythonInterpreter* getPythonInterpreter() {return pythonInterpreter_.get();}
+    pybind11::module* getInviwopyModule();
 
 private:
     std::unique_ptr<PythonInterpreter> pythonInterpreter_;
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     PythonLogger pythonLogger_;
 
-    std::vector<PythonInitCallback> callbackObjects_;
+    pybind11::module* inviwopyPyModule_;
+
+    void setInviwopyModule(pybind11::module* m);
+    friend void setInviwopyModule(Python3Module* ivwmodule, pybind11::module* pymodule);
 };
 
 }  // namespace

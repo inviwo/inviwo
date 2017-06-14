@@ -64,14 +64,12 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
     auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
     if (module) {
-        module->registerPythonInitCallback([&](auto module) {
-            auto m = module->def_submodule("qt", "Qt dependent stuff");
+        auto ivwmodule = module->getInviwopyModule();
+        auto m = ivwmodule->def_submodule("qt", "Qt dependent stuff");
 
-            m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-                  pybind11::arg("defaultResponse") = "");
-            m.def("update", []() { QCoreApplication::instance()->processEvents(); });
-
-        });
+        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+            pybind11::arg("defaultResponse") = "");
+        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
     } else {
         throw Exception("Failed to get Python3Module");
     }

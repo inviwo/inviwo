@@ -49,7 +49,9 @@ Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "Path to the file containing the script") {
+                       "Path to the file containing the script") 
+    , inviwopyPyModule_(nullptr) 
+{
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
@@ -81,14 +83,17 @@ Python3Module::Python3Module(InviwoApplication* app)
 
 Python3Module::~Python3Module() { pythonInterpreter_->removeObserver(&pythonLogger_); }
 
-void Python3Module::registerPythonInitCallback(PythonInitCallback callback) {
-    callbackObjects_.push_back(callback);
+inviwo::PythonInterpreter* Python3Module::getPythonInterpreter() {
+    return pythonInterpreter_.get();
 }
 
-void Python3Module::invokePythonInitCallbacks(pybind11::module* objects) {
-    for (auto& c : callbackObjects_) {
-        c(objects);
+pybind11::module* Python3Module::getInviwopyModule() { 
+    if(!inviwopyPyModule_){
+        pythonInterpreter_->runString("import inviwopy");
     }
+    return inviwopyPyModule_; 
 }
+
+void Python3Module::setInviwopyModule(pybind11::module* m) { inviwopyPyModule_ = m; }
 
 }  // namespace
