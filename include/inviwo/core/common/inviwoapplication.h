@@ -131,8 +131,6 @@ public:
                         const bool& createFolder = false);
 
     void registerModule(std::unique_ptr<InviwoModule> module);
-    template <class F>
-    void addPostModulesRegistrationCallback(F&& f);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
@@ -228,7 +226,6 @@ protected:
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-    std::vector<std::function<void()>> postModuleRegistrationCallbacks_;
 
     util::OnScopeExit clearAllSingeltons_;
 
@@ -279,11 +276,6 @@ T* InviwoApplication::getSettingsByType() {
 template <class T>
 T* InviwoApplication::getModuleByType() const {
     return getTypeFromVector<T>(modules_);
-}
-
-template <class F>
-void InviwoApplication::addPostModulesRegistrationCallback(F &&f) {
-    postModuleRegistrationCallbacks_.push_back(f);
 }
 
 template <class F, class... Args>
