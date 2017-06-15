@@ -63,7 +63,7 @@ namespace inviwo {
  * \brief processor for selecting one of n connected inputs
  */
 template <typename Inport, typename Outport>
-class IVW_MODULE_BASE_API InputSelector : public Processor {
+class InputSelector : public Processor {
 public:
     InputSelector()
         : Processor()
