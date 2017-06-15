@@ -411,7 +411,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     } catch (const Exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + exception.getMessage(),
+        throw IgnoreException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
     } catch (const std::exception& exception) {
         clear();
@@ -435,7 +435,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     } catch (const Exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + exception.getMessage(),
+        throw IgnoreException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
     } catch (const std::exception& exception) {
         clear();
