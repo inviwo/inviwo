@@ -83,7 +83,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
-            // The processor widget already has its correct pos, i.e. the one deserialized from file.
+            // The processor widget already has its correct pos, i.e. the one de-serialized from file.
             QWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
@@ -91,6 +91,20 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
             QWidget::move(newPos);
         }
     }
+    
+    {
+#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
+        // Trigger both resize event and move event by showing and hiding the widget
+        // in order to set the correct, i.e. the de-serialized, size and position. 
+        //
+        // Otherwise, a spontaneous event will be triggered which will set the widget 
+        // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        QWidget::setVisible(true);
+        QWidget::setVisible(false);
+#endif // QT_VERSION
+    }
+
     processor_->ProcessorObservable::addObserver(this);
     canvas_->setVisible(ProcessorWidget::isVisible());
     {
