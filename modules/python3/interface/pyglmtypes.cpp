@@ -28,16 +28,18 @@
  *********************************************************************************/
 
 #include <modules/python3/interface/pyglmtypes.h>
-#include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <inviwo/core/util/stringconversion.h>
 
-#include <map>
-#include <string>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/logcentral.h>
 
 #include <pybind11/operators.h>
+#include <pybind11/numpy.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+
+#include <map>
+#include <string>
 #include <algorithm>
 
 namespace py = pybind11;
@@ -116,6 +118,8 @@ void vecx(py::module &m, std::string prefix, std::string name = "vec", std::stri
         .def(py::self *= py::self)
         .def(py::self /= py::self)
 
+        .def_property_readonly("nparray",[](V &self){ return py::array_t<T>(A,glm::value_ptr(self));})
+
         .def("__str__",
              [](V &v) {
                  std::ostringstream oss;
@@ -163,30 +167,39 @@ void vec(py::module &m, std::string prefix, std::string name = "vec", std::strin
 
 template <typename T, unsigned COLS, unsigned ROWS>
 void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
-    using M = typename util::glmtype<T, COLS, ROWS>::type;
-    using Ma2 = typename util::glmtype<T, ROWS, 2>::type;
-    using Ma3 = typename util::glmtype<T, ROWS, 3>::type;
-    using Ma4 = typename util::glmtype<T, ROWS, 4>::type;
-    using Va = Vector<COLS, T>;
-    using Vb = Vector<ROWS, T>;
+    
+    using M = typename util::glmtype<T, COLS, ROWS >::type;
+
+    using ColumnVector = typename M::col_type;
+    using RowVector = typename M::row_type;
+
+    using Ma2 = typename util::glmtype<T, 2, COLS>::type; 
+    using Ma3 = typename util::glmtype<T, 3, COLS>::type;
+    using Ma4 = typename util::glmtype<T, 4, COLS>::type;
 
     std::stringstream classname;
-    classname << prefix << name << COLS;
+    classname << prefix << name;
     if (COLS != ROWS) {
-        classname << "x" << ROWS;
+        classname << COLS << "x" << ROWS;
+    }else{
+        classname << COLS;
     }
 
     py::class_<M> pym(m, classname.str().c_str());
     common<T>(m, pym, classname.str());
     addInit<T, M, COLS * ROWS>(pym);
-    addInit<typename M::col_type, M, ROWS>(pym);
-    pym.def(py::self * Vb())
+    addInit<typename M::col_type, M, COLS>(pym);
+    pym
+        .def(py::self * RowVector())
+        .def(ColumnVector() * py::self)
         .def(py::self * Ma2())
         .def(py::self * Ma3())
         .def(py::self * Ma4())
 
+        .def_property_readonly("nparray", [](M &self) { return py::array_t<T>(std::vector<size_t>{ROWS,COLS}, glm::value_ptr(self)); })
+
         .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
-        .def("__setitem__", [](M &m, int idx, Va &t) { return m[idx] = t; })
+        .def("__setitem__", [](M &m, int idx, ColumnVector &t) { return m[idx] = t; })
         .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
 
         .def("__str__",
