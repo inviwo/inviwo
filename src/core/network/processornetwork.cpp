@@ -385,17 +385,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                 });
         des(d, processors_);
 
-    } catch (const SerializationException& exception) {
+    } catch (const Exception& exception) {
         clear();
         throw AbortException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
-    } catch (Exception& exception) {
+    } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + exception.getMessage(),
-                             exception.getContext());
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Deserialization error", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     // Connections
@@ -410,12 +409,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         }
         for (auto& con : toDelete) removeConnection(con);
 
-    } catch (const SerializationException& exception) {
+    } catch (const Exception& exception) {
+        clear();
         throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                              exception.getContext());
+                             exception.getContext());
+    } catch (const std::exception& exception) {
+        clear();
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Deserialization error:", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     // Links
@@ -430,12 +433,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         }
         for (auto& link : toDelete) removeLink(link);
 
-    } catch (const SerializationException& exception) {
-        throw IgnoreException("DeSerialization Exception " + exception.getMessage(),
-                              exception.getContext());
+    } catch (const Exception& exception) {
+        clear();
+        throw IgnoreException("Deserialization error: " + exception.getMessage(),
+                             exception.getContext());
+    } catch (const std::exception& exception) {
+        clear();
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception.", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     notifyObserversProcessorNetworkChanged();
