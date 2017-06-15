@@ -209,11 +209,11 @@ PYBIND11_PLUGIN(inviwopy) {
 
             auto module = app->getModuleByType<Python3Module>();
             if (module) {
-                setInviwopyModule(module,&m);
+                setInviwopyModule(module,m);
             }
         }
     } catch (SingletonException &) {
-        LogErrorCustom("Inivopy", "Failed to get Inviwo application, inviwopy will not function as expected");
+        LogErrorCustom("inviwopy", "Failed to get Inviwo application, inviwopy will not function as expected");
     } catch (...) {
         throw;
     }
@@ -226,7 +226,7 @@ PYBIND11_PLUGIN(inviwopy) {
 }
 
 namespace inviwo {
-void setInviwopyModule(Python3Module *ivwmodule, pybind11::module *pymodule) {
-    ivwmodule->setInviwopyModule(pymodule);
+void setInviwopyModule(Python3Module *ivwmodule, pybind11::module pymodule) {
+    ivwmodule->setInviwopyModule(std::make_shared<pybind11::module>(pymodule));
 }
 }

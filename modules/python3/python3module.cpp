@@ -81,19 +81,23 @@ Python3Module::Python3Module(InviwoApplication* app)
     });
 }
 
-Python3Module::~Python3Module() { pythonInterpreter_->removeObserver(&pythonLogger_); }
+Python3Module::~Python3Module() { 
+    pythonInterpreter_->removeObserver(&pythonLogger_); 
+}
 
-inviwo::PythonInterpreter* Python3Module::getPythonInterpreter() {
+PythonInterpreter* Python3Module::getPythonInterpreter() {
     return pythonInterpreter_.get();
 }
 
-pybind11::module* Python3Module::getInviwopyModule() { 
+std::shared_ptr<pybind11::module> Python3Module::getInviwopyModule() { 
     if(!inviwopyPyModule_){
         pythonInterpreter_->runString("import inviwopy");
     }
     return inviwopyPyModule_; 
 }
 
-void Python3Module::setInviwopyModule(pybind11::module* m) { inviwopyPyModule_ = m; }
+void Python3Module::setInviwopyModule(std::shared_ptr<pybind11::module> m) { 
+    inviwopyPyModule_ = m; 
+}
 
 }  // namespace

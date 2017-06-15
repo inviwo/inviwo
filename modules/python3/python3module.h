@@ -53,17 +53,17 @@ public:
 
     PythonInterpreter* getPythonInterpreter();
 
-    pybind11::module* getInviwopyModule();
+    std::shared_ptr<pybind11::module> getInviwopyModule();
 
 private:
     std::unique_ptr<PythonInterpreter> pythonInterpreter_;
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     PythonLogger pythonLogger_;
 
-    pybind11::module* inviwopyPyModule_;
+    std::shared_ptr<pybind11::module> inviwopyPyModule_;
 
-    void setInviwopyModule(pybind11::module* m);
-    friend void setInviwopyModule(Python3Module* ivwmodule, pybind11::module* pymodule);
+    void setInviwopyModule(std::shared_ptr<pybind11::module> m);
+    friend void setInviwopyModule(Python3Module* ivwmodule, pybind11::module pymodule);
 };
 
 }  // namespace

@@ -83,7 +83,7 @@ struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
 namespace inviwo {
     class Python3Module;
 
-    void setInviwopyModule(Python3Module *ivwmodule , pybind11::module *pymodule);
+    void setInviwopyModule(Python3Module *ivwmodule , pybind11::module pymodule);
 
 
 template <typename T>
