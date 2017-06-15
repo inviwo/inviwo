@@ -116,8 +116,8 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
         // Fix window offset when restoring positions saved during shutdown.
         // Determined the window frame/border size once.
         QWidget w(nullptr, Qt::Tool);
-        // Move the widget out of sight.
-        w.move(-5000, -5000);
+        // ensure that widget is not positioned on a visible desktop
+        w.setAttribute(Qt::WA_DontShowOnScreen);
         // Need to show the widget, otherwise no border exists, i.e. this->pos() ==
         // this->geometry().topLeft()
         w.show();
