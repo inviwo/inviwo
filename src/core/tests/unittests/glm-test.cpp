@@ -410,6 +410,29 @@ TEST(GLMTest, glmcomp4) {
 }
 
 
+template <unsigned COLS, unsigned ROWS>
+void test() {
+    using M = typename util::glmtype<int, COLS, ROWS>::type;
+    M m;
+    auto v = m[0];
+
+    EXPECT_TRUE((std::is_same<Vector<ROWS, int>, decltype(v)>::value));
+    EXPECT_TRUE((std::is_same<Vector<ROWS, int>, typename M::col_type>::value));
+    EXPECT_TRUE((std::is_same<Vector<COLS, int>, typename M::row_type>::value));
+}
+
+TEST(GLMTest, MatrixSizeTest2by2) { test<2, 2>(); }
+TEST(GLMTest, MatrixSizeTest2by3) { test<2, 3>(); }
+TEST(GLMTest, MatrixSizeTest2by4) { test<2, 4>(); }
+
+TEST(GLMTest, MatrixSizeTest3by2) { test<3, 2>(); }
+TEST(GLMTest, MatrixSizeTest3by3) { test<3, 3>(); }
+TEST(GLMTest, MatrixSizeTest3by4) { test<3, 4>(); }
+
+TEST(GLMTest, MatrixSizeTest4by2) { test<4, 2>(); }
+TEST(GLMTest, MatrixSizeTest4by3) { test<4, 3>(); }
+TEST(GLMTest, MatrixSizeTest4by4) { test<4, 4>(); }
+
 
 
 }
