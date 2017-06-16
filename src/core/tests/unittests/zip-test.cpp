@@ -220,7 +220,7 @@ template <typename Zipped>
 void randomAccessTest(Zipped&& iter) {
     using Iter = typename std::decay_t<decltype(iter)>::iterator;
     // RandomAccessIterator requirements
-    using DT = Iter::difference_type;
+    using DT = typename Iter::difference_type;
 
     for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
 
