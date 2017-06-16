@@ -103,6 +103,10 @@ target_link_libraries(${${mod}_target} $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
 
 ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
 
+if(IVW_UNITTESTS_RUN_ON_BUILD)
+    add_dependencies(inviwo-unittests-python3 inviwopy)
+endif()
+
 #--------------------------------------------------------------------
 # Add Python to package
 if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
