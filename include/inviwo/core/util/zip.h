@@ -124,7 +124,7 @@ template <typename Tag, typename IterTuple>
 using require_t = typename require<Tag, IterTuple>::type;
 
 template <typename Iterables>
-struct iterator {
+struct zipIterator {
     using Iterators = typename detailzip::iterator_tools<Iterables>::iterators;
     using difference_type = typename detailzip::iterator_tools<Iterables>::difference_type;
     using iterator_category = typename detailzip::iterator_tools<Iterables>::iterator_category;
@@ -138,53 +138,53 @@ struct iterator {
     template <typename Tag, typename IterTuple>
     using require_t = detailzip::require_t<Tag, IterTuple>;
 
-    iterator() = default;
-    iterator(Iterators iterators) : iterators_(iterators) {}
+    zipIterator() = default;
+    zipIterator(Iterators iterators) : iterators_(iterators) {}
 
-    iterator& operator++() {
+    zipIterator& operator++() {
         for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);
         return *this;
     }
-    iterator operator++(int) {
-        iterator i = *this;
+    zipIterator operator++(int) {
+        auto i = *this;
         for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);
         return i;
     }
 
     template <typename I = Iterables, typename = require_t<std::bidirectional_iterator_tag, I>>
-    iterator& operator--() {
+    zipIterator& operator--() {
         for_each_in_tuple([](auto& iter) { --iter; }, iterators_);
         return *this;
     }
     template <typename I = Iterables, typename = require_t<std::bidirectional_iterator_tag, I>>
-    iterator operator--(int) {
-        iterator i = *this;
+    zipIterator operator--(int) {
+        auto i = *this;
         for_each_in_tuple([](auto& iter) { --iter; }, iterators_);
         return i;
     }
 
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    iterator& operator+=(difference_type rhs) {
+    zipIterator& operator+=(difference_type rhs) {
         for_each_in_tuple([&](auto& iter) { iter += rhs; }, iterators_);
         return *this;
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    iterator& operator-=(difference_type rhs) {
+    zipIterator& operator-=(difference_type rhs) {
         for_each_in_tuple([&](auto& iter) { iter -= rhs; }, iterators_);
         return *this;
     }
 
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    difference_type operator-(const iterator& rhs) const {
+    difference_type operator-(const zipIterator& rhs) const {
         return std::get<0>(iterators_) - std::get<0>(rhs.iterators_);
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    iterator operator+(difference_type rhs) const {
+    zipIterator operator+(difference_type rhs) const {
         auto i = *this;
         return i += rhs;
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    iterator operator-(difference_type rhs) const {
+    zipIterator operator-(difference_type rhs) const {
         auto i = *this;
         return i -= rhs;
     }
@@ -203,9 +203,9 @@ struct iterator {
         return std::get<N>(iterators_);
     }
 
-    bool operator==(const iterator& rhs) const { return iterators_ == rhs.iterators_; }
+    bool operator==(const zipIterator& rhs) const { return iterators_ == rhs.iterators_; }
 
-    bool operator!=(const iterator& rhs) const {
+    bool operator!=(const zipIterator& rhs) const {
         bool equal = false;
         for_each_in_tuple([&](auto& i1, auto& i2) { equal |= i1 == i2; }, iterators_,
                           rhs.iterators_);
@@ -213,19 +213,19 @@ struct iterator {
     }
 
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator>(const iterator& rhs) const {
+    bool operator>(const zipIterator& rhs) const {
         return std::get<0>(iterators_) > std::get<0>(rhs.iterators_);
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator<(const iterator& rhs) const {
+    bool operator<(const zipIterator& rhs) const {
         return std::get<0>(iterators_) < std::get<0>(rhs.iterators_);
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator>=(const iterator& rhs) const {
+    bool operator>=(const zipIterator& rhs) const {
         return std::get<0>(iterators_) >= std::get<0>(rhs.iterators_);
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator<=(const iterator& rhs) const {
+    bool operator<=(const zipIterator& rhs) const {
         return std::get<0>(iterators_) <= std::get<0>(rhs.iterators_);
     }
 
@@ -233,20 +233,20 @@ struct iterator {
 };
 
 template <typename Iterables, typename = require_t<std::random_access_iterator_tag, Iterables>>
-iterator<Iterables> operator+(typename detailzip::iterator_tools<Iterables>::difference_type lhs,
-                              const iterator<Iterables>& rhs) {
+zipIterator<Iterables> operator+(typename detailzip::iterator_tools<Iterables>::difference_type lhs,
+                              const zipIterator<Iterables>& rhs) {
     return rhs + lhs;
 }
 
 template <typename... Iterable>
 struct zipper {
     using Iterables = std::tuple<Iterable...>;
-
+    using iterator = zipIterator<Iterables>;
     template <typename... T>
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
 
-    auto begin() -> iterator<Iterables> { return iterator<Iterables>(getBegin(iterables_)); }
-    auto end() -> iterator<Iterables> { return iterator<Iterables>(getEnd(iterables_)); }
+    auto begin() -> iterator { return iterator(getBegin(iterables_)); }
+    auto end() -> iterator { return iterator(getEnd(iterables_)); }
 
     Iterables iterables_;
 };

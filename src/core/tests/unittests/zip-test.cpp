@@ -139,8 +139,8 @@ void forwadTest(Zipped&& iter) {
         // InputIterator requirements
         EXPECT_EQ(true, i != j);
         EXPECT_EQ(false, i == j);
-        Iter::value_type vt1 = *i;
-        Iter::value_type vt2 = *i++;
+        typename Iter::value_type vt1 = *i;
+        typename Iter::value_type vt2 = *i++;
         auto ref = std::tuple<int, D>{1, D{10}};
         EXPECT_EQ(ref, vt1);
         EXPECT_EQ(ref, vt2);
@@ -185,8 +185,8 @@ void bidirectionalTest(Zipped&& iter) {
         EXPECT_EQ(ref1, *i);
 
         // const Iter& i5 = i--;
-        Iter::value_type vt1 = *i;
-        Iter::value_type vt2 = *i--;
+        typename Iter::value_type vt1 = *i;
+        typename Iter::value_type vt2 = *i--;
 
         EXPECT_EQ(ref1, vt1);
         EXPECT_EQ(ref1, vt2);
@@ -265,7 +265,7 @@ void randomAccessTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
-            Iter::reference vr1 = i[n];
+            typename Iter::reference vr1 = i[n];
             auto ref = std::tuple<int, D>{ ints[n], ds[n] };
             EXPECT_EQ(ref, vr1);
             EXPECT_EQ(ref, i[n]);
