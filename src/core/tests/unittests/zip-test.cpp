@@ -362,7 +362,7 @@ TEST(ZipIterTest, Sort) {
     std::reverse(a.begin(), a.end());
 
     auto z = util::zip(a, b);
-    std::sort(z.begin(), z.end(), [](auto& a, auto& b){
+    std::sort(z.begin(), z.end(), [](const auto& a, const auto& b) -> bool {
         return std::get<0>(a) < std::get<0>(b);
     });
 
