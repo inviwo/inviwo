@@ -241,13 +241,12 @@ iterator<Iterables> operator+(typename detailzip::iterator_tools<Iterables>::dif
 template <typename... Iterable>
 struct zipper {
     using Iterables = std::tuple<Iterable...>;
-    using iterator = iterator<Iterables>;
 
     template <typename... T>
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
 
-    auto begin() -> iterator { return iterator(getBegin(iterables_)); }
-    auto end() -> iterator { return iterator(getEnd(iterables_)); }
+    auto begin() -> iterator<Iterables> { return iterator<Iterables>(getBegin(iterables_)); }
+    auto end() -> iterator<Iterables> { return iterator<Iterables>(getEnd(iterables_)); }
 
     Iterables iterables_;
 };

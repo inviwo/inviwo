@@ -113,7 +113,7 @@ namespace inviwo {
 
 template <typename Zipped>
 void forwadTest(Zipped&& iter) {
-    using Iter = std::decay_t<decltype(iter)>::iterator;
+    using Iter = typename std::decay_t<decltype(iter)>::iterator;
 
     // Iterator default constructible
     Iter defaltConstruct{};
@@ -176,7 +176,7 @@ void bidirectionalTest(Zipped&& iter) {
         auto ref0 = std::tuple<int, D>{3, D{30}};
         EXPECT_EQ(ref0, *i);
 
-        using Iter = std::decay_t<decltype(iter)>::iterator;
+        using Iter = typename std::decay_t<decltype(iter)>::iterator;
         // BidirectionalIterator requirements
         Iter& i4 = --i;
 
@@ -218,7 +218,7 @@ void bidirectionalTest(Zipped&& iter) {
 
 template <typename Zipped>
 void randomAccessTest(Zipped&& iter) {
-    using Iter = std::decay_t<decltype(iter)>::iterator;
+    using Iter = typename std::decay_t<decltype(iter)>::iterator;
     // RandomAccessIterator requirements
     using DT = Iter::difference_type;
 
