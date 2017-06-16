@@ -110,7 +110,7 @@ void exposeBuffer(py::module &m) {
             auto componentSize = df->getSize();
 
             std::vector<size_t> shape = {buffer->getSize(), df->getComponents()};
-            std::vector<size_t> strides = {componentSize * df->getComponents(), componentSize};
+            std::vector<size_t> strides = {componentSize,componentSize * df->getComponents()};
             auto data = buffer->getRepresentation<BufferRAM>()->getData();
 
             bool readOnly = false;
