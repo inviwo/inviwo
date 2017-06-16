@@ -51,6 +51,12 @@ void exposeMesh(py::module &m) {
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>())
+        .def("__str__",
+             [](Mesh::MeshInfo &mi) {
+                 std::ostringstream oss;
+                 oss << "MeshInfo (" << mi.dt << ", " << mi.ct << ")";
+                 return oss.str();
+             })
         .def_readwrite("dt", &Mesh::MeshInfo::dt)
         .def_readwrite("ct", &Mesh::MeshInfo::ct);
 
@@ -58,8 +64,25 @@ void exposeMesh(py::module &m) {
         .def(py::init<>())
         .def(py::init<BufferType>())
         .def(py::init<BufferType, int>())
+        .def("__str__",
+             [](Mesh::BufferInfo &bi) {
+                 std::ostringstream oss;
+                 oss << "BufferInfo (" << bi.type << ", " << bi.location << ")";
+                 return oss.str();
+             })
         .def_readwrite("type", &Mesh::BufferInfo::type)
         .def_readwrite("location", &Mesh::BufferInfo::location);
+
+    auto getBuffers = [](auto &buffers) {
+        pybind11::list list;
+        for (auto &buffer : buffers) {
+            auto tupl = py::tuple(2);
+            tupl[0] = py::cast(buffer.first);
+            tupl[1] = py::cast(buffer.second.get(), py::return_value_policy::reference);
+            list.append(tupl);
+        }
+        return list;
+    };
 
     py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
@@ -77,9 +100,10 @@ void exposeMesh(py::module &m) {
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
         .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)
 
-        .def_property_readonly("buffers", &Mesh::getBuffers, py::return_value_policy::reference)
-        .def_property_readonly("indexBuffers", &Mesh::getIndexBuffers,
-                               py::return_value_policy::reference);
+        .def_property_readonly("buffers", [&](Mesh *m) { return getBuffers(m->getBuffers());})
+        .def_property_readonly("indexBuffers", [&](Mesh *m) { return getBuffers(m->getIndexBuffers());})
+            
+        ;
 
     py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
         .def(py::init<>())
@@ -88,7 +112,7 @@ void exposeMesh(py::module &m) {
                  new (&instance) BasicMesh::Vertex{pos, normal, tex, color};
              });
 
-    py::class_<BasicMesh>(m, "BasicMesh")
+    py::class_<BasicMesh, Mesh>(m, "BasicMesh")
         .def(pybind11::init<>())
         .def(py::init<>())
         .def("addVertex", &BasicMesh::addVertex)
