@@ -128,6 +128,7 @@ set(ivw_default_modules
     "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
+    "PostProcessing"
     "Nifti" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
