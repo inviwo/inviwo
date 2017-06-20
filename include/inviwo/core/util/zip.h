@@ -83,23 +83,23 @@ bool operator==(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data == rhs.data;
 }
 template <typename... Ts, typename... Us>
-bool operator!=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+bool operator!=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data != rhs.data;
 }
 template <typename... Ts, typename... Us>
-bool operator>(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+bool operator>(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data > rhs.data;
 }
 template <typename... Ts, typename... Us>
-bool operator<(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+bool operator<(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data < rhs.data;
 }
 template <typename... Ts, typename... Us>
-bool operator>=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+bool operator>=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data >= rhs.data;
 }
 template <typename... Ts, typename... Us>
-bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data <= rhs.data;
 }
 
