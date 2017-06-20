@@ -68,6 +68,13 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
     return os << "]";
 }
 
+template <typename... T>
+std::ostream& operator<<(std::ostream& os, const inviwo::util::detailzip::proxy<T...>& p) {
+    os << "[";
+    print_tuple<0>(os, p.data);
+    return os << "]";
+}
+
 // no copy/move
 struct S {
     S() = delete;
@@ -76,16 +83,14 @@ struct S {
     S& operator=(const S&) = delete;
     S& operator=(S&&) = delete;
 
-    friend constexpr bool operator==(const S& a, const S& b)  noexcept { return a.a_ == b.a_;}
+    friend constexpr bool operator==(const S& a, const S& b) noexcept { return a.a_ == b.a_; }
 
-    constexpr int get() const  noexcept { return a_; }
+    constexpr int get() const noexcept { return a_; }
 
-    constexpr explicit S(int a)  noexcept : a_{ a } {}
+    constexpr explicit S(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-::std::ostream& operator<<(::std::ostream& os, const S& s) {
-    return os << "S(" << s.a_ << ")";
-}
+::std::ostream& operator<<(::std::ostream& os, const S& s) { return os << "S(" << s.a_ << ")"; }
 
 // default type
 struct D {
@@ -97,14 +102,12 @@ struct D {
 
     friend constexpr bool operator==(const D& a, const D& b) noexcept { return a.a_ == b.a_; }
 
-    constexpr int get() const  noexcept { return a_; }
+    constexpr int get() const noexcept { return a_; }
 
-    constexpr explicit D(int a) noexcept : a_{ a } {}
+    constexpr explicit D(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-::std::ostream& operator<<(::std::ostream& os, const D& d) {
-    return os << "D(" << d.a_ << ")";
-}
+::std::ostream& operator<<(::std::ostream& os, const D& d) { return os << "D(" << d.a_ << ")"; }
 
 constexpr const std::array<int, 5> ints{{1, 2, 3, 4, 5}};
 constexpr const std::array<D, 5> ds{{D{10}, D{20}, D{30}, D{40}, D{50}}};
@@ -114,6 +117,7 @@ namespace inviwo {
 template <typename Zipped>
 void forwadTest(Zipped&& iter) {
     using Iter = typename std::decay_t<decltype(iter)>::iterator;
+    using util::detailzip::proxy;
 
     // Iterator default constructible
     Iter defaltConstruct{};
@@ -127,7 +131,7 @@ void forwadTest(Zipped&& iter) {
         auto i = iter.begin();
         auto j = iter.end();
         for (size_t c = 0; c < ints.size(); ++c) {
-            auto ref = std::tuple<int, D>{ints[c], ds[c]};
+            auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
             Iter& i2 = ++i;
             EXPECT_EQ(i2, i);
@@ -141,7 +145,7 @@ void forwadTest(Zipped&& iter) {
         EXPECT_EQ(false, i == j);
         typename Iter::value_type vt1 = *i;
         typename Iter::value_type vt2 = *i++;
-        auto ref = std::tuple<int, D>{1, D{10}};
+        auto ref = proxy<int, D>{1, D{10}};
         EXPECT_EQ(ref, vt1);
         EXPECT_EQ(ref, vt2);
 
@@ -157,7 +161,7 @@ void forwadTest(Zipped&& iter) {
         auto i = iter.begin();
         auto j = iter.end();
         for (size_t c = 0; c < ints.size(); ++c) {
-            auto ref = std::tuple<int, D>{ ints[c], ds[c] };
+            auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
             Iter i1 = i;
             Iter i2 = i++;
@@ -168,19 +172,20 @@ void forwadTest(Zipped&& iter) {
 
 template <typename Zipped>
 void bidirectionalTest(Zipped&& iter) {
+    using util::detailzip::proxy;
     {
         auto i = iter.begin();
         auto j = iter.end();
         std::advance(i, 2);
 
-        auto ref0 = std::tuple<int, D>{3, D{30}};
+        auto ref0 = proxy<int, D>{3, D{30}};
         EXPECT_EQ(ref0, *i);
 
         using Iter = typename std::decay_t<decltype(iter)>::iterator;
         // BidirectionalIterator requirements
         Iter& i4 = --i;
 
-        auto ref1 = std::tuple<int, D>{2, D{20}};
+        auto ref1 = proxy<int, D>{2, D{20}};
         EXPECT_EQ(ref1, *i4);
         EXPECT_EQ(ref1, *i);
 
@@ -191,9 +196,8 @@ void bidirectionalTest(Zipped&& iter) {
         EXPECT_EQ(ref1, vt1);
         EXPECT_EQ(ref1, vt2);
 
-        auto ref2 = std::tuple<int, D>{ 1, D{10} };
+        auto ref2 = proxy<int, D>{1, D{10}};
         EXPECT_EQ(ref2, *i);
-
     }
     {
         auto i = iter.begin();
@@ -204,8 +208,8 @@ void bidirectionalTest(Zipped&& iter) {
             auto val = *j2--;
             EXPECT_EQ(true, val == *j1);
             --j1;
-            
-            auto ref3 = std::tuple<int, D>{ints[c], ds[c]};
+
+            auto ref3 = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref3, *j1);
             EXPECT_EQ(ref3, *j2);
             EXPECT_EQ(true, j1 == j2);
@@ -218,6 +222,7 @@ void bidirectionalTest(Zipped&& iter) {
 
 template <typename Zipped>
 void randomAccessTest(Zipped&& iter) {
+    using util::detailzip::proxy;
     using Iter = typename std::decay_t<decltype(iter)>::iterator;
     // RandomAccessIterator requirements
     using DT = typename Iter::difference_type;
@@ -227,7 +232,7 @@ void randomAccessTest(Zipped&& iter) {
         {
             auto i = iter.begin();
             Iter& i1 = i += n;
-            auto ref = std::tuple<int, D>{ints[n], ds[n]};
+            auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, *i1);
         }
 
@@ -235,20 +240,20 @@ void randomAccessTest(Zipped&& iter) {
             auto i = iter.begin();
             Iter i2 = i + n;
             Iter i3 = n + i;
-            auto ref = std::tuple<int, D>{ints[n], ds[n]};
+            auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, *i2);
             EXPECT_EQ(ref, *i3);
         }
         {
             auto i = iter.end();
             Iter i5 = i - (n + 1);
-            auto ref = std::tuple<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
+            auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
             EXPECT_EQ(ref, *i5);
         }
         {
             auto i = iter.end();
             Iter& i4 = i -= (n + 1);
-            auto ref = std::tuple<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
+            auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
             EXPECT_EQ(ref, *i4);
         }
     }
@@ -266,7 +271,7 @@ void randomAccessTest(Zipped&& iter) {
         auto i = iter.begin();
         for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
             typename Iter::reference vr1 = i[n];
-            auto ref = std::tuple<int, D>{ ints[n], ds[n] };
+            auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, vr1);
             EXPECT_EQ(ref, i[n]);
         }
@@ -282,7 +287,7 @@ void randomAccessTest(Zipped&& iter) {
 }
 
 TEST(ZipIterTest, ForwardIter) {
-    std::forward_list<int> fl1{ ints.begin(), ints.end() };
+    std::forward_list<int> fl1{ints.begin(), ints.end()};
     std::forward_list<D> fl2{ds.begin(), ds.end()};
 
     auto iter = util::zip(fl1, fl2);
@@ -290,17 +295,16 @@ TEST(ZipIterTest, ForwardIter) {
 }
 
 TEST(ZipIterTest, BidirectionalIter) {
-    std::list<int> bl1{ ints.begin(), ints.end() };
+    std::list<int> bl1{ints.begin(), ints.end()};
     std::list<D> bl2{ds.begin(), ds.end()};
 
     auto iter = util::zip(bl1, bl2);
     forwadTest(iter);
     bidirectionalTest(iter);
-
 }
 
 TEST(ZipIterTest, RandomAccessIter) {
-    std::vector<int> bl1{ ints.begin(), ints.end() };
+    std::vector<int> bl1{ints.begin(), ints.end()};
     std::vector<D> bl2{ds.begin(), ds.end()};
 
     auto iter = util::zip(bl1, bl2);
@@ -314,7 +318,7 @@ TEST(ZipIterTest, Minimal) {
     std::iota(a.begin(), a.end(), 0);
     int count = 0;
     for (auto&& i : util::zip(a)) {
-        EXPECT_EQ(count, std::get<0>(i));
+        EXPECT_EQ(count, get<0>(i));
         ++count;
     }
 }
@@ -328,8 +332,8 @@ TEST(ZipIterTest, Pair) {
 
     int count = 0;
     for (auto&& i : util::zip(a, b)) {
-        EXPECT_EQ(count, std::get<0>(i));
-        EXPECT_EQ(count+10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i));
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }
@@ -338,16 +342,15 @@ TEST(ZipIterTest, NoCopy) {
     std::vector<std::unique_ptr<S>> a;
     std::vector<int> b;
 
-    for (int i = 0; i<10; ++i) {
+    for (int i = 0; i < 10; ++i) {
         a.push_back(std::make_unique<S>(i));
-        b.push_back(i+10);
+        b.push_back(i + 10);
     }
-
 
     int count = 0;
     for (auto&& i : util::zip(a, b)) {
-        EXPECT_EQ(count, std::get<0>(i)->a_);
-        EXPECT_EQ(count + 10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i)->a_);
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }
@@ -362,9 +365,7 @@ TEST(ZipIterTest, Sort) {
     std::reverse(a.begin(), a.end());
 
     auto z = util::zip(a, b);
-    std::sort(z.begin(), z.end(), [](const auto& a, const auto& b) -> bool {
-        return std::get<0>(a) < std::get<0>(b);
-    });
+    std::sort(z.begin(), z.end(), [](auto&& a, auto&& b) -> bool { return get<0>(a) < get<0>(b); });
 
     EXPECT_EQ(19, b.front());
     EXPECT_EQ(10, b.back());
@@ -375,8 +376,8 @@ TEST(SequencerTest, Ranges) {
     auto r1 = util::make_sequence(0, 10, 1);
     auto r2 = util::make_sequence(10, 20, 1);
     for (auto&& i : util::zip(r1, r2)) {
-        EXPECT_EQ(count, std::get<0>(i));
-        EXPECT_EQ(count + 10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i));
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }
@@ -386,8 +387,8 @@ TEST(SequencerTest, DifferenLenght1) {
     auto r1 = util::make_sequence(0, 10, 1);
     auto r2 = util::make_sequence(10, 30, 1);
     for (auto&& i : util::zip(r1, r2)) {
-        EXPECT_EQ(count, std::get<0>(i));
-        EXPECT_EQ(count + 10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i));
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }
@@ -396,8 +397,8 @@ TEST(SequencerTest, DifferenLenght2) {
     auto r1 = util::make_sequence(0, 20, 1);
     auto r2 = util::make_sequence(10, 20, 1);
     for (auto&& i : util::zip(r1, r2)) {
-        EXPECT_EQ(count, std::get<0>(i));
-        EXPECT_EQ(count + 10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i));
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }
@@ -405,8 +406,8 @@ TEST(SequencerTest, DifferenLenght2) {
 TEST(SequencerTest, Temporaries) {
     int count = 0;
     for (auto&& i : util::zip(util::make_sequence(0, 20, 1), util::make_sequence(10, 20, 1))) {
-        EXPECT_EQ(count, std::get<0>(i));
-        EXPECT_EQ(count + 10, std::get<1>(i));
+        EXPECT_EQ(count, get<0>(i));
+        EXPECT_EQ(count + 10, get<1>(i));
         ++count;
     }
 }

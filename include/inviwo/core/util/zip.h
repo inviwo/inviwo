@@ -44,6 +44,74 @@ namespace util {
 
 namespace detailzip {
 
+template <typename... Ts>
+struct proxy {
+    proxy(const proxy&) = default;
+    proxy(proxy&&) = default;
+    proxy& operator=(const proxy&) = default;
+    proxy& operator=(proxy&&) = default;
+
+    template <typename... Us> 
+    proxy(Us&&... args) : data{std::forward<Us>(args)...} {}
+    
+    template <typename... Us> 
+    proxy<Ts...>(const proxy<Us...>& rhs) : data(rhs.data) {}
+    template <typename... Us> 
+    proxy<Ts...>(proxy<Us...>&& rhs) : data(std::move(rhs.data)) {}
+    
+    template <typename... Us> 
+    proxy& operator=(const proxy<Us...>& rhs) {
+        data = rhs.data;
+        return this;
+    }
+    template <typename... Us> 
+    proxy& operator=(proxy<Us...>&& rhs) {
+        data = std::move(rhs.data);
+        return *this;
+    }
+    
+    operator std::tuple<Ts...>&() { return data; }
+    
+    template <std::size_t N>
+    decltype(auto) get() const { return std::get<N>(data); } 
+      
+    std::tuple<Ts...> data;
+};
+
+template <typename... Ts, typename... Us>
+bool operator==(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
+    return lhs.data == rhs.data;
+}
+template <typename... Ts, typename... Us>
+bool operator!=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+    return lhs.data != rhs.data;
+}
+template <typename... Ts, typename... Us>
+bool operator>(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+    return lhs.data > rhs.data;
+}
+template <typename... Ts, typename... Us>
+bool operator<(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+    return lhs.data < rhs.data;
+}
+template <typename... Ts, typename... Us>
+bool operator>=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+    return lhs.data >= rhs.data;
+}
+template <typename... Ts, typename... Us>
+bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rh) {
+    return lhs.data <= rhs.data;
+}
+
+template <typename... Ts >
+void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) {
+    for_each_in_tuple([](auto&& i, auto&& j){
+        using std::swap;
+        swap(i,j);  
+    }, a.data, b.data);
+}
+    
+    
 template <typename T, std::size_t... I>
 auto beginImpl(T& t, std::index_sequence<I...>) {
     return std::make_tuple(std::begin(std::get<I>(t))...);
@@ -63,22 +131,22 @@ auto getEnd(std::tuple<T...>& t) {
 }
 
 template <typename T, std::size_t... I>
-auto refImpl(T& t, std::index_sequence<I...>) -> std::tuple<decltype(*(std::get<I>(t)))...> {
-    return std::tuple<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
+auto refImpl(T& t, std::index_sequence<I...>) -> proxy<decltype(*(std::get<I>(t)))...> {
+    return proxy<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
 }
 template <typename... T>
-auto ref(std::tuple<T...>& t) -> std::tuple<decltype(*(std::declval<T>()))...> {
+auto ref(std::tuple<T...>& t) -> proxy<decltype(*(std::declval<T>()))...> {
     return refImpl(t, std::index_sequence_for<T...>{});
 }
 
 template <typename T, typename ptrdiff_t, std::size_t... I>
 auto indexImpl(T& t, ptrdiff_t i, std::index_sequence<I...>)
-    -> std::tuple<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...> {
-    return std::tuple<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...>{std::get<I>(t)[i]...};
+    -> proxy<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...> {
+    return proxy<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...>{std::get<I>(t)[i]...};
 }
 template <typename... T, typename ptrdiff_t>
 auto index(std::tuple<T...>& t, ptrdiff_t i)
-    -> std::tuple<decltype(std::declval<T>()[std::declval<ptrdiff_t>()])...> {
+    -> proxy<decltype(std::declval<T>()[std::declval<ptrdiff_t>()])...> {
     return indexImpl(t, i, std::index_sequence_for<T...>{});
 }
 
@@ -98,7 +166,8 @@ struct get_iterator {
 };
 template <typename T>
 using get_iterator_t = typename get_iterator<T>::type;
-
+   
+    
 template <typename T>
 struct iterator_tools;
 
@@ -108,11 +177,11 @@ struct iterator_tools<std::tuple<Ts...>> {
     using iterator_category = typename std::common_type<
         typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>::type;
     using value_type =
-        std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
+        proxy<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
     using pointer =
         std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::pointer...>;
     using reference =
-        std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
+        proxy<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
     using iterators = std::tuple<get_iterator_t<Ts>...>;
 };
 
@@ -321,7 +390,9 @@ struct sequence {
         friend iterator operator+(difference_type lhs, const iterator& rhs) { return rhs + lhs; }
 
         value_type operator[](difference_type rhs) const { return val_ + rhs * inc_; }
+        
         reference operator*() { return val_; }
+        
         pointer operator->() { return &val_; }
 
         bool operator==(const iterator& rhs) const { return val_ == rhs.val_; }
@@ -358,6 +429,30 @@ auto enumerate(T&& cont, Ts&&... conts) {
 
 }  // namespace util
 
+
+// Get function for the proxy class. std::get is not a customization point
+template <std::size_t N, typename... Ts>
+decltype(auto) get(const util::detailzip::proxy<Ts...>& p) {
+    return p.template get<N>();
+}
+
 }  // namespace inviwo
+
+namespace std {
+
+// Needed to get structured bindings to work for the proxy class
+// enables for(auto&& [i, j] : zip(a, b)) std::cout << i << " " << j << std::endl;
+// in C++17
+template <typename... Ts>
+class tuple_size<::inviwo::util::detailzip::proxy<Ts...>>
+    : public std::integral_constant<std::size_t, sizeof...(Ts)> {};
+
+template <std::size_t N, typename... Ts>
+class tuple_element<N, ::inviwo::util::detailzip::proxy<Ts...>> {
+public:
+    using type =
+        decltype(std::declval<::inviwo::util::detailzip::proxy<Ts...>>().template get<N>());
+};
+}  // namespace std
 
 #endif  // IVW_ZIP_H
