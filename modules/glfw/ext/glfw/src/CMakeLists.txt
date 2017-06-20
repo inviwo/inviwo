@@ -97,7 +97,7 @@ if(WIN32)
    install(TARGETS glfw
             RUNTIME DESTINATION bin
             COMPONENT glfw_module)
-else(APPLE)
+elseif(APPLE)
     install(TARGETS glfw
             RUNTIME DESTINATION bin
             BUNDLE DESTINATION .

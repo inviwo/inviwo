@@ -688,7 +688,7 @@ function(ivw_default_install_targets)
            install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
                     COMPONENT modules)
-        else(APPLE)
+        elseif(APPLE)
             install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
                     BUNDLE DESTINATION .
