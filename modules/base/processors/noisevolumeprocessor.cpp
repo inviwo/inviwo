@@ -51,7 +51,7 @@ NoiseVolumeProcessor::NoiseVolumeProcessor()
     : Processor()
     , basisVolume_("forBasis")
     , volume_("volume_")
-    , size_("size", "Size", size3_t(256), size3_t(32), size3_t(4096))
+    , size_("size", "Size", size3_t(256), size3_t(32), size3_t(1024))
     , type_("type", "Type",
             {{"random", "Random", NoiseType::Random},
              {"haltonSequence", "Halton Sequence", NoiseType::HaltonSequence}})
