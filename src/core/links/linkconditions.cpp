@@ -30,6 +30,7 @@
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -40,24 +41,20 @@ bool SimpleCondition::canLink(const Property* src, const Property* dst) {
 bool PartiallyMatchingIdCondition::canLink(const Property* src, const Property* dst) {
     bool canLink = false;
     // conversion to lower case
-    std::string srcIdentifier = src->getIdentifier();
-    std::transform(srcIdentifier.begin(), srcIdentifier.end(), srcIdentifier.begin(), tolower);
-    std::string dstIdentifier = dst->getIdentifier();
-    std::transform(dstIdentifier.begin(), dstIdentifier.end(), dstIdentifier.begin(), tolower);
-    std::string srcClassName = src->getClassIdentifier();
-    std::transform(srcClassName.begin(), srcClassName.end(), srcClassName.begin(), tolower);
-    std::string dstClassName = dst->getClassIdentifier();
-    std::transform(dstClassName.begin(), dstClassName.end(), dstClassName.begin(), tolower);
+    std::string srcIdentifier = toLower(src->getIdentifier());
+    std::string dstIdentifier = toLower(dst->getIdentifier());
 
     // does class name occurs in identifiers
-    if (srcIdentifier.find(dstClassName) != std::string::npos &&
-        dstIdentifier.find(srcClassName) != std::string::npos)
+    if (srcIdentifier.find(toLower(dst->getClassIdentifier())) != std::string::npos &&
+        dstIdentifier.find(toLower(src->getClassIdentifier())) != std::string::npos) {
         canLink = true;
+    }
 
     // does identifier occur in other identifier
     if (srcIdentifier.find(dstIdentifier) != std::string::npos ||
-        dstIdentifier.find(srcIdentifier) != std::string::npos)
+        dstIdentifier.find(srcIdentifier) != std::string::npos) {
         canLink = true;
+    }
 
     return canLink;
 }
@@ -79,4 +76,4 @@ bool AutoLinker::canLink(const Property* src, const Property* dst,
 
     return false;
 }
-}
+}  // namespace inviwo
