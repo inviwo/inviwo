@@ -55,7 +55,8 @@ TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
     , isEditingPoint_(false)
     , dataPoint_(datapoint)
     , dataMap_(dataMap)
-    , currentPos_() {
+    , currentPos_()
+    , hovered_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
     setZValue(1);
@@ -80,19 +81,15 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
                                            dataPoint_->getRGBA().b));
     painter->setPen(pen);
     painter->setBrush(brush);
-    int c = static_cast<int>(-size_ / 2.0f);
-    int s = static_cast<int>(size_);
+    int c = static_cast<int>(-getSize() * 0.5f);
+    int s = static_cast<int>(getSize());
     painter->drawEllipse(c, c, s, s);
 
     if (showLabel_) {
-        QString label;
-        QTextStream labelStream(&label);
-        labelStream.setRealNumberPrecision(3);
-        labelStream << "a("
-                    << dataMap_.valueRange.x +
-                           dataPoint_->getPos() * (dataMap_.valueRange.y - dataMap_.valueRange.x)
-                    << ")=";
-        labelStream << dataPoint_->getRGBA().a;
+        auto label(QString("a(%1)=%2")
+            .arg(dataMap_.valueRange.x +
+                 dataPoint_->getPos() * (dataMap_.valueRange.y - dataMap_.valueRange.x))
+            .arg(dataPoint_->getRGBA().a, 0, 'f', 3) );
 
         Qt::AlignmentFlag align;
         if (dataPoint_->getPos() > 0.5f) {
@@ -112,33 +109,29 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
 }
 
 QRectF TransferFunctionEditorControlPoint::boundingRect() const {
-    float bBoxSize = size_ + 5.0f;
+    float bBoxSize = getSize() + 5.0f;
+    auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0f, bBoxSize, bBoxSize);
     if (showLabel_) {
         QRectF rect = calculateLabelRect();
-        return rect.united(QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0f, bBoxSize, bBoxSize));
+        return rect.united(bRect);
     } else {
-        return QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0f, bBoxSize, bBoxSize);
+        return bRect;
     }
 }
 
 QPainterPath TransferFunctionEditorControlPoint::shape() const {
     QPainterPath path;
-    path.addEllipse(QRectF(-size_ / 2.0, -size_ / 2.0f, size_, size_));
+    const auto size = getSize();
+    path.addEllipse(QRectF(-size / 2.0, -size / 2.0f, size, size));
     return path;
 }
 
 void TransferFunctionEditorControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
-    prepareGeometryChange();
-    size_ += 5.0f;
-    showLabel_ = true;
-    update();
+    setHovered(true);
 }
 
 void TransferFunctionEditorControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
-    prepareGeometryChange();
-    size_ -= 5.0f;
-    showLabel_ = false;
-    update();
+    setHovered(false);
 }
 
 QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange change,
@@ -228,15 +221,16 @@ void TransferFunctionEditorControlPoint::onTransferFunctionPointChange(
 
 QRectF TransferFunctionEditorControlPoint::calculateLabelRect() const {
     QRectF rect;
+    auto size = getSize();
     if (dataPoint_->getPos() > 0.5f) {
-        rect.setX(-0.5 * size_ - textWidth_);
+        rect.setX(-0.5 * size - textWidth_);
     } else {
-        rect.setX(0.5 * size_);
+        rect.setX(0.5 * size);
     }
     if (dataPoint_->getRGBA().a > 0.5f) {
-        rect.setY(0.5 * size_);
+        rect.setY(0.5 * size);
     } else {
-        rect.setY(-0.5 * size_ - textHeight_);
+        rect.setY(-0.5 * size - textHeight_);
     }
     rect.setHeight(textHeight_);
     rect.setWidth(textWidth_);
@@ -262,6 +256,23 @@ TransferFunctionDataPoint* TransferFunctionEditorControlPoint::getPoint() const 
 void TransferFunctionEditorControlPoint::setPos(const QPointF & pos) {
     currentPos_ = pos;
     QGraphicsItem::setPos(pos);
+}
+
+void TransferFunctionEditorControlPoint::setSize(float s) {
+    prepareGeometryChange();
+    size_ = s;
+    update();
+}
+
+float TransferFunctionEditorControlPoint::getSize() const {
+    return hovered_ ? size_ + 5.0f : size_;
+}
+
+void TransferFunctionEditorControlPoint::setHovered(bool hover) {
+    prepareGeometryChange();
+    hovered_ = hover;
+    showLabel_ = hover;
+    update();
 }
 
 const QPointF& TransferFunctionEditorControlPoint::getCurrentPos() const{

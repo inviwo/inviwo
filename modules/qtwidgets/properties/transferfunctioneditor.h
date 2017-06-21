@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONEDITOR_H
@@ -43,6 +43,7 @@
 
 class QGraphicsView;
 class QGraphicsPathItem;
+class QColorDialog;
 
 namespace inviwo {
 
@@ -58,7 +59,7 @@ class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
     Q_OBJECT
 #include <warn/pop>
 public:
-    TransferFunctionEditor(TransferFunctionProperty* tfProperty);
+    TransferFunctionEditor(TransferFunctionProperty* tfProperty, QWidget* parent = nullptr);
     virtual ~TransferFunctionEditor();
 
     float getZoomRangeXMin() const;
@@ -78,20 +79,23 @@ public:
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
     virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
 
-    /** 
+    /**
      * \brief Get the display size of the control points.
      * @see TransferFunctionEditorControlPoint::setSize
      */
     float getControlPointSize() const { return controlPointSize_; }
-    /** 
+    /**
      * \brief Set the display size of the control points.
      *
      * @see TransferFunctionEditorControlPoint::setSize
      * @param val Display size
      */
     void setControlPointSize(float val);
+
+    void setPointColor(const QColor& color);
+
 signals:
-    void doubleClick();
+    void colorChanged(const QColor& color);
 
 public slots:
     void resetTransferFunction();
@@ -103,13 +107,13 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
     void keyPressEvent(QKeyEvent* keyEvent);
 
-    /** 
-    * \brief Adds a new control point at the event position
-    *
-    * Adds a new control point the the points_ array, adds a new line item to the lines_ array,
-    * sorts the points_ array and updates the line items to go to and from the correct points.
-    * Runs CalcTransferValues to update the TransferFunction data Image
-    */
+    /**
+     * \brief Adds a new control point at the event position
+     *
+     * Adds a new control point the the points_ array, adds a new line item to the lines_ array,
+     * sorts the points_ array and updates the line items to go to and from the correct points.
+     * Runs CalcTransferValues to update the TransferFunction data Image
+     */
     void addControlPoint(QPointF pos);
     void addControlPoint(QPointF pos, vec4 color);
 
@@ -117,29 +121,35 @@ protected:
 
     TransferFunctionEditorControlPoint* getControlPointGraphicsItemAt(const QPointF pos) const;
 
-private :
-    float controlPointSize_ = 15.f; ///< Size of control points
+private:
+    void setColorDialogColor(const QColor& c);
+
+    float controlPointSize_ = 15.f;  ///< Size of control points
 
     float zoomRangeXMin_;
     float zoomRangeXMax_;
     float zoomRangeYMin_;
     float zoomRangeYMax_;
 
-    TransferFunction* transferFunction_; ///< Pointer to widget's member variable
+    TransferFunction* transferFunction_;  ///< Pointer to widget's member variable
 
     using PointVec = std::vector<TransferFunctionEditorControlPoint*>;
     using ConnectionVec = std::vector<TransferFunctionControlPointConnection*>;
     PointVec points_;
     ConnectionVec connections_;
-    QList<QGraphicsItem *> selectedItemsAtPress_; // The items selected when user pressed mouse button.
+    QList<QGraphicsItem*>
+        selectedItemsAtPress_;  // The items selected when user pressed mouse button.
     bool mouseDrag_;
-    bool mouseMovedSincePress_ = false; // Mouse moved since click
+    bool mouseMovedSincePress_ = false;  // Mouse moved since click
+    bool mouseDoubleClick_ = false;
     DataMapper dataMap_;
 
     std::vector<std::vector<TransferFunctionEditorControlPoint*> > groups_;
     int moveMode_;
+
+    std::unique_ptr<QColorDialog> colorDialog_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRANSFERFUNCTIONEDITOR_H
+#endif  // IVW_TRANSFERFUNCTIONEDITOR_H
