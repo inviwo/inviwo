@@ -84,7 +84,7 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
 
     colorDialog_ = util::make_unique<QColorDialog>(parent);
     colorDialog_->hide();
-    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
+    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
     colorDialog_->setOption(QColorDialog::NoButtons, true);
     colorDialog_->setWindowModality(Qt::NonModal);
     colorDialog_->setWindowTitle(QString::fromStdString(tfProperty->getDisplayName()));
