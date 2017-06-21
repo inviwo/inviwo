@@ -32,6 +32,13 @@
 # Needed for the function pybind11_add_module and dependency pybind11::module 
 add_subdirectory(${IVW_ROOT_DIR}/ext/pybind11)
 
+if(MSVC)
+    # Prevent setting the /GL and -LTCG flag 
+    set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
+    set(PYBIND11_LTO_LINKER_FLAGS "" CACHE INTERNAL "")
+endif(MSVC)
+
+
 function (ivw_add_py_wrapper name)
     if(IVW_MODULE_PYTHON3)
         pybind11_add_module(${name} ${ARGN})
