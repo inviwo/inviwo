@@ -34,7 +34,8 @@ uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
 uniform int kernelSize;
 
-uniform float inv2Sigma;
+uniform float sigmaSq2;
+uniform float a;
 
 in vec4 texCoord_;
 
@@ -47,11 +48,10 @@ void main() {
             for(int x = -k2;x < k2;x++){
                 float w = 1.0;
 #ifdef GAUSSIAN
-                vec3 p = vec3(x,y,z)/vec3(k2);
-                float l = dot(p,p);
-                w = exp(-l*inv2Sigma);
+                float l = x*x + y*y + z*z;
+                w = a * exp(-l / sigmaSq2);
 #endif
-                value += w*getVoxel(volume, volumeParameters, texCoord_.xyz + (vec3(x, y, z) * volumeParameters.reciprocalDimensions));
+                value += w*getVoxel(volume, volumeParameters, texCoord_.xyz + vec3(x,y,z)*volumeParameters.reciprocalDimensions);
                 tot_weight += w;
             }
         }
