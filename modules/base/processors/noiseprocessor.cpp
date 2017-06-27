@@ -27,10 +27,12 @@
  *
  *********************************************************************************/
 
-#include "noiseprocessor.h"
+#include <modules/base/processors/noiseprocessor.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/imagesampler.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/base/algorithm/random.h>
 
 namespace {
 static inline int nextPow2(int x) {
@@ -50,7 +52,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NoiseProcessor::processorInfo_{
     "org.inviwo.NoiseProcessor",  // Class identifier
-    "Noise Processor",             // Display name
+    "Noise Image",                // Display name
     "Data Creation",              // Category
     CodeState::Experimental,      // Code state
     Tags::CPU,                    // Tags
@@ -63,30 +65,39 @@ NoiseProcessor::NoiseProcessor()
     : Processor()
     , noise_("noise", DataFloat32::get(), false)
     , size_("size", "Size", ivec2(256), ivec2(32), ivec2(4096))
-    , type_("type", "Type")
-    , range_("range_","Range" , 0.0f, 1.0f, 0.0f, 1.0f)
+    , type_("type", "Type",
+            {{"random", "Random", NoiseType::Random},
+             {"perlin", "Perlin", NoiseType::Perlin},
+             {"poissonDisk", "Poisson Disk", NoiseType::PoissonDisk},
+             {"haltonSequence", "Halton Sequence", NoiseType::HaltonSequence}})
+    , range_("range_", "Range", 0.0f, 1.0f, 0.0f, 1.0f)
     , levels_("levels", "Levels", 2, 8, 1, 16)
     , persistence_("persistence", "Persistence", 0.5f, 0.001f, 1.0f, 0.001f)
-    , poissonDotsAlongX_("poissonDotsAlongX","Dots Along X",100,1,1024)
-    , poissonMaxPoints_("poissonMaxPoints","Max Points" , 1 , 10000000, 10000000)
+    , poissonDotsAlongX_("poissonDotsAlongX", "Dots Along X", 100, 1, 1024)
+    , poissonMaxPoints_("poissonMaxPoints", "Max Points", 1, 10000000, 10000000)
+
+    , haltonNumPoints_("numPoints", "Number of points", 100, 1, 1000)
+    , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
+    , haltonYBase_("haltonYBase", "Base for y values", 3, 2, 32)
+
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, 1000)
     , rd_()
     , mt_(rd_()) {
+
     addPort(noise_);
     addProperty(size_);
-
-    type_.addOption("random", "Random", NoiseType::Random);
-    type_.addOption("perlin", "Perlin", NoiseType::Perlin);
-    type_.addOption("poissonDisk", "Poisson Disk", NoiseType::PoissonDisk);
-    type_.setCurrentStateAsDefault();
+        
     addProperty(type_);
     addProperty(range_);
     addProperty(levels_);
     addProperty(persistence_);
     addProperty(poissonDotsAlongX_);
     addProperty(poissonMaxPoints_);
+    addProperty(haltonNumPoints_);
+    addProperty(haltonXBase_);
+    addProperty(haltonYBase_);
 
     auto typeOnChange = [&]() {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
@@ -94,6 +105,10 @@ NoiseProcessor::NoiseProcessor()
         persistence_.setVisible(type_.getSelectedValue() == NoiseType::Perlin);
         poissonDotsAlongX_.setVisible(type_.getSelectedValue() == NoiseType::PoissonDisk);
         poissonMaxPoints_.setVisible(type_.getSelectedValue() == NoiseType::PoissonDisk);
+
+        haltonNumPoints_.setVisible(type_.getSelectedValue() == NoiseType::HaltonSequence);
+        haltonXBase_.setVisible(type_.getSelectedValue() == NoiseType::HaltonSequence);
+        haltonYBase_.setVisible(type_.getSelectedValue() == NoiseType::HaltonSequence);
     };
 
     type_.onChange(typeOnChange);
@@ -131,6 +146,9 @@ void NoiseProcessor::process() {
             break;
         case NoiseType::PoissonDisk:
             poissonDisk(img.get());
+            break;
+        case NoiseType::HaltonSequence:
+            haltonSequence(img.get());
             break;
     }
 
@@ -282,6 +300,25 @@ void NoiseProcessor::poissonDisk(Image *img) {
         }
 
     }
+
+}
+
+void NoiseProcessor::haltonSequence(Image *img) {
+    auto x = util::haltonSequence<float>(haltonXBase_.get(), haltonNumPoints_.get());
+    auto y = util::haltonSequence<float>(haltonYBase_.get(), haltonNumPoints_.get());
+
+    auto dims = img->getDimensions();
+    auto dimsf = vec2(dims - size2_t(1));
+
+    util::IndexMapper2D index(dims);
+    auto data = static_cast<LayerRAMPrecision<float>*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>())->getDataTyped();
+
+    for (auto &&pair : util::zip(x, y)) {
+        auto coord = dimsf * vec2(get<0>(pair), get<1>(pair));
+        data[index(coord)] = 1;
+    }
+
+
 
 }
 
