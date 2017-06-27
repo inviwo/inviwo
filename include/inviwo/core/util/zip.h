@@ -272,8 +272,15 @@ struct zipIterator {
         return std::get<N>(iterators_);
     }
 
+
+    /**
+     * Should be true if __all__ underlaying iterators are equal.
+     */
     bool operator==(const zipIterator& rhs) const { return iterators_ == rhs.iterators_; }
 
+    /**
+     * Should be true as soon as __one__ underlaying iterator are not equal.
+     */
     bool operator!=(const zipIterator& rhs) const {
         bool equal = false;
         for_each_in_tuple([&](auto& i1, auto& i2) { equal |= i1 == i2; }, iterators_,
@@ -281,6 +288,10 @@ struct zipIterator {
         return !equal;
     }
 
+    /*
+     * Since all underlaying iterators are random access iterators, >,<,>=,<= should return the same
+     * result for all of the iterators, for convenience we just use the first one.
+     */
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
     bool operator>(const zipIterator& rhs) const {
         return std::get<0>(iterators_) > std::get<0>(rhs.iterators_);
@@ -330,7 +341,12 @@ struct zipper {
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
- *      std::cout << std::get<0>(i) << " " << std::get<1>(i) << std::endl;
+ *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
+ * }
+
+ * with C++17 structured bindings:
+ * for (auto&& [i, j] : util::enumerate(vec)) {
+ *      std::cout << i << " " << j << std::endl;
  * }
  */
 template <typename... T>
@@ -421,6 +437,21 @@ auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
     return sequence<T>(begin, end, inc);
 }
 
+
+/**
+ * Enumerate element in a container.
+ * Example use case:
+ * std::vector<int> vec(10);
+ * for (auto&& item : util::enumerate(vec)) {
+ *      auto&& ind = get<0>(item);
+ *      auto&& elem = get<1>(item);
+ * }
+ *
+ * with C++17 structured bindings
+ * for (auto&& [ind, elem] : util::enumerate(vec)) {
+ *     
+ * }
+ */
 template <typename T, typename... Ts>
 auto enumerate(T&& cont, Ts&&... conts) {
     return zip(sequence<size_t>(0u, std::numeric_limits<size_t>::max(), 1u), std::forward<T>(cont),

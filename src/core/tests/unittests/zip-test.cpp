@@ -120,16 +120,17 @@ void forwadTest(Zipped&& iter) {
     using util::detailzip::proxy;
 
     // Iterator default constructible
-    Iter defaltConstruct{};
+    Iter defaultConstruct{};
 
     // Iterator requirements
-    Iter copy{defaltConstruct};
-    Iter assign = defaltConstruct;
+    Iter copy{defaultConstruct};
+    Iter assign = defaultConstruct;
     std::swap(copy, assign);
 
     {
         auto i = iter.begin();
         auto j = iter.end();
+        EXPECT_FALSE(i==j);
         for (size_t c = 0; c < ints.size(); ++c) {
             auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
@@ -140,6 +141,7 @@ void forwadTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
+        EXPECT_FALSE(i==j);
         // InputIterator requirements
         EXPECT_EQ(true, i != j);
         EXPECT_EQ(false, i == j);
@@ -160,6 +162,7 @@ void forwadTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
+        EXPECT_FALSE(i==j);
         for (size_t c = 0; c < ints.size(); ++c) {
             auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
@@ -176,6 +179,7 @@ void bidirectionalTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
+        EXPECT_FALSE(i==j);
         std::advance(i, 2);
 
         auto ref0 = proxy<int, D>{3, D{30}};
@@ -189,7 +193,6 @@ void bidirectionalTest(Zipped&& iter) {
         EXPECT_EQ(ref1, *i4);
         EXPECT_EQ(ref1, *i);
 
-        // const Iter& i5 = i--;
         typename Iter::value_type vt1 = *i;
         typename Iter::value_type vt2 = *i--;
 
@@ -279,10 +282,10 @@ void randomAccessTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
-        i < j;
-        i > j;
-        i <= j;
-        i >= j;
+        EXPECT_TRUE(i < j);
+        EXPECT_FALSE(i > j);
+        EXPECT_TRUE(i <= j);
+        EXPECT_FALSE(i >= j);
     }
 }
 
