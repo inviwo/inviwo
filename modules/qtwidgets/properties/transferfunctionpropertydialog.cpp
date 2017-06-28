@@ -48,7 +48,6 @@
 #include <QSizePolicy>
 #include <QComboBox>
 #include <QGradientStops>
-#include <QColorDialog>
 #include <QPixmap>
 #include <warn/pop>
 
@@ -89,14 +88,20 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
 void TransferFunctionPropertyDialog::generateWidget() {
     ivec2 minEditorDims = vec2(255, 100);
 
-    tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_);
-    connect(tfEditor_.get(), &TransferFunctionEditor::doubleClick, [this]() { showColorDialog(); });
-    connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged,
-            [this]() { updateColorWheel(); });
+    tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
+
+    auto updateColorWheel = [this](const QColor& color) {
+        colorWheel_->blockSignals(true);
+        colorWheel_->setColor(color);
+        colorWheel_->blockSignals(false);
+    };
+
+    connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, updateColorWheel);
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
     
     // put origin to bottom left corner
+    tfEditorView_->setFocusPolicy(Qt::StrongFocus);
     tfEditorView_->scale(1.0, -1.0);
     tfEditorView_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
     tfEditorView_->setMinimumSize(minEditorDims.x, minEditorDims.y);
@@ -141,7 +146,8 @@ void TransferFunctionPropertyDialog::generateWidget() {
 
 
     colorWheel_ = util::make_unique<ColorWheel>();
-    connect(colorWheel_.get(), SIGNAL(colorChange(QColor)), this, SLOT(setPointColor(QColor)));
+    connect(colorWheel_.get(), &ColorWheel::colorChange, 
+            tfEditor_.get(), &TransferFunctionEditor::setPointColor);
 
     btnClearTF_ = new QPushButton("Reset");
     connect(btnClearTF_, &QPushButton::clicked, [this](){tfEditor_->resetTransferFunction();});
@@ -177,15 +183,6 @@ void TransferFunctionPropertyDialog::generateWidget() {
     pointMoveMode_->addItem("Point Movement: Push");
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, SIGNAL(currentIndexChanged(int)), this, SLOT(changeMoveMode(int)));
-
-    colorDialog_ = util::make_unique<QColorDialog>(this);
-    colorDialog_->hide();
-    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
-    colorDialog_->setOption(QColorDialog::NoButtons, true);
-    colorDialog_->setWindowModality(Qt::NonModal);
-    colorDialog_->setWindowTitle(QString::fromStdString(tfProperty_->getDisplayName()));
-    connect(colorDialog_.get(), SIGNAL(currentColorChanged(QColor)), this,
-            SLOT(setPointColorDialog(QColor)));
 
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
@@ -294,63 +291,6 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     updateTFPreview();
 }
 
-// Connected to selectionChanged() on the tfEditor
-void TransferFunctionPropertyDialog::updateColorWheel() {
-    const auto selection = tfEditor_->selectedItems();
-
-    if (selection.size() > 0) {
-        const auto tfPoint =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selection.at(0));
-        if (selection.size() == 1 && tfPoint) {
-            const ivec4 color{tfPoint->getPoint()->getRGBA() * 255.0f};
-            colorWheel_->blockSignals(true);
-            colorWheel_->setColor(QColor(color.r, color.g, color.b, color.a));
-            colorWheel_->blockSignals(false);
-
-            setColorDialogColor(QColor(color.r, color.g, color.b, color.a));
-        }
-    }
-}
-
-// Connected to doubleClick on the tfEditor
-void TransferFunctionPropertyDialog::showColorDialog() {
-    const auto selection = tfEditor_->selectedItems();
-    if (selection.size() > 0) {
-        colorDialog_->hide();  // Bug workaround
-        colorDialog_->show();
-    }
-}
-
-// Connected to colorChange on the colorWheel_
-void TransferFunctionPropertyDialog::setPointColor(QColor color) {
-    const auto selection = tfEditor_->selectedItems();
-    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-
-    // update Color dialog to reflect the color changes
-    setColorDialogColor(color);
-    for (auto& elem : selection) {
-        if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
-            tfcp->getPoint()->setRGB(newRgb);
-        }
-    }
-}
-
-// Connected to currentColorChanged on the colorDialog_
-void TransferFunctionPropertyDialog::setPointColorDialog(QColor color) {
-    const auto selection = tfEditor_->selectedItems();
-    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-
-    colorWheel_->blockSignals(true);
-    colorWheel_->setColor(color);
-    colorWheel_->blockSignals(false);
-
-    for (auto& elem : selection) {
-        if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
-            tfcp->getPoint()->setRGB(newRgb);
-        }
-    }
-}
-
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TransferFunctionPropertyDialog
     // have the range [0...100]
@@ -453,11 +393,5 @@ TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() cons
 }
 
 void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
-
-void TransferFunctionPropertyDialog::setColorDialogColor(QColor c) {
-    colorDialog_->blockSignals(true);
-    colorDialog_->setCurrentColor(c);
-    colorDialog_->blockSignals(false);
-}
 
 }  // namespace

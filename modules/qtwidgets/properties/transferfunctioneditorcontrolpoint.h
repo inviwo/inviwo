@@ -76,7 +76,8 @@ public:
     const QPointF& getCurrentPos() const;
     void setPos(const QPointF & pos);
 
-    void setSize(float s) { size_ = s; }
+    void setSize(float s);
+    float getSize() const;
     
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
                            const TransferFunctionEditorControlPoint& rhs);
@@ -87,6 +88,8 @@ public:
 
     TransferFunctionControlPointConnection* left_;   // Non-owning reference
     TransferFunctionControlPointConnection* right_;  // Non-owning reference
+
+    void setHovered(bool hover);
 
 protected:
     // Overload
@@ -108,6 +111,7 @@ private:
     TransferFunctionDataPoint* dataPoint_;
     DataMapper dataMap_;
     QPointF currentPos_;
+    bool hovered_;
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,

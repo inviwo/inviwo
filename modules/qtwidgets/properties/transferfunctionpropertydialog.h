@@ -53,7 +53,6 @@ class QPushButton;
 class QComboBox;
 class QLabel;
 class QPixmap;
-class QColorDialog;
 class QResizeEvent;
 class QShowEvent;
 
@@ -82,10 +81,6 @@ public:
     virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
 
 public slots:
-    void setPointColor(QColor color);
-    void setPointColorDialog(QColor color);
-    void updateColorWheel();
-    void showColorDialog();
     void changeMask(int maskMin, int maskMax);
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
@@ -101,11 +96,8 @@ protected:
     virtual void showEvent(QShowEvent*);
 
 private:
-    void setColorDialogColor(QColor c);
-
     const int sliderRange_;
 
-    std::unique_ptr<QColorDialog> colorDialog_;
     std::unique_ptr<ColorWheel> colorWheel_;
 
     // Pointer to property, for get and invalidation in the widget

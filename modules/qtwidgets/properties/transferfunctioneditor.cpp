@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
@@ -37,6 +37,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QApplication>
 #include <QBrush>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
@@ -44,6 +45,7 @@
 #include <QLineF>
 #include <QPainter>
 #include <QPen>
+#include <QColorDialog>
 #include <warn/pop>
 
 namespace inviwo {
@@ -62,8 +64,9 @@ private:
     const TransferFunctionDataPoint* p_;
 };
 
-TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfProperty)
-    : QGraphicsScene()
+TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfProperty,
+                                               QWidget* parent)
+    : QGraphicsScene(parent)
     , zoomRangeXMin_(0.0)
     , zoomRangeXMax_(1.0)
     , zoomRangeYMin_(0.0)
@@ -75,9 +78,42 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
 
     setSceneRect(0.0, 0.0, 512.0, 512.0);
     mouseDrag_ = false;
-   
-    // The default bsp tends to crash...  
+
+    // The default bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
+
+    colorDialog_ = util::make_unique<QColorDialog>(parent);
+    colorDialog_->hide();
+    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
+    colorDialog_->setOption(QColorDialog::NoButtons, true);
+    colorDialog_->setWindowModality(Qt::NonModal);
+    colorDialog_->setWindowTitle(QString::fromStdString(tfProperty->getDisplayName()));
+
+    auto updateTFPointColor = [&](QColor color) {
+        const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
+
+        for (auto& elem : selectedItems()) {
+            if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
+                tfcp->getPoint()->setRGB(newRgb);
+            }
+        }
+        emit colorChanged(color);
+    };
+    connect(colorDialog_.get(), &QColorDialog::currentColorChanged, updateTFPointColor);
+
+    auto updateColor = [&]() {
+        if (selectedItems().size() > 0) {
+            const auto tfPoint =
+                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selectedItems().at(0));
+            if (tfPoint) {
+                const ivec4 colori{tfPoint->getPoint()->getRGBA() * 255.0f};
+                QColor c(colori.r, colori.g, colori.b, colori.a);
+                setColorDialogColor(c);
+                emit colorChanged(c);
+            }
+        }
+    };
+    connect(this, &QGraphicsScene::selectionChanged, updateColor);
 
     if (auto port = tfProperty->getVolumeInport()) {
 
@@ -104,7 +140,7 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
         onControlPointAdded(transferFunction_->getPoint(i));
     }
 
-    for (int i = 0; i<10; ++i) {
+    for (int i = 0; i < 10; ++i) {
         groups_.push_back(std::vector<TransferFunctionEditorControlPoint*>());
     }
 }
@@ -128,11 +164,12 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 
     TransferFunctionEditorControlPoint* controlPointGraphicsItem =
         getControlPointGraphicsItemAt(e->scenePos());
+    
     // Need to store these since they are deselected in mousePressEvent.
     selectedItemsAtPress_ = QGraphicsScene::selectedItems();
-    
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
+
+#include <warn/push>
+#include <warn/ignore/switch-enum>
     switch (e->button()) {
         case Qt::LeftButton:
             if (controlPointGraphicsItem) {
@@ -145,7 +182,7 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
         default:
             break;
     }
-    #include <warn/pop>
+#include <warn/pop>
     mouseMovedSincePress_ = false;
 
     QGraphicsScene::mousePressEvent(e);
@@ -158,67 +195,64 @@ void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
         NetworkLock lock;
         QGraphicsScene::mouseMoveEvent(e);
     } else {
-        QGraphicsScene::mouseMoveEvent(e);    
+        QGraphicsScene::mouseMoveEvent(e);
     }
 }
 
 void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-    // left mouse button and no movement -> add new point if there is no selection
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
+// left mouse button and no movement -> add new point if there is no selection
+#include <warn/push>
+#include <warn/ignore/switch-enum>
     switch (e->button()) {
-    case Qt::LeftButton:
-        if (!mouseMovedSincePress_ && !mouseDrag_) {
-            // Add a new point if a group of points are not selected
-            // Simply deselect if more than one point is selected
-            if (selectedItemsAtPress_.size() <= 1) {
-                addControlPoint(e->scenePos());
-                this->clearSelection();
-                auto controlPointGraphicsItem =
-                    getControlPointGraphicsItemAt(e->scenePos());
-                if (controlPointGraphicsItem) {
-                    controlPointGraphicsItem->setSelected(true);
+        case Qt::LeftButton:
+            if (!mouseMovedSincePress_) {
+                // Add a new point if nothing was selected when clicking
+                if (selectedItemsAtPress_.size() < 1 && !mouseDoubleClick_ && !mouseDrag_) {
+                    this->clearSelection();
+                    addControlPoint(e->scenePos());
+                    auto controlPointGraphicsItem = getControlPointGraphicsItemAt(e->scenePos());
+                    if (controlPointGraphicsItem) {
+                        //controlPointGraphicsItem->setHovered(true);
+                    }
                 }
-            } else {
-                this->clearSelection();
+                e->accept();
             }
-            
-            e->accept();
-        }
-        break;
-    case Qt::RightButton:
-        if (!mouseDrag_) {
-            auto controlPointGraphicsItem =
-                getControlPointGraphicsItemAt(e->scenePos());
-            if (selectedItemsAtPress_.size() <= 1) {
-                // One or no selection, check whether there is a TF point under the mouse
-                
-                if (controlPointGraphicsItem) {
-                    removeControlPoint(controlPointGraphicsItem);
-                }
-            } else {
-                auto pressedOnSelectedItem = std::find(std::begin(selectedItemsAtPress_), std::end(selectedItemsAtPress_), controlPointGraphicsItem) != selectedItemsAtPress_.end();
-                if (pressedOnSelectedItem) {
-                    for (auto& elem : selectedItemsAtPress_) {
-                        auto point =
-                            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
-                        if (point) {
-                            removeControlPoint(point);
-                        }
+            break;
+        case Qt::RightButton:
+            if (!mouseDrag_) {
+                auto controlPointGraphicsItem = getControlPointGraphicsItemAt(e->scenePos());
+                if (selectedItemsAtPress_.size() <= 1) {
+                    // One or no selection, check whether there is a TF point under the mouse
+
+                    if (controlPointGraphicsItem) {
+                        removeControlPoint(controlPointGraphicsItem);
                     }
                 } else {
+                    auto pressedOnSelectedItem =
+                        std::find(std::begin(selectedItemsAtPress_),
+                                  std::end(selectedItemsAtPress_),
+                                  controlPointGraphicsItem) != selectedItemsAtPress_.end();
                     this->clearSelection();
+                    if (pressedOnSelectedItem) {
+                        NetworkLock lock;
+                        for (auto& elem : selectedItemsAtPress_) {
+                            auto point =
+                                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
+                            if (point) {
+                                removeControlPoint(point);
+                            }
+                        }
+                    }
                 }
-
+                e->accept();
             }
-            e->accept();
-        }
-        break;
+            break;
         default:
-        break;
+            break;
     }
-    #include <warn/pop>
+#include <warn/pop>
     mouseDrag_ = false;
+    mouseDoubleClick_ = false;
 
     if (!e->isAccepted()) {
         QGraphicsScene::mouseReleaseEvent(e);
@@ -226,8 +260,13 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    emit doubleClick();
-    QGraphicsScene::mouseDoubleClickEvent(e);
+    if (selectedItems().size() > 0) {
+        colorDialog_->show();
+        mouseDoubleClick_ = true;
+        e->accept();
+    } else {
+        QGraphicsScene::mouseDoubleClickEvent(e);
+    }
 }
 
 void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
@@ -236,14 +275,13 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
     NetworkLock lock;
 
-    if (k == 'A' && keyEvent->modifiers() == Qt::ControlModifier) {                // Select all
+    if (k == Qt::Key_A && keyEvent->modifiers() == Qt::ControlModifier) {  // Select all
         QList<QGraphicsItem*> itemList = items();
         for (auto& elem : itemList) {
             elem->setSelected(true);
         }
 
-    }
-    else if (k == 'D' && keyEvent->modifiers() == Qt::ControlModifier) {         // Select none
+    } else if (k == Qt::Key_D && keyEvent->modifiers() == Qt::ControlModifier) {  // Select none
         QList<QGraphicsItem*> itemList = selectedItems();
         for (auto& elem : itemList) {
             elem->setSelected(false);
@@ -251,6 +289,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
     } else if (k == Qt::Key_Delete) {  // Delete selected
         QList<QGraphicsItem*> itemList = selectedItems();
+        clearSelection();
         for (auto& elem : itemList) {
             TransferFunctionEditorControlPoint* p =
                 qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
@@ -259,9 +298,8 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
             }
         }
 
-    }
-    else if (!(keyEvent->modifiers() & Qt::ControlModifier) &&                     // Move points
-               (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down || 
+    } else if (!(keyEvent->modifiers() & Qt::ControlModifier) &&  // Move points
+               (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
                 k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
         QPointF delta;
         double x = sceneRect().width() / 1000.f;
@@ -294,8 +332,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
             selitem->setPos(selitem->pos() + delta);
         }
 
-    }
-    else if (keyEvent->modifiers() & Qt::ControlModifier &&                     // Modify selection
+    } else if (keyEvent->modifiers() & Qt::ControlModifier &&  // Modify selection
                (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
                 k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
         QList<QGraphicsItem*> selitems = selectedItems();
@@ -446,7 +483,7 @@ void TransferFunctionEditor::addControlPoint(QPointF pos, vec4 color) {
     } else if (pos.y() > height()) {
         pos.setY(height());
     }
-     NetworkLock lock;
+    NetworkLock lock;
     transferFunction_->addPoint(vec2(pos.x() / width(), pos.y() / height()), color);
 }
 
@@ -481,13 +518,13 @@ void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
 
 void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p) {
     std::vector<TransferFunctionEditorControlPoint*>::iterator it;
-    
+
     // remove point from all groups
     for (auto& elem : groups_) {
         it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
         if (it != elem.end()) elem.erase(it);
     }
-    
+
     // remove item.
     it = std::find_if(points_.begin(), points_.end(), ControlPointEquals(p));
     if (it != points_.end()) {
@@ -499,13 +536,13 @@ void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p)
 
 void TransferFunctionEditor::updateConnections() {
     std::stable_sort(points_.begin(), points_.end(), comparePtr{});
-    
-    while (connections_.size() < points_.size() + 1){
+
+    while (connections_.size() < points_.size() + 1) {
         auto c = new TransferFunctionControlPointConnection();
         connections_.push_back(c);
         addItem(c);
     }
-    while (connections_.size() > points_.size() + 1){
+    while (connections_.size() > points_.size() + 1) {
         auto c = connections_.back();
         removeItem(c);
         delete c;
@@ -515,11 +552,11 @@ void TransferFunctionEditor::updateConnections() {
     connections_[0]->left_ = nullptr;
     connections_[connections_.size() - 1]->right_ = nullptr;
 
-    for (int i = 0; i < static_cast<int>(points_.size()); ++i){
+    for (int i = 0; i < static_cast<int>(points_.size()); ++i) {
         points_[i]->left_ = connections_[i];
-        points_[i]->right_ = connections_[i+1];
+        points_[i]->right_ = connections_[i + 1];
         connections_[i]->right_ = points_[i];
-        connections_[i+1]->left_ = points_[i];
+        connections_[i + 1]->left_ = points_[i];
     }
 
     for (auto& elem : connections_) {
@@ -527,8 +564,7 @@ void TransferFunctionEditor::updateConnections() {
     }
 }
 
-void TransferFunctionEditor::onControlPointChanged(const TransferFunctionDataPoint* p) {
-}
+void TransferFunctionEditor::onControlPointChanged(const TransferFunctionDataPoint* p) {}
 
 void TransferFunctionEditor::setControlPointSize(float val) {
     controlPointSize_ = val;
@@ -537,44 +573,42 @@ void TransferFunctionEditor::setControlPointSize(float val) {
     }
 }
 
-float TransferFunctionEditor::getZoomRangeXMin() const {
-    return zoomRangeXMin_;
+void TransferFunctionEditor::setPointColor(const QColor& color) {
+    // update Color dialog to reflect the color changes
+    setColorDialogColor(color);
+
+    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
+    for (auto& elem : selectedItems()) {
+        if (auto tfcp = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem)) {
+            tfcp->getPoint()->setRGB(newRgb);
+        }
+    }
 }
 
-void TransferFunctionEditor::setZoomRangeXMin(float min) {
-    zoomRangeXMin_ = min;
+float TransferFunctionEditor::getZoomRangeXMin() const { return zoomRangeXMin_; }
+
+void TransferFunctionEditor::setZoomRangeXMin(float min) { zoomRangeXMin_ = min; }
+
+float TransferFunctionEditor::getZoomRangeXMax() const { return zoomRangeXMax_; }
+
+void TransferFunctionEditor::setZoomRangeXMax(float max) { zoomRangeXMax_ = max; }
+
+float TransferFunctionEditor::getZoomRangeYMin() const { return zoomRangeYMin_; }
+
+void TransferFunctionEditor::setZoomRangeYMin(float min) { zoomRangeYMin_ = min; }
+
+float TransferFunctionEditor::getZoomRangeYMax() const { return zoomRangeYMax_; }
+
+void TransferFunctionEditor::setZoomRangeYMax(float max) { zoomRangeYMax_ = max; }
+
+void TransferFunctionEditor::setMoveMode(int i) { moveMode_ = i; }
+
+int TransferFunctionEditor::getMoveMode() const { return moveMode_; }
+
+void TransferFunctionEditor::setColorDialogColor(const QColor& c) {
+    colorDialog_->blockSignals(true);
+    colorDialog_->setCurrentColor(c);
+    colorDialog_->blockSignals(false);
 }
 
-float TransferFunctionEditor::getZoomRangeXMax() const {
-    return zoomRangeXMax_;
-}
-
-void TransferFunctionEditor::setZoomRangeXMax(float max) {
-    zoomRangeXMax_ = max;
-}
-
-float TransferFunctionEditor::getZoomRangeYMin() const {
-    return zoomRangeYMin_;
-}
-
-void TransferFunctionEditor::setZoomRangeYMin(float min) {
-    zoomRangeYMin_ = min;
-}
-
-float TransferFunctionEditor::getZoomRangeYMax() const {
-    return zoomRangeYMax_;
-}
-
-void TransferFunctionEditor::setZoomRangeYMax(float max) {
-    zoomRangeYMax_ = max;
-}
-
-void TransferFunctionEditor::setMoveMode(int i) {
-   moveMode_ = i; 
-}
-
-int TransferFunctionEditor::getMoveMode() const {
-    return moveMode_;
-}
-
-}
+}  // namespace inviwo
