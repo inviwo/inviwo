@@ -62,6 +62,7 @@ LineRenderer::LineRenderer()
                  {"lineLoop", "Line Loop", LineDrawMode::LineLoop}},
                 0, InvalidationLevel::InvalidResources)
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
+    , writeDepth_("writeDepth", "Write Depth", true)
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
@@ -77,6 +78,7 @@ LineRenderer::LineRenderer()
     addProperty(miterLimit_);
     addProperty(drawMode_);
     addProperty(useAdjacency_);
+    addProperty(writeDepth_);
 
     addProperty(camera_);
     addProperty(trackball_);
@@ -106,6 +108,7 @@ void LineRenderer::process() {
     }
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::DepthMaskState depthMask(writeDepth_.get());
 
     shader_.activate();
     shader_.setUniform("screenDim", vec2(outport_.getDimensions()));

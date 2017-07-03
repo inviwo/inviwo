@@ -102,6 +102,7 @@ private:
     FloatProperty miterLimit_;
     TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
+    BoolProperty writeDepth_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
