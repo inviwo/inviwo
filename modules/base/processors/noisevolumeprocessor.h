@@ -34,12 +34,18 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <random>
 
 namespace inviwo {
 
 class IVW_MODULE_BASE_API NoiseVolumeProcessor : public Processor {
-    enum class NoiseType { Random, /*Perlin, PoissonDisk,*/ HaltonSequence };
+    enum class NoiseType { Random, HaltonSequence };
 public:
     NoiseVolumeProcessor();
     virtual ~NoiseVolumeProcessor() = default;
@@ -68,11 +74,6 @@ private:
     IntProperty seed_;
 
 private:
-    void randomNoise(VolumeRAMPrecision<float> &vol, float minv, float maxv);
-   /* void perlinNoise(Image *img);
-    void poissonDisk(Image *img);*/
-    void haltonSequence(VolumeRAMPrecision<float> &vol);
-
     std::random_device rd_;
     std::mt19937 mt_;
 };

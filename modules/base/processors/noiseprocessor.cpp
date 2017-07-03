@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/base/algorithm/random.h>
+#include <modules/base/algorithm/randomutils.h>
 
 namespace {
 static inline int nextPow2(int x) {
@@ -45,21 +45,19 @@ static inline int nextPow2(int x) {
     x |= x >> 16;
     return x + 1;
 }
-}
+}  // namespace
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NoiseProcessor::processorInfo_{
     "org.inviwo.NoiseProcessor",  // Class identifier
-    "Noise Image",                // Display name
+    "Noise Generator 2D",         // Display name
     "Data Creation",              // Category
     CodeState::Experimental,      // Code state
     Tags::CPU,                    // Tags
 };
-const ProcessorInfo NoiseProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorInfo_; }
 
 NoiseProcessor::NoiseProcessor()
     : Processor()
@@ -88,7 +86,7 @@ NoiseProcessor::NoiseProcessor()
 
     addPort(noise_);
     addProperty(size_);
-        
+
     addProperty(type_);
     addProperty(range_);
     addProperty(levels_);
@@ -112,7 +110,7 @@ NoiseProcessor::NoiseProcessor()
     };
 
     type_.onChange(typeOnChange);
-    
+
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
@@ -135,192 +133,28 @@ void NoiseProcessor::process() {
         mt_.seed(seed_.get());
     }
 
-    std::unique_ptr<Image> img = util::make_unique<Image>(size_.get(), DataFloat32::get());
+    std::uniform_real_distribution<float> r(range_.get().x, range_.get().y);
+    std::shared_ptr<Image> img;
 
     switch (type_.get()) {
         case NoiseType::Random:
-            randomNoise(img.get(), range_.get().x, range_.get().y);
+            img = util::randomImage<float>(size_.get(), mt_, r);
             break;
         case NoiseType::Perlin:
-            perlinNoise(img.get());
+            img = util::perlinNoise(size_.get(), persistence_.get(), levels_.get().x,
+                                    levels_.get().y, mt_);
             break;
         case NoiseType::PoissonDisk:
-            poissonDisk(img.get());
+            img = util::poissonDisk(size_.get(), poissonDotsAlongX_.get(), poissonMaxPoints_.get(), mt_);
             break;
         case NoiseType::HaltonSequence:
-            haltonSequence(img.get());
+            img = util::haltonSequence<float>(size_.get(), haltonNumPoints_.get(),
+                                              haltonXBase_.get(), haltonYBase_.get());
             break;
     }
 
     img->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
-    noise_.setData(img.release());
+    noise_.setData(img);
 }
 
-void NoiseProcessor::randomNoise(Image *img, float minv, float maxv) {
-    std::uniform_real_distribution<float> r(minv, maxv);
-    size_t pixels = img->getDimensions().x * img->getDimensions().y;
-    auto data = static_cast<float *>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-    for (size_t i = 0; i < pixels; i++) {
-        data[i] = r(mt_);
-    }
-}
-
-void NoiseProcessor::perlinNoise(Image *img) {
-    auto size = nextPow2(std::max(size_.get().x, size_.get().y));
-    std::vector<std::unique_ptr<Image>> levels;
-    std::vector<TemplateImageSampler<float,float>> samplers;
-    auto currentSize = std::pow(2, levels_.get().x);
-    auto iterations = levels_.get().y - levels_.get().x + 1;
-    float currentPersistance = 1;
-    while (currentSize <= size && iterations--) {
-        size2_t imgsize{static_cast<size_t>(currentSize)};
-        auto img1 = util::make_unique<Image>(imgsize, DataFloat32::get());
-        randomNoise(img1.get(), -currentPersistance, currentPersistance);
-        samplers.push_back(TemplateImageSampler<float,float>(img1.get()));
-        levels.push_back(std::move(img1));
-        currentSize *= 2;
-        currentPersistance *= persistence_.get();
-    }
-
-    auto data = static_cast<float *>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-    float repri = 1.0f / size;
-    // size_t index = 0;
-    util::IndexMapper2D index(size_.get());
-#pragma omp parallel for
-    for (long long y = 0; y < size_.get().y; y++) {
-        for (long long x = 0; x < size_.get().x; x++) {
-            float v = 0;
-            float X = x * repri;
-            float Y = y * repri;
-            for (auto &sampler : samplers) {
-                v += sampler.sample(X, Y);
-            }
-            v = (v + 1.0f) / 2.0f;
-            data[index(x, size_.get().y - 1 - y)] = glm::clamp(v, 0.0f, 1.0f);
-        }
-    }
-}
-
-glm::i32vec2 generateRandomPointAround(const glm::i32vec2 &point, float mindist, std::uniform_real_distribution<float> &rand, std::mt19937 &mt)
-{ //non-uniform, favours points closer to the inner ring, leads to denser packings
-    auto r1 = rand(mt);
-    auto r2 = rand(mt);
-    
-    //random radius between mindist and 2 * mindist
-    auto radius = mindist * (r1 + 1);
-    //random angle
-    auto angle = 2 * M_PI * r2;
-    //the new point is generated around the point (x, y)
-    auto newX = point.x + radius * std::cos(angle);
-    auto newY = point.y + radius * std::sin(angle);
-    return glm::i32vec2(newX, newY);
-}
-
-/* 
-Algorithm as describe by: 
-http://devmag.org.za/2009/05/03/poisson-disk-sampling/
-*/
-void NoiseProcessor::poissonDisk(Image *img) {
-    
-    float minDist = static_cast<float>( size_.get().x);
-    minDist /= poissonDotsAlongX_; //min pixel distance between samples
-    auto minDist2 = minDist*minDist;
-    size2_t gridSize = size2_t(1)+ size2_t(vec2(size_.get()) * (1.0f / minDist));
-
-    auto gridImg = util::make_unique<Image>(gridSize, DataVec2Int32::get());
-    auto grid = gridImg->getColorLayer()->getEditableRepresentation<LayerRAM>();
-
-    auto imgData = static_cast<float*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-    auto gridData = static_cast<glm::i32vec2*>(grid->getData());
-    util::IndexMapper2D imgIndex(size_.get());
-    util::IndexMapper2D gridIndex(gridSize);
-
-
-    for (size_t i = 0; i < gridSize.x*gridSize.y; i++) {
-        gridData[i] = glm::i32vec2(static_cast<glm::i32>(-2 * minDist));
-    }
-
-    std::uniform_int_distribution<int> rx(0, size_.get().x);
-    std::uniform_int_distribution<int> ry(0, size_.get().y);
-    std::uniform_real_distribution<float> rand(0, 1);
-
-    std::vector<glm::i32vec2>  processList;
-    std::vector<glm::i32vec2>  samplePoints;
-
-    auto firstPoint = glm::i32vec2(rx(mt_), ry(mt_));
-    processList.push_back(firstPoint);
-    samplePoints.push_back(firstPoint);
-
-    auto toGrid = [minDist](glm::i32vec2 p)->glm::i32vec2 { return glm::i32vec2(vec2(p)/minDist); };
-
-    gridData[gridIndex(toGrid(firstPoint))] = firstPoint;
-
-    int  someNumber = 30;
-
-    while (processList.size() != 0 && samplePoints.size()  < static_cast<size_t>(poissonMaxPoints_)) {
-        std::uniform_int_distribution<size_t> ri(0, processList.size()-1);
-        auto i = ri(mt_);
-        auto p = processList[i];
-        processList.erase(processList.begin() + i);
-
-
-        for (int j = 0; j < someNumber; j++) {
-            auto newPoint = generateRandomPointAround(p, minDist, rand, mt_);
-            if (newPoint.x < 0) continue;
-            if (newPoint.y < 0) continue;
-            if (newPoint.x >= size_.get().x) continue;
-            if (newPoint.y >= size_.get().y) continue;
-
-            auto newGridPoint = toGrid(newPoint);
-            bool neighbourhood = false;
-
-            int startX = std::max(0, newGridPoint.x - 2);
-            int startY = std::max(0, newGridPoint.y - 2);
-            int endX = std::min(static_cast<int>(gridSize.x) - 1, newGridPoint.x + 2);
-            int endY = std::min(static_cast<int>(gridSize.y) - 1, newGridPoint.y + 2);
-
-            for (int x = startX; x <= endX && !neighbourhood; x++) {
-                for (int y = startY; y <= endY && !neighbourhood; y++) {
-                    auto p2 = gridData[gridIndex(glm::i32vec2(x, y))];
-                    auto dist = glm::distance2(vec2(newPoint), vec2(p2));
-                    if (dist < minDist2) {
-                        neighbourhood = true;
-                    }
-                }
-            }//*/
-            if (!neighbourhood) {
-                processList.push_back(newPoint);
-                samplePoints.push_back(newPoint);
-                auto idx = gridIndex(newGridPoint);
-                gridData[idx] = newPoint;
-                imgData[imgIndex(newPoint)] = 1;
-            }
-        }
-
-    }
-
-}
-
-void NoiseProcessor::haltonSequence(Image *img) {
-    auto x = util::haltonSequence<float>(haltonXBase_.get(), haltonNumPoints_.get());
-    auto y = util::haltonSequence<float>(haltonYBase_.get(), haltonNumPoints_.get());
-
-    auto dims = img->getDimensions();
-    auto dimsf = vec2(dims - size2_t(1));
-
-    util::IndexMapper2D index(dims);
-    auto data = static_cast<LayerRAMPrecision<float>*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>())->getDataTyped();
-
-    for (auto &&pair : util::zip(x, y)) {
-        auto coord = dimsf * vec2(get<0>(pair), get<1>(pair));
-        data[index(coord)] = 1;
-    }
-
-
-
-}
-
-}  // namespace
-
+}  // namespace inviwo

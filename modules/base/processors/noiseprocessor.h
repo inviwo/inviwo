@@ -107,7 +107,7 @@ public:
 protected:
     ImageOutport noise_;
 
-    IntVec2Property size_; ///< Size of the output image.
+    IntSize2Property size_; ///< Size of the output image.
     TemplateOptionProperty<NoiseType> type_; ///< Witch type of noise to generate.
     FloatMinMaxProperty range_;///< The min/max values of the output values (default: [0 1]).
     IntMinMaxProperty levels_;///< Numbers of levels used in the generation of the Perlin noise
@@ -125,10 +125,6 @@ protected:
     IntProperty seed_;///<  The seed used to initialize the random sequence
 
 private:
-    void randomNoise(Image *img, float minv, float maxv);
-    void perlinNoise(Image *img);
-    void poissonDisk(Image *img);
-    void haltonSequence(Image *img);
 
     std::random_device rd_;
     std::mt19937 mt_;
