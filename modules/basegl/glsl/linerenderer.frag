@@ -28,6 +28,10 @@
  *********************************************************************************/
 #include "utils/structs.glsl"
 
+#if !defined(ENABLE_PSEUDO_LIGHTING)
+#  define ENABLE_PSEUDO_LIGHTING 0
+#endif
+
 // enable conservative depth writes (supported since GLSL 4.20)
 #if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
 layout (depth_less) out float gl_FragDepth;
@@ -76,7 +80,9 @@ void main() {
     float d = distance * screenDim.x * 0.5 - linewidthHalf + antialising;
 
     // apply pseudo lighting
+#if ENABLE_PSEUDO_LIGHTING == 1
     color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialising) * 1.2);
+#endif
 
     float alpha = 1.0;
     // line stippling
@@ -90,7 +96,7 @@ void main() {
         alpha = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.2) discard;
+    if (alpha < 0.05) discard;
 
     color.a = alpha;
     FragData0 = color;

@@ -100,6 +100,7 @@ private:
     FloatProperty lineWidth_;
     FloatProperty antialising_;
     FloatProperty miterLimit_;
+    BoolProperty pseudoLighting_;
     TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
     BoolProperty writeDepth_;

@@ -92,8 +92,11 @@ void renderLineWithoutJoints() {
 
     // determine normal
     vec2 normal = vec2(-v.y, v.x);
+    
+    vec2 halfScreenDim = screenDim * 0.5;
 
-    float halfWidth = lineWidth * 0.5;
+    float sLinewidth = lineWidth / halfScreenDim.x;
+    float halfWidth = sLinewidth / 2.0 + 1.5*antialising / halfScreenDim.x;
 
     vec4 offset = vec4(normal * halfWidth, 0.0, 0.0);
     segmentLength_ = length(pEnd - pStart);
