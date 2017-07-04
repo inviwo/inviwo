@@ -492,6 +492,10 @@ public:
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
+    MapDeserializer<K, T>& setIdentifierTransform(std::function<std::string(std::string)> identifierTransform) {
+        identifierTransform_ = identifierTransform;
+        return *this;
+    }
 
     template <typename C>
     void operator()(Deserializer& d, C& container) {
@@ -500,6 +504,7 @@ public:
             util::transform(container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
+                id = identifierTransform_(id);
                 util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
@@ -533,6 +538,9 @@ private:
     };
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
         return true;
+    };
+    std::function<K(const K&)> identifierTransform_ = [](const K &identifier) { 
+        return identifier; 
     };
 
     const std::string key_;
