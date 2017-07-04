@@ -260,8 +260,8 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     std::vector<glm::i32vec2> samplePoints;
 
     glm::i32vec2 firstPoint;
-    firstPoint.y = ry(randomNumberGenerator);
     firstPoint.x = rx(randomNumberGenerator);
+    firstPoint.y = ry(randomNumberGenerator);
     processList.push_back(firstPoint);
     samplePoints.push_back(firstPoint);
 
