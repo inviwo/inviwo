@@ -134,7 +134,7 @@ std::shared_ptr<Image> haltonSequence(size2_t dims, size_t numberOfPoints, size_
  */
 template <typename T>
 std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size_t baseX = 2,
-                                       size_t baseT = 3, size_t baseZ = 5) {
+                                       size_t baseY = 3, size_t baseZ = 5) {
     std::shared_ptr<Volume> vol = std::make_shared<Volume>(dims, DataFormat<T>::get());
     auto ram = static_cast<VolumeRAMPrecision<T> *>(vol->getEditableRepresentation<VolumeRAM>());
 
