@@ -42,9 +42,10 @@ uniform float antialising = 1.0; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 uniform CameraParameters camera;
 
-in float segmentLength_; // length of the current line segment in screen space
-in float objectLength_;  // length of line segment in world space
-in vec2 texCoord_;
+in float segmentLength_; // total length of the current line segment in screen space
+in float lineLengthWorld_; // total length of line segment in world space
+in float distanceWorld_; // distance in world coords to segment start
+in vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 in vec4 color_;
 
 float reconstructDepth(float z) {
@@ -77,11 +78,11 @@ void main() {
         distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
     }
 
-    float d = distance * screenDim.x * 0.5 - linewidthHalf + antialising;
+    float d = distance - linewidthHalf + antialising;
 
     // apply pseudo lighting
 #if ENABLE_PSEUDO_LIGHTING == 1
-    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialising) * 1.2);
+    color.rgb *= cos(distance / (linewidthHalf + antialising) * 1.2);
 #endif
 
     float alpha = 1.0;
@@ -103,7 +104,7 @@ void main() {
 
     // correct depth
     float depth = reconstructDepth(gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialising) / screenDim.x * 2.0;
+    float maxDist = (linewidthHalf + antialising);
     // assume circular profile of line
-    gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist);    
+    gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
 }
