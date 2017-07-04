@@ -447,7 +447,6 @@ void PythonEditorWidget::setDefaultText() {
 
     pythonCode_->setPlainText(defaultSource.c_str());
     unsavedChanges_ = false;
-    script_.setFilename("");
     script_.setSource(defaultSource);
     stopFileObservation(scriptFileName_);
     setFileName("");
@@ -465,6 +464,7 @@ void PythonEditorWidget::onTextChange() {
 
 void PythonEditorWidget::setFileName(const std::string filename) {
     scriptFileName_ = filename;
+    script_.setFilename(filename);
     updateTitleBar();
 }
 
