@@ -66,6 +66,12 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
             "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
             IvwContext);
     }
+    if (auto parent = dynamic_cast<Property*>(this)) {
+        if (parent == property) {
+            throw Exception("Can't add property \"" + property->getIdentifier() + "\" to itself.",
+                            IvwContext);
+        }
+    }
 
     notifyObserversWillAddProperty(property, properties_.size());
     properties_.push_back(property);
