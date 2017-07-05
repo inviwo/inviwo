@@ -45,7 +45,7 @@ FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(
 }
 
 int FontRenderingModule::getVersion() const {
-    return 1;
+    return 2;
 }
 
 std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
@@ -62,9 +62,31 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
              "Font size",
              "fontSize"}
     };
+    const std::vector<xml::IdentifierReplacement> repl2 = {
+        // TextOverlayGL
+        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
+        xml::Kind::property("org.inviwo.FloatVec2Property") },
+        "Position",
+        "position" }, 
+        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
+        xml::Kind::property("org.inviwo.FloatVec2Property") },
+        "Anchor",
+        "anchor" },
+        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
+        xml::Kind::property("org.inviwo.FloatVec4Property") },
+        "color_",
+        "color" },
+        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
+        xml::Kind::property("org.inviwo.StringProperty") },
+        "Text",
+        "text" }
+    };
 
     bool res = false;
     switch (version_) {
+        case 1: {
+            res |= xml::changeIdentifiers(root, repl2);
+        }
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
         }

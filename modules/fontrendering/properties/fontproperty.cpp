@@ -43,7 +43,7 @@ FontProperty::FontProperty(
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
     , fontSize_("fontSize", "Font size")
-    , anchorPos_("anchor", "Anchor", vec2(1.0f, 0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
 {
     auto fonts = util::getAvailableFonts();
 

@@ -60,12 +60,12 @@ TextOverlayGL::TextOverlayGL()
     , inport_("inport")
     , outport_("outport")
     , enable_("enable","Enabled",true)
-    , text_("Text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
+    , text_("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
             PropertySemantics::TextEditor)
-    , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , font_("font", "Font Settings")
-    , position_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
     , numArgs_(0u)
 {
