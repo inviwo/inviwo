@@ -146,7 +146,7 @@ void main(void) {
         // TODO: ignore all segments intersecting with the near clip plane due 
         //       to bug in homogeneous clipping 
         return;
-
+        /*
         bool p1Clipped = false;
         bool p2Clipped = false;
         
@@ -183,6 +183,7 @@ void main(void) {
             p3in = p2in;
         }
         if (p1Clipped && p2Clipped);
+        */
     }
 
     vec2 p0ndc = p0in.xy / p0in.w;

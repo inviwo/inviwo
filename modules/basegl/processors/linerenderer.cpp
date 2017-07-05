@@ -66,6 +66,18 @@ LineRenderer::LineRenderer()
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true,
                     InvalidationLevel::InvalidResources)
     , writeDepth_("writeDepth", "Write Depth", true)
+
+    , stippling_("stippling", "Stippling")
+    , stippleMode_("stippleMode", "Stipple Mode",
+                   {{"none", "None", StippleMode::None},
+                    {"screenspace", "Screen Space", StippleMode::ScreenSpace},
+                    {"worldspace", "World Space", StippleMode::WorldSpace}},
+                   0, InvalidationLevel::InvalidResources)
+    , stippleLen_("stippleLen", "Length", 30.0f, 0.0f, 100.0f)
+    , stippleSpacing_("stippleSpacing", "Spacing", 10.0f, 0.0f, 100.0f)
+    , stippleOffset_("stippleOffset", "Offset", 0.0f, 0.0f, 100.0f)
+    , stippleWorldScale_("stippleWorldScale", "World Scale", 4.0f, 1.0f, 20.0f)
+
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
@@ -84,6 +96,14 @@ LineRenderer::LineRenderer()
     addProperty(useAdjacency_);
     addProperty(writeDepth_);
 
+    stippling_.addProperty(stippleMode_);
+    stippling_.addProperty(stippleLen_);
+    stippling_.addProperty(stippleSpacing_);
+    stippling_.addProperty(stippleOffset_);
+    stippling_.addProperty(stippleWorldScale_);
+
+    addProperty(stippling_);
+
     addProperty(camera_);
     addProperty(trackball_);
 
@@ -91,7 +111,12 @@ LineRenderer::LineRenderer()
         bool noAdjacencySupport = (drawMode_.get() == LineDrawMode::LineLoop);
         useAdjacency_.setReadOnly(noAdjacencySupport);
     });
+    stippleMode_.onChange([this]() {
+        stippleWorldScale_.setVisible(stippleMode_.get() == StippleMode::WorldSpace);
+    });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    stippleWorldScale_.setVisible(stippleMode_.get() == StippleMode::WorldSpace);
 }
 
 void LineRenderer::initializeResources() {
@@ -100,8 +125,27 @@ void LineRenderer::initializeResources() {
     shader_.getGeometryShaderObject()->addShaderDefine(
         "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
 
-    shader_.getFragmentShaderObject()->addShaderDefine("ENABLE_PSEUDO_LIGHTING",
-                                                       pseudoLighting_.get() ? "1" : "0");
+    auto fragShader = shader_.getFragmentShaderObject();
+    fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_.get() ? "1" : "0");
+
+    if (stippleMode_.get() != StippleMode::None) {
+        fragShader->addShaderDefine("ENABLE_STIPPLING");
+    } else {
+        fragShader->removeShaderDefine("ENABLE_STIPPLING");
+    }
+    std::string str;
+    switch (stippleMode_.get()) {
+        case StippleMode::ScreenSpace:
+            str = "1";
+            break;
+        case StippleMode::WorldSpace:
+            str = "2";
+            break;
+        case StippleMode::None:
+        default:
+            break;
+    }
+    fragShader->addShaderDefine("STIPPLE_MODE", str);
 
     shader_.build();
 }
@@ -116,9 +160,16 @@ void LineRenderer::process() {
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthMaskState depthMask(writeDepth_.get());
 
+    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+
     shader_.activate();
     shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
     utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_);
+
+    if (stippleMode_.get() != StippleMode::None) {
+        utilgl::setUniforms(shader_, stippleLen_, stippleSpacing_, stippleOffset_,
+                            stippleWorldScale_);
+    }
 
     drawMeshes();
 

@@ -42,6 +42,12 @@ uniform float antialising = 1.0; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 uniform CameraParameters camera;
 
+// line stippling
+uniform float stippleLen = 30.0;
+uniform float stippleSpacing = 10.0;
+uniform float stippleOffset = 0.0;
+uniform float stippleWorldScale = 4.0;
+
 in float segmentLength_; // total length of the current line segment in screen space
 in float lineLengthWorld_; // total length of line segment in world space
 in float distanceWorld_; // distance in world coords to segment start
@@ -86,11 +92,27 @@ void main() {
 #endif
 
     float alpha = 1.0;
+
     // line stippling
-    // if (int(objectLength_ * 5.0) % 4 == 0) {
-    //    alpha = 0.0; 
-    //    d = -0.2;      
-    // }
+#if defined ENABLE_STIPPLING
+
+#if STIPPLE_MODE == 2
+    // in world space
+    float v = (distanceWorld_ * stippleWorldScale);
+#else
+    // in screen space
+    float v = (texCoord_.x + stippleOffset) / stippleLen;    
+#endif // STIPPLE_MODE
+
+    float t = fract(v) * (stippleLen) / stippleSpacing;
+    if ((t > 0.0) && (t < 1.0)) {
+        // renormalize t with respect to stipple length
+        t = min(t, 1.0-t) * (stippleSpacing) * 0.5;
+        d = max(d, t);
+    }
+#endif // ENABLE_STIPPLING
+
+    // antialising around the edges
     if( d > 0) {
         // apply antialising by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialising;

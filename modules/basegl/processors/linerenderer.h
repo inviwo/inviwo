@@ -78,6 +78,11 @@ public:
         LineStrip,
         LineLoop
     };
+    enum class StippleMode {
+        None,
+        ScreenSpace,
+        WorldSpace
+    };
 
     LineRenderer();
     virtual ~LineRenderer() = default;
@@ -104,6 +109,13 @@ private:
     TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
     BoolProperty writeDepth_;
+
+    CompositeProperty stippling_;
+    TemplateOptionProperty<StippleMode> stippleMode_;
+    FloatProperty stippleLen_;
+    FloatProperty stippleSpacing_;
+    FloatProperty stippleOffset_;
+    FloatProperty stippleWorldScale_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
