@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <vector>
 
@@ -78,11 +79,6 @@ public:
         LineStrip,
         LineLoop
     };
-    enum class StippleMode {
-        None,
-        ScreenSpace,
-        WorldSpace
-    };
 
     LineRenderer();
     virtual ~LineRenderer() = default;
@@ -110,12 +106,7 @@ private:
     BoolProperty useAdjacency_;
     BoolProperty writeDepth_;
 
-    CompositeProperty stippling_;
-    TemplateOptionProperty<StippleMode> stippleMode_;
-    FloatProperty stippleLen_;
-    FloatProperty stippleSpacing_;
-    FloatProperty stippleOffset_;
-    FloatProperty stippleWorldScale_;
+    StipplingProperty stippling_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;

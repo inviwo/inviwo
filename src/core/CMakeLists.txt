@@ -215,6 +215,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
@@ -460,6 +461,7 @@ set(SOURCE_FILES
     properties/propertywidgetfactoryobject.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
+    properties/stipplingproperty.cpp
     properties/stringproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp

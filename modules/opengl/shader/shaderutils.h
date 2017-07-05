@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/port.h>
@@ -52,11 +53,11 @@ namespace inviwo {
 namespace utilgl {
 
 // TemplateProperty
-template<typename T>
+template <typename T>
 void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property, std::string name) {
     shader.setUniform(name, property.get());
 }
-template<typename T>
+template <typename T>
 void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property) {
     setShaderUniforms(shader, property, property.getIdentifier());
 }
@@ -71,7 +72,8 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SimpleLightin
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const CameraProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const CameraProperty& property,
                                              std::string name);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& property, std::string name);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& property,
+                                             std::string name);
 
 // SpatialEntity
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object,
@@ -86,12 +88,18 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SimpleRaycastingProperty& property,
                                              std::string name);
 
-IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader,ImageInport port);
+IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader, ImageInport port);
 // VolumeIndicatorProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const VolumeIndicatorProperty& property,
+                                             std::string name);
+
+// StipplingProperty
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
                                              std::string name);
 
 // Ordinal Property
@@ -102,7 +110,8 @@ void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property, std::
 
 // Option Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const TemplateOptionProperty<T>& property, std::string name) {
+void setShaderUniforms(Shader& shader, const TemplateOptionProperty<T>& property,
+                       std::string name) {
     shader.setUniform(name, property.get());
 }
 
@@ -111,8 +120,6 @@ template <typename T>
 void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::string name) {
     shader.setUniform(name, property.get());
 }
-
-
 
 // Template magic...
 template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
@@ -129,7 +136,6 @@ void setUniforms(Shader& shader, const T& elem, const Ts&... elements) {
     setUniforms(shader, elements...);
 }
 
-
 IVW_MODULE_OPENGL_API int getLogLineNumber(const std::string& compileLogLine);
 IVW_MODULE_OPENGL_API std::string reformatInfoLog(
     const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
@@ -144,6 +150,6 @@ IVW_MODULE_OPENGL_API std::shared_ptr<const ShaderResource> findShaderResource(
 
 }  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SHADERUTILS_H

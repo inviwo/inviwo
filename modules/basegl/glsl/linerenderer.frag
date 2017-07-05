@@ -27,6 +27,7 @@
  * 
  *********************************************************************************/
 #include "utils/structs.glsl"
+#include "utils/depth.glsl"
 
 #if !defined(ENABLE_PSEUDO_LIGHTING)
 #  define ENABLE_PSEUDO_LIGHTING 0
@@ -43,10 +44,7 @@ uniform float lineWidth = 2.0; // line width [pixel]
 uniform CameraParameters camera;
 
 // line stippling
-uniform float stippleLen = 30.0;
-uniform float stippleSpacing = 10.0;
-uniform float stippleOffset = 0.0;
-uniform float stippleWorldScale = 4.0;
+uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
 
 in float segmentLength_; // total length of the current line segment in screen space
 in float lineLengthWorld_; // total length of line segment in world space
@@ -54,26 +52,10 @@ in float distanceWorld_; // distance in world coords to segment start
 in vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 in vec4 color_;
 
-float reconstructDepth(float z) {
-    float Zn = camera.nearPlane;
-    float Zf = camera.farPlane;
-
-    return Zn*Zf / (Zf - z*(Zf - Zn));
-}
-
-float computeDepth(float z) {
-    // compute depth in [-1,1]
-    float Zn = camera.nearPlane;
-    float Zf = camera.farPlane;
-    float depth = (Zf + Zn) / (Zf - Zn) + (-2.0 * Zf * Zn) / (z * (Zf - Zn));
-    return (depth + 1.0) * 0.5;
-    return depth;
-}
-
 void main() {
     vec4 color = color_;
 
-    float linewidthHalf = lineWidth * 0.5;
+    const float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
     float distance = abs(texCoord_.y);
@@ -98,16 +80,16 @@ void main() {
 
 #if STIPPLE_MODE == 2
     // in world space
-    float v = (distanceWorld_ * stippleWorldScale);
+    float v = (distanceWorld_ * stippling.worldScale);
 #else
     // in screen space
-    float v = (texCoord_.x + stippleOffset) / stippleLen;    
+    float v = (texCoord_.x + stippling.offset) / stippling.length;    
 #endif // STIPPLE_MODE
 
-    float t = fract(v) * (stippleLen) / stippleSpacing;
+    float t = fract(v) * (stippling.length) / stippling.spacing;
     if ((t > 0.0) && (t < 1.0)) {
-        // renormalize t with respect to stipple length
-        t = min(t, 1.0-t) * (stippleSpacing) * 0.5;
+        // renormalize t with respect to stippling length
+        t = min(t, 1.0-t) * (stippling.spacing) * 0.5;
         d = max(d, t);
     }
 #endif // ENABLE_STIPPLING
@@ -125,8 +107,9 @@ void main() {
     FragData0 = color;
 
     // correct depth
-    float depth = reconstructDepth(gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialising);
+    const float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
+    const float maxDist = (linewidthHalf + antialising);
     // assume circular profile of line
-    gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
+    gl_FragDepth = convertDepthViewToScreen(camera, 
+        depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
 }
