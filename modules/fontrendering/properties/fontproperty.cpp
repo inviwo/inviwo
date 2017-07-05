@@ -29,6 +29,7 @@
 
 #include <modules/fontrendering/properties/fontproperty.h>
 
+#include <inviwo/core/util/filesystem.h>
 #include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {

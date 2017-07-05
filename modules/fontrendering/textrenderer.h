@@ -52,14 +52,15 @@ class Texture2D;
  *
  * \brief Render text using the FreeType font library
  *
- * The origin is at the top-left corner. The first line starts at origin - ascent (getBaseLineOffset()).
- * The distance between two lines is governed by either setting the line height or the line spacing.
- * The line height defines the distance between two consecutive baselines. In contrast, the line
- * spacing (or line gap) is given by line height minus ascend minus descend. Typically, a line
- * spacing of 20% of the font size is used, which corresponds to a line height of 1.2 * font size.
+ * The origin is at the top-left corner. The first line starts at origin - ascent
+ * (getBaseLineOffset()). The distance between two lines is governed by either setting the line
+ * height or the line spacing. The line height defines the distance between two consecutive
+ * baselines. In contrast, the line spacing (or line gap) is given by line height minus ascend minus
+ * descend. Typically, a line spacing of 20% of the font size is used, which corresponds to a line
+ * height of 1.2 * font size.
  *
  *
- * \verbatim 
+ * \verbatim
  * Origin
  * +───────────────────────────ffffffffffffffff──────────────────── Top line
  *                            f::::::::::::::::f    ▲          ▲
@@ -120,24 +121,25 @@ public:
     void render(const std::string &str, float x, float y, const vec2 &scale, const vec4 &color);
 
     /**
-    * \brief renders the given string with the specified color into a texture.
-    *
-    * @param str    input string
-    * @param color  color of rendered text
-    */
-    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str, const vec4 &color);
+     * \brief renders the given string with the specified color into a texture.
+     *
+     * @param str    input string
+     * @param color  color of rendered text
+     */
+    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
+                         const vec4 &color);
 
     /**
-    * \brief computes the bounding box of a given string in normalized device coordinates using the
-    * scaling factor. The vertical height of the bounding box will be equal to (ascend + descend) +
-    * (number of lines - 1) times line height.
-    *
-    * @param str    input string
-    * @param scale  scaling factor from screen space (pixel) to normalized device coordinates
-    * ([-1,1])
-    * @return size of the bounding box enclosing the input string in normalized device coordinates
-    */
-    vec2 computeTextSize(const std::string& str, const vec2& scale);
+     * \brief computes the bounding box of a given string in normalized device coordinates using the
+     * scaling factor. The vertical height of the bounding box will be equal to (ascend + descend) +
+     * (number of lines - 1) times line height.
+     *
+     * @param str    input string
+     * @param scale  scaling factor from screen space (pixel) to normalized device coordinates
+     * ([-1,1])
+     * @return size of the bounding box enclosing the input string in normalized device coordinates
+     */
+    vec2 computeTextSize(const std::string &str, const vec2 &scale);
 
     /**
      * \brief computes the bounding box of a given string in pixels (screen space). The vertical
@@ -152,7 +154,7 @@ public:
     void setFontSize(int val);
     int getFontSize() const { return fontSize_; }
 
-    /** 
+    /**
      * \brief sets the line spacing relative to the font size (default 0.2 = 20%)
      *
      * @param lineSpacing   factor for line spacing
@@ -186,8 +188,8 @@ protected:
     FT_Library fontlib_;
     FT_Face fontface_;
 
-    int fontSize_; //<! font size in pixel
-    double lineSpacing_; //!< spacing between two lines in percent (default = 0.2)
+    int fontSize_;        //<! font size in pixel
+    double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
 
     Shader textShader_;
     GLuint texCharacter_;
@@ -195,22 +197,21 @@ protected:
     std::unique_ptr<MeshDrawerGL> drawer_;
 
     FrameBufferObject fbo_;
-    std::shared_ptr<Texture2D> prevTexture_; //<! 2D texture handle which was used previously in renderToTexture()
+    std::shared_ptr<Texture2D>
+        prevTexture_;  //<! 2D texture handle which was used previously in renderToTexture()
 };
 
-
-
-namespace util{
+namespace util {
 
 /**
- * \brief Creates a texture with the for a text string
+ * \brief Creates a texture with a text string
  *
- * Creates a texture with the for a text string using the specifed renderer, fontSize and color. May
+ * Creates a texture with a text string using the specified renderer, fontSize and color. May
  * take an additional variable tex of an existing texture that can be reused to reduce the number of
  * times we need to allocating new textures.
  *
- * The size of the texture will be the smallest possible for the given text and the pixels containng
- * no text will have zero alpha
+ * The size of the texture will be the smallest possible for the given text and the pixels
+ * containing no text will have zero alpha
  *
  * @param textRenderer_ The renderer that will be used to render the text
  * @param text text to be rendered
@@ -222,8 +223,8 @@ namespace util{
 IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
     TextRenderer &textRenderer_, std::string text, int fontSize, vec4 fontColor,
     std::shared_ptr<Texture2D> tex = nullptr);
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEXTRENDERER_H

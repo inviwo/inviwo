@@ -32,7 +32,6 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
