@@ -54,6 +54,8 @@ LineRenderer::LineRenderer()
     , outport_("image")
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
     , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
+    , pseudoLighting_("pseudoLighting", "Apply Pseudo Lighting", true,
+                      InvalidationLevel::InvalidResources)
     , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
     , drawMode_("drawMode", "Draw Mode",
                 {{"auto", "Automatic", LineDrawMode::Auto},
@@ -61,7 +63,10 @@ LineRenderer::LineRenderer()
                  {"lineStrip", "Line Strip", LineDrawMode::LineStrip},
                  {"lineLoop", "Line Loop", LineDrawMode::LineLoop}},
                 0, InvalidationLevel::InvalidResources)
-    , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
+    , useAdjacency_("useAdjacency", "Use Adjacency Information", true,
+                    InvalidationLevel::InvalidResources)
+    , writeDepth_("writeDepth", "Write Depth", true)
+    , stippling_("stippling", "Stippling")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
@@ -75,8 +80,12 @@ LineRenderer::LineRenderer()
     addProperty(lineWidth_);
     addProperty(antialising_);
     addProperty(miterLimit_);
+    addProperty(pseudoLighting_);
     addProperty(drawMode_);
     addProperty(useAdjacency_);
+    addProperty(writeDepth_);
+
+    addProperty(stippling_);
 
     addProperty(camera_);
     addProperty(trackball_);
@@ -85,7 +94,6 @@ LineRenderer::LineRenderer()
         bool noAdjacencySupport = (drawMode_.get() == LineDrawMode::LineLoop);
         useAdjacency_.setReadOnly(noAdjacencySupport);
     });
-    useAdjacency_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -94,6 +102,11 @@ void LineRenderer::initializeResources() {
 
     shader_.getGeometryShaderObject()->addShaderDefine(
         "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
+
+    auto fragShader = shader_.getFragmentShaderObject();
+    fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_.get() ? "1" : "0");
+
+    utilgl::addShaderDefines(shader_, stippling_);
 
     shader_.build();
 }
@@ -106,10 +119,13 @@ void LineRenderer::process() {
     }
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::DepthMaskState depthMask(writeDepth_.get());
+
+    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     shader_.activate();
     shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
-    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_);
+    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_, stippling_);
 
     drawMeshes();
 
@@ -157,6 +173,6 @@ MeshDrawerGL::DrawMode getDrawMode(LineRenderer::LineDrawMode drawMode, bool use
     }
 }
 
-} // namespace util
+}  // namespace util
 
 }  // namespace inviwo

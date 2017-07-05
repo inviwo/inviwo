@@ -89,6 +89,7 @@
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 
 
@@ -287,6 +288,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<PositionProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
+    registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();
     registerProperty<TransferFunctionProperty>();
     registerProperty<VolumeIndicatorProperty>();

@@ -132,4 +132,11 @@ struct VolumeIndicatorParameters {
     PlaneParameters plane3;
 };
 
+struct StipplingParameters {
+    float length;
+    float spacing;
+    float offset;
+    float worldScale;
+};
+
 #endif // IVW_STRUCTS_GLSL

@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <vector>
 
@@ -100,8 +101,12 @@ private:
     FloatProperty lineWidth_;
     FloatProperty antialising_;
     FloatProperty miterLimit_;
+    BoolProperty pseudoLighting_;
     TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
+    BoolProperty writeDepth_;
+
+    StipplingProperty stippling_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
