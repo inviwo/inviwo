@@ -181,8 +181,8 @@ std::string camelCaseToHeader(const std::string& s) {
     if (s.empty()) return s;
     std::stringstream ss;
     char last = ' ';
-    for (auto c : s) {
-        if (std::tolower(last) == last && std::toupper(c) == c) ss << " ";
+    for (auto c : s) {        
+        if (std::isalpha(c) && std::tolower(last) == last && std::toupper(c) == c) ss << " ";
         ss << c;
         last = c;
     }
