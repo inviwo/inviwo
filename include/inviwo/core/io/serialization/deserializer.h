@@ -479,7 +479,7 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<K, T>& setNewFilter(
+    MapDeserializer<K, T>& setNewFilter(
         std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
@@ -490,6 +490,10 @@ public:
     }
     MapDeserializer<K, T>& onRemove(std::function<void(const K&)> onRemoveItem) {
         onRemoveItem_ = onRemoveItem;
+        return *this;
+    }
+    MapDeserializer<K, T>& setIdentifierTransform(std::function<K(const K&)> identifierTransform) {
+        identifierTransform_ = identifierTransform;
         return *this;
     }
 
@@ -513,7 +517,7 @@ public:
         cont.setIdentityGetter([&](TxElement* node) {
             K key{};
             node->GetAttribute(attribKey_, &key);
-            return key;
+            return identifierTransform_(key);
         });
 
         d.deserialize(key_, cont);
@@ -533,6 +537,9 @@ private:
     };
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
         return true;
+    };
+    std::function<K(const K&)> identifierTransform_ = [](const K &identifier) { 
+        return identifier; 
     };
 
     const std::string key_;

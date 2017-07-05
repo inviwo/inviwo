@@ -35,6 +35,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/network/processornetworkconverter.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -58,7 +59,7 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
-    processors_[processor->getIdentifier()] = processor;
+    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
@@ -100,7 +101,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(processor->getIdentifier());
+    processors_.erase( util::stripIdentifier(processor->getIdentifier()));
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
@@ -116,7 +117,7 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
 }
 
 Processor* ProcessorNetwork::getProcessorByIdentifier(std::string identifier) const {
-    return util::map_find_or_null(processors_, identifier);
+    return util::map_find_or_null(processors_, util::stripIdentifier(identifier));
 }
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
@@ -307,7 +308,7 @@ void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
         return elem.second == processor;
     });
 
-    processors_[processor->getIdentifier()] = processor;
+    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
@@ -349,7 +350,7 @@ int ProcessorNetwork::getVersion() const {
     return processorNetworkVersion_;
 }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 14;
+const int ProcessorNetwork::processorNetworkVersion_ = 15;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
@@ -375,6 +376,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
+                .setIdentifierTransform([](const std::string &id) { return util::stripIdentifier(id); })
                 .setMakeNew([]() {
                     RenderContext::getPtr()->activateDefaultRenderContext();
                     return nullptr;

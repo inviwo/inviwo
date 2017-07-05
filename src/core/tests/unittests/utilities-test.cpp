@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,33 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_UTILITIES_H
-#define IVW_UTILITIES_H
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/exception.h>
-#include <string>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/utilities.h>
+
+
+#include <iostream>
 
 namespace inviwo {
 
-class ProcessorNetwork;
-
-namespace util {
-
-IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
-
-
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
-                                  std::string name = "UPN", std::string ext = ".png");
-
-IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = "");
-
-IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
-                                     ExceptionContext context, const std::string& extra = "");
-
-IVW_CORE_API std::string stripIdentifier(std::string identifier);
+TEST(UtilitiesTests, StripIndentifierTest) {
+    EXPECT_EQ("foo", util::stripIdentifier("foo"));
+    EXPECT_EQ("foobar", util::stripIdentifier("foo bar"));
+    EXPECT_EQ("foo123", util::stripIdentifier("foo123"));
+    EXPECT_EQ("foo123_", util::stripIdentifier("foo123_"));
+    EXPECT_EQ("foo123", util::stripIdentifier("(foo123)"));
+    EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123"));
+    EXPECT_EQ(
+        "_1abc123",
+        util::stripIdentifier("1abc123&!-=\"#§%&/()=?`¥+@£$Ä{[]}®^~*'-.,;:<>|ßΩÂ‰ˆ≈ƒ÷"));
 }
 
-}  // namespace
 
-#endif  // IVW_UTILITIES_H
+
+} // namespace
+
