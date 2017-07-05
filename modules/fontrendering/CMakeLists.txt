@@ -16,6 +16,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmoduledefine.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/textoverlaygl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/textrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/util/fontutils.h
 )
@@ -26,6 +27,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/textoverlaygl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/textrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/util/fontutils.cpp
 )
