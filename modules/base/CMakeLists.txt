@@ -12,6 +12,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
@@ -48,6 +49,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noisevolumeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
@@ -126,6 +128,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noisevolumeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp

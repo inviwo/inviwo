@@ -93,6 +93,9 @@
 #include <modules/base/processors/inputselector.h>
 
 
+#include <modules/base/processors/noisevolumeprocessor.h>
+
+
 namespace inviwo {
 
 using BasisTransformMesh = BasisTransform<Mesh>;
@@ -153,6 +156,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshExport>();
     registerProcessor<RandomMeshGenerator>();
     registerProcessor<RandomSphereGenerator>();
+    registerProcessor<NoiseVolumeProcessor>();
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
