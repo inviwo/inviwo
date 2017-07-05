@@ -42,15 +42,15 @@
 namespace inviwo {
 
 TEST(UtilitiesTests, StripIndentifierTest) {
-    EXPECT_STREQ("foo", util::stripIdentifier("foo").c_str());
-    EXPECT_STREQ("foobar", util::stripIdentifier("foo bar").c_str());
-    EXPECT_STREQ("foo123", util::stripIdentifier("foo123").c_str());
-    EXPECT_STREQ("foo123_", util::stripIdentifier("foo123_").c_str());
-    EXPECT_STREQ("foo123", util::stripIdentifier("(foo123)").c_str());
-    EXPECT_STREQ("_1abc123", util::stripIdentifier("1abc123").c_str());
-    EXPECT_STREQ(
+    EXPECT_EQ("foo", util::stripIdentifier("foo"));
+    EXPECT_EQ("foobar", util::stripIdentifier("foo bar"));
+    EXPECT_EQ("foo123", util::stripIdentifier("foo123"));
+    EXPECT_EQ("foo123_", util::stripIdentifier("foo123_"));
+    EXPECT_EQ("foo123", util::stripIdentifier("(foo123)"));
+    EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123"));
+    EXPECT_EQ(
         "_1abc123",
-        util::stripIdentifier("1abc123&!-=\"#§%&/()=?`¥+@£$Ä{[]}®^~*'-.,;:<>|ßΩÂ‰ˆ≈ƒ÷").c_str());
+        util::stripIdentifier("1abc123&!-=\"#§%&/()=?`¥+@£$Ä{[]}®^~*'-.,;:<>|ßΩÂ‰ˆ≈ƒ÷"));
 }
 
 

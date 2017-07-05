@@ -479,7 +479,7 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<K, T>& setNewFilter(
+    MapDeserializer<K, T>& setNewFilter(
         std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
@@ -492,7 +492,7 @@ public:
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
-    MapDeserializer<K, T>& setIdentifierTransform(std::function<std::string(std::string)> identifierTransform) {
+    MapDeserializer<K, T>& setIdentifierTransform(std::function<K(const K&)> identifierTransform) {
         identifierTransform_ = identifierTransform;
         return *this;
     }
@@ -504,7 +504,6 @@ public:
             util::transform(container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
-                id = identifierTransform_(id);
                 util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
@@ -518,7 +517,7 @@ public:
         cont.setIdentityGetter([&](TxElement* node) {
             K key{};
             node->GetAttribute(attribKey_, &key);
-            return key;
+            return identifierTransform_(key);
         });
 
         d.deserialize(key_, cont);
