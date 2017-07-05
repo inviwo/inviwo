@@ -74,17 +74,6 @@ FontProperty::FontProperty(const FontProperty& rhs)
     addProperty(fontSize_);
     addProperty(anchorPos_);
 }
-/*
-FontProperty& FontProperty::operator=(const FontProperty& rhs) {
-    if (this != &rhs) {
-        CompositeProperty::operator=(rhs);
-        fontFace_ = rhs.fontFace_;
-        fontSize_ = rhs.fontSize_;
-        anchorPos_ = rhs.anchorPos_;
-    }
-    return *this;
-}
-*/
 
 FontProperty* FontProperty::clone() const { return new FontProperty(*this); }
 
