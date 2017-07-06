@@ -32,6 +32,7 @@
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/textrenderer.h>
+#include <modules/fontrendering/properties/fontproperty.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -105,10 +106,8 @@ private:
     BoolProperty enable_;
     StringProperty text_;
     FloatVec4Property color_;
-    OptionPropertyString fontFace_;
-    OptionPropertyInt fontSize_;
-    FloatVec2Property fontPos_;
-    FloatVec2Property anchorPos_;
+    FontProperty font_;
+    FloatVec2Property position_;
 
     ButtonProperty addArgButton_; //!< this button will add string properties to be used with place markers
 

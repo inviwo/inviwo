@@ -32,7 +32,6 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
@@ -61,14 +60,12 @@ TextOverlayGL::TextOverlayGL()
     , inport_("inport")
     , outport_("outport")
     , enable_("enable","Enabled",true)
-    , text_("Text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
+    , text_("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
             PropertySemantics::TextEditor)
-    , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , fontFace_("fontFace", "Font Face")
-    , fontSize_("fontSize", "Font size")
-    , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , font_("font", "Font Settings")
+    , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
     , numArgs_(0u)
 {
@@ -77,10 +74,8 @@ TextOverlayGL::TextOverlayGL()
     addProperty(enable_);
     addProperty(text_);
     addProperty(color_);
-    addProperty(fontFace_);
-    addProperty(fontPos_);
-    addProperty(anchorPos_);
-    addProperty(fontSize_);
+    addProperty(font_);
+    addProperty(position_);
     addProperty(addArgButton_);
 
     addArgButton_.onChange([this]() {
@@ -95,24 +90,11 @@ TextOverlayGL::TextOverlayGL()
         addProperty(property, true);
     });
     
-    auto fonts = util::getAvailableFonts();
+    font_.fontFace_.setSelectedIdentifier("arial");
+    font_.fontFace_.setCurrentStateAsDefault();
 
-    for (auto font : fonts) {
-        auto identifier = filesystem::getFileNameWithoutExtension(font.second);
-        // use the file name w/o extension as identifier
-        fontFace_.addOption(identifier, font.first, font.second);
-    }
-    fontFace_.setSelectedIdentifier("arial");
-    fontFace_.setCurrentStateAsDefault();
-
-    // set up different font sizes
-    std::vector<int> fontSizes ={ 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96 };
-    for (auto size : fontSizes) {
-        std::string str = std::to_string(size);
-        fontSize_.addOption(str, str, size);
-    }
-    fontSize_.setSelectedIndex(4);
-    fontSize_.setCurrentStateAsDefault();
+    font_.fontSize_.setSelectedIndex(5);
+    font_.fontSize_.setCurrentStateAsDefault();
 }
 
 void TextOverlayGL::process() {
@@ -121,8 +103,8 @@ void TextOverlayGL::process() {
         return;
     }
     
-    if (fontFace_.isModified()) {
-        textRenderer_.setFont(fontFace_.get());
+    if (font_.fontFace_.isModified()) {
+        textRenderer_.setFont(font_.fontFace_.get());
     }
 
     // check whether a property was modified
@@ -138,9 +120,9 @@ void TextOverlayGL::process() {
 
     // use integer position for best results
     vec2 size(cacheTexture_->getDimensions());
-    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
+    vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
 
-    ivec2 pos(fontPos_.get() * vec2(outport_.getDimensions()));
+    ivec2 pos(position_.get() * vec2(outport_.getDimensions()));
     pos -= ivec2(shift);
     // render texture containing the text onto the current canvas
     textureRenderer_.render(cacheTexture_, pos, outport_.getDimensions());
@@ -203,9 +185,9 @@ std::string TextOverlayGL::getString() const {
 }
 
 void TextOverlayGL::updateCache() {
-    textRenderer_.setFontSize(fontSize_.getSelectedValue());
+    textRenderer_.setFontSize(font_.fontSize_.getSelectedValue());
     std::string str(getString());
-    cacheTexture_ = util::createTextTexture(textRenderer_ , str , fontSize_.getSelectedValue() , color_.get() , cacheTexture_ );
+    cacheTexture_ = util::createTextTexture(textRenderer_ , str , font_.fontSize_.getSelectedValue() , color_.get() , cacheTexture_ );
 }
 
 }  // namespace

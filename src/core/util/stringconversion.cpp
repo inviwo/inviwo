@@ -180,11 +180,11 @@ std::string dotSeperatedToPascalCase(const std::string& s) {
 std::string camelCaseToHeader(const std::string& s) {
     if (s.empty()) return s;
     std::stringstream ss;
-    char last = ' ';
-    for (auto c : s) {
-        if (std::tolower(last) == last && std::toupper(c) == c) ss << " ";
+    char previous = ' ';
+    for (auto c : s) {        
+        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c) ss << " ";
         ss << c;
-        last = c;
+        previous = c;
     }
     auto str{ ss.str() };
     str[0] = std::toupper(str[0]);
