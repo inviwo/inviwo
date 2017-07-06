@@ -53,7 +53,7 @@ LineRenderer::LineRenderer()
     , imageInport_("imageInport")
     , outport_("image")
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
-    , antialising_("antialising", "Antialising (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
+    , antialiasing_("antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
     , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
     , roundCaps_("roundCaps", "Round Caps", true)
     , pseudoLighting_("pseudoLighting", "Pseudo Lighting", true,
@@ -81,7 +81,7 @@ LineRenderer::LineRenderer()
     imageInport_.setOptional(true);
 
     addProperty(lineWidth_);
-    addProperty(antialising_);
+    addProperty(antialiasing_);
     addProperty(miterLimit_);
     addProperty(roundCaps_);
     addProperty(pseudoLighting_);
@@ -139,7 +139,7 @@ void LineRenderer::process() {
 
     shader_.activate();
     shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
-    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_, roundCaps_,
+    utilgl::setUniforms(shader_, camera_, lineWidth_, antialiasing_, miterLimit_, roundCaps_,
                         stippling_);
 
     drawMeshes();

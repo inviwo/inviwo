@@ -37,7 +37,7 @@
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
-uniform float antialising = 0.0; // width of antialised edged [pixel]
+uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 
 // initialize camera matrices with the identity matrix to enable default rendering
@@ -69,11 +69,11 @@ void main() {
         distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
     }
 
-    float d = distance - linewidthHalf + antialising;
+    float d = distance - linewidthHalf + antialiasing;
 
     // apply pseudo lighting
 #if defined(ENABLE_PSEUDO_LIGHTING)
-    color.rgb *= cos(distance / (linewidthHalf + antialising) * 1.2);
+    color.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
 #endif
 
     float alpha = 1.0;
@@ -97,10 +97,10 @@ void main() {
     }
 #endif // ENABLE_STIPPLING
 
-    // antialising around the edges
+    // antialiasing around the edges
     if( d > 0) {
-        // apply antialising by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
-        d /= antialising;
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
+        d /= antialiasing;
         alpha = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
@@ -112,7 +112,7 @@ void main() {
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // correct depth for a round profile, i.e. tube like appearance
     const float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-    const float maxDist = (linewidthHalf + antialising);
+    const float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
     gl_FragDepth = convertDepthViewToScreen(camera, 
         depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);

@@ -41,7 +41,7 @@ layout(lines) in;
 layout(triangle_strip, max_vertices=5) out;
 
 uniform vec2 screenDim = vec2(512, 512);
-uniform float antialising = 0.0; // width of antialised edged [pixel]
+uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = false;
@@ -206,7 +206,7 @@ void main(void) {
 
     vec2 depth = vec2(p1ndc.z, p2ndc.z);
 
-    float w = lineWidth * 0.5 + 1.2 * antialising;
+    float w = lineWidth * 0.5 + 1.2 * antialiasing;
     segmentLength_ = length(p2 - p1);
     // segment length in world space
     lineLengthWorld_ = length(worldPosition_[index2] - worldPosition_[index1]);

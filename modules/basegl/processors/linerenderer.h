@@ -104,7 +104,7 @@ private:
     ImageOutport outport_;
 
     FloatProperty lineWidth_;
-    FloatProperty antialising_;
+    FloatProperty antialiasing_;
     FloatProperty miterLimit_;
     BoolProperty roundCaps_;
 
