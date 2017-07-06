@@ -182,7 +182,7 @@ std::string camelCaseToHeader(const std::string& s) {
     std::stringstream ss;
     char previous = ' ';
     for (auto c : s) {        
-        if (std::isalpha(c) && std::tolower(previous) == last && std::toupper(c) == c) ss << " ";
+        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c) ss << " ";
         ss << c;
         previous = c;
     }
