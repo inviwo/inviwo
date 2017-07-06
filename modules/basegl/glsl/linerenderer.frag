@@ -29,19 +29,22 @@
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
 
-#if !defined(ENABLE_PSEUDO_LIGHTING)
-#  define ENABLE_PSEUDO_LIGHTING 0
-#endif
-
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
 // enable conservative depth writes (supported since GLSL 4.20)
-#if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
-layout (depth_less) out float gl_FragDepth;
+#   if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
+        layout (depth_less) out float gl_FragDepth;
+#   endif
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
-uniform float antialising = 1.0; // width of antialised edged [pixel]
+uniform float antialising = 0.0; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
-uniform CameraParameters camera;
+
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = { mat4(1), mat(1), mat4(1), mat(1), 
+                                    mat4(1), mat(1), vec3(0), 0, 1};
+
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -69,14 +72,14 @@ void main() {
     float d = distance - linewidthHalf + antialising;
 
     // apply pseudo lighting
-#if ENABLE_PSEUDO_LIGHTING == 1
+#if defined(ENABLE_PSEUDO_LIGHTING)
     color.rgb *= cos(distance / (linewidthHalf + antialising) * 1.2);
 #endif
 
     float alpha = 1.0;
 
     // line stippling
-#if defined ENABLE_STIPPLING
+#if defined(ENABLE_STIPPLING)
 
 #if STIPPLE_MODE == 2
     // in world space
@@ -106,10 +109,12 @@ void main() {
     color.a = alpha;
     FragData0 = color;
 
-    // correct depth
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
+    // correct depth for a round profile, i.e. tube like appearance
     const float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     const float maxDist = (linewidthHalf + antialising);
     // assume circular profile of line
     gl_FragDepth = convertDepthViewToScreen(camera, 
         depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
+#endif // ENABLE_ROUND_DEPTH_PROFILE
 }

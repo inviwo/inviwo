@@ -53,10 +53,14 @@ LineRenderer::LineRenderer()
     , imageInport_("imageInport")
     , outport_("image")
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
-    , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
-    , pseudoLighting_("pseudoLighting", "Apply Pseudo Lighting", true,
-                      InvalidationLevel::InvalidResources)
+    , antialising_("antialising", "Antialising (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
     , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
+    , roundCaps_("roundCaps", "Round Caps", true)
+    , pseudoLighting_("pseudoLighting", "Pseudo Lighting", true,
+                      InvalidationLevel::InvalidResources)
+    , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
+                         InvalidationLevel::InvalidResources)
+    , writeDepth_("writeDepth", "Write Depth Layer", true)
     , drawMode_("drawMode", "Draw Mode",
                 {{"auto", "Automatic", LineDrawMode::Auto},
                  {"lineSegments", "Line Segments", LineDrawMode::LineSegments},
@@ -65,7 +69,6 @@ LineRenderer::LineRenderer()
                 0, InvalidationLevel::InvalidResources)
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true,
                     InvalidationLevel::InvalidResources)
-    , writeDepth_("writeDepth", "Write Depth", true)
     , stippling_("stippling", "Stippling")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
@@ -80,10 +83,12 @@ LineRenderer::LineRenderer()
     addProperty(lineWidth_);
     addProperty(antialising_);
     addProperty(miterLimit_);
+    addProperty(roundCaps_);
     addProperty(pseudoLighting_);
+    addProperty(roundDepthProfile_);
+    addProperty(writeDepth_);
     addProperty(drawMode_);
     addProperty(useAdjacency_);
-    addProperty(writeDepth_);
 
     addProperty(stippling_);
 
@@ -104,7 +109,16 @@ void LineRenderer::initializeResources() {
         "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
 
     auto fragShader = shader_.getFragmentShaderObject();
-    fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_.get() ? "1" : "0");
+    if (pseudoLighting_.get()) {
+        fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING");
+    } else {
+        fragShader->removeShaderDefine("ENABLE_PSEUDO_LIGHTING");
+    }
+    if (roundDepthProfile_.get()) {
+        fragShader->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
+    } else {
+        fragShader->removeShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
+    }
 
     utilgl::addShaderDefines(shader_, stippling_);
 
@@ -125,7 +139,8 @@ void LineRenderer::process() {
 
     shader_.activate();
     shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
-    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_, stippling_);
+    utilgl::setUniforms(shader_, camera_, lineWidth_, antialising_, miterLimit_, roundCaps_,
+                        stippling_);
 
     drawMeshes();
 

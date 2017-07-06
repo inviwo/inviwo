@@ -29,7 +29,7 @@
 #include "utils/structs.glsl"
 
 #if !defined(ENABLE_ADJACENCY)
-#  define ENABLE_ADJACENCY 1
+#  define ENABLE_ADJACENCY 0
 #endif
 
 #if ENABLE_ADJACENCY == 1
@@ -41,10 +41,10 @@ layout(lines) in;
 layout(triangle_strip, max_vertices=5) out;
 
 uniform vec2 screenDim = vec2(512, 512);
-uniform float antialising = 1.0; // width of antialised edged [pixel]
+uniform float antialising = 0.0; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
-
+uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
@@ -99,7 +99,6 @@ vec4 convertScreenToNDC(vec2 v, float z) {
 //   
 // @result clipped line segmenet p1-p2
 //
-
 void homogeneousClip(in out vec4 p1, in out vec4 p2, int axis, float sign, 
                      in out bool p1Clipped, in out bool p2Clipped) {
     // clip against -y
@@ -254,10 +253,17 @@ void main(void) {
     vec2 leftTop, leftBottom;
     vec2 texCoord;
     if (capBegin) {
-        // offset start position p1 by radius
-        leftTop = p1 - w * v1 + w * n1;
-        leftBottom = p1 - w * v1 - w * n1;
-        texCoord = vec2(-w);
+        // compute start position at p1
+        leftTop = p1 + w * n1;
+        leftBottom = p1 - w * n1;
+        texCoord = vec2(0);
+
+        if (roundCaps) {
+            // extend segment beyond p1 by radius for cap
+            leftTop -= w * v1;
+            leftBottom -= w * v1;
+            texCoord = vec2(-w);
+        }
     }
     else {
         leftTop = p1 + length_a * miterBegin;
@@ -274,10 +280,17 @@ void main(void) {
 
     vec2 rightTop, rightBottom;
     if (capEnd) {
-        // offset end position p2 by radius
-        rightTop = p2 + w * v1 + w * n1;
-        rightBottom = p2 + w * v1 - w * n1;
-        texCoord = vec2(segmentLength_ + w);
+        // compute end position at p2
+        rightTop = p2 + w * n1;
+        rightBottom = p2 - w * n1;
+        texCoord = vec2(0);
+
+        if (roundCaps) {
+            // extend segment beyond p2 by radius for cap
+            rightTop += w * v1;
+            rightBottom += w * v1;
+            texCoord = vec2(segmentLength_ + w);
+        }
     }
     else {
         rightTop = p2 + length_b * miterEnd;
