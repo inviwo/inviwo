@@ -40,7 +40,7 @@ const ProcessorInfo NumPyVolume::processorInfo_{
     "NumPy Volume",            // Display name
     "NumPy",                   // Category
     CodeState::Experimental,   // Code state
-    Tags::None,                // Tags
+    {"Python"},                // Tags
 };
 const ProcessorInfo NumPyVolume::getProcessorInfo() const {
     return processorInfo_;

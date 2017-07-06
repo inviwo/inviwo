@@ -39,7 +39,7 @@ const ProcessorInfo NumpyMandelbrot::processorInfo_{
     "NumPy Mandelbrot",            // Display name
     "NumPy",                       // Category
     CodeState::Experimental,       // Code state
-    Tags::None,                    // Tags
+    {"Python"},                    // Tags
 };
 const ProcessorInfo NumpyMandelbrot::getProcessorInfo() const {
     return processorInfo_;

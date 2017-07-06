@@ -41,7 +41,7 @@ const ProcessorInfo NumPyMeshCreateTest::processorInfo_{
     "NumPy Mesh Create Test",          // Display name
     "NumPy",                           // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    {"Python"},                        // Tags
 };
 const ProcessorInfo NumPyMeshCreateTest::getProcessorInfo() const {
     return processorInfo_;
