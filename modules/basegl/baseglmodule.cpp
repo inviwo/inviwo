@@ -141,7 +141,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeMerger>();
 }
 
-int BaseGLModule::getVersion() const { return 2; }
+int BaseGLModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -297,6 +297,12 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                          {{xml::Kind::processor("org.inviwo.Background"),
                                            xml::Kind::property("org.inviwo.FloatVec4Property")}},
                                          "color2", "bgColor2");
+        }
+        case 2: {
+            res |= xml::changeIdentifier(root,
+                                         {{xml::Kind::processor("org.inviwo.LineRenderer"),
+                                           xml::Kind::property("org.inviwo.FloatProperty")}},
+                                         "antialising", "antialiasing");
 
             return res;
         }

@@ -84,14 +84,13 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
 
     bool res = false;
     switch (version_) {
-        case 1: {
-            res |= xml::changeIdentifiers(root, repl2);
-        }
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
         }
-                return res;
-
+        case 1: {
+            res |= xml::changeIdentifiers(root, repl2);
+            return res;
+        }
         default:
             return false;  // No changes
     }
