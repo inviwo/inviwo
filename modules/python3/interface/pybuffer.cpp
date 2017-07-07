@@ -107,10 +107,9 @@ void exposeBuffer(py::module &m) {
         .def_property_readonly("data", [&](BufferBase *buffer)->py::array {
 
             auto df = buffer->getDataFormat();
-            auto componentSize = df->getSize();
 
             std::vector<size_t> shape = {buffer->getSize(), df->getComponents()};
-            std::vector<size_t> strides = {componentSize,componentSize * df->getComponents()};
+            std::vector<size_t> strides = {df->getSize(),df->getSize() / df->getComponents()};
             auto data = buffer->getRepresentation<BufferRAM>()->getData();
 
             bool readOnly = false;

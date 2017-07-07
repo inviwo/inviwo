@@ -50,30 +50,30 @@ namespace py = pybind11;
 namespace inviwo {
 
 void exposeVolume(py::module &m) {
-    /*
-    py::class_<Image>(m, "Image")
-        .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
-    py::return_value_policy::reference)
-        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); },
-    py::return_value_policy::reference)
-        .def_property_readonly("colorLayers", getLayers, py::return_value_policy::reference);
-    */
+
 
     py::class_<Volume>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase *>())
+        .def("clone" ,[](Volume &self){ return self.clone(); })
+        .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
+        .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
+        .def("copyMetaDataFrom", [](Volume &self,Volume &other){ self.copyMetaDataFrom(other); } )
+        .def("copyMetaDataTo", [](Volume &self,Volume &other){ self.copyMetaDataTo(other); } )
         .def_property_readonly("dimensions", &Volume::getDimensions)
         .def_property_readonly("data", [&](Volume *volume) -> py::array {
 
             auto df = volume->getDataFormat();
-            auto size = df->getSize();
             auto dims = volume->getDimensions();
 
-            std::vector<size_t> shape = {dims.x, dims.y, dims.z, df->getComponents()};
+            std::vector<size_t> shape = {dims.x, dims.y, dims.z};
+            std::vector<size_t> strides = {df->getSize(),
+                                           df->getSize() * dims.x,
+                                           df->getSize() * dims.x * dims.y};
 
-            std::vector<size_t> strides = {size * df->getComponents(),
-                                           size * df->getComponents() * dims.x,
-                                           size * df->getComponents() * dims.x * dims.y, size};
+            if(df->getComponents()>1){
+                shape.push_back(df->getComponents());
+                strides.push_back(df->getSize() / df->getComponents());
+            }
 
             auto data = volume->getRepresentation<VolumeRAM>()->getData();
 

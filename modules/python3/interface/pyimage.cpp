@@ -72,13 +72,17 @@ void exposeImage(py::module &m) {
         .def_property_readonly("data", [&](Layer *layer) -> py::array {
 
             auto df = layer->getDataFormat();
-            auto size = df->getSize();
             auto dims = layer->getDimensions();
 
-            std::vector<size_t> shape = {dims.x, dims.y, df->getComponents()};
 
-            std::vector<size_t> strides = {size * df->getComponents(),
-                                           size * df->getComponents() * dims.x, size};
+            std::vector<size_t> shape = {dims.x, dims.y};
+            std::vector<size_t> strides = {df->getSize(), 
+                                           df->getSize() * dims.x};
+
+            if(df->getComponents()>1){
+                shape.push_back(df->getComponents());
+                strides.push_back(df->getSize() / df->getComponents());
+            }
 
             auto data = layer->getRepresentation<LayerRAM>()->getData();
 
