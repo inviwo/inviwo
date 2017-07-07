@@ -156,4 +156,4 @@ void DepthDarkening::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-}  // namespace
+}  // namespace inviwo

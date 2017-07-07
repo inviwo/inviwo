@@ -43,28 +43,18 @@ uniform float lambda;
 
 uniform CameraParameters camera;
 
-void main(void) {
-        
+void main(void) {        
     vec2 tCord = gl_FragCoord.xy * reciprocalDimensions;
-
 
     vec4 orig = texture(image,tCord.xy);
     float d = texture(depth,tCord.xy).r;
-  //  d = (d-minmax.x )/ (minmax.y-minmax.x);
 
     float unsharpD = texture(blurredDepth,tCord.xy).r - d;
 
     float i = unsharpD*lambda;
-    //i = abs(i);
     if(true){ // darken
         i = min(0,i); 
-        if(i!=0){
-            //i = -1 - i;           
-        }
     }
     
     FragData0 = vec4(orig.rgb + vec3(i) , orig.a);  
-    //FragData0 = vec4(vec3(i) ,texture(image,tCord.xy).a);  
-
-
 }

@@ -71,6 +71,6 @@ private:
     ImageConvolution convolution_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DEPTHDARKENING_H
