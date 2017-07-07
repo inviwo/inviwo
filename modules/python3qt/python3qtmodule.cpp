@@ -25,25 +25,56 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <modules/python3qt/python3qtmodule.h>
-#include <modules/python3qt/pythonqtmethods/pythonqtmethods.h>
 #include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/python3/pyinviwo.h>
+#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pybindutils.h>
 #include <modules/python3qt/pythonmenu.h>
+
+#include <inviwo/core/util/exception.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QInputDialog>
+#include <QCoreApplication>
+#include <warn/pop>
 
 namespace inviwo {
 
+namespace {
+pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
+
+    bool ok;
+    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
+                                         defaultResponse.c_str(), &ok);
+    if (ok && !text.isEmpty()) {
+        return pybind11::str(text.toLocal8Bit().constData());
+    } else if (ok) {
+        return pybind11::str("");
+    }
+    return pybind11::none();
+}
+}
+
 Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt")
-    , menu_(util::make_unique<PythonMenu>(app))
-{
-    initPythonQT();
+    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
+    auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
+    if (module) {
+        auto ivwmodule = module->getInviwopyModule();
+        auto m = ivwmodule->def_submodule("qt", "Qt dependent stuff");
+
+        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+            pybind11::arg("defaultResponse") = "");
+        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+    } else {
+        throw Exception("Failed to get Python3Module");
+    }
 }
 
 Python3QtModule::~Python3QtModule() = default;
 
-} // namespace
+}  // namespace

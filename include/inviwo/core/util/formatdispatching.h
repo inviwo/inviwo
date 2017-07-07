@@ -147,52 +147,8 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
     // Has to be in order of increasing id
-    using Formats = std::tuple< 
-        DataFloat16,
-        DataFloat32,
-        DataFloat64,
-        DataInt8,
-        DataInt16,
-        DataInt32,
-        DataInt64,
-        DataUInt8,
-        DataUInt16,
-        DataUInt32,
-        DataUInt64,
-        DataVec2Float16,
-        DataVec2Float32,
-        DataVec2Float64,
-        DataVec2Int8,
-        DataVec2Int16,
-        DataVec2Int32,
-        DataVec2Int64,
-        DataVec2UInt8,
-        DataVec2UInt16,
-        DataVec2UInt32,
-        DataVec2UInt64,
-        DataVec3Float16,
-        DataVec3Float32,
-        DataVec3Float64,
-        DataVec3Int8,
-        DataVec3Int16,
-        DataVec3Int32,
-        DataVec3Int64,
-        DataVec3UInt8,
-        DataVec3UInt16,
-        DataVec3UInt32,
-        DataVec3UInt64,
-        DataVec4Float16,
-        DataVec4Float32,
-        DataVec4Float64,
-        DataVec4Int8,
-        DataVec4Int16,
-        DataVec4Int32,
-        DataVec4Int64,
-        DataVec4UInt8,
-        DataVec4UInt16,
-        DataVec4UInt32,
-        DataVec4UInt64
-    >;
+
+    using Formats = DefaultDataFormats;
 
     using FilteredFormats = typename detail::Filter<Predicate, Formats>::type;
 

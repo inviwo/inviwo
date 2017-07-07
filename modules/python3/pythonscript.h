@@ -32,11 +32,12 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <inviwo/core/util/singlefileobserver.h>
-#include <modules/python3/pythonincluder.h>
 
 #include <unordered_map>
+#include <pybind11/pybind11.h>
+
 
 namespace inviwo {
 
@@ -48,7 +49,7 @@ namespace inviwo {
     class IVW_MODULE_PYTHON3_API PythonScript {
 
     public:
-        using VariableMap = std::unordered_map<std::string, PyObject*>;
+        using VariableMap = std::unordered_map<std::string, pybind11::object>;
 
         PythonScript();
 
@@ -57,7 +58,7 @@ namespace inviwo {
         * Python interpreter is still initialized
         * when deleting the script.
         */
-        ~PythonScript();
+        virtual ~PythonScript();
 
         /**
         * Sets the source for the Python (replacing the current source).
@@ -87,7 +88,12 @@ namespace inviwo {
         * @return true, if script execution has been successful
         */
         bool run(const VariableMap& extraLocalVariables = VariableMap(),
-                 std::function<void(PyObject*)> callback = [](PyObject* obj) {});
+            std::function<void(pybind11::dict)> callback = [](pybind11::dict dict) {});
+
+
+        bool run(std::function<void(pybind11::dict)> callback) {
+            return run({}, callback);
+        }
 
         void setFilename(std::string filename);
 

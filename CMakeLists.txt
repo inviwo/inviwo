@@ -74,6 +74,22 @@ endif()
 # Build
 option(SHARED_LIBS "Build shared libs, else static libs" ON)
 
+
+# Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools") 
+
+
+# Make sure we do look for python 3 here, before it is done in any subdirectory or external library. 
+# If we do not specify version number on our first call to find_package(PythonLibs) it returns the 
+# first python version that is found on the system and then set the PYTHON_FOUND variable, this 
+# version may be 2.x and not 3.x and later when we find_package(PythonLibsNew 3) (or find_package(PythonLibs 3))
+# it will detected that PYTHON_FOUND is set and reuse the paths found before and not look for python
+# again resulting in Python 2.x binaries will be used. 
+set(PythonLibsNew_FIND_REQUIRED 3)
+set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
+find_package(PythonLibsNew 3)
+
+
 include(cmake/globalconfig.cmake)
 
 #--------------------------------------------------------------------
@@ -133,8 +149,7 @@ set(ivw_default_modules
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
-set(Python_ADDITIONAL_VERSIONS 3.5)
-find_package(PythonLibs 3 QUIET)
+
 if(PYTHONLIBS_FOUND)
     set(ivw_default_modules
         ${ivw_default_modules}

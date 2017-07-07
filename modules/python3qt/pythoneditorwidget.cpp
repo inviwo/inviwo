@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -40,7 +40,7 @@
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <modules/python3/pyinviwo.h>
+#include <modules/python3/pythoninterpreter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -63,8 +63,7 @@ namespace inviwo {
 
 
 const static std::string defaultSource =
-"#Inviwo Python script \nimport inviwo \nimport inviwoqt \n\nhelp('inviwo') \nhelp('inviwoqt') "
-    "\n";
+"#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Python Editor"), parent)
@@ -408,7 +407,10 @@ void PythonEditorWidget::run() {
     util::OnScopeExit reenable([&]() {
         runAction_->setEnabled(true);
     });
-    PyInviwo::getPtr()->addObserver(this);
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->addObserver(this);
     if (!appendLog_->isChecked()) {
         clearOutput();
     }
@@ -423,7 +425,10 @@ void PythonEditorWidget::run() {
     }
 
     LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
-    PyInviwo::getPtr()->removeObserver(this);
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->removeObserver(this);
 }
 
 void PythonEditorWidget::show() {

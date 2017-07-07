@@ -27,23 +27,29 @@
 # 
 #*********************************************************************************
 
-import inviwo 
-import inviwoqt
+from inviwopy.properties import Property
 
 class Animation:
     """
     Example:
-    with ivw.animation.Animation("Volume Source.Sequence.selectedSequenceIndex") as ani:
-        for i in ani:
-            inviwoqt.update()
-            inviwo.snapshot("T:\data\TVDR\imgs\pjets.energy.{:0>3d}.png".format(i), "CanvasGL")
+    import inviwopy
+    from inviwopy import qt
+    import ivw.animation
+
+    app = inviwopy.app
+    network = app.network
+
+    with ivw.animation.Animation(network.VolumeRaycaster.raycaster.samplingRate,1,10,0.5) as ani:
+        for i,v in ani:
+            print([i,v])
+            qt.update()
     """
-    def __init__(self, propertyId, start = None, stop = None, inc = None):
-        self.id = propertyId
-        self.startVal = start if start != None else inviwo.getPropertyMinValue(self.id)
-        self.stopVal = stop if stop != None else inviwo.getPropertyMaxValue(self.id)
+    def __init__(self, prop : Property, start = None, stop = None, inc = None):
+        self.prop = prop
+        self.startVal = start if start != None else prop.minValue
+        self.stopVal = stop if stop != None else prop.maxValue
         self.inc = inc if inc != None else 1
-        self.initalVal = inviwo.getPropertyValue(self.id)
+        self.initalVal = prop.value
         self.i = 0
 
     def __enter__(self):
@@ -59,8 +65,8 @@ class Animation:
     def __next__(self):
         self.i = self.i + 1
         if self.startVal + self.i * self.inc < self.stopVal:
-            inviwo.setPropertyValue(self.id, self.startVal + self.i * self.inc)
-            return self.i
+            self.prop.value = self.startVal + self.i * self.inc
+            return (self.i,self.prop.value)
         else:
             raise StopIteration
 
@@ -69,11 +75,12 @@ class Animation:
 
     def start(self):
         self.i = 0
-        inviwo.setPropertyValue(self.id, self.startVal)
+        self.prop.value = self.startVal
 
     def restore(self):
         self.i = 0
-        inviwo.setPropertyValue(self.id, self.initalVal)
+        self.prop.value = self.initalVal
+
 
 
 

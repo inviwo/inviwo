@@ -376,6 +376,10 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
     return processorWidgetFactory_.get();
 }
 
-}  // namespace
+namespace util{
+    IVW_CORE_API InviwoApplication* getInviwoApplication();
+} // namespace util
+
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOAPPLICATION_H

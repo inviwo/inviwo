@@ -6,3 +6,6 @@
     url = https://github.com/live-clones/hdf5.git
     branch = hdf5_1_10_0
 
+[submodule "ext/pybind11"]
+	path = ext/pybind11
+	url = https://github.com/pybind/pybind11.git

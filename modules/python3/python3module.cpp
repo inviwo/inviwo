@@ -27,10 +27,15 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
+#include <pybind11/pybind11.h>
 #include <modules/python3/python3module.h>
-#include <modules/python3/pyinviwo.h>
+
+#include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
+
+#include <modules/python3/processors/numpymandelbrot.h>
+#include <modules/python3/processors/numpyvolume.h>
+#include <modules/python3/processors/numpymeshcreatetest.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -42,35 +47,57 @@ namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pyInviwo_(util::make_unique<PyInviwo>(this))
+    , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-        "Path to the file containing the script") {
+                       "Path to the file containing the script") 
+    , inviwopyPyModule_(nullptr) 
+{
 
-    pyInviwo_->addObserver(&pythonLogger_);
+    registerProcessor<NumPyVolume>();
+    registerProcessor<NumpyMandelbrot>();
+    registerProcessor<NumPyMeshCreateTest>();
 
+    pythonInterpreter_->addObserver(&pythonLogger_);
+    app->getCommandLineParser().add(
+        &pythonScriptArg_,
+        [this]() {
+            auto filename = pythonScriptArg_.getValue();
+            if (!filesystem::fileExists(filename)) {
+                LogWarn("Could not run script, file does not exist: " << filename);
+                return;
+            }
+            PythonScriptDisk s(filename);
+            s.run();
+        },
+        100);
 
-    app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        PythonScript s;
-        auto filename = pythonScriptArg_.getValue();
-        if (!filesystem::fileExists(filename)) {
-            LogWarn("Could not run script, file does not exist: " << filename);
-            return;
-        }
-        std::ifstream file(filename.c_str());
-        std::string src((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        file.close();
-
-        s.setSource(src);
-        s.setFilename(filename);
-
-        s.run();
-
-
-    }, 100);
+    app->dispatchFront([&]() {
+        pythonInterpreter_->runString("import inviwopy");  // we need to import inviwopy to trigger
+                                                           // the initialization code in
+                                                           // inviwopy.cpp, this is needed to be
+                                                           // able to cast cpp/inviwo objects to
+                                                           // python objects
+        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
+    });
 }
 
-Python3Module::~Python3Module() {
-    pyInviwo_->removeObserver(&pythonLogger_);
+Python3Module::~Python3Module() { 
+    pythonInterpreter_->removeObserver(&pythonLogger_); 
+}
+
+PythonInterpreter* Python3Module::getPythonInterpreter() {
+    return pythonInterpreter_.get();
+}
+
+std::shared_ptr<pybind11::module> Python3Module::getInviwopyModule() { 
+    if(!inviwopyPyModule_){
+        pythonInterpreter_->runString("import inviwopy");
+    }
+    return inviwopyPyModule_; 
+}
+
+void Python3Module::setInviwopyModule(std::shared_ptr<pybind11::module> m) { 
+    inviwopyPyModule_ = m; 
 }
 
 }  // namespace

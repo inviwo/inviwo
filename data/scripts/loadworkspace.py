@@ -1,6 +1,4 @@
 # Inviwo Python script 
-import inviwo
-import inviwoqt 
+import inviwopy
 
-
-inviwoqt.loadWorkspace( inviwo.getDataPath() + "/workspaces/boron.inv")
+inviwopy.app.network.load(inviwopy.app.getPath(inviwopy.PathType.Workspaces) + "/boron.inv")

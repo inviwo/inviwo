@@ -29,11 +29,11 @@
 
 import time
 import json
-import inviwo
+import inviwopy
 
-def saveCanvas(canvas, name = None):
-	if name == None: name = canvas
-	inviwo.snapshot( inviwo.getOutputPath() + "/imgtest/"+name+".png", canvas)
+def saveCanvas(canvas : inviwopy.CanvasProcessor , name = None):
+	if name == None: name = canvas.identifier
+	canvas.snapshot(inviwopy.app.getOutputPath() + "/imgtest/"+name+".png")
 
 class Measurements:
 	def __init__(self):
@@ -55,6 +55,6 @@ class Measurements:
 		self.add(name, "fraction", "%", value)
 
 	def save(self):
-		with open(inviwo.getOutputPath() + "/stats.json", 'w') as f:
+		with open(inviwopy.app.getOutputPath() + "/stats.json", 'w') as f:
  			json.dump(self.m, f, indent=4, separators=(',', ': '))
 

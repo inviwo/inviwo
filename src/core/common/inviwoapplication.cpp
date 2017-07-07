@@ -432,4 +432,8 @@ void InviwoApplication::playSound(Message soundID) {
     LogWarn("this application have not implemented the playSound function");
 }
 
+namespace util {
+InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+}  // namespace util
+
 }  // namespace

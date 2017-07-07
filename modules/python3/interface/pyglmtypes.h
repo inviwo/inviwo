@@ -1,0 +1,100 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2014-2016 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#ifndef IVW_PYGLMTYPES_H
+#define IVW_PYGLMTYPES_H
+#include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
+
+#include <inviwo/core/util/glm.h>
+
+namespace pybind11 {
+    namespace detail {
+        using namespace inviwo;
+       
+        template<> class type_caster<Vector<2, float>> : public type_caster_base<Vector<2, float>> { };
+        template<> class type_caster<typename util::glmtype<float, 2, 2>::type> : public type_caster_base<typename util::glmtype<float, 2, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 2, 3>::type> : public type_caster_base<typename util::glmtype<float, 2, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 2, 4>::type> : public type_caster_base<typename util::glmtype<float, 2, 4>::type> { };
+        template<> class type_caster<Vector<3, float>> : public type_caster_base<Vector<3, float>> { };
+        template<> class type_caster<typename util::glmtype<float, 3, 2>::type> : public type_caster_base<typename util::glmtype<float, 3, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 3, 3>::type> : public type_caster_base<typename util::glmtype<float, 3, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 3, 4>::type> : public type_caster_base<typename util::glmtype<float, 3, 4>::type> { };
+        template<> class type_caster<Vector<4, float>> : public type_caster_base<Vector<4, float>> { };
+        template<> class type_caster<typename util::glmtype<float, 4, 2>::type> : public type_caster_base<typename util::glmtype<float, 4, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 4, 3>::type> : public type_caster_base<typename util::glmtype<float, 4, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<float, 4, 4>::type> : public type_caster_base<typename util::glmtype<float, 4, 4>::type> { };
+        template<> class type_caster<Vector<2, double>> : public type_caster_base<Vector<2, double>> { };
+        template<> class type_caster<typename util::glmtype<double, 2, 2>::type> : public type_caster_base<typename util::glmtype<double, 2, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 2, 3>::type> : public type_caster_base<typename util::glmtype<double, 2, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 2, 4>::type> : public type_caster_base<typename util::glmtype<double, 2, 4>::type> { };
+        template<> class type_caster<Vector<3, double>> : public type_caster_base<Vector<3, double>> { };
+        template<> class type_caster<typename util::glmtype<double, 3, 2>::type> : public type_caster_base<typename util::glmtype<double, 3, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 3, 3>::type> : public type_caster_base<typename util::glmtype<double, 3, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 3, 4>::type> : public type_caster_base<typename util::glmtype<double, 3, 4>::type> { };
+        template<> class type_caster<Vector<4, double>> : public type_caster_base<Vector<4, double>> { };
+        template<> class type_caster<typename util::glmtype<double, 4, 2>::type> : public type_caster_base<typename util::glmtype<double, 4, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 4, 3>::type> : public type_caster_base<typename util::glmtype<double, 4, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<double, 4, 4>::type> : public type_caster_base<typename util::glmtype<double, 4, 4>::type> { };
+        template<> class type_caster<Vector<2, int>> : public type_caster_base<Vector<2, int>> { };
+        template<> class type_caster<typename util::glmtype<int, 2, 2>::type> : public type_caster_base<typename util::glmtype<int, 2, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 2, 3>::type> : public type_caster_base<typename util::glmtype<int, 2, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 2, 4>::type> : public type_caster_base<typename util::glmtype<int, 2, 4>::type> { };
+        template<> class type_caster<Vector<3, int>> : public type_caster_base<Vector<3, int>> { };
+        template<> class type_caster<typename util::glmtype<int, 3, 2>::type> : public type_caster_base<typename util::glmtype<int, 3, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 3, 3>::type> : public type_caster_base<typename util::glmtype<int, 3, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 3, 4>::type> : public type_caster_base<typename util::glmtype<int, 3, 4>::type> { };
+        template<> class type_caster<Vector<4, int>> : public type_caster_base<Vector<4, int>> { };
+        template<> class type_caster<typename util::glmtype<int, 4, 2>::type> : public type_caster_base<typename util::glmtype<int, 4, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 4, 3>::type> : public type_caster_base<typename util::glmtype<int, 4, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<int, 4, 4>::type> : public type_caster_base<typename util::glmtype<int, 4, 4>::type> { };
+        template<> class type_caster<Vector<2, unsigned int>> : public type_caster_base<Vector<2, unsigned int>> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 2, 2>::type> : public type_caster_base<typename util::glmtype<unsigned int, 2, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 2, 3>::type> : public type_caster_base<typename util::glmtype<unsigned int, 2, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 2, 4>::type> : public type_caster_base<typename util::glmtype<unsigned int, 2, 4>::type> { };
+        template<> class type_caster<Vector<3, unsigned int>> : public type_caster_base<Vector<3, unsigned int>> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 3, 2>::type> : public type_caster_base<typename util::glmtype<unsigned int, 3, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 3, 3>::type> : public type_caster_base<typename util::glmtype<unsigned int, 3, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 3, 4>::type> : public type_caster_base<typename util::glmtype<unsigned int, 3, 4>::type> { };
+        template<> class type_caster<Vector<4, unsigned int>> : public type_caster_base<Vector<4, unsigned int>> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 4, 2>::type> : public type_caster_base<typename util::glmtype<unsigned int, 4, 2>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 4, 3>::type> : public type_caster_base<typename util::glmtype<unsigned int, 4, 3>::type> { };
+        template<> class type_caster<typename util::glmtype<unsigned int, 4, 4>::type> : public type_caster_base<typename util::glmtype<unsigned int, 4, 4>::type> { };
+    }
+}
+
+
+
+namespace inviwo {
+
+    void exposeGLMTypes(pybind11::module &m);
+
+}
+
+#endif
