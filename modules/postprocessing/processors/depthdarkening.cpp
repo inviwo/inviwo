@@ -31,6 +31,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/image/layergl.h>
