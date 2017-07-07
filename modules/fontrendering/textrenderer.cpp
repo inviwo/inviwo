@@ -153,6 +153,11 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
                                    const vec4 &color) {
+    renderToTexture(texture, size2_t(0u), texture->getDimensions(), str, color);
+}
+
+void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
+                     const size2_t &size, const std::string &str, const vec4 &color) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
@@ -166,8 +171,9 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std
     }
 
     // set up viewport
-    ivec2 dim(texture->getDimensions());
-    utilgl::ViewportState viewport(0, 0, dim.x, dim.y);
+    ivec2 pos(origin);
+    ivec2 dim(size);
+    utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // render text into texture
@@ -289,6 +295,7 @@ std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer_, std::s
     textRenderer_.renderToTexture(tex, text, fontColor);
     return tex;
 }
-}
 
-}  // namespace
+} // namespace util
+
+}  // namespace inviwo
