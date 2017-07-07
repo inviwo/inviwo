@@ -55,7 +55,7 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, flo
 std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int kernelSize,
                                                          float sigma) {
     float sigmaSq2 = 2.0f * sigma * sigma;
-    float a = 1.0f / (sigmaSq2 * M_PI);
+    float a = 1.0f / (sigmaSq2 * glm::pi<float>());
 
     float totWeight = 0;
     auto kernelFunc = [&](float p) {
