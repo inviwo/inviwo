@@ -83,13 +83,11 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,
     }
 
     std::vector<float> kernel(kernel1DSize);
-    std::ostringstream ss;
 
     vec2 kernelCenter(kernelSize);
     kernelCenter /= 2.0f;
 
     for (int j = 0; j < kernelSize.y; j++) {
-        ss << std::endl;
         for (int i = 0; i < kernelSize.x; i++) {
             vec2 p = vec2(i, j) - kernelCenter;
             kernel[i + j * kernelSize.y] = kernelWeight(p);
