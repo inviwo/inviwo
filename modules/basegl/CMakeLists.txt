@@ -6,6 +6,7 @@ ivw_module(BaseGL)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
@@ -63,6 +64,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
@@ -127,13 +129,13 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_binary.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_convolution.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_findedges.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_gamma.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_graysc.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_highpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_invert.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_jacobian.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_lowpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_normalize.frag

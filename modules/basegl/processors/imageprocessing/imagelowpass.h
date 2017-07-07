@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGELOWPASS_H
@@ -35,44 +35,54 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/algorithm/imageconvolution.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
+ /** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
  * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
+ *
  * Applies a low pass filter on the input image.
  *
+ *
  * ### Inports
- *   * __inputImage__ Input image
+ *   * __inputImage__ Input image.
  *
  * ### Outports
- *   * __outputImage__ Filtered input image
+ *   * __outputImage__ Lowpass filtered image.
  *
  * ### Properties
- *   * __Kernel Size__ Size of the applied low pass filter
+ *   * __Kernel Size__ Size of the kernel to use.
+ *   * __Use Gaussian weights__ Whether to use Gaussian weights or constant weights.
+ *   * __Sigma__ Controls the shape of the Gaussian bell curve. 
  */
-
 
 /**
  * \class ImageLowPass
  *
- * \brief Applies a low pass filter on the input image.
+ * \brief Applies a low pass filter on the input image using either constant weight or Gaussian weights
  */
-class IVW_MODULE_BASEGL_API ImageLowPass : public ImageGLProcessor {
+class IVW_MODULE_BASEGL_API ImageLowPass : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     ImageLowPass();
-    virtual ~ImageLowPass(){}
-    
+    virtual ~ImageLowPass() {}
+
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void process() override;
 
 private:
+    ImageInport inport_;
+    ImageOutport outport_;
+
     IntProperty kernelSize_;
+    BoolProperty gaussian_;
+    FloatProperty sigma_;
+
+    ImageConvolution convolution_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGELOWPASS_H
-
+#endif  // IVW_IMAGELOWPASS_H

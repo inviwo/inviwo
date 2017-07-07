@@ -28,9 +28,15 @@
  *********************************************************************************/
 
 #include "imagelowpass.h"
+#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/texture/texture2d.h>
 
 namespace inviwo {
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageLowPass::processorInfo_{
     "org.inviwo.ImageLowPass",  // Class identifier
@@ -39,17 +45,39 @@ const ProcessorInfo ImageLowPass::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo ImageLowPass::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageLowPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageLowPass::ImageLowPass()
-    : ImageGLProcessor("img_lowpass.frag")
-    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 15, 2) {
+    : Processor()
+    , inport_("inputImage")
+    , outport_("outputImage")
+    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 25, 1)
+    , gaussian_("gaussian", "Use Gaussian weights", true)
+    , sigma_("sigma", "Sigma", 1.f, 1.f, 100.f, 0.01f)
+    , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+
+    addPort(inport_);
+    addPort(outport_);
+
     addProperty(kernelSize_);
+    addProperty(sigma_);
+    addProperty(gaussian_);
+    kernelSize_.setVisible(false);
+    gaussian_.onChange([&]() {
+        kernelSize_.setVisible(!gaussian_.get());
+        sigma_.setVisible(gaussian_.get());
+    });
 }
 
-void ImageLowPass::preProcess(TextureUnitContainer &cont) { shader_.setUniform("kernelSize", kernelSize_.get()); }
+void ImageLowPass::process() {
+    if (gaussian_) {
+        outport_.setData(
+            convolution_.gaussianLowpass(*inport_.getData()->getColorLayer(), sigma_.get()));
+
+    } else {
+        outport_.setData(
+            convolution_.lowpass(*inport_.getData()->getColorLayer(), kernelSize_.get()));
+    }
+}
 
 }  // namespace
-

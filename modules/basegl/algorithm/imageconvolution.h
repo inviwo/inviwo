@@ -27,35 +27,46 @@
  *
  *********************************************************************************/
 
-#include <modules/postprocessing/processors/imagebrightnesscontrast.h>
-#include <modules/opengl/shader/shaderutils.h>
+#ifndef IVW_IMAGECONVOLUTION_H
+#define IVW_IMAGECONVOLUTION_H
+
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageBrightnessContrast::processorInfo_{
-    "org.inviwo.ImageBrightnessContrast",      // Class identifier
-    "Image Brightness Contrast",                // Display name
-    "Image Operation",              // Category
-    CodeState::Stable,  // Code state
-    Tags::None,               // Tags
+class IVW_MODULE_BASEGL_API ImageConvolution {
+public:
+    template <typename Callback>
+    ImageConvolution(Callback C) : ImageConvolution() {
+        shader_.onReload(C);
+    }
+    ImageConvolution() : shader_("img_convolution.frag", false) {}
+    virtual ~ImageConvolution() {}
+
+    std::shared_ptr<Image> convolution(const Layer &layer, std::function<float(vec2)> kernelWeight,
+                                       const float &kernelScale, ivec2 kernelSize);
+
+    std::shared_ptr<Image> convolution_separable(const Layer &layer, std::function<float(float)>,
+                                                int kernelSize, const float &kernelScale);
+
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize);
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, float sigma);
+    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize, float sigma);
+
+    std::shared_ptr<Image> lowpass(const Layer &layer, int kernelSize);
+
+protected:
+    Shader shader_;
+
+    std::shared_ptr<Image> convolution_internal(const Layer &layer, int kw, int kh,
+                                                const std::vector<float> &kernel,
+                                                const float &kernelScale);
 };
-const ProcessorInfo ImageBrightnessContrast::getProcessorInfo() const {
-    return processorInfo_;
-}
 
-ImageBrightnessContrast::ImageBrightnessContrast()
-    : ImageGLProcessor("brightnesscontrast.frag")
-    , brightness_("brightness","Brightness", 0.f, -1.f, 1.f, 0.01f)
-    , contrast_("contrast", "Contrast", 1.f, 0.f, 2.f, 0.01f) {
+}  // namespace
 
-    addProperty(brightness_);
-    addProperty(contrast_);
-}
-    
-void ImageBrightnessContrast::preProcess(TextureUnitContainer &cont) {
-    utilgl::setUniforms(shader_, brightness_, contrast_);
-}
-
-} // namespace
-
+#endif  // IVW_IMAGECONVOLUTION_H

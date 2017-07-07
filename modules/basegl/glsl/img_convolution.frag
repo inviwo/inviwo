@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,31 +29,39 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+in vec3 texCoord_;
 
-uniform sampler2D inport_;
+uniform sampler2D tex;
 
-uniform int kernelSize;
- 
+uniform vec2 reciprocalDimensions;
+uniform vec2 offset;
+uniform float kernelScale;
+
+uniform float kernel[KERNELSIZE];
+
 void main() {
- 
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+	vec2 tCord = gl_FragCoord.xy * reciprocalDimensions;
+
+#if KERNELSIZE == 1
+    FragData0 = texture(tex,tCord.xy); 
+#else
 	vec3 v = vec3(0); 
-	int k2 = kernelSize/2;
 	
-	int startX = int(gl_FragCoord.x) - k2;
-	int endX = int(gl_FragCoord.x) + k2;
-	int startY = int(gl_FragCoord.y) - k2;
-	int endY = int(gl_FragCoord.y) + k2;
+	float startX = gl_FragCoord.x - (KERNELWIDTH-1)/2.0;
+	float startY = gl_FragCoord.y - (KERNELHEIGHT-1)/2.0;
 
-
-	for(int y = startY  ; y <= endY ; y++){
-		for(int x = startX  ; x <= endX ; x++){
-			v += texture(inport_,vec2(x,y) * outportParameters_.reciprocalDimensions ).xyz; 
+	for(int j = 0  ; j < KERNELHEIGHT ; j++){
+		for(int i = 0  ; i < KERNELWIDTH ; i++){
+			float x = startX + i;
+			float y = startY + j;
+			vec2 p = vec2(x,y) * reciprocalDimensions;
+			
+			float w = kernel[i+j*KERNELWIDTH];
+			v += texture(tex, p ).rgb * w;
 		}
 	}
- 
-	v /= kernelSize*kernelSize;
-
-    FragData0 = vec4(v,texture(inport_,ivec2(gl_FragCoord.xy)).a); 
+	v /= kernelScale;
+	
+    FragData0 = vec4(v,texture(tex,tCord.xy).a); 
+#endif
 }
