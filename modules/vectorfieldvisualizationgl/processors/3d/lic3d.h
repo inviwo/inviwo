@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,53 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
-#include "utils/sampler3d.glsl"
+#ifndef IVW_LIC3D_H
+#define IVW_LIC3D_H
 
-uniform sampler3D volume;
-uniform VolumeParameters volumeParameters;
-uniform int kernelSize;
+#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
-uniform float sigmaSq2;
-uniform float a;
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-in vec4 texCoord_;
+namespace inviwo {
 
-void main() {
-    int k2 = kernelSize / 2;
-    vec4 value = vec4(0,0,0,0);
-    float tot_weight = 0;
-    for(int z = -k2;z < k2;z++) {
-        for(int y = -k2;y < k2;y++) {
-            for(int x = -k2;x < k2;x++){
-                float w = 1.0;
-#ifdef GAUSSIAN
-                float l = x*x + y*y + z*z;
-                w = a * exp(-l / sigmaSq2);
-#endif
-                value += w*getVoxel(volume, volumeParameters, texCoord_.xyz + vec3(x,y,z)*volumeParameters.reciprocalDimensions);
-                tot_weight += w;
-            }
-        }
-    }
-    vec4 voxel = value / tot_weight;
-   
-    FragData0 = voxel;
-}
+class Volume;
+
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC3D : public VolumeGLProcessor {
+public:
+    LIC3D();
+    virtual ~LIC3D() = default;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void postProcess() override;
+
+protected:
+    VolumeInport vectorField_;
+    IntProperty samples_;
+    FloatProperty stepLength_;
+    BoolProperty normalizeVectors_;
+    BoolProperty intensityMapping_;
+
+    FloatProperty noiseRepeat_;
+
+    TransferFunctionProperty tf_;
+    FloatProperty velocityScale_;
+
+    FloatProperty alphaScale_;
+
+    std::unique_ptr<Volume> noiseVolume_;
+};
+
+}  // namespace inviwo
+
+#endif  // IVW_LIC3D_H

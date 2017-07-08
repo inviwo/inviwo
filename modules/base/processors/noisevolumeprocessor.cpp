@@ -51,13 +51,13 @@ NoiseVolumeProcessor::NoiseVolumeProcessor()
     : Processor()
     , basisVolume_("forBasis")
     , volume_("volume_")
-    , size_("size", "Size", size3_t(256), size3_t(32), size3_t(4096))
+    , size_("size", "Size", size3_t(100), size3_t(32), size3_t(1024))
     , type_("type", "Type",
             {{"random", "Random", NoiseType::Random},
              {"haltonSequence", "Halton Sequence", NoiseType::HaltonSequence}})
     , range_("range_", "Range", 0.0f, 1.0f, 0.0f, 1.0f)
 
-    , haltonNumPoints_("numPoints", "Number of points", 100, 1, 1000)
+    , haltonNumPoints_("numPoints", "Number of points", 20, 1, 1000)
     , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
     , haltonYBase_("haltonYBase", "Base for y values", 3, 2, 32)
     , haltonZBase_("haltonZBase", "Base for z values", 5, 2, 32)
