@@ -53,7 +53,7 @@ const ProcessorInfo LIC3D::getProcessorInfo() const {
 LIC3D::LIC3D()
     : VolumeGLProcessor("lic3d.frag")
     , vectorField_("vectorField")
-    , samples_("samples", "Number of steps", 20, 3, 100)
+    , samples_("samples", "Number of steps", 200, 3, 1000)
     , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
@@ -93,20 +93,11 @@ void LIC3D::preProcess(TextureUnitContainer &cont) {
 
     utilgl::bindAndSetUniforms(shader_,cont,tf_);
 
-
     shader_.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
 }
 
 
 void LIC3D::postProcess() {
-    /*auto minmax = util::volumeMinMax(volume_.get());
-    auto min = minmax.first.x;
-    auto max = minmax.second.x;
-    for (size_t i = 1; i < volume_->getDataFormat()->getComponents(); i++) {
-        min = std::min(min, minmax.first[i]);
-        max = std::max(max, minmax.second[i]);
-    }
-    volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(min, max);*/
     volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(0, 255);
 }
 
