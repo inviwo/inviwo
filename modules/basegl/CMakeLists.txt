@@ -54,6 +54,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeshader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.h
@@ -112,6 +113,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeshader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.cpp
