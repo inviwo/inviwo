@@ -759,7 +759,7 @@ QSplitter::handle:hover#RangeSliderQt {
     border: 2px solid #268bd2;
 }
 
-QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
+QSplitter QFrame#pythonEditor, QFrame#modifiedWidgetTextEdit, QFrame#shaderwidgetcode, QFrame#htmlEditor, QTreeWidget#htmlTree  {
     font-family: "Calibra";
     background-color: #b0b0bc;
     color: #111111;

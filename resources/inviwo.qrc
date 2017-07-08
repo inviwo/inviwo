@@ -38,15 +38,17 @@
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
-        <file>icons/python-run.png</file>
         <file>icons/python.png</file>
-        <file>icons/reset-dark.png</file>
+        <file>icons/python-run.png</file>
+        <file>icons/redo.png</file>
         <file>icons/reset.png</file>
+        <file>icons/reset-dark.png</file>
         <file>icons/reveal.png</file>
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
         <file>icons/stopwatch.png</file>
         <file>icons/text_block.png</file>
+        <file>icons/undo.png</file>
         <file>icons/view-application.png</file>
         <file>icons/view-developer.png</file>
         <file>icons/view_choose.png</file>
