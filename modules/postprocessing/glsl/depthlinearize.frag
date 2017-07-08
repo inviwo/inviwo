@@ -55,6 +55,9 @@
 uniform vec4 clipInfo; // z_n * z_f,  z_n - z_f,  z_f, perspective = 1 : 0
 uniform sampler2D inputTexture;
 
+uniform float minD = 0;
+uniform float maxD = 1;
+
 layout(location=0,index=0) out float out_Color;
 
 float reconstructCSZ(float d, vec4 clipInfo) {
@@ -69,5 +72,9 @@ float reconstructCSZ(float d, vec4 clipInfo) {
 void main() {
   float depth = texelFetch(inputTexture, ivec2(gl_FragCoord.xy), 0).x;
 
-  out_Color = reconstructCSZ(depth, clipInfo);
+  float minDD = reconstructCSZ(minD, clipInfo);
+  float maxDD = reconstructCSZ(maxD, clipInfo);
+  float range = maxDD - minDD;
+
+  out_Color = clamp((reconstructCSZ(depth, clipInfo) - minDD) / range,0,1);
 }
