@@ -121,25 +121,32 @@ public:
     void render(const std::string &str, float x, float y, const vec2 &scale, const vec4 &color);
 
     /**
-    * \brief renders the given string with the specified color into a texture.
-    *
-    * @param texture   the text will be rendered into this texture
-    * @param str    input string
-    * @param color  color of rendered text
-    */
+     * \brief renders the given string with the specified color into a texture.
+     *
+     * @param texture   the text will be rendered into this texture
+     * @param str    input string
+     * @param color  color of rendered text
+     * @param clearTexture   if true, the texture is cleared before rendering the text
+     */
     void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
-                         const vec4 &color);
+                         const vec4 &color, bool clearTexture = true);
     /**
-    * \brief renders the given string with the specified color into a subregion of the texture.
-    *
-    * @param texture   the text will be rendered into this texture
-    * @param origin    origin of sub region within the texture (lower left corner, in pixel)
-    * @param extent    extent of sub region (in pixel)
-    * @param str    input string
-    * @param color  color of rendered text
-    */
+     * \brief renders the given string with the specified color into a subregion of the texture.
+     *
+     * @param texture   the text will be rendered into this texture
+     * @param origin    origin of sub region within the texture (lower left corner, in pixel)
+     * @param extent    extent of sub region (in pixel)
+     * @param str    input string
+     * @param color  color of rendered text
+     * @param clearTexture   if true, the texture is cleared before rendering the text
+     */
     void renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
-                         const size2_t &size, const std::string &str, const vec4 &color);
+                         const size2_t &size, const std::string &str, const vec4 &color,
+                         bool clearTexture = true);
+
+    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::vector<size2_t> &origin,
+                         const std::vector<size2_t> &size, const std::vector<std::string> &str,
+                         const vec4 &color, bool clearTexture = true);
 
     /**
      * \brief computes the bounding box of a given string in normalized device coordinates using the
