@@ -87,7 +87,7 @@ LIC3D::LIC3D()
 
 void LIC3D::preProcess(TextureUnitContainer &cont) {
     
-    utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vf");
+    utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
     utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,
                         noiseRepeat_, alphaScale_, velocityScale_);
 

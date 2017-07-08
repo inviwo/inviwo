@@ -26,17 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
- 
+
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
 
-uniform sampler3D volume; // noise 
+uniform sampler3D volume;  // noise
 uniform VolumeParameters volumeParameters;
 
-uniform sampler3D vf;
-uniform VolumeParameters vfParameters;
-
+uniform sampler3D vectorField;
+uniform VolumeParameters vectorFieldParameters;
 
 uniform sampler2D tf;
 uniform float velocityScale;
@@ -56,65 +55,61 @@ in vec4 texCoord_;
 uniform float noiseRepeat = 5.f;
 
 void main(void) {
-    float v = texture(noise, mod(texCoord_.xyz*noiseRepeat,1)).r;
-    float voxelVelo = length(texture(vf, texCoord_.xyz).xyz); 
+    float v = texture(noise, mod(texCoord_.xyz * noiseRepeat, 1)).r;
+    float voxelVelo = length(texture(vectorField, texCoord_.xyz).xyz);
 
-    if(voxelVelo < 0.000001) 
-    {
+    if (voxelVelo < 0.000001) {
         discard;
         return;
     }
-
 
     int c = 1;
     vec3 posF;
 
     posF = texCoord_.xyz;
-    for(int i = 0;i<samples/2;i++){
-        vec3 V0 = texture(vf, posF).rgb;
-        if(normalizeVectors){
+    for (int i = 0; i < samples / 2; i++) {
+        vec3 V0 = texture(vectorField, posF).rgb;
+        if (normalizeVectors) {
             V0 = normalize(V0);
         }
 
         posF += invBasis * (V0 * stepLength);
 
-        if(any(lessThan(posF ,vec3(0)))) break;
-        if(any(greaterThan(posF ,vec3(1)))) break;
-        
-        v += texture(noise, mod(posF*noiseRepeat,1)).r;
+        if (any(lessThan(posF, vec3(0)))) break;
+        if (any(greaterThan(posF, vec3(1)))) break;
+
+        v += texture(noise, mod(posF * noiseRepeat, 1)).r;
         c += 1;
     }
     posF = texCoord_.xyz;
-    for(int i = 0;i<samples/2;i++){
-        vec3 V0 = texture(vf, posF).rgb;
-        if(normalizeVectors){
+    for (int i = 0; i < samples / 2; i++) {
+        vec3 V0 = texture(vectorField, posF).rgb;
+        if (normalizeVectors) {
             V0 = normalize(V0);
         }
-        
+
         posF -= invBasis * (V0 * stepLength);
 
+        if (any(lessThan(posF, vec3(0)))) break;
+        if (any(greaterThan(posF, vec3(1)))) break;
 
-        if(any(lessThan(posF ,vec3(0)))) break;
-        if(any(greaterThan(posF ,vec3(1)))) break;
-
-        v += texture(noise, mod(posF*noiseRepeat,1)).r;
+        v += texture(noise, mod(posF * noiseRepeat, 1)).r;
         c += 1;
     }
 
     v /= c;
 
-    if(intensityMapping) {
-        v = pow(v,(4.0/pow((v+1.0),4)));
+    if (intensityMapping) {
+        v = pow(v, (4.0 / pow((v + 1.0), 4)));
     }
 
-    if(v<0.6 && false){
+    if (v < 0.6 && false) {
         discard;
         return;
     }
 
-    vec4 color = applyTF(tf, voxelVelo/velocityScale);
+    vec4 color = applyTF(tf, voxelVelo / velocityScale);
     color.a *= v * alphaScale;
 
     FragData0 = color;
-        
 }
