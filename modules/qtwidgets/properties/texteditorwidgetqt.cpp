@@ -95,6 +95,7 @@ ModifiedWidget::ModifiedWidget(Property* property , TextEditorWidgetQt *parent)
     toolBar_->addWidget(reDoButton_);
     textEditor_ = new QTextEdit();
     textEditor_->setObjectName("modifiedWidgetTextEdit");
+    textEditor_->setStyleSheet("font: 10pt \"Courier\";");
     textEditor_->createStandardContextMenu();
     syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(textEditor_->document());
     textEditorLayout->addWidget(toolBar_);
