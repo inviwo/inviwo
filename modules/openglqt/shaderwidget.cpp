@@ -31,6 +31,7 @@
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -64,10 +65,12 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     setWidget(mainWindow);
 
     auto shadercode = new QTextEdit(nullptr);
+    shadercode->setObjectName("shaderwidgetcode");
     shadercode->setReadOnly(false);
     shadercode->setText(obj->print(false, false).c_str());
     shadercode->setStyleSheet("font: 10pt \"Courier\";");
     shadercode->setWordWrapMode(QTextOption::NoWrap);
+    SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
 
     auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save shader"));
     save->setShortcut(QKeySequence::Save); 
