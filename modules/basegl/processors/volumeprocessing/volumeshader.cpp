@@ -37,7 +37,7 @@ const ProcessorInfo VolumeShader::processorInfo_{
     "org.inviwo.VolumeShader",  // Class identifier
     "Volume Shader",            // Display name
     "Volume Operation",         // Category
-    CodeState::Experimental,    // Code state
+    CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
 
@@ -65,7 +65,7 @@ VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
 
 VolumeShader::~VolumeShader() {}
 
-std::string VolumeShader::getDefaultShader() {
+std::string VolumeShader::getDefaultFragmentShader() {
     std::ostringstream oss;
 
     oss << "#include \"utils/sampler3d.glsl\"" << std::endl << std::endl;
