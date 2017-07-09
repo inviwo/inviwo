@@ -30,13 +30,16 @@
 
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/zip.h>
+
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
-#include "textrenderer.h"
+
+#include <modules/fontrendering/textrenderer.h>
 
 namespace inviwo {
 
@@ -44,8 +47,7 @@ TextRenderer::TextRenderer(const std::string &fontPath)
     : fontface_(nullptr)
     , fontSize_(10)
     , lineSpacing_(0.2)
-    , textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true)
-{
+    , textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true) {
 
     if (FT_Init_FreeType(&fontlib_)) {
         throw Exception("Could not initialize FreeType library");
@@ -75,8 +77,7 @@ void TextRenderer::setFont(const std::string &fontPath) {
     int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
         throw Exception(std::string("Unsupported font format: \"") + fontPath + "\"");
-    }
-    else if (error) {
+    } else if (error) {
         throw FileException(std::string("Could not open font file: \"") + fontPath + "\"");
     }
 
@@ -152,12 +153,13 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
-                                   const vec4 &color) {
-    renderToTexture(texture, size2_t(0u), texture->getDimensions(), str, color);
+                                   const vec4 &color, bool clearTexture) {
+    renderToTexture(texture, size2_t(0u), texture->getDimensions(), str, color, clearTexture);
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
-                     const size2_t &size, const std::string &str, const vec4 &color) {
+                                   const size2_t &size, const std::string &str, const vec4 &color,
+                                   bool clearTexture) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
@@ -169,16 +171,52 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const siz
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
         prevTexture_ = texture;
     }
+    if (clearTexture) {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
     // set up viewport
     ivec2 pos(origin);
     ivec2 dim(size);
     utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
-    glClear(GL_COLOR_BUFFER_BIT);
 
     // render text into texture
     vec2 scale(2.f / vec2(dim));
     render(str, -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, color);
+
+    fbo_.deactivate();
+}
+
+void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
+                                   const std::vector<size2_t> &origin,
+                                   const std::vector<size2_t> &size,
+                                   const std::vector<std::string> &str, const vec4 &color,
+                                   bool clearTexture) {
+    // disable depth test and writing depth
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
+
+    fbo_.activate();
+    if (prevTexture_ != texture) {
+        // detach previous texture and attach new texture as a render target, no depth texture
+        fbo_.detachTexture(GL_COLOR_ATTACHMENT0);
+        fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
+        prevTexture_ = texture;
+    }
+    if (clearTexture) {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    for (auto &&elem : util::zip(origin, size, str)) {
+        // set up viewport
+        ivec2 pos(get<0>(elem));
+        ivec2 dim(get<1>(elem));
+        utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
+
+        // render text into texture
+        vec2 scale(2.f / vec2(dim));
+        render(get<2>(elem), -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, color);
+    }
 
     fbo_.deactivate();
 }
@@ -296,6 +334,6 @@ std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer_, std::s
     return tex;
 }
 
-} // namespace util
+}  // namespace util
 
 }  // namespace inviwo
