@@ -50,13 +50,13 @@ const ProcessorInfo VolumeShader::getProcessorInfo() const { return processorInf
 
 VolumeShader::VolumeShader()
     : VolumeShader(
-          std::make_shared<StringShaderResource>("volume_shader.frag", getDefaultShader())) {
+          std::make_shared<StringShaderResource>("volume_shader.frag", getDefaultFragmentShader())) {
 }
 
 VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
     : VolumeGLProcessor(fragmentShader, false)
     , fragmentShader_(fragmentShader)
-    , fragmentSrc_("shader", "Shader", getDefaultShader(), InvalidationLevel::InvalidResources,
+    , fragmentSrc_("shader", "Shader", getDefaultFragmentShader(), InvalidationLevel::InvalidResources,
                    PropertySemantics::ShaderEditor) {
     addProperty(fragmentSrc_);
 
