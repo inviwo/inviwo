@@ -32,8 +32,8 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
- //Property includes
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 
 //QT includes
 #include <warn/push>
@@ -56,10 +56,10 @@ class FilePropertyWidgetQt;
 class TextEditorWidgetQt;
 class StringPropertyWidgetQt;
 
-class IVW_MODULE_QTWIDGETS_API ModifiedWidget : public QWidget {
+class IVW_MODULE_QTWIDGETS_API ModifiedWidget : public PropertyObserver,
+                                                public PropertyEditorWidgetQt {
 public:
-    ModifiedWidget();
-    void setParent(TextEditorWidgetQt*);
+    ModifiedWidget(Property *property, TextEditorWidgetQt *parent);
 
     QFile* file_;
     QTextEdit* textEditor_;
@@ -74,7 +74,10 @@ public:
     SyntaxHighligther* getSyntaxHighligther();
 
 protected:
-    void closeEvent(QCloseEvent*);
+    virtual void closeEvent(QCloseEvent*) override;
+    virtual void onSetDisplayName(const std::string& displayName) override {
+        QDockWidget::setWindowTitle(QString::fromStdString(displayName));
+    }
 
 private:
     SyntaxHighligther* syntaxHighligther_;

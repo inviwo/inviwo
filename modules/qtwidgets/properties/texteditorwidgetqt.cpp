@@ -33,6 +33,8 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/properties/property.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
@@ -41,6 +43,9 @@
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
+
+#include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
 
 
 #include <warn/push>
@@ -59,55 +64,64 @@
 
 namespace inviwo {
 
-ModifiedWidget::ModifiedWidget() {
+ModifiedWidget::ModifiedWidget(Property* property , TextEditorWidgetQt *parent) 
+    : PropertyEditorWidgetQt(property,property->getDisplayName(),parent)
+    , mainParentWidget_(parent)
+{
+    property->addObserver(this);
+    QWidget* mainPanel = new QWidget(this);
     QVBoxLayout* textEditorLayout = new QVBoxLayout();
     textEditorLayout->setSpacing(0);
     textEditorLayout->setMargin(0);
     toolBar_ = new QToolBar();
     saveButton_ = new QToolButton();
-    saveButton_->setIcon(QIcon(":/icons/save.png"));  // Temporary icon
-    saveButton_->setToolTip("Save file");
+    saveButton_->setIcon(QIcon(":/icons/button_ok.png"));  
+    saveButton_->setToolTip("Apply changes");
+    saveButton_->setShortcut(QKeySequence::Save);
     unDoButton_ = new QToolButton();
-    unDoButton_->setIcon(QIcon(":/icons/arrow_left.png"));  // Temporary icon
+    unDoButton_->setIcon(QIcon(":/icons/undo.png"));  
     unDoButton_->setToolTip("Undo");
+    saveButton_->setShortcut(QKeySequence::Undo);
     reDoButton_ = new QToolButton();
-    reDoButton_->setIcon(QIcon(":/icons/arrow_right.png"));  // Temporary icon
+    reDoButton_->setIcon(QIcon(":/icons/redo.png"));  
     reDoButton_->setToolTip("Redo");
+    saveButton_->setShortcut(QKeySequence::Redo);
     reLoadButton_ = new QToolButton();
-    reLoadButton_->setIcon(QIcon(":/icons/inviwo_tmp.png"));  // Temporary icon
-    reLoadButton_->setToolTip("Reload");
+    reLoadButton_->setIcon(QIcon(":/icons/button_cancel-bw.png"));  
+    reLoadButton_->setToolTip("Discard changes");
     toolBar_->addWidget(saveButton_);
-    toolBar_->addSeparator();
-    toolBar_->addWidget(unDoButton_);
-    toolBar_->addSeparator();
-    toolBar_->addWidget(reDoButton_);
-    toolBar_->addSeparator();
     toolBar_->addWidget(reLoadButton_);
-    toolBar_->addSeparator();
+    toolBar_->addWidget(unDoButton_);
+    toolBar_->addWidget(reDoButton_);
     textEditor_ = new QTextEdit();
+    textEditor_->setObjectName("modifiedWidgetTextEdit");
+    textEditor_->setStyleSheet("font: 10pt \"Courier\";");
     textEditor_->createStandardContextMenu();
     syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(textEditor_->document());
     textEditorLayout->addWidget(toolBar_);
     textEditorLayout->addWidget(textEditor_);
-    setLayout(textEditorLayout);
+    mainPanel->setLayout(textEditorLayout);
+    setWidget(mainPanel);
     connect(unDoButton_, SIGNAL(pressed()), textEditor_, SLOT(undo()));
     connect(reDoButton_, SIGNAL(pressed()), textEditor_, SLOT(redo()));
+
+    setMinimumSize(QSize(560,500));
+
+    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 }
 
-void ModifiedWidget::closeEvent(QCloseEvent* event) {
-    if (mainParentWidget_->saveDialog())
-        event->accept();
-    else
-        event->ignore();
-}
 
 SyntaxHighligther* ModifiedWidget::getSyntaxHighligther() { return syntaxHighligther_; }
 
-void ModifiedWidget::setParent(TextEditorWidgetQt* tmp) {
-    mainParentWidget_ = tmp;
+
+void ModifiedWidget::closeEvent(QCloseEvent *){
+    if (dynamic_cast<FileProperty*>(property_)) {
+        mainParentWidget_->writeToFile();
+    } else if (dynamic_cast<StringProperty*>(property_)) {
+        mainParentWidget_->writeToString();
+    }
 }
-
-
+ 
 TextEditorWidgetQt::TextEditorWidgetQt(Property* property) : PropertyWidgetQt(property) {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
@@ -115,6 +129,11 @@ TextEditorWidgetQt::TextEditorWidgetQt(Property* property) : PropertyWidgetQt(pr
 
     btnEdit_ = new QToolButton();
     btnEdit_->setIcon(QIcon(":/icons/edit.png"));
+
+    textEditorWidget_ = new ModifiedWidget(property_,this);
+    if (property_->getSemantics().getString() == "ShaderEditor") {
+        textEditorWidget_->getSyntaxHighligther()->setSyntax<GLSL>();
+    }
 
     if (dynamic_cast<FileProperty*>(property_)) {
         fileWidget_ = new FilePropertyWidgetQt(static_cast<FileProperty*>(property_));
@@ -129,12 +148,6 @@ TextEditorWidgetQt::TextEditorWidgetQt(Property* property) : PropertyWidgetQt(pr
     }
 
     setLayout(hLayout);
-
-    textEditorWidget_ = new ModifiedWidget();
-    textEditorWidget_->setParent(this);
-    if (property_->getSemantics().getString() == "ShaderEditor") {
-        textEditorWidget_->getSyntaxHighligther()->setSyntax<GLSL>();
-    }
 
     updateFromProperty();
 }
@@ -198,6 +211,7 @@ void TextEditorWidgetQt::editString() {
     connect(textEditorWidget_->reLoadButton_, SIGNAL(pressed()), this, SLOT(loadString()));
     loadString();
     textEditorWidget_->show();
+    textEditorWidget_->raise();
 }
 
 void TextEditorWidgetQt::loadString() {
