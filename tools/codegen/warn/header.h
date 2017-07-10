@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,25 +24,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/selector` used without `warn/push`"
-#endif
-
-#if defined(IVW_WARN_PUSH_SELECTOR_)
-# error "`warn/ignore/selector` already included"
-#else
-# define IVW_WARN_SELECTOR_
-#endif
-
-#if (__clang__)
-# if __has_warning("-Wselector")
-#  pragma clang diagnostic ignored "-Wselector"
-# endif
-#endif
-
-#if (__GNUC__)
-# pragma GCC diagnostic ignored "-Wselector"
-#endif
