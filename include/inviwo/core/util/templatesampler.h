@@ -63,6 +63,9 @@ public:
     static_assert(DataDims > 0, "zero extent");
 
     TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
+        CoordinateSpace space = CoordinateSpace::Data);
+
+    TemplateVolumeSampler(const Volume &sharedVolume,
                           CoordinateSpace space = CoordinateSpace::Data);
     virtual ~TemplateVolumeSampler() = default;
 
@@ -81,8 +84,16 @@ template <typename DataType, typename P, typename T, unsigned int DataDims>
 TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
     std::shared_ptr<const Volume> sharedVolume, CoordinateSpace space)
     : SpatialSampler<3, DataDims, T>(sharedVolume, space)
-    , data_(static_cast<const DataType*>(sharedVolume->getRepresentation<VolumeRAM>()->getData()))
+    , data_(static_cast<const DataType *>(sharedVolume->getRepresentation<VolumeRAM>()->getData()))
     , dims_(sharedVolume->getRepresentation<VolumeRAM>()->getDimensions())
+    , ic_(dims_) {}
+
+template <typename DataType, typename P, typename T, unsigned int DataDims>
+TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
+    const Volume &volume, CoordinateSpace space)
+    : SpatialSampler<3, DataDims, T>(volume, space)
+    , data_(static_cast<const DataType*>(volume.getRepresentation<VolumeRAM>()->getData()))
+    , dims_(volume.getRepresentation<VolumeRAM>()->getDimensions())
     , ic_(dims_) {}
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
