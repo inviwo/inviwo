@@ -63,8 +63,7 @@ template <typename T, typename GLM>
 void common(py::module &m, py::class_<GLM> &pyc, std::string name) {
     pyc.def(py::init<T>())
         .def(py::init<>())
-        .def("__repr__", [](GLM &v) { return glm::to_string(v); })
-
+        
         .def(py::self + py::self)
         .def(py::self - py::self)
         .def(py::self += py::self)
