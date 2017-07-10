@@ -56,9 +56,9 @@ uniform vec4 bgColor2 = vec4(1, 1, 1, 1);
 #  define BACKGROUND_STYLE_FUNCTION linearGradientVertical(texCoord)
 #endif // BACKGROUND_STYLE_FUNCTION
 
-#if !defined(BLEND)
-#  define BLEND(src, dst) mix(dst, src, src.a)
-#endif // BLEND
+#if !defined(BLENDFUNC)
+#  define BLENDFUNC blendBackToFront
+#endif // BLENDFUNC
 
 vec4 checkerBoard(vec2 texCoord) {
     vec2 t = floor(ivec2(gl_FragCoord.x, outportParameters.dimensions.y - gl_FragCoord.y) /
@@ -74,6 +74,16 @@ vec4 linearGradientVertical(vec2 texCoord) {
     return mix(bgColor2, bgColor1, texCoord.y);
 }
 
+
+vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
+    return srcColor + dstColor * (1.0 - srcColor.a);
+}
+
+vec4 blendAlphaCompositing(vec4 srcColor, vec4 dstColor) {
+    return mix(dstColor, srcColor, srcColor.a);
+}
+
+
 void main() {  
     vec2 texCoord = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 srcColor = SRC_COLOR;
@@ -82,7 +92,8 @@ void main() {
     // pre-multiplied alpha for background color
     bgColor.rgb *= bgColor.a;
 
-    FragData0 = BLEND(srcColor, bgColor);
+    FragData0 = BLENDFUNC(srcColor, bgColor);
+
 
 #ifdef ADDITIONAL_COLOR_LAYERS
     ADDITIONAL_COLOR_LAYER_WRITE
