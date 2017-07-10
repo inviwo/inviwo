@@ -116,7 +116,7 @@ void TextOverlayGL::process() {
     // draw cached overlay on top of the input image
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // use integer position for best results
     vec2 size(cacheTexture_->getDimensions());
