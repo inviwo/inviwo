@@ -99,36 +99,33 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
     textShader_.activate();
     textShader_.setUniform("tex", texUnit.getUnitNumber());
     textShader_.setUniform("color", color);
+    
+    const char lf = '\n';   // Line Feed Ascii for std::endl, \n
+    const char tab = '\t';  // Tab Ascii
 
-    // account for baseline offset
-    // y += getBaseLineOffset() * scale.y;
-
-    float offset = 0;
-    float inputX = x;
-
-    // TODO: To make things more reliable ask the system for proper ascii
-    const char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
-    const char tab = (char)0x9;  // Tab Ascii
+    ivec2 glyphPos;
+    int verticalOffset = 0;
 
     for (auto p : str) {
-        // load glyph to access metric and bitmap of it
         if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
             LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
-                                                         << static_cast<int>(p) << ")");
+                    << static_cast<int>(p) << ")");
             continue;
         }
-        float w = fontface_->glyph->bitmap.width * scale.x;
-        float h = fontface_->glyph->bitmap.rows * scale.y;
+        const int w = fontface_->glyph->bitmap.width;
+        const int h = fontface_->glyph->bitmap.rows;
+
+        const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);
 
         if (p == lf) {
-            offset += getLineHeight() * scale.y;
-            x = inputX;
-            y += (fontface_->glyph->advance.y >> 6) * scale.y;
+            verticalOffset += getLineHeight();
+            glyphPos.x = 0;
+            glyphPos.y += advance.y;
             continue;
         } else if (p == tab) {
-            x += (fontface_->glyph->advance.x >> 6) * scale.x;
-            y += (fontface_->glyph->advance.y >> 6) * scale.y;
-            x += (4 * w);  // 4 times glyph character width
+            glyphPos += advance;
+
+            glyphPos.x += (4 * w);  // 4 times glyph character width
             continue;
         }
 
@@ -137,16 +134,21 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
                      fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
                      fontface_->glyph->bitmap.buffer);
 
-        float x2 = x + fontface_->glyph->bitmap_left * scale.x;
-        float y2 = -y - fontface_->glyph->bitmap_top * scale.y;
-        y2 += offset;
+        // compute floating point position
+        vec3 pos(x, y, 0.f);
+        pos.x += (glyphPos.x + fontface_->glyph->bitmap_left) * scale.x;
+        pos.y -= (verticalOffset - glyphPos.y - fontface_->glyph->bitmap_top) * scale.y;
+        
         // Translate quad to correct position and render
-        mesh_->setModelMatrix(glm::translate(vec3(x2, -y2, 0.f)) * glm::scale(vec3(w, -h, 1.f)));
+        mat4 m(glm::scale(vec3(w * scale.x, -h * scale.y, 1.f)));
+        m[3] = vec4(pos, 1.0f);
+
+        mesh_->setModelMatrix(m);
         utilgl::setShaderUniforms(textShader_, *mesh_, "geometry_");
 
         drawer_->draw();
-        x += (fontface_->glyph->advance.x >> 6) * scale.x;
-        y += (fontface_->glyph->advance.y >> 6) * scale.y;
+
+        glyphPos += advance;
     }
 
     textShader_.deactivate();
