@@ -6,6 +6,17 @@ ivw_module(Python3)
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
 ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
 
+
+
+#Check if numpy exist 
+execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
+                "try: import numpy; print(numpy.__version__);\nexcept: print('failed')\n"
+                RESULT_VARIABLE NUMPY_STATUS
+                OUTPUT_VARIABLE NUMPY_OUTPUT_VERSION
+                ERROR_VARIABLE NUMPY_ERROR
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+               )
+
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
@@ -62,6 +73,15 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/passvalues.py
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/simple_buffer_test.py
 )
+
+if  (NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
+    set(TEST_FILES
+        ${TEST_FILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/numpy-test.cpp
+    )
+endif()
+
+
 ivw_add_unittest(${TEST_FILES})
 
 set(INTERFACE_HEADER_FILES
