@@ -220,8 +220,7 @@ void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture
                                        const std::vector<mat4> &texTransform,
                                        const size2_t &canvasSize, const mat4 &transformation) {
     utilgl::DepthFuncState depth(GL_ALWAYS);
-    utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    
     TextureUnit texUnit;
     texUnit.activate();
     texture->bind();
