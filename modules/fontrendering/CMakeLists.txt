@@ -38,6 +38,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fontrendering_freetype.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fontrendering_freetype.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/textrenderer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/textrenderer.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

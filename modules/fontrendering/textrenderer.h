@@ -35,10 +35,14 @@
 #include <modules/fontrendering/util/fontutils.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/buffer/framebufferobject.h>
+
+#include <unordered_map>
+#include <tuple>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -108,6 +112,8 @@ public:
      */
     void setFont(const std::string &fontPath);
 
+    void render(const std::string &str, const vec2 &posf, const vec2 &scale, const vec4 &color);
+
     /**
      * \brief renders the given string with the specified color at position x, y in normalized
      * device coordinates [-1,1] using the scaling factor.
@@ -119,6 +125,8 @@ public:
      * @param color  color of rendered text
      */
     void render(const std::string &str, float x, float y, const vec2 &scale, const vec4 &color);
+    void renderDirect(const std::string &str, float x, float y, const vec2 &scale,
+                      const vec4 &color);
 
     /**
      * \brief renders the given string with the specified color into a texture.
@@ -199,10 +207,54 @@ public:
     int getBaseLineDescent() const;
 
 protected:
-    void initMesh();
+    struct GlyphEntry {
+        ivec2 advance;
 
+        ivec2 bitmapSize;  // bitmap.width, bitmap.rows
+        ivec2 bitmapPos;   // bitmap_left, bitmap_top
+
+        ivec2 texPos;
+    };
+
+    using FontFamilyStyle =
+        std::tuple<std::string, std::string, int>;  // holds font family, style, and size
+    using GlyphMap = std::map<unsigned int, GlyphEntry>;
+
+    struct FontCache {
+        std::shared_ptr<Texture2D> glyphTex;
+        GlyphMap glyphMap;
+
+        // current fill status of the texture
+        std::vector<int> lineLengths;
+        std::vector<int> lineHeights;
+    };
+    
     double getFontAscent() const;
     double getFontDescent() const;
+
+    /**
+     * \brief request glyph information from the texture atlas. The glyph will be added
+     * to the atlas if it isn't registered yet and there is space left in the atlas.
+     *
+     * @param fc       font cache for the currently selected font, style, and size
+     * @param glyph    character code of the glyph
+     * @return std::pair<bool, GlyphEntry> where pair.first is true if the glyph exists
+     *              and GlyphEntry refers to the respective glyph
+     */
+    std::pair<bool, GlyphEntry> requestGlyph(FontCache &fc, unsigned int glyph);
+
+    std::pair<bool, GlyphEntry> addGlyph(FontCache &fc, unsigned int glyph);
+
+    void uploadGlyph(FontCache &fc, unsigned int glyph);
+
+    FontCache &getFontCache();
+
+    void createDefaultGlyphAtlas();
+    std::shared_ptr<Texture2D> createAtlasTexture(FontCache &fc);
+
+    FontFamilyStyle getFontTuple() const;
+
+    std::unordered_map<FontFamilyStyle, FontCache> glyphAtlas_;
 
     FT_Library fontlib_;
     FT_Face fontface_;
@@ -210,10 +262,8 @@ protected:
     int fontSize_;        //<! font size in pixel
     double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
 
-    Shader textShader_;
-    GLuint texCharacter_;
-    std::unique_ptr<Mesh> mesh_;
-    std::unique_ptr<MeshDrawerGL> drawer_;
+    const int glyphMargin_;
+    Shader shader_;
 
     FrameBufferObject fbo_;
     std::shared_ptr<Texture2D>
