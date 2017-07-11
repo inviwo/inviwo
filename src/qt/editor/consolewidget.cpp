@@ -93,8 +93,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , model_()
     , filter_(new QSortFilterProxyModel(this))
     , levelFilter_(new QSortFilterProxyModel(this))
-    , filterPattern_(new QLineEdit(this))
     , textSelectionDelegate_(new TextSelectionDelegate(this))
+    , filterPattern_(new QLineEdit(this))
     , mainwindow_(parent) {
 
     setObjectName("ConsoleWidget");

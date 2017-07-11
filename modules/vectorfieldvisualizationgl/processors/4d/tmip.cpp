@@ -167,8 +167,6 @@ void TMIP::initShader(Shader& s, int samplers) {
             }
             break;
         }
-
-        i++;
     }
 
     shader_.getFragmentShaderObject()->addShaderDefine("GEN_UNIFORMS", uniforms.str());

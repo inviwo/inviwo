@@ -36,7 +36,7 @@
 
 #include <inviwo/core/util/utilities.h>
 
-
+#include <string>
 #include <iostream>
 
 namespace inviwo {
@@ -50,7 +50,7 @@ TEST(UtilitiesTests, StripIndentifierTest) {
     EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123"));
     EXPECT_EQ(
         "_1abc123",
-        util::stripIdentifier("1abc123&!-=\"#§%&/()=?`¥+@£$Ä{[]}®^~*'-.,;:<>|ßΩÂ‰ˆ≈ƒ÷"));
+        util::stripIdentifier("1abc123&!-=\"#%&/()=?`+@${[]}~*'-.,;:<>|"));
 }
 
 
