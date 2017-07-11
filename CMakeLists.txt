@@ -97,6 +97,50 @@ include(cmake/globalconfig.cmake)
 option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
+string(FIND "${CMAKE_PREFIX_PATH}" qt hasqt) # Skip if qt is already in CMAKE_PREFIX_PATH
+if(NOT ${hasqt} GREATER 0) # try and find qt and add it to CMAKE_PREFIX_PATH
+    if(NOT QT_QMAKE_EXECUTABLE)
+        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
+           PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
+        set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
+    endif()
+
+    if(WIN32)
+        if(QT_QMAKE_EXECUTABLE)
+            string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+        endif()
+    elseif(APPLE)
+        if(EXISTS "/usr/local/Cellar/qt")
+            file(GLOB qtversions RELATIVE "/usr/local/Cellar/qt/" "/usr/local/Cellar/qt/?.?.*")
+            list(LENGTH qtversions len)
+            if(${len} GREATER 0)
+                list(GET qtversions -1 qtlatest)
+                if(EXISTS "/usr/local/Cellar/qt/${qtlatest}")   
+                    set(QT5_PATH "/usr/local/Cellar/qt/${qtlatest}")          
+                endif()
+             endif()
+        elseif(EXISTS "/usr/local/Cellar/qt5")
+            file(GLOB qtversions RELATIVE "/usr/local/Cellar/qt5/" "/usr/local/Cellar/qt5/?.?.*")
+            list(LENGTH qtversions len)
+            if(${len} GREATER 0)
+                list(GET qtversions -1 qtlatest)
+                if(EXISTS "/usr/local/Cellar/qt5/${qtlatest}")   
+                    set(QT5_PATH "/usr/local/Cellar/qt5/${qtlatest}")          
+                endif()
+             endif()
+        endif()
+    else()
+        if(QT_QMAKE_EXECUTABLE)
+            string(REGEX REPLACE "bin/qmake([^ ]*)$" "lib/cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+        endif()
+    endif()
+
+    if(QT5_PATH)
+        ivw_debug_message(STATUS "Found qt at: ${QT5_PATH}") 
+        list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH}) 
+    endif()
+endif()
+
 #--------------------------------------------------------------------
 # Add external libraries.
 # 
