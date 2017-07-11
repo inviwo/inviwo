@@ -53,6 +53,8 @@ public:
     VolumeDoubleSampler(const Volume &vol, CoordinateSpace space = CoordinateSpace::Data);
     virtual ~VolumeDoubleSampler() = default;
 
+    VolumeDoubleSampler &operator=(const VolumeDoubleSampler &) = default;
+
     virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const override;
     virtual bool withinBoundsDataSpace(const dvec3 &pos) const override;
 
@@ -81,15 +83,13 @@ using VolumeSampler = VolumeDoubleSampler<4>;
 template <unsigned int DataDims>
 VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
                                                    CoordinateSpace space)
-    : SpatialSampler<3, DataDims, double>(vol, space)
-    , volume_(vol)
-    , ram_(vol->getRepresentation<VolumeRAM>())
-    , dims_(vol->getDimensions()) {}
+    : VolumeDoubleSampler(*vol,space) {
+    volume_ = vol;
+}
 
 template <unsigned int DataDims>
 VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(const Volume &vol, CoordinateSpace space)
     : SpatialSampler<3, DataDims, double>(vol, space)
-    , volume_(vol)
     , ram_(vol.getRepresentation<VolumeRAM>())
     , dims_(vol.getDimensions()) {}
 
