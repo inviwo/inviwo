@@ -216,10 +216,10 @@ void TextEditorWidgetQt::editString() {
 
 void TextEditorWidgetQt::loadString() {
     tmpPropertyValue_ = static_cast<StringProperty*>(property_)->get();
-    textEditorWidget_->textEditor_->setPlainText(QString::fromStdString(tmpPropertyValue_));
+    textEditorWidget_->textEditor_->setPlainText(utilqt::toQString(tmpPropertyValue_));
 }
 bool TextEditorWidgetQt::writeToString() {
-    static_cast<StringProperty*>(property_)->set(textEditorWidget_->textEditor_->toPlainText().toLocal8Bit().constData());
+    static_cast<StringProperty*>(property_)->set(utilqt::fromQString(textEditorWidget_->textEditor_->toPlainText()));
     stringWidget_->updateFromProperty();
     return true;
 }
