@@ -56,3 +56,9 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add font directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
+
+#--------------------------------------------------------------------
+# Add dependency to ext/utf 
+target_link_libraries(inviwo-module-fontrendering utf)
+
+ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)

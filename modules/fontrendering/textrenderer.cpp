@@ -41,6 +41,8 @@
 
 #include <modules/fontrendering/textrenderer.h>
 
+#include <utf8.h>
+
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string &fontPath)
@@ -81,6 +83,7 @@ void TextRenderer::setFont(const std::string &fontPath) {
         throw FileException(std::string("Could not open font file: \"") + fontPath + "\"");
     }
 
+    FT_Select_Charmap(fontface_, ft_encoding_unicode);
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
@@ -99,17 +102,28 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
     textShader_.activate();
     textShader_.setUniform("tex", texUnit.getUnitNumber());
     textShader_.setUniform("color", color);
-    
-    const char lf = '\n';   // Line Feed Ascii for std::endl, \n
+
+    const char lf = '\n';   // Line Feed Ascii
     const char tab = '\t';  // Tab Ascii
 
     ivec2 glyphPos;
     int verticalOffset = 0;
 
-    for (auto p : str) {
+    // check input string for invalid utf8 encoding
+    auto endIt = utf8::find_invalid(str.begin(), str.end());
+    if (endIt != str.end()) {
+        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
+                                                                                      endIt));
+    }
+
+    auto it = str.begin();
+    while (it < endIt) {
+        // convert input string to Unicode
+        uint32_t p = utf8::next(it, endIt);
+
         if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
             LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
-                    << static_cast<int>(p) << ")");
+                                                         << static_cast<int>(p) << ")");
             continue;
         }
         const int w = fontface_->glyph->bitmap.width;
@@ -138,7 +152,7 @@ void TextRenderer::render(const std::string &str, float x, float y, const vec2 &
         vec3 pos(x, y, 0.f);
         pos.x += (glyphPos.x + fontface_->glyph->bitmap_left) * scale.x;
         pos.y -= (verticalOffset - glyphPos.y - fontface_->glyph->bitmap_top) * scale.y;
-        
+
         // Translate quad to correct position and render
         mat4 m(glm::scale(vec3(w * scale.x, -h * scale.y, 1.f)));
         m[3] = vec4(pos, 1.0f);
