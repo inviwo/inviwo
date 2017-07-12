@@ -60,7 +60,7 @@ class ImageGL;
  * marker can occur multiple times and all occurences will be replaced with the same text.
  *
  * ### Inports
- *   * __Inport__ Input image
+ *   * __Inport__ Input image (optional)
  *
  * ### Outports
  *   * __Outport__ Output image with overlayed text
@@ -85,6 +85,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
+
+    virtual bool isReady() const override;
 
 protected:
     virtual void process() override;
