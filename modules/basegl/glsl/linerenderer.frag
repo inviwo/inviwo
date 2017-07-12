@@ -106,6 +106,7 @@ void main() {
     // prevent fragments with low alpha from being rendered
     if (alpha < 0.05) discard;
 
+    color.rgb *= alpha;
     color.a = alpha;
     FragData0 = color;
 

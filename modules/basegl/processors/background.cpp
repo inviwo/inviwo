@@ -64,7 +64,7 @@ Background::Background()
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
     , blendMode_("blendMode", "Blend mode",
-                 {{"backtofront", "Back To Front", BlendMode::BackToFront},
+                 {{"backtofront", "Back To Front (Pre-multiplied)", BlendMode::BackToFront},
                   {"alphamixing", "Alpha Mixing", BlendMode::AlphaMixing}},
                  0, InvalidationLevel::InvalidResources)
     , shader_("background.frag", false) {
@@ -133,18 +133,18 @@ void Background::initializeResources() {
         hadData_ = false;
     }
 
-    std::string blendMode = "";
+    std::string blendfunc = "";
     switch (blendMode_.get()) {
         case BlendMode::BackToFront:
-            blendMode = "srcColor + bgColor * (1.0 - srcColor.a)";
+            blendfunc = "blendBackToFront";
             break;
         default:
         case BlendMode::AlphaMixing:
-            blendMode = "mix(bgColor, srcColor, srcColor.a)";
+            blendfunc = "blendAlphaCompositing";
             break;
     }
 
-    shader_.getFragmentShaderObject()->addShaderDefine("BLEND(srcColor, dstColor)", blendMode);
+    shader_.getFragmentShaderObject()->addShaderDefine("BLENDFUNC", blendfunc);
 
     shader_.build();
 }
