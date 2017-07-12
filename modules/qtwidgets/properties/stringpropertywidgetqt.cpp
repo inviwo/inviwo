@@ -84,7 +84,8 @@ void StringPropertyWidgetQt::setPropertyValue() {
 }
 
 void StringPropertyWidgetQt::updateFromProperty() {
-    lineEdit_->setText(QString::fromStdString(property_->get()));
+    QSignalBlocker blocker(lineEdit_);
+    lineEdit_->setText(QString::fromLocal8Bit(property_->get().c_str()));
     lineEdit_->setCursorPosition(0);
 }
 
