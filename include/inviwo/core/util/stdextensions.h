@@ -512,6 +512,26 @@ inline void hash_combine(std::size_t& seed, const T& v) {
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+namespace hashtuple {
+
+/**
+ * Hashing for tuples
+ * https://stackoverflow.com/questions/20834838/using-tuple-in-unordered-map
+ */
+template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+struct HashValueImpl {
+    static void apply(size_t& seed, Tuple const& tuple) {
+        HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);
+        hash_combine(seed, std::get<Index>(tuple));
+    }
+};
+
+template <class Tuple>
+struct HashValueImpl<Tuple, 0> {
+    static void apply(size_t& seed, Tuple const& tuple) { hash_combine(seed, std::get<0>(tuple)); }
+};
+
+}  // namespace hashtuple
 }  // namespace util
 }  // namespace inviwo
 
@@ -526,7 +546,16 @@ struct hash<std::pair<T, U>> {
         return h;
     }
 };
-
+    
+template <typename ... TT>
+struct hash<std::tuple<TT...>> {
+    size_t
+        operator()(std::tuple<TT...> const& tt) const {
+        size_t seed = 0;
+        inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...> >::apply(seed, tt);
+        return seed;
+    }
+};
 
 template <class ForwardIt> 
 ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {
