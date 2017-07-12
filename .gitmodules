@@ -9,3 +9,6 @@
 [submodule "ext/pybind11"]
 	path = ext/pybind11
 	url = https://github.com/pybind/pybind11.git
+[submodule "ext/utf/utfcpp"]
+	path = ext/utf/utfcpp
+	url = https://github.com/nemtrif/utfcpp

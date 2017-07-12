@@ -157,6 +157,7 @@ add_subdirectory(ext/warn)
 add_subdirectory(ext/tclap)
 add_subdirectory(ext/tinydir)
 add_subdirectory(ext/half)
+add_subdirectory(ext/utf)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
