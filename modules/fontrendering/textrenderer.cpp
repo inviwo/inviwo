@@ -331,27 +331,34 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
     const size2_t glyphExtent(glyphEntry.bitmapSize + 2 * glyphMargin_);
     const size2_t texDims(fc.glyphTex->getDimensions());
 
-    for (size_t l = 0; l < fc.lineLengths.size(); ++l) {
-        if ((fc.lineLengths[l] + glyphExtent.x < texDims.x) &&
-            (fc.lineHeights[l + 1] - fc.lineHeights[l] + glyphExtent.y < texDims.y)) {
-            // found some space in the current line
+    size_t line = 0;
+    while (line < fc.lineLengths.size()) {
+        if ((fc.lineLengths[line] + glyphExtent.x < texDims.x) &&
+            (fc.lineHeights[line + 1] - fc.lineHeights[line] >= glyphExtent.y)) {
+            // found some space in the current line, store the glyph here
+            glyphEntry.texPos = ivec2(fc.lineLengths[line], fc.lineHeights[line]);
+
+            fc.lineLengths[line] += glyphExtent.x;
+            break;
         }
+        ++line;
     }
     // check remaining vertical space inside atlas texture
-    if (fc.lineHeights.back() + glyphExtent.y > texDims.y) {
-        LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex << glyph
-                                         << ") (max size for texture atlas exceeded)");
-        return std::make_pair(false, glyphEntry);
+    if (line == fc.lineLengths.size()) {
+        if (fc.lineHeights.back() + glyphExtent.y > texDims.y) {
+            LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex << glyph
+                    << ") (max size for texture atlas exceeded)");
+            return std::make_pair(false, glyphEntry);
+        }
+        // create a new, empty line in the texture and store the glyph there
+        glyphEntry.texPos = ivec2(0, fc.lineHeights.back());
+
+        fc.lineLengths.push_back(glyphExtent.x);
+        fc.lineHeights.push_back(glyphExtent.y + fc.lineHeights.back());
     }
 
-    // create a new, empty line in the texture and store the glyph there
-    glyphEntry.texPos = ivec2(0, fc.lineHeights.back());
     fc.glyphMap.insert({glyph, glyphEntry});
-
     uploadGlyph(fc, glyph);
-
-    fc.lineLengths.push_back(glyphExtent.x);
-    fc.lineHeights.push_back(glyphExtent.y + fc.lineHeights.back());
 
     return std::make_pair(true, glyphEntry);
 }
