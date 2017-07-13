@@ -67,7 +67,11 @@ node {
             dir('build') {
                 nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
                     sh """
+                        # tell ccache where the project root is
+                        CPATH=`pwd`
+                        CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         cmake -G \"Unix Makefiles\" -LA \
+                              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                               -DCMAKE_BUILD_TYPE=${params['Build Type']} \
                               -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
                               -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
