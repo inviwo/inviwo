@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/inconsistent-missing-override` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/inconsistent-missing-override` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_INCONSISTENT_MISSING_OVERRIDE_)
-# error "`warn/ignore/inconsistent-missing-override` already included"
-#else
-# define IVW_WARN_INCONSISTENT_MISSING_OVERRIDE_
+#if defined(WARN_IGNORE_INCONSISTENT_MISSING_OVERRIDE)
+#   error "`warn/ignore/inconsistent-missing-override` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Winconsistent-missing-override")
-#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
-# endif
-#endif
+#define WARN_IGNORE_INCONSISTENT_MISSING_OVERRIDE
 
-#if (__GNUC__)
-# if __GNUC__ > 4 || \
-    (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
-    // gcc 4.8.x does not support this warning
-#  pragma GCC diagnostic ignored "-Wsuggest-override"
-# endif
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 6)
+#       if __has_warning("-Winconsistent-missing-override")
+#           pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+#   if __GNUC__ > 5 || (__GNUC__ == 5  && __GNUC_MINOR__ > 0)
+#       pragma GCC diagnostic ignored "-Wsuggest-override"
+#   endif
+#elif defined(_MSC_VER)
+//  Not available
 #endif

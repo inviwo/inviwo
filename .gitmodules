@@ -7,8 +7,11 @@
     branch = hdf5_1_10_0
 
 [submodule "ext/pybind11"]
-	path = ext/pybind11
-	url = https://github.com/pybind/pybind11.git
+    path = ext/pybind11
+    url = https://github.com/pybind/pybind11.git
+[submodule "tools/codegen/warn/warn"]
+    path = tools/codegen/warn/warn
+    url = https://petersteneteg@github.com/petersteneteg/warn.git
 [submodule "ext/utf/utfcpp"]
-	path = ext/utf/utfcpp
-	url = https://github.com/nemtrif/utfcpp
+    path = ext/utf/utfcpp
+    url = https://github.com/nemtrif/utfcpp
