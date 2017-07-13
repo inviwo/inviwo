@@ -69,8 +69,8 @@ node {
                     sh """
                         ccache -z # reset ccache statistics
                         # tell ccache where the project root is
-                        CPATH=`pwd`
-                        CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
+                        export CPATH=`pwd`
+                        export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         cmake -G \"Unix Makefiles\" -LA \
                               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                               -DCMAKE_BUILD_TYPE=${params['Build Type']} \
