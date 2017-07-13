@@ -67,6 +67,7 @@ node {
             dir('build') {
                 nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
                     sh """
+                        ccache -z # reset ccache statistics
                         # tell ccache where the project root is
                         CPATH=`pwd`
                         CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
@@ -92,6 +93,8 @@ node {
                               ../inviwo
 
                         make -j 6
+
+                        ccache -s # print ccache statistics
                     """
                 }
             }
