@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,21 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/weak-vtables` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/weak-vtables` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_WEAK_VTABLES_)
-# error "`warn/ignore/weak-vtables` already included"
-#else
-# define IVW_WARN_WEAK_VTABLES_
+#if defined(WARN_IGNORE_WEAK_VTABLES)
+#   error "`warn/ignore/weak-vtables` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Wweak-vtables")
-#  pragma clang diagnostic ignored "-Wweak-vtables"
-# endif
+#define WARN_IGNORE_WEAK_VTABLES
+
+#if defined(__clang__)
+//  Not available
+#elif defined(__GNUC__)
+//  Not available
+#elif defined(_MSC_VER)
+//  Not available
 #endif

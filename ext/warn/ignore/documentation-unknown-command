@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,21 +24,27 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/documentation-unknown-command` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/documentation-unknown-command` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_DOCUMENTATION_UNKNOWN_COMMAND_)
-# error "`warn/ignore/documentation-unknown-command` already included"
-#else
-# define IVW_WARN_DOCUMENTATION_UNKNOWN_COMMAND_
+#if defined(WARN_IGNORE_DOCUMENTATION_UNKNOWN_COMMAND)
+#   error "`warn/ignore/documentation-unknown-command` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Wdocumentation-unknown-command")
-#  pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
-# endif
+#define WARN_IGNORE_DOCUMENTATION_UNKNOWN_COMMAND
+
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 3)
+#       if __has_warning("-Wdocumentation-unknown-command")
+#           pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+//  Not available
+#elif defined(_MSC_VER)
+//  Not available
 #endif
