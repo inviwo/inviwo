@@ -38,6 +38,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/sharedopenglresources.h>
 
 #include <modules/fontrendering/textrenderer.h>
 
@@ -47,7 +48,8 @@ TextRenderer::TextRenderer(const std::string &fontPath)
     : fontface_(nullptr)
     , fontSize_(10)
     , lineSpacing_(0.2)
-    , textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true) {
+    , glyphMargin_(2)
+    , shader_("textrenderer.vert", "textrenderer.frag") {
 
     if (FT_Init_FreeType(&fontlib_)) {
         throw Exception("Could not initialize FreeType library");
@@ -55,19 +57,12 @@ TextRenderer::TextRenderer(const std::string &fontPath)
 
     setFont(fontPath);
 
-    glGenTextures(1, &texCharacter_);
-
-    initMesh();
-
     fbo_.activate();
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     fbo_.deactivate();
 }
 
-TextRenderer::~TextRenderer() {
-    FT_Done_Face(fontface_);
-    glDeleteTextures(1, &texCharacter_);
-}
+TextRenderer::~TextRenderer() { FT_Done_Face(fontface_); }
 
 void TextRenderer::setFont(const std::string &fontPath) {
     // free previous font face
@@ -84,74 +79,77 @@ void TextRenderer::setFont(const std::string &fontPath) {
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
-void TextRenderer::render(const std::string &str, float x, float y, const vec2 &scale,
+void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &scaling,
                           const vec4 &color) {
-    TextureUnit texUnit;
-    texUnit.activate();
-
-    glBindTexture(GL_TEXTURE_2D, texCharacter_);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    textShader_.activate();
-    textShader_.setUniform("tex", texUnit.getUnitNumber());
-    textShader_.setUniform("color", color);
-    
     const char lf = '\n';   // Line Feed Ascii for std::endl, \n
     const char tab = '\t';  // Tab Ascii
+
+    auto &fc = getFontCache();
+
+    TextureUnit texUnit;
+    texUnit.activate();
+    fc.glyphTex->bind();
+
+    const vec2 texDims(fc.glyphTex->getDimensions());
+
+    shader_.activate();
+    shader_.setUniform("tex", texUnit);
+    shader_.setUniform("color", color);
+
+    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
 
     ivec2 glyphPos;
     int verticalOffset = 0;
 
-    for (auto p : str) {
-        if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
-                    << static_cast<int>(p) << ")");
+    for (unsigned char c : str) {
+        auto p = requestGlyph(fc, static_cast<unsigned char>(c));
+        if (!p.first) {
+            // glyph not found, skip it
+            glyphPos += p.second.advance;
             continue;
         }
-        const int w = fontface_->glyph->bitmap.width;
-        const int h = fontface_->glyph->bitmap.rows;
 
-        const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);
+        GlyphEntry &glyph = p.second;
 
-        if (p == lf) {
+        if (c == lf) {
             verticalOffset += getLineHeight();
             glyphPos.x = 0;
-            glyphPos.y += advance.y;
+            glyphPos.y += glyph.advance.y;
             continue;
-        } else if (p == tab) {
-            glyphPos += advance;
-
-            glyphPos.x += (4 * w);  // 4 times glyph character width
+        } else if (c == tab) {
+            glyphPos += glyph.advance;
+            glyphPos.x += (4 * glyph.bitmapSize.x);  // 4 times glyph character width
             continue;
         }
 
-        // load glyph into texture
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, fontface_->glyph->bitmap.width,
-                     fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
-                     fontface_->glyph->bitmap.buffer);
-
         // compute floating point position
-        vec3 pos(x, y, 0.f);
-        pos.x += (glyphPos.x + fontface_->glyph->bitmap_left) * scale.x;
-        pos.y -= (verticalOffset - glyphPos.y - fontface_->glyph->bitmap_top) * scale.y;
-        
+        vec3 pos(posf, 0.f);
+        pos.x += (glyphPos.x + glyph.bitmapPos.x) * scaling.x;
+        pos.y -= (verticalOffset - glyphPos.y - glyph.bitmapPos.y) * scaling.y;
+
         // Translate quad to correct position and render
-        mat4 m(glm::scale(vec3(w * scale.x, -h * scale.y, 1.f)));
-        m[3] = vec4(pos, 1.0f);
+        mat4 dataToWorld(
+            glm::scale(vec3(glyph.bitmapSize.x * scaling.x, -glyph.bitmapSize.y * scaling.y, 1.f)));
+        dataToWorld[3] = vec4(pos, 1.0f);
 
-        mesh_->setModelMatrix(m);
-        utilgl::setShaderUniforms(textShader_, *mesh_, "geometry_");
+        {
+            mat4 texTransform(glm::scale(vec3(vec2(glyph.bitmapSize) / texDims, 1.0f)));
+            texTransform[3] = vec4(vec2(glyph.texPos) / texDims, 0.0f, 1.0f);
 
-        drawer_->draw();
+            shader_.setUniform("geometry_.dataToWorld", dataToWorld);
+            shader_.setUniform("texCoordTransform", texTransform);
 
-        glyphPos += advance;
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        }
+
+        glyphPos += glyph.advance;
     }
+}
 
-    textShader_.deactivate();
+void TextRenderer::render(const std::string &str, float x, float y, const vec2 &scale,
+                          const vec4 &color) {
+    render(str, vec2(x, y), scale, color);
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
@@ -273,23 +271,6 @@ vec2 TextRenderer::computeTextSize(const std::string &str) {
     return vec2(maxx, maxy + 2);
 }
 
-void TextRenderer::initMesh() {
-    auto verticesBuffer =
-        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-
-    auto texCoordsBuffer =
-        util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-
-    auto indices = util::makeIndexBuffer({0, 1, 2, 3});
-
-    mesh_ = util::make_unique<Mesh>();
-    mesh_->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    mesh_->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-    mesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices);
-
-    drawer_ = util::make_unique<MeshDrawerGL>(mesh_.get());
-}
-
 void TextRenderer::setFontSize(int val) {
     if (fontSize_ != val) {
         fontSize_ = val;
@@ -319,6 +300,236 @@ double TextRenderer::getFontAscent() const {
 
 double TextRenderer::getFontDescent() const {
     return (fontface_->descender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
+}
+
+std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::requestGlyph(FontCache &fc,
+                                                                     unsigned int glyph) {
+    // try to find the glyph
+    auto it = fc.glyphMap.find(glyph);
+    if (it != fc.glyphMap.end()) {
+        return std::make_pair(true, it->second);
+    } else {
+        // glyph doesn't exist yet. Try to add glyph
+        return addGlyph(fc, glyph);
+    }
+}
+
+std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
+                                                                 unsigned int glyph) {
+    if (FT_Load_Char(fontface_, glyph, FT_LOAD_RENDER)) {
+        LogWarn("FreeType: could not load char: '" << static_cast<char>(glyph) << "' (0x"
+                                                   << std::hex << glyph << ")");
+        return std::make_pair(false, GlyphEntry());
+    }
+
+    const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);
+    const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
+    const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
+
+    GlyphEntry glyphEntry = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+
+    const size2_t glyphExtent(glyphEntry.bitmapSize + 2 * glyphMargin_);
+    const size2_t texDims(fc.glyphTex->getDimensions());
+
+    size_t line = 0;
+    while (line < fc.lineLengths.size()) {
+        if ((fc.lineLengths[line] + glyphExtent.x < texDims.x) &&
+            (fc.lineHeights[line + 1] - fc.lineHeights[line] >= glyphExtent.y)) {
+            // found some space in the current line, store the glyph here
+            glyphEntry.texPos = ivec2(fc.lineLengths[line], fc.lineHeights[line]);
+
+            fc.lineLengths[line] += glyphExtent.x;
+            break;
+        }
+        ++line;
+    }
+    // check remaining vertical space inside atlas texture
+    if (line == fc.lineLengths.size()) {
+        if (fc.lineHeights.back() + glyphExtent.y > texDims.y) {
+            LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex << glyph
+                    << ") (max size for texture atlas exceeded)");
+            return std::make_pair(false, glyphEntry);
+        }
+        // create a new, empty line in the texture and store the glyph there
+        glyphEntry.texPos = ivec2(0, fc.lineHeights.back());
+
+        fc.lineLengths.push_back(glyphExtent.x);
+        fc.lineHeights.push_back(glyphExtent.y + fc.lineHeights.back());
+    }
+
+    fc.glyphMap.insert({glyph, glyphEntry});
+    uploadGlyph(fc, glyph);
+
+    return std::make_pair(true, glyphEntry);
+}
+
+void TextRenderer::uploadGlyph(FontCache &fc, unsigned int glyph) {
+    fc.glyphTex->bind();
+
+    const auto it = fc.glyphMap.find(glyph);
+    if (it == fc.glyphMap.end()) {
+        // glyph is not registered
+        return;
+    }
+
+    if (FT_Load_Char(fontface_, glyph, FT_LOAD_RENDER)) return;
+
+    const auto &elem = it->second;
+    glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texPos.x, elem.texPos.y, elem.bitmapSize.x,
+                    elem.bitmapSize.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
+}
+
+TextRenderer::FontCache &TextRenderer::getFontCache() {
+    const auto font = getFontTuple();
+
+    auto fontCacheIt = glyphAtlas_.find(font);
+    if (fontCacheIt == glyphAtlas_.end()) {
+        // texture atlas doesn't exist for the current font/style/size combination
+        //
+        // create a new atlas texture
+        createDefaultGlyphAtlas();
+        fontCacheIt = glyphAtlas_.find(font);
+        if (fontCacheIt == glyphAtlas_.end()) {
+            throw Exception("Could not create font atlas");
+        }
+    }
+    return fontCacheIt->second;
+}
+
+void TextRenderer::createDefaultGlyphAtlas() {
+    if (glyphAtlas_.find(getFontTuple()) != glyphAtlas_.end()) {
+        // glyph atlas already exists
+        return;
+    }
+
+    FontCache fc;
+
+    // create glyphs for all ascii characters between 32 and 128
+    for (unsigned int c = 32u; c < 128u; ++c) {
+        if (FT_Load_Char(fontface_, c, FT_LOAD_RENDER)) {
+            LogWarn("FreeType: could not load char: '" << static_cast<char>(c) << "' (0x"
+                                                       << std::hex << c << ")");
+            continue;
+        }
+
+        const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);
+        const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
+        const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
+
+        fc.glyphMap[c] = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+    }
+
+    fc.glyphTex = createAtlasTexture(fc);
+
+    // upload all glyphs
+    for (unsigned int c = 32u; c < 128u; ++c) {
+        if (FT_Load_Char(fontface_, c, FT_LOAD_RENDER)) {
+            continue;
+        }
+
+        const auto it = fc.glyphMap.find(c);
+        if (it == fc.glyphMap.end()) {
+            // glyph is not registered
+            continue;
+        }
+        const auto &elem = it->second;
+        glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texPos.x, elem.texPos.y, elem.bitmapSize.x,
+                        elem.bitmapSize.y, GL_RED, GL_UNSIGNED_BYTE,
+                        fontface_->glyph->bitmap.buffer);
+    }
+
+    // insert font cache into global map
+    glyphAtlas_.insert({getFontTuple(), std::move(fc)});
+}
+
+std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache &fc) {
+    std::vector<unsigned int> indices(fc.glyphMap.size());
+    std::iota(indices.begin(), indices.end(), 32u);
+
+    // sort labels according to width then height
+    std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
+        const auto &extA(fc.glyphMap[a].bitmapSize);
+        const auto &extB(fc.glyphMap[b].bitmapSize);
+
+        return ((extA.x > extB.x) || ((extA.x == extA.x) && (extA.y > extA.y)));
+    });
+
+    // figure out texture size to fit all glyph given a specific width using the Shelf First Fit
+    // algorithm this function also updates the glyph positions within the new atlas texture
+    auto calcTexLayout = [&](const int width, const int margin) {
+        std::vector<int> lineLengths;
+        std::vector<int> lineHeights;
+        lineLengths.push_back(0);
+        lineHeights.push_back(0);
+        // Fill each line by putting each element after the previous one.
+        // If an element does not fit, start new line.
+        for (auto i : indices) {
+            const auto &extent = fc.glyphMap[i].bitmapSize + 2 * margin;
+            size_t line = 0;
+            while (line < lineLengths.size()) {
+                if (lineLengths[line] + extent.x < width) {
+                    // found a position with enough space, for now we only know the x coord,
+                    // use y component to store current line
+                    fc.glyphMap[i].texPos = ivec2(lineLengths[line] + margin, line);
+                    lineLengths[line] += extent.x;
+                    lineHeights[line] = std::max(extent.y, lineHeights[line]);
+                    break;
+                }
+                ++line;
+            }
+            if (line == lineLengths.size()) {
+                // no space found, create new line
+                fc.glyphMap[i].texPos = ivec2(margin, line);
+                lineLengths.push_back(extent.x);
+                lineHeights.push_back(extent.y);
+            }
+        }
+        // update y positions of all elements
+        std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
+        lineHeights.insert(lineHeights.begin(), 0);
+        for (auto &elem : fc.glyphMap) {
+            elem.second.texPos.y = lineHeights[elem.second.texPos.y] + margin;
+        }
+
+        fc.lineLengths = std::move(lineLengths);
+        fc.lineHeights = std::move(lineHeights);
+
+        return ivec2(width, fc.lineHeights.back());
+    };
+
+    // figure out conservative texture size
+    const int maxTexSize = 8192;
+
+    int width = 256;
+    ivec2 texSize = calcTexLayout(width, glyphMargin_);
+    while (texSize.y > width) {
+        width *= 2;
+        if (width > maxTexSize) {
+            throw Exception("TextRenderer: font size too large (max size for font atlas exceeded)");
+        }
+
+        texSize = calcTexLayout(width, glyphMargin_);
+    }
+
+    // add space for another three rows of glyphs
+    const int additionalRows = 3;
+    const int maxRowHeight = fc.lineHeights[1];
+
+    texSize.y =
+        glm::min(maxTexSize, texSize.y + (maxRowHeight + 2 * glyphMargin_) * additionalRows);
+
+    auto tex =
+        std::make_shared<Texture2D>(size2_t(texSize), GL_RED, GL_RED, GL_UNSIGNED_BYTE, GL_LINEAR);
+    // clear texture
+    std::vector<unsigned char> data(texSize.x * texSize.y, 0);
+    tex->initialize(data.data());
+
+    return tex;
+}
+
+TextRenderer::FontFamilyStyle TextRenderer::getFontTuple() const {
+    return std::make_tuple(std::string(fontface_->family_name), std::string(fontface_->style_name),
+                           fontSize_);
 }
 
 namespace util {
