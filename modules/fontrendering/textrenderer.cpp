@@ -42,6 +42,8 @@
 
 #include <modules/fontrendering/textrenderer.h>
 
+#include <utf8.h>
+
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string &fontPath)
@@ -76,6 +78,7 @@ void TextRenderer::setFont(const std::string &fontPath) {
         throw FileException(std::string("Could not open font file: \"") + fontPath + "\"");
     }
 
+    FT_Select_Charmap(fontface_, ft_encoding_unicode);
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
@@ -102,22 +105,34 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
     ivec2 glyphPos;
     int verticalOffset = 0;
 
-    for (unsigned char c : str) {
-        auto p = requestGlyph(fc, static_cast<unsigned char>(c));
+      // check input string for invalid utf8 encoding
+    auto endIt = utf8::find_invalid(str.begin(), str.end());
+    if (endIt != str.end()) {
+        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
+                                                                                      endIt));
+    }
+
+    auto it = str.begin();
+    while (it < endIt) {
+        // convert input string to Unicode
+        const uint32_t charCode = utf8::next(it, endIt);
+
+        auto p = requestGlyph(fc, charCode);
         if (!p.first) {
             // glyph not found, skip it
             glyphPos += p.second.advance;
+
             continue;
         }
 
         GlyphEntry &glyph = p.second;
 
-        if (c == lf) {
+        if (charCode == lf) {
             verticalOffset += getLineHeight();
             glyphPos.x = 0;
             glyphPos.y += glyph.advance.y;
             continue;
-        } else if (c == tab) {
+        } else if (charCode == tab) {
             glyphPos += glyph.advance;
             glyphPos.x += (4 * glyph.bitmapSize.x);  // 4 times glyph character width
             continue;

@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>
@@ -63,7 +65,7 @@ StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty 
 }
 
 void StringMultilinePropertyWidgetQt::setPropertyValue() {
-    std::string valueStr = textEdit_->toPlainText().toLocal8Bit().constData();
+    std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
     property_->setInitiatingWidget(this);
     property_->set(valueStr);
     property_->clearInitiatingWidget();
@@ -71,7 +73,7 @@ void StringMultilinePropertyWidgetQt::setPropertyValue() {
 
 void StringMultilinePropertyWidgetQt::updateFromProperty() {
     QString text(textEdit_->toPlainText());
-    QString newContents(QString::fromStdString(property_->get()));
+    QString newContents(utilqt::toQString(property_->get()));
     if (text != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);

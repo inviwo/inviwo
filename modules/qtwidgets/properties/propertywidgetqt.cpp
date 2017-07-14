@@ -413,7 +413,7 @@ bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         auto helpEvent = static_cast<QHelpEvent*>(event);
         QToolTip::showText(helpEvent->globalPos(),
-                           utilqt::toLocalQString(property_->getDescription()));
+                           utilqt::toQString(property_->getDescription()));
         return true;
     } else if (event->type() == QEvent::MouseButtonRelease) {
         auto mouseEvent = static_cast<QMouseEvent*>(event);
