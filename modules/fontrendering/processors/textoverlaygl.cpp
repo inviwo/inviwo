@@ -69,6 +69,8 @@ TextOverlayGL::TextOverlayGL()
     , addArgButton_("addArgBtn", "Add String Argument")
     , numArgs_(0u)
 {
+    inport_.setOptional(true);
+
     addPort(inport_);
     addPort(outport_);
     addProperty(enable_);
@@ -114,7 +116,12 @@ void TextOverlayGL::process() {
     }
 
     // draw cached overlay on top of the input image
-    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepthPicking);
+    if (inport_.isConnected()) {
+        utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
+    } else {
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
+    }
+
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -139,6 +146,15 @@ void TextOverlayGL::deserialize(Deserializer & d) {
     
     // only maxNumArgs_ are supported, disable button if more exist
     addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
+}
+
+bool TextOverlayGL::isReady() const {
+    if (enable_.get())
+        return Processor::isReady();
+    else {
+        // if font overlay is not enabled we need data from the inport
+        return inport_.isReady();
+    }
 }
 
 std::string TextOverlayGL::getString() const {
