@@ -71,7 +71,8 @@ node {
                         # tell ccache where the project root is
                         export CPATH=`pwd`
                         export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
-                        cmake -G \"Unix Makefiles\" -LA \
+                        
+                        cmake -G \"Ninja\" -LA \
                               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                               -DCMAKE_BUILD_TYPE=${params['Build Type']} \
                               -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
@@ -92,7 +93,7 @@ node {
                               -DIVW_INTEGRATION_TESTS=ON \
                               ../inviwo
 
-                        make -j 6
+                        ninja
 
                         ccache -s # print ccache statistics
                     """
