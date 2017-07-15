@@ -638,7 +638,7 @@ file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script
 # Custom target for updating the build information (this target is always out-of-date)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
