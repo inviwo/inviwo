@@ -37,5 +37,4 @@ void main(void) {
     FragData0 = color;
 
     PickingData = vec4(0.0);
-    gl_FragDepth = 0.0;
 }

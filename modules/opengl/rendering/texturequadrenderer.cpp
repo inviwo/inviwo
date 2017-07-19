@@ -220,7 +220,7 @@ void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture
                                        const std::vector<mat4> &texTransform,
                                        const size2_t &canvasSize, const mat4 &transformation) {
     utilgl::DepthFuncState depth(GL_ALWAYS);
-    
+
     TextureUnit texUnit;
     texUnit.activate();
     texture->bind();
@@ -238,9 +238,68 @@ void TextureQuadRenderer::renderToRect(const std::shared_ptr<Texture2D> &texture
         const vec2 p(vec2(get<0>(elem)) * scaling);
         const vec2 ext(vec2(get<1>(elem)));
 
-        const mat4 dataToWorld(glm::translate(vec3(-1.0f + p.x, -1.0f + p.y, 0.0f)) *
+        const mat4 dataToWorld(glm::translate(vec3(-1.0f + p.x, -1.0f + p.y, -1.0f)) *
                                glm::scale(vec3(scaling, 1.f)) * transformation *
                                glm::scale(vec3(ext, 1.f)));
+
+        shader_.setUniform("geometry_.dataToWorld", dataToWorld);
+        shader_.setUniform("texCoordTransform", get<2>(elem));
+
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+    shader_.deactivate();
+}
+
+void TextureQuadRenderer::renderToRect3D(const Camera &camera,
+                                         const std::shared_ptr<Texture2D> &texture, const vec3 &pos,
+                                         const ivec2 &extent, const size2_t &canvasSize,
+                                         const vec2 &anchor, const mat4 &transformation,
+                                         const mat4 &texTransform) {
+    if (texture) {
+        renderToRect3D(camera, texture, {pos}, {extent}, {texTransform}, canvasSize, anchor,
+                       transformation);
+    }
+}
+
+void TextureQuadRenderer::renderToRect3D(
+    const Camera &camera, const std::shared_ptr<Texture2D> &texture, const std::vector<vec3> &pos,
+    const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
+    const size2_t &canvasSize, const vec2 &anchor, const mat4 &transformation) {
+
+    utilgl::DepthFuncState depth(GL_LESS);
+
+    TextureUnit texUnit;
+    texUnit.activate();
+    texture->bind();
+
+    shader_.activate();
+    shader_.setUniform("tex", texUnit);
+
+    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
+
+    // scaling factor from screen coords to normalized dev coords
+    const vec2 scaling(vec2(2.0f) / vec2(canvasSize));
+
+    const mat4 viewprojMatrix(camera.getProjectionMatrix() * camera.getViewMatrix());
+
+    for (auto &&elem : util::zip(pos, extent, texTransform)) {
+        // transform position from world space into normalized dev coords
+        vec4 p(viewprojMatrix * vec4(get<0>(elem), 1.0f));
+        p /= p.w;
+
+        const vec2 ext(vec2(get<1>(elem)));
+        // consider anchor position
+        const vec2 offset = 0.5f * ext * scaling * (anchor + vec2(1.0f, 1.0f));
+
+        // ensure that the lower left position is pixel aligned
+        const vec3 origin(
+            glm::round(vec2(p.x - offset.x, p.y - offset.y) * vec2(canvasSize) * 0.5f) * scaling,
+            p.z);
+
+        const mat4 dataToWorld(glm::translate(origin) * glm::scale(vec3(scaling, 1.f)) *
+                               transformation * glm::scale(vec3(ext, 1.f)));
 
         shader_.setUniform("geometry_.dataToWorld", dataToWorld);
         shader_.setUniform("texCoordTransform", get<2>(elem));

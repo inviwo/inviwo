@@ -35,6 +35,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/camera.h>
 
 namespace inviwo {
 class Image;
@@ -68,7 +69,7 @@ public:
      *                   or Picking
      * @param transformation  additional transformation matrix to be applied before rendering. (For
      *                 example a rotation matrix to rotate the quad)
-     * @param texTransform   optional transformation for texture coordinates, e.g. 
+     * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
     void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
@@ -228,6 +229,31 @@ public:
     void renderToRect(const std::shared_ptr<Texture2D> &texture, const std::vector<ivec2> &pos,
                       const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
                       const size2_t &canvasSize, const mat4 &transformation = mat4(1));
+
+    /**
+     * \brief renders a texture at world position pos onto the current canvas with the given
+     * extent. The covered area is defined by the extent (in pixel). The anchor point
+     * of the texture is defined by anchor (-1 to 1).
+     *
+     * @param camera      camera used for determining the screen position
+     * @param texture     texture which is to be rendered onto the current render target
+     * @param pos         position in world coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize  dimensions of the current render target
+     * @param anchor      anchor position of texture (default lower left, i.e. (-1,-1))
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
+                        const vec3 &pos, const ivec2 &extent, const size2_t &canvasSize,
+                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1),
+                        const mat4 &texTransform = mat4(1));
+    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
+                        const std::vector<vec3> &pos, const std::vector<ivec2> &extent,
+                        const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1));
 
 private:
     Shader shader_;
