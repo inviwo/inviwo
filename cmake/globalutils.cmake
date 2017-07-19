@@ -634,7 +634,7 @@ endfunction()
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
-function(ivw_generate_build_info header_template ini_template buildinfo_headerfile buildinfo_inifile)
+function(ivw_generate_build_info source_template ini_template buildinfo_sourcefile buildinfo_inifile)
     ivw_find_unique_path_segements(unique_names "${ARGN}")
     set(index 0)
     set(hashes_list "")
@@ -644,8 +644,8 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
         list(APPEND hashes_list "{\"${name}\", \"${hash}\"}")
         MATH(EXPR index "${index}+1")
     endforeach()
-    string(REPLACE ";" ",\n    " hashes "${hashes_list}")
-    set(HASHES "{{\n    ${hashes}\n}}")
+    string(REPLACE ";" ",\n            " hashes "${hashes_list}")
+    set(HASHES "{\n            ${hashes}\n        }")
     set(NHASHES "${index}")
 
     set(index 0)
@@ -657,7 +657,7 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
         MATH(EXPR index "${index}+1")
     endforeach()
     string(REPLACE ";" "\n" hashes "${hashes_list}")
-    set(INIHASHES "${hashes}\n")
+    set(INIHASHES "${hashes}")
 
 
     string(TIMESTAMP TMPYEAR "%Y")
@@ -672,7 +672,7 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
     string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
     string(TIMESTAMP TMPSECOND "%S")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
-    configure_file("${header_template}" "${buildinfo_headerfile}" @ONLY)
+    configure_file("${source_template}" "${buildinfo_sourcefile}" @ONLY)
 
     string(REPLACE "\"" "" ini_dest_path ${INI_DEST_PATH})
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
