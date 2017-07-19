@@ -71,20 +71,28 @@ float calculateTValueFromDepthValue(CameraParameters camera, float depth, float 
 }
 
 
+float convertDepthViewToClip(CameraParameters camera, float z) {
+    // convert linear depth from view coordinates to non-linear clip coords [-1,1]
+    float Zn = camera.nearPlane;
+    float Zf = camera.farPlane;
+
+    return (Zf + Zn) / (Zf - Zn) + (-2.0 * Zf * Zn) / (z * (Zf - Zn));
+}
+
+float convertDepthClipToView(CameraParameters camera, float z) {
+    // convert non-linear depth from clip coords [-1,1] back to linear view coords (-inf,inf)
+    float Zn = camera.nearPlane;
+    float Zf = camera.farPlane;
+
+    return 2.0 * Zn * Zf / (Zf + Zn - z * (Zf - Zn));
+}
+
 float convertDepthScreenToView(CameraParameters camera, float z) {
     // convert non-linear depth from screen coords [0,1] back to linear view coords (-inf,inf)
     float Zn = camera.nearPlane;
     float Zf = camera.farPlane;
 
     return Zn*Zf / (Zf - z*(Zf - Zn));
-}
-
-float convertDepthViewToClip(CameraParameters camera, float z) {
-    // convert linear depth from view coordinates to non-linear clip coords [-1,1]
-    float Zn = camera.nearPlane;
-    float Zf = camera.farPlane;
-    float depth = (Zf + Zn) / (Zf - Zn) + (-2.0 * Zf * Zn) / (z * (Zf - Zn));
-    return depth;
 }
 
 float convertDepthViewToScreen(CameraParameters camera, float z) {
