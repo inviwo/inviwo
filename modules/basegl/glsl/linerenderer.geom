@@ -262,7 +262,7 @@ void main(void) {
             // extend segment beyond p1 by radius for cap
             leftTop -= w * v1;
             leftBottom -= w * v1;
-            texCoord = vec2(-w);
+            texCoord -= w;
         }
     }
     else {
@@ -283,13 +283,13 @@ void main(void) {
         // compute end position at p2
         rightTop = p2 + w * n1;
         rightBottom = p2 - w * n1;
-        texCoord = vec2(0);
+        texCoord = vec2(segmentLength_);
 
         if (roundCaps) {
             // extend segment beyond p2 by radius for cap
             rightTop += w * v1;
             rightBottom += w * v1;
-            texCoord = vec2(segmentLength_ + w);
+            texCoord += w;
         }
     }
     else {
