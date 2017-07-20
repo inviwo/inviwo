@@ -125,8 +125,6 @@ public:
      * @param color  color of rendered text
      */
     void render(const std::string &str, float x, float y, const vec2 &scale, const vec4 &color);
-    void renderDirect(const std::string &str, float x, float y, const vec2 &scale,
-                      const vec4 &color);
 
     /**
      * \brief renders the given string with the specified color into a texture.
