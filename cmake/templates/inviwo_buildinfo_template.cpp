@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,27 @@
  *
  *********************************************************************************/
 
-#include <array>
-#include <utility>
-#include <string>
+#include <inviwo/core/util/buildinfo.h>
 
 namespace inviwo {
-namespace buildinfo {
 
-constexpr std::array<std::pair<const char *, const char *>, @NHASHES@> githashes = @HASHES@;
-constexpr int year = @YEAR@;
-constexpr int month = @MONTH@; 
-constexpr int day = @DAY@;
-constexpr int hour = @HOUR@;
-constexpr int minute = @MINUTE@;
-constexpr int second  = @SECOND@;
+namespace util {
 
-}  // namespace
-}  // namespace
+BuildInfo getBuildInfo() {
+    BuildInfo info;
+    
+    info.year = @YEAR@;
+    info.month = @MONTH@; 
+    info.day = @DAY@;
+    info.hour = @HOUR@;
+    info.minute = @MINUTE@;
+    info.second  = @SECOND@;
+
+    info.githashes = @HASHES@;
+
+    return info;
+}
+
+}  // namespace util
+
+}  // namespace inviwo

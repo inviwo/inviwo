@@ -228,6 +228,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/templateresource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
@@ -514,6 +515,16 @@ set(SOURCE_FILES
     util/volumesequenceutils.cpp
     util/volumeutils.cpp
 )
+
+#--------------------------------------------------------------------
+# include implementation for build info - the build info will be 
+# updated during every compilation
+if(IVW_EMBED_BUILDINFO)
+    list(APPEND SOURCE_FILES "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp")
+else()
+    list(APPEND SOURCE_FILES util/buildinfoini.cpp)
+endif()
+
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
@@ -615,9 +626,9 @@ endif()
 # make a clean help script
 set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
-    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.h"
+    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.cpp"
     "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.ini"
-    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
+    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
     "    inviwo_buildinfo.ini"
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
@@ -626,7 +637,7 @@ file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script
 
 # Custom target for updating the build information (this target is always out-of-date)
 add_custom_target(inviwo-buildinfo-header ALL
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
+    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
     COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
