@@ -39,6 +39,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 
 #include <array>
 #include <algorithm>
