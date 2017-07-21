@@ -211,6 +211,8 @@ void ScatterPlotMatrixProcessor::process() {
     auto dims = outport_.getDimensions();
     auto size = dims / numParams_;
 
+
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     size2_t pos;
     size_t idx = 0;
     for (size_t i = 0; i < numParams_; i++) {
