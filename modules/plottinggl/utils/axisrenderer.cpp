@@ -467,7 +467,7 @@ void AxisRenderer::updateLabelPositions(const size2_t& startPos, const size2_t& 
     const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
 
     auto v = util::zip(labelAtlas_, tickmarks);
-    std::transform(v.begin(), v.end(), labelPos_.begin(), [&](auto& p) {
+    std::transform(v.begin(), v.end(), labelPos_.begin(), [&](auto&& p) {
         const vec2 size(get<0>(p).texExtent);
         const vec2 offset = 0.5f * size * (anchorPos + vec2(1.0f, 1.0f));
 
@@ -583,15 +583,6 @@ void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endP
 
     std::transform(tickmarks.begin(), tickmarks.end(), labelPos_.begin(),
                    [](auto& tick) { return tick.second; });
-    /*
-    auto v = util::zip(labelAtlas_, tickmarks);
-    std::transform(v.begin(), v.end(), labelPos_.begin(), [&](auto& p) {
-        const vec2 size(get<0>(p).texExtent);
-        const vec2 offset = 0.5f * size * (anchorPos + vec2(1.0f, 1.0f));
-
-        return vec3(get<1>(p).second) - vec3(offset, 0.0f);
-    });
-    */
 }
 
 }  // namespace inviwo
