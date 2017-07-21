@@ -99,8 +99,8 @@ vec4 convertScreenToNDC(vec2 v, float z) {
 //   
 // @result clipped line segmenet p1-p2
 //
-void homogeneousClip(in out vec4 p1, in out vec4 p2, int axis, float sign, 
-                     in out bool p1Clipped, in out bool p2Clipped) {
+void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign, 
+                     inout bool p1Clipped, inout bool p2Clipped) {
     // clip against -y
     float t = (p1.w + sign * p1[axis]) / ((p1.w + sign * p1[axis]) - (p2.w + sign * p2[axis]));
     vec4 pNew = mix(p1, p2, t);
