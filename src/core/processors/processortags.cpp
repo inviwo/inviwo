@@ -29,6 +29,7 @@
 
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -94,9 +95,23 @@ Tags& Tags::operator=(const std::string& that) {
 }
 
 void Tags::addTag(Tag t){
-    if (std::find(tags_.begin(), tags_.end(), t) == tags_.end()) {
+    if (!util::contains(tags_, t)) {
         tags_.push_back(t);
     }
+}
+
+void Tags::addTags(const Tags &t) {
+    for (auto& tag : t.tags_) {
+        addTag(tag);
+    }
+}
+
+size_t Tags::size() const {
+    return tags_.size();
+}
+
+bool Tags::empty() const {
+    return tags_.empty();
 }
 
 std::string Tags::getString() const {
@@ -133,5 +148,25 @@ const Tags Tags::GL("GL");
 const Tags Tags::CL("CL");
 const Tags Tags::CPU("CPU");
 
-} // namespace
 
+namespace util {
+
+Tags getPlatformTags(const Tags& t) {
+    Tags result;
+    for (auto& tag : t.tags_) {
+        if (util::contains(Tags::GL.tags_, tag)) {
+            result.addTag(tag);
+        }
+        if (util::contains(Tags::CL.tags_, tag)) {
+            result.addTag(tag);
+        }
+        if (util::contains(Tags::CPU.tags_, tag)) {
+            result.addTag(tag);
+        }
+    }
+    return result;
+}
+
+} // namespace util
+
+} // namespace inviwo
