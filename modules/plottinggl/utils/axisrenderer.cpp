@@ -76,10 +76,10 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
         }
     };
 
-    auto drawMesh = [&](auto mesh, float lineWidth, bool caps) {
+    auto drawMesh = [&](const MeshGL* meshgl, float lineWidth, bool caps) {
         lineShader_.setUniform("lineWidth", lineWidth);
-        MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
-                                        mesh->getDefaultMeshInfo());
+        auto mesh = meshgl->getOwner();
+        MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
         utilgl::setShaderUniforms(lineShader_, *mesh, "geometry");
         lineShader_.setUniform("antialiasing", antialiasWidth(lineWidth));
         lineShader_.setUniform("roundCaps", caps);
@@ -97,19 +97,21 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
     // draw axis
     if (axisMesh_) {
         axisMesh_->setWorldMatrix(m);
-        drawMesh(axisMesh_, property_.width_.get(), false);
+        drawMesh(axisMesh_->getRepresentation<MeshGL>(), property_.width_.get(), false);
     }
 
     // draw major ticks
     if (majorTicksMesh_) {
         majorTicksMesh_->setWorldMatrix(m);
-        drawMesh(majorTicksMesh_, property_.ticks_.majorTicks_.tickWidth_.get(), true);
+        drawMesh(majorTicksMesh_->getRepresentation<MeshGL>(), 
+                 property_.ticks_.majorTicks_.tickWidth_.get(), true);
     }
 
     // draw minor ticks
     if (minorTicksMesh_) {
         minorTicksMesh_->setWorldMatrix(m);
-        drawMesh(minorTicksMesh_, property_.ticks_.minorTicks_.tickWidth_.get(), true);
+        drawMesh(minorTicksMesh_->getRepresentation<MeshGL>(), 
+                 property_.ticks_.minorTicks_.tickWidth_.get(), true);
     }
 
     lineShader_.deactivate();
