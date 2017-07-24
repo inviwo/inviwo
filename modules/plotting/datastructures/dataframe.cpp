@@ -35,15 +35,18 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /*
  * This creates a table with one column: The index column
  */
-DataFrame::DataFrame(glm::u32 size) : columns_() {
-    auto indexColumn = addColumn<glm::u32>("index");  // 32 is the biggest possible on gpu atm
+DataFrame::DataFrame(std::uint32_t size) : columns_() {
+    // at the moment, GPUs only support uints up to 32bit
+    auto indexColumn = addColumn<std::uint32_t>("index");
 
     auto ib = indexColumn->getTypedBuffer();
     auto buffer = ib->getEditableRAMRepresentation();
-    for (glm::u32 i = 0; i < size; i++) {
+    for (std::uint32_t i = 0; i < size; i++) {
         buffer->add(i);
     }
 }
@@ -51,26 +54,24 @@ DataFrame::DataFrame(glm::u32 size) : columns_() {
 /*
 In order to prevent data loss, external data will be casted to glm::f64
 */
-std::shared_ptr<DataFrame::Column> DataFrame::addColumnFromBuffer(
+std::shared_ptr<Column> DataFrame::addColumnFromBuffer(
     const std::string &identifier, std::shared_ptr<const BufferBase> buffer) {
-    return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<DataFrame::Column>>(
+    return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<Column>>(
         [&](auto buf) {
-            using BufferType = std::remove_cv_t<decltype(buf)>;
-            using ValueType = util::PrecsionValueType<BufferType>;
-            //  using ValueType = decltype(buf)::type;
-            auto col = this->addColumn<ValueType>(identifier);
-            auto newBuf = col->getTypedBuffer();  // std::make_shared<Buffer<ValueType>>( );
-            auto &newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();
-            auto &oldVec = buf->getDataContainer();
-            newVec.insert(newVec.end(), oldVec.begin(), oldVec.end());
-            // col->setBuffer( newBuf );
-            return col;
-        });
+        using BufferType = std::remove_cv_t<decltype(buf)>;
+        using ValueType = util::PrecsionValueType<BufferType>;
+        auto col = this->addColumn<ValueType>(identifier);
+        auto newBuf = col->getTypedBuffer();
+        auto &newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();
+        auto &oldVec = buf->getDataContainer();
+        newVec.insert(newVec.end(), oldVec.begin(), oldVec.end());
+        return col;
+    });
 }
 
-std::shared_ptr<DataFrame::CategoricalColumn> DataFrame::addCategoricalColumn(
-    const std::string &header, size_t size /*= 0*/) {
-    auto col = std::make_shared<DataFrame::CategoricalColumn>(header);
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
+    const std::string &header, size_t size) {
+    auto col = std::make_shared<CategoricalColumn>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
     return col;
@@ -90,7 +91,7 @@ void DataFrame::updateIndexBuffer() {
         for (size_t i = 1; i < columns_.size(); i++) {
             size = std::max(size, columns_[i]->getSize());
         }
-        auto indexBuffer = std::dynamic_pointer_cast<Buffer<glm::u32>>(
+        auto indexBuffer = std::dynamic_pointer_cast<Buffer<std::uint32_t>>(
             columns_[0]->getBuffer());  // change to static cast after tested
         auto &indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
         indexVector.resize(size);
@@ -111,5 +112,57 @@ size_t DataFrame::getSize() const {
 size_t DataFrame::getNumberOfColumns() const { return columns_.size(); }
 
 size_t DataFrame::getNumberOfRows() const { return getSize(); }
+
+DataFrame::DataFrame(const DataFrame &df) {
+    for (const auto &col : df.columns_) {
+        columns_.emplace_back(col->clone());
+    }
+}
+
+std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
+    return columns_.end();
+}
+
+const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::getHeaders() const {
+    std::vector<std::pair<std::string, const DataFormatBase *>> headers;
+    for (const auto &c : columns_) {
+        headers.emplace_back(c->getHeader(), c->getBuffer()->getDataFormat());
+    }
+    return headers;
+}
+
+std::string DataFrame::getHeader(size_t idx) const {
+    return columns_[idx]->getHeader();
+}
+
+std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const {
+    return columns_[index];
+}
+
+std::shared_ptr<Column> DataFrame::getColumn(size_t index) {
+    return columns_[index];
+}
+
+std::shared_ptr<const TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() const {
+    return std::dynamic_pointer_cast<const TemplateColumn<std::uint32_t>>(columns_[0]);
+}
+
+std::shared_ptr<TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() {
+    return std::dynamic_pointer_cast<TemplateColumn<std::uint32_t>>(columns_[0]);
+}
+
+std::vector<std::shared_ptr<Column>>::iterator DataFrame::begin() {
+    return columns_.begin();
+}
+
+std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
+    return columns_.begin();
+}
+
+std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() {
+    return columns_.end();
+}
+
+} // namespace plot
 
 }  // namespace inviwo

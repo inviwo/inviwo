@@ -42,17 +42,17 @@ namespace inviwo {
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 
-    registerProcessor<CSVSource>();
-    registerProcessor<DataFrameColumnToColorVector>();
-    registerProcessor<SyntheticDataFrame>();
+    registerProcessor<plot::CSVSource>();
+    registerProcessor<plot::DataFrameColumnToColorVector>();
+    registerProcessor<plot::SyntheticDataFrame>();
 
-    registerProperty<AxisProperty>();
-    registerProperty<DataFrameColumnProperty>();
-    registerProperty<MajorTickProperty>();
-    registerProperty<MarginProperty>();
-    registerProperty<MinorTickProperty>();
-    registerProperty<PlotTextProperty>();
-    registerProperty<TickProperty>();
+    registerProperty<plot::AxisProperty>();
+    registerProperty<plot::DataFrameColumnProperty>();
+    registerProperty<plot::MajorTickProperty>();
+    registerProperty<plot::MarginProperty>();
+    registerProperty<plot::MinorTickProperty>();
+    registerProperty<plot::PlotTextProperty>();
+    registerProperty<plot::TickProperty>();
 }
 
 }  // namespace inviwo

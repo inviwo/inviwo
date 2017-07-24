@@ -48,6 +48,8 @@ class Camera;
 class Mesh;
 class Texture2D;
 
+namespace plot {
+
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
     AxisRendererBase(const AxisProperty& property);
@@ -149,6 +151,8 @@ private:
     vec3 prevEndPos_;
     vec3 prevTickDirection_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

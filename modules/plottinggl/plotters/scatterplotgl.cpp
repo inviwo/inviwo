@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(ScatterPlotGL::Properties, "org.inviwo.ScatterPlotGL.Properties");
 
 ScatterPlotGL::Properties::Properties(std::string identifier, std::string displayName,
@@ -280,20 +282,16 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices) {
     renderAxis(dims);
 }
 
-void ScatterPlotGL::setXAxisLabel(const std::string &label) {
-    properties_.xAxis_.setTitle(label);
-}
+void ScatterPlotGL::setXAxisLabel(const std::string &label) { properties_.xAxis_.setTitle(label); }
 
-void ScatterPlotGL::setYAxisLabel(const std::string &label) {
-    properties_.yAxis_.setTitle(label);
-}
+void ScatterPlotGL::setYAxisLabel(const std::string &label) { properties_.yAxis_.setTitle(label); }
 
-void ScatterPlotGL::setXAxis(std::shared_ptr<const DataFrame::Column> col) {
+void ScatterPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col->getBuffer());
 }
 
-void ScatterPlotGL::setYAxis(std::shared_ptr<const DataFrame::Column> col) {
+void ScatterPlotGL::setYAxis(std::shared_ptr<const plot::Column> col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col->getBuffer());
 }
@@ -356,5 +354,7 @@ void ScatterPlotGL::renderAxis(const size2_t &dims) {
     axisRenderers_[1].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding));
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

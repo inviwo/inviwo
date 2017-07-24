@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
     InviwoPropertyInfo();
@@ -60,6 +62,8 @@ public:
     FloatProperty offset_;    //!< offset from axis
     FontProperty font_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

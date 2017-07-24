@@ -41,7 +41,7 @@ namespace inviwo {
 
 class Mesh;
 
-namespace plotting {
+namespace plot {
 
 /**
  * \brief returns tick positions along the axis range defined in the axis property

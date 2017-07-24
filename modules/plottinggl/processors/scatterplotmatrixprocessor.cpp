@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ScatterPlotMatrixProcessor::processorInfo_{
     "org.inviwo.ScatterPlotMatrixProcessor",  // Class identifier
@@ -325,5 +327,7 @@ void ScatterPlotMatrixProcessor::createLabels() {
         }
     }
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

@@ -48,6 +48,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.VolumeAxis, Volume Axis}
  * ![](org.inviwo.VolumeAxis.png?classIdentifier=org.inviwo.VolumeAxis)
  * Renders a x, y, and z axis next to the input volume.
@@ -110,6 +112,8 @@ private:
 
     bool propertyUpdate_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

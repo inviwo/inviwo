@@ -51,6 +51,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 static const float handleW = 40;
 static const float handleH = 20;
 
@@ -927,5 +929,7 @@ void ParallelCoordinates::updateBrushing() {
 
     brushingAndLinking_.sendFilterEvent(brushedID);
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

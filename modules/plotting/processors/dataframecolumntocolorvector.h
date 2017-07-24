@@ -43,6 +43,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.DataFrameColumnToColorVector, Data Frame Column To Color Vector}
  * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
  * This processor maps column values of a DataFrame to colors using a 1D transfer function.
@@ -75,6 +77,8 @@ private:
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

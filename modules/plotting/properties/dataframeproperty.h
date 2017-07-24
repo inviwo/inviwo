@@ -37,6 +37,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
 public:
     InviwoPropertyInfo();
@@ -49,7 +51,7 @@ public:
 
     void setOptions(std::shared_ptr<const DataFrame> dataframe);
 
-    std::shared_ptr<const DataFrame::Column> getColumn();
+    std::shared_ptr<const Column> getColumn();
     std::shared_ptr<const BufferBase> getBuffer();
 
     virtual std::string getClassIdentifierForWidget() const override {
@@ -63,6 +65,8 @@ private:
     bool allowNone_;
     size_t firstIndex_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

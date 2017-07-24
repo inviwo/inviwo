@@ -27,63 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_AXISRENDERPROCESSOR_H
-#define IVW_AXISRENDERPROCESSOR_H
-
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/imageport.h>
-
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/marginproperty.h>
-
-#include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/plotting/datastructures/column.h>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.AxisRenderProcessor, Axis Render Processor}
- * ![](org.inviwo.AxisRenderProcessor.png?classIdentifier=org.inviwo.AxisRenderProcessor)
- * Test processor for rendering plot axes
- */
+CategoricalColumn::CategoricalColumn(const std::string &header)
+    : TemplateColumn<std::uint32_t>(header) {}
 
-/**
- * \class AxisRenderProcessor
- * \brief Test processor for axis rendering
- */
-class IVW_MODULE_PLOTTINGGL_API AxisRenderProcessor : public Processor {
-public:
-    AxisRenderProcessor();
-    virtual ~AxisRenderProcessor() = default;
+plot::CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
-    virtual void process() override;
+std::string CategoricalColumn::getAsString(size_t idx) const {
+    auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
+    return lookUpTable_[index];
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getStringsAsStrings) const {
+    if (getStringsAsStrings) {
+        return std::make_shared<DataPoint<std::string>>(getAsString(idx));
+    } else {
+        return TemplateColumn<std::uint32_t>::get(idx, getStringsAsStrings);
+    }
+}
 
-private:
-    ImageInport inport_;
-    ImageOutport outport_;
+void CategoricalColumn::set(size_t idx, const std::string &str) {
+    auto id = addOrGetID(str);
+    getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
+}
 
-    MarginProperty margins_;
-    FloatProperty axisMargin_;
-    BoolProperty antialiasing_;
-    BoolProperty renderAtlas_;
+void CategoricalColumn::add(const std::string &str) {
+    auto id = addOrGetID(str);
+    getTypedBuffer()->getEditableRAMRepresentation()->add(id);
+}
 
-    AxisProperty axis1_;
-    AxisProperty axis2_;
-    AxisProperty axis3_;
-
-    std::vector<AxisRenderer> axisRenderers_;
-};
+glm::uint32_t CategoricalColumn::addOrGetID(const std::string &str) {
+    auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
+    if (it != lookUpTable_.end()) {
+        return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));
+    }
+    lookUpTable_.push_back(str);
+    return static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
+}
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISRENDERPROCESSOR_H

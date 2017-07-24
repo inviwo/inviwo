@@ -47,6 +47,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 AxisRendererBase::AxisRendererBase(const AxisProperty& property)
     : property_(property)
     , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
@@ -240,7 +242,7 @@ void AxisRendererBase::updateLabelAtlas() {
     textRenderer_.setFont(property_.labels_.font_.fontFace_.get());
     textRenderer_.setFontSize(property_.labels_.font_.fontSize_.getSelectedValue());
 
-    const auto tickmarks = plotting::getMajorTickPositions(property_);
+    const auto tickmarks = plot::getMajorTickPositions(property_);
     if (tickmarks.empty()) {
         // create a dummy texture
         axisLabelAtlasTex_ =
@@ -428,7 +430,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
             offset = texDims * 0.5f * (anchor + vec2(1.0f));
         }
 
-        const ivec2 posi(plotting::getAxisCaptionPosition(property_, startPos, endPos) - offset);
+        const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
         quadRenderer_.render(axisCaptionTex_, posi, outputDims, m);
     }
 
@@ -451,20 +453,20 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
 void AxisRenderer::updateMeshes(const size2_t& startPos, const size2_t& endPos) {
     if (!axisMesh_) {
-        axisMesh_ = plotting::generateAxisMesh(property_, startPos, endPos);
+        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos);
     }
     if (!majorTicksMesh_) {
-        majorTicksMesh_ = plotting::generateMajorTicksMesh(property_, startPos, endPos);
+        majorTicksMesh_ = plot::generateMajorTicksMesh(property_, startPos, endPos);
     }
     if (!minorTicksMesh_) {
-        minorTicksMesh_ = plotting::generateMinorTicksMesh(property_, startPos, endPos);
+        minorTicksMesh_ = plot::generateMinorTicksMesh(property_, startPos, endPos);
     }
 }
 
 void AxisRenderer::invalidateLabelPositions() { labelPos_.clear(); }
 
 void AxisRenderer::updateLabelPositions(const size2_t& startPos, const size2_t& endPos) {
-    const auto& tickmarks = plotting::getLabelPositions(property_, startPos, endPos);
+    const auto& tickmarks = plot::getLabelPositions(property_, startPos, endPos);
     labelPos_.resize(tickmarks.size());
 
     const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
@@ -535,7 +537,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         */
 
         const vec3 pos(
-            plotting::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
+            plot::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
 
         quadRenderer_.renderToRect3D(*camera, axisCaptionTex_, pos,
                                      ivec2(axisCaptionTex_->getDimensions()), outputDims, anchor);
@@ -562,15 +564,15 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 void AxisRenderer3D::updateMeshes(const vec3& startPos, const vec3& endPos,
                                   const vec3& tickDirection) {
     if (!axisMesh_) {
-        axisMesh_ = plotting::generateAxisMesh3D(property_, startPos, endPos);
+        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos);
     }
     if (!majorTicksMesh_) {
         majorTicksMesh_ =
-            plotting::generateMajorTicksMesh3D(property_, startPos, endPos, tickDirection);
+            plot::generateMajorTicksMesh3D(property_, startPos, endPos, tickDirection);
     }
     if (!minorTicksMesh_) {
         minorTicksMesh_ =
-            plotting::generateMinorTicksMesh3D(property_, startPos, endPos, tickDirection);
+            plot::generateMinorTicksMesh3D(property_, startPos, endPos, tickDirection);
     }
 }
 
@@ -579,7 +581,7 @@ void AxisRenderer3D::invalidateLabelPositions() { labelPos_.clear(); }
 void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endPos,
                                           const vec3& tickDirection) {
     const auto& tickmarks =
-        plotting::getLabelPositions3D(property_, startPos, endPos, tickDirection);
+        plot::getLabelPositions3D(property_, startPos, endPos, tickDirection);
     labelPos_.resize(tickmarks.size());
 
     const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
@@ -587,5 +589,7 @@ void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endP
     std::transform(tickmarks.begin(), tickmarks.end(), labelPos_.begin(),
                    [](auto& tick) { return tick.second; });
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

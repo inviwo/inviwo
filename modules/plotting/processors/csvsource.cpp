@@ -34,6 +34,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CSVSource::processorInfo_{
     "org.inviwo.CSVSource",                   // Class identifier
@@ -87,7 +89,7 @@ void CSVSource::process() {
     std::vector<std::string> headers;
 
     std::vector<BufferRAMPrecision<float> *> ordinalBuffers;
-    std::vector<std::shared_ptr<DataFrame::CategoricalColumn>> nonimalBuffers;
+    std::vector<std::shared_ptr<CategoricalColumn>> nonimalBuffers;
 
     std::vector<char> delimiters(delimiters_.get().begin(), delimiters_.get().end());
 
@@ -145,5 +147,7 @@ void CSVSource::process() {
 
     data_.setData(dataFrame);
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

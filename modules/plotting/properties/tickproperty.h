@@ -40,6 +40,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 enum class TickStyle { None, Inside, Outside, Both };
 
 class IVW_MODULE_PLOTTING_API MajorTickProperty : public CompositeProperty {
@@ -97,6 +99,8 @@ public:
     MajorTickProperty majorTicks_;
     MinorTickProperty minorTicks_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

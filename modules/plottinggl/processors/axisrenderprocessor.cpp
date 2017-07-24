@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo AxisRenderProcessor::processorInfo_{
     "org.inviwo.AxisRenderProcessor",  // Class identifier
@@ -107,5 +109,7 @@ void AxisRenderProcessor::process() {
 
     utilgl::deactivateCurrentTarget();
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

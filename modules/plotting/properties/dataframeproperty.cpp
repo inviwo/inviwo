@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(DataFrameColumnProperty, "org.inviwo.DataFrameColumnProperty");
 
 DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
@@ -59,7 +61,6 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
     });
 }
 
-#pragma optimize("", off)
 void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
     dataframe_ = dataframe;
@@ -95,9 +96,8 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
     propertyModified();
     setCurrentStateAsDefault();
 }
-#pragma optimize("", on)
 
-std::shared_ptr<const DataFrame::Column> DataFrameColumnProperty::getColumn() {
+std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() {
     if (!dataframe_) {
         return nullptr;
     }
@@ -137,5 +137,7 @@ void DataFrameColumnProperty::set(const Property *p) {
         OptionPropertyInt::set(p);
     }
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

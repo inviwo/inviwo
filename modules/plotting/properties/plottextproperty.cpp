@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(PlotTextProperty, "org.inviwo.PlotTextProperty");
 
 PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::string& displayName,
@@ -67,5 +69,7 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
 }
 
 PlotTextProperty* PlotTextProperty::clone() const { return new PlotTextProperty(*this); }
+
+}  // namespace plot
 
 }  // namespace inviwo

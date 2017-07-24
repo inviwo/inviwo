@@ -42,6 +42,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.ScatterPlotProcessor, Scatter Plot}
  * ![](org.inviwo.ScatterPlotProcessor.png?classIdentifier=org.inviwo.ScatterPlotProcessor)
  * This processor plots a scatter plot for a given DataFrame.
@@ -82,6 +84,8 @@ private:
     void onColorChange();
     void onRadiusChange();
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

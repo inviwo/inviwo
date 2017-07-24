@@ -45,11 +45,11 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
 
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerProcessor<AxisRenderProcessor>();
-    registerProcessor<ParallelCoordinates>();
-    registerProcessor<ScatterPlotMatrixProcessor>();
-    registerProcessor<ScatterPlotProcessor>();
-    registerProcessor<VolumeAxis>();
+    registerProcessor<plot::AxisRenderProcessor>();
+    registerProcessor<plot::ParallelCoordinates>();
+    registerProcessor<plot::ScatterPlotMatrixProcessor>();
+    registerProcessor<plot::ScatterPlotProcessor>();
+    registerProcessor<plot::VolumeAxis>();
 }
 
 }  // namespace inviwo

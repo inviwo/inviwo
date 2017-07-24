@@ -37,6 +37,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /**
 /**
 * \class MarginProperty
@@ -73,6 +75,8 @@ public:
     FloatProperty bottom_;
     FloatProperty left_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

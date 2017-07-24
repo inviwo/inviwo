@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ScatterPlotProcessor::processorInfo_{
     "org.inviwo.ScatterPlotProcessor",  // Class identifier
@@ -156,5 +158,7 @@ void ScatterPlotProcessor::onRadiusChange() {
         scatterPlot_.setRadiusData(buffer);
     }
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

@@ -45,6 +45,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 class IVW_MODULE_PLOTTING_API AxisProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
@@ -85,6 +87,8 @@ public:
 
     TickProperty ticks_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

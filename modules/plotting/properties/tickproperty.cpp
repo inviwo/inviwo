@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(TickProperty, "org.inviwo.TickProperty");
 PropertyClassIdentifier(MajorTickProperty, "org.inviwo.MajorTickProperty");
 PropertyClassIdentifier(MinorTickProperty, "org.inviwo.MinorTickProperty");
@@ -143,5 +145,7 @@ TickProperty::TickProperty(const TickProperty& rhs)
 }
 
 TickProperty* TickProperty::clone() const { return new TickProperty(*this); }
+
+}  // namespace plot
 
 }  // namespace inviwo

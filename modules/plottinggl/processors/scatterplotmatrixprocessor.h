@@ -48,7 +48,7 @@
 
 namespace inviwo {
 
-class ScatterPlotGL;
+namespace plot {
 
 /** \docpage{org.inviwo.ScatterPlotMatrixProcessor, Scatter Plot Matrix}
 * ![](org.inviwo.ScatterPlotMatrixProcessor.png?classIdentifier=org.inviwo.ScatterPlotMatrixProcessor)
@@ -107,6 +107,8 @@ private:
     TextRenderer textRenderer_;
     TextureQuadRenderer textureQuadRenderer_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

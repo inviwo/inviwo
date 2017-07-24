@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-namespace plotting {
+namespace plot {
 
 namespace tickutil {
 

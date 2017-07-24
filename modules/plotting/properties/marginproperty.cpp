@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(MarginProperty, "org.inviwo.MarginProperty");
 
 MarginProperty::MarginProperty(
@@ -74,5 +76,7 @@ float MarginProperty::getLeft() const { return left_.get(); }
 inviwo::vec4 MarginProperty::getAsVec4() const {
     return vec4(top_.get(), right_.get(), bottom_.get(), left_.get());
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

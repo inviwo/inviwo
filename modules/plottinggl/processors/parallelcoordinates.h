@@ -69,6 +69,8 @@ class PickingEvent;
  *
  */
 
+namespace plot {
+
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
     struct AxisBase {
@@ -78,7 +80,8 @@ public:
             , property_(boolCompositeProperty)
             , usePercentiles_(usePercentiles)
             , buffer_(buffer)
-            , name_(name) {}
+            , name_(name) {
+        }
 
         size_t columnId_;
         BoolCompositeProperty *property_;
@@ -205,6 +208,8 @@ private:
     vec4 extraMarginsHandles_;
     vec4 extraMargins_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

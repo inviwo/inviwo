@@ -43,6 +43,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.CSVSource, CSVSource}
  * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
  * Reads comma separated values (CSV) and converts it into a DataFrame.
@@ -55,11 +57,6 @@ namespace inviwo {
  *   * __Delimiters__          defines the delimiter between values (default ',')
  */
 
-/**
- * \class CSVSource
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_PLOTTING_API CSVSource : public Processor {
 public:
     CSVSource();
@@ -77,6 +74,8 @@ private:
     StringProperty delimiters_;
     ButtonProperty reloadData_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

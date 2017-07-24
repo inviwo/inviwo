@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 PropertyClassIdentifier(AxisProperty, "org.inviwo.AxisProperty");
 
 AxisProperty::AxisProperty(const std::string& identifier, const std::string& displayName,
@@ -156,5 +158,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
+
+}  // namespace plot
 
 }  // namespace inviwo

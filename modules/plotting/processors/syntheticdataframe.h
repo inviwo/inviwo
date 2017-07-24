@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.SyntheticDataFrame, Synthetic Data Frame}
  * ![](org.inviwo.SyntheticDataFrame.png?classIdentifier=org.inviwo.SyntheticDataFrame)
  * This processor generates a DataFrame filled with random values.
@@ -65,6 +67,8 @@ private:
 
     IntSizeTProperty numRow_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 

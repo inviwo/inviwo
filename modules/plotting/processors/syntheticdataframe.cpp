@@ -33,6 +33,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SyntheticDataFrame::processorInfo_{
     "org.inviwo.SyntheticDataFrame",  // Class identifier
@@ -85,5 +87,7 @@ void SyntheticDataFrame::process() {
 
     dataFrame_.setData(dataframe);
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

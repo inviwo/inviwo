@@ -31,6 +31,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameColumnToColorVector::processorInfo_{
     "org.inviwo.DataFrameColumnToColorVector",  // Class identifier
@@ -87,5 +89,7 @@ void DataFrameColumnToColorVector::process() {
 
                 }));
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

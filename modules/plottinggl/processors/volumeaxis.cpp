@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeAxis::processorInfo_{
     "org.inviwo.VolumeAxis",  // Class identifier
@@ -206,5 +208,7 @@ void VolumeAxis::adjustRanges() {
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
+
+}  // namespace plot
 
 }  // namespace inviwo

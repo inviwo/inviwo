@@ -5,6 +5,7 @@ ivw_module(Plotting)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/datapoint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.h
@@ -23,6 +24,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframecolumntocolorvector.cpp

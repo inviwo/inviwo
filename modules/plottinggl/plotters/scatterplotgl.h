@@ -45,6 +45,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
     class Properties : public CompositeProperty {
@@ -90,9 +92,9 @@ public:
 
     void setYAxisLabel(const std::string &label);
 
-    void setXAxis(std::shared_ptr<const DataFrame::Column> col);
+    void setXAxis(std::shared_ptr<const plot::Column> col);
 
-    void setYAxis(std::shared_ptr<const DataFrame::Column> col);
+    void setYAxis(std::shared_ptr<const plot::Column> col);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
@@ -118,6 +120,8 @@ protected:
 
     std::array<AxisRenderer, 2> axisRenderers_;
 };
+
+}  // namespace plot
 
 }  // namespace inviwo
 
