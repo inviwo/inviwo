@@ -46,10 +46,19 @@ const ProcessorInfo SyntheticDataFrame::processorInfo_{
 const ProcessorInfo SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 SyntheticDataFrame::SyntheticDataFrame()
-    : Processor(), dataFrame_("dataFrame_"), numRow_("numRow", "Number of Rows", 1000, 3, 100000) {
+    : Processor(), dataFrame_("dataFrame_"), numRow_("numRow", "Number of Rows", 1000, 3, 100000)
+    , randomParams_("randomParams", "Random Generator Settings")
+    , useSameSeed_("useSameSeed", "Use same seed", true)
+    , seed_("seed", "Seed", 1, 0, 1000)
+{
 
     addPort(dataFrame_);
     addProperty(numRow_);
+
+    addProperty(randomParams_);
+    randomParams_.addProperty(useSameSeed_);
+    randomParams_.addProperty(seed_);
+    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
 }
 
 void SyntheticDataFrame::process() {
@@ -66,6 +75,10 @@ void SyntheticDataFrame::process() {
                                  rdist{-0.9f, 0.9f}, rdist{-1.0f, 1.0f}
 
     };
+
+    if (useSameSeed_.get()) {
+        gen.seed(seed_.get());
+    }
 
     std::vector<std::vector<float> *> cols;
     for (auto &rdist : rdists) {
