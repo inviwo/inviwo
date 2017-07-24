@@ -146,9 +146,9 @@ void ProcessorTreeWidget::addSelectedProcessor() {
             auto item = processorTree_->topLevelItem(0);
             if (item->childCount() == 1) {
                 id = item->child(0)
-                    ->data(0, ProcessorTree::IDENTIFIER_ROLE)
-                    .toString()
-                    .toStdString();
+                         ->data(0, ProcessorTree::IDENTIFIER_ROLE)
+                         .toString()
+                         .toStdString();
             }
         }
     }
@@ -212,8 +212,8 @@ const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
 }
 QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title, const std::string& desc) {
     QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList(title));
-    
-    if(!desc.empty()) {
+
+    if (!desc.empty()) {
         newItem->setToolTip(0, utilqt::toLocalQString(desc));
     }
     processorTree_->addTopLevelItem(newItem);
@@ -228,18 +228,29 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
     QTreeWidgetItem* newItem = new QTreeWidgetItem();
     newItem->setIcon(0, *getCodeStateIcon(processor->getCodeState()));
     newItem->setText(0, QString::fromStdString(processor->getDisplayName()));
-    newItem->setText(1, QString::fromStdString(processor->getTags().getString() + " "));
     newItem->setTextAlignment(1, Qt::AlignRight);
     newItem->setData(0, ProcessorTree::IDENTIFIER_ROLE,
                      QString::fromStdString(processor->getClassIdentifier()));
+
+    // add only platform tags to second column
+    auto platformTags = util::getPlatformTags(processor->getTags());
+    const bool hasTags = !platformTags.empty();
+
+    if (hasTags) {
+        newItem->setText(1, utilqt::toQString(platformTags.getString() + " "));
+
+        QFont font = newItem->font(1);
+        font.setWeight(QFont::Bold);
+        newItem->setFont(1, font);
+    }
 
     {
         Document doc;
         using P = Document::PathComponent;
         auto b = doc.append("html").append("body");
-        b.append("b", processor->getDisplayName(), { {"style", "color:white;"} });
+        b.append("b", processor->getDisplayName(), {{"style", "color:white;"}});
         using H = utildoc::TableBuilder::Header;
-        utildoc::TableBuilder tb(b, P::end(), { {"identifier", "propertyInfo"} });
+        utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
 
         tb(H("Module"), moduleId);
         tb(H("Identifier"), processor->getClassIdentifier());
@@ -247,16 +258,14 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
         tb(H("Code"), Processor::getCodeStateString(processor->getCodeState()));
         tb(H("Tags"), processor->getTags().getString());
 
-        newItem->setToolTip(0, utilqt::toLocalQString(doc));
+        newItem->setToolTip(0, utilqt::toQString(doc));
+        if (hasTags) {
+            newItem->setToolTip(1, utilqt::toQString(doc));
+        }
     }
 
-    QFont font = newItem->font(1);
-    font.setWeight(QFont::Bold);
-    newItem->setFont(1, font);
-
     item->addChild(newItem);
-
-    if (processor->getTags().tags_.size() == 0) {
+    if (!hasTags) {
         processorTree_->setFirstItemColumnSpanned(newItem, true);
     }
 
@@ -380,4 +389,4 @@ bool ProcessorDragObject::decode(const QMimeData* mimeData, QString& className) 
     return true;
 }
 
-}  // namespace
+}  // namespace inviwo
