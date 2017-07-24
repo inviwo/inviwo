@@ -67,7 +67,12 @@ node {
             dir('build') {
                 nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
                     sh """
+                        ccache -z # reset ccache statistics
+                        # tell ccache where the project root is
+                        export CPATH=`pwd`
+                        export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         cmake -G \"Unix Makefiles\" -LA \
+                              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                               -DCMAKE_BUILD_TYPE=${params['Build Type']} \
                               -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
                               -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
@@ -88,6 +93,8 @@ node {
                               ../inviwo
 
                         make -j 6
+
+                        ccache -s # print ccache statistics
                     """
                 }
             }
