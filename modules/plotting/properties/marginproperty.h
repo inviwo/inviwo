@@ -40,7 +40,6 @@ namespace inviwo {
 namespace plot {
 
 /**
-/**
 * \class MarginProperty
 * \brief Property for keeping track of margins
 *

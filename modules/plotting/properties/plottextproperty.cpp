@@ -41,8 +41,8 @@ PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::str
     : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
     , title_("title", "Title", "")
     , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , offset_("offset", "Offset", 10.0f, 0.0f, 100.0f)
     , position_("position", "Position", 0.5f, 0.0f, 1.0f)
+    , offset_("offset", "Offset", 10.0f, 0.0f, 100.0f)
     , font_("font", "Font") {
     color_.setSemantics(PropertySemantics::Color);
     addProperty(title_);
@@ -56,8 +56,8 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     : BoolCompositeProperty(rhs)
     , title_(rhs.title_)
     , color_(rhs.color_)
-    , offset_(rhs.offset_)
     , position_(rhs.position_)
+    , offset_(rhs.offset_)
     , font_(rhs.font_) {
 
     color_.setSemantics(PropertySemantics::Color);

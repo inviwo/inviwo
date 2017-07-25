@@ -78,6 +78,7 @@ struct Axis : public ParallelCoordinates::AxisBase {
         p75_ = copy[copy.size() * 0.75];
         p100_ = copy.back();
     }
+    virtual ~Axis() = default;
 
     virtual float getNormalized(float v) const override {
         if (range_->getRangeMax() == range_->getRangeMin()) {
@@ -204,18 +205,25 @@ ParallelCoordinates::ParallelCoordinates()
     , handleColor_("handleColor", "Handle Color", vec4(.6f, .6f, .6f, 1))
     , tf_("tf", "Line Color")
     , tfSelection_("tfSelection", "Selection Color")
+
+    , filteringOptions_("filteringOptions", "Filtering Options")
+    , showFiltered_("showFiltered", "Show Filtered", false)
+    , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 1.f))
+    , filterIntensity_("filterIntensity", "Filter Intensity", 0.5f, 0.01f, 1.0f, 0.001f)
+
     , blendMode_("blendMode", "Blend Mode")
     , alpha_("alpha", "Alpha", 0.9f)
-    , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
+    , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
 
     , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
-
+    
+    , margins_("margins", "Margins", 0, 0, 0, 0)
+    
     , selectedAxisName_("selectedAxis", "Selected Axis", "", InvalidationLevel::Valid)
     , selectedAxisId_("selectedAxisId", "Selected AxisID", 0, 0, 100, 1, InvalidationLevel::Valid)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1)
-    , margins_("margins", "Margins", 0, 0, 0, 0)
 
     , text_("labels", "Labels")
     , labelPosition_("labelPosition", "Label Position")
@@ -241,12 +249,6 @@ ParallelCoordinates::ParallelCoordinates()
     , extraMarginsLabel_(0, 0, 0, 0)
     , extraMarginsValues_(0, 0, 0, 0)
     , extraMarginsHandles_(handleH, handleW / 2, handleH, handleW / 2)
-
-    , filteringOptions_("filteringOptions", "Filtering Options")
-    , showFiltered_("showFiltered", "Show Filtered", false)
-    , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 1.f))
-    , filterIntensity_("filterIntensity", "Filter Intensity", 0.5f, 0.01f, 1.0f, 0.001f)
-
 {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
@@ -437,7 +439,6 @@ void ParallelCoordinates::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-#pragma optimize("", off)
 void ParallelCoordinates::createOrUpdateProperties() {
     if (dataFrame_.hasData()) {
         auto data = dataFrame_.getData();
@@ -538,7 +539,6 @@ void ParallelCoordinates::createOrUpdateProperties() {
         handlePicking_.resize(axisVector_.size() * 2);
     }
 }
-#pragma optimize("", on)
 
 void ParallelCoordinates::buildLineMesh() {
     lines_ = util::make_unique<BasicMesh>();

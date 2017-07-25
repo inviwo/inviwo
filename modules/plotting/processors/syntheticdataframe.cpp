@@ -81,9 +81,9 @@ void SyntheticDataFrame::process() {
     }
 
     std::vector<std::vector<float> *> cols;
-    for (auto &rdist : rdists) {
+    for (size_t j = 0; j < rdists.size(); j++) {
         std::ostringstream oss;
-        oss << "Column " << (cols.size() + 1);
+        oss << "Column " << (j + 1);
         auto col = dataframe->addColumn<float>(oss.str());
         cols.push_back(&col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
     }

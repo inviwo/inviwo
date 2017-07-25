@@ -584,8 +584,6 @@ void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endP
         plot::getLabelPositions3D(property_, startPos, endPos, tickDirection);
     labelPos_.resize(tickmarks.size());
 
-    const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
-
     std::transform(tickmarks.begin(), tickmarks.end(), labelPos_.begin(),
                    [](auto& tick) { return tick.second; });
 }

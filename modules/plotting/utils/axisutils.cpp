@@ -150,7 +150,6 @@ std::vector<double> getMinorTickPositions(const AxisProperty& property) {
     //
     //    :..+....|....+....+....+....+....|....+....+...:
     //
-    const auto& majorTicks = property.ticks_.majorTicks_;
 
     // calculate number of major ticks
     tickutil::AxisTickRange majorTickRange = tickutil::getMajorTickRange(property);

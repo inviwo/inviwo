@@ -82,7 +82,9 @@ public:
             , buffer_(buffer)
             , name_(name) {
         }
-
+        
+        virtual ~AxisBase() = default;
+        
         size_t columnId_;
         BoolCompositeProperty *property_;
         BoolProperty *usePercentiles_;

@@ -155,7 +155,7 @@ public:
     CategoricalColumn &operator=(const CategoricalColumn &rhs) = default;
     CategoricalColumn &operator=(CategoricalColumn &&rhs) = default;
 
-    virtual CategoricalColumn *clone() const;
+    virtual CategoricalColumn *clone() const override;
 
     virtual ~CategoricalColumn() = default;
 
@@ -171,7 +171,7 @@ public:
      *
      * \see TemplateColumn
      */
-    virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const;
+    virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
 
     virtual void set(size_t idx, const std::string &str);
 

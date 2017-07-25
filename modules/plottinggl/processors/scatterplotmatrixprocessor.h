@@ -102,10 +102,10 @@ private:
     std::vector<std::shared_ptr<Texture2D>> statsTextures_;
     std::vector<std::shared_ptr<Texture2D>> bgTextures_;
 
-    EventProperty mouseEvent_;
-
     TextRenderer textRenderer_;
     TextureQuadRenderer textureQuadRenderer_;
+
+    EventProperty mouseEvent_;
 };
 
 }  // namespace plot

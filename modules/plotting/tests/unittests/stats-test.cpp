@@ -54,13 +54,9 @@ TEST(StatsUtilsTest, init) {
     vecY.emplace_back( 70);
     auto res = statsutil::linearRegresion(X,Y);
 
-
-    auto asf = res.r2;
     EXPECT_DOUBLE_EQ(0.64383561643835918, res.k) << " value of K";
     EXPECT_DOUBLE_EQ(26.780821917808225, res.m) << " value of m";
     EXPECT_DOUBLE_EQ(0.48032180908893229, res.r2) << " value of r";
-//    LogInfoCustom(res.e);
-
 }
 
 

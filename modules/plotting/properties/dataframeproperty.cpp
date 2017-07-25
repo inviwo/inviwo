@@ -87,7 +87,7 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
             return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
         });
         addOption(identifier, header, idx);
-        if ((prevID == "" && firstIndex_ == idx) || identifier == prevID) {
+        if ((prevID == "" && static_cast<int>(firstIndex_) == idx) || identifier == prevID) {
             setSelectedIdentifier(identifier);
         }
         idx++;
