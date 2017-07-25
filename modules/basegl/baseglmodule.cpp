@@ -31,6 +31,7 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/basegl/processors/axisalignedcutplane.h>
 #include <modules/basegl/processors/background.h>
+#include <modules/basegl/processors/cuberenderer.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
@@ -92,6 +93,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
+    registerProcessor<CubeRenderer>();
     registerProcessor<DrawLines>();
     registerProcessor<DrawPoints>();
     registerProcessor<EntryExitPoints>();
