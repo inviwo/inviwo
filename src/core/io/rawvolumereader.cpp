@@ -80,18 +80,19 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
     littleEndian_ = littleEndian;
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
+    std::string fileName = filePath;
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
-    rawFile_ = filePath;
+    rawFile_ = fileName;
 
     if (!parametersSet_) {
         auto readerDialog = util::dynamic_unique_ptr_cast<DataReaderDialog>(
@@ -127,7 +128,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
         volume->setWorldMatrix(wtm);
         volume->setDimensions(dimensions_);
         volume->setDataFormat(format_);
-        auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
+        auto vd = std::make_shared<VolumeDisk>(fileName, dimensions_, format_);
 
         auto loader =
             util::make_unique<RawVolumeRAMLoader>(rawFile_, 0u, dimensions_, littleEndian_, format_);
@@ -135,7 +136,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
         volume->addRepresentation(vd);
         std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
                                                (format_->getSize()));
-        LogInfo("Loaded volume: " << filePath << " size: " << size);
+        LogInfo("Loaded volume: " << fileName << " size: " << size);
         return volume;
     } else {
         throw DataReaderException("Raw data import could not determine format", IvwContext);

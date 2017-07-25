@@ -67,7 +67,7 @@ public:
     virtual DatVolumeReader* clone() const override;
     virtual ~DatVolumeReader() = default;
 
-    virtual std::shared_ptr<VolumeSequence> readData(const std::string filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(const std::string &filePath) override;
 
 private:
     std::string rawFile_;

@@ -50,7 +50,7 @@ public:
     virtual CImgVolumeReader* clone() const override;
     virtual ~CImgVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
  protected:
      void printMetaInfo(const MetaDataOwner&, std::string) const;

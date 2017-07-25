@@ -76,21 +76,22 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
 
 DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*this); }
 
-std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::string filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(const std::string& filePath) {
+    std::string fileName = filePath;
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
-    std::string fileDirectory = filesystem::getFileDirectory(filePath);
-    std::string fileExtension = filesystem::getFileExtension(filePath);
+    std::string fileDirectory = filesystem::getFileDirectory(fileName);
+    std::string fileExtension = filesystem::getFileExtension(fileName);
     // Read the dat file content
-    std::ifstream f(filePath.c_str());
+    std::ifstream f(fileName.c_str());
     std::string textLine;
     std::string formatFlag = "";
     glm::mat3 basis(2.0f);
@@ -220,20 +221,20 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         if (enableLogOutput_) {
-            LogInfo("Loaded multiple volumes: " << filePath << " volumes: " << datFiles.size());
+            LogInfo("Loaded multiple volumes: " << fileName << " volumes: " << datFiles.size());
         }
         
 
     } else {
         if (dimensions_ == size3_t(0))
             throw DataReaderException(
-                "Error: Unable to find \"Resolution\" tag in .dat file: " + filePath, IvwContext);
+                "Error: Unable to find \"Resolution\" tag in .dat file: " + fileName, IvwContext);
         else if (format_ == nullptr)
             throw DataReaderException(
-                "Error: Unable to find \"Format\" tag in .dat file: " + filePath, IvwContext);
+                "Error: Unable to find \"Format\" tag in .dat file: " + fileName, IvwContext);
         else if (format_->getId() == DataFormatId::NotSpecialized)
             throw DataReaderException(
-                "Error: Invalid format string found: " + formatFlag + " in " + filePath +
+                "Error: Invalid format string found: " + formatFlag + " in " + fileName +
                     "\nThe valid formats are:\n" +
                     "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
                     "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
@@ -246,7 +247,7 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::
 
         else if (rawFile_ == "")
             throw DataReaderException(
-                "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + filePath,
+                "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + fileName,
                 IvwContext);
 
         if (spacing != vec3(0.0f)) {
@@ -301,7 +302,7 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::
                 volumes->push_back(std::move(volume));
             else
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
-            auto diskRepr = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
+            auto diskRepr = std::make_shared<VolumeDisk>(fileName, dimensions_, format_);
             filePos_ = t * bytes;
 
             auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
@@ -312,7 +313,7 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(std::
 
         std::string size = util::formatBytesToString(bytes * sequences);
         if (enableLogOutput_) {
-            LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
+            LogInfo("Loaded volume sequence: " << fileName << " size: " << size);
         }
     }
     return volumes;

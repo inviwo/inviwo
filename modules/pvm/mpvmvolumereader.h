@@ -49,7 +49,7 @@ public:
     virtual MPVMVolumeReader* clone() const override;
     virtual ~MPVMVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
     
  protected:
      void printPVMMeta(const Volume&, std::string) const;

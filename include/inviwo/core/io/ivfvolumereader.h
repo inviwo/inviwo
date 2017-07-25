@@ -48,7 +48,7 @@ public:
     virtual IvfVolumeReader* clone() const override;
     virtual ~IvfVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
 private:
     std::string rawFile_;
