@@ -17,6 +17,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/plottextproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tickproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/csvreader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/statsutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -35,6 +36,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/plottextproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tickproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/csvreader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/statsutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,54 +27,44 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/processors/csvsource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#ifndef IVW_CSVREADER_H
+#define IVW_CSVREADER_H
 
-#include <modules/plotting/utils/csvreader.h>
+#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/io/datareader.h>
+#include <modules/plotting/datastructures/dataframe.h>
 
 namespace inviwo {
 
-namespace plot {
+/**
+ * \class CSVReader
+ * \ingroup dataio
+ *
+ * \brief A reader for comma separated value (CSV) files with customizable delimiters.
+ */
+class IVW_MODULE_PLOTTING_API CSVReader : public DataReaderType<plot::DataFrame> { 
+public:
+    CSVReader();
+    CSVReader(const CSVReader&) = default;
+    CSVReader(CSVReader&&) = default;
+    CSVReader& operator=(const CSVReader&) = default;
+    CSVReader& operator=(CSVReader&&) = default;
+    virtual CSVReader* clone() const override;
+    virtual ~CSVReader() = default;
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CSVSource::processorInfo_{
-    "org.inviwo.CSVSource",                   // Class identifier
-    "CSVSource",                              // Display name
-    "Data Input",                             // Category
-    CodeState::Stable,                        // Code state
-    "CPU, Plotting, Source, CSV, DataFrame",  // Tags
+    void setDelimiters(const std::string &delim);
+    void setFirstRowHeader(bool hasHeader);
+
+    virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
+
+private:
+    std::string delimiters_;
+    bool firstRowHeader_;
 };
-const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
 
-CSVSource::CSVSource()
-    : Processor()
-    , data_("data")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File")
-    , delimiters_("delimiters", "Delimiters", ",")
-    , reloadData_("reloadData", "Reload Data") {
+} // namespace
 
-    addPort(data_);
+#endif // IVW_CSVREADER_H
 
-    addProperty(inputFile_);
-    addProperty(firstRowIsHeaders_);
-    addProperty(delimiters_);
-    addProperty(reloadData_);
-
-    reloadData_.onChange([&] {});
-}
-
-void CSVSource::process() {
-    CSVReader reader;
-
-    reader.setDelimiters(delimiters_.get());
-    reader.setFirstRowHeader(firstRowIsHeaders_.get());
-
-    data_.setData(reader.readData(inputFile_.get()));
-}
-
-}  // namespace plot
-
-}  // namespace inviwo
