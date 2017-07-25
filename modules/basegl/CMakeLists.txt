@@ -9,6 +9,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.h
@@ -68,6 +69,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.cpp
@@ -127,6 +129,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/background.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
