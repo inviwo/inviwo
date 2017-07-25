@@ -35,6 +35,7 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/exception.h>
 
 #include <modules/plotting/datastructures/datapoint.h>
 
@@ -42,6 +43,14 @@ namespace inviwo {
 
 class DataPointBase;
 class BufferBase;
+
+class IVW_MODULE_PLOTTING_API InvalidConversion : public Exception {
+public:
+    InvalidConversion(const std::string &message = "", ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {
+    }
+    virtual ~InvalidConversion() throw() {}
+};
 
 namespace plot {
 
@@ -56,6 +65,9 @@ public:
     virtual Column *clone() const = 0;
 
     virtual const std::string &getHeader() const = 0;
+    virtual void setHeader(const std::string &header) = 0;
+
+    virtual void add(const std::string &value) = 0;
 
     virtual std::shared_ptr<BufferBase> getBuffer() = 0;
     virtual std::shared_ptr<const BufferBase> getBuffer() const = 0;
@@ -82,6 +94,8 @@ protected:
 template <typename T>
 class TemplateColumn : public Column {
 public:
+    using type = T;
+
     TemplateColumn(const std::string &header);
 
     TemplateColumn(const TemplateColumn<T> &rhs);
@@ -95,7 +109,17 @@ public:
     virtual ~TemplateColumn() = default;
 
     virtual const std::string &getHeader() const override;
-    void setHeader(const std::string &header);
+    void setHeader(const std::string &header) override;
+
+    virtual void add(const T &value);
+    /** 
+     * \brief converts given value to type T, which is added to the column
+     *
+     * @param value   
+     * @throws InvalidConversion if the value cannot be converted to T
+     */
+    virtual void add(const std::string &value) override;
+    virtual void set(size_t idx, const T &value);
 
     T get(size_t idx) const;
     /**
@@ -175,7 +199,7 @@ public:
 
     virtual void set(size_t idx, const std::string &str);
 
-    virtual void add(const std::string &str);
+    virtual void add(const std::string &value) override;
 
 private:
     virtual glm::uint32_t addOrGetID(const std::string &str);
@@ -227,6 +251,28 @@ const std::string &TemplateColumn<T>::getHeader() const {
 template <typename T>
 void TemplateColumn<T>::setHeader(const std::string &header) {
     header_ = header;
+}
+
+template <typename T>
+void TemplateColumn<T>::add(const T &value) {
+    buffer_->getEditableRAMRepresentation()->add(value);
+}
+
+template <typename T>
+void TemplateColumn<T>::add(const std::string &value) {
+    T result;
+    std::istringstream stream;
+    stream.str(value);
+    stream >> result;
+    if (stream.fail()) {
+        throw InvalidConversion("cannot convert \"" + value + "\" to target type");
+    }
+    buffer_->getEditableRAMRepresentation()->add(result);
+}
+
+template <typename T>
+void TemplateColumn<T>::set(size_t idx, const T &value) {
+    buffer_->getEditableRAMRepresentation()->set(idx, value);
 }
 
 template <typename T>

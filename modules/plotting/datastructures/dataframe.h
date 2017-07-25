@@ -38,9 +38,8 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/exception.h>
 #include <unordered_map>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/datainport.h>
 
 namespace inviwo {
 class DataPointBase;
@@ -48,6 +47,27 @@ class BufferBase;
 class BufferRAM;
 
 namespace plot {
+
+class IVW_MODULE_PLOTTING_API InvalidColCount : public Exception {
+public:
+    InvalidColCount(const std::string &message = "", ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {
+    }
+    virtual ~InvalidColCount() throw() {}
+};
+class IVW_MODULE_PLOTTING_API NoColumns : public Exception {
+public:
+    NoColumns(const std::string &message = "", ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {
+    }
+    virtual ~NoColumns() throw() {}
+};
+class IVW_MODULE_PLOTTING_API DataTypeMismatch : public Exception {
+public:
+    DataTypeMismatch(const std::string &message = "", ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~DataTypeMismatch() throw() {}
+};
 
 class IVW_MODULE_PLOTTING_API DataFrame {
 public:
@@ -67,6 +87,16 @@ public:
 
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string &header,
                                                             size_t size = 0);
+    /**
+     * \brief add a new row given a vector of strings
+     *
+     * @param data  data for each column
+     * @throws NoColumns        if the data frame has no columns defined
+     * @throws InvalidColCount  if column count of DataFrame does not match the number of columns in
+     * data
+     * @throws DataTypeMismatch  if the data type of a column doesn't match with the input data
+     */
+    void addRow(const std::vector<std::string> &data);
 
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
@@ -96,6 +126,16 @@ private:
 
 using DataFrameOutport = DataOutport<DataFrame>;
 using DataFrameInport = DataInport<DataFrame>;
+
+/**
+ * \brief create a new DataFrame given a vector of strings as input
+ *
+ * @param exampleData  data for guessing data type of each column
+ * @param colHeaders   headers for the columns. If none given, "Column 1", "Column 2", ... is used
+ * @throws InvalidColCount  if column count between exampleData and colHeaders does not match
+ */
+std::shared_ptr<DataFrame> IVW_MODULE_PLOTTING_API createDataFrame(
+    const std::vector<std::string> &exampleData, const std::vector<std::string> &colHeaders = {});
 
 template <typename T>
 std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header, size_t size) {

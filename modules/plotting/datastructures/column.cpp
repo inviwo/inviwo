@@ -56,8 +56,8 @@ void CategoricalColumn::set(size_t idx, const std::string &str) {
     getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
 }
 
-void CategoricalColumn::add(const std::string &str) {
-    auto id = addOrGetID(str);
+void CategoricalColumn::add(const std::string &value) {
+    auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
 

@@ -54,10 +54,9 @@ DataFrame::DataFrame(std::uint32_t size) : columns_() {
 /*
 In order to prevent data loss, external data will be casted to glm::f64
 */
-std::shared_ptr<Column> DataFrame::addColumnFromBuffer(
-    const std::string &identifier, std::shared_ptr<const BufferBase> buffer) {
-    return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<Column>>(
-        [&](auto buf) {
+std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identifier,
+                                                       std::shared_ptr<const BufferBase> buffer) {
+    return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
         using BufferType = std::remove_cv_t<decltype(buf)>;
         using ValueType = util::PrecsionValueType<BufferType>;
         auto col = this->addColumn<ValueType>(identifier);
@@ -69,12 +68,29 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(
     });
 }
 
-std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
-    const std::string &header, size_t size) {
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
+                                                                   size_t size) {
     auto col = std::make_shared<CategoricalColumn>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
     return col;
+}
+
+void DataFrame::addRow(const std::vector<std::string> &data) {
+    if (columns_.size() <= 1) {
+        throw NoColumns("DataFrame: DataFrame has no columns");
+    } else if (columns_.size() != data.size() + 1) { // consider index column of DataFrame
+        throw InvalidColCount("DataFrame: data does not match column count");
+    }
+    // try to match up input data with columns.
+    for (size_t i = 0; i < data.size(); ++i) {
+        try {
+            columns_[i+1]->add(data[i]);
+        } catch (InvalidConversion &) {
+            throw DataTypeMismatch("DataFrame: data type does not match (col. " +
+                                   std::to_string(i + 1) + ")");
+        }
+    }
 }
 
 DataFrame::DataItem DataFrame::getDataItem(size_t index, bool getStringsAsStrings) const {
@@ -131,17 +147,11 @@ const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::get
     return headers;
 }
 
-std::string DataFrame::getHeader(size_t idx) const {
-    return columns_[idx]->getHeader();
-}
+std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHeader(); }
 
-std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const {
-    return columns_[index];
-}
+std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
 
-std::shared_ptr<Column> DataFrame::getColumn(size_t index) {
-    return columns_[index];
-}
+std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
 
 std::shared_ptr<const TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() const {
     return std::dynamic_pointer_cast<const TemplateColumn<std::uint32_t>>(columns_[0]);
@@ -151,18 +161,38 @@ std::shared_ptr<TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() {
     return std::dynamic_pointer_cast<TemplateColumn<std::uint32_t>>(columns_[0]);
 }
 
-std::vector<std::shared_ptr<Column>>::iterator DataFrame::begin() {
-    return columns_.begin();
-}
+std::vector<std::shared_ptr<Column>>::iterator DataFrame::begin() { return columns_.begin(); }
 
 std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
     return columns_.begin();
 }
 
-std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() {
-    return columns_.end();
+std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }
+
+std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::string> &exampleData,
+                                         const std::vector<std::string> &colHeaders) {
+
+    if (!colHeaders.empty() && (colHeaders.size() != exampleData.size())) {
+        throw InvalidColCount("Number of headers does not match column count");
+    }
+
+    auto dataFrame = std::make_shared<DataFrame>(0u);
+    for (size_t i = 0; i < exampleData.size(); ++i) {
+        const auto header =
+            (!colHeaders.empty() ? colHeaders[i] : std::string("Column ") + std::to_string(i + 1));
+
+        std::istringstream iss(exampleData[i]);
+
+        float d;
+        if (iss >> d) {  // ordinal buffer
+            dataFrame->addColumn<float>(header, 0u);
+        } else {  // nominal buffer
+            dataFrame->addCategoricalColumn(header, 0);
+        }
+    }
+    return dataFrame;
 }
 
-} // namespace plot
+}  // namespace plot
 
 }  // namespace inviwo
