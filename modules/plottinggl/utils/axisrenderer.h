@@ -39,6 +39,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
+#include <modules/fontrendering/util/textureatlas.h>
 
 #include <map>
 
@@ -63,16 +64,6 @@ public:
 protected:
     void renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing);
 
-    struct AtlasEntry {
-        std::string value;
-        ivec2 texPos;
-        ivec2 texExtent;
-    };
-    struct AtlasRenderInfo {
-        std::vector<ivec2> size;
-        std::vector<mat4> texTransform;
-    };
-
     void invalidateInternalState(bool positionChange);
 
     void updateCaptionTexture();
@@ -92,14 +83,8 @@ protected:
     std::shared_ptr<Mesh> minorTicksMesh_;
 
     std::shared_ptr<Texture2D> axisCaptionTex_;
-    std::shared_ptr<Texture2D> axisLabelAtlasTex_;
-
-    std::vector<AtlasEntry> labelAtlas_;
-
-    AtlasRenderInfo labelRenderInfo_;
-
-private:
-    std::shared_ptr<Texture2D> createAtlasTexture(std::vector<AtlasEntry>& atlas) const;
+    
+    util::TextureAtlas labelTexAtlas_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {

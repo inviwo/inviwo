@@ -202,8 +202,7 @@ void AxisRendererBase::invalidateInternalState(bool positionChange) {
         invalidateLabelPositions();
     }
     if (invalidateLabelAtlas) {
-        axisLabelAtlasTex_ = nullptr;
-        labelAtlas_.clear();
+        labelTexAtlas_.clear();
     }
 }
 
@@ -223,7 +222,7 @@ std::shared_ptr<Mesh> AxisRendererBase::getMesh() const {
 }
 
 std::shared_ptr<Texture2D> AxisRendererBase::getLabelAtlasTexture() const {
-    return axisLabelAtlasTex_;
+    return labelTexAtlas_.getTexture();
 }
 
 void AxisRendererBase::updateCaptionTexture() {
@@ -237,145 +236,33 @@ void AxisRendererBase::updateCaptionTexture() {
 }
 
 void AxisRendererBase::updateLabelAtlas() {
-    labelAtlas_.clear();
-
     textRenderer_.setFont(property_.labels_.font_.fontFace_.get());
     textRenderer_.setFontSize(property_.labels_.font_.fontSize_.getSelectedValue());
 
     const auto tickmarks = plot::getMajorTickPositions(property_);
     if (tickmarks.empty()) {
         // create a dummy texture
-        axisLabelAtlasTex_ =
-            std::make_shared<Texture2D>(size2_t(1u), GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
-        axisLabelAtlasTex_->initialize(nullptr);
+        labelTexAtlas_.initTexture(size2_t(1u));
         return;
     }
 
     // fill map with all labels
     std::array<char, 100> buf;
     const char* format = property_.labels_.title_.get().c_str();
-    labelAtlas_.reserve(tickmarks.size());
+
+    const vec4 color(property_.labels_.color_.get());
+
+    std::vector<TexAtlasEntry> atlasEntries;
+    atlasEntries.reserve(tickmarks.size());
     for (auto& tick : tickmarks) {
         // convert current tick value into string
         snprintf(buf.data(), buf.size(), format, tick);
         const ivec2 size(textRenderer_.computeTextSize(buf.data()));
 
-        labelAtlas_.push_back({buf.data(), ivec2(0), size});
+        atlasEntries.push_back({buf.data(), ivec2(0), size, color});
     }
 
-    axisLabelAtlasTex_ = createAtlasTexture(labelAtlas_);
-
-    // render labels into texture
-    const vec4 color(property_.labels_.color_.get());
-
-    std::vector<size2_t> pos(labelAtlas_.size());
-    std::vector<size2_t> extent(labelAtlas_.size());
-    std::vector<std::string> str(labelAtlas_.size());
-
-    for (size_t i = 0; i < labelAtlas_.size(); ++i) {
-        pos[i] = labelAtlas_[i].texPos;
-        extent[i] = labelAtlas_[i].texExtent;
-        str[i] = labelAtlas_[i].value;
-    }
-    {
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        textRenderer_.renderToTexture(axisLabelAtlasTex_, pos, extent, str, color);
-    }
-
-    // compute transformation matrix to map texCoords [0,1] to atlas entry
-    labelRenderInfo_.texTransform.clear();
-    labelRenderInfo_.texTransform.reserve(labelAtlas_.size());
-    const vec2 texDim(axisLabelAtlasTex_->getDimensions());
-
-    std::transform(labelAtlas_.begin(), labelAtlas_.end(),
-                   std::back_inserter(labelRenderInfo_.texTransform), [&](auto& elem) {
-                       mat4 m(glm::scale(vec3(vec2(elem.texExtent) / texDim, 1.0f)));
-                       m[3] = vec4(vec2(elem.texPos) / texDim, 0.0f, 1.0f);
-                       return m;
-                   });
-
-    labelRenderInfo_.size.clear();
-    labelRenderInfo_.size.reserve(labelAtlas_.size());
-    std::transform(labelAtlas_.begin(), labelAtlas_.end(),
-                   std::back_inserter(labelRenderInfo_.size), [](auto& a) { return a.texExtent; });
-}
-
-std::shared_ptr<Texture2D> AxisRendererBase::createAtlasTexture(
-    std::vector<AtlasEntry>& atlas) const {
-    std::vector<size_t> indices(atlas.size());
-    std::iota(indices.begin(), indices.end(), 0u);
-
-    // sort labels according to width then height
-    std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
-        const auto& extA(atlas[a].texExtent);
-        const auto& extB(atlas[b].texExtent);
-
-        return ((extA.x > extB.x) || ((extA.x == extA.x) && (extA.y > extA.y)));
-    });
-
-    // figure out texture size to fit all labels given a specific width using the Shelf First Fit
-    // algorithm this function also updates the element positions within the new atlas texture
-    auto calcTexLayout = [&](const int width, const int margin) {
-        std::vector<int> lineLengths;
-        std::vector<int> lineHeights;
-        lineLengths.push_back(0);
-        lineHeights.push_back(0);
-        // Fill each line by putting each element after the previous one.
-        // If an element does not fit, start new line.
-        for (auto i : indices) {
-            const auto& extent = atlas[i].texExtent + 2 * margin;
-            size_t line = 0;
-            while (line < lineLengths.size()) {
-                if (lineLengths[line] + extent.x < width) {
-                    // found a position with enough space, for now we only know the x coord,
-                    // use y component to store current line
-                    atlas[i].texPos = ivec2(lineLengths[line] + margin, line);
-                    lineLengths[line] += extent.x;
-                    lineHeights[line] = std::max(extent.y, lineHeights[line]);
-                    break;
-                }
-                ++line;
-            }
-            if (line == lineLengths.size()) {
-                // no space found, create new line
-                atlas[i].texPos = ivec2(margin, line);
-                lineLengths.push_back(extent.x);
-                lineHeights.push_back(extent.y);
-            }
-        }
-        // update y positions of all elements
-        std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
-        lineHeights.insert(lineHeights.begin(), 0);
-        for (auto& elem : atlas) {
-            elem.texPos.y = lineHeights[elem.texPos.y] + margin;
-        }
-
-        return ivec2(width, lineHeights.back());
-    };
-
-    const int maxTexSize = 8192;
-    const int margin = 2;
-    // begin with an initial texture width of 1024 texel
-    int width = 1024;
-    ivec2 texSize = calcTexLayout(width, margin);
-    // if the texture is too large, try again with wider atlas texture
-    while (texSize.y > maxTexSize) {
-        width *= 2;
-        if (width > maxTexSize) {
-            throw Exception(
-                "Axis Renderer: axis labels too large or too many labels (max size for texture "
-                "atlas exceeded)");
-        }
-
-        texSize = calcTexLayout(width, margin);
-    }
-
-    auto tex = std::make_shared<Texture2D>(size2_t(texSize), GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-                                           GL_LINEAR);
-    std::vector<unsigned char> data(texSize.x * texSize.y * 4, 0);
-    tex->initialize(data.data());
-
-    return tex;
+    labelTexAtlas_.fillAtlas(textRenderer_, atlasEntries);
 }
 
 // ---------------------------------------
@@ -436,7 +323,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
     // axis labels
     if (property_.labels_.isChecked()) {
-        if (!axisLabelAtlasTex_) {
+        if (!labelTexAtlas_.valid()) {
             updateLabelAtlas();
             labelPos_.clear();
         }
@@ -446,8 +333,9 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         }
 
         // render axis labels
-        quadRenderer_.renderToRect(axisLabelAtlasTex_, labelPos_, labelRenderInfo_.size,
-                                   labelRenderInfo_.texTransform, outputDims);
+        const auto& renderInfo = labelTexAtlas_.getRenderInfo();
+        quadRenderer_.renderToRect(labelTexAtlas_.getTexture(), labelPos_, renderInfo.size,
+                                   renderInfo.texTransform, outputDims);
     }
 }
 
@@ -471,7 +359,7 @@ void AxisRenderer::updateLabelPositions(const size2_t& startPos, const size2_t& 
 
     const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
 
-    auto v = util::zip(labelAtlas_, tickmarks);
+    auto v = util::zip(labelTexAtlas_.getEntries(), tickmarks);
     std::transform(v.begin(), v.end(), labelPos_.begin(), [&](auto&& p) {
         const vec2 size(get<0>(p).texExtent);
         const vec2 offset = 0.5f * size * (anchorPos + vec2(1.0f, 1.0f));
@@ -522,20 +410,6 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         const vec2 texDims(axisCaptionTex_->getDimensions());
         const auto anchor(property_.caption_.font_.anchorPos_.get());
 
-        /*
-        mat4 m;
-        vec2 offset;
-        if (property_.orientation_.get() == AxisProperty::Orientation::Vertical) {
-            // rotate labels for vertical axis by 90 degree ccw.
-            m = glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
-
-            // need to invert anchor.x due to rotation
-            offset = vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f));
-        } else {
-            offset = texDims * 0.5f * (anchor + vec2(1.0f));
-        }
-        */
-
         const vec3 pos(
             plot::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
 
@@ -545,7 +419,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 
     // axis labels
     if (property_.labels_.isChecked()) {
-        if (!axisLabelAtlasTex_) {
+        if (!labelTexAtlas_.valid()) {
             updateLabelAtlas();
             labelPos_.clear();
         }
@@ -556,8 +430,9 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 
         // render axis labels
         const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
-        quadRenderer_.renderToRect3D(*camera, axisLabelAtlasTex_, labelPos_, labelRenderInfo_.size,
-                                     labelRenderInfo_.texTransform, outputDims, anchorPos);
+        const auto& renderInfo = labelTexAtlas_.getRenderInfo();
+        quadRenderer_.renderToRect3D(*camera, labelTexAtlas_.getTexture(), labelPos_, renderInfo.size,
+                                     renderInfo.texTransform, outputDims, anchorPos);
     }
 }
 
