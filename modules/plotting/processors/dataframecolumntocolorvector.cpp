@@ -52,7 +52,7 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
     , tf_("tf", "Color Mapping",
           TransferFunction(
-              {{{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}}})) {
+              {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}})) {
 
     addPort(dataFrame_);
     addPort(colors_);
