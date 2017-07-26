@@ -32,6 +32,8 @@
 
 #include <modules/plotting/utils/statsutils.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -202,9 +204,8 @@ void ScatterPlotMatrixProcessor::process() {
         auto &vec = indicies->getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
 
-        std::copy_if(RangeIterator<std::uint32_t>(),
-                     RangeIterator<std::uint32_t>(static_cast<std::uint32_t>(dfSize)),
-                     std::back_inserter(vec),
+        auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
+        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
     }
 
@@ -212,7 +213,6 @@ void ScatterPlotMatrixProcessor::process() {
 
     auto dims = outport_.getDimensions();
     auto size = dims / numParams_;
-
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     size2_t pos;

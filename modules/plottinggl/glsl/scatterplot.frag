@@ -38,48 +38,20 @@ uniform vec4 borderColor;
 
 void main(void) {
     float r = 0;
-    if(circle == 1){
+    if (circle == 1) {
         r = length(gPos);
-    }else{
-        r = max(abs(gPos.x),abs(gPos.y));
+    } else {
+        r = max(abs(gPos.x), abs(gPos.y));
     }
 
-    if(r>gR){
+    if (r > gR) {
         discard;
     }
-    if(r>gR-borderWidth){
+    if (r > gR - borderWidth) {
         FragData0 = borderColor;
-    }else{
-        FragData0 = gColor;    
-    }
-    
-
-
-    /*if(circle == 1){
-        float r = length(gPos);
-        if(r>gR){
-            discard;
-        }
-        if(r>gr-borderWidth){
-            FragData0 = borderColor;
-        }
+    } else {
         FragData0 = gColor;
-    }else{
-        float d = max(abs(gPos.x),abs(gPos.y));
-
     }
-
-
-    if (circle == 0 &&   >gR){
-        discard;
-    }
-
-    if (circle == 1 && r > gR-borderWidth) {
-        FragData0 = borderColor;
-    }
-    else {
-        FragData0 = gColor;
-    }*/
 
     gl_FragDepth = gDepth;
 }

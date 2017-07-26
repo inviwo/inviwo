@@ -86,10 +86,8 @@ AxisTickRange getMajorTickRange(const AxisProperty& property) {
         numTicks = 1u;
     } else {
         numTicks = static_cast<size_t>((axisLength + glm::epsilon<double>()) / tickDelta) + 1;
-        // if (ticks.rangeBasedTicks_.get()) {
         // adjust end value
         endValue = startValue + (numTicks - 1) * tickDelta;
-        //}
         tickDelta = glm::min(ticks.tickDelta_.get(), axisLength);
     }
 

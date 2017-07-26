@@ -47,8 +47,6 @@ struct RegresionResult {
 };
 
 IVW_MODULE_PLOTTING_API RegresionResult linearRegresion(const BufferBase& X, const BufferBase& Y);
-// IVW_MODULE_PLOTTING_API RegresionResult linearRegresion2(std::shared_ptr<const BufferBase> X,
-// std::shared_ptr<const BufferBase> Y);
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
@@ -59,6 +57,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
 }
 
 }  // namespace statsutil
+
 }  // namespace inviwo
 
 #endif  // IVW_STATISUTILS_H

@@ -32,9 +32,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lineplotter.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lineplotter.geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lineplotter.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_common.glsl

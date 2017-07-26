@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
@@ -82,20 +83,6 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     });
 }
 
-template <typename T>
-struct RangeIterator : public std::iterator<std::forward_iterator_tag, T, T, const T *, T> {
-    T i;
-
-    RangeIterator(T i = 0) : i(i) {}
-
-    bool operator==(RangeIterator b) { return i == b.i; }
-    bool operator!=(RangeIterator b) { return i != b.i; }
-    T operator++() { return ++i; }
-    T operator++(int) { return i++; }
-
-    T operator*() const { return i; }
-};
-
 void ScatterPlotProcessor::process() {
     if (brushing_.isConnected()) {
         auto dataframe = dataFrame_.getData();
@@ -108,10 +95,9 @@ void ScatterPlotProcessor::process() {
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
-
-        std::copy_if(RangeIterator<std::uint32_t>(),
-                     RangeIterator<std::uint32_t>(static_cast<std::uint32_t>(dfSize)),
-                     std::back_inserter(vec),
+        
+        auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
+        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
 
         scatterPlot_.plot(outport_, &indicies);

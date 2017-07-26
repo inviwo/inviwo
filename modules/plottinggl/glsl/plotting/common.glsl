@@ -32,21 +32,18 @@ uniform ivec2 dims;
 //    vec4(top,right,bottom,left)
 uniform vec4 margins;
 
-
 /**
-* maps (0,0) -> (bottom ,left)
-*      (1,1) -> (w - top , h - right) 
-* 
-* @param inPos 2d-position between zero and one where (0,0) is the lower left corner of the image and (1,1) is the upper right corner, both including/excluding including margins
-*
-* @return the pixel coordinate where (0,0) is the bottom left and (w,h) is top right 
-*/                            
-vec2 getPixelCoordsWithSpacing(vec2 inPos){
-    //return inPos*2.0-1.0;
+ * maps (0,0) -> (bottom ,left)
+ *      (1,1) -> (w - top , h - right)
+ *
+ * @param inPos 2d-position between zero and one where (0,0) is the lower left corner of the image
+ * and (1,1) is the upper right corner, both including/excluding including margins
+ *
+ * @return the pixel coordinate where (0,0) is the bottom left and (w,h) is top right
+ */
+vec2 getPixelCoordsWithSpacing(vec2 inPos) {
     vec2 pixelSpace = (inPos * (dims - margins.wz - margins.yx) + margins.wz);
-    return pixelSpace;// / (dims/2.0) - 1.0;
-} 
-
-vec2 getGLPositionFromPixel(vec2 pos){
-    return pos / vec2(dims) * 2 - 1;
+    return pixelSpace;
 }
+
+vec2 getGLPositionFromPixel(vec2 pos) { return pos / vec2(dims) * 2 - 1; }

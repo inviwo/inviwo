@@ -130,7 +130,6 @@ void DataFrameColumnProperty::set(const Property *p) {
             auto id = dfcp->getSelectedIdentifier();
             if (id != getSelectedIdentifier()) {
                 setSelectedIdentifier(id);
-                LogInfo("set the select id: " << id);
             }
         }
     } else {

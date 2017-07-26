@@ -37,18 +37,11 @@
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
-//#include <modules/plotting/plottersfactory.h>
-
 namespace inviwo {
 
 class IVW_MODULE_PLOTTING_API PlottingModule : public InviwoModule {
 public:
   PlottingModule(InviwoApplication *app);
-
-  //PlottersFactory *getPlotterFactory() { return &plottersFactory_; }
-
-private:
-  //PlottersFactory plottersFactory_;
 };
 
 } // namespace

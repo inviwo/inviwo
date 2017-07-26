@@ -50,20 +50,14 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     , dataFrame_("dataFrame")
     , colors_("colors")
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
-    , tf_("tf", "Color Mapping") {
+    , tf_("tf", "Color Mapping",
+          TransferFunction(
+              {{{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}}})) {
 
     addPort(dataFrame_);
     addPort(colors_);
     addProperty(selectedColorAxis_);
     addProperty(tf_);
-
-    TransferFunction tf;
-    tf.clearPoints();
-    tf.addPoint(vec2(0, 1), vec4(1, 0, 0, 1));
-    tf.addPoint(vec2(0.5, 1), vec4(1, 1, 0, 1));
-    tf.addPoint(vec2(1, 1), vec4(0, 1, 0, 1));
-    tf_.set(tf);
-    tf_.setCurrentStateAsDefault();
 }
 
 void DataFrameColumnToColorVector::process() {

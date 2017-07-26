@@ -29,9 +29,6 @@
 
 #include <modules/plotting/utils/statsutils.h>
 
-//#include <modules/python3/numpyobjectwrapper.h>
-//#include <modules/python3/pythonscript.h>
-
 namespace inviwo {
 namespace statsutil {
 namespace detail {
@@ -117,27 +114,6 @@ RegresionResult linearRegresion(const BufferBase &X, const BufferBase &Y) {
         });
 }
 
-// RegresionResult linearRegresion2(std::shared_ptr<const BufferBase> X, std::shared_ptr<const
-// BufferBase> Y) {
-//    RegresionResult res;
-//    PythonScript script;
-//    script.setSource("from scipy import stats\nimport numpy as np\nslope, intercept, r_value,
-//    p_value, std_err = stats.linregress(x,y)\n");
-//
-//
-//    auto numpyX = util::toNumPyObject(X);
-//    auto numpyY = util::toNumPyObject(Y);
-//
-//    script.run({ {"x",numpyX->getPyBindObject()},{"y",numpyY->getPyBindObject()} },
-//    [&](pybind11::dict dict) {
-//        res.k = dict["slope"].cast<double>();
-//        res.m = dict["intercept"].cast<double>();
-//        res.corr = dict["r_value"].cast<double>();
-//        res.r2 = res.corr*res.corr;
-//    });
-//
-//    return res;
-//}
-
 }  // namespace statsutil
+
 }  // namespace inviwo
