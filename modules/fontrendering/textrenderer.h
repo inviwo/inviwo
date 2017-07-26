@@ -33,6 +33,8 @@
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/util/fontutils.h>
+#include <modules/fontrendering/datastructures/texatlasentry.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -154,6 +156,9 @@ public:
                          const std::vector<size2_t> &size, const std::vector<std::string> &str,
                          const vec4 &color, bool clearTexture = true);
 
+    void renderToTexture(std::shared_ptr<Texture2D> texture,
+                         const std::vector<TexAtlasEntry> &entries, bool clearTexture = true);
+
     /**
      * \brief computes the bounding box of a given string in normalized device coordinates using the
      * scaling factor. The vertical height of the bounding box will be equal to (ascend + descend) +
@@ -226,7 +231,7 @@ protected:
         std::vector<int> lineLengths;
         std::vector<int> lineHeights;
     };
-    
+
     double getFontAscent() const;
     double getFontDescent() const;
 
