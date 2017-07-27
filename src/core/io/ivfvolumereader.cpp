@@ -49,20 +49,21 @@ IvfVolumeReader::IvfVolumeReader()
 
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
-std::shared_ptr<Volume> IvfVolumeReader::readData(std::string filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
+    std::string fileName = filePath;
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
-    std::string fileDirectory = filesystem::getFileDirectory(filePath);
+    std::string fileDirectory = filesystem::getFileDirectory(fileName);
     auto volume = std::make_shared<Volume>();
-    Deserializer d(filePath);
+    Deserializer d(fileName);
     d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + "/" + rawFile_;

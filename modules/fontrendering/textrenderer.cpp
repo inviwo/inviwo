@@ -105,7 +105,7 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
     ivec2 glyphPos;
     int verticalOffset = 0;
 
-      // check input string for invalid utf8 encoding
+    // check input string for invalid utf8 encoding
     auto endIt = utf8::find_invalid(str.begin(), str.end());
     if (endIt != str.end()) {
         LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
@@ -236,6 +236,37 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
     fbo_.deactivate();
 }
 
+void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
+                                   const std::vector<TexAtlasEntry> &entries,
+                                   bool clearTexture) {
+    // disable depth test and writing depth
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
+
+    fbo_.activate();
+    if (prevTexture_ != texture) {
+        // detach previous texture and attach new texture as a render target, no depth texture
+        fbo_.detachTexture(GL_COLOR_ATTACHMENT0);
+        fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
+        prevTexture_ = texture;
+    }
+    if (clearTexture) {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    for (auto &elem : entries) {
+        // set up viewport
+        utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
+                                       elem.texExtent.y);
+
+        // render text into texture
+        vec2 scale(2.f / vec2(elem.texExtent));
+        render(elem.value, -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, elem.color);
+    }
+
+    fbo_.deactivate();
+}
+
 vec2 TextRenderer::computeTextSize(const std::string &str, const vec2 &scale) {
     return computeTextSize(str) * scale;
 }
@@ -361,8 +392,8 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
     // check remaining vertical space inside atlas texture
     if (line == fc.lineLengths.size()) {
         if (fc.lineHeights.back() + glyphExtent.y > texDims.y) {
-            LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex << glyph
-                    << ") (max size for texture atlas exceeded)");
+            LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex
+                                             << glyph << ") (max size for texture atlas exceeded)");
             return std::make_pair(false, glyphEntry);
         }
         // create a new, empty line in the texture and store the glyph there

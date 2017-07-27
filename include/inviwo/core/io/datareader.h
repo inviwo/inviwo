@@ -72,7 +72,7 @@ public:
     DataReaderType& operator=(const DataReaderType& that) = default;
     virtual DataReaderType* clone() const = 0;
     virtual ~DataReaderType() = default;
-    virtual std::shared_ptr<T> readData(const std::string filePath) = 0;
+    virtual std::shared_ptr<T> readData(const std::string& filePath) = 0;
 };
 
 }  // namespace

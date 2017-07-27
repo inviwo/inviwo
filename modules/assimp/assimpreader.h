@@ -67,7 +67,7 @@ public:
     void setFixInvalidDataFlag(bool enable);
     bool getFixInvalidDataFlag() const;
 
-    virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;
 
 private:
     AssimpLogLevel

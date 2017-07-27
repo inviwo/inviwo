@@ -53,7 +53,7 @@ public:
 
     virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian);
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
     bool haveReadLittleEndian() const { return littleEndian_; }
     const DataFormatBase* getFormat() const { return format_; }

@@ -119,7 +119,7 @@ bool AssimpReader::getFixInvalidDataFlag() const {
     return fixInvalidData_;
 }
 
-std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();

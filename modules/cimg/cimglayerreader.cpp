@@ -57,18 +57,19 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
-std::shared_ptr<Layer> CImgLayerReader::readData(std::string filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& filePath) {
+    std::string fileName = filePath; 
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
-    auto layerDisk = std::make_shared<LayerDisk>(filePath);
+    auto layerDisk = std::make_shared<LayerDisk>(fileName);
     layerDisk->setLoader(new CImgLayerRAMLoader(layerDisk.get()));
     auto layer = std::make_shared<Layer>(layerDisk);
     return layer;
@@ -86,24 +87,24 @@ std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() 
     uvec2 dimensions = layerDisk_->getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string filePath = layerDisk_->getSourceFile();
+    std::string fileName = layerDisk_->getSourceFile();
 
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
     if (dimensions != uvec2(0)) {
         // Load and rescale to input dimensions
-        data = cimgutil::loadLayerData(nullptr, filePath, dimensions, formatId, true);
+        data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, true);
     } else {
         // Load to original dimensions
-        data = cimgutil::loadLayerData(nullptr, filePath, dimensions, formatId, false);
+        data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, false);
         layerDisk_->setDimensions(dimensions);
     }
 
@@ -123,24 +124,24 @@ void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<LayerRepresentatio
     uvec2 dimensions = layerDisk_->getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string filePath = layerDisk_->getSourceFile();
+    std::string fileName = layerDisk_->getSourceFile();
 
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
+    if (!filesystem::fileExists(fileName)) {
+        std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
+            fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
         }
     }
 
     if (dimensions != uvec2(0)) {
         // Load and rescale to input dimensions
-        cimgutil::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, true);
+        cimgutil::loadLayerData(layerDst->getData(), fileName, dimensions, formatId, true);
     } else {
         // Load to original dimensions
-        cimgutil::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, false);
+        cimgutil::loadLayerData(layerDst->getData(), fileName, dimensions, formatId, false);
         layerDisk_->setDimensions(dimensions);
     }
 

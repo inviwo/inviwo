@@ -87,6 +87,8 @@ node {
                               -DIVW_MODULE_ANIMATION=ON \
                               -DIVW_MODULE_ANIMATIONQT=ON \
                               -DIVW_MODULE_POSTPROCESSING=ON \
+                              -DIVW_MODULE_PLOTTING=ON \
+                              -DIVW_MODULE_PLOTTINGGL=ON \
                               -DIVW_MODULE_HDF5=ON \
                               -DIVW_UNITTESTS=ON \
                               -DIVW_UNITTESTS_RUN_ON_BUILD=OFF \
