@@ -34,8 +34,6 @@
 
 #include <fstream>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 CSVReader::CSVReader() : delimiters_(","), firstRowHeader_(true) {}
@@ -156,4 +154,3 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
 }
 
 }  // namespace inviwo
-#pragma optimize("", on)
