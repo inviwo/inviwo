@@ -68,6 +68,7 @@
                 <Processors>
                     <Processor content="org.inviwo.AxisAlignedCutPlane" />
                     <Processor content="org.inviwo.Background" />
+                    <Processor content="org.inviwo.CubeRenderer" />
                     <Processor content="org.inviwo.DrawLines" />
                     <Processor content="org.inviwo.DrawPoints" />
                     <Processor content="org.inviwo.EntryExitPoints" />
@@ -116,11 +117,26 @@
                     <Processor content="org.inviwo.VolumeShader" />
                 </Processors>
             </Module>
+            <Module name="ABufferGL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                </Processors>
+            </Module>
             <Module name="Animation" version="0" />
             <Module name="QtWidget" version="0" />
             <Module name="AnimationQt" version="0" />
             <Module name="assimp" version="0" />
             <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
+            <Module name="BaseCL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
+                </Processors>
+            </Module>
             <Module name="BrushingAndLinking" version="0">
                 <Processors>
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
@@ -139,6 +155,14 @@
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
+            <Module name="HDF5" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.hdf5.Source" />
+                    <Processor content="org.inviwo.hdf5.ToVolume" />
+                    <Processor content="org.inviwo.hdf5.PathSelection" />
+                </Processors>
+            </Module>
+            <Module name="Nifti" version="0" />
             <Module name="Plotting" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -153,6 +177,17 @@
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
                     <Processor content="org.inviwo.ScatterPlotProcessor" />
                     <Processor content="org.inviwo.VolumeAxis" />
+                </Processors>
+            </Module>
+            <Module name="PostProcessing" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.SSAO" />
+                    <Processor content="org.inviwo.FXAA" />
+                    <Processor content="org.inviwo.ImageBrightnessContrast" />
+                    <Processor content="org.inviwo.DepthDarkening" />
+                    <Processor content="org.inviwo.ImageHueSaturationLuminance" />
+                    <Processor content="org.inviwo.ImageSharpen" />
+                    <Processor content="org.inviwo.ImageOpacity" />
                 </Processors>
             </Module>
             <Module name="PVM" version="0" />
@@ -194,31 +229,6 @@
                     <Processor content="org.inviwo.Vector3DDivergence" />
                     <Processor content="org.inviwo.TMIP" />
                     <Processor content="org.inviwo.VectorFieldGenerator4D" />
-                </Processors>
-            </Module>
-            <Module name="CameraInteraction" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CameraInteractionWidget" />
-                    <Processor content="org.inviwo.ClippingWidget" />
-                </Processors>
-            </Module>
-            <Module name="NanoVGUtils" version="0" />
-            <Module name="DataPlotting" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.MeshToBuffer" />
-                    <Processor content="org.inviwo.Scatterplot" />
-                    <Processor content="org.inviwo.Lineplot" />
-                    <Processor content="org.inviwo.BarChart" />
-                    <Processor content="org.inviwo.StackedRadialBarChartProcessor" />
-                    <Processor content="org.inviwo.DataFrame" />
-                    <Processor content="org.inviwo.DataFrameExporter" />
-                    <Processor content="org.inviwo.PieChartGL" />
-                    <Processor content="org.inviwo.VolumeToDataFrame" />
-                    <Processor content="org.inviwo.ImageToDataFrame" />
-                    <Processor content="org.inviwo.StackedBarChart" />
-                    <Processor content="org.inviwo.StackDataFrame" />
-                    <Processor content="org.inviwo.Crosshair2dIndicator" />
-                    <Processor content="org.inviwo.AnnotationplotProcessor" />
                 </Processors>
             </Module>
             <Module name="Experimental" version="3">
@@ -275,38 +285,8 @@
                     <Processor content="org.inviwo.TransferFunctions" />
                     <Processor content="org.inviwo.VolumeRayExtractor" />
                     <Processor content="org.inviwo.LayerExtremaExtraction" />
-                </Processors>
-            </Module>
-            <Module name="SpringMassSystem" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.SpringMassSystemProcessor" />
-                </Processors>
-            </Module>
-            <Module name="OpenSlide" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.OpenSlideSource" />
-                    <Processor content="org.inviwo.OpenSlideRendererGL" />
-                    <Processor content="org.inviwo.OpenSlideVolumeRendererGL" />
-                    <Processor content="org.inviwo.OpenSlideToVolume" />
-                    <Processor content="org.inviwo.OpenSlideToVolume2" />
-                    <Processor content="org.inviwo.AnnotationSource" />
-                    <Processor content="org.inviwo.AnnotationRenderer" />
-                    <Processor content="org.inviwo.CbCrHistProcessor" />
-                    <Processor content="org.inviwo.RGBVolumeRaycaster" />
-                    <Processor content="org.inviwo.TFSlideProcessor" />
-                    <Processor content="org.inviwo.MapReduceVolumeProcessor" />
-                    <Processor content="org.inviwo.RGBBrickedVolumeRaycaster" />
-                    <Processor content="org.inviwo.BrickedVolumeSliceGL" />
-                    <Processor content="org.inviwo.BrickedOrthogonalVolumeSliceGL" />
-                    <Processor content="org.inviwo.ClipPlaneInteractionGL" />
-                    <Processor content="org.inviwo.OpenSlideUI" />
-                    <Processor content="org.inviwo.OpenSlidePositionWidget" />
-                    <Processor content="org.inviwo.ExportSlideHistograms" />
-                    <Processor content="org.inviwo.ImportHistogram" />
-                    <Processor content="org.inviwo.MergeSlideHistograms" />
-                    <Processor content="org.inviwo.ImportSlideHistograms" />
-                    <Processor content="org.inviwo.ConvexHullMeshing" />
-                    <Processor content="org.inviwo.TFColorSpaceMapping" />
+                    <Processor content="org.inviwo.PresentationSwitch" />
+                    <Processor content="org.inviwo.HydrogenGenerator" />
                 </Processors>
             </Module>
             <Module name="testing" version="0">
@@ -356,11 +336,11 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="DataFrameInport" identifier="dataFrame_" id="ref0" />
+                    <InPort type="DataFrameInport" identifier="dataFrame_" id="ref3" />
                     <InPort type="BrushingAndLinkingManagerInport" identifier="brushing" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref1" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref4" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.ScatterPlotGL.Properties" identifier="scatterplot">
@@ -922,16 +902,45 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
+            <Processor type="org.inviwo.SyntheticDataFrame" identifier="Synthetic DataFrame">
+                <PortGroups>
+                    <PortGroup content="default" key="dataFrame_" />
+                </PortGroups>
+                <OutPorts>
+                    <OutPort type="DataFrameOutport" identifier="dataFrame_" id="ref5" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.Size_tProperty" identifier="numRow">
+                        <value content="150" />
+                    </Property>
+                    <Property type="org.inviwo.CompositeProperty" identifier="randomParams">
+                        <Properties>
+                            <Property type="org.inviwo.BoolProperty" identifier="useSameSeed" />
+                            <Property type="org.inviwo.IntProperty" identifier="seed">
+                                <value content="0" />
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-125" y="-250" />
+                        <visibility content="1" />
+                        <selection content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
             <Processor type="org.inviwo.Background" identifier="Background">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref3" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref1" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref4" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref2" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
@@ -959,41 +968,12 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.SyntheticDataFrame" identifier="Synthetic DataFrame">
-                <PortGroups>
-                    <PortGroup content="default" key="dataFrame_" />
-                </PortGroups>
-                <OutPorts>
-                    <OutPort type="DataFrameOutport" identifier="dataFrame_" id="ref2" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.Size_tProperty" identifier="numRow">
-                        <value content="150" />
-                    </Property>
-                    <Property type="org.inviwo.CompositeProperty" identifier="randomParams">
-                        <Properties>
-                            <Property type="org.inviwo.BoolProperty" identifier="useSameSeed" />
-                            <Property type="org.inviwo.IntProperty" identifier="seed">
-                                <value content="0" />
-                            </Property>
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-125" y="-250" />
-                        <visibility content="1" />
-                        <selection content="1" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
             <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref5" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -1067,16 +1047,16 @@
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="DataFrameOutport" identifier="dataFrame_" reference="ref2" />
-                <InPort type="DataFrameInport" identifier="dataFrame_" reference="ref0" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref1" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref3" />
+                <OutPort type="DataFrameOutport" identifier="dataFrame_" reference="ref5" />
+                <InPort type="DataFrameInport" identifier="dataFrame_" reference="ref3" />
             </Connection>
             <Connection>
                 <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref4" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref1" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref0" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
