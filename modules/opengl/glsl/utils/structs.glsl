@@ -107,12 +107,19 @@ struct ImageParameters {
     vec2 reciprocalDimensions;
 };
 
+struct Light {
+	vec3 position;
+	vec3 ambientColor;
+	vec3 diffuseColor;
+	vec3 specularColor;
+	vec4 attenuation;
+};
+
 struct LightParameters {
-    vec3 position; 
-    vec3 ambientColor;
-    vec3 diffuseColor; 
-    vec3 specularColor;
     float specularExponent;
+	float roughness;
+	int numLights;
+	Light lights[8];
 };
 
 struct RaycastingParameters {
