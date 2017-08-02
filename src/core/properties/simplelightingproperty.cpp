@@ -41,23 +41,22 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
-    , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
-    vec3(10, 10, 10))
-    , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
-    , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
-
-    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
-    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f))
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
-    , camera_(camera) {
-
+	, roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
+    , camera_(camera) 
+	, addLight_("addLight", "Add Light")
+	, deleteLight_("deleteLight", "Delete Light")
+	, lightSelection_("lightSelection", "Light Selection")
+	, numLights_(0)
+{
     shadingMode_.addOption("none", "No Shading", ShadingMode::None);
     shadingMode_.addOption("ambient", "Ambient", ShadingMode::Ambient);
     shadingMode_.addOption("diffuse", "Diffuse", ShadingMode::Diffuse);
     shadingMode_.addOption("specular", "Specular", ShadingMode::Specular);
     shadingMode_.addOption("blinnphong", "Blinn Phong", ShadingMode::BlinnPhong);
     shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
+	shadingMode_.addOption("orennayar", "Oren Nayar", ShadingMode::OrenNayar);
+	shadingMode_.addOption("orennayardiffuse", "Oren Nayar (Diffuse only)", ShadingMode::OrenNayarDiffuse);
     shadingMode_.setSelectedValue(ShadingMode::Phong);
     shadingMode_.setCurrentStateAsDefault();
 
@@ -70,45 +69,49 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     
     referenceFrame_.setCurrentStateAsDefault();
 
-    lightPosition_.setSemantics(PropertySemantics("Spherical"));
-    ambientColor_.setSemantics(PropertySemantics::Color);
-    diffuseColor_.setSemantics(PropertySemantics::Color);
-    specularColor_.setSemantics(PropertySemantics::Color);
+    
 
     // add properties
     addProperty(shadingMode_);
     addProperty(referenceFrame_);
-    addProperty(lightPosition_);
-    addProperty(ambientColor_);
-    addProperty(diffuseColor_);
-    addProperty(specularColor_);
     addProperty(specularExponent_);
-    addProperty(applyLightAttenuation_);
-    addProperty(lightAttenuation_);
+	addProperty(roughness_);
+	
+	addLight_.onChange(this, &SimpleLightingProperty::addLight);
+	deleteLight_.onChange(this, &SimpleLightingProperty::deleteLight);
+
+	addProperty(lightSelection_);
+	addProperty(deleteLight_);
+	addProperty(addLight_);
+
+	addLight();
+    
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
-    : CompositeProperty(rhs)
-    , shadingMode_(rhs.shadingMode_)
-    , referenceFrame_(rhs.referenceFrame_)
-    , lightPosition_(rhs.lightPosition_)
-    , lightAttenuation_(rhs.lightAttenuation_)
-    , applyLightAttenuation_(rhs.applyLightAttenuation_)
-    , ambientColor_(rhs.ambientColor_) 
-    , diffuseColor_(rhs.diffuseColor_)
-    , specularColor_(rhs.specularColor_)
-    , specularExponent_(rhs.specularExponent_) {
+	: CompositeProperty(rhs)
+	, shadingMode_(rhs.shadingMode_)
+	, referenceFrame_(rhs.referenceFrame_)
+	, specularExponent_(rhs.specularExponent_)
+	, roughness_(rhs.roughness_)
+	, addLight_(rhs.addLight_)
+	, deleteLight_(rhs.deleteLight_)
+	, lightSelection_(rhs.lightSelection_)
+	, numLights_(rhs.numLights_)
+{
 
     // add properties
     addProperty(shadingMode_);
     addProperty(referenceFrame_);
-    addProperty(lightPosition_);
-    addProperty(ambientColor_);
-    addProperty(diffuseColor_);
-    addProperty(specularColor_);
     addProperty(specularExponent_);
-    addProperty(applyLightAttenuation_);
-    addProperty(lightAttenuation_);
+	addProperty(roughness_);
+
+	addProperty(lightSelection_);
+	addProperty(deleteLight_);
+	addProperty(addLight_);
+
+	for(auto property : rhs.getPropertiesByType<LightProperty>())
+		this->addProperty(property->clone());
 }
 
 SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingProperty& that) {
@@ -116,13 +119,17 @@ SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingPr
         CompositeProperty::operator=(that);
         shadingMode_ = that.shadingMode_;
         referenceFrame_ = that.referenceFrame_;
-        lightPosition_ = that.lightPosition_;
-        lightAttenuation_ = that.lightAttenuation_;
-        applyLightAttenuation_ = that.applyLightAttenuation_;
-        ambientColor_ = that.ambientColor_;
-        diffuseColor_ = that.diffuseColor_;
-        specularColor_ = that.specularColor_;
         specularExponent_ = that.specularExponent_;
+		roughness_ = that.roughness_;
+		addLight_ = that.addLight_;
+		deleteLight_ = that.deleteLight_;
+		lightSelection_ = that.lightSelection_;
+		numLights_ = that.numLights_;
+		for (auto property : this->getPropertiesByType<LightProperty>())
+			this->removeProperty(property);
+		for (auto property : that.getPropertiesByType<LightProperty>())
+			this->addProperty(property);
+			
     }
     return *this;
 }
@@ -133,15 +140,43 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 
 SimpleLightingProperty::~SimpleLightingProperty() {}
 
-inviwo::vec3 SimpleLightingProperty::getTransformedPosition() const {
-    switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
-        case Space::VIEW:
-            return camera_ ? vec3(camera_->inverseViewMatrix() * vec4(lightPosition_.get(), 1.0f))
-                           : lightPosition_.get();
-        case Space::WORLD:
-        default:
-            return lightPosition_.get();
-    }
+void SimpleLightingProperty::addLight() {
+	if (numLights_ >= MAX_NUMBER_OF_LIGHTS) return;
+	numLights_++;
+	std::string num = std::to_string(numLights_);
+
+	lightSelection_.addOption("lightOption_" + num, "Light " + num);
+
+	auto property = new LightProperty("light_" + num, "Light " + num);
+	property->setSerializationMode(PropertySerializationMode::All);
+	this->addProperty(property, true);
+}
+
+void SimpleLightingProperty::deleteLight() {
+	if (numLights_ <= 0) return;
+	auto beforeDeletion = this->getPropertiesByType<LightProperty>(false);
+	int selectedElement = lightSelection_.getSelectedIndex();
+
+	std::string identifier = beforeDeletion.at(selectedElement)->getIdentifier();
+	removeProperty(identifier);
+	lightSelection_.removeOption(selectedElement);
+	numLights_--;
+
+	auto afterDeletion = this->getPropertiesByType<LightProperty>(false);
+
+	size_t loopCount = 1;
+	for (auto prop : afterDeletion) {
+		prop->setDisplayName("Light " + std::to_string(loopCount));
+		prop->setIdentifier("light_" + std::to_string(loopCount));
+		loopCount++;
+	}
+
+	lightSelection_.clearOptions();
+
+	for (size_t i = 1; i < afterDeletion.size() + 1; i++) {
+		std::string str_i = std::to_string(i);
+		lightSelection_.addOption("lightOption_" + str_i, "Light " + str_i);
+	}
 }
 
 }  // namespace

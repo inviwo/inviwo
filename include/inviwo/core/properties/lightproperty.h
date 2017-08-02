@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,80 +24,52 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLELIGHTINGPROPERTY_H
-#define IVW_SIMPLELIGHTINGPROPERTY_H
+#ifndef IVW_LIGHTPROPERTY_H
+#define IVW_LIGHTPROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/lightproperty.h>
 
 namespace inviwo {
+	enum class Space : int { WORLD, VIEW };
 
-namespace ShadingMode {
-    enum Modes {
-        None,
-        Ambient,
-        Diffuse,
-        Specular,
-        BlinnPhong,
-        Phong,
-		OrenNayar,
-		OrenNayarDiffuse
-    };
-}
-
-class CameraProperty;
 /**
- * \ingroup properties
- * A CompositeProperty representing a light with position, ambient, diffuse, specular color. Used
- * for phong shading.
+ * \class LightProperty
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
+class IVW_CORE_API LightProperty : public CompositeProperty { 
 public:
-    InviwoPropertyInfo();
-	static const size_t MAX_NUMBER_OF_LIGHTS = 8;
+	InviwoPropertyInfo();
 
-    SimpleLightingProperty(std::string identifier, std::string displayName,
-                           CameraProperty* camera = nullptr,
-                           InvalidationLevel = InvalidationLevel::InvalidResources,
-                           PropertySemantics semantics = PropertySemantics::Default);
-    
-    SimpleLightingProperty(const SimpleLightingProperty& rhs);
-    SimpleLightingProperty& operator=(const SimpleLightingProperty& that);
-    virtual SimpleLightingProperty* clone() const override;
-    virtual ~SimpleLightingProperty();
-    
-    // Light properties
-    OptionPropertyInt shadingMode_;
-    OptionPropertyInt referenceFrame_;
+    LightProperty(std::string identifier, std::string displayName,
+				  InvalidationLevel = InvalidationLevel::InvalidResources,
+				  PropertySemantics semantics = PropertySemantics::Default);
+	LightProperty(const LightProperty& rhs);
+	LightProperty& operator=(const LightProperty& that);
+	virtual LightProperty* clone() const override;
+    virtual ~LightProperty();
 
-    FloatProperty specularExponent_;
-	FloatProperty roughness_;
+	FloatVec3Property lightPosition_;
+	FloatVec3Property lightAttenuation_;
+	BoolProperty applyLightAttenuation_;
 
-	void addLight();
-	void deleteLight();
-	size_t numLights_;
-	OptionPropertyString lightSelection_;
-	ButtonProperty addLight_;
-	ButtonProperty deleteLight_;
-    
-	const CameraProperty* getCameraProperty() const {
-		return camera_;
-	}
-private:
-    CameraProperty* camera_; //< Non-owning reference.
+	FloatVec3Property ambientColor_;
+	FloatVec3Property diffuseColor_;
+	FloatVec3Property specularColor_;
+
+	vec3 getTransformedPosition(const CameraProperty* camera, Space space) const;
 };
 
 } // namespace
 
-#endif // IVW_SIMPLELIGHTINGPROPERTY_H
+#endif // IVW_LIGHTPROPERTY_H
 

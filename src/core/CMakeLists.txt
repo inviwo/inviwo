@@ -199,6 +199,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/lightproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
@@ -460,6 +461,7 @@ set(SOURCE_FILES
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
+    properties/lightproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
