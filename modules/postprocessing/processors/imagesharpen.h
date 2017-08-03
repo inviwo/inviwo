@@ -67,21 +67,24 @@ namespace inviwo {
  * \class ImageSharpen
  * \brief Applies a laplacian filter to the input image.
  */
-class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor { 
-public:
-    ImageSharpen();
-    virtual ~ImageSharpen() = default;
+    class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor {
+    public:
+        ImageSharpen();
+        virtual ~ImageSharpen() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    protected:
+        virtual void preProcess(TextureUnitContainer &cont) override;
 
-private:
-    IntProperty passes_;
-    BoolProperty sharpen_;
-    OptionPropertyInt filter_;
+    private:
+        FloatMat3Property kernel_;
+        BoolProperty sharpen_;
+        OptionPropertyInt filter_;
+
+        std::array<mat3, 2> kernels_ = {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
+                                        mat3(vec3( 0, -1,  0), vec3(-1, 4, -1), vec3( 0, -1,  0))};
 };
 
 } // namespace
