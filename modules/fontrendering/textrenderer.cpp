@@ -374,8 +374,8 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
 
     GlyphEntry glyphEntry = {advance, bitmapSize, bitmapPos, ivec2(-1)};
 
-    const size2_t glyphExtent(glyphEntry.bitmapSize + 2 * glyphMargin_);
-    const size2_t texDims(fc.glyphTex->getDimensions());
+    const ivec2 glyphExtent(glyphEntry.bitmapSize + 2 * glyphMargin_);
+    const ivec2 texDims(fc.glyphTex->getDimensions());
 
     size_t line = 0;
     while (line < fc.lineLengths.size()) {

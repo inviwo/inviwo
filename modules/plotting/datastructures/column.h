@@ -197,6 +197,7 @@ public:
      */
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
 
+    using TemplateColumn<std::uint32_t>::set;
     virtual void set(size_t idx, const std::string &str);
 
     virtual void add(const std::string &value) override;

@@ -134,9 +134,9 @@ TimerThread::TimerInfo::TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlB
     : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
 
 Timer::Timer(Milliseconds interval, std::function<void()> callback, TimerThread &thread)
-    : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {};
+    : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {}
 
-Timer::~Timer() { stop(); };
+Timer::~Timer() { stop(); }
 
 void Timer::start(Milliseconds interval) {
     interval_ = interval;
@@ -173,7 +173,7 @@ bool Timer::isRunning() const { return controlblock_ != nullptr; }
 void Timer::stop() { controlblock_.reset(); }
 
 Delay::Delay(Milliseconds interval, std::function<void()> callback, TimerThread &thread)
-    : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {};
+    : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {}
 
 Delay::~Delay() { cancel(); }
 
