@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESHARPEN_H
@@ -58,7 +58,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Sharpen__ Turn filter on/off.
  */
@@ -67,27 +67,26 @@ namespace inviwo {
  * \class ImageSharpen
  * \brief Applies a laplacian filter to the input image.
  */
-    class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor {
-    public:
-        ImageSharpen();
-        virtual ~ImageSharpen() = default;
+class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor {
+public:
+    ImageSharpen();
+    virtual ~ImageSharpen() = default;
 
-        virtual const ProcessorInfo getProcessorInfo() const override;
-        static const ProcessorInfo processorInfo_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    protected:
-        virtual void preProcess(TextureUnitContainer &cont) override;
+protected:
+    virtual void preProcess(TextureUnitContainer &cont) override;
 
-    private:
-        FloatMat3Property kernel_;
-        BoolProperty sharpen_;
-        OptionPropertyInt filter_;
+private:
+    FloatMat3Property kernel_;
+    BoolProperty sharpen_;
+    OptionPropertyInt filter_;
 
-        std::array<mat3, 2> kernels_ = {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
-                                        mat3(vec3( 0, -1,  0), vec3(-1, 4, -1), vec3( 0, -1,  0))};
+    std::array<mat3, 2> kernels_ = { {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
+                                    mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))} };
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESHARPEN_H
-
+#endif  // IVW_IMAGESHARPEN_H
