@@ -44,34 +44,21 @@ const ProcessorInfo ImageSharpen::getProcessorInfo() const { return processorInf
 
 ImageSharpen::ImageSharpen()
     : ImageGLProcessor("imagesharpen.frag")
-    , passes_("passes", "Passes", 1, 1, 10, 1)
+    , kernel_("kernel", "Kernel", kernels_[0])
     , sharpen_("sharpen", "Sharpen", true)
-    , filter_("filter", "Filter") {
-
-    filter_.addOption("filter1", "Filter 1", 0);
-    filter_.addOption("filter2", "Filter 2", 1);
-    filter_.setSelectedValue(0);
-    filter_.setCurrentStateAsDefault();
+    , filter_("filter", "Filter", {{"filter1", "Kernel 1", 0}, {"filter2", "Kernel 2", 1}}, 0) {
 
     addProperty(sharpen_);
     addProperty(filter_);
+
+    kernel_.setReadOnly(true);
+    kernel_.setCurrentStateAsDefault();
+    addProperty(kernel_);
 }
 
 void ImageSharpen::preProcess(TextureUnitContainer &cont) {
-    mat3 kernel;
-
-    if (filter_.get() == 0) {
-        kernel[0] = vec3(-1, -1, -1);
-        kernel[1] = vec3(-1, 8, -1);
-        kernel[2] = vec3(-1, -1, -1);
-    }
-    if (filter_.get() == 1) {
-        kernel[0] = vec3(0, -1, 0);
-        kernel[1] = vec3(-1, 4, -1);
-        kernel[2] = vec3(0, -1, 0);
-    }
-
+    kernel_.set(kernels_[filter_.get()]);
     utilgl::setUniforms(shader_, sharpen_);
-    shader_.setUniform("kernel", kernel);
+    shader_.setUniform("kernel", kernels_[filter_.get()]);
 }
-}  // namespace
+}  // namespace inviwo
