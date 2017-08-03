@@ -40,17 +40,19 @@ void main() {
         float x = outportParameters_.reciprocalDimensions.x;
         float y = outportParameters_.reciprocalDimensions.y;
         
-        vec2 texCoords11 = (gl_FragCoord.xy - vec2( 0, 0)) * outportParameters_.reciprocalDimensions;
-        vec2 texCoords01 = texCoords11 - vec2(-x, 0.0);
-        vec2 texCoords21 = texCoords11 - vec2(x, 0.0);
+        vec2 texCoords11 = (gl_FragCoord.xy) * outportParameters_.reciprocalDimensions;
 
-        vec2 texCoords00 = texCoords11 - vec2(x, y);
-        vec2 texCoords10 = texCoords11 - vec2(0.0, y);            
-        vec2 texCoords20 = texCoords11 - vec2(-x, y);
+        vec2 texCoords01 = texCoords11 - vec2(  x, 0.0);
+        //   texCoords11 = texCoords11 - vec2(0.0, 0.0);
+        vec2 texCoords21 = texCoords11 - vec2( -x, 0.0);
+
+        vec2 texCoords00 = texCoords11 - vec2(  x,   y);
+        vec2 texCoords10 = texCoords11 - vec2(0.0,   y);            
+        vec2 texCoords20 = texCoords11 - vec2( -x,   y);
         
-        vec2 texCoords02 = texCoords11 - vec2(-x, y);
-        vec2 texCoords12 = texCoords11 - vec2(0.0, y);
-        vec2 texCoords22 = texCoords11 - vec2(x, y);
+        vec2 texCoords02 = texCoords11 - vec2(  x,  -y);
+        vec2 texCoords12 = texCoords11 - vec2(0.0,  -y);
+        vec2 texCoords22 = texCoords11 - vec2( -x,  -y);
 
         vec4 samples[9];
         const float weights[9] = float[9](
