@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,54 +24,43 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_IMAGESHARPEN_H
-#define IVW_IMAGESHARPEN_H
+#ifndef IVW_IMAGEEDGEDARKEN_H
+#define IVW_IMAGEEDGEDARKEN_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageSharpen, Image Sharpen}
- * ![](org.inviwo.ImageSharpen.png?classIdentifier=org.inviwo.ImageSharpen)
- * Applies a laplacian filter to the input image.
- * Two kernels are available:
- *
- *     Filter1: -1  -1  -1
- *              -1   8  -1
- *              -1  -1  -1
- *
- *     Filter2:  0  -1   0
- *              -1   4  -1
- *               0  -1   0
+/** \docpage{org.inviwo.ImageEdgeDarken, Image Edge Darken}
+ * ![](org.inviwo.ImageEdgeDarken.png?classIdentifier=org.inviwo.ImageEdgeDarken)
  *
  * ### Inports
  *   * __ImageInport__ Input image.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- *
+ * 
  * ### Properties
- *   * __Sharpen__ Turn filter on/off.
+ *   * __Darken__ Enables/disables effect.
+ *   * __Intensity__ Controls intensity.
  */
 
 /**
- * \class ImageSharpen
- * \brief Applies a laplacian filter to the input image.
+ * \class ImageEdgeDarken
+ * \brief Darken edges in an image.
  */
-class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor {
+class IVW_MODULE_POSTPROCESSING_API ImageEdgeDarken : public ImageGLProcessor { 
 public:
-    ImageSharpen();
-    virtual ~ImageSharpen() = default;
-
+    ImageEdgeDarken();
+    virtual ~ImageEdgeDarken() = default;
+    
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -79,14 +68,11 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
-    FloatMat3Property kernel_;
-    BoolProperty sharpen_;
-    OptionPropertyInt filter_;
-
-    std::array<mat3, 2> kernels_ = { {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
-                                    mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))} };
+    BoolProperty darken_;
+    FloatProperty intensity_;
 };
 
-}  // namespace inviwo
+} // namespace
 
-#endif  // IVW_IMAGESHARPEN_H
+#endif // IVW_IMAGEEDGEDARKEN_H
+

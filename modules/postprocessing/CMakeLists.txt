@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageedgedarken.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.h
@@ -21,6 +22,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageedgedarken.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.cpp
@@ -39,6 +41,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthdarkening.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/displaytex.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/edgedarken.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fxaa.frag
