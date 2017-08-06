@@ -63,8 +63,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void initializeResources();
-    virtual void process();
+    virtual void initializeResources() override;
+    virtual void process() override;
 
     void onAbufferSettingChanged();
     void onAbufferTransparencyChanged();

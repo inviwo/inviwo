@@ -79,12 +79,12 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
+    std::array<mat3, 2> kernels_ = { {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
+                                    mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))} };
+    
     FloatMat3Property kernel_;
     BoolProperty sharpen_;
     OptionPropertyInt filter_;
-
-    std::array<mat3, 2> kernels_ = { {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
-                                    mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))} };
 };
 
 }  // namespace inviwo

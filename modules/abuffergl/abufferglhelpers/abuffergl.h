@@ -104,7 +104,7 @@ public:
 
         virtual std::string getClassIdentifier() const override; 
 
-        void invokeEvent(Event* event);
+        void invokeEvent(Event* event) override;
 
     private:
         Inviwo_ABufferGL4* parent_;

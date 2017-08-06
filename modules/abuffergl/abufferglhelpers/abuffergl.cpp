@@ -527,7 +527,7 @@ glm::uint Inviwo_ABufferGL4::abuffer_fetchCurrentAtomicCounterValue() {
     memcpy(atomicCounterBuff, glAtomicCounterBuff, 4 * sizeof(glm::uint));
     glUnmapBuffer(GL_TEXTURE_BUFFER);
     totalABuffUsed = atomicCounterBuff[0];
-    delete atomicCounterBuff;
+    delete[] atomicCounterBuff;
     return totalABuffUsed;
 }
 
@@ -540,7 +540,6 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
         const LayerRAM* layerRam_FragCount =
             fcImage->getColorLayer()->getRepresentation<LayerRAM>();
         const glm::uint32* fcImageData = (const glm::uint32*)layerRam_FragCount->getData();
-        ivec2 dim = fcImage->getDimensions();
         ivec2 sPos = ivec2(pos.x, pos.y);
         size_t ind = LayerRAM::posToIndex(sPos, fcImage->getDimensions());
         glm::uint32 fragCountVal = fcImageData[ind];
@@ -572,7 +571,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                 ss << currPage << " ";
                 currPage = data[currPage];
             };
-            delete data;
+            delete[] data;
 
             glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue();
 
@@ -629,8 +628,8 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                         ss << "####" << std::endl;
                         // if (totalCount>=fragCountVal) break;
 
-                        delete rgbData;
-                        delete extData;
+                        delete[] rgbData;
+                        delete[] extData;
                     }
                     ss << " ------------------------------------ " << std::endl;
                     ss << "Total fragements in Pages " << totalCount << std::endl;
@@ -766,7 +765,7 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
                 LogWarn("ABuffer info @ " << basePath + rndInt + "abuffer_linkListBuffer.txt")
             }
 
-            delete data;
+            delete[] data;
         }
     }
 }
