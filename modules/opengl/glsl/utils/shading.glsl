@@ -32,35 +32,35 @@
 #include "utils/structs.glsl"
 
 // Helper functions to calculate the shading
-vec3 shadeDiffuseCalculation(LightParameters light_, vec3 materialDiffuseColor, vec3 normal,
+vec3 shadeDiffuseCalculation(LightParameters lightParameters_, vec3 materialDiffuseColor, vec3 normal,
                              vec3 position) {
 							 vec3 col = vec3(0);
-	for(int i = 0; i < light_.numLights; i++){
-		vec3 toLightDir = normalize(light_.lights[i].position - position);
+	for(int i = 0; i < lightParameters_.numLights; i++){
+		vec3 toLightDir = lightParameters_.lights[i].position - position;
 
-		vec4 att = light_.lights[i].attenuation;
+		vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
 		float attenuation = 1.0;
-		if(att.w == 1.0) { 
-			float dist = length(light_.lights[i].position - position);
-			attenuation = 1.0 / (att.x + att.y * dist + att.z * (dist * dist));  
+		if(lightAttenuation.w == 1.0) { // Attenuation enabled
+			float dist = length(toLightDir);
+			attenuation = 1.0 / (lightAttenuation.x + lightAttenuation.y * dist + lightAttenuation.z * (dist * dist));  
 		}
-		col += attenuation * materialDiffuseColor * light_.lights[i].diffuseColor * max(dot(normal, toLightDir), 0.0);
+		col += attenuation * materialDiffuseColor * lightParameters_.lights[i].diffuseColor * max(dot(normal, normalize(toLightDir)), 0.0);
 	}
 	return col;
 }
 
-vec3 shadeSpecularBlinnPhongCalculation(LightParameters light_, vec3 materialSpecularColor,
+vec3 shadeSpecularBlinnPhongCalculation(LightParameters lightParameters_, vec3 materialSpecularColor,
                                         vec3 normal, vec3 position, vec3 toCameraDir) {
 	vec3 col = vec3(0);
-	for(int i = 0; i < light_.numLights; i++){
-		vec3 toLightDir = normalize(light_.lights[i].position - position);
-		vec4 att = light_.lights[i].attenuation;
+	for(int i = 0; i < lightParameters_.numLights; i++){
+		vec3 toLightDir = lightParameters_.lights[i].position - position;
+		vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
 		float attenuation = 1.0;
-		if(att.w == 1.0) { 
-			float dist = length(light_.lights[i].position - position);
-			attenuation = 1.0 / (att.x + att.y * dist + att.z * (dist * dist));  
+		if(lightAttenuation.w == 1.0) { // Attenuation enabled
+			float dist = length(toLightDir);
+			attenuation = 1.0 / (lightAttenuation.x + lightAttenuation.y * dist + lightAttenuation.z * (dist * dist));  
 		}
-		vec3 halfway = toCameraDir + toLightDir;
+		vec3 halfway = toCameraDir + normalize(toLightDir);
 
 		// check for special case where the light source is exactly opposite
 		// to the view direction, i.e. the length of the halfway vector is zero
@@ -68,23 +68,23 @@ vec3 shadeSpecularBlinnPhongCalculation(LightParameters light_, vec3 materialSpe
 			col += vec3(0.0);
 		} else {
 			halfway = normalize(halfway);
-			col+= attenuation * materialSpecularColor * light_.lights[i].specularColor *
-				   pow(max(dot(normal, halfway), 0.0), light_.specularExponent);
+			col+= attenuation * materialSpecularColor * lightParameters_.lights[i].specularColor *
+				   pow(max(dot(normal, halfway), 0.0), lightParameters_.specularExponent);
 		}
 	}
 	return col;
 }
 
-vec3 shadeSpecularPhongCalculation(LightParameters light_, vec3 materialSpecularColor, vec3 normal,
+vec3 shadeSpecularPhongCalculation(LightParameters lightParameters_, vec3 materialSpecularColor, vec3 normal,
                                    vec3 position, vec3 toCameraDir) {
 	vec3 col = vec3(0);
-	for(int i = 0; i < light_.numLights; i++){
-		vec3 toLightDir = normalize(light_.lights[i].position - position);
-		vec4 att = light_.lights[i].attenuation;
+	for(int i = 0; i < lightParameters_.numLights; i++){
+		vec3 toLightDir = normalize(lightParameters_.lights[i].position - position);
+		vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
 		float attenuation = 1.0;
-		if(att.w == 1.0) { 
-			float dist = length(light_.lights[i].position - position);
-			attenuation = 1.0 / (att.x + att.y * dist + att.z * (dist * dist));  
+		if(lightAttenuation.w == 1.0) { // Attenuation enabled
+			float dist = length(lightParameters_.lights[i].position - position);
+			attenuation = 1.0 / (lightAttenuation.x + lightAttenuation.y * dist + lightAttenuation.z * (dist * dist));  
 		}
 		// Compute reflection (not that glsl uses incident direction)
 		// Equivalent to: 2.0*dot(toLightDir, normal)*normal - toLightDir;
@@ -93,8 +93,8 @@ vec3 shadeSpecularPhongCalculation(LightParameters light_, vec3 materialSpecular
 		if (dot(toLightDir, normal) < 0.0) {
 			col += vec3(0.0);
 		} else {
-			col += attenuation * materialSpecularColor * light_.lights[i].specularColor *
-				pow(max(dot(r, toCameraDir), 0.0), light_.specularExponent * 0.25);
+			col += attenuation * materialSpecularColor * lightParameters_.lights[i].specularColor *
+				pow(max(dot(r, toCameraDir), 0.0), lightParameters_.specularExponent * 0.25);
 		}
 	}
 	return col;
@@ -102,63 +102,64 @@ vec3 shadeSpecularPhongCalculation(LightParameters light_, vec3 materialSpecular
 
 // Functions to apply different shading modes.
 // All positions and directions should be in world space!
-vec3 shadeAmbient(LightParameters light_, vec3 materialAmbientColor, vec3 position) {
+vec3 shadeAmbient(LightParameters lightParameters_, vec3 materialAmbientColor, vec3 position) {
 	vec3 ambient = vec3(0);
-	for(int i = 0; i < light_.numLights; i++){
-		vec4 att = light_.lights[i].attenuation;
+	for(int i = 0; i < lightParameters_.numLights; i++){
+		vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
 		float attenuation = 1.0;
-		if(att.w == 1.0) { 
-			float dist = length(light_.lights[i].position - position);
-			attenuation = 1.0 / (att.x + att.y * dist + att.z * (dist * dist));  
+		if(lightAttenuation.w == 1.0) { 
+			float dist = length(lightParameters_.lights[i].position - position);
+			attenuation = 1.0 / (lightAttenuation.x + lightAttenuation.y * dist + lightAttenuation.z * (dist * dist));  
 		}
-		ambient += attenuation * light_.lights[i].ambientColor;
+		ambient += attenuation * lightParameters_.lights[i].ambientColor;
 	}
     return materialAmbientColor * ambient;
 }
 
-vec3 shadeDiffuse(LightParameters light_, vec3 materialDiffuseColor, vec3 position, vec3 normal) {
-    return shadeDiffuseCalculation(light_, materialDiffuseColor, normal, position);
+vec3 shadeDiffuse(LightParameters lightParameters_, vec3 materialDiffuseColor, vec3 position, vec3 normal) {
+    return shadeDiffuseCalculation(lightParameters_, materialDiffuseColor, normal, position);
 }
 
-vec3 shadeSpecular(LightParameters light_, vec3 materialSpecularColor, vec3 position, vec3 normal,
+vec3 shadeSpecular(LightParameters lightParameters_, vec3 materialSpecularColor, vec3 position, vec3 normal,
                    vec3 toCameraDir) {
-    return shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, position, toCameraDir);
+    return shadeSpecularPhongCalculation(lightParameters_, materialSpecularColor, normal, position, toCameraDir);
 }
 
-vec3 shadeBlinnPhong(LightParameters light_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
+vec3 shadeBlinnPhong(LightParameters lightParameters_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
                      vec3 materialSpecularColor, vec3 position, vec3 normal, vec3 toCameraDir) {
-    vec3 resAmb = shadeAmbient(light_, materialAmbientColor, position);
-    vec3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, position);
-    vec3 resSpec = shadeSpecularBlinnPhongCalculation(light_, materialSpecularColor, normal, position, toCameraDir);
+    vec3 resAmb = shadeAmbient(lightParameters_, materialAmbientColor, position);
+    vec3 resDiff = shadeDiffuseCalculation(lightParameters_, materialDiffuseColor, normal, position);
+    vec3 resSpec = shadeSpecularBlinnPhongCalculation(lightParameters_, materialSpecularColor, normal, position, toCameraDir);
     return resAmb + resDiff + resSpec;
 }
 
-vec3 shadePhong(LightParameters light_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
+vec3 shadePhong(LightParameters lightParameters_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
                 vec3 materialSpecularColor, vec3 position, vec3 normal, vec3 toCameraDir) {
-    vec3 resAmb = shadeAmbient(light_, materialAmbientColor, position);
-    vec3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, position);
-    vec3 resSpec = shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, position, toCameraDir);
+    vec3 resAmb = shadeAmbient(lightParameters_, materialAmbientColor, position);
+    vec3 resDiff = shadeDiffuseCalculation(lightParameters_, materialDiffuseColor, normal, position);
+    vec3 resSpec = shadeSpecularPhongCalculation(lightParameters_, materialSpecularColor, normal, position, toCameraDir);
     return resAmb + resDiff + resSpec;
 }
 
-vec3 shadeOrenNayarDiffuse(LightParameters light_, vec3 materialDiffuseColor, vec3 position, vec3 normal, vec3 toCameraDir) { // http://ruh.li/GraphicsOrenNayar.html
+vec3 shadeOrenNayarDiffuse(LightParameters lightParameters_, vec3 materialDiffuseColor, vec3 position, vec3 normal, vec3 toCameraDir) { // http://ruh.li/GraphicsOrenNayar.html
 	vec3 col = vec3(0);
 	float NdotV = dot(normal, toCameraDir);
 	float angleVN = acos(NdotV);
 
-	float roughnessSquared = light_.roughness * light_.roughness;
+	float roughnessSquared = lightParameters_.roughness * lightParameters_.roughness;
 
 	float A = 1.0 - 0.5 * (roughnessSquared / (roughnessSquared + 0.57));
 	float B = 0.45 * (roughnessSquared / (roughnessSquared + 0.09));
 
-	for(int i = 0; i < light_.numLights; i++){
-		vec3 lightDirection = normalize(light_.lights[i].position - position);
-		vec4 att = light_.lights[i].attenuation;
+	for(int i = 0; i < lightParameters_.numLights; i++){
+		vec3 lightDirection = lightParameters_.lights[i].position - position;
+		vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
 		float attenuation = 1.0;
-		if(att.w == 1.0) { 
-			float dist = length(light_.lights[i].position - position);
-			attenuation = 1.0 / (att.x + att.y * dist + att.z * (dist * dist));  
+		if(lightAttenuation.w == 1.0) { 
+			float dist = length(lightDirection);
+			attenuation = 1.0 / (lightAttenuation.x + lightAttenuation.y * dist + lightAttenuation.z * (dist * dist));  
 		}
+    lightDirection = normalize(lightDirection);
 
 		float NdotL = dot(normal, lightDirection);
 
@@ -172,14 +173,14 @@ vec3 shadeOrenNayarDiffuse(LightParameters light_, vec3 materialDiffuseColor, ve
 
 		// put it all together
 		float result = max(0.0, NdotL) * (A + B * max(0.0, gamma) * C);
-		col += attenuation * light_.lights[i].diffuseColor * materialDiffuseColor * result;
+		col += attenuation * lightParameters_.lights[i].diffuseColor * materialDiffuseColor * result;
 	}
 	return col;
 }
 
-vec3 shadeOrenNayar(LightParameters light_, vec3 materialAmbientColor, vec3 materialDiffuseColor, vec3 position, vec3 normal, vec3 toCameraDir) {
-	vec3 diffuse = shadeOrenNayarDiffuse(light_, materialDiffuseColor, position, normal, toCameraDir);
-	vec3 ambient = shadeAmbient(light_, materialAmbientColor, position);
+vec3 shadeOrenNayar(LightParameters lightParameters_, vec3 materialAmbientColor, vec3 materialDiffuseColor, vec3 position, vec3 normal, vec3 toCameraDir) {
+	vec3 diffuse = shadeOrenNayarDiffuse(lightParameters_, materialDiffuseColor, position, normal, toCameraDir);
+	vec3 ambient = shadeAmbient(lightParameters_, materialAmbientColor, position);
 	return ambient + diffuse;
 }
 

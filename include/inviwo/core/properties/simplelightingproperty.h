@@ -50,8 +50,8 @@ namespace ShadingMode {
         Specular,
         BlinnPhong,
         Phong,
-		OrenNayar,
-		OrenNayarDiffuse
+        OrenNayar,
+        OrenNayarDiffuse
     };
 }
 
@@ -64,7 +64,7 @@ class CameraProperty;
 class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
-	static const size_t MAX_NUMBER_OF_LIGHTS = 8;
+	static const size_t MAX_NUMBER_OF_LIGHTS = 8; // the maximum number of lights is set to 8 in shading.glsl, do not increase!
 
     SimpleLightingProperty(std::string identifier, std::string displayName,
                            CameraProperty* camera = nullptr,
