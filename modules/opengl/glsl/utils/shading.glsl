@@ -65,7 +65,7 @@ vec3 shadeSpecularBlinnPhongCalculation(LightParameters light_, vec3 materialSpe
 		// check for special case where the light source is exactly opposite
 		// to the view direction, i.e. the length of the halfway vector is zero
 		if (dot(halfway, halfway) < 1.0e-6) {  // check for squared length
-			return vec3(0.0);
+			col += vec3(0.0);
 		} else {
 			halfway = normalize(halfway);
 			col+= attenuation * materialSpecularColor * light_.lights[i].specularColor *
@@ -91,7 +91,7 @@ vec3 shadeSpecularPhongCalculation(LightParameters light_, vec3 materialSpecular
 		vec3 r = reflect(-toLightDir, normal);
    
 		if (dot(toLightDir, normal) < 0.0) {
-			return vec3(0.0);
+			col += vec3(0.0);
 		} else {
 			col += attenuation * materialSpecularColor * light_.lights[i].specularColor *
 				pow(max(dot(r, toCameraDir), 0.0), light_.specularExponent * 0.25);
