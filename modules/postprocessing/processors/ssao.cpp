@@ -245,8 +245,7 @@ void SSAO::process() {
 void SSAO::initHbao() {
     constexpr float numDir = 8; // keep in sync to glsl
 
-    std::random_device rd;
-    std::default_random_engine gen(rd());
+    std::mt19937 gen;
     std::uniform_real_distribution<float> uni_float(0.f, 1.f);
 
     auto random = [&gen, &uni_float]() -> float {

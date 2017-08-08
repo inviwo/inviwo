@@ -72,9 +72,12 @@ float reconstructCSZ(float d, vec4 clipInfo) {
 void main() {
   float depth = texelFetch(inputTexture, ivec2(gl_FragCoord.xy), 0).x;
 
+  float linDepth = reconstructCSZ(depth, clipInfo);
+
+#ifdef NORMALIZE
   float minDD = reconstructCSZ(minD, clipInfo);
   float maxDD = reconstructCSZ(maxD, clipInfo);
-  float range = maxDD - minDD;
-
-  out_Color = clamp((reconstructCSZ(depth, clipInfo) - minDD) / range,0,1);
+  linDepth = clamp((linDepth - minDD) / (maxDD - minDD),0,1);
+#endif
+  out_Color = linDepth;
 }

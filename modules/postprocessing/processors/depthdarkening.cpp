@@ -67,7 +67,7 @@ DepthDarkening::DepthDarkening()
     , cam_("camera", "Camera")
 
     , depthDarkeningShader_("depthdarkening.frag")
-    , linearizeDepthShader_("depthlinearize.frag")
+    , linearizeDepthShader_("depthlinearize.frag",false)
 
     , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); })
 
@@ -79,6 +79,9 @@ DepthDarkening::DepthDarkening()
     addProperty(lambda_);
 
     addProperty(cam_);
+
+    linearizeDepthShader_.getFragmentShaderObject()->addShaderDefine("NORMALIZE");
+    linearizeDepthShader_.build();
 
     depthDarkeningShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
     linearizeDepthShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
