@@ -206,15 +206,19 @@ void bidirectionalTest(Zipped&& iter) {
         auto i = iter.begin();
         auto j1 = iter.end();
         auto j2 = iter.end();
+        j2--;
+        --j1;
 
-        for (int c = static_cast<int>(ints.size()) - 1; c >= 0; --c) {
+        for (int c = static_cast<int>(ints.size()) - 1; c >= 1; --c) {
+            auto ref3 = proxy<int, D>{ints[c], ds[c]};
+            EXPECT_EQ(ref3, *j1);
+            EXPECT_EQ(ref3, *j2);
+            EXPECT_EQ(true, j1 == j2);
+            
             auto val = *j2--;
             EXPECT_EQ(true, val == *j1);
             --j1;
 
-            auto ref3 = proxy<int, D>{ints[c], ds[c]};
-            EXPECT_EQ(ref3, *j1);
-            EXPECT_EQ(ref3, *j2);
             EXPECT_EQ(true, j1 == j2);
         }
         EXPECT_EQ(*i, *j1);
