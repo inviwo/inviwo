@@ -116,7 +116,7 @@ struct Light {
 };
 
 struct LightParameters {
-    float specularExponent;
+  float specularExponent;
 	float roughness;
 	int numLights;
 	Light lights[8];
