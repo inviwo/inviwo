@@ -118,7 +118,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         auto filename = commandLineParser_.getLogToFileFileName();
         auto dir = filesystem::getFileDirectory(filename);
         if (dir.empty() || !filesystem::directoryExists(dir)){
-            filename = commandLineParser_.getOutputPath() + "/" + filename;
+            if(!commandLineParser_.getOutputPath().empty()){
+                filename = commandLineParser_.getOutputPath() + "/" + filename;
+            }
         }
         filelogger_ = std::make_shared<FileLogger>(filename);
         LogCentral::getPtr()->registerLogger(filelogger_);
