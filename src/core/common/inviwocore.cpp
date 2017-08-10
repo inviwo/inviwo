@@ -169,8 +169,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();
-    syscap->retrieveStaticInfo();
-    syscap->printInfo();
     registerCapabilities(std::move(syscap));
     
     // Register Data readers

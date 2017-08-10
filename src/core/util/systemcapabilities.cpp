@@ -46,6 +46,8 @@ SystemCapabilities::SystemCapabilities() {
 #ifdef IVW_SIGAR
     sigar_open(&sigar_);
 #endif
+    retrieveStaticInfo();
+    retrieveDynamicInfo();
 }
 
 SystemCapabilities::~SystemCapabilities() {
@@ -76,7 +78,6 @@ uvec3 SystemCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t for
 
 void SystemCapabilities::retrieveStaticInfo() {
     successOSInfo_ = lookupOSInfo();
-
     buildInfo_ = util::getBuildInfo();
 }
 
