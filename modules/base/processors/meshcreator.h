@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <modules/base/properties/basisproperty.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
@@ -93,16 +93,6 @@ protected:
     virtual void process() override;
 
 private:
-    template <typename... Args>
-    void show(Args&&... args) {
-        util::for_each_argument([](Property& p) { p.setVisible(true); }, std::forward<Args>(args)...);
-    }
-
-    template <typename... Args>
-    void hide(Args&&... args) {
-        util::for_each_argument([](Property& p) { p.setVisible(false); }, std::forward<Args>(args)...);
-    }
-
     enum class MeshType {
         Sphere,
         ColorSphere,
