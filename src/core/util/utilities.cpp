@@ -32,6 +32,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/processorwidget.h>
+
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 namespace util {
@@ -106,6 +109,17 @@ std::string stripIdentifier(std::string identifier) {
     util::erase_remove_if(identifier, testRest);
     return identifier;
 }
+
+namespace detail {
+
+void Shower::operator()(Property& p) {p.setVisible(true);}
+void Hideer::operator()(Property& p) {p.setVisible(false);}
+
+void Shower::operator()(ProcessorWidget& p) {p.setVisible(true);}
+void Hideer::operator()(ProcessorWidget& p) {p.setVisible(false);}
+
+}  // namespace
+
 
 }  // namespace util
 }  // namespace inviwo

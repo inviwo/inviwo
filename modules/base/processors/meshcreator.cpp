@@ -84,8 +84,8 @@ MeshCreator::MeshCreator()
     meshType_.addOption("torus", "Torus", MeshType::Torus);
     meshType_.addOption("sphereopt", "Sphere with Position", MeshType::SphereOpt);
 
-    hide(position1_, position2_, normal_, basis_, color_ , torusRadius1_ , torusRadius2_);
-    show(meshScale_, meshRes_);
+    util::hide(position1_, position2_, normal_, basis_, color_ , torusRadius1_ , torusRadius2_);
+    util::show(meshScale_, meshRes_);
 
     meshType_.set(MeshType::Sphere);
     meshType_.setCurrentStateAsDefault();
@@ -124,83 +124,83 @@ MeshCreator::MeshCreator()
         
         
 
-        hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_, torusRadius1_,
+        util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_, torusRadius1_,
              torusRadius2_);
 
         switch (meshType_.get()) {
             case MeshType::Sphere: {
                 pickingUpdate_ = updateNone;
-                show(meshScale_, meshRes_);
+                util::show(meshScale_, meshRes_);
                 break;
             }
             case MeshType::ColorSphere: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_, meshScale_);
+                util::show(position1_, meshScale_);
                 break;
             }
             case MeshType::CubeBasicMesh: {
                 pickingUpdate_ = updatePosition1and2;
-                show(position1_, position2_, color_);
+                util::show(position1_, position2_, color_);
                 break;
             }
             case MeshType::CubeSimpleMesh: {
                 pickingUpdate_ = updatePosition1and2;
-                show(position1_, position2_);
+                util::show(position1_, position2_);
                 break;
             }
             case MeshType::LineCube: {
                 pickingUpdate_ = updateBasis;
-                show(basis_, color_);
+                util::show(basis_, color_);
                 break;
             }
             case MeshType::LineCubeAdjacency: {
                 pickingUpdate_ = updateBasis;
-                show(basis_, color_);
+                util::show(basis_, color_);
                 break;
             }
             case MeshType::Plane: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_, normal_, meshScale_, meshRes_, color_);
+                util::show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Disk: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_, normal_, meshScale_, meshRes_, color_);
+                util::show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Cone: {
                 pickingUpdate_ = updatePosition1and2;
-                show(position1_, position2_, meshScale_, meshRes_, color_);
+                util::show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Cylinder: {
                 pickingUpdate_ = updatePosition1and2;
-                show(position1_, position2_, meshScale_, meshRes_, color_);
+                util::show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Arrow: {
                 pickingUpdate_ = updatePosition1and2;
-                show(position1_, position2_, meshScale_, meshRes_, color_);
+                util::show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::CoordAxes: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_, meshScale_);
+                util::show(position1_, meshScale_);
                 break;
             }
             case MeshType::Torus: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_,torusRadius1_, torusRadius2_,meshRes_,color_);
+                util::show(position1_,torusRadius1_, torusRadius2_,meshRes_,color_);
                 break;
             }
             case MeshType::SphereOpt: {
                 pickingUpdate_ = updatePosition1;
-                show(position1_, meshScale_, color_);
+                util::show(position1_, meshScale_, color_);
                 break;
             }
             default: {
                 pickingUpdate_ = updateNone;
-                show(meshScale_, meshRes_);
+                util::show(meshScale_, meshRes_);
                 break;
             }
         }
