@@ -60,12 +60,12 @@ IVW_CORE_API std::string stripIdentifier(std::string identifier);
 
 namespace detail {
 
-struct Shower {
+struct IVW_CORE_API Shower {
     void operator()(Property& p);
     void operator()(ProcessorWidget& p);
 };
 
-struct Hideer {
+struct IVW_CORE_API Hideer {
     void operator()(Property& p);
     void operator()(ProcessorWidget& p);
 };
