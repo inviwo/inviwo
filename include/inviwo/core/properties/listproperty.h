@@ -27,48 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LIGHTPROPERTY_H
-#define IVW_LIGHTPROPERTY_H
+#ifndef IVW_LISTPROPERTY_H
+#define IVW_LISTPROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
+
 /**
- * \class LightProperty
- * \brief Holds information of a light source
- * Represents a light source as a property. Contains information such as
- * Position, Color, Attenuation
+ * \class ListProperty
+ * \brief A property that has specified sub-properties that can be added
+ * Represents a List of properties that allows to add and delete items of this list
  */
-class IVW_CORE_API LightProperty : public CompositeProperty {
+template <typename T>
+class IVW_CORE_API ListProperty : public CompositeProperty {
+    static_assert(std::is_base_of<Property, T>::value, "T must be a property.");
+
+private:
+    std::string elementName_;
+    std::unique_ptr<T> prefab_;
+
 public:
-    InviwoPropertyInfo();
+    size_t numElements_;
+    size_t maxNumElements_;
 
-    LightProperty(std::string identifier, std::string displayName,
-                  InvalidationLevel = InvalidationLevel::InvalidResources,
-                  PropertySemantics semantics = PropertySemantics::Default);
-    LightProperty(const LightProperty& rhs);
-    LightProperty& operator=(const LightProperty& that);
-    virtual LightProperty* clone() const override;
-    virtual ~LightProperty();
+    ListProperty(std::string identifier, std::string displayName, std::string elementName = "Element",
+                 T* prefab = nullptr, size_t maxNumberOfElements = 0,
+                 InvalidationLevel = InvalidationLevel::InvalidResources,
+                 PropertySemantics semantics = PropertySemantics::Default);
+    ListProperty(const ListProperty& rhs);
+    ListProperty& operator=(const ListProperty& that);
+    virtual ListProperty* clone() const override;
+    virtual ~ListProperty() = default;
 
-    FloatVec3Property lightPosition_;
-    FloatVec3Property lightAttenuation_;
-    BoolProperty applyLightAttenuation_;
+    void addElement();
+    void deleteElement();
 
-    FloatVec3Property ambientColor_;
-    FloatVec3Property diffuseColor_;
-    FloatVec3Property specularColor_;
-
-    vec3 getTransformedPosition(const CameraProperty* camera, CoordinateSpace space) const;
+    OptionPropertyString elementSelection_;
+    ButtonProperty addElementButton_;
+    ButtonProperty deleteElementButton_;
+    CompositeProperty elements_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_LIGHTPROPERTY_H
+#endif  // IVW_LISTPROPERTY_H

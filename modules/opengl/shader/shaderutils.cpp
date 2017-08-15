@@ -47,36 +47,40 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
     std::string shadingValue = "";
 
     switch (mode) {
-    case ShadingMode::Ambient:
-        shadingValue = "shadeAmbient(lighting, materialAmbientColor, position);";
-        break;
-    case ShadingMode::Diffuse:
-        shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
-        break;
-    case ShadingMode::Specular:
-        shadingValue =
-            "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
-        break;
-    case ShadingMode::BlinnPhong:
-        shadingValue =
-            "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-            "materialSpecularColor, position, normal, toCameraDir);";
-        break;
-    case ShadingMode::Phong:
-        shadingValue =
-            "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-            "materialSpecularColor, position, normal, toCameraDir);";
-        break;
-    case ShadingMode::OrenNayarDiffuse:
-        shadingValue = "shadeOrenNayarDiffuse(lighting, materialDiffuseColor, position, normal, toCameraDir);";
-        break;
-    case ShadingMode::OrenNayar:
-        shadingValue = "shadeOrenNayar(lighting, materialAmbientColor, materialDiffuseColor, position, normal, toCameraDir);";
-        break;
-    case ShadingMode::None:
-    default:
-        shadingValue = "materialAmbientColor;";
-        break;
+        case ShadingMode::Ambient:
+            shadingValue = "shadeAmbient(lighting, materialAmbientColor, position);";
+            break;
+        case ShadingMode::Diffuse:
+            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
+            break;
+        case ShadingMode::Specular:
+            shadingValue =
+                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
+            break;
+        case ShadingMode::BlinnPhong:
+            shadingValue =
+                "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                "materialSpecularColor, position, normal, toCameraDir);";
+            break;
+        case ShadingMode::Phong:
+            shadingValue =
+                "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                "materialSpecularColor, position, normal, toCameraDir);";
+            break;
+        case ShadingMode::OrenNayarDiffuse:
+            shadingValue =
+                "shadeOrenNayarDiffuse(lighting, materialDiffuseColor, position, normal, "
+                "toCameraDir);";
+            break;
+        case ShadingMode::OrenNayar:
+            shadingValue =
+                "shadeOrenNayar(lighting, materialAmbientColor, materialDiffuseColor, position, "
+                "normal, toCameraDir);";
+            break;
+        case ShadingMode::None:
+        default:
+            shadingValue = "materialAmbientColor;";
+            break;
     }
 
     shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
@@ -85,22 +89,27 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, std::string name) {
     shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
     shader.setUniform(name + ".roughness", property.roughness_.get());
-    shader.setUniform(name + ".numLights", static_cast<int>(property.numLights_));
-    
-    std::vector<LightProperty*> lights = property.getPropertiesByType<LightProperty>();
+
+    shader.setUniform(name + ".numLights", static_cast<int>(property.lights_.numElements_));
+    std::vector<LightProperty*> lights = property.lights_.getPropertiesByType<LightProperty>();
 
     name += ".lights";
     for (size_t i = 0; i < lights.size(); ++i) {
         LightProperty* light = lights[i];
         std::string prefix = "[" + std::to_string(i) + "]";
-        shader.setUniform(name + prefix + ".position", light->getTransformedPosition(property.getCameraProperty(), static_cast<Space>(property.referenceFrame_.get())));
+        shader.setUniform(
+            name + prefix + ".position",
+            light->getTransformedPosition(property.getCameraProperty(),
+                                          static_cast<CoordinateSpace>(property.referenceFrame_.get())));
         shader.setUniform(name + prefix + ".ambientColor", light->ambientColor_.get());
         shader.setUniform(name + prefix + ".diffuseColor", light->diffuseColor_.get());
         shader.setUniform(name + prefix + ".specularColor", light->specularColor_.get());
-        if (light->applyLightAttenuation_.get())
-            shader.setUniform(name + prefix + ".attenuation", vec4(light->lightAttenuation_.get(), 1.0f));
-        else
+        if (light->applyLightAttenuation_.get()) {
+            shader.setUniform(name + prefix + ".attenuation",
+                              vec4(light->lightAttenuation_.get(), 1.0f));
+        } else {
             shader.setUniform(name + prefix + ".attenuation", vec4(1.0f, 0.0f, 0.0f, 0.0f));
+        }
     }
 }
 
