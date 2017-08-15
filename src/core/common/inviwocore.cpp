@@ -88,7 +88,7 @@
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
-
+#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
 
@@ -214,6 +214,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerCamera<OrthographicCamera>("OrthographicCamera");
     registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
 
+    
     // Register Data readers
     registerDataReader(util::make_unique<RawVolumeReader>());
     // Register Data writers
@@ -308,6 +309,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<PositionProperty>();
     registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
+    registerProperty<LightProperty>();
+    registerProperty<ListProperty<LightProperty>>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();
@@ -357,6 +360,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Register Settings
     // Do this after the property registration since the settings use properties.
+     registerSettings(util::make_unique<SystemSettings>());
     registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
 }
 
@@ -372,6 +376,5 @@ void InviwoCore::scanDirForComposites(const std::string& dir) {
             }
         }
     }
-}
 
 }  // namespace inviwo

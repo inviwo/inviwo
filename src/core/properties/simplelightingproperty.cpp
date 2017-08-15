@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/simplelightingproperty.h>
@@ -42,76 +42,56 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
-	, roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
-    , camera_(camera) 
-	, addLight_("addLight", "Add Light")
-	, deleteLight_("deleteLight", "Delete Light")
-	, lightSelection_("lightSelection", "Light Selection")
-	, numLights_(0)
-{
+    , roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
+    , camera_(camera)
+    , lights_("lightList", "Lights", "Light", new LightProperty("light", "Light"),
+              maxNumberOfLights) {
     shadingMode_.addOption("none", "No Shading", ShadingMode::None);
     shadingMode_.addOption("ambient", "Ambient", ShadingMode::Ambient);
     shadingMode_.addOption("diffuse", "Diffuse", ShadingMode::Diffuse);
     shadingMode_.addOption("specular", "Specular", ShadingMode::Specular);
     shadingMode_.addOption("blinnphong", "Blinn Phong", ShadingMode::BlinnPhong);
     shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
-	shadingMode_.addOption("orennayar", "Oren Nayar", ShadingMode::OrenNayar);
-	shadingMode_.addOption("orennayardiffuse", "Oren Nayar (Diffuse only)", ShadingMode::OrenNayarDiffuse);
+    shadingMode_.addOption("orennayar", "Oren Nayar", ShadingMode::OrenNayar);
+    shadingMode_.addOption("orennayardiffuse", "Oren Nayar (Diffuse only)",
+                           ShadingMode::OrenNayarDiffuse);
     shadingMode_.setSelectedValue(ShadingMode::Phong);
     shadingMode_.setCurrentStateAsDefault();
 
-    referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
-    referenceFrame_.setSelectedValue(static_cast<int>(Space::WORLD));
+    referenceFrame_.addOption("world", "World", static_cast<int>(CoordinateSpace::World));
+    referenceFrame_.setSelectedValue(static_cast<int>(CoordinateSpace::World));
     if (camera_) {
-        referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
-        referenceFrame_.setSelectedValue(static_cast<int>(Space::VIEW));
+        referenceFrame_.addOption("view", "View", static_cast<int>(CoordinateSpace::View));
+        referenceFrame_.setSelectedValue(static_cast<int>(CoordinateSpace::View));
     }
-    
-    referenceFrame_.setCurrentStateAsDefault();
 
-    
+    referenceFrame_.setCurrentStateAsDefault();
 
     // add properties
     addProperty(shadingMode_);
     addProperty(referenceFrame_);
     addProperty(specularExponent_);
-	addProperty(roughness_);
-	
-	addLight_.onChange(this, &SimpleLightingProperty::addLight);
-	deleteLight_.onChange(this, &SimpleLightingProperty::deleteLight);
+    addProperty(roughness_);
 
-	addProperty(lightSelection_);
-	addProperty(deleteLight_);
-	addProperty(addLight_);
-
-	addLight();
-    
+    addProperty(lights_);
+    lights_.addElement();
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
-	: CompositeProperty(rhs)
-	, shadingMode_(rhs.shadingMode_)
-	, referenceFrame_(rhs.referenceFrame_)
-	, specularExponent_(rhs.specularExponent_)
-	, roughness_(rhs.roughness_)
-	, addLight_(rhs.addLight_)
-	, deleteLight_(rhs.deleteLight_)
-	, lightSelection_(rhs.lightSelection_)
-	, numLights_(rhs.numLights_)
-{
+    : CompositeProperty(rhs)
+    , shadingMode_(rhs.shadingMode_)
+    , referenceFrame_(rhs.referenceFrame_)
+    , specularExponent_(rhs.specularExponent_)
+    , roughness_(rhs.roughness_)
+    , lights_(rhs.lights_) {
 
     // add properties
     addProperty(shadingMode_);
     addProperty(referenceFrame_);
     addProperty(specularExponent_);
-	addProperty(roughness_);
+    addProperty(roughness_);
 
-	addProperty(lightSelection_);
-	addProperty(deleteLight_);
-	addProperty(addLight_);
-
-	for(auto property : rhs.getPropertiesByType<LightProperty>())
-		this->addProperty(property->clone());
+    addProperty(lights_);
 }
 
 SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingProperty& that) {
@@ -120,16 +100,8 @@ SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingPr
         shadingMode_ = that.shadingMode_;
         referenceFrame_ = that.referenceFrame_;
         specularExponent_ = that.specularExponent_;
-		roughness_ = that.roughness_;
-		addLight_ = that.addLight_;
-		deleteLight_ = that.deleteLight_;
-		lightSelection_ = that.lightSelection_;
-		numLights_ = that.numLights_;
-		for (auto property : this->getPropertiesByType<LightProperty>())
-			this->removeProperty(property);
-		for (auto property : that.getPropertiesByType<LightProperty>())
-			this->addProperty(property);
-			
+        roughness_ = that.roughness_;
+        lights_ = that.lights_;
     }
     return *this;
 }
@@ -140,43 +112,4 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 
 SimpleLightingProperty::~SimpleLightingProperty() {}
 
-void SimpleLightingProperty::addLight() {
-	if (numLights_ >= MAX_NUMBER_OF_LIGHTS) return;
-	numLights_++;
-	std::string num = std::to_string(numLights_);
-
-	lightSelection_.addOption("lightOption_" + num, "Light " + num);
-
-	auto property = new LightProperty("light_" + num, "Light " + num);
-	property->setSerializationMode(PropertySerializationMode::All);
-	this->addProperty(property, true);
-}
-
-void SimpleLightingProperty::deleteLight() {
-	if (numLights_ <= 0) return;
-	auto beforeDeletion = this->getPropertiesByType<LightProperty>(false);
-	int selectedElement = lightSelection_.getSelectedIndex();
-
-	std::string identifier = beforeDeletion.at(selectedElement)->getIdentifier();
-	removeProperty(identifier);
-	lightSelection_.removeOption(selectedElement);
-	numLights_--;
-
-	auto afterDeletion = this->getPropertiesByType<LightProperty>(false);
-
-	size_t loopCount = 1;
-	for (auto prop : afterDeletion) {
-		prop->setDisplayName("Light " + std::to_string(loopCount));
-		prop->setIdentifier("light_" + std::to_string(loopCount));
-		loopCount++;
-	}
-
-	lightSelection_.clearOptions();
-
-	for (size_t i = 1; i < afterDeletion.size() + 1; i++) {
-		std::string str_i = std::to_string(i);
-		lightSelection_.addOption("lightOption_" + str_i, "Light " + str_i);
-	}
-}
-
-}  // namespace
+}  // namespace inviwo

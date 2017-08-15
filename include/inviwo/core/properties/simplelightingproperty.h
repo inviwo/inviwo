@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SIMPLELIGHTINGPROPERTY_H
@@ -39,20 +39,12 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/lightproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 
 namespace inviwo {
 
 namespace ShadingMode {
-    enum Modes {
-        None,
-        Ambient,
-        Diffuse,
-        Specular,
-        BlinnPhong,
-        Phong,
-        OrenNayar,
-        OrenNayarDiffuse
-    };
+enum Modes { None, Ambient, Diffuse, Specular, BlinnPhong, Phong, OrenNayar, OrenNayarDiffuse };
 }
 
 class CameraProperty;
@@ -64,40 +56,34 @@ class CameraProperty;
 class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
-	static const size_t MAX_NUMBER_OF_LIGHTS = 8; // the maximum number of lights is set to 8 in shading.glsl, do not increase!
+    static const size_t maxNumberOfLights =
+        8;  // the maximum number of lights is set to 8 in shading.glsl, do not increase!
 
     SimpleLightingProperty(std::string identifier, std::string displayName,
                            CameraProperty* camera = nullptr,
                            InvalidationLevel = InvalidationLevel::InvalidResources,
                            PropertySemantics semantics = PropertySemantics::Default);
-    
+
     SimpleLightingProperty(const SimpleLightingProperty& rhs);
     SimpleLightingProperty& operator=(const SimpleLightingProperty& that);
     virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
-    
+
     // Light properties
     OptionPropertyInt shadingMode_;
     OptionPropertyInt referenceFrame_;
 
     FloatProperty specularExponent_;
-	FloatProperty roughness_;
+    FloatProperty roughness_;
 
-	void addLight();
-	void deleteLight();
-	size_t numLights_;
-	OptionPropertyString lightSelection_;
-	ButtonProperty addLight_;
-	ButtonProperty deleteLight_;
-    
-	const CameraProperty* getCameraProperty() const {
-		return camera_;
-	}
+    ListProperty<LightProperty> lights_;
+
+    const CameraProperty* getCameraProperty() const { return camera_; }
+
 private:
-    CameraProperty* camera_; //< Non-owning reference.
+    CameraProperty* camera_;  //< Non-owning reference.
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SIMPLELIGHTINGPROPERTY_H
-
+#endif  // IVW_SIMPLELIGHTINGPROPERTY_H
