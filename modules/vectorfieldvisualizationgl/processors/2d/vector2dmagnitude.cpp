@@ -50,16 +50,18 @@ const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const {
 Vector2DMagnitude::Vector2DMagnitude()
     : Processor()
     , inport_("inport",true)
-    , outport_("outport",DataVec4Float32::get())
+    , outport_("outport",DataFloat32::get())
     , shader_("vector2dmagnitude.frag")
 {
     
     addPort(inport_);
     addPort(outport_);
+
 }
     
 void Vector2DMagnitude::process() {
     utilgl::activateAndClearTarget(outport_);
+    outport_.getEditableData()->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
 
     shader_.activate();
     TextureUnitContainer units;
