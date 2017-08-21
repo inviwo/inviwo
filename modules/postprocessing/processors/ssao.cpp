@@ -141,7 +141,6 @@ SSAO::SSAO()
     addProperty(camera_);
 
     initHbao();
-    initFramebuffers(512, 512);
 
     initializeResources();
     directions_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -152,6 +151,22 @@ SSAO::SSAO()
     hbaoCalcBlur_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoBlurHoriz_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoBlurVert_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+	inport_.onChange([this]() {
+		const DataFormatBase* format = inport_.getData()->getDataFormat();
+		const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
+
+		if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
+			swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
+			auto dim = outport_.getData()->getDimensions();
+			Image *img = new Image(dim, format);
+			img->copyMetaDataFrom(*inport_.getData());
+			// forward swizzle mask of the input
+			img->getColorLayer()->setSwizzleMask(swizzleMask);
+
+			outport_.setData(img);
+		}
+	});
+
 }
 
 SSAO::~SSAO() {
@@ -406,13 +421,14 @@ void SSAO::drawLinearDepth(GLuint depthTex, const ProjectionParam& proj) {
 
 void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam& proj, int width, int height) {
     prepareHbaoData(proj, width, height);
+	glViewport(0, 0, width, height);
     drawLinearDepth(depthTex, proj);
-
-    auto blur = enableBlur_.get();
 
     glBindFramebuffer(GL_FRAMEBUFFER, fboOut);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glColorMask(1, 1, 1, 0);
+
+	auto blur = enableBlur_.get();
 
     if (blur) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers_.hbaoCalc);
@@ -457,8 +473,6 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
-    glDisable(GL_SAMPLE_MASK);
-    glSampleMaski(0, ~0u);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1);

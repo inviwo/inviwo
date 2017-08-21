@@ -30,40 +30,45 @@
 #include <modules/postprocessing/postprocessingmodule.h>
 #include <modules/postprocessing/processors/ssao.h>
 #include <modules/postprocessing/processors/fxaa.h>
+#include <modules/postprocessing/processors/tonemapping.h>
+#include <modules/postprocessing/processors/hdrbloom.h>
 #include <modules/postprocessing/processors/imagebrightnesscontrast.h>
 #include <modules/postprocessing/processors/imageedgedarken.h>
 #include <modules/postprocessing/processors/imagehuesaturationluminance.h>
 #include <modules/postprocessing/processors/imageopacity.h>
-#include <modules/opengl/shader/shadermanager.h>
 #include <modules/postprocessing/processors/imagesharpen.h>
 #include <modules/postprocessing/processors/depthdarkening.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-PostProcessingModule::PostProcessingModule(InviwoApplication* app) : InviwoModule(app, "PostProcessing") {   
+PostProcessingModule::PostProcessingModule(InviwoApplication* app)
+    : InviwoModule(app, "PostProcessing") {
 
     // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     registerProcessor<SSAO>();
     registerProcessor<FXAA>();
+    registerProcessor<Tonemapping>();
+    registerProcessor<HdrBloom>();
     registerProcessor<ImageBrightnessContrast>();
     registerProcessor<ImageEdgeDarken>();
     registerProcessor<DepthDarkening>();
     registerProcessor<ImageHueSaturationLuminance>();
     registerProcessor<ImageSharpen>();
     registerProcessor<ImageOpacity>();
-    
+
     // Properties
     // registerProperty<PostProcessingProperty>();
-    
+
     // Readers and writes
     // registerDataReader(util::make_unique<PostProcessingReader>());
     // registerDataWriter(util::make_unique<PostProcessingWriter>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<PostProcessingDisk2RAMConverter>());
 
@@ -73,17 +78,18 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app) : InviwoModul
 
     // PropertyWidgets
     // registerPropertyWidget<PostProcessingPropertyWidget, PostProcessingProperty>("Default");
-    
+
     // Dialogs
     // registerDialog<PostProcessingDialog>(PostProcessingOutport);
-    
+
     // Other varius things
     // registerCapabilities(util::make_unique<PostProcessingCapabilities>());
     // registerSettings(util::make_unique<PostProcessingSettings>());
-    // registerMetaData(util::make_unique<PostProcessingMetaData>());   
+    // registerMetaData(util::make_unique<PostProcessingMetaData>());
     // registerPortInspector("PostProcessingOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<PostProcessingDrawer>());  
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget);
+    // registerDrawer(util::make_unique_ptr<PostProcessingDrawer>());
 }
 
-} // namespace
+}  // namespace

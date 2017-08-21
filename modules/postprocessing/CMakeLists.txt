@@ -13,6 +13,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdrbloom.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tonemapping.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -27,6 +29,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdrbloom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tonemapping.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -35,6 +39,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add shaders
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bilateralblur.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bloomblur.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bloomcompose.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bloomhighpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/colortools.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/common.glsl
@@ -54,6 +61,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imageopacity.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagesharpen.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tonemapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/viewnormal.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})

@@ -98,6 +98,21 @@ FXAA::FXAA()
     fxaa_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+	inport_.onChange([this]() {
+		const DataFormatBase* format = inport_.getData()->getDataFormat();
+		const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
+
+		if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
+			swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
+			auto dim = outport_.getData()->getDimensions();
+			Image *img = new Image(dim, format);
+			img->copyMetaDataFrom(*inport_.getData());
+			// forward swizzle mask of the input
+			img->getColorLayer()->setSwizzleMask(swizzleMask);
+
+			outport_.setData(img);
+		}
+	});
 }
 
 FXAA::~FXAA() {
@@ -154,6 +169,7 @@ void FXAA::process() {
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     utilgl::Enable<MeshGL> enable(rect);
 
+	glViewport(0, 0, width, height);
     glDisable(GL_DEPTH_TEST);
     glActiveTexture(GL_TEXTURE0);
 
