@@ -85,7 +85,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/too
 # version may be 2.x and not 3.x and later when we find_package(PythonLibsNew 3) (or find_package(PythonLibs 3))
 # it will detected that PYTHON_FOUND is set and reuse the paths found before and not look for python
 # again resulting in Python 2.x binaries will be used. 
-set(PythonLibsNew_FIND_REQUIRED 3)
+set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 find_package(PythonLibsNew 3)
 
