@@ -81,8 +81,8 @@ ListProperty<T>::ListProperty(std::string identifier, std::string displayName,
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , elementName_(elementName)
     , prefab_(std::move(prefab))
-    , addElementButton_("addElement", "Add Element")
-    , deleteElementButton_("deleteElement", "Delete Element")
+    , addElementButton_("addElement", "Add Element", InvalidationLevel::InvalidResources)
+    , deleteElementButton_("deleteElement", "Delete Element", InvalidationLevel::InvalidResources)
     , elementSelection_("elementSelection", "Element Selection")
     , maxNumElements_(maxNumberOfElements)
     , numElements_(0)
@@ -140,7 +140,8 @@ ListProperty<T>* ListProperty<T>::clone() const {
 template <typename T>
 void ListProperty<T>::addElement() {
     if (numElements_ < maxNumElements_ || maxNumElements_ == 0) {
-        numElements_++;
+        numElements_ = elements_.getProperties().size() + 1;
+
         std::string num = std::to_string(numElements_);
 
         elementSelection_.addOption("elementOption_" + num, elementName_ + " " + num);
@@ -162,7 +163,6 @@ void ListProperty<T>::deleteElement() {
     std::string identifier = (static_cast<T*>(beforeDeletion.at(selectedElement)))->getIdentifier();
     elements_.removeProperty(identifier);
     elementSelection_.removeOption(selectedElement);
-    numElements_--;
 
     std::vector<Property*> afterDeletion = elements_.getProperties();
 
@@ -180,6 +180,8 @@ void ListProperty<T>::deleteElement() {
         std::string str_i = std::to_string(i);
         elementSelection_.addOption("elementOption_" + str_i, elementName_ + " " + str_i);
     }
+
+    numElements_ = afterDeletion.size();
 }
 
 }  // namespace inviwo

@@ -115,11 +115,14 @@ struct Light {
 	vec4 attenuation;
 };
 
+#ifndef NUMBER_OF_LIGHTS
+    #define NUMBER_OF_LIGHTS 1
+#endif
+
 struct LightParameters {
-  float specularExponent;
+    float specularExponent;
 	float roughness;
-	int numLights;
-	Light lights[8];
+	Light lights[NUMBER_OF_LIGHTS];
 };
 
 struct RaycastingParameters {

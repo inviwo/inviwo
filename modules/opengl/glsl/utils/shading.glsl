@@ -35,7 +35,7 @@
 vec3 shadeDiffuseCalculation(LightParameters lightParameters_, vec3 materialDiffuseColor,
                              vec3 normal, vec3 position) {
     vec3 col = vec3(0);
-    for (int i = 0; i < lightParameters_.numLights; i++) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS; i++) {
         vec3 toLightDir = lightParameters_.lights[i].position - position;
 
         vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
@@ -55,7 +55,7 @@ vec3 shadeSpecularBlinnPhongCalculation(LightParameters lightParameters_,
                                         vec3 materialSpecularColor, vec3 normal, vec3 position,
                                         vec3 toCameraDir) {
     vec3 col = vec3(0);
-    for (int i = 0; i < lightParameters_.numLights; i++) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS; i++) {
         vec3 toLightDir = lightParameters_.lights[i].position - position;
         vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
         float attenuation = 1.0;
@@ -82,7 +82,7 @@ vec3 shadeSpecularBlinnPhongCalculation(LightParameters lightParameters_,
 vec3 shadeSpecularPhongCalculation(LightParameters lightParameters_, vec3 materialSpecularColor,
                                    vec3 normal, vec3 position, vec3 toCameraDir) {
     vec3 col = vec3(0);
-    for (int i = 0; i < lightParameters_.numLights; i++) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS; i++) {
         vec3 toLightDir = normalize(lightParameters_.lights[i].position - position);
         vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
         float attenuation = 1.0;
@@ -109,7 +109,7 @@ vec3 shadeSpecularPhongCalculation(LightParameters lightParameters_, vec3 materi
 // All positions and directions should be in world space!
 vec3 shadeAmbient(LightParameters lightParameters_, vec3 materialAmbientColor, vec3 position) {
     vec3 ambient = vec3(0);
-    for (int i = 0; i < lightParameters_.numLights; i++) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS; i++) {
         vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
         float attenuation = 1.0;
         if (lightAttenuation.w == 1.0) {
@@ -167,7 +167,7 @@ vec3 shadeOrenNayarDiffuse(LightParameters lightParameters_, vec3 materialDiffus
     float A = 1.0 - 0.5 * (roughnessSquared / (roughnessSquared + 0.57));
     float B = 0.45 * (roughnessSquared / (roughnessSquared + 0.09));
 
-    for (int i = 0; i < lightParameters_.numLights; i++) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS; i++) {
         vec3 lightDirection = lightParameters_.lights[i].position - position;
         vec4 lightAttenuation = lightParameters_.lights[i].attenuation;
         float attenuation = 1.0;
