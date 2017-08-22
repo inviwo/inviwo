@@ -434,9 +434,10 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 #if IVW_PROFILING
     tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
     tb(H("Eval Count"), processCount_);
-    tb(H("Eval Time"), evalTime_);
-    tb(H("Mean Time"), totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0));
-    tb(H("Max Time"), maxEvalTime_);
+    tb(H("Eval Time"), msToString(evalTime_, true, true));
+    tb(H("Mean Time"),
+       msToString(totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0), true, true));
+    tb(H("Max Time"), msToString(maxEvalTime_, true, true));
 #endif
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));

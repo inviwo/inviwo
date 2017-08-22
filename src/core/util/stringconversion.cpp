@@ -24,12 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/stringconversion.h>
 
 #include <random>
+#include <iomanip>
 
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
@@ -86,14 +87,26 @@ void replaceInString(std::string& str, const std::string& oldStr, const std::str
 std::string htmlEncode(const std::string& data) {
     std::string buffer;
     buffer.reserve(data.size());
-    for(size_t pos = 0; pos != data.size(); ++pos) {
-        switch(data[pos]) {
-            case '&':  buffer.append("&amp;");       break;
-            case '\"': buffer.append("&quot;");      break;
-            case '\'': buffer.append("&apos;");      break;
-            case '<':  buffer.append("&lt;");        break;
-            case '>':  buffer.append("&gt;");        break;
-            default:   buffer.append(&data[pos], 1); break;
+    for (size_t pos = 0; pos != data.size(); ++pos) {
+        switch (data[pos]) {
+            case '&':
+                buffer.append("&amp;");
+                break;
+            case '\"':
+                buffer.append("&quot;");
+                break;
+            case '\'':
+                buffer.append("&apos;");
+                break;
+            case '<':
+                buffer.append("&lt;");
+                break;
+            case '>':
+                buffer.append("&gt;");
+                break;
+            default:
+                buffer.append(&data[pos], 1);
+                break;
         }
     }
     return buffer;
@@ -128,7 +141,7 @@ std::string toUpper(std::string str) {
 }
 
 std::string toLower(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), (int(*)(int))std::tolower);
+    std::transform(str.begin(), str.end(), str.begin(), (int (*)(int))std::tolower);
     return str;
 }
 
@@ -170,7 +183,7 @@ std::string ltrim(std::string s) {
 
 std::string dotSeperatedToPascalCase(const std::string& s) {
     std::stringstream ss;
-    for(auto elem : splitString(s, '.')) {
+    for (auto elem : splitString(s, '.')) {
         elem[0] = std::toupper(elem[0]);
         ss << elem;
     }
@@ -181,12 +194,13 @@ std::string camelCaseToHeader(const std::string& s) {
     if (s.empty()) return s;
     std::stringstream ss;
     char previous = ' ';
-    for (auto c : s) {        
-        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c) ss << " ";
+    for (auto c : s) {
+        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c)
+            ss << " ";
         ss << c;
         previous = c;
     }
-    auto str{ ss.str() };
+    auto str{ss.str()};
     str[0] = std::toupper(str[0]);
     return str;
 }
@@ -211,35 +225,44 @@ std::string removeSubString(const std::string& str, const std::string& strToRemo
     return newString;
 }
 
-std::string msToString(double ms, unsigned precision) {
+std::string msToString(double ms, bool includeZeros, bool spacing) {
+    const std::string space = (spacing ? " " : "");
     std::stringstream ss;
-    unsigned used = 0;
+    bool follows = false;
+
+    size_t days = static_cast<size_t>(ms / (1000.0 * 3600.0 * 24.0));
+    if (days > 0 || (follows && includeZeros)) {
+        follows = true;
+        ss << days << space << "d";
+        ms -= 3600 * 1000 * 24 * days;
+    }
     size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
-    if (hours > 0 && used < precision) {
-        if (used++) ss << " ";
-        ss << hours << "h";
+    if (hours > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << hours << space << "h";
         ms -= 3600 * 1000 * hours;
     }
     size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
-    if (minutes > 0 && used < precision) {
-        if (used++) ss << " ";
-        ss << minutes << "min";
+    if (minutes > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << minutes << space << "min";
         ms -= 60 * 1000 * minutes;
     }
-
-    size_t sec = static_cast<size_t>(ms / (1000.0));
-    if (sec > 0 && used < precision) {
-        if (used++) ss << " ";
-        ss << sec << "s";
-        ms -= 1000 * sec;
-    }
-
-    if (ms > 0 && used < precision) {
-        if (used++) ss << " ";
-        ss << ms << "ms";
+    size_t seconds = static_cast<size_t>(ms / 1000.0);
+    // combine seconds and milliseconds, iff there already something added to the string stream
+    // _or_ there are more than one second
+    if (seconds > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << std::setprecision(4) << (ms / 1000.0) << space << "s";
+    } else {
+        // less than one second, no leading minutes/hours
+        ss << std::setprecision(4) << ms << space << "ms";
     }
 
     return ss.str();
 }
 
-}  // namespace
+}  // namespace inviwo
