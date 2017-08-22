@@ -37,6 +37,9 @@ namespace utilgl {
 
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
     addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
+    std::string numLights = property.lights_.numElements_ == 0 ? "1" : std::to_string(property.lights_.numElements_);
+    shader.getVertexShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLights);
+    shader.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLights);
 }
 
 void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
