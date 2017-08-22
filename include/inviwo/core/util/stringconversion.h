@@ -129,8 +129,8 @@ IVW_CORE_API std::string msToString(double ms, bool includeZeros = true, bool sp
  * @return duration formatted as string
  */
 template <class Rep, class Period = std::ratio<1>>
-std::string msToString(std::chrono::duration<Rep, Period> duration, bool includeZeros = true,
-                       bool spacing = false) {
+std::string durationToString(std::chrono::duration<Rep, Period> duration, bool includeZeros = true,
+                             bool spacing = false) {
     using milliseconds = std::chrono::duration<double, std::milli>;
     auto ms = std::chrono::duration_cast<milliseconds>(duration, includeZeros, spacing);
     return msToString(ms.count());
