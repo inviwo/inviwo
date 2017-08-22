@@ -95,7 +95,7 @@ LightProperty* LightProperty::clone() const {
 LightProperty::~LightProperty() {}
 
 vec3 LightProperty::getTransformedPosition(const CameraProperty* camera, CoordinateSpace space) const {
-	switch (space) {
+    switch (space) {
         case CoordinateSpace::View:
 		return camera ? vec3(camera->inverseViewMatrix() * vec4(lightPosition_.get(), 1.0f))
 			: lightPosition_.get();

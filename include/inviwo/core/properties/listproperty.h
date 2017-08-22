@@ -44,7 +44,7 @@ namespace inviwo {
  * Represents a List of properties that allows to add and delete items of this list
  */
 template <typename T>
-class IVW_CORE_API ListProperty : public CompositeProperty {
+class ListProperty : public CompositeProperty {
     static_assert(std::is_base_of<Property, T>::value, "T must be a property.");
 
 private:
@@ -56,7 +56,7 @@ public:
     size_t maxNumElements_;
 
     ListProperty(std::string identifier, std::string displayName, std::string elementName = "Element",
-                 T* prefab = nullptr, size_t maxNumberOfElements = 0,
+                 std::unique_ptr<T> prefab = nullptr, size_t maxNumberOfElements = 0,
                  InvalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(const ListProperty& rhs);
@@ -72,6 +72,115 @@ public:
     ButtonProperty deleteElementButton_;
     CompositeProperty elements_;
 };
+
+template <typename T>
+ListProperty<T>::ListProperty(std::string identifier, std::string displayName,
+                              std::string elementName, std::unique_ptr<T> prefab,
+                              size_t maxNumberOfElements, InvalidationLevel invalidationLevel,
+                              PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , elementName_(elementName)
+    , prefab_(std::move(prefab))
+    , addElementButton_("addElement", "Add Element")
+    , deleteElementButton_("deleteElement", "Delete Element")
+    , elementSelection_("elementSelection", "Element Selection")
+    , maxNumElements_(maxNumberOfElements)
+    , numElements_(0)
+    , elements_("lightsContainer", "Lights") {
+    addElementButton_.onChange(this, &ListProperty<T>::addElement);
+    deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
+
+    addProperty(elementSelection_);
+    addProperty(deleteElementButton_);
+    addProperty(addElementButton_);
+    addProperty(elements_);
+}
+
+template <typename T>
+ListProperty<T>::ListProperty(const ListProperty<T>& rhs)
+    : CompositeProperty(rhs)
+    , elementName_(rhs.elementName_)
+    , prefab_(rhs.prefab_->clone())
+    , addElementButton_(rhs.addElementButton_)
+    , deleteElementButton_(rhs.deleteElementButton_)
+    , elementSelection_(rhs.elementSelection_)
+    , maxNumElements_(rhs.maxNumElements_)
+    , numElements_(rhs.numElements_)
+    , elements_(rhs.elements_) {
+    addElementButton_.onChange(this, &ListProperty<T>::addElement);
+    deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
+
+    addProperty(elementSelection_);
+    addProperty(deleteElementButton_);
+    addProperty(addElementButton_);
+    addProperty(elements_);
+}
+
+template <typename T>
+ListProperty<T>& ListProperty<T>::operator=(const ListProperty<T>& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        elementName_ = that.elementName_;
+        prefab_ = std::make_unique<T>(*(that.prefab_->clone()));
+        addElementButton_ = that.addElementButton_;
+        deleteElementButton_ = that.deleteElementButton_;
+        elementSelection_ = that.elementSelection_;
+        maxNumElements_ = that.maxNumElements_;
+        numElements_ = that.numElements_;
+        elements_ = that.elements_;
+    }
+    return *this;
+}
+
+template <typename T>
+ListProperty<T>* ListProperty<T>::clone() const {
+    return new ListProperty<T>(*this);
+}
+
+template <typename T>
+void ListProperty<T>::addElement() {
+    if (numElements_ < maxNumElements_ || maxNumElements_ == 0) {
+        numElements_++;
+        std::string num = std::to_string(numElements_);
+
+        elementSelection_.addOption("elementOption_" + num, elementName_ + " " + num);
+
+        T* property = prefab_->clone();
+        property->setSerializationMode(PropertySerializationMode::All);
+        property->setIdentifier("element_" + num);
+        property->setDisplayName(elementName_ + " " + num);
+        elements_.addProperty(property, true);
+    }
+}
+
+template <typename T>
+void ListProperty<T>::deleteElement() {
+    if (numElements_ <= 0) return;
+    std::vector<Property*> beforeDeletion = elements_.getProperties();
+    int selectedElement = elementSelection_.getSelectedIndex();
+
+    std::string identifier = (static_cast<T*>(beforeDeletion.at(selectedElement)))->getIdentifier();
+    elements_.removeProperty(identifier);
+    elementSelection_.removeOption(selectedElement);
+    numElements_--;
+
+    std::vector<Property*> afterDeletion = elements_.getProperties();
+
+    size_t loopCount = 1;
+    for (Property* prop : afterDeletion) {
+        T* casted = static_cast<T*>(prop);
+        casted->setDisplayName(elementName_ + " " + std::to_string(loopCount));
+        casted->setIdentifier("element_" + std::to_string(loopCount));
+        loopCount++;
+    }
+
+    elementSelection_.clearOptions();
+
+    for (size_t i = 1; i < afterDeletion.size() + 1; i++) {
+        std::string str_i = std::to_string(i);
+        elementSelection_.addOption("elementOption_" + str_i, elementName_ + " " + str_i);
+    }
+}
 
 }  // namespace inviwo
 

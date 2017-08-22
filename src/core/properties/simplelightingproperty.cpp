@@ -44,7 +44,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
     , camera_(camera)
-    , lights_("lightList", "Lights", "Light", new LightProperty("light", "Light"),
+    , lights_("lightList", "Lights", "Light", std::move(std::make_unique<LightProperty>("light", "Light")),
               maxNumberOfLights) {
     shadingMode_.addOption("none", "No Shading", ShadingMode::None);
     shadingMode_.addOption("ambient", "Ambient", ShadingMode::Ambient);
