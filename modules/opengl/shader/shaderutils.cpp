@@ -90,12 +90,11 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, s
     shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
     shader.setUniform(name + ".roughness", property.roughness_.get());
 
-    shader.setUniform(name + ".numLights", static_cast<int>(property.lights_.numElements_));
-    std::vector<LightProperty*> lights = property.lights_.getPropertiesByType<LightProperty>();
+    std::vector<Property*> lights = property.lights_.elements_.getProperties();
 
     name += ".lights";
     for (size_t i = 0; i < lights.size(); ++i) {
-        LightProperty* light = lights[i];
+        LightProperty* light = static_cast<LightProperty*>(lights[i]);
         std::string prefix = "[" + std::to_string(i) + "]";
         shader.setUniform(
             name + prefix + ".position",

@@ -463,7 +463,6 @@ set(SOURCE_FILES
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
     properties/lightproperty.cpp
-    properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
