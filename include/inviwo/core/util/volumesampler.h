@@ -83,7 +83,7 @@ using VolumeSampler = VolumeDoubleSampler<4>;
 template <unsigned int DataDims>
 VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
                                                    CoordinateSpace space)
-    : VolumeDoubleSampler(*vol,space) {
+    : VolumeDoubleSampler(*vol, space) {
     volume_ = vol;
 }
 
@@ -118,10 +118,7 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
 
 template <unsigned int DataDims>
 bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3 &pos) const {
-    if (glm::any(glm::lessThan(pos, dvec3(0.0)))) {
-        return false;
-    }
-    if (glm::any(glm::greaterThan(pos, dvec3(1.0)))) {
+    if (glm::any(glm::lessThan(pos, dvec3(0.0))) || glm::any(glm::greaterThan(pos, dvec3(1.0)))) {
         return false;
     }
     return true;
