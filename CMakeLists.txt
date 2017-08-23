@@ -30,14 +30,6 @@
 cmake_minimum_required(VERSION 3.2.0)
 cmake_policy(VERSION 3.2.0)
 
-if(POLICY CMP0020)
-    cmake_policy(SET CMP0020 OLD) # Missing dependencies policy.
-endif()
-
-if(POLICY CMP0028)
-    cmake_policy(SET CMP0028 OLD) # allow :: in targets. like Qt5::Sql
-endif()
-
 if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
 endif()
