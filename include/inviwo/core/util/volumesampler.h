@@ -50,14 +50,16 @@ class VolumeDoubleSampler : public SpatialSampler<3, DataDims, double> {
 public:
     VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
                         CoordinateSpace space = CoordinateSpace::Data);
+    VolumeDoubleSampler(const Volume &vol, CoordinateSpace space = CoordinateSpace::Data);
     virtual ~VolumeDoubleSampler() = default;
 
+    VolumeDoubleSampler &operator=(const VolumeDoubleSampler &) = default;
+
     virtual Vector<DataDims, double> sampleDataSpace(const dvec3 &pos) const override;
+    virtual bool withinBoundsDataSpace(const dvec3 &pos) const override;
 
 protected:
     Vector<DataDims, double> getVoxel(const size3_t &pos) const;
-
-    virtual bool withinBoundsDataSpace(const dvec3 &pos) const override;
 
     std::shared_ptr<const Volume> volume_;
     const VolumeRAM *ram_;
@@ -79,15 +81,17 @@ IVW_CORE_API Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &p
 using VolumeSampler = VolumeDoubleSampler<4>;
 
 template <unsigned int DataDims>
-bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3 &pos) const {
-    if (glm::any(glm::lessThan(pos, dvec3(0.0)))) {
-        return false;
-    }
-    if (glm::any(glm::greaterThan(pos, dvec3(1.0)))) {
-        return false;
-    }
-    return true;
+VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
+                                                   CoordinateSpace space)
+    : VolumeDoubleSampler(*vol, space) {
+    volume_ = vol;
 }
+
+template <unsigned int DataDims>
+VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(const Volume &vol, CoordinateSpace space)
+    : SpatialSampler<3, DataDims, double>(vol, space)
+    , ram_(vol.getRepresentation<VolumeRAM>())
+    , dims_(vol.getDimensions()) {}
 
 template <unsigned int DataDims>
 Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dvec3 &pos) const {
@@ -109,17 +113,17 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<Vector<DataDims, double>>::trilinear( samples, interpolants);
+    return Interpolation<Vector<DataDims, double>>::trilinear(samples, interpolants);
 }
 
 template <unsigned int DataDims>
-VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                                                   CoordinateSpace space)
-    : SpatialSampler<3, DataDims, double>(vol, space)
-    , volume_(vol)
-    , ram_(vol->getRepresentation<VolumeRAM>())
-    , dims_(vol->getDimensions()) {}
+bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3 &pos) const {
+    if (glm::any(glm::lessThan(pos, dvec3(0.0))) || glm::any(glm::greaterThan(pos, dvec3(1.0)))) {
+        return false;
+    }
+    return true;
+}
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESAMPLER_H

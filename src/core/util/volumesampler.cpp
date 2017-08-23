@@ -55,4 +55,4 @@ Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const {
     return ram_->getAsDVec4(p);
 }
 
-}  // namespace
+}  // namespace inviwo

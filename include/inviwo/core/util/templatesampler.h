@@ -54,7 +54,7 @@ template <typename T>
 using componentType =
     typename std::conditional<util::rank<T>::value == 0, T, typename T::value_type>::type;
 
-}  // namespace
+}  // namespace detail
 
 template <typename DataType, typename P, typename T = detail::componentType<DataType>,
           unsigned int DataDims = detail::components<DataType>()>
@@ -63,6 +63,9 @@ public:
     static_assert(DataDims > 0, "zero extent");
 
     TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
+                          CoordinateSpace space = CoordinateSpace::Data);
+
+    TemplateVolumeSampler(const Volume &sharedVolume,
                           CoordinateSpace space = CoordinateSpace::Data);
     virtual ~TemplateVolumeSampler() = default;
 
@@ -75,14 +78,22 @@ private:
     const DataType *data_;
     size3_t dims_;
     util::IndexMapper3D ic_;
+    std::shared_ptr<const Volume> sharedVolume_;
 };
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
     std::shared_ptr<const Volume> sharedVolume, CoordinateSpace space)
-    : SpatialSampler<3, DataDims, T>(sharedVolume, space)
-    , data_(static_cast<const DataType*>(sharedVolume->getRepresentation<VolumeRAM>()->getData()))
-    , dims_(sharedVolume->getRepresentation<VolumeRAM>()->getDimensions())
+    : TemplateVolumeSampler(*sharedVolume, space) {
+    sharedVolume_ = sharedVolume;
+}
+
+template <typename DataType, typename P, typename T, unsigned int DataDims>
+TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(const Volume &volume,
+                                                                       CoordinateSpace space)
+    : SpatialSampler<3, DataDims, T>(volume, space)
+    , data_(static_cast<const DataType *>(volume.getRepresentation<VolumeRAM>()->getData()))
+    , dims_(volume.getRepresentation<VolumeRAM>()->getDimensions())
     , ic_(dims_) {}
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
@@ -122,7 +133,7 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataS
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<Vector<DataDims, T>,P>::trilinear(samples, interpolants);
+    return Interpolation<Vector<DataDims, T>, P>::trilinear(samples, interpolants);
 }
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
@@ -131,6 +142,6 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::getVoxel(
     return data_[ic_(pos)];
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEMPLATESAMPLER_H
