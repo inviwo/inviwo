@@ -65,7 +65,6 @@ CropWidget::CropWidget()
     , inport_("inport")
     , volume_("volume")
     , outport_("outport")
-    , meshOut_("mesh")
 
     , uiSettings_("uiSettings", "UI Settings")
     , showWidget_("showWidget", "Show Widget", true)
@@ -78,20 +77,26 @@ CropWidget::CropWidget()
     , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f)
     , scale_("scale", "Scale", 0.15f, 0.001f, 2.0f, 0.05f)
 
-    , axis_("axis", "Active Axis",
-            {
-                {"x", "X", CartesianCoordinateAxis::X},
-                {"y", "Y", CartesianCoordinateAxis::Y},
-                {"z", "Z", CartesianCoordinateAxis::Z},
-            })
-    , clipRanges_({{{"cropX", "Crop X", 0, 256, 0, 256, 1, 1},
-                    {"cropY", "Crop Y", 0, 256, 0, 256, 1, 1},
-                    {"cropZ", "Crop Z", 0, 256, 0, 256, 1, 1}}})
+    , cropAxes_({{{CartesianCoordinateAxis::X,
+                   {"cropAxisX", "Crop X"},
+                   {"cropAxisXEnabled", "Enabled", true},
+                   {"cropX", "Range", 0, 256, 0, 256, 1, 1},
+                   AnnotationInfo()},
+                  {CartesianCoordinateAxis::Y,
+                   {"cropAxisY", "Crop Y"},
+                   {"cropAxisYEnabled", "Enabled", true},
+                   {"cropY", "Range", 0, 256, 0, 256, 1, 1},
+                   AnnotationInfo()},
+                  {CartesianCoordinateAxis::Z,
+                   {"cropAxisZ", "Crop Z"},
+                   {"cropAxisZEnabled", "Enabled", true},
+                   {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
+                   AnnotationInfo()}}})
     , camera_("camera", "Camera")
 
     , lightingProperty_("internalLighting", "Lighting", &camera_)
     , trackball_(&camera_)
-    , picking_(this, numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
+    , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
     , shader_("meshrenderer.vert", "meshrenderer.frag", false)
     , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false)
     , isMouseBeingPressedAndHold_(false)
@@ -102,13 +107,18 @@ CropWidget::CropWidget()
     addPort(volume_);
     addPort(inport_);
     addPort(outport_);
-    addPort(meshOut_);
 
     inport_.setOptional(true);
 
-    addProperty(axis_);
-    for (auto &elem : clipRanges_) {
-        addProperty(elem);
+    for (auto &elem : cropAxes_) {
+        // Since the clips depend on the input volume dimensions, we make sure to always
+        // serialize them so we can do a proper renormalization when we load new data.
+        elem.range.setSerializationMode(PropertySerializationMode::All);
+
+        elem.composite.addProperty(elem.enabled);
+        elem.composite.addProperty(elem.range);
+        elem.composite.setCollapsed(true);
+        addProperty(elem.composite);
     }
 
     handleColor_.setSemantics(PropertySemantics::Color);
@@ -116,9 +126,11 @@ CropWidget::CropWidget()
 
     // brighten up ambient color
     lightingProperty_.ambientColor_.set(vec3(0.6f));
+    lightingProperty_.setCollapsed(true);
 
     uiSettings_.setCollapsed(true);
     uiSettings_.addProperty(showWidget_);
+
     uiSettings_.addProperty(handleColor_);
     uiSettings_.addProperty(offset_);
     uiSettings_.addProperty(scale_);
@@ -135,34 +147,25 @@ CropWidget::CropWidget()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    // Since the clips depend on the input volume dimensions, we make sure to always
-    // serialize them so we can do a proper renormalization when we load new data.
-    for (auto &elem : clipRanges_) {
-        elem.setSerializationMode(PropertySerializationMode::All);
-    }
-
-    volume_.onChange([this]() { updateAxis(); });
+    volume_.onChange([this]() { updateAxisRanges(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     lineShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};
-    for (int i = 0; i < numInteractionWidgets; ++i) {
-        pickingIDs_[i] = {picking_.getPickingId(i), elem[i]};
+    for (int i = 0; i < pickingIDs_.size(); ++i) {
+        pickingIDs_[i] = {picking_.getPickingId(i), elem[i % numInteractionWidgets]};
     }
 }
 
 CropWidget::~CropWidget() = default;
 
 void CropWidget::process() {
-    if (!interactionHandleMesh_) {
+    if (!interactionHandleMesh_[0]) {
         initMesh();
     }
     if (volume_.isChanged()) {
         updateBoundingCube();
-    }
-    if (axis_.isModified()) {
-        updateAxis();
     }
 
     if (inport_.isConnected()) {
@@ -178,104 +181,19 @@ void CropWidget::process() {
 
         utilgl::setShaderUniforms(shader_, camera_, "camera_");
         utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
+        shader_.setUniform("overrideColor_", handleColor_.get());
 
-        auto axisInfo = getAxis();
-        currentAxisInfo_ = axisInfo;
-        auto &property = clipRanges_[static_cast<int>(axis_.get())];
-        float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
-        float lowerBound = (property.get().x - property.getRangeMin()) / range;
-        float upperBound = (property.get().y - property.getRangeMin()) / range;
+        for (auto &elem : cropAxes_) {
+            // if (elem.composite.isChecked()) {
+            if (elem.enabled.get()) {
+                // update axis information
+                elem.info = getAxis(elem.axis);
 
-        // draw the interaction handles
-        {
-            shader_.setUniform("overrideColor_", handleColor_.get());
-
-            // apply custom transformation
-            const mat4 m = glm::scale(vec3(scale_.get()));
-
-            // lower bound
-            mat4 worldMatrix(glm::translate(axisInfo.pos + axisInfo.axis * lowerBound) * m *
-                             axisInfo.rotMatrix);
-            mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
-            shader_.setUniform("geometry_.dataToWorld", worldMatrix);
-            shader_.setUniform("geometry_.dataToWorldNormalMatrix", normalMatrix);
-            shader_.setUniform("pickColor_", picking_.getColor(0));
-            interactionHandleDrawer_->draw();
-
-            // upper bound
-            worldMatrix =
-                glm::translate(axisInfo.pos + axisInfo.axis * upperBound) * m * axisInfo.flipMatrix;
-            normalMatrix = mat3(glm::inverseTranspose(worldMatrix));
-            shader_.setUniform("geometry_.dataToWorld", worldMatrix);
-            shader_.setUniform("geometry_.dataToWorldNormalMatrix", normalMatrix);
-            shader_.setUniform("pickColor_", picking_.getColor(1));
-            interactionHandleDrawer_->draw();
-        }
-        shader_.setUniform("pickColor_", vec3(-1.0f));
-
-        {
-            if (showCropPlane_.get()) {
-                bool drawLowerPlane = (property.get().x != property.getRangeMin());
-                bool drawUpperPlane = (property.get().y != property.getRangeMax());
-
-                if (drawLowerPlane || drawUpperPlane) {
-                    if (cropLineColor_.isModified()) {
-                        createLineStripMesh();
-                    }
-
-                    Shader &shader = lineShader_;
-                    shader.activate();
-
-                    MeshDrawerGL::DrawObject drawStrip(linestrip_->getRepresentation<MeshGL>(),
-                                                       linestrip_->getDefaultMeshInfo());
-
-                    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
-
-                    shader.setUniform("screenDim", vec2(outport_.getDimensions()));
-                    utilgl::setUniforms(shader, camera_, lineWidth_);
-
-                    // rotate clip plane from [0, 0, -1] to match the currently selected clip axis
-                    mat4 scale(volumeBasis_);
-                    mat4 rotMatrix(1.0f);
-                    if (axis_.get() != CartesianCoordinateAxis::Z) {
-                        vec3 v1(0.0f, 0.0f, -1.0f);
-                        vec3 v2(glm::normalize(axisInfo.axis));
-                        rotMatrix = glm::rotate(glm::half_pi<float>(), glm::cross(v1, v2));
-                    }
-                    rotMatrix = scale * rotMatrix;
-
-                    if (drawLowerPlane) {
-                        // draw lower clip plane
-                        mat4 worldMatrix(
-                            glm::translate(volumeOffset_ + axisInfo.axis * lowerBound) * rotMatrix);
-                        mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
-                        shader.setUniform("geometry.dataToWorld", worldMatrix);
-                        shader.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-                        LGL_ERROR;
-                        drawStrip.draw();
-                        LGL_ERROR;
-                    }
-
-                    if (drawUpperPlane) {
-                        // draw upper clip plane
-                        mat4 worldMatrix(
-                            glm::translate(volumeOffset_ + axisInfo.axis * upperBound) * rotMatrix);
-                        linestrip_->setModelMatrix(worldMatrix);
-                        mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
-                        shader.setUniform("geometry.dataToWorld", worldMatrix);
-                        shader.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-                        LGL_ERROR;
-                        drawStrip.draw();
-                        LGL_ERROR;
-                    }
-                    LGL_ERROR;
-                }
+                renderAxis(elem);
             }
         }
     }
     utilgl::deactivateCurrentTarget();
-
-    meshOut_.setData(linestrip_);
 }
 
 void CropWidget::initializeResources() {
@@ -319,15 +237,14 @@ void CropWidget::initMesh() {
 
     std::string basePath(module->getPath(ModulePath::Data));
     basePath += "/meshes/";
-    std::string meshFilename = basePath + "arrow-single.fbx";
 
     AssimpReader meshReader;
     meshReader.setLogLevel(AssimpLogLevel::Error);
     meshReader.setFixInvalidDataFlag(false);
 
     // interaction handles
-    interactionHandleMesh_ = meshReader.readData(meshFilename);
-    interactionHandleDrawer_ = std::make_shared<MeshDrawerGL>(interactionHandleMesh_.get());
+    interactionHandleMesh_[0] = meshReader.readData(basePath + "arrow-single.fbx");
+    interactionHandleMesh_[1] = meshReader.readData(basePath + "crop-handle.fbx");
 
     createLineStripMesh();
 }
@@ -369,20 +286,123 @@ void CropWidget::createLineStripMesh() {
     linestrip_ = linestrip;
 }
 
-void CropWidget::updateAxis() {
+void CropWidget::renderAxis(const CropAxis &axis) {
+    // if min separation of the range is smaller, the middle handle is not drawn
+    const float minSeparationPercentage = 0.05f;
+
+    auto &property = axis.range;
+
+    float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
+    float lowerBound = (property.get().x - property.getRangeMin()) / range;
+    float upperBound = (property.get().y - property.getRangeMin()) / range;
+
+    // draw the interaction handles
+    {
+        const int axisIDOffset = static_cast<int>(axis.axis) * numInteractionWidgets;
+
+        shader_.activate();
+
+        // apply custom transformation
+        const mat4 m = glm::scale(vec3(scale_.get()));
+
+        auto draw = [&](auto &drawObject, int elemID, float value, const mat4 &rot) {
+            mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m * rot);
+            mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
+            shader_.setUniform("geometry_.dataToWorld", worldMatrix);
+            shader_.setUniform("geometry_.dataToWorldNormalMatrix", normalMatrix);
+            shader_.setUniform("pickColor_", picking_.getColor(axisIDOffset + elemID));
+
+            drawObject.draw();
+        };
+
+        {
+            // lower bound
+            auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[0].get());
+            draw(drawObject, 0, lowerBound, axis.info.rotMatrix);
+
+            // upper bound
+            draw(drawObject, 1, upperBound, axis.info.flipMatrix);
+        }
+
+        {
+            // middle handle
+            if ((property.get().x > property.getRangeMin()) ||
+                (property.get().y < property.getRangeMax())) {
+                auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[1].get());
+                if (std::fabs(upperBound - lowerBound) > minSeparationPercentage) {
+                    draw(drawObject, 2, (upperBound + lowerBound) * 0.5f, axis.info.rotMatrix);
+                }
+            }
+        }
+        shader_.setUniform("pickColor_", vec3(-1.0f));
+    }
+
+    if (showCropPlane_.get()) {
+        bool drawLowerPlane = (property.get().x != property.getRangeMin());
+        bool drawUpperPlane = (property.get().y != property.getRangeMax());
+
+        if (drawLowerPlane || drawUpperPlane) {
+            if (cropLineColor_.isModified()) {
+                createLineStripMesh();
+            }
+
+            utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+
+            lineShader_.activate();
+            lineShader_.setUniform("screenDim", vec2(outport_.getDimensions()));
+            utilgl::setUniforms(lineShader_, camera_, lineWidth_);
+
+            // rotate clip plane from [0, 0, -1] to match the currently selected clip axis
+            mat4 scale(volumeBasis_);
+            mat4 rotMatrix(1.0f);
+            if (axis.axis != CartesianCoordinateAxis::Z) {
+                vec3 v1(0.0f, 0.0f, -1.0f);
+                vec3 v2(glm::normalize(axis.info.axis));
+                rotMatrix = glm::rotate(glm::half_pi<float>(), glm::cross(v1, v2));
+            }
+            rotMatrix = scale * rotMatrix;
+
+            MeshDrawerGL::DrawObject drawStrip(linestrip_->getRepresentation<MeshGL>(),
+                                               linestrip_->getDefaultMeshInfo());
+
+            auto draw = [&](float value) {
+                mat4 worldMatrix(glm::translate(volumeOffset_ + axis.info.axis * value) *
+                                 rotMatrix);
+                mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
+                lineShader_.setUniform("geometry.dataToWorld", worldMatrix);
+                lineShader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
+                drawStrip.draw();
+            };
+
+            if (drawLowerPlane) {
+                draw(lowerBound);
+            }
+
+            if (drawUpperPlane) {
+                draw(upperBound);
+            }
+        }
+    }
+}
+
+void CropWidget::updateAxisRanges() {
     if (!volume_.hasData()) return;
 
     auto dims = util::getVolumeDimensions(volume_.getData());
 
-    if (dims != size3_t(clipRanges_[0].getRangeMax() + 1, clipRanges_[1].getRangeMax() + 1,
-                        clipRanges_[2].getRangeMax() + 1)) {
+    size3_t cropDims;
+    for (int i = 0; i < 3; ++i) {
+        cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
+    }
+
+    if (dims != cropDims) {
         NetworkLock lock(this);
 
         for (int i = 0; i < 3; ++i) {
-            clipRanges_[i].setRange(ivec2(0, dims[i] - 1));
+            cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
 
             // set the new dimensions to default if we were to press reset
-            clipRanges_[i].setCurrentStateAsDefault();
+            cropAxes_[i].range.setCurrentStateAsDefault();
         }
     }
 }
@@ -400,25 +420,22 @@ void CropWidget::updateBoundingCube() {
 void CropWidget::objectPicked(PickingEvent *p) {
     if (auto me = p->getEventAs<MouseEvent>()) {
         if (me->buttonState() & MouseButton::Left) {
-            if (me->state() == MouseState::Press) {
-                isMouseBeingPressedAndHold_ = true;
-                lastState_ = clipRanges_[static_cast<int>(axis_.get())].get();
-            } else if (me->state() == MouseState::Release) {
-                isMouseBeingPressedAndHold_ = false;
-                lastState_ = ivec2(-1);
-            } else if (me->state() == MouseState::Move) {
-                switch (p->getPickedId()) {
-                    case 0:
-                        rangePositionHandlePicked(p, false);
-                        break;
-                    case 1:
-                        rangePositionHandlePicked(p, true);
-                        break;
-                    case 2:
-                        break;
-                    default:
-                        LogWarn("invalid picking ID");
-                        break;
+            const int axisID = static_cast<int>(p->getPickedId()) / numInteractionWidgets;
+
+            if (axisID >= cropAxes_.size()) {
+                LogWarn("invalid picking ID");
+            } else {
+                if (me->state() == MouseState::Press) {
+                    isMouseBeingPressedAndHold_ = true;
+                    lastState_ = cropAxes_[axisID].range.get();
+                } else if (me->state() == MouseState::Release) {
+                    isMouseBeingPressedAndHold_ = false;
+                    lastState_ = ivec2(-1);
+                } else if (me->state() == MouseState::Move) {
+
+                    InteractionElement element =
+                        static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
+                    rangePositionHandlePicked(cropAxes_[axisID], p, element);
                 }
             }
             me->markAsUsed();
@@ -426,7 +443,7 @@ void CropWidget::objectPicked(PickingEvent *p) {
     }
 }
 
-CropWidget::AnnotationInfo CropWidget::getAxis() {
+CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis) {
     auto &cam = camera_.get();
     std::array<vec2, 4> axisSelector = {{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
 
@@ -438,7 +455,7 @@ CropWidget::AnnotationInfo CropWidget::getAxis() {
     mat4 rotMatrix(1.0f);
     mat4 flipOrientationMat;  // matrix used for the second arrow facing the opposite direction
                               // tilt the arrow mesh so that it is rotated by 45 degree
-    switch (axis_.get()) {
+    switch (majorAxis) {
         case CartesianCoordinateAxis::X:
             indices = {{0, 1, 2}};
             rotMatrix = glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 1.0f, 0.0f)) *
@@ -567,7 +584,8 @@ CropWidget::AnnotationInfo CropWidget::getAxis() {
             vec3(projPoints2[selectedIndex + 4])};
 }
 
-void CropWidget::rangePositionHandlePicked(PickingEvent *p, bool upperLimit) {
+void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
+                                           InteractionElement element) {
     auto currNDC = p->getNDC();
     auto prevNDC = p->getPressedNDC();
 
@@ -579,31 +597,47 @@ void CropWidget::rangePositionHandlePicked(PickingEvent *p, bool upperLimit) {
     auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
     auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
 
-    vec3 axis(volumeBasis_[static_cast<int>(axis_.get())]);
+    vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
 
     auto viewprojMatrix = camera_.get().getProjectionMatrix() * camera_.get().getViewMatrix();
 
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);
-    vec2 axis2D(currentAxisInfo_.endNDC - currentAxisInfo_.startNDC);
+    vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);
     float dist = glm::dot(delta, glm::normalize(axis2D));
-    // LogInfo("dist: " << dist);
 
-    auto &property = clipRanges_[static_cast<int>(axis_.get())];
+    auto &property = cropAxis.range;
 
     auto value = property.get();
     auto range = property.getRange();
     bool modified = false;
-    if (upperLimit) {
-        int v = lastState_.y + static_cast<int>(dist * (range.y - range.x));
-        v = std::max(v, property.getMinSeparation() + lastState_.x);
-        modified = (value.y != v);
-        value.y = v;
-    } else {
-        int v = lastState_.x + static_cast<int>(dist * (range.y - range.x));
-        v = std::min(v, lastState_.y - property.getMinSeparation());
-        modified = (value.x != v);
-        value.x = v;
+    switch (element) {
+        case InteractionElement::UpperBound: {
+            int v = lastState_.y + static_cast<int>(dist * (range.y - range.x));
+            v = std::max(v, property.getMinSeparation() + lastState_.x);
+            modified = (value.y != v);
+            value.y = v;
+            break;
+        }
+        case InteractionElement::LowerBound: {
+            int v = lastState_.x + static_cast<int>(dist * (range.y - range.x));
+            v = std::min(v, lastState_.y - property.getMinSeparation());
+            modified = (value.x != v);
+            value.x = v;
+            break;
+        }
+        case InteractionElement::Middle: {
+            // adjust both lower and upper bound
+            int v = lastState_.x + static_cast<int>(dist * (range.y - range.x));
+            v = std::min(v, range.y - property.getMinSeparation());
+            modified = (value.x != v);
+            value.x = v;
+            value.y = std::min(v + lastState_.y - lastState_.x, range.y);
+            break;
+        }
+        case InteractionElement::None:
+        default:
+            break;
     }
     if (modified) {
         property.set(value);

@@ -65,8 +65,8 @@ void main() {
     
 
     if (overrideColor_.a > -0.1) {
-    	color_ = overrideColor_;
+        color_ = overrideColor_;
     }
 
-	pickingColor_ = (pickColor_.r < 0.0) ? vec4(0.0) : vec4(pickColor_, 1.0);
+    pickingColor_ = (pickColor_.r < 0.0) ? vec4(0.0) : vec4(pickColor_, 1.0);
 }
