@@ -151,6 +151,7 @@ endif()
 #--------------------------------------------------------------------
 # Add dependencies
 ivw_add_dependencies(${package_list})
+add_dependencies(inviwo ${_allPyBindWrappers})
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
@@ -178,6 +179,7 @@ if(WIN32)
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
     ivw_add_dependencies(${package_list})
+    add_dependencies(inviwo-cli ${_allPyBindWrappers})
     ivw_memleak_setup(inviwo-cli)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
