@@ -4,4 +4,4 @@ This module contains a selection of various processors providing on-screen inter
 
 The Presentation Processor can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input.
 
-The [Assimp](assimp.sourceforge.net/) library is used for handling the meshes used in the widgets. 
+The [Assimp](http://assimp.sourceforge.net/) library is used for handling the meshes used in the widgets. 
