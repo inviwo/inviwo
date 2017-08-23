@@ -137,14 +137,14 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
     if (this != &that) {
         LayerRAM::operator=(that);
 
-        auto dim = that.dimensions_;
+        const auto dim = that.dimensions_;
         auto data = util::make_unique<T[]>(dim.x * dim.y);
         std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * sizeof(T));
         data_.swap(data);
-        std::swap(dim, dimensions_);
-        swizzleMask_.swap(that.swizzleMask_);
+        
+        dimensions_ = that.dimensions_;
+        swizzleMask_ = that.swizzleMask_;
     }
-
     return *this;
 }
 
