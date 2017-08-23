@@ -74,7 +74,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     addProperty(roughness_);
 
     addProperty(lights_);
-    if(lights_.numElements_ == 0)
+    if(lights_.getNumberOfElements() == 0)
         lights_.addElement();
 }
 

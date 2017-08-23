@@ -52,7 +52,6 @@ private:
     std::unique_ptr<T> prefab_;
 
 public:
-    size_t numElements_;
     size_t maxNumElements_;
 
     ListProperty(std::string identifier, std::string displayName, std::string elementName = "Element",
@@ -66,11 +65,17 @@ public:
 
     void addElement();
     void deleteElement();
+    size_t getNumberOfElements() const {
+        return elements_.getProperties().size();
+    }
 
     OptionPropertyString elementSelection_;
     ButtonProperty addElementButton_;
     ButtonProperty deleteElementButton_;
     CompositeProperty elements_;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 };
 
 template <typename T>
@@ -85,7 +90,6 @@ ListProperty<T>::ListProperty(std::string identifier, std::string displayName,
     , deleteElementButton_("deleteElement", "Delete Element", InvalidationLevel::InvalidResources)
     , elementSelection_("elementSelection", "Element Selection")
     , maxNumElements_(maxNumberOfElements)
-    , numElements_(0)
     , elements_("lightsContainer", "Lights") {
     addElementButton_.onChange(this, &ListProperty<T>::addElement);
     deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
@@ -105,7 +109,6 @@ ListProperty<T>::ListProperty(const ListProperty<T>& rhs)
     , deleteElementButton_(rhs.deleteElementButton_)
     , elementSelection_(rhs.elementSelection_)
     , maxNumElements_(rhs.maxNumElements_)
-    , numElements_(rhs.numElements_)
     , elements_(rhs.elements_) {
     addElementButton_.onChange(this, &ListProperty<T>::addElement);
     deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
@@ -126,7 +129,6 @@ ListProperty<T>& ListProperty<T>::operator=(const ListProperty<T>& that) {
         deleteElementButton_ = that.deleteElementButton_;
         elementSelection_ = that.elementSelection_;
         maxNumElements_ = that.maxNumElements_;
-        numElements_ = that.numElements_;
         elements_ = that.elements_;
     }
     return *this;
@@ -139,10 +141,9 @@ ListProperty<T>* ListProperty<T>::clone() const {
 
 template <typename T>
 void ListProperty<T>::addElement() {
-    if (numElements_ < maxNumElements_ || maxNumElements_ == 0) {
-        numElements_ = elements_.getProperties().size() + 1;
+    if (getNumberOfElements() < maxNumElements_ || maxNumElements_ == 0) {
 
-        std::string num = std::to_string(numElements_);
+        std::string num = std::to_string(getNumberOfElements() + 1);
 
         elementSelection_.addOption("elementOption_" + num, elementName_ + " " + num);
 
@@ -151,16 +152,18 @@ void ListProperty<T>::addElement() {
         property->setIdentifier("element_" + num);
         property->setDisplayName(elementName_ + " " + num);
         elements_.addProperty(property, true);
+    } else {
+        LogInfo("The maximum number of elements is reached.");
     }
 }
 
 template <typename T>
 void ListProperty<T>::deleteElement() {
-    if (numElements_ <= 0) return;
+    if (getNumberOfElements() <= 0) return;
     std::vector<Property*> beforeDeletion = elements_.getProperties();
     int selectedElement = elementSelection_.getSelectedIndex();
 
-    std::string identifier = (static_cast<T*>(beforeDeletion.at(selectedElement)))->getIdentifier();
+    std::string identifier = beforeDeletion.at(selectedElement)->getIdentifier();
     elements_.removeProperty(identifier);
     elementSelection_.removeOption(selectedElement);
 
@@ -180,8 +183,19 @@ void ListProperty<T>::deleteElement() {
         std::string str_i = std::to_string(i);
         elementSelection_.addOption("elementOption_" + str_i, elementName_ + " " + str_i);
     }
+}
 
-    numElements_ = afterDeletion.size();
+template <typename T>
+void ListProperty<T>::serialize(Serializer& s) const {
+    CompositeProperty::serialize(s);
+    s.serialize("maxNumElements", maxNumElements_);
+}
+
+template <typename T>
+void ListProperty<T>::deserialize(Deserializer& d) {
+    CompositeProperty::deserialize(d);
+    d.deserialize("maxNumElements", maxNumElements_);
+    LogInfo(std::to_string(maxNumElements_) + " is max number of elements");
 }
 
 }  // namespace inviwo
