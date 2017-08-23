@@ -147,7 +147,8 @@ void HdrBloom::process() {
     blur_.setUniform("texSource", 0);
     for (int i = 0; i < Levels; i++) {
         auto inv_res = 1.f / vec2(input_tex->getWidth(), input_tex->getHeight());
-        glViewport(0, 0, texHorizontal_[i]->getWidth(), texHorizontal_[i]->getHeight());
+        glViewport(0, 0, static_cast<GLsizei>(texHorizontal_[i]->getWidth()),
+                   static_cast<GLsizei>(texHorizontal_[i]->getHeight()));
 
         // --- X-PASS ---
         input_tex->bind();
@@ -168,11 +169,11 @@ void HdrBloom::process() {
     utilgl::activateTarget(outport_, ImageType::ColorOnly);
     compose_.activate();
 
-	// Blend bloom results onto colorchannel of outport.
+    // Blend bloom results onto colorchannel of outport.
     utilgl::GlBoolState blend(GL_BLEND, true);
     glBlendFunc(GL_ONE, GL_ONE);
     glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-    std::array<float, Levels> factors{1.0, 0.8, 0.6, 0.4, 0.2};
+    std::array<float, Levels> factors{1.0f, 0.8f, 0.6f, 0.4f, 0.2f};
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());
     for (int i = 0; i < Levels; i++) {
@@ -204,4 +205,4 @@ void HdrBloom::resizeTextures(int width, int height) {
     height_ = height;
 }
 
-}  // namespace
+}  // namespace inviwo
