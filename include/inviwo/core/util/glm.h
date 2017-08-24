@@ -44,6 +44,7 @@
 #include <warn/ignore/shadow>
 #include <warn/ignore/sign-compare>
 #include <warn/ignore/conversion>
+#include <warn/ignore/misleading-indentation>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
