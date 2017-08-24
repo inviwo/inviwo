@@ -237,7 +237,8 @@ std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu(
         tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
            "minSepration and increment values"));
 
-    connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
+    connect(settingsAction, &QAction::triggered, this,
+            &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings);
     settingsAction->setEnabled(!property_->getReadOnly());
     settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
     return menu;
