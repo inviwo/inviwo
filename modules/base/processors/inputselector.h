@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/datastructures/image/image.h>
