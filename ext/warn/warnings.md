@@ -25,7 +25,6 @@ deprecated-register              | *same* (3.4)       | *no*                 | *
 dflt-ctor-base-inaccessible      | *no*               | *no*                 | C4623 (13)   
 dflt-ctor-could-not-be-generated | *no*               | *no*                 | C4510 (13)   
 digraphs-not-supported           | *no*               | *no*                 | C4628 (13.10)
-disabled-macro-expansion         | *no*               | *no*                 | *no*         
 dll-interface                    | *no*               | *no*                 | C4251 (13)   
 dll-interface-base               | *no*               | *no*                 | C4275 (13)   
 documentation                    | *same* (3.2)       | *no*                 | *no*         
@@ -47,10 +46,10 @@ int-conversion                   | *same* (3.2)       | *no*                 | *
 invalid-offsetof                 | *same* (3.2)       | *same* (3.4)         | *no*         
 is-defined-to-be                 | *no*               | *no*                 | C4574 (16)   
 layout-changed                   | *no*               | *no*                 | C4371 (13)   
+misleading-indentation           | *no*               | *same* (6)           | *no*         
 missing-braces                   | *same* (3.2)       | *same* (3.4)         | *no*         
 missing-field-initializers       | *same* (3.2)       | *same* (4.0)         | *no*         
 missing-noreturn                 | *same* (3.3)       | *same* (3.4)         | *no*         
-missing-prototypes               | *no*               | *same* (3.4)         | *no*         
 name-length-exceeded             | *no*               | *no*                 | C4503 (13)   
 newline-eof                      | *same* (3.4)       | *no*                 | *no*         
 no-such-warning                  | *no*               | *no*                 | C4619 (13)   
@@ -62,10 +61,8 @@ overloaded-virtual               | *same* (3.2)       | *same* (3.4)         | *
 padded                           | *same* (3.2)       | *same* (3.4)         | C4820 (13)   
 parentheses                      | *same* (3.2)       | *same* (3.4)         | *no*         
 pedantic                         | *same* (3.2)       | *same* (4.8)         | *no*         
-pointer-sign                     | *no*               | *same* (4.0)         | *no*         
 return-type                      | *same* (3.2)       | *same* (3.4)         | *no*         
 shadow                           | *same* (3.2)       | *same* (3.4)         | *no*         
-shift-sign-overflow              | *no*               | *no*                 | *no*         
 shorten-64-to-32                 | *same* (3.2)       | *no*                 | *no*         
 sign-compare                     | *same* (3.2)       | *same* (3.4)         | C4389 (13)   
 sign-conversion                  | *same* (3.2)       | *same* (4.3)         | C4365 (14)   
@@ -73,7 +70,7 @@ signed-unsigned-compare          | sign-compare (3.2) | sign-compare (3.4)   | C
 static-ctor-not-thread-safe      | *no*               | *no*                 | C4640 (13)   
 switch                           | *same* (3.2)       | *same* (3.4)         | C4062 (13)   
 switch-enum                      | *same* (3.2)       | *same* (3.4)         | C4061 (13)   
-this-used-in-init                | *no*               | *no*                 | *no*         
+this-used-in-init                | *no*               | *no*                 | C4355 (13)   
 undef                            | *no*               | *same* (3.4)         | C4668 (13)   
 uninitialized                    | *same* (3.2)       | *same* (3.4)         | *no*         
 unknown-pragmas                  | *same* (3.2)       | *same* (3.4)         | *no*         
@@ -89,4 +86,3 @@ unused-value                     | *same* (3.2)       | *same* (3.4)         | C
 unused-variable                  | *same* (3.2)       | *same* (3.4)         | C4189 (13)   
 used-but-marked-unused           | *same* (3.2)       | *no*                 | *no*         
 user-ctor-required               | *no*               | *no*                 | C4610 (13)   
-weak-vtables                     | *no*               | *no*                 | *no*         
