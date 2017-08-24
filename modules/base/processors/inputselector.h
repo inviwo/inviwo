@@ -71,6 +71,8 @@ public:
         , outport_("outport")
         , selectedPort_("selectedPort", "Select Inport") {
 
+        portSettings();
+
         addPort(inport_);
         addPort(outport_);
 
@@ -105,6 +107,8 @@ public:
     }
     virtual ~InputSelector() = default;
 
+    void portSettings();
+
     virtual void process() override {
         outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
     }
@@ -119,8 +123,6 @@ private:
 
     OptionPropertyInt selectedPort_;
 };
-
-
 
 template <typename T>
 struct DataNamer {
@@ -144,6 +146,12 @@ template <>
 struct DataNamer<Mesh> {
     static std::string getName() { return "Mesh"; }
 };
+
+template <>
+IVW_MODULE_BASE_API void InputSelector<ImageMultiInport, ImageOutport>::portSettings();
+
+template <typename Inport, typename Outport>
+void InputSelector<Inport, Outport>::portSettings() {}
 
 template <typename Inport, typename Outport>
 struct ProcessorTraits<InputSelector<Inport, Outport>> {

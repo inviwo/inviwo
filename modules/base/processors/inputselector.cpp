@@ -31,5 +31,10 @@
 
 namespace inviwo {
 
-} // namespace
+template <>
+void InputSelector<ImageMultiInport, ImageOutport>::portSettings() {
+    inport_.setOutportDeterminesSize(true);
+    outport_.setHandleResizeEvents(false);
+}
 
+}  // namespace inviwo
