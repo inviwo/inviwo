@@ -136,12 +136,14 @@ std::string parseTypeIdName(std::string str) {
 }
 
 std::string toUpper(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
     return str;
 }
 
 std::string toLower(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), (int (*)(int))std::tolower);
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
     return str;
 }
 
