@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALPROPERTY_H
@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/util/glm.h>
 #include <string>
 #include <sstream>
 
@@ -40,20 +41,20 @@ namespace inviwo {
 
 /**
  * \ingroup properties
- * A property representing a Ordinal value, for example int, floats. 
+ * A property representing a Ordinal value, for example int, floats.
  */
 template <typename T>
 class OrdinalProperty : public TemplateProperty<T> {
 public:
     InviwoPropertyInfo();
 
-    OrdinalProperty(
-        const std::string& identifier, const std::string& displayName,
-        const T& value = Defaultvalues<T>::getVal(), const T& minValue = Defaultvalues<T>::getMin(),
-        const T& maxValue = Defaultvalues<T>::getMax(),
-        const T& increment = Defaultvalues<T>::getInc(),
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    OrdinalProperty(const std::string& identifier, const std::string& displayName,
+                    const T& value = Defaultvalues<T>::getVal(),
+                    const T& minValue = Defaultvalues<T>::getMin(),
+                    const T& maxValue = Defaultvalues<T>::getMax(),
+                    const T& increment = Defaultvalues<T>::getInc(),
+                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                    PropertySemantics semantics = PropertySemantics::Default);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
     OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that) = default;
@@ -72,6 +73,12 @@ public:
     void setMaxValue(const T& value);
     void setIncrement(const T& value);
 
+    /**
+     * \brief set all parameters of the ordinal property at the same time with only a
+     * single validation.
+     */
+    void set(const T& value, const T& minVal, const T& maxVal, const T& increment);
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
@@ -81,6 +88,9 @@ public:
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
     virtual Document getDescription() const override;
+
+protected:
+    void validateValues();
 
 private:
     using TemplateProperty<T>::value_;
@@ -129,8 +139,7 @@ PropertyClassIdentifier(OrdinalProperty<T>,
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
                                     const T& value, const T& minValue, const T& maxValue,
-                                    const T& increment,
-                                    InvalidationLevel invalidationLevel,
+                                    const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
     : TemplateProperty<T>(identifier, displayName, value, invalidationLevel, semantics)
     , minValue_("minvalue", minValue)
@@ -156,7 +165,9 @@ OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
 
 template <typename T>
 void OrdinalProperty<T>::set(const T& value) {
+    if (value_.value == value) return;
     TemplateProperty<T>::set(value);
+    validateValues();
 }
 
 template <typename T>
@@ -188,24 +199,24 @@ template <typename T>
 void OrdinalProperty<T>::setMinValue(const T& value) {
     if (value == minValue_) return;
     minValue_ = value;
-    
-    // Make sure min < value < max
-    this->value_.value = glm::max(this->value_.value, minValue_.value);
+
+    // Make sure min < max
     maxValue_.value = glm::max(maxValue_.value, minValue_.value);
 
     Property::propertyModified();
+    validateValues();
 }
 
 template <typename T>
 void OrdinalProperty<T>::setMaxValue(const T& value) {
     if (value == maxValue_) return;
     maxValue_ = value;
-    
-    // Make sure min < value < max
-    this->value_.value = glm::min(this->value_.value, maxValue_.value);
+
+    // Make sure min < max
     minValue_.value = glm::min(minValue_.value, maxValue_.value);
-    
+
     Property::propertyModified();
+    validateValues();
 }
 
 template <typename T>
@@ -213,6 +224,32 @@ void OrdinalProperty<T>::setIncrement(const T& value) {
     if (value == increment_) return;
     increment_ = value;
     Property::propertyModified();
+}
+
+template <typename T>
+void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
+    bool modified = false;
+
+    if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
+        if (minVal < maxVal) {
+            minValue_.value = minVal;
+            maxValue_.value = maxVal;
+        } else {
+            minValue_.value = maxVal;
+            maxValue_.value = minVal;
+        }
+        modified = true;
+    }
+    if (value != value_.value) {
+        TemplateProperty<T>::set(value);
+        modified = true;
+    }
+
+    setIncrement(increment);
+    if (modified) {
+        Property::propertyModified();
+        validateValues();
+    }
 }
 
 template <typename T>
@@ -234,7 +271,7 @@ void OrdinalProperty<T>::setCurrentStateAsDefault() {
 template <typename T>
 void OrdinalProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
-    
+
     minValue_.serialize(s, this->serializationMode_);
     maxValue_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
@@ -253,6 +290,22 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     if (modified) this->propertyModified();
 }
 
+template <typename T>
+void OrdinalProperty<T>::validateValues() {
+    T val = value_.value;
+    T minVal = glm::min(minValue_.value, maxValue_.value);
+    T maxVal = glm::max(minValue_.value, maxValue_.value);
+
+    // Ensure that min < value < max
+    if (minVal != minValue_.value) {
+        Property::propertyModified();
+    }
+    val = glm::clamp(val, minVal, maxVal);
+
+    if (val != value_.value) {
+        TemplateProperty<T>::set(val);
+    }
+}
 
 template <typename T>
 Document OrdinalProperty<T>::getDescription() const {
@@ -273,7 +326,6 @@ Document OrdinalProperty<T>::getDescription() const {
     return doc;
 }
 
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ORDINALPROPERTY_H
