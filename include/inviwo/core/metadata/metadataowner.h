@@ -60,6 +60,15 @@ public:
     T* createMetaData(const std::string &key);
     template<typename T, typename U>
     void setMetaData(const std::string &key, U value);
+    
+    /** 
+     * \brief unset, i.e. remove the metadata entry matching the given key and type
+     * 
+     * @param key   key of the entry to be removed
+     */
+    template<typename T>
+    bool unsetMetaData(const std::string &key);
+
     //param val is required to deduce the template argument
     template<typename T, typename U>
     U getMetaData(const std::string &key, U val) const;
@@ -99,6 +108,13 @@ void MetaDataOwner::setMetaData(const std::string& key, U value) {
         }
     }
     metaData_.add(key, util::make_unique<T>())->set(value);
+}
+
+template<typename T>
+bool MetaDataOwner::unsetMetaData(const std::string &key) {
+    bool existed = hasMetaData<T>(key);
+    metaData_.remove(key);
+    return existed;
 }
 
 //param val is required to deduce the template argument
