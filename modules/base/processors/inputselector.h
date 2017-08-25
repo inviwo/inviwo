@@ -108,7 +108,6 @@ public:
     }
     virtual ~InputSelector() = default;
 
-    void portSettings();
 
     virtual void process() override {
         outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
@@ -119,6 +118,8 @@ public:
     }
 
 private:
+    void portSettings();
+
     Inport inport_;
     Outport outport_;
 
@@ -149,7 +150,7 @@ struct DataNamer<Mesh> {
 };
 
 template <>
-IVW_MODULE_BASE_API void InputSelector<ImageMultiInport, ImageOutport>::portSettings();
+void InputSelector<ImageMultiInport, ImageOutport>::portSettings();
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::portSettings() {}
