@@ -90,7 +90,16 @@ public:
     virtual Document getDescription() const override;
 
 protected:
-    void validateValues();
+    /**
+     * \brief validate the given value against the set min/max range
+     *
+     * @param v   value to be validated
+     * @return returns the pair { modified, valid value } where modified indicates 
+     *            whether the given value was adjusted. The new value is stored as 
+     *            second parameter. In case there was not modification, valid value
+     *            is equal to TemplateProperty<T>::value_.
+     */
+    std::pair<bool, T> validateValues(const T& v);
 
 private:
     using TemplateProperty<T>::value_;
@@ -166,8 +175,12 @@ OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
 template <typename T>
 void OrdinalProperty<T>::set(const T& value) {
     if (value_.value == value) return;
-    TemplateProperty<T>::set(value);
-    validateValues();
+
+    auto retVal = validateValues(value);
+    if (retVal.first) {
+        value_.value = retVal.second;
+        OrdinalProperty<T>::propertyModified();
+    }
 }
 
 template <typename T>
@@ -203,8 +216,8 @@ void OrdinalProperty<T>::setMinValue(const T& value) {
     // Make sure min < max
     maxValue_.value = glm::max(maxValue_.value, minValue_.value);
 
-    Property::propertyModified();
-    validateValues();
+    value_.value = validateValues(value_.value).second;
+    OrdinalProperty<T>::propertyModified();
 }
 
 template <typename T>
@@ -215,15 +228,17 @@ void OrdinalProperty<T>::setMaxValue(const T& value) {
     // Make sure min < max
     minValue_.value = glm::min(minValue_.value, maxValue_.value);
 
-    Property::propertyModified();
-    validateValues();
+    value_.value = validateValues(value_.value).second;
+    OrdinalProperty<T>::propertyModified();
 }
 
 template <typename T>
 void OrdinalProperty<T>::setIncrement(const T& value) {
     if (value == increment_) return;
     increment_ = value;
-    Property::propertyModified();
+
+    value_.value = validateValues(value_.value).second;
+    OrdinalProperty<T>::propertyModified();
 }
 
 template <typename T>
@@ -231,24 +246,28 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     bool modified = false;
 
     if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
-        if (minVal < maxVal) {
-            minValue_.value = minVal;
-            maxValue_.value = maxVal;
-        } else {
-            minValue_.value = maxVal;
-            maxValue_.value = minVal;
+        if (glm::any(glm::greaterThan(minVal, maxVal))) {
+            LogWarn("Invalid range given for \"" << this->getDisplayName() << "\" ("
+                                                 << Defaultvalues<T>::getName()
+                                                 << "Property). Using min range as reference.");
         }
+
+        minValue_.value = minVal;
+        maxValue_.value = glm::max(minVal, maxVal);
         modified = true;
     }
-    if (value != value_.value) {
-        TemplateProperty<T>::set(value);
+    if (increment != increment_) {
+        increment_ = value;
+        modified = true;
+    }
+    auto retVal = validateValues(value);
+    if (retVal.first) {
+        value_.value = retVal.second;
         modified = true;
     }
 
-    setIncrement(increment);
     if (modified) {
-        Property::propertyModified();
-        validateValues();
+        OrdinalProperty<T>::propertyModified();
     }
 }
 
@@ -287,24 +306,13 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     modified |= maxValue_.deserialize(d, this->serializationMode_);
     modified |= increment_.deserialize(d, this->serializationMode_);
     modified |= value_.deserialize(d, this->serializationMode_);
-    if (modified) this->propertyModified();
+    if (modified) OrdinalProperty<T>::propertyModified();
 }
 
 template <typename T>
-void OrdinalProperty<T>::validateValues() {
-    T val = value_.value;
-    T minVal = glm::min(minValue_.value, maxValue_.value);
-    T maxVal = glm::max(minValue_.value, maxValue_.value);
-
-    // Ensure that min < value < max
-    if (minVal != minValue_.value) {
-        Property::propertyModified();
-    }
-    val = glm::clamp(val, minVal, maxVal);
-
-    if (val != value_.value) {
-        TemplateProperty<T>::set(val);
-    }
+std::pair<bool, T> OrdinalProperty<T>::validateValues(const T& v) {
+    T newValue(glm::clamp(v, minValue_.value, maxValue_.value));
+    return {(newValue != value_.value), newValue};
 }
 
 template <typename T>

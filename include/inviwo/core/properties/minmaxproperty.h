@@ -112,7 +112,16 @@ public:
     virtual Document getDescription() const override;
 
 protected:
-    void validateValues();
+    /**
+     * \brief validate the given value against the set min/max range
+     *
+     * @param v   value to be validated
+     * @return returns the pair { modified, valid value } where modified indicates
+     *            whether the given value was adjusted. The new value is stored as
+     *            second parameter. In case there was not modification, valid value
+     *            is equal to TemplateProperty<range_type>::value_.
+     */
+    auto validateValues(const range_type& v) -> std::pair<bool, range_type>;
 
 private:
     using TemplateProperty<range_type>::value_;
@@ -144,7 +153,7 @@ MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayNam
     , increment_("increment", increment)
     , minSeparation_("minSeparation", minSeparation) {
     // invariant: range_.x <= value_.x <= value_.y + minseperation <= range_.y
-    // Assume range_.x is correct.
+    // Assume minimum range, i.e. range_.x, is correct.
     value_.value.x = std::max(value_.value.x, range_.value.x);
     value_.value.y = std::max(value_.value.y, value_.value.x + minSeparation_.value);
     range_.value.y = std::max(range_.value.y, value_.value.y);
@@ -201,9 +210,11 @@ void MinMaxProperty<T>::set(const range_type& value) {
     if (value == TemplateProperty<range_type>::value_.value) {
         return;
     }
-    TemplateProperty<range_type>::value_ = value;
-    TemplateProperty<range_type>::propertyModified();
-    validateValues();
+    auto retVal = validateValues(value);
+    if (retVal.first) {
+        TemplateProperty<range_type>::value_ = retVal.second;
+        MinMaxProperty<T>::propertyModified();
+    }
 }
 
 template <typename T>
@@ -245,8 +256,8 @@ void MinMaxProperty<T>::setRangeMin(const T& value) {
     // ensure that rangeMax is greater equal than rangeMin
     range_.value.y = std::max(range_.value.x, range_.value.y);
 
-    TemplateProperty<range_type>::propertyModified();
-    validateValues();
+    value_.value = validateValues(value_.value).second;
+    MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
 }
 
@@ -258,8 +269,8 @@ void MinMaxProperty<T>::setRangeMax(const T& value) {
     // ensure that rangeMin is less equal than rangeMax
     range_.value.x = std::min(range_.value.x, range_.value.y);
 
-    TemplateProperty<range_type>::propertyModified();
-    validateValues();
+    value_.value = validateValues(value_.value).second;
+    MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
 }
 
@@ -267,15 +278,21 @@ template <typename T>
 void MinMaxProperty<T>::setIncrement(const T& value) {
     if (increment_ == value) return;
     increment_ = value;
-    TemplateProperty<range_type>::propertyModified();
+    MinMaxProperty<T>::propertyModified();
 }
 
 template <typename T>
 void MinMaxProperty<T>::setMinSeparation(const T& value) {
     if (minSeparation_ == value) return;
     minSeparation_ = value;
-    TemplateProperty<range_type>::propertyModified();
-    validateValues();
+
+    // ensure that min separation is not larger than the entire range
+    if (minSeparation_ > (range_.value.y - range_.value.x)) {
+        minSeparation_ = range_.value.y - range_.value.x;
+    }
+
+    value_.value = validateValues(value_.value).second;
+    MinMaxProperty<T>::propertyModified();
 }
 
 template <typename T>
@@ -288,8 +305,8 @@ void MinMaxProperty<T>::setRange(const range_type& value) {
         range_.value = range_type(value.y, value.x);
     }
 
-    TemplateProperty<range_type>::propertyModified();
-    validateValues();
+    value_.value = validateValues(value_.value).second;
+    MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
 }
 
@@ -307,18 +324,22 @@ void MinMaxProperty<T>::set(const range_type& value, const range_type& range, co
         }
         rangeModified = true;
     }
-    if (value != TemplateProperty<range_type>::value_.value) {
-        TemplateProperty<range_type>::value_ = value;
+    if (increment != increment_) {
+        increment_ = increment;
+        modified = true;
     }
     if (minSep != minSeparation_) {
         minSeparation_.value = minSep;
         modified = true;
     }
+    auto retVal = validateValues(value);
+    if (retVal.first) {
+        value_.value = retVal.second;
+        modified = true;
+    }
 
-    setIncrement(increment);
     if (modified || rangeModified) {
-        TemplateProperty<range_type>::propertyModified();
-        validateValues();
+        MinMaxProperty<T>::propertyModified();
         if (rangeModified) {
             onRangeChangeCallback_.invokeAll();
         }
@@ -391,22 +412,13 @@ void MinMaxProperty<T>::deserialize(Deserializer& d) {
     modified |= increment_.deserialize(d, this->serializationMode_);
     modified |= minSeparation_.deserialize(d, this->serializationMode_);
     modified |= value_.deserialize(d, this->serializationMode_);
-    if (modified) this->propertyModified();
+    if (modified) MinMaxProperty<T>::propertyModified();
 }
 
 template <typename T>
-void MinMaxProperty<T>::validateValues() {
-    range_type val = TemplateProperty<range_type>::value_.value;
-
+auto MinMaxProperty<T>::validateValues(const range_type& v) -> std::pair<bool, range_type> {
+    range_type val(glm::clamp(v, range_type(range_.value.x), range_type(range_.value.y)));
     if (val.x > val.y) std::swap(val.x, val.y);
-    // check bounds
-    val = glm::clamp(val, range_type(range_.value.x), range_type(range_.value.y));
-
-    // ensure that min separation is not larger than the range
-    if (minSeparation_ > (range_.value.y - range_.value.x)) {
-        minSeparation_ = range_.value.y - range_.value.x;
-        TemplateProperty<range_type>::propertyModified();
-    }
 
     // check whether updated min/max values are separated properly, i.e. > minSeparation_
     if (glm::abs(val.y - val.x) < minSeparation_ - glm::epsilon<T>()) {
@@ -414,15 +426,13 @@ void MinMaxProperty<T>::validateValues() {
         if (val.x + minSeparation_ < range_.value.y + glm::epsilon<T>()) {
             val.y = std::max(val.x + minSeparation_.value, val.y);
         } else {
-            // otherwise adjust min value
+            // otherwise adjust min value (min separation is at most rangeMax - rangeMin)
             val.y = range_.value.y;
             val.x = range_.value.y - minSeparation_;
         }
     }
-    if (val != TemplateProperty<range_type>::value_.value) {
-        TemplateProperty<range_type>::value_.value = val;
-        TemplateProperty<range_type>::propertyModified();
-    }
+
+    return {(val != value_.value), val};
 }
 
 template <typename T>
