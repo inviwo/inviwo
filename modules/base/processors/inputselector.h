@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/datastructures/image/image.h>
@@ -71,6 +72,8 @@ public:
         , outport_("outport")
         , selectedPort_("selectedPort", "Select Inport") {
 
+        portSettings();
+
         addPort(inport_);
         addPort(outport_);
 
@@ -105,6 +108,7 @@ public:
     }
     virtual ~InputSelector() = default;
 
+
     virtual void process() override {
         outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
     }
@@ -114,13 +118,13 @@ public:
     }
 
 private:
+    void portSettings();
+
     Inport inport_;
     Outport outport_;
 
     OptionPropertyInt selectedPort_;
 };
-
-
 
 template <typename T>
 struct DataNamer {
@@ -144,6 +148,12 @@ template <>
 struct DataNamer<Mesh> {
     static std::string getName() { return "Mesh"; }
 };
+
+template <>
+void InputSelector<ImageMultiInport, ImageOutport>::portSettings();
+
+template <typename Inport, typename Outport>
+void InputSelector<Inport, Outport>::portSettings() {}
 
 template <typename Inport, typename Outport>
 struct ProcessorTraits<InputSelector<Inport, Outport>> {
