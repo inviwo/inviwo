@@ -151,6 +151,9 @@ endif()
 #--------------------------------------------------------------------
 # Add dependencies
 ivw_add_dependencies(${package_list})
+
+# Add build dependency towards any pybind11 targets and inviwo, 
+# if python is not enabled, this list will be empty
 add_dependencies(inviwo ${_allPyBindWrappers})
 
 #--------------------------------------------------------------------
