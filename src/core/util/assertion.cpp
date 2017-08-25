@@ -48,8 +48,7 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
 }
 
 #else
-void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
-                  std::string message) {}
+void ivwAssertion(const char*, const char*, long, std::string) {}
 
 #endif  // _DEBUG
 
@@ -61,6 +60,4 @@ void util::debugBreak() {
 #endif
 }
 
-
-
-}  // namespace
+}  // namespace inviwo
