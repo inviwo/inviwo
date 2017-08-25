@@ -245,7 +245,7 @@ void InviwoMainWindow::addActions() {
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
-        connect(newAction, SIGNAL(triggered()), this, SLOT(newWorkspace()));
+        connect(newAction, &QAction::triggered, this, &InviwoMainWindow::newWorkspace);
         fileMenuItem->addAction(newAction);
         workspaceToolBar->addAction(newAction);
     }
@@ -256,7 +256,8 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
         actions_["Open"] = openAction;
-        connect(openAction, SIGNAL(triggered()), this, SLOT(openWorkspace()));
+        connect(openAction, &QAction::triggered, this,
+                static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -267,7 +268,8 @@ void InviwoMainWindow::addActions() {
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAction);
         actions_["Save"] = saveAction;
-        connect(saveAction, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
+        connect(saveAction, &QAction::triggered, this,
+                static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::saveWorkspace));
         fileMenuItem->addAction(saveAction);
         workspaceToolBar->addAction(saveAction);
     }
@@ -279,7 +281,7 @@ void InviwoMainWindow::addActions() {
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAsAction);
         actions_["Save As"] = saveAsAction;
-        connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
+        connect(saveAsAction, &QAction::triggered, this, &InviwoMainWindow::saveWorkspaceAs);
         fileMenuItem->addAction(saveAsAction);
         workspaceToolBar->addAction(saveAsAction);
     }
@@ -287,7 +289,8 @@ void InviwoMainWindow::addActions() {
     {
         auto workspaceActionSaveAsCopy =
             new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As Copy"), this);
-        connect(workspaceActionSaveAsCopy, SIGNAL(triggered()), this, SLOT(saveWorkspaceAsCopy()));
+        connect(workspaceActionSaveAsCopy, &QAction::triggered, this,
+                &InviwoMainWindow::saveWorkspaceAsCopy);
         fileMenuItem->addAction(workspaceActionSaveAsCopy);
     }
 
@@ -325,13 +328,14 @@ void InviwoMainWindow::addActions() {
             action = new QAction(this);
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
-            QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+            QObject::connect(action, &QAction::triggered, this,
+                             &InviwoMainWindow::openRecentWorkspace);
         }
         // action for clearing the recent file menu
         clearRecentWorkspaces_ = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
         clearRecentWorkspaces_->setEnabled(false);
-        QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this,
-                         SLOT(clearRecentWorkspaceMenu()));
+        QObject::connect(clearRecentWorkspaces_, &QAction::triggered, this,
+                         &InviwoMainWindow::clearRecentWorkspaceMenu);
     }
 
     {
@@ -352,7 +356,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
-        connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+        connect(exitAction, &QAction::triggered, this, &InviwoMainWindow::close);
         fileMenuItem->addAction(exitAction);
     }
 
@@ -539,7 +543,7 @@ void InviwoMainWindow::addActions() {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
         auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
-        connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
+        connect(aboutBoxAction, &QAction::triggered, this, &InviwoMainWindow::showAboutBox);
         helpMenuItem->addAction(aboutBoxAction);
     }
 }
@@ -569,10 +573,14 @@ void InviwoMainWindow::updateRecentWorkspaceMenu() {
     for (int i = 0; i < recentFiles.size(); ++i) {
         workspaceActionRecent_[i]->setVisible(!recentFiles[i].isEmpty());
         if (!recentFiles[i].isEmpty()) {
-            QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
-            // cannonical path will check whether the path exists and returns an empty string if not
-            //.arg(QFileInfo(recentFiles[i]).canonicalFilePath());
-            workspaceActionRecent_[i]->setText(menuEntry);
+            if(QFileInfo(recentFiles[i]).exists()) {
+                QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
+                workspaceActionRecent_[i]->setText(menuEntry);
+            } else {
+                QString menuEntry = tr("&%1 %2 (missing)").arg(i + 1).arg(recentFiles[i]);
+                workspaceActionRecent_[i]->setText(menuEntry);
+                workspaceActionRecent_[i]->setEnabled(false);
+            }
             workspaceActionRecent_[i]->setData(recentFiles[i]);
         }
     }
@@ -643,8 +651,8 @@ void InviwoMainWindow::fillExampleWorkspaceMenu() {
                                      .arg(filename));
                     action->setData(path);
 
-                    QObject::connect(action, SIGNAL(triggered()), this,
-                                     SLOT(openExampleWorkspace()));
+                    QObject::connect(action, &QAction::triggered, this,
+                                     &InviwoMainWindow::openExampleWorkspace);
                 }
             }
         }
@@ -672,8 +680,8 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
                             }
                             QAction* action = moduleMenu->addAction(QString::fromStdString(item));
                             action->setData(QString::fromStdString(testdir + "/" + item));
-                            QObject::connect(action, SIGNAL(triggered()), this,
-                                             SLOT(openRecentWorkspace()));
+                            QObject::connect(action, &QAction::triggered, this,
+                                             &InviwoMainWindow::openRecentWorkspace);
                         }
                     }
                 }
@@ -768,7 +776,8 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
                     QString("%1/%2").arg(QString::fromStdString(elem.first)).arg(filename));
                 action->setData(path);
 
-                QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+                QObject::connect(action, &QAction::triggered, this,
+                                 &InviwoMainWindow::openRecentWorkspace);
             }
         }
     }
@@ -874,9 +883,7 @@ void InviwoMainWindow::openRecentWorkspace() {
         std::string fileName(utilqt::fromQString(action->data().toString()));
 
         if (!filesystem::fileExists(fileName)) {
-            QMessageBox::critical(
-                this, "Could not locate file",
-                QString("Failed to load the requested file:\n%1").arg(utilqt::toQString(fileName)));
+            LogError("Failed to load the requested file: " << fileName);
             return;
         }
         if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
