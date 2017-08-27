@@ -79,33 +79,18 @@ if(IVW_CMAKE_DEBUG)
     #variable_watch(_projectName log_proj)
 endif()
 
-#--------------------------------------------------------------------
-# Only output error messages
-function(message)
-    if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
-    else()
-        if( GET )
-            list(GET ARGV 0 MessageType)
-            if( MessageType STREQUAL FATAL_ERROR OR
-                MessageType STREQUAL SEND_ERROR OR
-                MessageType STREQUAL WARNING OR
-                MessageType STREQUAL AUTHOR_WARNING)
-                    list(REMOVE_AT ARGV 0)
-                    _message(STATUS "${ARGV}")
-            endif()
-        endif()
-    endif()
-endfunction()
+# Make sure we print deprecation warnings
+set(CMAKE_WARN_DEPRECATED ON)
 
 function(ivw_debug_message)
     if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
+        message(${ARGV})
     endif()
 endfunction()
 
 function(ivw_message)
-    _message(${ARGV})
+    message(DEPRECATION "ivw_message is deprecatede, just use message")
+    message(${ARGV})
 endfunction()
 
 

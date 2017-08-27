@@ -396,7 +396,7 @@ endfunction()
 # ivw_print_list(list) -> "list  = list1, list2, list3"
 function(ivw_print_list list_var)
     string(REPLACE ";" ", " res "${${list_var}}") 
-    ivw_message("${list_var} = ${res}")
+    message(STATUS "${list_var} = ${res}")
 endfunction()
 
 #--------------------------------------------------------------------
@@ -428,7 +428,7 @@ endfunction()
 function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_list_var node_edge_var count)
     MATH(EXPR count "${count}+1")
     if(${count} GREATER 30)
-        ivw_message(ERROR "Stoppig to deep recursion")
+        message(ERROR "Stoppig to deep recursion")
         return()
     endif()
 
@@ -439,7 +439,7 @@ function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_l
 
     list(FIND tempmarked ${node} tempfound)
     if(NOT ${tempfound} EQUAL -1) # Error not a dag
-        ivw_message(ERROR "Dependency graph not a DAG. Cant resove for node \"${node}\"")
+        message(ERROR "Dependency graph not a DAG. Cant resove for node \"${node}\"")
     endif()
 
     list(FIND marked ${node} markedfound)
