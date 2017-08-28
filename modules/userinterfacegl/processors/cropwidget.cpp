@@ -36,7 +36,6 @@
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/buffergl.h>
@@ -263,7 +262,7 @@ void CropWidget::createLineStripMesh() {
     vec2 t(0.0f, 0.0f);
     vec4 color;
     vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
-                    {1.0f, 0.0, 0.0f},
+                    {1.0f, 0.0f, 0.0f},
                     {1.0f, 1.0f, 0.0f},
                     {0.0f, 1.0f, 0.0f},
                     {0.0f, 0.0f, 0.0f}};
