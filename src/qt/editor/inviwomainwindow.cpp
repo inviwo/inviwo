@@ -144,9 +144,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                     },
                                     1200);
 
-    app->getCommandLineParser().add(&updateWorkspaces_, [this](){
-            util::updateWorkspaces(app_);
-       }, 1250);
+    app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
+                                    1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
@@ -178,9 +177,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
-        .toString();
+            .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
-    settings.endGroup(); 
+    settings.endGroup();
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
 
@@ -246,7 +245,7 @@ void InviwoMainWindow::addActions() {
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
-        connect(newAction, SIGNAL(triggered()), this, SLOT(newWorkspace()));
+        connect(newAction, &QAction::triggered, this, &InviwoMainWindow::newWorkspace);
         fileMenuItem->addAction(newAction);
         workspaceToolBar->addAction(newAction);
     }
@@ -257,7 +256,8 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
         actions_["Open"] = openAction;
-        connect(openAction, SIGNAL(triggered()), this, SLOT(openWorkspace()));
+        connect(openAction, &QAction::triggered, this,
+                static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -268,7 +268,8 @@ void InviwoMainWindow::addActions() {
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAction);
         actions_["Save"] = saveAction;
-        connect(saveAction, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
+        connect(saveAction, &QAction::triggered, this,
+                static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::saveWorkspace));
         fileMenuItem->addAction(saveAction);
         workspaceToolBar->addAction(saveAction);
     }
@@ -280,7 +281,7 @@ void InviwoMainWindow::addActions() {
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAsAction);
         actions_["Save As"] = saveAsAction;
-        connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
+        connect(saveAsAction, &QAction::triggered, this, &InviwoMainWindow::saveWorkspaceAs);
         fileMenuItem->addAction(saveAsAction);
         workspaceToolBar->addAction(saveAsAction);
     }
@@ -288,33 +289,34 @@ void InviwoMainWindow::addActions() {
     {
         auto workspaceActionSaveAsCopy =
             new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As Copy"), this);
-        connect(workspaceActionSaveAsCopy, SIGNAL(triggered()), this, SLOT(saveWorkspaceAsCopy()));
+        connect(workspaceActionSaveAsCopy, &QAction::triggered, this,
+                &InviwoMainWindow::saveWorkspaceAsCopy);
         fileMenuItem->addAction(workspaceActionSaveAsCopy);
     }
 
     {
         connect(fileMenuItem->addAction("Save Network Image"), &QAction::triggered,
-            [&](bool state) {
-            InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
-            saveFileDialog.setFileMode(FileMode::AnyFile);
-            saveFileDialog.setAcceptMode(AcceptMode::Save);
-            saveFileDialog.setConfirmOverwrite(true);
+                [&](bool state) {
+                    InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
+                    saveFileDialog.setFileMode(FileMode::AnyFile);
+                    saveFileDialog.setAcceptMode(AcceptMode::Save);
+                    saveFileDialog.setConfirmOverwrite(true);
 
-            saveFileDialog.addSidebarPath(PathType::Workspaces);
-            saveFileDialog.addSidebarPath(workspaceFileDir_);
+                    saveFileDialog.addSidebarPath(PathType::Workspaces);
+                    saveFileDialog.addSidebarPath(workspaceFileDir_);
 
-            saveFileDialog.addExtension("png", "PNG");
-            saveFileDialog.addExtension("jpg", "JPEG");
-            saveFileDialog.addExtension("bmp", "BMP");
-            saveFileDialog.addExtension("pdf", "PDF");
+                    saveFileDialog.addExtension("png", "PNG");
+                    saveFileDialog.addExtension("jpg", "JPEG");
+                    saveFileDialog.addExtension("bmp", "BMP");
+                    saveFileDialog.addExtension("pdf", "PDF");
 
-            if (saveFileDialog.exec()) {
-                QString path = saveFileDialog.selectedFiles().at(0);
-                networkEditor_->saveNetworkImage(path.toStdString());
-                LogInfo("Saved image of network as " << path.toStdString());
-            }
+                    if (saveFileDialog.exec()) {
+                        QString path = saveFileDialog.selectedFiles().at(0);
+                        networkEditor_->saveNetworkImage(path.toStdString());
+                        LogInfo("Saved image of network as " << path.toStdString());
+                    }
 
-        });
+                });
     }
 
     {
@@ -326,13 +328,14 @@ void InviwoMainWindow::addActions() {
             action = new QAction(this);
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
-            QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+            QObject::connect(action, &QAction::triggered, this,
+                             &InviwoMainWindow::openRecentWorkspace);
         }
         // action for clearing the recent file menu
         clearRecentWorkspaces_ = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
         clearRecentWorkspaces_->setEnabled(false);
-        QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this,
-                         SLOT(clearRecentWorkspaceMenu()));
+        QObject::connect(clearRecentWorkspaces_, &QAction::triggered, this,
+                         &InviwoMainWindow::clearRecentWorkspaceMenu);
     }
 
     {
@@ -353,7 +356,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
-        connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+        connect(exitAction, &QAction::triggered, this, &InviwoMainWindow::close);
         fileMenuItem->addAction(exitAction);
     }
 
@@ -370,14 +373,13 @@ void InviwoMainWindow::addActions() {
     }
 
     editMenuItem->addSeparator();
-    
+
     {
         auto cutAction = new QAction(tr("Cu&t"), this);
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
         editMenuItem->addAction(cutAction);
         cutAction->setEnabled(false);
-        
     }
 
     {
@@ -390,8 +392,7 @@ void InviwoMainWindow::addActions() {
         auto actions = widget->actions();
         if (actions.isEmpty()) {
             widget->addAction(copyAction);
-        }
-        else {
+        } else {
             // insert copy action at the beginning
             widget->insertAction(actions.front(), copyAction);
         }
@@ -485,7 +486,7 @@ void InviwoMainWindow::addActions() {
                                  ->getSettingsByType<SystemSettings>()
                                  ->applicationUsageMode_;
 
-        appUsageModeProp_->onChange([&](){visibilityModeChangedInSettings();});
+        appUsageModeProp_->onChange([&]() { visibilityModeChangedInSettings(); });
 
         connect(visibilityModeAction_, &QAction::triggered, [&](bool appView) {
             auto selectedIdx = appUsageModeProp_->getSelectedValue();
@@ -514,7 +515,7 @@ void InviwoMainWindow::addActions() {
         lockNetworkAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
         evalMenuItem->addAction(lockNetworkAction);
         evalToolBar->addAction(lockNetworkAction);
-        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction,this]() {
+        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction, this]() {
             if (lockNetworkAction->isChecked()) {
                 app_->getProcessorNetwork()->lock();
             } else {
@@ -542,7 +543,7 @@ void InviwoMainWindow::addActions() {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
         auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
-        connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
+        connect(aboutBoxAction, &QAction::triggered, this, &InviwoMainWindow::showAboutBox);
         helpMenuItem->addAction(aboutBoxAction);
     }
 }
@@ -572,10 +573,14 @@ void InviwoMainWindow::updateRecentWorkspaceMenu() {
     for (int i = 0; i < recentFiles.size(); ++i) {
         workspaceActionRecent_[i]->setVisible(!recentFiles[i].isEmpty());
         if (!recentFiles[i].isEmpty()) {
-            QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
-            // cannonical path will check whether the path exists and returns an empty string if not
-            //.arg(QFileInfo(recentFiles[i]).canonicalFilePath());
-            workspaceActionRecent_[i]->setText(menuEntry);
+            if(QFileInfo(recentFiles[i]).exists()) {
+                QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
+                workspaceActionRecent_[i]->setText(menuEntry);
+            } else {
+                QString menuEntry = tr("&%1 %2 (missing)").arg(i + 1).arg(recentFiles[i]);
+                workspaceActionRecent_[i]->setText(menuEntry);
+                workspaceActionRecent_[i]->setEnabled(false);
+            }
             workspaceActionRecent_[i]->setData(recentFiles[i]);
         }
     }
@@ -635,17 +640,19 @@ void InviwoMainWindow::fillExampleWorkspaceMenu() {
             for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (filesystem::getFileExtension(item) == "inv") {
-                    if(!moduleMenu)
-                        moduleMenu = exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
-                
+                    if (!moduleMenu)
+                        moduleMenu =
+                            exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
+
                     QString filename(QString::fromStdString(item));
                     QAction* action = moduleMenu->addAction(filename);
-                    QString path(
-                        QString("%1/%2").arg(QString::fromStdString(moduleWorkspacePath)).arg(filename));
+                    QString path(QString("%1/%2")
+                                     .arg(QString::fromStdString(moduleWorkspacePath))
+                                     .arg(filename));
                     action->setData(path);
 
-                    QObject::connect(action, SIGNAL(triggered()), this,
-                                     SLOT(openExampleWorkspace()));
+                    QObject::connect(action, &QAction::triggered, this,
+                                     &InviwoMainWindow::openExampleWorkspace);
                 }
             }
         }
@@ -668,13 +675,13 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
                     for (auto item : filesystem::getDirectoryContents(testdir)) {
                         if (filesystem::getFileExtension(item) == "inv") {
                             if (!moduleMenu) {
-                                moduleMenu =
-                                    testMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
+                                moduleMenu = testMenu_->addMenu(
+                                    QString::fromStdString(module->getIdentifier()));
                             }
                             QAction* action = moduleMenu->addAction(QString::fromStdString(item));
                             action->setData(QString::fromStdString(testdir + "/" + item));
-                            QObject::connect(action, SIGNAL(triggered()), this,
-                                             SLOT(openRecentWorkspace()));
+                            QObject::connect(action, &QAction::triggered, this,
+                                             &InviwoMainWindow::openRecentWorkspace);
                         }
                     }
                 }
@@ -769,7 +776,8 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
                     QString("%1/%2").arg(QString::fromStdString(elem.first)).arg(filename));
                 action->setData(path);
 
-                QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+                QObject::connect(action, &QAction::triggered, this,
+                                 &InviwoMainWindow::openRecentWorkspace);
             }
         }
     }
@@ -812,9 +820,10 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
-                    util::log(e.getContext(), "Incomplete network loading " + fileName +
-                                                  " due to " + e.getMessage(),
-                              LogLevel::Error);
+                    util::log(
+                        e.getContext(),
+                        "Incomplete network loading " + fileName + " due to " + e.getMessage(),
+                        LogLevel::Error);
                 }
             });
 
@@ -871,6 +880,12 @@ void InviwoMainWindow::openWorkspace() {
 
 void InviwoMainWindow::openRecentWorkspace() {
     if (QAction* action = qobject_cast<QAction*>(sender())) {
+        std::string fileName(utilqt::fromQString(action->data().toString()));
+
+        if (!filesystem::fileExists(fileName)) {
+            LogError("Failed to load the requested file: " << fileName);
+            return;
+        }
         if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
     }
 }
@@ -955,7 +970,7 @@ void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWi
 void InviwoMainWindow::showAboutBox() {
     auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();
     auto syscap = getTypeFromVector<SystemCapabilities>(caps);
-    
+
     const int buildYear = (syscap ? syscap->getBuildTimeYear() : 0);
 
     std::stringstream aboutText;
@@ -977,11 +992,11 @@ void InviwoMainWindow::showAboutBox() {
               << "http://www.inviwo.org/</a>\n"
               << "<p>Inviwo is a rapid prototyping environment for interactive "
               << "visualizations.<br>It is licensed under the Simplified BSD license.</p>\n"
-    
+
               << "<p><b>Core Team:</b><br>\n"
               << "Peter Steneteg, Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, "
               << "Rickard Englund, Sathish Kottravel, Timo Ropinski</p>\n"
-    
+
               << "<p><b>Former Developers:</b><br>\n"
               << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
               << "Hans-Christian Helltegen, Viktor Axelsson</p>\n";
@@ -1032,7 +1047,6 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
                     }
                 }
 
-
                 if (visibilityModeAction_->isChecked()) {
                     visibilityModeAction_->setChecked(false);
                 }
@@ -1059,7 +1073,7 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
 NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }
 
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
-    if(!saveIfModified) getNetworkEditor()->setModified(false);
+    if (!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
     app_->closeInviwoApplication();
 }
@@ -1080,9 +1094,9 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
     settings.setValue("resourcemanagerwidgetSticky", resourceManagerWidget_->isSticky());
     settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
-    settings.endGroup(); // dialogs
+    settings.endGroup();  // dialogs
 
-    settings.endGroup(); // mainwindow
+    settings.endGroup();  // mainwindow
 }
 void InviwoMainWindow::loadWindowState() {
     // load settings and restore window state
@@ -1180,4 +1194,4 @@ const std::unordered_map<std::string, QAction*>& InviwoMainWindow::getActions() 
     return actions_;
 }
 
-}  // namespace
+}  // namespace inviwo
