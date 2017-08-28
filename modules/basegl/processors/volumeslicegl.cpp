@@ -97,25 +97,28 @@ VolumeSliceGL::VolumeSliceGL()
     , transferFunction_("transferFunction", "Transfer Function", &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
-    , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f))
-    , volumeSample_("volumeSample", "Sample Output", vec4(0.0f))
+    , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f),
+                        vec4(0.001f), InvalidationLevel::Valid, PropertySemantics::Text)
+    , volumeSample_("volumeSample", "Sample Output", vec4(0.0f),
+                    vec4(std::numeric_limits<float>::lowest()),
+                    vec4(std::numeric_limits<float>::max()), vec4(0.001f), InvalidationLevel::Valid,
+                    PropertySemantics::Text)
     , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-                      [this](Event* e) { eventShiftSlice(e); },
-                      util::make_unique<WheelEventMatcher>())
+                       [this](Event* e) { eventShiftSlice(e); },
+                       util::make_unique<WheelEventMatcher>())
 
     , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
                       MouseButton::Left, MouseState::Press | MouseState::Move)
-    , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker", 
-                            [this](Event* e) { eventUpdateMousePos(e); },
-                            MouseButton::None, MouseState::Move)
-    
-    , stepSliceUp_( "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
-          IvwKey::W, KeyState::Press)
-    , stepSliceDown_(
-          "stepSliceDown", "Key Slice Down",  [this](Event* e) { eventStepSliceDown(e); },
-          IvwKey::S, KeyState::Press)
+    , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker",
+                            [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None,
+                            MouseState::Move)
+
+    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+                   IvwKey::W, KeyState::Press)
+    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
+                     IvwKey::S, KeyState::Press)
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
@@ -234,11 +237,9 @@ VolumeSliceGL::VolumeSliceGL()
         }
     });
 
-    normalizedSample_.setSemantics(PropertySemantics::Text);
     normalizedSample_.setReadOnly(true);
     normalizedSample_.setSerializationMode(PropertySerializationMode::None);
     normalizedSample_.setCurrentStateAsDefault();
-    volumeSample_.setSemantics(PropertySemantics::Text);
     volumeSample_.setReadOnly(true);
     volumeSample_.setSerializationMode(PropertySerializationMode::None);
     volumeSample_.setCurrentStateAsDefault();
@@ -477,25 +478,20 @@ void VolumeSliceGL::updateIndicatorMesh() {
     meshCrossHair_ = util::make_unique<Mesh>();
     meshCrossHair_->setModelMatrix(mat4(1.0f));
     // add two vertical and two horizontal lines with a gap around the selected position
-    auto posBuf = util::makeBuffer<vec2>({
-        // horizontal
-        vec2(-0.5f, pos.y) * 2.0f - 1.0f, 
-        vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
-        vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, 
-        vec2(1.5f, pos.y) * 2.0f - 1.0f,
+    auto posBuf = util::makeBuffer<vec2>(
+        {// horizontal
+         vec2(-0.5f, pos.y) * 2.0f - 1.0f, vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
+         vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, vec2(1.5f, pos.y) * 2.0f - 1.0f,
 
-        // vertical
-        vec2(pos.x, -0.5f) * 2.0f - 1.0f, 
-        vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-        vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
-        vec2(pos.x, 1.5f) * 2.0f - 1.0f,
+         // vertical
+         vec2(pos.x, -0.5f) * 2.0f - 1.0f, vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+         vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f, vec2(pos.x, 1.5f) * 2.0f - 1.0f,
 
-        // box
-        vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-        vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-        vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
-        vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f
-    });
+         // box
+         vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+         vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+         vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
+         vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f});
 
     auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
 
@@ -522,37 +518,35 @@ void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
 
 void VolumeSliceGL::shiftSlice(int shift) {
     switch (sliceAlongAxis_.get()) {
-    case 0:  // x axis
+        case 0:  // x axis
         {
             int newValue = sliceX_.get() + shift;
             newValue = glm::clamp(newValue, sliceX_.getMinValue(), sliceX_.getMaxValue());
             sliceX_.set(newValue);
             break;
         }
-    case 1:  // y axis
+        case 1:  // y axis
         {
             int newValue = sliceY_.get() + shift;
             newValue = glm::clamp(newValue, sliceY_.getMinValue(), sliceY_.getMaxValue());
             sliceY_.set(newValue);
             break;
-
         }
-    case 2:  // z axis
+        case 2:  // z axis
         {
             int newValue = sliceZ_.get() + shift;
             newValue = glm::clamp(newValue, sliceZ_.getMinValue(), sliceZ_.getMaxValue());
             sliceZ_.set(newValue);
             break;
-
         }
-    default:
-    case 3: {
-        vec3 newPos = planePosition_.get() +
-                        static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
-        newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
-        planePosition_.set(newPos);
-        break;
-    }
+        default:
+        case 3: {
+            vec3 newPos = planePosition_.get() +
+                          static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
+            newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+            planePosition_.set(newPos);
+            break;
+        }
     }
 }
 
@@ -570,9 +564,9 @@ vec2 VolumeSliceGL::getScreenPosFromVolPos() {
     return pos;
 }
 
-vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2 &screenPos, bool clamp) const {
-    vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) * glm::translate(vec3(-0.5f, -0.5f, 0.0f)) *
-                    vec4(screenPos, 0.0f, 1.0f));
+vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) const {
+    vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
+                    glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
 
     if (clamp) {
         if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
@@ -649,16 +643,14 @@ void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
         shiftSlice(1);
         event->markAsUsed();
 
-    }
-    else if (gestureEvent->deltaPos().y > 0) {
+    } else if (gestureEvent->deltaPos().y > 0) {
         shiftSlice(-1);
         event->markAsUsed();
     }
 }
 
 void VolumeSliceGL::eventUpdateMousePos(Event* event) {
-    if (!sampleQuery_.isChecked())
-        return;
+    if (!sampleQuery_.isChecked()) return;
 
     if (!inport_.hasData()) {
         return;
@@ -669,20 +661,18 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
 
     auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
     // convert normalized volume position to voxel coords
-    const mat4 textureToIndex(
-        volume->getCoordinateTransformer().getTextureToIndexMatrix());
+    const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
     const vec4 texturePos(volPos, 1.0);
     ivec3 indexPos(ivec3(textureToIndex * texturePos));
 
     const ivec3 volDim(volume->getDimensions());
 
-    bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim))
-        || glm::any(glm::lessThan(indexPos, ivec3(0)));
+    bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
+                       glm::any(glm::lessThan(indexPos, ivec3(0)));
     if (outOfBounds) {
         normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
         volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-    }
-    else {
+    } else {
         // sample input volume at given index position
         const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
         normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
@@ -752,4 +742,4 @@ void VolumeSliceGL::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // inviwo namespace
+}  // namespace inviwo
