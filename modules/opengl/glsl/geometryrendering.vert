@@ -35,6 +35,8 @@ layout(location = 4) in uint in_PickId;
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
+uniform vec4 overrideColor;
+
 uniform bool pickingEnabled = false;
 
 out vec4 worldPosition_;
@@ -45,7 +47,11 @@ out vec3 texCoord_;
 flat out vec4 pickColor_;
  
 void main() {
+#ifdef OVERRIDE_COLOR_BUFFER
+    color_ = overrideColor;
+#else
     color_ = in_Color;
+#endif
     texCoord_ = in_TexCoord;
     worldPosition_ = geometry.dataToWorld * in_Vertex;
     normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
