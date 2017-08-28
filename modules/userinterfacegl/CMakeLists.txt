@@ -24,8 +24,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/meshrenderer.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/meshrenderer.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/geometrycustompicking.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgetrenderer.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})

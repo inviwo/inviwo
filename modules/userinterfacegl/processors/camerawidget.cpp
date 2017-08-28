@@ -95,8 +95,8 @@ CameraWidget::CameraWidget()
     , lightingProperty_("internalLighting", "Lighting", nullptr)
 
     , picking_(this, numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
-    , shader_("widgetrenderer.vert", "meshrenderer.frag", false)
-    , cubeShader_("meshrenderer.vert", "meshrenderer.frag", false)
+    , shader_("widgetrenderer.vert", "geometryrendering.frag", false)
+    , cubeShader_("geometryrendering.vert", "geometryrendering.frag", false)
     , overlayShader_("img_identity.vert", "img_copy.frag")
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
@@ -246,24 +246,24 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
 
     shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, internalCamera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
+    utilgl::setShaderUniforms(shader_, internalCamera_, "camera");
+    utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
     shader_.setUniform("overrideColor_", userColor_.get());
 
     auto *meshDrawer = meshDrawers_[showRollWidget_.get() ? 1 : 0].get();
-    utilgl::setShaderUniforms(shader_, *meshDrawer->getMesh(), "geometry_");
+    utilgl::setShaderUniforms(shader_, *meshDrawer->getMesh(), "geometry");
 
     meshDrawer->draw();
 
     // draw zoom buttons
-    utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry_");
+    utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry");
     meshDrawers_[2]->draw();
     
     if (showCube_.get()) {
         // draw cube behind the widget using the view matrix of the output camera
         cubeShader_.activate();
-        utilgl::setShaderUniforms(cubeShader_, internalCamera_, "camera_");
-        utilgl::setShaderUniforms(cubeShader_, lightingProperty_, "light_");
+        utilgl::setShaderUniforms(cubeShader_, internalCamera_, "camera");
+        utilgl::setShaderUniforms(cubeShader_, lightingProperty_, "lighting");
 
         // apply custom transformation
         mat4 worldMatrix(camera_.viewMatrix());
@@ -272,8 +272,8 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
         worldMatrix[3] = vec4(0.0f, 0.0f, -8.0f, 1.0f);
         mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
-        cubeShader_.setUniform("geometry_.dataToWorld", worldMatrix);
-        cubeShader_.setUniform("geometry_.dataToWorldNormalMatrix", normalMatrix);
+        cubeShader_.setUniform("geometry.dataToWorld", worldMatrix);
+        cubeShader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
         cubeShader_.setUniform("overrideColor_", cubeColor_.get());
 
         meshDrawers_[3]->draw();

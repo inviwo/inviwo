@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,45 @@
  * 
  *********************************************************************************/
 
-#include "utils/shading.glsl"
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec3 viewNormal_;
-in vec3 texCoord_;
-in vec4 color_;
-in vec4 pickingColor_;
+uniform bool pickingEnabled = true;
 
+uniform vec4 overrideColor = vec4(-1.0);
+
+uniform vec2 scaling = vec2(1.0);
+uniform vec2 offset = vec2(0.0);
+
+uniform uint pickId = 0;
+
+out vec4 worldPosition_;
+out vec3 normal_;
+out vec3 viewNormal_;
+out vec4 color_;
+out vec3 texCoord_;
+flat out vec4 pickColor_;
+ 
 void main() {
-    vec3 toCameraDir = camera_.position - worldPosition_.xyz;
+    color_ = in_Color;
+    texCoord_ = in_TexCoord;
 
-    vec4 fragColor = color_;
-    fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
-                                   normalize(normal_), normalize(toCameraDir));
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
+    gl_Position = camera.worldToClip * worldPosition_;
 
-    FragData0 = fragColor;
-    PickingData = pickingColor_;
+    // move mesh into correct 2D position on screen and scale it accordingly    
+    gl_Position /= gl_Position.w;
+    gl_Position.xy *= scaling;
+    gl_Position.xy += offset;
+    
+    if (overrideColor.a > -0.1) {
+        color_ = overrideColor;
+    }
+
+    pickColor_ = vec4(pickingIndexToColor(pickId), pickingEnabled ? 1.0 : 0.0);
 }

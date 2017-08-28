@@ -31,8 +31,8 @@
 
 layout(location=6) in vec3 in_PickCoords_;
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
 uniform vec4 overrideColor_;
 
@@ -47,16 +47,16 @@ out vec3 normal_;
 out vec3 viewNormal_;
 out vec4 color_;
 out vec3 texCoord_;
-out vec4 pickingColor_;
+flat out vec4 pickColor_;
 out float pickingCoord_;
  
 void main() {
     color_ = in_Color;
     texCoord_ = in_TexCoord;
-    worldPosition_ = geometry_.dataToWorld * in_Vertex;
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera_.worldToView * vec4(normal_,0)).xyz;
-    gl_Position = camera_.worldToClip * worldPosition_;
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
+    gl_Position = camera.worldToClip * worldPosition_;
 
     // move mesh into correct 2D position on screen and scale it accordingly
     gl_Position /= gl_Position.w;
@@ -76,5 +76,5 @@ void main() {
 #  endif // #if (CUSTOM_COLOR == 0)
 #endif
 
-    pickingColor_ = vec4(pickColors[pickID], 1.0);
+    pickColor_ = vec4(pickColors[pickID], 1.0);
 }

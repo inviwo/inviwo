@@ -96,7 +96,7 @@ CropWidget::CropWidget()
     , lightingProperty_("internalLighting", "Lighting", &camera_)
     , trackball_(&camera_)
     , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
-    , shader_("meshrenderer.vert", "meshrenderer.frag", false)
+    , shader_("geometrycustompicking.vert", "geometryrendering.frag", false)
     , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false)
     , isMouseBeingPressedAndHold_(false)
     , lastState_(-1)
@@ -178,9 +178,9 @@ void CropWidget::process() {
         utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shader_.activate();
 
-        utilgl::setShaderUniforms(shader_, camera_, "camera_");
-        utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
-        shader_.setUniform("overrideColor_", handleColor_.get());
+        utilgl::setShaderUniforms(shader_, camera_, "camera");
+        utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
+        shader_.setUniform("overrideColor", handleColor_.get());
 
         for (auto &elem : cropAxes_) {
             // if (elem.composite.isChecked()) {
@@ -199,24 +199,6 @@ void CropWidget::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
     shader_.build();
-
-    // initialize shader uniform containing all picking colors, the mesh will fetch the appropriate
-    // one using the object ID stored in the second texture coordinate set
-    shader_.activate();
-    std::vector<vec3> pickcolors;
-    pickcolors.resize(3);
-
-    // fill vector with picking colors
-    for (int i = 0; i < 3; ++i) {
-        pickcolors[i] = picking_.getColor(i);
-    }
-    shader_.setUniform("pickColors", pickcolors);
-    // set up default colors for the mesh (horizontal: red, vertical: green, center: light gray,
-    // roll: light blue, zoom: light gray)
-    std::array<vec4, 4> color = {vec4(1.0f, 0.7f, 0.7f, 1.0f), vec4(0.7f, 1.0f, 0.7f, 1.0f),
-                                 vec4(vec3(0.76f), 1.0f), vec4(0.7f, 0.9f, 1.0f, 1.0f)};
-    shader_.setUniform("meshColors_", color);
-    shader_.deactivate();
 
     lineShader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "1");
     lineShader_.getFragmentShaderObject()->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
@@ -307,9 +289,10 @@ void CropWidget::renderAxis(const CropAxis &axis) {
         auto draw = [&](auto &drawObject, int elemID, float value, const mat4 &rot) {
             mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m * rot);
             mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
-            shader_.setUniform("geometry_.dataToWorld", worldMatrix);
-            shader_.setUniform("geometry_.dataToWorldNormalMatrix", normalMatrix);
-            shader_.setUniform("pickColor_", picking_.getColor(axisIDOffset + elemID));
+            shader_.setUniform("geometry.dataToWorld", worldMatrix);
+            shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
+            unsigned int pickID = static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
+            shader_.setUniform("pickId", pickID);
 
             drawObject.draw();
         };
@@ -333,7 +316,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
                 }
             }
         }
-        shader_.setUniform("pickColor_", vec3(-1.0f));
+        shader_.setUniform("pickId", 0);
     }
 
     if (showCropPlane_.get()) {
