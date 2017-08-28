@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
+#include <modules/userinterfacegl/userinterfaceglmodule.h>
 
-#include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
+#include <modules/userinterfacegl/processors/camerawidget.h>
+#include <modules/userinterfacegl/processors/cropwidget.h>
+#include <modules/userinterfacegl/processors/presentationprocessor.h>
 
-uniform GeometryParameters geometry;
-uniform CameraParameters camera;
+#include <modules/opengl/shader/shadermanager.h>
 
-uniform vec4 overrideColor;
+namespace inviwo {
 
-uniform bool pickingEnabled = false;
+UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app) : InviwoModule(app, "UserInterfaceGL") {   
+    // Add a directory to the search path of the Shadermanager
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-out vec4 worldPosition_;
-out vec3 normal_;
-out vec3 viewNormal_;
-out vec4 color_;
-out vec3 texCoord_;
-flat out vec4 pickColor_;
- 
-void main() {
-#ifdef OVERRIDE_COLOR_BUFFER
-    color_ = overrideColor;
-#else
-    color_ = in_Color;
-#endif
-    texCoord_ = in_TexCoord;
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
-    gl_Position = camera.worldToClip * worldPosition_;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+    // Register objects that can be shared with the rest of inviwo here:
+    
+    // Processors
+    registerProcessor<CameraWidget>();
+    registerProcessor<CropWidget>();
+    registerProcessor<PresentationProcessor>();
+    
+    // Properties
+    // registerProperty<UserInterfaceGLProperty>();
+    
+    // PropertyWidgets
+    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
 }
+
+} // namespace inviwo

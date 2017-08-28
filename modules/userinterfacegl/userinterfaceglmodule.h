@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
+#ifndef IVW_USERINTERFACEGLMODULE_H
+#define IVW_USERINTERFACEGLMODULE_H
 
-#include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
-uniform GeometryParameters geometry;
-uniform CameraParameters camera;
+namespace inviwo {
 
-uniform vec4 overrideColor;
+class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule {
+public:
+    UserInterfaceGLModule(InviwoApplication* app);
+    virtual ~UserInterfaceGLModule() = default;
+};
 
-uniform bool pickingEnabled = false;
+} // namespace
 
-out vec4 worldPosition_;
-out vec3 normal_;
-out vec3 viewNormal_;
-out vec4 color_;
-out vec3 texCoord_;
-flat out vec4 pickColor_;
- 
-void main() {
-#ifdef OVERRIDE_COLOR_BUFFER
-    color_ = overrideColor;
-#else
-    color_ = in_Color;
-#endif
-    texCoord_ = in_TexCoord;
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
-    gl_Position = camera.worldToClip * worldPosition_;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
-}
+#endif // IVW_USERINTERFACEGLMODULE_H

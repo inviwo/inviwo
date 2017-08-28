@@ -48,12 +48,14 @@ uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
+in vec4 pickColors_[];
 
 out float segmentLength_; // total length of the current line segment in screen space
 out float lineLengthWorld_;  // total length of line segment in world space
 out float distanceWorld_;  // distance in world coords to segment start
 out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 out vec4 color_;
+flat out vec4 pickColor_;
 
 //
 // 2D line rendering in screen space.
@@ -129,6 +131,9 @@ void main(void) {
     vec4 p2in = gl_in[1].gl_Position;
     vec4 p3in = gl_in[1].gl_Position;
 
+    // set pick color equivalent to first vertex
+    pickColor_ = pickColors_[0];
+
 #else
     // Get the four vertices passed to the shader
     const int index1 = 1;
@@ -138,6 +143,9 @@ void main(void) {
     vec4 p1in = gl_in[1].gl_Position;
     vec4 p2in = gl_in[2].gl_Position;
     vec4 p3in = gl_in[3].gl_Position;
+    
+    // set pick color equivalent to first vertex
+    pickColor_ = pickColors_[1];
 #endif
     
     // perform homogeneous clipping

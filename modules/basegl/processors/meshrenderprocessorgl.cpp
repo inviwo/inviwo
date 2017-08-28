@@ -134,9 +134,9 @@ void MeshRenderProcessorGL::initializeResources() {
     utilgl::addShaderDefines(shader_, lightingProperty_);
 
     if (overrideColorBuffer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+        shader_.getVertexShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
+        shader_.getVertexShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
     }
 
     if (colorLayer_.get()) {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,20 @@
  * 
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
-
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-uniform vec4 overrideColor;
+uniform bool pickingEnabled = true;
 
-uniform bool pickingEnabled = false;
+uniform vec4 overrideColor = vec4(-1.0);
+
+uniform vec2 scaling = vec2(1.0);
+uniform vec2 offset = vec2(0.0);
+
+uniform uint pickId = 0;
 
 out vec4 worldPosition_;
 out vec3 normal_;
@@ -47,15 +50,22 @@ out vec3 texCoord_;
 flat out vec4 pickColor_;
  
 void main() {
-#ifdef OVERRIDE_COLOR_BUFFER
-    color_ = overrideColor;
-#else
     color_ = in_Color;
-#endif
     texCoord_ = in_TexCoord;
+
     worldPosition_ = geometry.dataToWorld * in_Vertex;
     normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera.worldToClip * worldPosition_;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+
+    // move mesh into correct 2D position on screen and scale it accordingly    
+    gl_Position /= gl_Position.w;
+    gl_Position.xy *= scaling;
+    gl_Position.xy += offset;
+    
+    if (overrideColor.a > -0.1) {
+        color_ = overrideColor;
+    }
+
+    pickColor_ = vec4(pickingIndexToColor(pickId), pickingEnabled ? 1.0 : 0.0);
 }
