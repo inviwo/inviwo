@@ -1,4 +1,3 @@
-import numpy as np
 import inviwopy
 from inviwopy.glm import *
 
