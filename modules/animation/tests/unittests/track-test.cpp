@@ -57,7 +57,7 @@ namespace animation {
 
 TEST(AnimationTests, FloatInterpolation) {
 
-    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 100.0f);
     
     PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
 
@@ -113,9 +113,9 @@ TEST(AnimationTests, FloatInterpolation) {
 
 TEST(AnimationTests, AnimationTest) {
 
-    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 100.0f);
 
-    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
+    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(100.0));
 
     KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
     { {Seconds{1.0}, 0.0f}, {Seconds{2.0}, 1.0f}, {Seconds{3.0}, 0.0f} },

@@ -72,10 +72,16 @@ class TemplatePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
     using BT = typename util::value_type<T>::type;
     TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
-    virtual ~TemplatePropertySettingsWidgetQt() = default;
+    virtual ~TemplatePropertySettingsWidgetQt();
 
     virtual void updateFromProperty() override;
+    /**
+     * \brief shows the widget and registers the widget with the property
+     */
     void showWidget();
+    /**
+     * \brief hides the widget and deregisters it from the property
+     */
     void hideWidget();
     bool getVisible() const;
 
@@ -96,8 +102,8 @@ private:
 };
 
 template <typename T>
-TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
-    OrdinalProperty<T>* property, QWidget* widget)
+TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property,
+                                                                      QWidget* widget)
     : QDialog(widget)
     , PropertyWidget(property)
     , btnApply_(new QPushButton("Apply", this))
@@ -120,7 +126,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
     for (size_t i = 0; i < labels.size(); ++i) {
         gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
     }
-    const std::array<char,4> desc = {'x', 'y', 'z', 'w'};
+    const std::array<char, 4> desc = {'x', 'y', 'z', 'w'};
     const uvec2 components = OrdinalProperty<T>::getDim();
 
     int count = 0;
@@ -146,16 +152,18 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(
 
     setLayout(gridLayout);
 
-    connect(btnApply_, &QPushButton::clicked, this,
-            &TemplatePropertySettingsWidgetQt<T>::apply);
+    connect(btnApply_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::apply);
     connect(btnOk_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::save);
-    connect(btnCancel_, &QPushButton::clicked, this,
-            &TemplatePropertySettingsWidgetQt<T>::cancel);
+    connect(btnCancel_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::cancel);
 
     reload();
     setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
 }
 
+template <typename T>
+TemplatePropertySettingsWidgetQt<T>::~TemplatePropertySettingsWidgetQt() {
+    if (property_) property_->deregisterWidget(this);
+}
 
 template <typename T>
 void TemplatePropertySettingsWidgetQt<T>::apply() {
@@ -247,12 +255,18 @@ class TemplateMinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWi
 public:
     using BT = typename util::value_type<T>::type;
     TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
-    virtual ~TemplateMinMaxPropertySettingsWidgetQt() = default;
+    virtual ~TemplateMinMaxPropertySettingsWidgetQt();
 
     using V = glm::tvec2<T, glm::defaultp>;
 
     virtual void updateFromProperty() override;
+    /**
+     * \brief shows the widget and registers the widget with the property
+     */
     void showWidget();
+    /**
+     * \brief hides the widget and deregisters it from the property
+     */
     void hideWidget();
     bool getVisible() const;
 
@@ -298,7 +312,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     for (size_t i = 0; i < labels.size(); ++i) {
         gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
     }
-    const std::array<char, 4> desc = { 'x', 'y', 'z', 'w' };
+    const std::array<char, 4> desc = {'x', 'y', 'z', 'w'};
     const uvec2 components = OrdinalProperty<T>::getDim();
 
     int count = 0;
@@ -308,7 +322,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
             ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
             settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
             gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
-            
+
             for (int k = 0; k < 6; ++k) {
                 QLineEdit* edit = settings_[count]->addField();
                 gridLayout->addWidget(edit, count + 1, k + 1);
@@ -326,8 +340,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
 
     connect(btnApply_, &QPushButton::clicked, this,
             &TemplateMinMaxPropertySettingsWidgetQt<T>::apply);
-    connect(btnOk_, &QPushButton::clicked, this,
-            &TemplateMinMaxPropertySettingsWidgetQt<T>::save);
+    connect(btnOk_, &QPushButton::clicked, this, &TemplateMinMaxPropertySettingsWidgetQt<T>::save);
     connect(btnCancel_, &QPushButton::clicked, this,
             &TemplateMinMaxPropertySettingsWidgetQt<T>::cancel);
 
@@ -335,53 +348,51 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
 }
 
+template <typename T>
+TemplateMinMaxPropertySettingsWidgetQt<T>::~TemplateMinMaxPropertySettingsWidgetQt() {
+    if (property_) property_->deregisterWidget(this);
+}
 
 template <typename T>
 void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
-    std::array<T, 6> vals{
-        property_->getRangeMin(),
-        property_->getStart(),
-        property_->getEnd(),
-        property_->getRangeMax(),
-        property_->getMinSeparation(),
-        property_->getIncrement()
-    };
-    const std::array<T, 6> orgVals{vals};
+    using range_type = typename MinMaxProperty<T>::range_type;
 
-    // Visual studio warns here even with the static casts, bug?  
-#include <warn/push>
-#include <warn/ignore/conversion>
-    for (size_t i = 0; i < settings_.size(); i++) {
-        for (int k = 0; k < 6; ++k) {
-            util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
-        }
+    // order of values stored in setting_:
+    // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"
+    auto getVal = [&](int index) { return static_cast<BT>(settings_[0]->getFieldAsDouble(index)); };
+
+    range_type newVal(getVal(1), getVal(2));
+    range_type newRange(getVal(0), getVal(3));
+    T minSep = getVal(4);
+    T increment = getVal(5);
+
+    // swap values if necessary
+    if (newVal.x > newVal.y) newVal = range_type(newVal.y, newVal.x);
+    // swap range if necessary
+    if (newRange.x > newRange.y) newRange = range_type(newRange.y, newRange.x);
+
+    // perform sanity check whether new values are out of bounds
+    bool outOfBounds = ((newVal.x < newRange.x) || (newVal.y > newRange.y));
+    if (outOfBounds) {
+        // adjust ranges
+        newRange.x = glm::min(newRange.x, newVal.x);
+        newRange.y = glm::max(newRange.y, newVal.y);
     }
-#include <warn/pop>
-
-    static const std::array<void (MinMaxProperty<T>::*)(const T&), 6> setters{
-        &MinMaxProperty<T>::setRangeMin,      &MinMaxProperty<T>::setStart,
-        &MinMaxProperty<T>::setEnd,           &MinMaxProperty<T>::setRangeMax,
-        &MinMaxProperty<T>::setMinSeparation, &MinMaxProperty<T>::setIncrement};
 
     property_->setInitiatingWidget(this);
-    for (int k = 0; k < 6; ++k) {
-        if (vals[k] != orgVals[k]) (*property_.*setters[k])(vals[k]);
-    }
+    property_->set(newVal, newRange, increment, minSep);
     property_->clearInitiatingWidget();
+    // the values stored in the property might be different from the ones shown in the dialog
+    reload();
 }
 
 template <typename T>
 void TemplateMinMaxPropertySettingsWidgetQt<T>::reload() {
-    std::array<T, 6> vals{
-        property_->getRangeMin(),
-        property_->getStart(),
-        property_->getEnd(),
-        property_->getRangeMax(),
-        property_->getMinSeparation(),
-        property_->getIncrement()
-    };
+    std::array<T, 6> vals{property_->getRangeMin(),      property_->getStart(),
+                          property_->getEnd(),           property_->getRangeMax(),
+                          property_->getMinSeparation(), property_->getIncrement()};
 
     QLocale locale = settings_[0]->additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {
@@ -437,6 +448,6 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) 
     QDialog::keyPressEvent(event);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYSETTINGSWIDGETQT_H

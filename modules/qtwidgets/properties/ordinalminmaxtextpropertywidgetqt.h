@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/metadata/metadata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,7 +50,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
 
 template <typename BT, typename T>
 class OrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
@@ -62,7 +62,7 @@ public:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
     using V = glm::tvec2<T, glm::defaultp>;
-    
+
 protected:
     void updateFromMin();
     void updateFromMax();
@@ -154,55 +154,122 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
+    QSignalBlocker minBlock(min_);
+
     const T min = min_->getValue();
-    const T sep = minMaxProperty_->getMinSeparation();
-    V range = minMaxProperty_->get();
+    V value = minMaxProperty_->get();
 
-    if (std::abs(min - range.x) > glm::epsilon<T>()) {
-        range.x = min;
+    // check for modification of range start
+    if (std::abs(min - value.x) > glm::epsilon<T>()) {
+        const T sep = minMaxProperty_->getMinSeparation();
+        V range = minMaxProperty_->getRange();
 
-        if (range.y - range.x < sep) {
-            range.y = range.x + sep;
-            QSignalBlocker maxBlock(max_);
-            max_->setValue(range.y);
+        value.x = min;
+
+        // adjust range end position if range start is larger than range end - minSep
+        if (value.x > value.y - sep) {
+            // offset value.y
+            value.y = min + sep;
+        }
+        if ((value.x < range.x) || (value.y > range.y)) {
+            // range adjustment necessary
+            if (minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false)) {
+                // adjust ranges to fit values
+                range.x = glm::min(range.x, value.x);
+                range.y = glm::max(range.y, value.y);
+            } else {
+                // clamp values to range
+                value.x = glm::clamp(value.x, range.x, range.y - sep);
+                value.y = glm::clamp(value.y, range.x + sep, range.y);
+            }
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        minMaxProperty_->set(value, range, minMaxProperty_->getIncrement(), sep);
         minMaxProperty_->clearInitiatingWidget();
+
+        {
+            QSignalBlocker maxBlock(max_);
+
+            const V newVal(minMaxProperty_->get());
+            min_->setValue(newVal.x);
+            max_->setValue(newVal.y);
+        }
     }
 }
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
+    QSignalBlocker maxBlock(max_);
+
     const T max = max_->getValue();
-    const T sep = minMaxProperty_->getMinSeparation();
-    V range = minMaxProperty_->get();
+    V value = minMaxProperty_->get();
 
-    if (std::abs(max - range.y) > glm::epsilon<T>()) {
-        range.y = max;
+    // check for modification of range start
+    if (std::abs(max - value.y) > glm::epsilon<T>()) {
+        const T sep = minMaxProperty_->getMinSeparation();
+        V range = minMaxProperty_->getRange();
 
-        if (range.y - range.x < sep) {
-            range.x = range.y - sep;
-            QSignalBlocker minBlock(min_);
-            min_->setValue(range.x);
+        value.y = max;
+
+        // adjust range start position if range end is smaller than range start + minSep
+        if (value.y < value.x + sep) {
+            // offset value.x
+            value.x = max - sep;
+        }
+        if ((value.x < range.x) || (value.y > range.y)) {
+            // range adjustment necessary
+            if (minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false)) {
+                // adjust ranges to fit values
+                range.x = glm::min(range.x, value.x);
+                range.y = glm::max(range.y, value.y);
+            } else {
+                // clamp values to range
+                value.x = glm::clamp(value.x, range.x, range.y - sep);
+                value.y = glm::clamp(value.y, range.x + sep, range.y);
+            }
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        minMaxProperty_->set(value, range, minMaxProperty_->getIncrement(), sep);
         minMaxProperty_->clearInitiatingWidget();
+
+        {
+            QSignalBlocker minBlock(min_);
+
+            const V newVal(minMaxProperty_->get());
+            min_->setValue(value.x);
+            max_->setValue(value.y);
+        }
     }
 }
 
 template <typename BT, typename T>
 std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
+
+    auto rangeAutoAdjustAction = menu->addAction(tr("&Auto adjust ranges"));
+    rangeAutoAdjustAction->setCheckable(true);
+    rangeAutoAdjustAction->setChecked(
+        minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false));
+
+    connect(rangeAutoAdjustAction, &QAction::toggled, [&](bool toggled) {
+        // adjust metadata of the property
+        if (toggled) {
+            minMaxProperty_->template setMetaData<BoolMetaData>("autoAdjustRanges", true);
+        } else {
+            // remove metadata entry
+            minMaxProperty_->template unsetMetaData<BoolMetaData>("autoAdjustRanges");
+        }
+    });
+
     auto settingsAction = menu->addAction(tr("&Property settings..."));
     settingsAction->setToolTip(
         tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
            "minSepration and increment values"));
 
-    connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
+    connect(settingsAction, &QAction::triggered, this,
+            &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings);
     settingsAction->setEnabled(!property_->getReadOnly());
     settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
     return menu;
@@ -216,7 +283,6 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
     settingsWidget_->showWidget();
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
-
+#endif  // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
