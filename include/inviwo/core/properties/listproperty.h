@@ -161,7 +161,7 @@ template <typename T>
 void ListProperty<T>::deleteElement() {
     if (getNumberOfElements() <= 0) return;
     std::vector<Property*> beforeDeletion = elements_.getProperties();
-    int selectedElement = elementSelection_.getSelectedIndex();
+    size_t selectedElement = elementSelection_.getSelectedIndex();
 
     std::string identifier = beforeDeletion.at(selectedElement)->getIdentifier();
     elements_.removeProperty(identifier);
@@ -188,14 +188,21 @@ void ListProperty<T>::deleteElement() {
 template <typename T>
 void ListProperty<T>::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
+    /*
     s.serialize("maxNumElements", maxNumElements_);
+    PropertyOwner prefab = static_cast<PropertyOwner>(*prefab_);
+    s.serialize("prefab", prefab); */
 }
 
 template <typename T>
 void ListProperty<T>::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
+    /* 
     d.deserialize("maxNumElements", maxNumElements_);
-    LogInfo(std::to_string(maxNumElements_) + " is max number of elements");
+    PropertyOwner prefab;
+    d.deserialize("prefab", prefab);
+    T casted = static_cast<T>(prefab);
+    prefab_ = std::make_unique<T>(casted); */
 }
 
 }  // namespace inviwo
