@@ -35,8 +35,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_define_qt_definitions()
 ivw_add_definition(IVW_PYTHON3_QT)
 
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5widgets QUIET REQUIRED)
+
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-
-
-#target_link_libraries(${${mod}_target} pybind11::module)
+target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+ivw_make_package(InviwoPython3QtModule inviwo-module-python3qt)

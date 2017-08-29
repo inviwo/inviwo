@@ -130,6 +130,10 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create library
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Help QUIET REQUIRED)
+
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 #add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
@@ -155,16 +159,8 @@ ivw_define_qt_definitions()
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Help)
+ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 
-# Add qt dependencies to this list
-set(IVW_WIDGETS_QT_DEPENDS
-    Qt5Core
-    Qt5Gui
-    Qt5Widgets
-    Qt5Help
-)
+ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets Qt5Help)
 
-foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
-    #ivw_add_dependencies(${qtarget})
-    ivw_qt_add_to_install(${qtarget} qt_widgets)
-endforeach()

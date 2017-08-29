@@ -47,7 +47,7 @@ ELSE("${ITK_VERSION_MAJOR}" GREATER 0.0)
    #FIND_PACKAGE(ZLIB)
 
    ADD_DEFINITIONS(-DHAVE_ZLIB)
-   #ivw_message("ZLIB_LIBRARIES" ${ZLIB_LIBRARIES})
+   #message("ZLIB_LIBRARIES" ${ZLIB_LIBRARIES})
 #  MESSAGE(STATUS "---------------------SYSTEM ZLIB ${ZLIB_LIBRARY}")
   SET(PACKAGE_PREFIX "")
   # Set default shared library version

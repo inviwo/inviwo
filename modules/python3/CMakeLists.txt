@@ -2,11 +2,8 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
-
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
 ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
-
-
 
 #Check if numpy exist 
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
@@ -110,16 +107,11 @@ set(INTERFACE_SRC_FILES
 )
 #ivw_group("Source Files" ${INTERFACE_SRC_FILES})
 
-
-
 add_dependency_libs_to_module(pybind11::module)
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
-target_link_libraries(${${mod}_target} $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
-
-#target_link_libraries(${${mod}_target} pybind11::module)
-
+target_link_libraries(${${mod}_target} PUBLIC $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
 
 ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
 

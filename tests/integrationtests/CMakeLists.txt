@@ -41,7 +41,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo-integrationtests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-target_link_libraries(inviwo-integrationtests gtest)
+target_link_libraries(inviwo-integrationtests PRIVATE gtest)
 
 #--------------------------------------------------------------------
 # Define defintions

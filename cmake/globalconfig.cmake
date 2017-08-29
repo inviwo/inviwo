@@ -175,11 +175,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 #--------------------------------------------------------------------
-# Force use of GLFW context over QT context
-option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
-mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
-
-#--------------------------------------------------------------------
 # Package creation
 option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 

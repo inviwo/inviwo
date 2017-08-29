@@ -212,13 +212,6 @@ ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 # Add modules
 ivw_register_modules(all_modules)
 
-# OpenGL Context created with GLFW or Qt within Inviwo by default
-if(IVW_USE_GLFW_NOT_OPENGLQT)
-    ivw_enable_module(GLFW)
-else()
-    ivw_enable_module(OpenGLQt)
-endif()
-
 #--------------------------------------------------------------------
 # Add Qt
 add_subdirectory(src/qt)

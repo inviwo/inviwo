@@ -76,9 +76,14 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create library
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Help QUIET REQUIRED)
+
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-qteditor PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Help)
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -86,22 +91,7 @@ ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
 ivw_define_standard_properties(inviwo-qteditor)
 ivw_define_qt_definitions()
 
-# Add dependencies to this list
-set(IVW_EDITOR_QT_DEPENDS
-    Qt5Core
-    Qt5Gui
-    Qt5Widgets
-    Qt5Help
-)
-
-foreach(qtarget ${IVW_EDITOR_QT_DEPENDS})
-    ivw_add_dependencies(${qtarget})  
-    ivw_qt_add_to_install(${qtarget} qt_editor)
-endforeach()
-
-foreach(qtarget Qt5Sql Qt5Network)
-    ivw_qt_add_to_install(${qtarget} qt_editor)
-endforeach()
+ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help)
 
 ivw_add_dependencies(InviwoQtWidgetsModule)
 ivw_add_dependencies(InviwoQtApplicationBase)

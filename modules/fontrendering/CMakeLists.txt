@@ -7,10 +7,6 @@ endif(IVW_MODULE_FONTRENDERING)
 ivw_module(FontRendering)
 
 #--------------------------------------------------------------------
-# Set include directories
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/include)
-
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/texatlasentry.h
@@ -49,7 +45,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Disable Pre-compiled headers as file is not generated properly on CMake 3.1 ->
-ivw_set_pch_disabled_for_module()
+#ivw_set_pch_disabled_for_module()
 
 #--------------------------------------------------------------------
 # Create module
@@ -65,6 +61,5 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 
 #--------------------------------------------------------------------
 # Add dependency to ext/utf 
-target_link_libraries(inviwo-module-fontrendering utf)
-
+target_link_libraries(inviwo-module-fontrendering PRIVATE utf)
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)

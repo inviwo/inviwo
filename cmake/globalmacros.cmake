@@ -586,7 +586,7 @@ macro(ivw_create_module)
     ivw_define_standard_properties(${${mod}_target})
     
     # Add dependencies
-    target_link_libraries(${${mod}_target} ${_preModuleDependencies})
+    target_link_libraries(${${mod}_target} PUBLIC ${_preModuleDependencies})
 
     # Add dependencies from depends.cmake and InviwoCore
     ivw_add_dependencies_on_target(${${mod}_target} InviwoCore ${${mod}_dependencies})
@@ -847,7 +847,7 @@ macro(ivw_add_dependencies_on_target target)
         endif()
     
         # Set includes and append to list (Only add new include dirs)
-        get_target_property(ivw_already_added_incdirs ${target} INCLUDE_DIRECTORIES)
+        get_target_property(ivw_already_added_incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
         if(NOT ivw_already_added_incdirs)
             set(ivw_already_added_incdirs "")
         endif()
@@ -869,12 +869,12 @@ macro(ivw_add_dependencies_on_target target)
         endif(BUILD_${u_package})
       
         # Link library (Only link new libs)
-        get_target_property(ivw_already_added_libs ${target} LINK_LIBRARIES)
+        get_target_property(ivw_already_added_libs ${target} INTERFACE_LINK_LIBRARIES)
         if(NOT ivw_already_added_libs)
             set(ivw_already_added_libs "")
         endif()
         remove_from_list(ivw_new_libs "${${u_package}_LIBRARIES}" ${ivw_already_added_libs})
-        target_link_libraries(${target} ${ivw_new_libs})
+        target_link_libraries(${target} PUBLIC ${ivw_new_libs})
       
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
@@ -912,40 +912,42 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
-macro(ivw_qt_add_to_install qtarget ivw_comp)
-    if(IVW_PACKAGE_PROJECT)
+macro(ivw_qt_add_to_install ivw_comp)
+    foreach(qtarget ${ARGN})
         find_package(${qtarget} QUIET REQUIRED)
-        if(${qtarget}_FOUND)
-            if(WIN32)
-                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Debug)
-                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Release)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION bin/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
-            elseif(APPLE)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
+        if(IVW_PACKAGE_PROJECT)
+            if(${qtarget}_FOUND)
+                if(WIN32)
+                    set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
+                    install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Debug)
+                    install(FILES ${QTARGET_DIR}/${qtarget}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Release)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION bin/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                elseif(APPLE)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                endif()
             endif()
         endif()
-    endif()
+    endforeach()
 endmacro()
 
 #-------------------------------------------------------------------#

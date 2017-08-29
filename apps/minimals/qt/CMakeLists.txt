@@ -5,6 +5,7 @@ ivw_project(inviwo_qtminimum)
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt5Help QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add source files
