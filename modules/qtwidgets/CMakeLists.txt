@@ -2,6 +2,11 @@
 # Inviwo Qt Widgets
 ivw_module(QtWidgets)
 
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Help QUIET REQUIRED)
+
 #-------------------------------------------------------------------- 
 # Add MOC files
 set(MOC_FILES
@@ -129,35 +134,16 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5widgets QUIET REQUIRED)
-find_package(Qt5Help QUIET REQUIRED)
-
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
-#add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-
 
 #--------------------------------------------------------------------
 # Define defintions
-#ivw_define_standard_definitions(IVW_QTWIDGETS inviwo-qtwidgets)
-#ivw_define_standard_properties(inviwo-qtwidgets)
 ivw_define_qt_definitions()
-
-
-
-# Add core dependencies to this list
-#ivw_add_dependencies(InviwoCore)
-
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-#ivw_set_cpack_name(qt_widgets)
-#ivw_make_package(InviwoQtWidgets inviwo-qtwidgets)
 
 #--------------------------------------------------------------------
 # Create module
+ivw_set_cpack_name(qt_widgets)
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Help)
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
