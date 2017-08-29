@@ -30,6 +30,9 @@
  ### Generate python binding targets for modules. ###
 
 # Needed for the function pybind11_add_module and dependency pybind11::module 
+
+ set(_allPyBindWrappers "" CACHE INTERNAL  "")
+
 if(PYTHONLIBS_FOUND)
     add_subdirectory(${IVW_ROOT_DIR}/ext/pybind11)
 
@@ -51,5 +54,7 @@ function (ivw_add_py_wrapper name)
         target_link_libraries(${name} PUBLIC ${${mod}_target})
 
         ivw_folder(${name} pybind11modules)
+
+        set(_allPyBindWrappers "${_allPyBindWrappers};${name}" CACHE INTERNAL  "_allPyBindWrappers")
     endif()
 endfunction()
