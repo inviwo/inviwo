@@ -91,8 +91,6 @@ ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
 ivw_define_standard_properties(inviwo-qteditor)
 ivw_define_qt_definitions()
 
-ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help)
-
 ivw_add_dependencies(InviwoQtWidgetsModule)
 ivw_add_dependencies(InviwoQtApplicationBase)
 
@@ -104,3 +102,6 @@ ivw_compile_optimize_inviwo_core()
 # Make package (for other projects to find)
 ivw_set_cpack_name(qt_editor)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
+
+ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
+ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help)

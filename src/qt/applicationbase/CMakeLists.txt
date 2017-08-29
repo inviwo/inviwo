@@ -43,9 +43,11 @@ ivw_define_qt_definitions()
 
 # Add core dependencies to this list
 ivw_add_dependencies(InviwoCore)
-ivw_qt_add_to_install(inviwo-qtapplicationbase Qt5Core Qt5Gui Qt5Widgets)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_set_cpack_name(qt_applicationbase)
 ivw_make_package(InviwoQtApplicationBase inviwo-qtapplicationbase)
+
+ivw_default_install_comp_targets(qt_applicationbase inviwo-qtapplicationbase)
+ivw_qt_add_to_install(inviwo-qtapplicationbase Qt5Core Qt5Gui Qt5Widgets)

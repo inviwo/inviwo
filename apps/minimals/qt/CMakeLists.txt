@@ -61,20 +61,7 @@ ivw_folder(inviwo_qtminimum minimals)
 
 #--------------------------------------------------------------------
 # Add application to pack
-if(IVW_PACKAGE_PROJECT)
-if(WIN32)
-   install(TARGETS inviwo_qtminimum
-            RUNTIME DESTINATION bin
-            COMPONENT qt_app)
-else()
-    install(TARGETS inviwo_qtminimum
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT qt_app)
-endif()
-endif()
+ivw_default_install_comp_targets(qt_app inviwo_qtminimum)
 
 #--------------------------------------------------------------------
 # Add dependencies

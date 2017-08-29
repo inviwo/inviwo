@@ -681,20 +681,21 @@ endfunction()
 
 #--------------------------------------------------------------------
 # A helper funtion to install targets
-function(ivw_default_install_targets)
-    # package the zlib lib
+function(ivw_default_install_comp_targets comp)
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
         if(WIN32)
            install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
-                    COMPONENT modules)
+                    ARCHIVE DESTINATION bin
+                    LIBRARY DESTINATION bin
+                    COMPONENT ${comp})
         elseif(APPLE)
             install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
                     BUNDLE DESTINATION .
                     ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
                     LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT modules)
+                    COMPONENT ${comp})
         
         else()
             install(TARGETS ${ARGN}
@@ -702,8 +703,12 @@ function(ivw_default_install_targets)
                     BUNDLE DESTINATION bin
                     ARCHIVE DESTINATION lib
                     LIBRARY DESTINATION lib
-                    COMPONENT modules)
+                    COMPONENT ${comp})
         endif()
     endif()
+endfunction()
+
+function(ivw_default_install_targets)
+    ivw_default_install_comp_targets(modules ${ARGN})
 endfunction()
 

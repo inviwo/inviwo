@@ -667,29 +667,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_package project_name)
-   # Add to package
-   if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-        if(WIN32)
-           install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    COMPONENT ${_cpackName})
-        
-        elseif(APPLE)
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${_cpackName})
-        else()
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${_cpackName})
-        endif()
-    endif()
+    ivw_default_install_comp_targets(${_cpackName} ${project_name})
 endfunction()
 
 function(ivw_private_install_module_dirs)
